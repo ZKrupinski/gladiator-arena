@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLADIATOR — Avatar Foundry v1.5</title>
+<style>
+:root{color-scheme:dark;--bg:#100e0d;--panel:#201a16;--panel2:#292019;--edge:#76583b;--gold:#dfb875;--text:#f4e8d4;--muted:#b9a58a;--mint:#9fd2bb}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif;background:radial-gradient(ellipse at 30% 0,#322317 0,#110e0c 65%);color:var(--text);min-height:100vh}button,select,textarea{font:inherit}button,select{cursor:pointer}a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
+header{max-width:1350px;margin:0 auto;padding:19px 24px;border-bottom:1px solid #695034;display:flex;justify-content:space-between;gap:18px;align-items:center}.logo{font:700 20px Georgia,serif;letter-spacing:.13em;color:#f3d3a0}.logo small{display:block;font:500 10px system-ui;letter-spacing:.22em;color:var(--muted);margin-top:5px}.back{background:#33261b;border:1px solid #836444;padding:10px 16px;border-radius:9px;white-space:nowrap}
+main{max-width:1350px;margin:0 auto;padding:24px;display:grid;grid-template-columns:minmax(250px,310px) minmax(300px,1fr) minmax(285px,350px);gap:16px}.panel{background:linear-gradient(155deg,#29221b,#1c1714 90%);border:1px solid #655039;border-radius:15px;box-shadow:0 10px 35px #0005;overflow:hidden}.inside{padding:19px}.overline{font-size:11px;letter-spacing:.21em;color:#d3a566;text-transform:uppercase;margin-bottom:10px}h1,h2,h3,p{margin:0}h1{font:700 26px Georgia,serif;margin-bottom:6px}h2{font:700 18px Georgia,serif;margin-bottom:14px;color:#f8dfb3}.info{line-height:1.58;color:var(--muted);font-size:13px;margin:12px 0 18px}.group{margin-top:18px}.label{display:block;font-size:12px;color:#dbbe94;margin-bottom:7px}.field{width:100%;border:1px solid #785c3c;border-radius:7px;background:#1a1512;color:#fff1d8;padding:10px}.stage-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stage{border:1px solid #604a34;border-radius:9px;background:#2e251e;color:#e8d3b7;padding:11px 9px;text-align:left}.stage strong{display:block;font-size:13px}.stage small{display:block;font-size:11px;color:#a99b8b;margin-top:4px}.stage.active,.pose.active{border-color:#f2d291;background:#4e3924;box-shadow:inset 0 0 0 1px #c3934b}
+.appearance{display:grid;grid-template-columns:1fr 1fr;gap:10px}.avatar-panel{position:relative;display:flex;flex-direction:column}.arena-preview{position:relative;height:430px;min-height:330px;overflow:hidden;background:#66533b url('./assets/backgrounds/colosseum/arena.webp') center / cover no-repeat;border-bottom:1px solid #9e7b46}.arena-preview:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#0001 0%,transparent 30%,#100d0a6b 97%);pointer-events:none}.vignette{position:absolute;inset:0;background:linear-gradient(90deg,#170d0580,transparent 25%,transparent 75%,#170d0580)}.avatar-image{position:absolute;object-fit:contain;width:min(94%,400px);height:400px;max-height:92%;left:50%;bottom:4px;transform:translateX(-50%);image-rendering:auto;filter:drop-shadow(2px 9px 9px #1b120d8c)}.avatar-image.facing-left{transform:translateX(-50%) scaleX(-1)}.layer-canvas{position:absolute;width:320px;height:320px;left:50%;bottom:13px;transform:translateX(-50%);max-width:100%;max-height:92%}.layer-canvas img{position:absolute;inset:0;width:100%;height:100%}.preview-top{position:absolute;top:13px;left:14px;right:14px;display:flex;justify-content:space-between;z-index:2;align-items:center}.preview-title{background:#24170bcf;border:1px solid #a17a49;border-radius:6px;padding:7px 10px;font:600 11px system-ui}.preview-bottom{position:absolute;bottom:12px;left:13px;right:13px;z-index:3;background:#160f0ada;color:#f5e2c4;border-radius:7px;padding:10px 12px;font-size:12px;line-height:1.55}.pose-toolbar{padding:15px;display:flex;flex-wrap:wrap;gap:7px}.pose{background:#322820;border:1px solid #73583c;border-radius:6px;color:#e8dbc6;padding:9px 11px;font-size:12px}.summary{padding:15px 18px;border-top:1px solid #4e3a29;display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{text-align:center}.stat strong{display:block;color:#f8dba2;font-size:20px}.stat small{font-size:11px;color:var(--muted)}
+.equip-card{border:1px solid #564430;background:#211a15;border-radius:10px;padding:12px;margin-bottom:10px}.equip-title{font-size:13px;color:#f2d2a4;display:flex;justify-content:space-between;gap:8px;margin-bottom:9px}.equip-title small{color:var(--muted)}.equip-actions{display:flex;gap:7px;margin-top:9px}.action{color:#e9d2ad;background:#483420;border:1px solid #947149;padding:8px 11px;border-radius:7px;font-size:12px;flex:1}.action:hover{background:#654626}.action:disabled{opacity:.4;cursor:default}.good{color:#a3d3b1}.broken{color:#ffae91}.meter{height:6px;background:#3a2d24;border-radius:10px;margin-top:10px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#a26b43,#f4d08a)}.utility{margin-top:13px;display:flex;gap:8px;flex-wrap:wrap}.utility button{flex:1;min-width:90px}.full-width{grid-column:1/-1}.data-tools{display:grid;grid-template-columns:1fr auto;gap:13px;align-items:end}.data-tools textarea{min-height:115px;width:100%;resize:vertical;background:#0f0d0b;border:1px solid #5a4631;color:#e7d6c0;border-radius:8px;padding:12px;font:11px/1.5 monospace}.message{color:var(--mint);font-size:12px;min-height:21px;margin-top:8px}.warning{background:#4b3121;border:1px solid #a36e40;color:#f6d0a0;border-radius:8px;padding:12px;font-size:12px;line-height:1.65}.muted{color:var(--muted)}.tiny{font-size:11px}footer{max-width:1350px;margin:auto;padding:12px 24px 30px;color:#aa9376;font-size:12px}
+@media(max-width:1100px){main{grid-template-columns:minmax(245px,1fr) minmax(290px,1.4fr)}.equip-panel{grid-column:1/-1}.equip-layout{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.equip-card{margin:0}}
+@media(max-width:700px){header{padding:14px;align-items:flex-start}.logo{font-size:14px}.back{font-size:12px}main{padding:12px;display:flex;flex-direction:column}.arena-preview{height:390px}.equip-layout{display:block}.equip-card{margin-bottom:10px}.data-tools{display:block}.data-tools>div:last-child{margin-top:12px}}
+</style></head><body>
+<header><div class="logo">GLADIATOR <small>AVATAR FOUNDRY / v1.5 SYSTEM FOUNDATION</small></div><a class="back" href="./index.html">← 전투로 돌아가기</a></header>
+<main>
+  <section class="panel inside"><div class="overline">01 / Character blueprint</div><h1>검투사의 탄생</h1><p class="info">참고 이미지의 <b>포로 → 수련생 → 검투사 → 베테랑 → 챔피언</b> 성장 방향을 아바타 데이터로 정의합니다.</p>
+   <label class="label" for="classSelect">검투사 병과</label><select id="classSelect" class="field"></select><div id="classInfo" class="info"></div>
+   <div class="group"><h2>성장 단계</h2><div class="stage-grid" id="stageTrack"></div></div>
+   <div class="group"><h2>기본 외형</h2><div class="appearance" id="appearanceFields"></div></div>
+   <p class="info">현재 단계와 외형 값은 별도로 저장됩니다. 실제 외형 교체는 해당 파츠의 투명 스프라이트가 제작된 다음 연결됩니다.</p>
+  </section>
+  <section class="panel avatar-panel"><div class="inside"><div class="overline">02 / Avatar preview</div><h2 id="avatarHeadline">무르밀로</h2></div>
+   <div class="arena-preview"><div class="vignette"></div><div class="preview-top"><span class="preview-title" id="previewStage">포로 / CAPTIVUS</span><button class="pose" id="flipBtn">↔ 방향 전환</button></div><img class="avatar-image" id="previewSprite" alt="기존 합성 캐릭터 미리보기"><div class="layer-canvas" id="layerCanvas" hidden></div><div id="renderBadge" class="preview-bottom">기존 픽셀 스프라이트로 미리보기 · 장비 교체는 현재 데이터 상태만 변경</div></div>
+   <div class="pose-toolbar" id="poseToolbar"></div><div class="summary"><div class="stat"><strong id="levelText">1</strong><small>LEVEL</small></div><div class="stat"><strong id="equippedText">0/5</strong><small>장착 슬롯</small></div><div class="stat"><strong id="durabilityText">—</strong><small>장비 평균 내구도</small></div></div>
+  </section>
+  <section class="panel inside equip-panel"><div class="overline">03 / Equipment slots</div><h2>장비 조립 및 상태</h2><div class="warning">현재 18개 원본 전투 스프라이트는 장비와 몸이 합쳐진 이미지입니다. 이 실험실은 <b>장비 착탈·내구도·파손 상태의 데이터 동작</b>을 검증합니다. 파츠 분리 이미지 없이 투구나 방패가 화면에서 사라지지는 않습니다.</div><div id="equipmentGrid" class="equip-layout group"></div><div class="utility"><button id="presetBtn" class="action">병과 기본 장비</button><button id="stripBtn" class="action">모든 장비 해제</button></div></section>
+  <section class="panel inside full-width"><div class="overline">04 / Integration payload</div><h2>아바타 저장 데이터</h2><p class="info">클래스·성장 단계·기본 외형·착용 장비와 내구도를 하나의 JSON으로 내보냅니다. 브라우저 로컬 저장소에 자동 저장되며 기존 v1.4 전투 저장 기록에는 영향을 주지 않습니다.</p><div class="data-tools"><textarea id="payload" aria-label="아바타 JSON 저장/불러오기" spellcheck="false"></textarea><div class="utility"><button id="exportBtn" class="action">JSON 내보내기</button><button id="importBtn" class="action">JSON 적용</button><button id="resetBtn" class="action">초기화</button></div></div><div class="message" id="message" role="status"></div></section>
+</main>
+<footer>AVATAR SYSTEM v1.5 — 구조/데이터 프로토타입 · 원본 픽셀 스프라이트 18개 및 GLADIATOR v1.4 전투 코드는 변경하지 않았습니다.</footer>
+<script src="./js/avatar-core.js"></script>
+<script>
+(async function(){
+  'use strict';
+  const $=s=>document.querySelector(s);
+  const catalog=await fetch('./assets/data/avatar-catalog.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('아바타 카탈로그 로드 실패');return r.json()});
+  const A=window.GladiatorAvatar,errors=A.validateCatalog(catalog);
+  if(errors.length)throw Error('카탈로그 오류: '+errors.join(', '));
+  const storageKey='gladiator_avatar_v15',poses={idle:'대기',walk:'이동',guard:'방어',high:'상단',mid:'중단',low:'하단'};
+  let avatar,pose='idle',left=false,hasPayloadEdit=false;
+  try{avatar=A.importAvatar(catalog,localStorage.getItem(storageKey));}catch(e){avatar=A.createAvatar(catalog,'murmillo');}
+  function notice(msg){$('#message').textContent=msg;}
+  function sync(){try{localStorage.setItem(storageKey,A.exportAvatar(avatar));}catch(e){}render();notice('저장 완료 · 기존 전투 데이터와 분리 보관');}
+  function mk(tag,txt,cls){const el=document.createElement(tag);if(txt!=null)el.textContent=txt;if(cls)el.className=cls;return el;}
+  function render(){
+    const klass=catalog.classes[avatar.classId],stage=catalog.stages.find(s=>s.id===avatar.stageId),plan=A.getRenderPlan(catalog,avatar,pose),states=A.getSlotStates(catalog,avatar);
+    $('#avatarHeadline').textContent=klass.name+'  /  '+klass.latin;
+    $('#classSelect').value=avatar.classId;$('#classInfo').textContent=klass.role;
+    $('#previewStage').textContent=stage.name+' / LEVEL '+avatar.level;
+    const img=$('#previewSprite'),layerCanvas=$('#layerCanvas');
+    if(plan.mode==='composite'){img.hidden=false;layerCanvas.hidden=true;img.src='./'+plan.src;img.classList.toggle('facing-left',left);}
+    else{img.hidden=true;layerCanvas.hidden=false;layerCanvas.replaceChildren(...plan.drawOrder.map(l=>{const i=mk('img');i.src='./'+l.src;i.alt=l.slot;return i;}));layerCanvas.style.transform='translateX(-50%)'+(left?' scaleX(-1)':'');}
+    $('#renderBadge').textContent=plan.mode==='composite'?'COMPOSITE FALLBACK · 기존 픽셀 애니메이션 표시 / 장비·외형은 데이터만 변화':'LAYERED AVATAR · 투명 파츠 조합 표시';
+    $('#levelText').textContent=avatar.level;
+    $('#equippedText').textContent=states.filter(s=>s.equipped).length+'/'+states.length;
+    const eq=states.filter(s=>s.equipped);$('#durabilityText').textContent=eq.length?Math.round(eq.reduce((v,s)=>v+100*s.durability/s.maxDurability,0)/eq.length)+'%':'—';
+    const stages=$('#stageTrack');stages.replaceChildren(...catalog.stages.map(st=>{const b=mk('button',null,'stage'+(st.id===avatar.stageId?' active':''));b.type='button';b.append(mk('strong',st.name),mk('small','LV '+st.minLevel+' · '+st.label));b.onclick=()=>{avatar=A.setStage(catalog,avatar,st.id);sync();};return b;}));
+    const selector=$('#classSelect');if(!selector.options.length){selector.replaceChildren(...Object.values(catalog.classes).map(c=>{const o=mk('option',c.name);o.value=Object.keys(catalog.classes).find(k=>catalog.classes[k]===c);return o;}));selector.value=avatar.classId;}
+    const p=$('#poseToolbar');p.replaceChildren(...Object.entries(poses).map(([id,name])=>{const b=mk('button',name,'pose'+(pose===id?' active':''));b.type='button';b.onclick=()=>{pose=id;render();};return b;}));
+    const fields=$('#appearanceFields');fields.replaceChildren(...Object.entries({skinTone:'피부',hairStyle:'헤어',expression:'표정',bodyType:'체형'}).map(([field,name])=>{
+      const div=mk('div');div.appendChild(mk('label',name,'label'));const select=mk('select',null,'field');select.setAttribute('aria-label',name);
+      for(const val of catalog.appearanceOptions[field+'s']){const opt=mk('option',val);opt.value=val;select.appendChild(opt);}
+      select.value=avatar.appearance[field];select.onchange=()=>{avatar=A.setAppearance(catalog,avatar,field,select.value);sync();};div.appendChild(select);return div;
+    }));
+    const equipment=$('#equipmentGrid');equipment.replaceChildren(...states.map(state=>{
+      const card=mk('div',null,'equip-card');const title=mk('div',null,'equip-title');title.append(mk('strong',state.name),mk('small',state.broken?'파손':state.equipped?'장착 중':'비어 있음'));card.appendChild(title);
+      const sel=mk('select',null,'field');sel.setAttribute('aria-label',state.name+' 장비');
+      const empty=mk('option','장비 없음');empty.value='';sel.appendChild(empty);
+      for(const item of Object.values(catalog.items).filter(i=>i.slot===state.slot&&i.classId===avatar.classId)){const opt=mk('option',item.name);opt.value=item.id;sel.appendChild(opt);}
+      sel.value=state.itemId||'';sel.onchange=()=>{avatar=sel.value?A.equip(catalog,avatar,sel.value):A.unequip(catalog,avatar,state.slot);sync();};card.appendChild(sel);
+      const met=mk('div',null,'meter'),fill=mk('div',null,'fill');fill.style.width=(state.maxDurability?state.durability/state.maxDurability*100:0)+'%';met.appendChild(fill);card.appendChild(met);
+      card.appendChild(mk('div',state.equipped?'내구도 '+state.durability+' / '+state.maxDurability:'장착 가능 장비는 병과에 따라 다릅니다.','tiny '+(state.broken?'broken':'muted')));
+      const btns=mk('div',null,'equip-actions');
+      for(const [label,change] of [['피해 -25',()=>A.damageSlot(catalog,avatar,state.slot,25)],['수리',()=>A.repairSlot(catalog,avatar,state.slot)]]){const b=mk('button',label,'action');b.type='button';b.disabled=!state.equipped;b.onclick=()=>{avatar=change();sync();};btns.appendChild(b);}
+      card.appendChild(btns);return card;
+    }));
+    if(!hasPayloadEdit)$('#payload').value=A.exportAvatar(avatar);
+  }
+  $('#classSelect').onchange=e=>{avatar=A.setClass(catalog,avatar,e.target.value);sync();};
+  $('#flipBtn').onclick=()=>{left=!left;render();};
+  $('#presetBtn').onclick=()=>{for(const id of Object.values(catalog.classes[avatar.classId].defaultItems))if(id)avatar=A.equip(catalog,avatar,id);sync();};
+  $('#stripBtn').onclick=()=>{for(const s of catalog.slots)avatar=A.unequip(catalog,avatar,s.id);sync();};
+  $('#payload').oninput=()=>{hasPayloadEdit=true;};
+  $('#exportBtn').onclick=()=>{hasPayloadEdit=false;$('#payload').value=A.exportAvatar(avatar);$('#payload').focus();$('#payload').select();notice('JSON을 선택했습니다. 복사하여 저장할 수 있습니다.');};
+  $('#importBtn').onclick=()=>{try{avatar=A.importAvatar(catalog,$('#payload').value);hasPayloadEdit=false;sync();notice('JSON 불러오기 성공');}catch(e){notice('적용 실패: '+e.message);}};
+  $('#resetBtn').onclick=()=>{avatar=A.createAvatar(catalog,'murmillo');hasPayloadEdit=false;sync();};
+  render();notice('아바타 실험실 준비 완료');
+})().catch(e=>{document.getElementById('message').textContent='시스템 로딩 오류: '+e.message;console.error(e);});
+</script></body></html>
