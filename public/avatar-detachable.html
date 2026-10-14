@@ -1,0 +1,34 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GLADIATOR · Detachable Avatar Prototype</title><style>
+*{box-sizing:border-box}body{margin:0;background:#101318;color:#f1e4d2;font:14px/1.5 system-ui}header{padding:16px 3vw;background:#24232c;display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:2px solid #ac783e}h1{font:700 21px Georgia,serif;margin:0;color:#f0cd8b}a{color:#f1c886}main{padding:18px 3vw;display:grid;grid-template-columns:minmax(260px,1fr) minmax(280px,1fr);gap:16px;max-width:1220px;margin:auto}.panel{background:#23212a;border:1px solid #6e5b47;border-radius:13px;padding:18px}h2{margin:0 0 12px;color:#edbf77}select,button{background:#382d29;color:#f6e2ca;border:1px solid #a58056;border-radius:8px;padding:9px 12px;font:inherit;cursor:pointer}select{width:100%;margin-bottom:12px}.control-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.control-grid label{background:#342c29;padding:11px;border-radius:8px;border:1px solid #594a3c;display:flex;align-items:center;gap:8px}label input{accent-color:#e3ba80;width:18px;height:18px}button{margin:5px}.display{position:relative;min-height:440px;display:flex;justify-content:center;align-items:flex-end;overflow:hidden;background:radial-gradient(ellipse at 55% 40%,#ae8b67 0,#5c443a 50%,#261e24 85%);border-radius:10px}.display:after{content:'';position:absolute;bottom:42px;width:230px;height:26px;border-radius:100%;background:#19111288;filter:blur(7px);z-index:0}#avatar{width:min(100%,390px);height:390px;overflow:visible;position:relative;z-index:1;filter:drop-shadow(7px 8px 5px #0007)}.is-walking #avatar{animation:walk .38s ease-in-out infinite alternate}.is-guard #avatar{transform:translateX(-14px) rotate(-3deg)}.is-hit #avatar{animation:hit .45s ease-in-out infinite}.is-idle #avatar{animation:breathe 1.8s ease-in-out infinite}.is-dash #avatar{animation:dash .65s ease-in-out infinite}.is-attack #avatar [data-slot="weapon"]{animation:weapon .7s ease-in-out infinite;transform-origin:230px 190px}.is-attack #avatar{animation:breathe .7s ease-in-out infinite}@keyframes breathe{50%{transform:translateY(-3px)}}@keyframes walk{to{transform:translateY(-15px) rotate(2deg)}}@keyframes hit{25%{transform:translateX(-18px) rotate(-6deg)}75%{transform:translateX(8px)}}@keyframes dash{20%{transform:translateX(30px) skewX(-10deg)}60%{transform:translateX(-20px)}}@keyframes weapon{40%{transform:rotate(-42deg)}80%{transform:rotate(23deg)}}.status{font-size:12px;color:#b4d7be;padding:10px;min-height:40px}.note{background:#443326;border-left:3px solid #dfab65;padding:12px;margin-top:14px;font-size:12px;line-height:1.7}.buttons{display:flex;flex-wrap:wrap}.desc{color:#cdbba7;font-size:12px;margin-bottom:15px}small{color:#c0b5ae}@media(max-width:740px){main{display:block}.panel{margin-bottom:13px}#avatar{height:330px}.display{min-height:375px}}</style></head><body>
+<header><h1>GLADIATOR / Detachable Prototype v1.7</h1><a href="./index.html">← 기존 전투 (v1.4)</a></header>
+<main><section class="panel"><h2>독립 파츠 조립 실험</h2><p class="desc">모든 병과와 성장 단계의 기본 바디 크기는 동일합니다. 아래 체크박스는 실제 개별 SVG 파츠 노드의 표시 여부를 변경합니다.</p>
+<label>병과</label><select id="klass"><option value="murmillo">무르밀로 / Murmillo</option><option value="thraex">트라에키스 / Thraex</option><option value="retiarius">레티아리우스 / Retiarius</option></select>
+<label>성장 단계</label><select id="stage"><option value="trainee">수련생 / Trainee</option><option value="novice">초급 / Novice</option><option value="gladiator" selected>검투사 / Gladiator</option><option value="veteran">베테랑 / Veteran</option><option value="champion">챔피언 / Champion</option></select>
+<h2>장비 탈착</h2><div class="control-grid" id="slots"></div>
+<div class="buttons"><button id="all">전체 장착</button><button id="none">맨몸으로</button><button id="reset">초기화</button></div>
+<h2>기초 애니메이션 검증</h2><div class="buttons" id="motions"><button data-motion="idle">대기</button><button data-motion="walking">이동</button><button data-motion="dash">대시</button><button data-motion="guard">방어</button><button data-motion="attack">공격</button><button data-motion="hit">피격</button></div>
+<p class="note"><b>구현 구분:</b> 실제로 분리된 SVG 레이어의 표시/숨김과 CSS 기반 기초 애니메이션은 동작합니다. 단, 현재 도형은 리깅된 3D 원화가 아닌 <b>구조·작동 검증용 임시 2D 모형</b>입니다. 최종 참고 시트와 같은 품질의 3D 파츠·정식 애니메이션, v1.4 실전 전투 연동은 후속 제작 단계입니다.</p>
+</section>
+<section class="panel"><h2>실시간 아바타 구성</h2><div class="display is-idle" id="display"><svg xmlns="http://www.w3.org/2000/svg" id="avatar" viewBox="0 0 320 320"></svg></div><p class="status" id="status"></p><small>조작: 병과·성장 단계 변경 → 장비 숨김/표시 → 애니메이션 선택. 모든 SVG 부위는 동일한 320×320 기준 좌표에 고정됩니다.</small></section></main>
+<script src="./js/avatar-layer-demo.js"></script><script>
+(()=>{'use strict';const L=window.GladiatorLayerDemo,$=s=>document.querySelector(s);
+const parts=[['hair','헤어'],['helmet','투구'],['cloak','망토'],['torso','갑옷'],['shoulder','어깨 보호구'],['bracer','팔 보호구'],['waist','허리 갑주'],['legs','각반'],['shield','방패'],['offhand','그물'],['weapon','무기']];
+let active=Object.fromEntries(parts.map(([k])=>[k,true]));let motion='idle';
+function render(){
+ const klass=$('#klass').value,stage=$('#stage').value;
+ L.mount($('#avatar'),{classId:klass,stage,active});
+ $('#display').className='display is-'+motion;
+ const available=parts.filter(([k])=>k!=='offhand'||klass==='retiarius').filter(([k])=>k!=='shield'||klass!=='retiarius');
+ const visible=available.filter(([k])=>active[k]!==false).length;
+ $('#status').textContent=klass.toUpperCase()+' · '+stage.toUpperCase()+' · 장착 표시 '+visible+'/'+available.length+' · 공유 바디 스케일 1.0';
+ for(const box of document.querySelectorAll('#slots input')){box.checked=active[box.dataset.slot]!==false;box.disabled=box.dataset.slot==='shield'&&klass==='retiarius'||box.dataset.slot==='offhand'&&klass!=='retiarius';}
+}
+const list=$('#slots');for(const [k,n] of parts){const label=document.createElement('label'),cb=document.createElement('input');cb.type='checkbox';cb.dataset.slot=k;cb.checked=true;cb.onchange=()=>{active[k]=cb.checked;render()};label.append(cb,document.createTextNode(n));list.append(label);}
+$('#klass').onchange=render;$('#stage').onchange=render;
+$('#all').onclick=()=>{for(const k in active)active[k]=true;render()};
+$('#none').onclick=()=>{for(const k in active)active[k]=false;render()};
+$('#reset').onclick=()=>{active=Object.fromEntries(parts.map(([k])=>[k,true]));$('#klass').value='murmillo';$('#stage').value='gladiator';motion='idle';render()};
+document.querySelectorAll('#motions button').forEach(b=>b.onclick=()=>{motion=b.dataset.motion;render()});
+render();
+})();
+</script></body></html>
