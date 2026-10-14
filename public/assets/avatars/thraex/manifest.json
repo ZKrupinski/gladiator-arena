@@ -19,10 +19,8 @@
   "validSlots": [
     "hair",
     "helmet",
-    "torso",
-    "shoulder",
-    "bracer",
-    "waist",
+    "armor",
+    "armguard",
     "greaves",
     "sandals",
     "weapon",
@@ -140,226 +138,6 @@
           "lod": 0,
           "productionStatus": "not-created",
           "visualDesign": "thraex helmet champion from approved final avatar design sheet",
-          "stage": "champion",
-          "minLevel": 30
-        }
-      }
-    },
-    "torso": {
-      "socket": "chest",
-      "variants": {
-        "trainee": {
-          "id": "thraex_torso_trainee",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex torso trainee from approved final avatar design sheet",
-          "stage": "trainee",
-          "minLevel": 1
-        },
-        "novice": {
-          "id": "thraex_torso_novice",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex torso novice from approved final avatar design sheet",
-          "stage": "novice",
-          "minLevel": 2
-        },
-        "gladiator": {
-          "id": "thraex_torso_gladiator",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex torso gladiator from approved final avatar design sheet",
-          "stage": "gladiator",
-          "minLevel": 5
-        },
-        "veteran": {
-          "id": "thraex_torso_veteran",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex torso veteran from approved final avatar design sheet",
-          "stage": "veteran",
-          "minLevel": 15
-        },
-        "champion": {
-          "id": "thraex_torso_champion",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex torso champion from approved final avatar design sheet",
-          "stage": "champion",
-          "minLevel": 30
-        }
-      }
-    },
-    "shoulder": {
-      "socket": "rightShoulder",
-      "variants": {
-        "trainee": {
-          "id": "thraex_shoulder_trainee",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex shoulder trainee from approved final avatar design sheet",
-          "stage": "trainee",
-          "minLevel": 1
-        },
-        "novice": {
-          "id": "thraex_shoulder_novice",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex shoulder novice from approved final avatar design sheet",
-          "stage": "novice",
-          "minLevel": 2
-        },
-        "gladiator": {
-          "id": "thraex_shoulder_gladiator",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex shoulder gladiator from approved final avatar design sheet",
-          "stage": "gladiator",
-          "minLevel": 5
-        },
-        "veteran": {
-          "id": "thraex_shoulder_veteran",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex shoulder veteran from approved final avatar design sheet",
-          "stage": "veteran",
-          "minLevel": 15
-        },
-        "champion": {
-          "id": "thraex_shoulder_champion",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex shoulder champion from approved final avatar design sheet",
-          "stage": "champion",
-          "minLevel": 30
-        }
-      }
-    },
-    "bracer": {
-      "socket": "rightHand",
-      "variants": {
-        "trainee": {
-          "id": "thraex_bracer_trainee",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex bracer trainee from approved final avatar design sheet",
-          "stage": "trainee",
-          "minLevel": 1
-        },
-        "novice": {
-          "id": "thraex_bracer_novice",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex bracer novice from approved final avatar design sheet",
-          "stage": "novice",
-          "minLevel": 2
-        },
-        "gladiator": {
-          "id": "thraex_bracer_gladiator",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex bracer gladiator from approved final avatar design sheet",
-          "stage": "gladiator",
-          "minLevel": 5
-        },
-        "veteran": {
-          "id": "thraex_bracer_veteran",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex bracer veteran from approved final avatar design sheet",
-          "stage": "veteran",
-          "minLevel": 15
-        },
-        "champion": {
-          "id": "thraex_bracer_champion",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex bracer champion from approved final avatar design sheet",
-          "stage": "champion",
-          "minLevel": 30
-        }
-      }
-    },
-    "waist": {
-      "socket": "waist",
-      "variants": {
-        "trainee": {
-          "id": "thraex_waist_trainee",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex waist trainee from approved final avatar design sheet",
-          "stage": "trainee",
-          "minLevel": 1
-        },
-        "novice": {
-          "id": "thraex_waist_novice",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex waist novice from approved final avatar design sheet",
-          "stage": "novice",
-          "minLevel": 2
-        },
-        "gladiator": {
-          "id": "thraex_waist_gladiator",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex waist gladiator from approved final avatar design sheet",
-          "stage": "gladiator",
-          "minLevel": 5
-        },
-        "veteran": {
-          "id": "thraex_waist_veteran",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex waist veteran from approved final avatar design sheet",
-          "stage": "veteran",
-          "minLevel": 15
-        },
-        "champion": {
-          "id": "thraex_waist_champion",
-          "resource": null,
-          "attachment": null,
-          "lod": 0,
-          "productionStatus": "not-created",
-          "visualDesign": "thraex waist champion from approved final avatar design sheet",
           "stage": "champion",
           "minLevel": 30
         }
@@ -639,73 +417,221 @@
           "minLevel": 30
         }
       }
+    },
+    "armor": {
+      "socket": "chest",
+      "includes": [
+        "torso",
+        "waist"
+      ],
+      "variants": {
+        "trainee": {
+          "id": "thraex_armor_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "Combined torso + waist piece for thraex trainee",
+          "stage": "trainee",
+          "minLevel": 1,
+          "components": [
+            "thraex_torso_trainee",
+            "thraex_waist_trainee"
+          ]
+        },
+        "novice": {
+          "id": "thraex_armor_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "Combined torso + waist piece for thraex novice",
+          "stage": "novice",
+          "minLevel": 2,
+          "components": [
+            "thraex_torso_novice",
+            "thraex_waist_novice"
+          ]
+        },
+        "gladiator": {
+          "id": "thraex_armor_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "Combined torso + waist piece for thraex gladiator",
+          "stage": "gladiator",
+          "minLevel": 5,
+          "components": [
+            "thraex_torso_gladiator",
+            "thraex_waist_gladiator"
+          ]
+        },
+        "veteran": {
+          "id": "thraex_armor_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "Combined torso + waist piece for thraex veteran",
+          "stage": "veteran",
+          "minLevel": 15,
+          "components": [
+            "thraex_torso_veteran",
+            "thraex_waist_veteran"
+          ]
+        },
+        "champion": {
+          "id": "thraex_armor_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "Combined torso + waist piece for thraex champion",
+          "stage": "champion",
+          "minLevel": 30,
+          "components": [
+            "thraex_torso_champion",
+            "thraex_waist_champion"
+          ]
+        }
+      }
+    },
+    "armguard": {
+      "socket": "rightShoulder",
+      "includes": [
+        "shoulder",
+        "bracer"
+      ],
+      "variants": {
+        "trainee": {
+          "id": "thraex_armguard_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "Combined shoulder + bracer piece for thraex trainee",
+          "stage": "trainee",
+          "minLevel": 1,
+          "components": [
+            "thraex_shoulder_trainee",
+            "thraex_bracer_trainee"
+          ]
+        },
+        "novice": {
+          "id": "thraex_armguard_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "Combined shoulder + bracer piece for thraex novice",
+          "stage": "novice",
+          "minLevel": 2,
+          "components": [
+            "thraex_shoulder_novice",
+            "thraex_bracer_novice"
+          ]
+        },
+        "gladiator": {
+          "id": "thraex_armguard_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "Combined shoulder + bracer piece for thraex gladiator",
+          "stage": "gladiator",
+          "minLevel": 5,
+          "components": [
+            "thraex_shoulder_gladiator",
+            "thraex_bracer_gladiator"
+          ]
+        },
+        "veteran": {
+          "id": "thraex_armguard_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "Combined shoulder + bracer piece for thraex veteran",
+          "stage": "veteran",
+          "minLevel": 15,
+          "components": [
+            "thraex_shoulder_veteran",
+            "thraex_bracer_veteran"
+          ]
+        },
+        "champion": {
+          "id": "thraex_armguard_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "Combined shoulder + bracer piece for thraex champion",
+          "stage": "champion",
+          "minLevel": 30,
+          "components": [
+            "thraex_shoulder_champion",
+            "thraex_bracer_champion"
+          ]
+        }
+      }
     }
   },
   "stageLoadouts": {
     "trainee": {
       "hair": "thraex_hair_trainee",
       "helmet": null,
-      "torso": "thraex_torso_trainee",
-      "shoulder": null,
-      "bracer": "thraex_bracer_trainee",
-      "waist": "thraex_waist_trainee",
       "greaves": "thraex_greaves_trainee",
       "sandals": "thraex_sandals_trainee",
       "weapon": "thraex_weapon_trainee",
       "shield": "thraex_shield_trainee",
-      "cloak": null
+      "cloak": null,
+      "armor": "thraex_armor_trainee",
+      "armguard": "thraex_armguard_trainee"
     },
     "novice": {
       "hair": "thraex_hair_novice",
       "helmet": "thraex_helmet_novice",
-      "torso": "thraex_torso_novice",
-      "shoulder": "thraex_shoulder_novice",
-      "bracer": "thraex_bracer_novice",
-      "waist": "thraex_waist_novice",
       "greaves": "thraex_greaves_novice",
       "sandals": "thraex_sandals_novice",
       "weapon": "thraex_weapon_novice",
       "shield": "thraex_shield_novice",
-      "cloak": null
+      "cloak": null,
+      "armor": "thraex_armor_novice",
+      "armguard": "thraex_armguard_novice"
     },
     "gladiator": {
       "hair": "thraex_hair_gladiator",
       "helmet": "thraex_helmet_gladiator",
-      "torso": "thraex_torso_gladiator",
-      "shoulder": "thraex_shoulder_gladiator",
-      "bracer": "thraex_bracer_gladiator",
-      "waist": "thraex_waist_gladiator",
       "greaves": "thraex_greaves_gladiator",
       "sandals": "thraex_sandals_gladiator",
       "weapon": "thraex_weapon_gladiator",
       "shield": "thraex_shield_gladiator",
-      "cloak": "thraex_cloak_gladiator"
+      "cloak": "thraex_cloak_gladiator",
+      "armor": "thraex_armor_gladiator",
+      "armguard": "thraex_armguard_gladiator"
     },
     "veteran": {
       "hair": "thraex_hair_veteran",
       "helmet": "thraex_helmet_veteran",
-      "torso": "thraex_torso_veteran",
-      "shoulder": "thraex_shoulder_veteran",
-      "bracer": "thraex_bracer_veteran",
-      "waist": "thraex_waist_veteran",
       "greaves": "thraex_greaves_veteran",
       "sandals": "thraex_sandals_veteran",
       "weapon": "thraex_weapon_veteran",
       "shield": "thraex_shield_veteran",
-      "cloak": "thraex_cloak_veteran"
+      "cloak": "thraex_cloak_veteran",
+      "armor": "thraex_armor_veteran",
+      "armguard": "thraex_armguard_veteran"
     },
     "champion": {
       "hair": "thraex_hair_champion",
       "helmet": "thraex_helmet_champion",
-      "torso": "thraex_torso_champion",
-      "shoulder": "thraex_shoulder_champion",
-      "bracer": "thraex_bracer_champion",
-      "waist": "thraex_waist_champion",
       "greaves": "thraex_greaves_champion",
       "sandals": "thraex_sandals_champion",
       "weapon": "thraex_weapon_champion",
       "shield": "thraex_shield_champion",
-      "cloak": "thraex_cloak_champion"
+      "cloak": "thraex_cloak_champion",
+      "armor": "thraex_armor_champion",
+      "armguard": "thraex_armguard_champion"
     }
   },
   "poseAssets": {

@@ -12,7 +12,7 @@
 <section class="panel"><h2>실시간 아바타 구성</h2><div class="display is-idle" id="display"><svg xmlns="http://www.w3.org/2000/svg" id="avatar" viewBox="0 0 320 320"></svg></div><p class="status" id="status"></p><small>조작: 병과·성장 단계 변경 → 장비 숨김/표시 → 애니메이션 선택. 모든 SVG 부위는 동일한 320×320 기준 좌표에 고정됩니다.</small></section></main>
 <script src="./js/avatar-layer-demo.js"></script><script>
 (()=>{'use strict';const L=window.GladiatorLayerDemo,$=s=>document.querySelector(s);
-const parts=[['hair','헤어'],['helmet','투구'],['cloak','망토'],['torso','갑옷'],['shoulder','어깨 보호구'],['bracer','팔 보호구'],['waist','허리 갑주'],['legs','각반'],['shield','방패'],['offhand','그물'],['weapon','무기']];
+const parts=[['hair','헤어'],['helmet','투구'],['cloak','망토'],['armor','갑옷 + 허리갑주'],['armguard','어깨 + 팔 보호구'],['legs','각반'],['shield','방패'],['offhand','그물'],['weapon','무기']];
 let active=Object.fromEntries(parts.map(([k])=>[k,true]));let motion='idle';
 function render(){
  const klass=$('#klass').value,stage=$('#stage').value;

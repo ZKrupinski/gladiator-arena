@@ -5,7 +5,7 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;if(root)root.GladiatorLayerDemo=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
 const NS='http://www.w3.org/2000/svg';
-const order=['cloak','legs','body','waist','torso','shoulder','bracer','hair','helmet','shield','offhand','weapon'];
+const order=['cloak','legs','body','armor','armguard','hair','helmet','shield','offhand','weapon'];
 const stages=['trainee','novice','gladiator','veteran','champion'];
 const parts={
 body:`<ellipse cx="160" cy="137" rx="59" ry="52" fill="#f4b989" stroke="#ad704c" stroke-width="4"/><path d="M124 171Q117 200 135 225L186 224Q200 192 189 169" fill="#f5ba88" stroke="#ae7550" stroke-width="4"/><path d="M126 210L113 266Q117 278 137 273L156 222M181 220L183 274Q202 280 208 267L195 208" fill="#e8a475" stroke="#aa6e4e" stroke-width="5"/><ellipse cx="129" cy="279" rx="22" ry="11" fill="#bd7855"/><ellipse cx="193" cy="278" rx="22" ry="11" fill="#bd7855"/><path d="M114 171L92 208M206 170L224 207" stroke="#e7a77b" stroke-width="24" stroke-linecap="round"/><path d="M135 122Q160 113 185 124L192 154Q165 178 128 150Z" fill="#eab184"/><ellipse cx="160" cy="75" rx="61" ry="61" fill="#f4bc94" stroke="#a97557" stroke-width="3"/><ellipse cx="128" cy="85" rx="8" ry="11" fill="#382b25"/><ellipse cx="188" cy="83" rx="8" ry="11" fill="#382b25"/><path d="M120 67L140 65M181 65L200 68" stroke="#493326" stroke-width="7" stroke-linecap="round"/><path d="M153 103Q163 110 174 103" fill="none" stroke="#985d44" stroke-width="3"/><circle cx="119" cy="102" r="7" fill="#e78874" opacity=".45"/><circle cx="198" cy="101" r="7" fill="#e78874" opacity=".45"/>`,
@@ -29,6 +29,8 @@ function svgMarkupFor(classId,slot,stage){
  if(slot==='shield'&&classId==='retiarius')key='offhand';
  const raw=parts[key]||'';return raw;
 }
+parts.armor=parts.waist+parts.torso;
+parts.armguard=parts.shoulder+parts.bracer;
 function mount(svg,opts={}){
  if(!svg||svg.namespaceURI!==NS)throw Error('Expected SVG root');
  const classId=opts.classId||'murmillo',stage=opts.stage||'gladiator',active=opts.active||{};
