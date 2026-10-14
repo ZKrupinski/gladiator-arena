@@ -1,0 +1,726 @@
+{
+  "schemaVersion": "1.0",
+  "classId": "murmillo",
+  "displayName": "MURMILLO",
+  "rig": "gladiator_sd_shared_v1",
+  "bodyScale": 1,
+  "roleSpecial": "shield_bash",
+  "design": {
+    "palette": [
+      "bronze",
+      "crimson",
+      "leather"
+    ],
+    "classSignature": {
+      "shield": "large_scutum",
+      "head": "murmillones_helmet"
+    }
+  },
+  "validSlots": [
+    "hair",
+    "helmet",
+    "torso",
+    "shoulder",
+    "bracer",
+    "waist",
+    "greaves",
+    "sandals",
+    "weapon",
+    "shield",
+    "cloak"
+  ],
+  "baseBody": {
+    "model3d": null,
+    "sprite2d": null,
+    "productionStatus": "not-created"
+  },
+  "equipment": {
+    "hair": {
+      "socket": "head",
+      "variants": {
+        "trainee": {
+          "id": "murmillo_hair_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo hair trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "murmillo_hair_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo hair novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "murmillo_hair_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo hair gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "murmillo_hair_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo hair veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "murmillo_hair_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo hair champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "helmet": {
+      "socket": "head",
+      "variants": {
+        "trainee": {
+          "id": "murmillo_helmet_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo helmet trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "murmillo_helmet_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo helmet novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "murmillo_helmet_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo helmet gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "murmillo_helmet_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo helmet veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "murmillo_helmet_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo helmet champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "torso": {
+      "socket": "chest",
+      "variants": {
+        "trainee": {
+          "id": "murmillo_torso_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo torso trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "murmillo_torso_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo torso novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "murmillo_torso_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo torso gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "murmillo_torso_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo torso veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "murmillo_torso_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo torso champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "shoulder": {
+      "socket": "rightShoulder",
+      "variants": {
+        "trainee": {
+          "id": "murmillo_shoulder_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo shoulder trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "murmillo_shoulder_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo shoulder novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "murmillo_shoulder_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo shoulder gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "murmillo_shoulder_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo shoulder veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "murmillo_shoulder_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo shoulder champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "bracer": {
+      "socket": "rightHand",
+      "variants": {
+        "trainee": {
+          "id": "murmillo_bracer_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo bracer trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "murmillo_bracer_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo bracer novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "murmillo_bracer_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo bracer gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "murmillo_bracer_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo bracer veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "murmillo_bracer_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo bracer champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "waist": {
+      "socket": "waist",
+      "variants": {
+        "trainee": {
+          "id": "murmillo_waist_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo waist trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "murmillo_waist_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo waist novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "murmillo_waist_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo waist gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "murmillo_waist_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo waist veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "murmillo_waist_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo waist champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "greaves": {
+      "socket": "leftLeg",
+      "variants": {
+        "trainee": {
+          "id": "murmillo_greaves_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo greaves trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "murmillo_greaves_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo greaves novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "murmillo_greaves_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo greaves gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "murmillo_greaves_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo greaves veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "murmillo_greaves_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo greaves champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "sandals": {
+      "socket": "leftFoot",
+      "variants": {
+        "trainee": {
+          "id": "murmillo_sandals_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo sandals trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "murmillo_sandals_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo sandals novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "murmillo_sandals_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo sandals gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "murmillo_sandals_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo sandals veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "murmillo_sandals_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo sandals champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "weapon": {
+      "socket": "rightHand",
+      "variants": {
+        "trainee": {
+          "id": "murmillo_weapon_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo weapon trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "murmillo_weapon_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo weapon novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "murmillo_weapon_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo weapon gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "murmillo_weapon_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo weapon veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "murmillo_weapon_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo weapon champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "shield": {
+      "socket": "leftHand",
+      "variants": {
+        "trainee": {
+          "id": "murmillo_shield_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo shield trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "murmillo_shield_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo shield novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "murmillo_shield_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo shield gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "murmillo_shield_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo shield veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "murmillo_shield_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo shield champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "cloak": {
+      "socket": "back",
+      "variants": {
+        "trainee": {
+          "id": "murmillo_cloak_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo cloak trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "murmillo_cloak_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo cloak novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "murmillo_cloak_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo cloak gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "murmillo_cloak_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo cloak veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "murmillo_cloak_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "murmillo cloak champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    }
+  },
+  "stageLoadouts": {
+    "trainee": {
+      "hair": "murmillo_hair_trainee",
+      "helmet": null,
+      "torso": "murmillo_torso_trainee",
+      "shoulder": null,
+      "bracer": "murmillo_bracer_trainee",
+      "waist": "murmillo_waist_trainee",
+      "greaves": "murmillo_greaves_trainee",
+      "sandals": "murmillo_sandals_trainee",
+      "weapon": "murmillo_weapon_trainee",
+      "shield": "murmillo_shield_trainee",
+      "cloak": null
+    },
+    "novice": {
+      "hair": "murmillo_hair_novice",
+      "helmet": "murmillo_helmet_novice",
+      "torso": "murmillo_torso_novice",
+      "shoulder": "murmillo_shoulder_novice",
+      "bracer": "murmillo_bracer_novice",
+      "waist": "murmillo_waist_novice",
+      "greaves": "murmillo_greaves_novice",
+      "sandals": "murmillo_sandals_novice",
+      "weapon": "murmillo_weapon_novice",
+      "shield": "murmillo_shield_novice",
+      "cloak": null
+    },
+    "gladiator": {
+      "hair": "murmillo_hair_gladiator",
+      "helmet": "murmillo_helmet_gladiator",
+      "torso": "murmillo_torso_gladiator",
+      "shoulder": "murmillo_shoulder_gladiator",
+      "bracer": "murmillo_bracer_gladiator",
+      "waist": "murmillo_waist_gladiator",
+      "greaves": "murmillo_greaves_gladiator",
+      "sandals": "murmillo_sandals_gladiator",
+      "weapon": "murmillo_weapon_gladiator",
+      "shield": "murmillo_shield_gladiator",
+      "cloak": "murmillo_cloak_gladiator"
+    },
+    "veteran": {
+      "hair": "murmillo_hair_veteran",
+      "helmet": "murmillo_helmet_veteran",
+      "torso": "murmillo_torso_veteran",
+      "shoulder": "murmillo_shoulder_veteran",
+      "bracer": "murmillo_bracer_veteran",
+      "waist": "murmillo_waist_veteran",
+      "greaves": "murmillo_greaves_veteran",
+      "sandals": "murmillo_sandals_veteran",
+      "weapon": "murmillo_weapon_veteran",
+      "shield": "murmillo_shield_veteran",
+      "cloak": "murmillo_cloak_veteran"
+    },
+    "champion": {
+      "hair": "murmillo_hair_champion",
+      "helmet": "murmillo_helmet_champion",
+      "torso": "murmillo_torso_champion",
+      "shoulder": "murmillo_shoulder_champion",
+      "bracer": "murmillo_bracer_champion",
+      "waist": "murmillo_waist_champion",
+      "greaves": "murmillo_greaves_champion",
+      "sandals": "murmillo_sandals_champion",
+      "weapon": "murmillo_weapon_champion",
+      "shield": "murmillo_shield_champion",
+      "cloak": "murmillo_cloak_champion"
+    }
+  },
+  "poseAssets": {
+    "idle": null,
+    "walk": null,
+    "guard": null,
+    "high": null,
+    "mid": null,
+    "low": null,
+    "dash": null,
+    "parry": null,
+    "hit_react": null,
+    "finisher": null
+  },
+  "legacyCompositePath": "assets/characters/murmillo/composite/{pose}.webp",
+  "renderPolicy": "never_render_missing_layers_as_detachable",
+  "readyForRuntime": false
+}

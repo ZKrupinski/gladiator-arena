@@ -1,0 +1,217 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.6",
+  "canonicalRigId": "gladiator_sd_shared_v1",
+  "coordinateSpace": "pixel-canvas",
+  "canvas": {
+    "width": 320,
+    "height": 320,
+    "feetPivot": [
+      160,
+      300
+    ],
+    "pixelsPerUnit": 100
+  },
+  "body": {
+    "heightPx": 228,
+    "headHeightRatio": 0.4,
+    "scale": 1
+  },
+  "scalePolicy": {
+    "classScale": 1,
+    "stageScale": 1,
+    "equipmentCanChangeBodySize": false,
+    "referenceClass": "retiarius"
+  },
+  "attachPoints": {
+    "head": [
+      160,
+      81
+    ],
+    "face": [
+      160,
+      101
+    ],
+    "neck": [
+      160,
+      132
+    ],
+    "chest": [
+      160,
+      167
+    ],
+    "back": [
+      160,
+      159
+    ],
+    "leftShoulder": [
+      126,
+      148
+    ],
+    "rightShoulder": [
+      191,
+      148
+    ],
+    "leftHand": [
+      108,
+      202
+    ],
+    "rightHand": [
+      210,
+      200
+    ],
+    "waist": [
+      160,
+      217
+    ],
+    "leftLeg": [
+      139,
+      257
+    ],
+    "rightLeg": [
+      181,
+      257
+    ],
+    "leftFoot": [
+      137,
+      298
+    ],
+    "rightFoot": [
+      184,
+      298
+    ]
+  },
+  "slots": [
+    {
+      "id": "base",
+      "group": "body",
+      "order": 0,
+      "required": true
+    },
+    {
+      "id": "sandals",
+      "group": "body",
+      "order": 10,
+      "anchor": "leftFoot"
+    },
+    {
+      "id": "greaves",
+      "group": "body",
+      "order": 20,
+      "anchor": "leftLeg"
+    },
+    {
+      "id": "waist",
+      "group": "body",
+      "order": 30,
+      "anchor": "waist"
+    },
+    {
+      "id": "torso",
+      "group": "body",
+      "order": 40,
+      "anchor": "chest"
+    },
+    {
+      "id": "bracer",
+      "group": "body",
+      "order": 50,
+      "anchor": "rightHand"
+    },
+    {
+      "id": "shoulder",
+      "group": "body",
+      "order": 60,
+      "anchor": "rightShoulder"
+    },
+    {
+      "id": "hair",
+      "group": "head",
+      "order": 70,
+      "anchor": "head"
+    },
+    {
+      "id": "helmet",
+      "group": "head",
+      "order": 80,
+      "anchor": "head",
+      "covers": [
+        "hair"
+      ]
+    },
+    {
+      "id": "cloak",
+      "group": "prestige",
+      "order": 5,
+      "anchor": "back"
+    },
+    {
+      "id": "shield",
+      "group": "hands",
+      "order": 90,
+      "anchor": "leftHand"
+    },
+    {
+      "id": "offhand",
+      "group": "hands",
+      "order": 95,
+      "anchor": "leftHand"
+    },
+    {
+      "id": "weapon",
+      "group": "hands",
+      "order": 100,
+      "anchor": "rightHand"
+    },
+    {
+      "id": "fx",
+      "group": "effects",
+      "order": 200
+    }
+  ],
+  "states": [
+    "idle",
+    "walk",
+    "dash",
+    "guard",
+    "parry",
+    "hit_react",
+    "high",
+    "mid",
+    "low",
+    "special",
+    "finisher",
+    "equip",
+    "unequip",
+    "drop",
+    "pickup",
+    "stagger",
+    "knockback",
+    "defeat"
+  ],
+  "requiredVisualStates": [
+    "idle",
+    "walk",
+    "guard",
+    "high",
+    "mid",
+    "low"
+  ],
+  "layersMustShare": {
+    "canvas": [
+      320,
+      320
+    ],
+    "origin": [
+      0,
+      0
+    ],
+    "feetPivot": [
+      160,
+      300
+    ],
+    "transparent": true,
+    "singleCharacter": true
+  },
+  "implementationNotice": "Numeric anchor points are initial placeholders for 320x320 2D sprite registration and must be approved against first real transparent art. Concept sheets are not separated alpha sprite files. Existing sprites remain as fallback."
+}
