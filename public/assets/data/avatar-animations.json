@@ -1,0 +1,192 @@
+{
+  "schemaVersion": "1.0",
+  "rig": "gladiator_sd_shared_v1",
+  "fps": 24,
+  "blendPolicy": "pose-switch-and-frame-index",
+  "animations": {
+    "idle": {
+      "loop": true,
+      "frames": 8,
+      "seconds": 1.2,
+      "motion": "breathing"
+    },
+    "walk": {
+      "loop": true,
+      "frames": 8,
+      "seconds": 0.7,
+      "motion": "locomotion"
+    },
+    "dash": {
+      "loop": false,
+      "frames": 6,
+      "seconds": 0.32,
+      "motion": "forward-burst"
+    },
+    "guard": {
+      "loop": true,
+      "frames": 4,
+      "seconds": 0.6,
+      "motion": "shield-or-weapon-guard"
+    },
+    "parry": {
+      "loop": false,
+      "frames": 6,
+      "seconds": 0.32,
+      "motion": "weapon-deflection"
+    },
+    "hit_react": {
+      "loop": false,
+      "frames": 5,
+      "seconds": 0.38,
+      "motion": "stagger"
+    },
+    "high": {
+      "loop": false,
+      "frames": 6,
+      "seconds": 0.46,
+      "motion": "upper-strike"
+    },
+    "mid": {
+      "loop": false,
+      "frames": 6,
+      "seconds": 0.42,
+      "motion": "middle-strike"
+    },
+    "low": {
+      "loop": false,
+      "frames": 6,
+      "seconds": 0.5,
+      "motion": "low-strike"
+    },
+    "special": {
+      "loop": false,
+      "frames": 10,
+      "seconds": 0.85,
+      "motion": "class-special"
+    },
+    "finisher": {
+      "loop": false,
+      "frames": 14,
+      "seconds": 1.25,
+      "motion": "cinematic-finish"
+    },
+    "equip": {
+      "loop": false,
+      "frames": 5,
+      "seconds": 0.45,
+      "motion": "attach-item"
+    },
+    "unequip": {
+      "loop": false,
+      "frames": 5,
+      "seconds": 0.45,
+      "motion": "detach-item"
+    },
+    "drop": {
+      "loop": false,
+      "frames": 6,
+      "seconds": 0.5,
+      "motion": "item-release"
+    },
+    "pickup": {
+      "loop": false,
+      "frames": 7,
+      "seconds": 0.64,
+      "motion": "recover-item"
+    },
+    "stagger": {
+      "loop": false,
+      "frames": 6,
+      "seconds": 0.5,
+      "motion": "heavy-hit"
+    },
+    "knockback": {
+      "loop": false,
+      "frames": 7,
+      "seconds": 0.6,
+      "motion": "pushback"
+    },
+    "defeat": {
+      "loop": false,
+      "frames": 12,
+      "seconds": 0.9,
+      "motion": "knockdown"
+    }
+  },
+  "transitions": [
+    {
+      "from": "any",
+      "to": "defeat",
+      "priority": 100
+    },
+    {
+      "from": "any",
+      "to": "hit_react",
+      "priority": 90
+    },
+    {
+      "from": "guard",
+      "to": "parry",
+      "priority": 85
+    },
+    {
+      "from": "any",
+      "to": "finisher",
+      "priority": 80
+    },
+    {
+      "from": "idle|walk",
+      "to": "dash",
+      "priority": 60
+    },
+    {
+      "from": "idle|walk|guard",
+      "to": "high|mid|low|special",
+      "priority": 55
+    },
+    {
+      "from": "idle",
+      "to": "walk",
+      "priority": 10
+    },
+    {
+      "from": "walk",
+      "to": "idle",
+      "priority": 10
+    }
+  ],
+  "classOverrides": {
+    "murmillo": {
+      "special": {
+        "frames": 11,
+        "seconds": 0.82,
+        "keyFrame": "shield-bash"
+      }
+    },
+    "thraex": {
+      "special": {
+        "frames": 12,
+        "seconds": 0.88,
+        "keyFrame": "double-sica-strike"
+      }
+    },
+    "retiarius": {
+      "special": {
+        "frames": 12,
+        "seconds": 0.96,
+        "keyFrame": "net-throw"
+      }
+    }
+  },
+  "layerSync": {
+    "strategy": "shared-pose-clock",
+    "enforceSameFrameCount": true,
+    "allowFrameFallback": false,
+    "frameAnchorFile": "avatar-rig.shared.json"
+  },
+  "notes": [
+    "Numbers are timing proposals, not finished animation resources.",
+    "Animation pose art for detached equipment has not been generated; no false playable claims.",
+    "Existing six WebP composite animations remain runtime fallback until layer assets are authored."
+  ]
+}
