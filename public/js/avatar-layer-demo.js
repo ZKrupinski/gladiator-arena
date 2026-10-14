@@ -21,7 +21,7 @@ offhand:`<path d="M42 201Q81 189 112 212L105 272Q74 291 42 267Z" fill="none" str
 weapon:`<g transform="translate(223 186) rotate(14)"><path d="M-6 0L-9 -103L0 -124L9 -103L6 0Z" fill="#d8dde0" stroke="#606c73" stroke-width="4"/><path d="M-23 3L23 3" stroke="#dca75f" stroke-width="8" stroke-linecap="round"/><path d="M0 7L0 39" stroke="#77492a" stroke-width="12"/><circle cy="43" r="8" fill="#d7ac64"/></g>`,
 trident:`<g transform="translate(229 182) rotate(7)"><path d="M0 45L0 -115M-20 -112L-20 -89Q0 -58 20 -89L20 -112" fill="none" stroke="#c3b290" stroke-width="8" stroke-linecap="round"/><path d="M-26 -107L-20 -132L-14 -108M-6 -113L0 -142L6 -113M14 -108L20 -132L26 -107" fill="#dbd1b5" stroke="#786d5d" stroke-width="3"/><path d="M0 46L0 63" stroke="#70452b" stroke-width="13"/></g>`,
 sica:`<g transform="translate(224 182) rotate(20)"><path d="M-4 2Q-25 -40 -18 -82Q-26 -112 -7 -130Q-13 -92 3 -85Q17 -36 5 2Z" fill="#d8dde0" stroke="#5e6870" stroke-width="4"/><path d="M-19 4L18 4" stroke="#cb9b63" stroke-width="7"/><path d="M0 8L0 45" stroke="#7d4928" stroke-width="11"/></g>`,
-cloak:`<path d="M117 126Q151 115 204 128L237 266Q215 300 160 264Q132 285 90 261Z" fill="#9a2529" stroke="#68222b" stroke-width="8"/><path d="M107 249Q157 271 221 246" stroke="#dfad5c" stroke-width="5"/></g>`
+cloak:`<path d="M117 126Q151 115 204 128L237 266Q215 300 160 264Q132 285 90 261Z" fill="#9a2529" stroke="#68222b" stroke-width="8"/><path d="M107 249Q157 271 221 246" stroke="#dfad5c" stroke-width="5"/>`
 };
 function el(tag,attrs={}){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);return e;}
 function svgMarkupFor(classId,slot,stage){
