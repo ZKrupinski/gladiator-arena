@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "gameVersion": "1.3",
+  "gameVersion": "1.4",
   "renderPolicy": "preserve-original-composite-sprites",
   "coordinates": {
     "facing": "+x",
