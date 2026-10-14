@@ -1,6 +1,16 @@
 # GLADIATOR — The Gladius Renaissance
 
-Korean-language HTML5 Canvas 2D gladiator game. Current playable version: **v1.3**.
+Korean-language HTML5 Canvas 2D gladiator game. Current playable version: **v1.4**.
+
+## v1.4 — Class specials and finishers
+
+- **Murmillo:** shield impact, stronger knockback, and guard stamina crush.
+- **Thraex:** second hit during the special and a double sickle-cut visual.
+- **Retiarius:** basic attack pulls netted enemies into melee range.
+- **Finishers:** class-specific ~1.25-second victory flourish after a counter or special defeat.
+- **Artwork:** original pixel composites and painterly arena remain unchanged.
+
+> v1.4 is deployed only after this PR is reviewed and merged into `main`.
 
 ## Source layout
 
