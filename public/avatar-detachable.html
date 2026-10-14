@@ -14,6 +14,8 @@
 (()=>{'use strict';const L=window.GladiatorLayerDemo,$=s=>document.querySelector(s);
 const parts=[['hair','헤어'],['helmet','투구'],['cloak','망토'],['armor','갑옷 + 허리갑주'],['armguard','어깨 + 팔 보호구'],['legs','각반'],['shield','방패'],['offhand','그물'],['weapon','무기']];
 let active=Object.fromEntries(parts.map(([k])=>[k,true]));let motion='idle';
+const requestedClass=new URLSearchParams(location.search).get('class');
+if(['murmillo','thraex','retiarius'].includes(requestedClass))$('#klass').value=requestedClass;
 function render(){
  const klass=$('#klass').value,stage=$('#stage').value;
  L.mount($('#avatar'),{classId:klass,stage,active});
