@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "gameVersion": "1.3",
+  "gameVersion": "1.4",
   "renderPolicy": "preserve-original-composite-sprites",
   "coordinates": {
     "facing": "+x",
@@ -508,5 +508,12 @@
     "armorPickupRestoreFraction": 0.4,
     "cameraCloseDistance": 820,
     "cameraPlayerOffset": 0.4
+  },
+  "featuresV14": {
+    "finishers": "three class-specific animated sequences before result",
+    "murmillo": "shield guard crush",
+    "thraex": "two-hit special",
+    "retiarius": "net pull on basic attack while target netted",
+    "artwork": "preserves original composite six-state sprites"
   }
 }
