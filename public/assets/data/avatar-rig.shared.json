@@ -89,6 +89,12 @@
       "required": true
     },
     {
+      "id": "cloak",
+      "group": "prestige",
+      "order": 5,
+      "anchor": "back"
+    },
+    {
       "id": "sandals",
       "group": "body",
       "order": 10,
@@ -101,28 +107,26 @@
       "anchor": "leftLeg"
     },
     {
-      "id": "waist",
-      "group": "body",
-      "order": 30,
-      "anchor": "waist"
-    },
-    {
-      "id": "torso",
+      "id": "armor",
       "group": "body",
       "order": 40,
-      "anchor": "chest"
+      "anchor": "chest",
+      "includes": [
+        "torso",
+        "waist"
+      ],
+      "label": "갑옷 + 허리갑주"
     },
     {
-      "id": "bracer",
-      "group": "body",
-      "order": 50,
-      "anchor": "rightHand"
-    },
-    {
-      "id": "shoulder",
+      "id": "armguard",
       "group": "body",
       "order": 60,
-      "anchor": "rightShoulder"
+      "anchor": "rightShoulder",
+      "includes": [
+        "shoulder",
+        "bracer"
+      ],
+      "label": "어깨 + 팔 보호구"
     },
     {
       "id": "hair",
@@ -138,12 +142,6 @@
       "covers": [
         "hair"
       ]
-    },
-    {
-      "id": "cloak",
-      "group": "prestige",
-      "order": 5,
-      "anchor": "back"
     },
     {
       "id": "shield",
@@ -213,5 +211,11 @@
     "transparent": true,
     "singleCharacter": true
   },
-  "implementationNotice": "Numeric anchor points are initial placeholders for 320x320 2D sprite registration and must be approved against first real transparent art. Concept sheets are not separated alpha sprite files. Existing sprites remain as fallback."
+  "implementationNotice": "Numeric anchor points are initial placeholders for 320x320 2D sprite registration and must be approved against first real transparent art. Concept sheets are not separated alpha sprite files. Existing sprites remain as fallback.",
+  "slotMigration": {
+    "torso": "armor",
+    "waist": "armor",
+    "shoulder": "armguard",
+    "bracer": "armguard"
+  }
 }
