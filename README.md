@@ -31,3 +31,14 @@ Create a **new** Pages project using Git integration and select this repository.
 Every push to `main` will deploy automatically. The existing Direct Upload project cannot be switched to Git integration, so the Git-integrated Pages project must be separate.
 
 **Note:** Original character sprites are composite images, not yet layer-separated equipment. Source imagery was preserved.
+
+
+## v1.4 Combat update (PR)
+
+- Murmillo: shield guard crush and heavy shield impact on special attack
+- Thraex: two-hit special attack with a second low strike
+- Retiarius: net combo pulls the enemy closer
+- Cinematic finisher phase of 1.25 seconds for special/counter victories
+- Keeps existing composite pixel sprites and Colosseum background unchanged
+
+This version is reviewed through a GitHub pull request before merging to main. Cloudflare Pages will publish after merge.
