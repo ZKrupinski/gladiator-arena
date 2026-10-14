@@ -1,0 +1,393 @@
+{
+  "schemaVersion": "1.0",
+  "featureVersion": "1.5-foundation",
+  "source": "GLADIATOR original references provided 2026-10-14",
+  "renderPolicy": "composite-fallback-until-layer-assets-ready",
+  "designPrinciples": [
+    "새 참고 이미지: 작은 수련생에서 로마 검투사, 숙련 전사로 성장하는 단계성",
+    "어린 SD형 얼굴/체형 + 장비 세분화 + 따뜻한 콜로세움 톤",
+    "새 레퍼런스는 장면 일러스트이며 투명 분리 스프라이트가 아니므로 직접 장비 레이어로 사용하지 않는다.",
+    "게임의 기존 18개 WebP 애니메이션은 유지한다."
+  ],
+  "render": {
+    "canvas": [
+      320,
+      320
+    ],
+    "feetBaseline": 300,
+    "facing": "+x",
+    "poses": [
+      "idle",
+      "walk",
+      "guard",
+      "high",
+      "mid",
+      "low"
+    ],
+    "order": [
+      "back",
+      "legs",
+      "base",
+      "armor",
+      "arms",
+      "head",
+      "helmet",
+      "offhand",
+      "shield",
+      "weapon",
+      "effect"
+    ],
+    "layerReady": false
+  },
+  "stages": [
+    {
+      "id": "captivus",
+      "name": "포로",
+      "label": "맨몸 입문",
+      "minLevel": 1
+    },
+    {
+      "id": "tiro",
+      "name": "수련생",
+      "label": "기초 훈련",
+      "minLevel": 2
+    },
+    {
+      "id": "gladiator",
+      "name": "검투사",
+      "label": "첫 장비",
+      "minLevel": 5
+    },
+    {
+      "id": "veteranus",
+      "name": "베테랑",
+      "label": "숙련 장비",
+      "minLevel": 15
+    },
+    {
+      "id": "campio",
+      "name": "챔피언",
+      "label": "황금 장식",
+      "minLevel": 30
+    }
+  ],
+  "appearanceOptions": {
+    "skinTones": [
+      "warm",
+      "tan",
+      "dark"
+    ],
+    "hairStyles": [
+      "crop",
+      "shaggy",
+      "braided"
+    ],
+    "expressions": [
+      "focused",
+      "angry",
+      "calm"
+    ],
+    "bodyTypes": [
+      "chibi",
+      "stocky",
+      "athletic"
+    ]
+  },
+  "slots": [
+    {
+      "id": "helmet",
+      "name": "머리/투구",
+      "layer": "helmet"
+    },
+    {
+      "id": "armor",
+      "name": "몸/갑옷",
+      "layer": "armor"
+    },
+    {
+      "id": "weapon",
+      "name": "주무기",
+      "layer": "weapon"
+    },
+    {
+      "id": "shield",
+      "name": "방패",
+      "layer": "shield"
+    },
+    {
+      "id": "offhand",
+      "name": "보조무기",
+      "layer": "offhand"
+    }
+  ],
+  "classes": {
+    "murmillo": {
+      "name": "무르밀로",
+      "latin": "MURMILLO",
+      "role": "방패와 단검을 쓰는 중장갑 검투사",
+      "defaultItems": {
+        "helmet": "murmillo_helmet",
+        "armor": "murmillo_armor",
+        "weapon": "gladius",
+        "shield": "scutum",
+        "offhand": null
+      },
+      "body": {
+        "scale": 1,
+        "baseline": [
+          160,
+          300
+        ]
+      },
+      "poses": {
+        "idle": {
+          "composite": "assets/characters/murmillo/composite/idle.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "walk": {
+          "composite": "assets/characters/murmillo/composite/walk.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "guard": {
+          "composite": "assets/characters/murmillo/composite/guard.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "high": {
+          "composite": "assets/characters/murmillo/composite/high.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "mid": {
+          "composite": "assets/characters/murmillo/composite/mid.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "low": {
+          "composite": "assets/characters/murmillo/composite/low.webp",
+          "base": null,
+          "overlays": {}
+        }
+      },
+      "face": "assets/characters/murmillo/head/face.png"
+    },
+    "thraex": {
+      "name": "트라에키스",
+      "latin": "THRAEX",
+      "role": "곡검과 소형 방패를 쓰는 기동형 검투사",
+      "defaultItems": {
+        "helmet": "thraex_helmet",
+        "armor": "thraex_armor",
+        "weapon": "sica",
+        "shield": "parmula",
+        "offhand": null
+      },
+      "body": {
+        "scale": 0.98,
+        "baseline": [
+          160,
+          300
+        ]
+      },
+      "poses": {
+        "idle": {
+          "composite": "assets/characters/thraex/composite/idle.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "walk": {
+          "composite": "assets/characters/thraex/composite/walk.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "guard": {
+          "composite": "assets/characters/thraex/composite/guard.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "high": {
+          "composite": "assets/characters/thraex/composite/high.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "mid": {
+          "composite": "assets/characters/thraex/composite/mid.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "low": {
+          "composite": "assets/characters/thraex/composite/low.webp",
+          "base": null,
+          "overlays": {}
+        }
+      },
+      "face": "assets/characters/thraex/head/face.png"
+    },
+    "retiarius": {
+      "name": "레티아리우스",
+      "latin": "RETIARIUS",
+      "role": "삼지창과 그물을 사용하는 제압형 검투사",
+      "defaultItems": {
+        "helmet": null,
+        "armor": "retiarius_armor",
+        "weapon": "trident",
+        "shield": null,
+        "offhand": "net"
+      },
+      "body": {
+        "scale": 1.02,
+        "baseline": [
+          160,
+          300
+        ]
+      },
+      "poses": {
+        "idle": {
+          "composite": "assets/characters/retiarius/composite/idle.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "walk": {
+          "composite": "assets/characters/retiarius/composite/walk.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "guard": {
+          "composite": "assets/characters/retiarius/composite/guard.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "high": {
+          "composite": "assets/characters/retiarius/composite/high.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "mid": {
+          "composite": "assets/characters/retiarius/composite/mid.webp",
+          "base": null,
+          "overlays": {}
+        },
+        "low": {
+          "composite": "assets/characters/retiarius/composite/low.webp",
+          "base": null,
+          "overlays": {}
+        }
+      },
+      "face": "assets/characters/retiarius/head/face.png"
+    }
+  },
+  "items": {
+    "gladius": {
+      "id": "gladius",
+      "slot": "weapon",
+      "classId": "murmillo",
+      "name": "글라디우스",
+      "rarity": "common",
+      "durability": 82,
+      "appearanceByPose": null,
+      "previewIcon": "⚔"
+    },
+    "scutum": {
+      "id": "scutum",
+      "slot": "shield",
+      "classId": "murmillo",
+      "name": "스쿠툼",
+      "rarity": "common",
+      "durability": 95,
+      "appearanceByPose": null,
+      "previewIcon": "🛡"
+    },
+    "murmillo_helmet": {
+      "id": "murmillo_helmet",
+      "slot": "helmet",
+      "classId": "murmillo",
+      "name": "무르밀로 투구",
+      "rarity": "common",
+      "durability": 82,
+      "appearanceByPose": null,
+      "previewIcon": "⛑"
+    },
+    "murmillo_armor": {
+      "id": "murmillo_armor",
+      "slot": "armor",
+      "classId": "murmillo",
+      "name": "무르밀로 갑옷",
+      "rarity": "common",
+      "durability": 114,
+      "appearanceByPose": null,
+      "previewIcon": "🛡"
+    },
+    "sica": {
+      "id": "sica",
+      "slot": "weapon",
+      "classId": "thraex",
+      "name": "시카",
+      "rarity": "common",
+      "durability": 74,
+      "appearanceByPose": null,
+      "previewIcon": "⚔"
+    },
+    "parmula": {
+      "id": "parmula",
+      "slot": "shield",
+      "classId": "thraex",
+      "name": "파르물라",
+      "rarity": "common",
+      "durability": 54,
+      "appearanceByPose": null,
+      "previewIcon": "🛡"
+    },
+    "thraex_helmet": {
+      "id": "thraex_helmet",
+      "slot": "helmet",
+      "classId": "thraex",
+      "name": "트라에키스 투구",
+      "rarity": "common",
+      "durability": 65,
+      "appearanceByPose": null,
+      "previewIcon": "⛑"
+    },
+    "thraex_armor": {
+      "id": "thraex_armor",
+      "slot": "armor",
+      "classId": "thraex",
+      "name": "트라에키스 갑옷",
+      "rarity": "common",
+      "durability": 96,
+      "appearanceByPose": null,
+      "previewIcon": "🛡"
+    },
+    "trident": {
+      "id": "trident",
+      "slot": "weapon",
+      "classId": "retiarius",
+      "name": "삼지창",
+      "rarity": "common",
+      "durability": 80,
+      "appearanceByPose": null,
+      "previewIcon": "⚔"
+    },
+    "net": {
+      "id": "net",
+      "slot": "offhand",
+      "classId": "retiarius",
+      "name": "그물",
+      "rarity": "common",
+      "durability": 55,
+      "appearanceByPose": null,
+      "previewIcon": "🕸"
+    },
+    "retiarius_armor": {
+      "id": "retiarius_armor",
+      "slot": "armor",
+      "classId": "retiarius",
+      "name": "레티아리우스 갑옷",
+      "rarity": "common",
+      "durability": 92,
+      "appearanceByPose": null,
+      "previewIcon": "🛡"
+    }
+  }
+}
