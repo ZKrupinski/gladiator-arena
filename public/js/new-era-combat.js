@@ -94,5 +94,6 @@ for(const b of document.querySelectorAll('[data-key]')){
  for(const name of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(name,()=>G.holding.delete(key));
 }
 $('#restart').onclick=reset;$('#again').onclick=reset;$('#playerClass').onchange=reset;$('#stage').onchange=()=>{if(G.p)renderAvatar(G.p,$('#player'));if(G.e)renderAvatar(G.e,$('#enemy'));};
+const requestedClass=new URLSearchParams(location.search).get('class');if(CLASS[requestedClass])$('#playerClass').value=requestedClass;
 reset();requestAnimationFrame(loop);
 })();
