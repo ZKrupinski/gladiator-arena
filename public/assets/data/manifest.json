@@ -1,0 +1,512 @@
+{
+  "schemaVersion": "1.0",
+  "gameVersion": "1.3",
+  "renderPolicy": "preserve-original-composite-sprites",
+  "coordinates": {
+    "facing": "+x",
+    "ground": "feet-baseline",
+    "spriteCanvas": [
+      320,
+      320
+    ]
+  },
+  "notes": [
+    "Current six poses per class remain composite sprites; per-layer images are NOT yet created.",
+    "Metadata is live-wired for fighter stats and draw dimensions.",
+    "Standalone HTML embeds manifest and sprites; JSON/assets are included separately for further production.",
+    "v1.3: independent body/equipment art remains unavailable; pickup and armor states are logical layers over original composite sprites."
+  ],
+  "classes": {
+    "murmillo": {
+      "id": "murmillo",
+      "displayName": "무르밀로",
+      "renderMode": "composite",
+      "stats": {
+        "maxHp": 110,
+        "maxSt": 95,
+        "damage": 12,
+        "speed": 198,
+        "reach": 150,
+        "shield": 95,
+        "helm": 82,
+        "body": 114,
+        "weapon": 82,
+        "grip": 88,
+        "special": "방패 강타",
+        "specialCd": 6.7,
+        "latin": "MURMILLO",
+        "name": "무르밀로"
+      },
+      "canvas": {
+        "width": 320,
+        "height": 320,
+        "feetBaseline": 300,
+        "bodyPivot": [
+          160,
+          300
+        ]
+      },
+      "render": {
+        "height": 236,
+        "yOffset": -2,
+        "anchor": 0.52
+      },
+      "animations": {
+        "idle": {
+          "composite": "assets/characters/murmillo/composite/idle.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "walk": {
+          "composite": "assets/characters/murmillo/composite/walk.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "high": {
+          "composite": "assets/characters/murmillo/composite/high.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "mid": {
+          "composite": "assets/characters/murmillo/composite/mid.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "low": {
+          "composite": "assets/characters/murmillo/composite/low.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "guard": {
+          "composite": "assets/characters/murmillo/composite/guard.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        }
+      },
+      "defaultEquipment": {
+        "helmet": "murmillo_helmet",
+        "armor": "murmillo_armor",
+        "shield": "scutum",
+        "weapon": "gladius"
+      },
+      "layerStatus": "not-yet-separated"
+    },
+    "thraex": {
+      "id": "thraex",
+      "displayName": "트라에키스",
+      "renderMode": "composite",
+      "stats": {
+        "maxHp": 91,
+        "maxSt": 110,
+        "damage": 10,
+        "speed": 252,
+        "reach": 158,
+        "shield": 54,
+        "helm": 65,
+        "body": 96,
+        "weapon": 74,
+        "grip": 84,
+        "special": "곡검 연격",
+        "specialCd": 6.3,
+        "latin": "THRAEX",
+        "name": "트라에키스"
+      },
+      "canvas": {
+        "width": 320,
+        "height": 320,
+        "feetBaseline": 300,
+        "bodyPivot": [
+          160,
+          300
+        ]
+      },
+      "render": {
+        "height": 232,
+        "yOffset": -1,
+        "anchor": 0.52
+      },
+      "animations": {
+        "idle": {
+          "composite": "assets/characters/thraex/composite/idle.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "walk": {
+          "composite": "assets/characters/thraex/composite/walk.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "high": {
+          "composite": "assets/characters/thraex/composite/high.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "mid": {
+          "composite": "assets/characters/thraex/composite/mid.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "low": {
+          "composite": "assets/characters/thraex/composite/low.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "guard": {
+          "composite": "assets/characters/thraex/composite/guard.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        }
+      },
+      "defaultEquipment": {
+        "helmet": "thraex_helmet",
+        "armor": "thraex_armor",
+        "shield": "parmula",
+        "weapon": "sica"
+      },
+      "layerStatus": "not-yet-separated"
+    },
+    "retiarius": {
+      "id": "retiarius",
+      "displayName": "레티아리우스",
+      "renderMode": "composite",
+      "stats": {
+        "maxHp": 88,
+        "maxSt": 114,
+        "damage": 11,
+        "speed": 230,
+        "reach": 196,
+        "shield": 0,
+        "helm": 0,
+        "body": 92,
+        "weapon": 80,
+        "grip": 92,
+        "special": "투망 던지기",
+        "specialCd": 8.4,
+        "latin": "RETIARIUS",
+        "name": "레티아리우스"
+      },
+      "canvas": {
+        "width": 320,
+        "height": 320,
+        "feetBaseline": 300,
+        "bodyPivot": [
+          160,
+          300
+        ]
+      },
+      "render": {
+        "height": 233,
+        "yOffset": -2,
+        "anchor": 0.52
+      },
+      "animations": {
+        "idle": {
+          "composite": "assets/characters/retiarius/composite/idle.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "walk": {
+          "composite": "assets/characters/retiarius/composite/walk.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "high": {
+          "composite": "assets/characters/retiarius/composite/high.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "mid": {
+          "composite": "assets/characters/retiarius/composite/mid.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "low": {
+          "composite": "assets/characters/retiarius/composite/low.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        },
+        "guard": {
+          "composite": "assets/characters/retiarius/composite/guard.webp",
+          "layers": {
+            "base": null,
+            "head": null,
+            "helmet": null,
+            "armor": null,
+            "shield": null,
+            "weapon": null,
+            "offhand": null
+          }
+        }
+      },
+      "defaultEquipment": {
+        "helmet": null,
+        "armor": "retiarius_armor",
+        "shield": null,
+        "weapon": "trident",
+        "offhand": "net"
+      },
+      "layerStatus": "not-yet-separated"
+    }
+  },
+  "equipment": {
+    "gladius": {
+      "slot": "weapon",
+      "class": "murmillo",
+      "durability": 82,
+      "grip": 88,
+      "art": null,
+      "dropArt": null
+    },
+    "scutum": {
+      "slot": "shield",
+      "class": "murmillo",
+      "durability": 95,
+      "art": null,
+      "dropArt": null
+    },
+    "murmillo_helmet": {
+      "slot": "helmet",
+      "class": "murmillo",
+      "durability": 82,
+      "art": null,
+      "dropArt": null
+    },
+    "murmillo_armor": {
+      "slot": "armor",
+      "class": "murmillo",
+      "durability": 114,
+      "art": null,
+      "dropArt": null
+    },
+    "sica": {
+      "slot": "weapon",
+      "class": "thraex",
+      "durability": 74,
+      "grip": 84,
+      "art": null,
+      "dropArt": null
+    },
+    "parmula": {
+      "slot": "shield",
+      "class": "thraex",
+      "durability": 54,
+      "art": null,
+      "dropArt": null
+    },
+    "thraex_helmet": {
+      "slot": "helmet",
+      "class": "thraex",
+      "durability": 65,
+      "art": null,
+      "dropArt": null
+    },
+    "thraex_armor": {
+      "slot": "armor",
+      "class": "thraex",
+      "durability": 96,
+      "art": null,
+      "dropArt": null
+    },
+    "trident": {
+      "slot": "weapon",
+      "class": "retiarius",
+      "durability": 80,
+      "grip": 92,
+      "art": null,
+      "dropArt": null
+    },
+    "net": {
+      "slot": "offhand",
+      "class": "retiarius",
+      "durability": 55,
+      "art": null,
+      "dropArt": null
+    },
+    "retiarius_armor": {
+      "slot": "armor",
+      "class": "retiarius",
+      "durability": 92,
+      "art": null,
+      "dropArt": null
+    }
+  },
+  "background": {
+    "arena": "assets/backgrounds/colosseum/arena.webp"
+  },
+  "fx": {
+    "parry": "procedural-canvas",
+    "hit": "procedural-canvas",
+    "net": "procedural-canvas"
+  },
+  "assetPipeline": {
+    "layeredAvatarReady": false,
+    "requiredLayers": [
+      "base",
+      "head",
+      "helmet",
+      "armor",
+      "shield",
+      "weapon",
+      "offhand"
+    ],
+    "requiredStates": [
+      "idle",
+      "walk",
+      "high",
+      "mid",
+      "low",
+      "guard"
+    ]
+  },
+  "combatProfiles": {
+    "murmillo": {
+      "approachDistance": 125,
+      "aggression": 0.66,
+      "parryBias": 0.38,
+      "retreatBias": 0.16,
+      "specialPreference": "shield_bash"
+    },
+    "thraex": {
+      "approachDistance": 100,
+      "aggression": 0.81,
+      "parryBias": 0.2,
+      "retreatBias": 0.12,
+      "specialPreference": "sica_combo"
+    },
+    "retiarius": {
+      "approachDistance": 205,
+      "aggression": 0.42,
+      "parryBias": 0.08,
+      "retreatBias": 0.54,
+      "specialPreference": "cast_net"
+    }
+  },
+  "battleSettings": {
+    "pickupRadius": 100,
+    "pickupCooldownSeconds": 0.85,
+    "equipmentLifetimeSeconds": 26,
+    "armorBreakAtFraction": 0.4,
+    "armorPickupRestoreFraction": 0.4,
+    "cameraCloseDistance": 820,
+    "cameraPlayerOffset": 0.4
+  }
+}

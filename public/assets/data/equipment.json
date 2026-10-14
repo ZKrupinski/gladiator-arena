@@ -1,0 +1,82 @@
+{
+  "gladius": {
+    "slot": "weapon",
+    "class": "murmillo",
+    "durability": 82,
+    "grip": 88,
+    "art": null,
+    "dropArt": null
+  },
+  "scutum": {
+    "slot": "shield",
+    "class": "murmillo",
+    "durability": 95,
+    "art": null,
+    "dropArt": null
+  },
+  "murmillo_helmet": {
+    "slot": "helmet",
+    "class": "murmillo",
+    "durability": 82,
+    "art": null,
+    "dropArt": null
+  },
+  "murmillo_armor": {
+    "slot": "armor",
+    "class": "murmillo",
+    "durability": 114,
+    "art": null,
+    "dropArt": null
+  },
+  "sica": {
+    "slot": "weapon",
+    "class": "thraex",
+    "durability": 74,
+    "grip": 84,
+    "art": null,
+    "dropArt": null
+  },
+  "parmula": {
+    "slot": "shield",
+    "class": "thraex",
+    "durability": 54,
+    "art": null,
+    "dropArt": null
+  },
+  "thraex_helmet": {
+    "slot": "helmet",
+    "class": "thraex",
+    "durability": 65,
+    "art": null,
+    "dropArt": null
+  },
+  "thraex_armor": {
+    "slot": "armor",
+    "class": "thraex",
+    "durability": 96,
+    "art": null,
+    "dropArt": null
+  },
+  "trident": {
+    "slot": "weapon",
+    "class": "retiarius",
+    "durability": 80,
+    "grip": 92,
+    "art": null,
+    "dropArt": null
+  },
+  "net": {
+    "slot": "offhand",
+    "class": "retiarius",
+    "durability": 55,
+    "art": null,
+    "dropArt": null
+  },
+  "retiarius_armor": {
+    "slot": "armor",
+    "class": "retiarius",
+    "durability": 92,
+    "art": null,
+    "dropArt": null
+  }
+}
