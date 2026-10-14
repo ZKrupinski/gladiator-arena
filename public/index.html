@@ -1,67 +1,36 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"/>
-  <meta name="theme-color" content="#251a13"/>
-  <meta name="description" content="GLADIATOR: The Gladius Renaissance — 모바일 웹 2D 검투 액션 프로토타입"/>
-  <title>GLADIATOR — 2D Pixel Arena Prototype v1.4</title>
-  <link rel="stylesheet" href="./css/game.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#120d0a">
+<title>GLADIATOR — 노예들의 왕 | 새로운 시대</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:#f5e6d1;background:#140e0c}*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:#130f0c}.backdrop{position:fixed;inset:0;background:linear-gradient(90deg,#120a08ec 0%,#170e0bbd 48%,#170f0b95 100%),linear-gradient(0deg,#170b09c9 0%,transparent 70%),url('./assets/backgrounds/colosseum/arena.webp') center/cover;z-index:-1}
+a{color:inherit;text-decoration:none}.top{max-width:1350px;padding:26px 32px;display:flex;justify-content:space-between;gap:15px;margin:auto;align-items:center}.top-brand{font:700 14px Georgia,serif;letter-spacing:.27em;color:#ecd1a1}.top-badge{font-size:11px;letter-spacing:.14em;color:#c4a680;border:1px solid #846546;padding:9px 12px;border-radius:2px}
+main{max-width:1350px;margin:auto;padding:40px 32px 55px}.hero{max-width:810px;padding-top:24px}.eyebrow{color:#d8a968;letter-spacing:.26em;font-size:12px;font-weight:700}.hero h1{font:700 clamp(59px,10vw,128px)/.95 Georgia,"Times New Roman",serif;letter-spacing:.08em;margin:19px 0 12px;text-shadow:0 8px 38px #0e0301}.subtitle{font:500 clamp(17px,3vw,27px) Georgia,serif;letter-spacing:.23em;color:#dfc092}.hero p{margin:28px 0 32px;font-size:15px;line-height:1.9;max-width:600px;color:#e3ceb5}.divider{background:linear-gradient(90deg,#f4c77e,transparent);height:2px;width:300px;margin-top:29px}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin:35px 0 52px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid #8c653b;border-radius:8px;background:#3e2a1edc;min-height:55px;padding:14px 25px;font-weight:700;transition:transform .2s,background .2s}.btn:hover{transform:translateY(-2px);background:#634329}.btn.primary{background:linear-gradient(125deg,#cf9252,#a96935);color:#211409;border-color:#edbd78;box-shadow:0 6px 32px #dc994543}.btn.legacy{border-color:#9b7965;background:#27201dbd}.btn small{font-weight:400;color:#c5b5a6}.grid-head{display:flex;align-items:flex-end;justify-content:space-between;gap:15px;padding-bottom:12px;border-bottom:1px solid #8a6542}.grid-head h2{font:700 26px Georgia,serif;margin:0}.grid-head small{font-size:11px;letter-spacing:.1em;color:#c3ab8a}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:17px;margin-top:17px}.class-card{position:relative;background:linear-gradient(160deg,#413028e8,#201b19dc);border:1px solid #7e5b3f;min-height:267px;border-radius:12px;padding:23px 24px 20px;overflow:hidden;transition:transform .2s,border .2s}.class-card:hover{transform:translateY(-4px);border-color:#d9af75}.class-card:before{content:"";position:absolute;top:-80px;right:-80px;width:240px;height:240px;background:radial-gradient(circle,var(--accent),transparent 70%);opacity:.26}.class-symbol{position:relative;font-size:56px;filter:drop-shadow(0 3px 10px #080503);margin-bottom:9px}.class-card h3{position:relative;font:700 24px Georgia,serif;margin:6px 0 0}.class-card .latin{font-size:11px;letter-spacing:.22em;color:#d6b58a;margin-top:3px}.class-card p{line-height:1.7;color:#d5c1b2;font-size:13px;min-height:54px;margin:17px 0}.card-link{display:inline-flex;align-items:center;gap:8px;color:#ffdb9d;font-size:12px;font-weight:700;border-bottom:1px solid #bc9d6d;padding-bottom:4px}.hint{font-size:12px;background:#261e19c9;color:#c8b5a1;border:1px solid #685139;border-radius:9px;padding:16px 18px;margin-top:22px;line-height:1.75}.footer{max-width:1350px;margin:auto;border-top:1px solid #604a37;padding:18px 32px 28px;color:#aa9785;font-size:11px;display:flex;justify-content:space-between;gap:20px}.footer a{color:#e1be88}
+@media(max-width:760px){.top,main,.footer{padding-left:17px;padding-right:17px}.top{padding-top:18px}.top-badge{display:none}main{padding-top:20px}.hero{padding-top:0}.cards{grid-template-columns:1fr}.class-card{min-height:210px}.class-card p{min-height:0}.hero h1{font-size:clamp(50px,13vw,80px)}.actions{margin-bottom:39px}.btn{flex:1;min-width:175px}.grid-head{align-items:flex-start;flex-direction:column}}
+</style>
 </head>
-<body>
-  <main class="shell">
-    <header class="topbar">
-      <div class="brand-small"><span class="brand-mark">⚔</span><span><b>GLADIATOR</b><small>THE GLADIUS RENAISSANCE · PROTOTYPE 1.4 · PIXEL</small></span></div>
-      <div class="top-actions"><button class="top-button" id="helpBtn" aria-label="조작법">? <span>조작법</span></button><button class="top-button" id="muteBtn" aria-label="소리 켜기 및 끄기">◖)) <span>사운드 ON</span></button></div>
-    </header>
-
-    <section id="stage" class="stage" aria-label="2D 검투사 대전 화면">
-      <canvas id="game" width="1200" height="675" aria-label="검투사 전투 화면"></canvas>
-      <div class="vignette" aria-hidden="true"></div>
-
-      <div id="hud" class="hud hidden">
-        <div class="fighter-hud player-hud"><div class="fighter-title"><span class="crest">Ⅰ</span><div><strong id="playerName">MURMILLO</strong><small>나의 검투사</small></div></div><div class="meter health"><div id="playerHp"></div></div><div class="meter stamina"><div id="playerSt"></div></div><div class="meter-label"><span>VITA</span><span id="playerHpText">100 / 100</span><span>STAMINA</span></div><div class="durability-line" id="playerDurability">HEAD <b>0</b> BODY <b>0</b> WEAPON <b>0</b> SHIELD <b>0</b> GRIP <b>0</b></div></div>
-        <div class="round-hud"><div class="chapter">CERTAMEN</div><strong id="roundCount">Ⅰ / Ⅲ</strong><small id="clock">90</small><span id="crowdText">관중 호응 0%</span><div class="crowd-meter"><i id="crowdFill"></i></div></div>
-        <div class="fighter-hud enemy-hud"><div class="fighter-title"><div><strong id="enemyName">THRAEX</strong><small>상대 검투사 · AI</small></div><span class="crest">Ⅱ</span></div><div class="meter health"><div id="enemyHp"></div></div><div class="meter stamina"><div id="enemySt"></div></div><div class="meter-label"><span>VITA</span><span id="enemyHpText">100 / 100</span><span>STAMINA</span></div><div class="durability-line" id="enemyDurability">HEAD <b>0</b> BODY <b>0</b> WEAPON <b>0</b> SHIELD <b>0</b> GRIP <b>0</b></div></div>
-      </div>
-
-      <div id="toast" class="toast" aria-live="polite"></div><div id="pickupHint" class="hidden" aria-live="off">✦ E / 줍기 — 장비 회수</div>
-      <div id="pauseBanner" class="pause-banner hidden">일시 정지 <small>P 키 또는 화면 터치로 재개</small></div>
-
-      <div id="menu" class="menu-panel">
-        <div class="menu-fade"></div>
-        <div class="menu-content">
-          <div class="eyebrow">SPQR · ROMA · MMXXVI</div>
-          <h1>GLADIATOR</h1>
-          <div class="subtitle">THE GLADIUS RENAISSANCE</div>
-          <div class="gold-rule"></div>
-          <p class="hero-text">작은 검투사들의 위대한 투기장.<br/>검과 방패, 지구력 그리고 관중의 환호로 살아남아라.</p>
-          <div class="menu-label">검투사를 선택하십시오</div>
-          <div id="classPick" class="class-pick">
-            <button class="class-card selected" data-class="murmillo"><b>🛡 무르밀로</b><span>MURMILLO</span><small>단검 · 대형 방패</small></button>
-            <button class="class-card" data-class="thraex"><b>⚔ 트라에키스</b><span>THRAEX</span><small>곡검 · 소형 방패</small></button>
-            <button class="class-card" data-class="retiarius"><b>🔱 레티아리우스</b><span>RETIARIUS</span><small>삼지창 · 그물</small></button>
-          </div>
-          <button id="startBtn" class="primary-button">투기장 입장 <span>→</span></button>
-          <a href="./avatar-lab.html" style="display:inline-block;margin:11px 0 3px;padding:9px 18px;border-radius:8px;color:#f6d39c;border:1px solid #a4773c;background:#302317e3;text-decoration:none;font:600 13px system-ui">⚙ 아바타 실험실 v1.5 (장비 · 성장 구조)</a>
-          <div class="career" id="career"><span>DENARII <b id="goldCount">0</b></span><span>승리 <b id="winCount">0</b></span><span>명예 <b id="honorCount">0</b></span></div>
-          <div class="training"><span>루두스 훈련</span><button id="trainHp" type="button">체력 +8 <em>120 D</em></button><button id="trainSt" type="button">지구력 +8 <em>120 D</em></button></div>
-        </div>
-        <span class="menu-credit">ART REFERENCES PROVIDED BY PROJECT OWNER · DEMO BUILD</span>
-      </div>
-
-      <div id="result" class="result-panel hidden" role="dialog" aria-modal="true" aria-labelledby="resultHeading">
-        <div class="result-content"><div id="resultSeal" class="result-seal">✦</div><div class="eyebrow">GLORIA ET HONOR</div><h2 id="resultHeading">VICTORIA!</h2><p id="resultDesc">투기장에서 살아남았습니다.</p><div id="resultStats" class="result-stats"></div><div class="result-buttons"><button id="nextBtn" class="primary-button">다음 상대 →</button><button id="menuBtn" class="secondary-button">루두스로 돌아가기</button></div></div>
-      </div>
-
-      <div id="help" class="help-panel hidden" role="dialog" aria-modal="true" aria-label="조작법"><div class="help-body"><h2>⚔ 전투 조작법</h2><div class="help-columns"><div><b>PC 키보드</b><p>A / D — 좌우 이동<br/>J / Space — 공격<br/>K — 방어 (길게)<br/>L — 회피<br/>I — 특수기<br/>E — 장비 줍기<br/>P — 일시 정지</p></div><div><b>모바일 터치</b><p>화면 아래 이동 버튼을 누르고 유지.<br/>공격 · 회피 · 특수기는 탭.<br/>방어 버튼을 누르고 있는 동안 방어.<br/>적 공격 직전에 방어하면 패링!<br/>떨어진 장비는 다가가서 줍기 버튼을 누르세요.</p></div></div><p class="tip">방어 시 스태미나가 줄어듭니다. 적 공격을 막거나 회피하여 빈틈을 노리세요. 투구·방패·무기·갑옷은 파손될 수 있으며, 가까이에서 다시 회수할 수 있습니다.</p><button id="closeHelp" class="primary-button">확인</button></div></div>
-
-      <div id="touchControls" class="touch-controls hidden" aria-label="터치 전투 조작"><div class="move-group"><button class="control-btn move" data-control="left" aria-label="왼쪽 이동">◀</button><button class="control-btn move" data-control="right" aria-label="오른쪽 이동">▶</button></div><div class="action-group"><button class="control-btn dodge" data-control="dodge">회피<span>↶</span></button><button class="control-btn guard" data-control="guard">방어<span>⬟</span></button><button class="control-btn special" data-control="pickup" aria-label="장비 줍기" style="font-size:13px;background:#6d583a">줍기</button><button class="control-btn special" data-control="special">특수기<span id="specialCd"></span></button><button class="control-btn attack" data-control="attack">공격<span>⚔</span></button></div></div>
-      <button id="pauseBtn" class="pause-btn hidden" aria-label="일시 정지">Ⅱ</button>
-      <div class="mobile-orient">↻ 화면을 가로로 돌리면 더 쾌적하게 플레이할 수 있습니다.</div>
-    </section>
-    <footer class="bottom-info"><span>실제 로마 검투사 병과를 소재로 한 캐주얼 액션 · PvE 전투 프로토타입 · <a href="./avatar-lab.html" style="color:#efc78a">아바타 시스템 실험실</a></span><span>← A / D 이동 · J 공격 · K 방어 · L 회피 · I 특수기 · E 장비 줍기 →</span></footer>
-  </main>
-  <script src="./js/game.js"></script>
-<script>console.info("GLADIATOR v1.4: camera/pickup/armor update, live asset manifest 1.3");</script></body>
-</html>
+<body><div class="backdrop" aria-hidden="true"></div>
+<header class="top"><div class="top-brand">SPARTACUS · THE KING OF SLAVES</div><div class="top-badge">NEW ERA / AVATAR FOUNDATION PREVIEW</div></header>
+<main>
+<section class="hero"><div class="eyebrow">ROMA · THE ARENA AWAITS</div><h1>GLADIATOR</h1><div class="subtitle">THE GLADIUS RENAISSANCE</div><div class="divider"></div>
+<p>노예의 쇠사슬에서 검투사의 영광까지. 하나의 몸, 수많은 무장. 같은 크기와 체형을 가진 세 병과가 장비를 갈아입고 고유한 전투 방식으로 새로운 전설을 시작합니다.</p>
+<div class="actions">
+<a class="btn primary" href="./avatar-detachable.html"><span>⚔</span> 새로운 검투사 개발판 <span>→</span></a>
+<a class="btn legacy" href="./legend.html"><span>◈</span> 전설의 시작 <span>→</span></a>
+<a class="btn" href="./avatar-lab.html">아바타 편집실</a>
+</div></section>
+<section><div class="grid-head"><h2>THREE PATHS TO GLORY</h2><small>SHARED BODY SCALE · MODULAR EQUIPMENT · FIVE PROGRESSION TIERS</small></div>
+<div class="cards">
+<a class="class-card" href="./avatar-detachable.html?class=murmillo" style="--accent:#db6247"><div class="class-symbol">🛡️</div><h3>무르밀로</h3><div class="latin">MURMILLO · HEAVY DEFENSE</div><p>대형 스쿠툼과 글라디우스. 묵직한 방패와 장비가 만드는 전방 압박형 검투사.</p><span class="card-link">아바타 확인 →</span></a>
+<a class="class-card" href="./avatar-detachable.html?class=thraex" style="--accent:#77a78d"><div class="class-symbol">⚔️</div><h3>트라에키스</h3><div class="latin">THRAEX · SWIFT STRIKE</div><p>곡검 시카와 파르물라. 속도와 공격 각도의 변화를 살린 기동형 전사.</p><span class="card-link">아바타 확인 →</span></a>
+<a class="class-card" href="./avatar-detachable.html?class=retiarius" style="--accent:#5e98c9"><div class="class-symbol">🔱</div><h3>레티아리우스</h3><div class="latin">RETIARIUS · NET CONTROL</div><p>삼지창과 그물. 투구 대신 머리띠와 갑주 장식으로 차별화한 제압형 검투사.</p><span class="card-link">아바타 확인 →</span></a>
+</div>
+<p class="hint"><strong>개발 상태 안내:</strong> 새 타이틀은 3D 애니메이션풍으로 전환할 게임의 시작 화면입니다. 새 전투와 최종 캐릭터 3D 렌더는 아직 제작 중이며, '새로운 검투사 개발판'은 장비 탈착과 기초 애니메이션을 시험하는 임시 그래픽 모형입니다. '전설의 시작'에서는 기존 v1.4 픽셀 전투를 그대로 플레이할 수 있습니다.</p>
+</section></main>
+<footer class="footer"><span>GLADIATOR · NEW ERA DEVELOPMENT PREVIEW</span><div><a href="./legend.html">기존 전투</a> · <a href="./avatar-resources.html">리소스 개발 현황</a> · <a href="./avatar-lab.html">아바타 실험실</a></div></footer>
+</body></html>
