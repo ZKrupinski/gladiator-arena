@@ -1,0 +1,726 @@
+{
+  "schemaVersion": "1.0",
+  "classId": "retiarius",
+  "displayName": "RETIARIUS",
+  "rig": "gladiator_sd_shared_v1",
+  "bodyScale": 1,
+  "roleSpecial": "net_throw",
+  "design": {
+    "palette": [
+      "blue",
+      "bronze",
+      "linen"
+    ],
+    "classSignature": {
+      "offhand": "weighted_net",
+      "head": "band_or_laurel"
+    }
+  },
+  "validSlots": [
+    "hair",
+    "helmet",
+    "torso",
+    "shoulder",
+    "bracer",
+    "waist",
+    "greaves",
+    "sandals",
+    "weapon",
+    "offhand",
+    "cloak"
+  ],
+  "baseBody": {
+    "model3d": null,
+    "sprite2d": null,
+    "productionStatus": "not-created"
+  },
+  "equipment": {
+    "hair": {
+      "socket": "head",
+      "variants": {
+        "trainee": {
+          "id": "retiarius_hair_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius hair trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "retiarius_hair_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius hair novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "retiarius_hair_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius hair gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "retiarius_hair_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius hair veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "retiarius_hair_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius hair champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "helmet": {
+      "socket": "head",
+      "variants": {
+        "trainee": {
+          "id": "retiarius_helmet_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius helmet trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "retiarius_helmet_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius helmet novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "retiarius_helmet_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius helmet gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "retiarius_helmet_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius helmet veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "retiarius_helmet_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius helmet champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "torso": {
+      "socket": "chest",
+      "variants": {
+        "trainee": {
+          "id": "retiarius_torso_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius torso trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "retiarius_torso_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius torso novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "retiarius_torso_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius torso gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "retiarius_torso_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius torso veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "retiarius_torso_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius torso champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "shoulder": {
+      "socket": "rightShoulder",
+      "variants": {
+        "trainee": {
+          "id": "retiarius_shoulder_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius shoulder trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "retiarius_shoulder_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius shoulder novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "retiarius_shoulder_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius shoulder gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "retiarius_shoulder_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius shoulder veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "retiarius_shoulder_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius shoulder champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "bracer": {
+      "socket": "rightHand",
+      "variants": {
+        "trainee": {
+          "id": "retiarius_bracer_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius bracer trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "retiarius_bracer_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius bracer novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "retiarius_bracer_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius bracer gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "retiarius_bracer_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius bracer veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "retiarius_bracer_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius bracer champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "waist": {
+      "socket": "waist",
+      "variants": {
+        "trainee": {
+          "id": "retiarius_waist_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius waist trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "retiarius_waist_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius waist novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "retiarius_waist_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius waist gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "retiarius_waist_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius waist veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "retiarius_waist_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius waist champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "greaves": {
+      "socket": "leftLeg",
+      "variants": {
+        "trainee": {
+          "id": "retiarius_greaves_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius greaves trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "retiarius_greaves_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius greaves novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "retiarius_greaves_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius greaves gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "retiarius_greaves_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius greaves veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "retiarius_greaves_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius greaves champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "sandals": {
+      "socket": "leftFoot",
+      "variants": {
+        "trainee": {
+          "id": "retiarius_sandals_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius sandals trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "retiarius_sandals_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius sandals novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "retiarius_sandals_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius sandals gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "retiarius_sandals_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius sandals veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "retiarius_sandals_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius sandals champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "weapon": {
+      "socket": "rightHand",
+      "variants": {
+        "trainee": {
+          "id": "retiarius_weapon_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius weapon trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "retiarius_weapon_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius weapon novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "retiarius_weapon_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius weapon gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "retiarius_weapon_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius weapon veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "retiarius_weapon_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius weapon champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "offhand": {
+      "socket": "leftHand",
+      "variants": {
+        "trainee": {
+          "id": "retiarius_offhand_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius offhand trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "retiarius_offhand_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius offhand novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "retiarius_offhand_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius offhand gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "retiarius_offhand_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius offhand veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "retiarius_offhand_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius offhand champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    },
+    "cloak": {
+      "socket": "back",
+      "variants": {
+        "trainee": {
+          "id": "retiarius_cloak_trainee",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius cloak trainee from approved final avatar design sheet",
+          "stage": "trainee",
+          "minLevel": 1
+        },
+        "novice": {
+          "id": "retiarius_cloak_novice",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius cloak novice from approved final avatar design sheet",
+          "stage": "novice",
+          "minLevel": 2
+        },
+        "gladiator": {
+          "id": "retiarius_cloak_gladiator",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius cloak gladiator from approved final avatar design sheet",
+          "stage": "gladiator",
+          "minLevel": 5
+        },
+        "veteran": {
+          "id": "retiarius_cloak_veteran",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius cloak veteran from approved final avatar design sheet",
+          "stage": "veteran",
+          "minLevel": 15
+        },
+        "champion": {
+          "id": "retiarius_cloak_champion",
+          "resource": null,
+          "attachment": null,
+          "lod": 0,
+          "productionStatus": "not-created",
+          "visualDesign": "retiarius cloak champion from approved final avatar design sheet",
+          "stage": "champion",
+          "minLevel": 30
+        }
+      }
+    }
+  },
+  "stageLoadouts": {
+    "trainee": {
+      "hair": "retiarius_hair_trainee",
+      "helmet": null,
+      "torso": "retiarius_torso_trainee",
+      "shoulder": null,
+      "bracer": "retiarius_bracer_trainee",
+      "waist": "retiarius_waist_trainee",
+      "greaves": "retiarius_greaves_trainee",
+      "sandals": "retiarius_sandals_trainee",
+      "weapon": "retiarius_weapon_trainee",
+      "offhand": "retiarius_offhand_trainee",
+      "cloak": null
+    },
+    "novice": {
+      "hair": "retiarius_hair_novice",
+      "helmet": "retiarius_helmet_novice",
+      "torso": "retiarius_torso_novice",
+      "shoulder": "retiarius_shoulder_novice",
+      "bracer": "retiarius_bracer_novice",
+      "waist": "retiarius_waist_novice",
+      "greaves": "retiarius_greaves_novice",
+      "sandals": "retiarius_sandals_novice",
+      "weapon": "retiarius_weapon_novice",
+      "offhand": "retiarius_offhand_novice",
+      "cloak": null
+    },
+    "gladiator": {
+      "hair": "retiarius_hair_gladiator",
+      "helmet": "retiarius_helmet_gladiator",
+      "torso": "retiarius_torso_gladiator",
+      "shoulder": "retiarius_shoulder_gladiator",
+      "bracer": "retiarius_bracer_gladiator",
+      "waist": "retiarius_waist_gladiator",
+      "greaves": "retiarius_greaves_gladiator",
+      "sandals": "retiarius_sandals_gladiator",
+      "weapon": "retiarius_weapon_gladiator",
+      "offhand": "retiarius_offhand_gladiator",
+      "cloak": "retiarius_cloak_gladiator"
+    },
+    "veteran": {
+      "hair": "retiarius_hair_veteran",
+      "helmet": "retiarius_helmet_veteran",
+      "torso": "retiarius_torso_veteran",
+      "shoulder": "retiarius_shoulder_veteran",
+      "bracer": "retiarius_bracer_veteran",
+      "waist": "retiarius_waist_veteran",
+      "greaves": "retiarius_greaves_veteran",
+      "sandals": "retiarius_sandals_veteran",
+      "weapon": "retiarius_weapon_veteran",
+      "offhand": "retiarius_offhand_veteran",
+      "cloak": "retiarius_cloak_veteran"
+    },
+    "champion": {
+      "hair": "retiarius_hair_champion",
+      "helmet": "retiarius_helmet_champion",
+      "torso": "retiarius_torso_champion",
+      "shoulder": "retiarius_shoulder_champion",
+      "bracer": "retiarius_bracer_champion",
+      "waist": "retiarius_waist_champion",
+      "greaves": "retiarius_greaves_champion",
+      "sandals": "retiarius_sandals_champion",
+      "weapon": "retiarius_weapon_champion",
+      "offhand": "retiarius_offhand_champion",
+      "cloak": "retiarius_cloak_champion"
+    }
+  },
+  "poseAssets": {
+    "idle": null,
+    "walk": null,
+    "guard": null,
+    "high": null,
+    "mid": null,
+    "low": null,
+    "dash": null,
+    "parry": null,
+    "hit_react": null,
+    "finisher": null
+  },
+  "legacyCompositePath": "assets/characters/retiarius/composite/{pose}.webp",
+  "renderPolicy": "never_render_missing_layers_as_detachable",
+  "readyForRuntime": false
+}
