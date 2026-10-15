@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v2.9.8</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v2.9.9</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -84,7 +84,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 @media(prefers-reduced-motion:reduce){.result-pose-art{animation:none!important}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.9.8</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.9.9</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -133,8 +133,8 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 2초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=2.9.8-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=2.9.8-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=2.9.8-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=2.9.8-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=2.9.8-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=2.9.8-g753935a6", "bg": "assets/new-era/arena.webp?v=2.9.8-g753935a6"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.9.8 (correct parry counter damage, iframe protection)
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=2.9.9-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=2.9.9-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=2.9.9-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=2.9.9-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=2.9.9-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=2.9.9-g753935a6", "bg": "assets/new-era/arena.webp?v=2.9.9-g753935a6"};</script>
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.9.9 (high-damage comeback parry)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -346,10 +346,15 @@ function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stag
  let dmg=special?f.cfg.sp:f.cfg.atk;
  if(special&&f.cls==='thraex')dmg+=8;
  if(wideParry){
-   // Damage flows from the defender's counterstrike into the ATTACKER, never vice versa.
-   // NPC counters are intentionally softer; player parries should feel rewarding.
-   const counterDamage=Math.round(victim.cfg.atk*(victim.enemy?.72:1.22)+(special?7:5));
-   const defenderHP=victim.hp;
+   // Parry counterstrike always damages the ATTACKER, never the defender.
+   // The player's parry is an explicit comeback weapon: at full HP ~48-51 damage,
+   // and at critical HP ~95-110; enemy AI keeps its previous weaker counter.
+   const missingHealth=clamp(1-victim.hp/Math.max(1,victim.maxHp),0,1);
+   const comebackBonus=Math.round(missingHealth*39)+(missingHealth>=.7?16:0);
+   const playerCounter=Math.max(48,Math.round(victim.cfg.atk*2.8))
+     +comebackBonus+(special?11:0);
+   const enemyCounter=Math.round(victim.cfg.atk*.72+(special?7:5));
+   const counterDamage=victim.enemy?enemyCounter:playerCounter;
    victim.parry=0;victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
    victim.st=clamp(victim.st-(special?12:7),0,100);
    f.hp=Math.max(0,f.hp-counterDamage);
@@ -358,7 +363,8 @@ function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stag
    setAction(f,'hit',f.stagger);
    f.knockVX=away*(special?670:520);f.knockT=special?.48:.42;
    f.x=clamp(f.x+away*(special?86:64),125,1165);
-   S.shake=Math.max(S.shake,special?22:17);S.flash=Math.max(S.flash,special?.29:.22);
+   S.shake=Math.max(S.shake,victim.enemy?(special?22:17):(special?28:24));
+   S.flash=Math.max(S.flash,victim.enemy?(special?.29:.22):.32);
    S.parryBursts.push({x:victim.x+victim.face*28,y:FLOOR-170,t:0,max:.65,
      damage:counterDamage,hitX:f.x,hitY:FLOOR-278});
    const atlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
@@ -367,7 +373,9 @@ function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stag
    if(!victim.enemy){S.score+=counterDamage*2;S.combo++;}
    else{S.combo=0;}
    // Make the recipient of counter damage explicit in the feedback.
-   say(victim.enemy?'ENEMY PARRY! YOU -'+counterDamage:'PERFECT PARRY! ENEMY -'+counterDamage,.98);
+   const comeback=(!victim.enemy&&missingHealth>=.5);
+   say(victim.enemy?'ENEMY PARRY! YOU -'+counterDamage:
+     (comeback?'REVERSAL PARRY! ENEMY -':'PERFECT PARRY! ENEMY -')+counterDamage,1.2);
    fxSound('hit');
    if(f.hp<=0)finishFight(victim,f);
    else updateHud();
