@@ -1,6 +1,6 @@
 # GLADIATOR — SPARTACUS / THE GLADIUS RENAISSANCE
 
-Version: **New Era v3.0**. One playable version only. The old **「전설의 시작」 classic combat** and its assets are no longer distributed from `public/`.
+Version: **New Era v3.1**. One playable version only. The old **「전설의 시작」 classic combat** and its assets are no longer distributed from `public/`.
 
 ## Play / deployment
 - Git-backed Cloudflare Pages: https://gladiator-arena-git.pages.dev/
@@ -18,8 +18,9 @@ Version: **New Era v3.0**. One playable version only. The old **「전설의 시
 ## Game loop
 - Choose your fighter and opponent, enter the arena; move, attack, guard, dodge and special.
 - Basic strikes randomly alternate among **horizontal slash**, **rising strike** and **forward thrust** (no identical back-to-back move), each with matched body interpolation and rotated/offset class-specific FX.
-- **Land 3 consecutive ordinary hits** within a 3-second chain window; the **4th regular attack input** triggers a short leap followed by a high-speed dash hit that damages and powerfully knocks back the target. Guarded/missed/parried hits do not count. The chain breaks if the attacker is hit or uses a special attack.
-- AUTO takes over after **2 seconds** without manual input.
+- **Land 3 consecutive ordinary hits** within a **3.8-second** chain window; the **4th regular attack input** triggers a short leap followed by a high-speed dash hit that damages and powerfully knocks back the target. Guarded/missed/parried hits do not count. The chain breaks if the attacker is hit or uses a special attack.
+- AUTO takes over after **2 seconds** without manual input; it prioritizes ordinary strikes while building a four-hit combo.
+- Opponent AI v3.1: roughly half the previous attack frequency, lower parry frequency, and a 0.92-second pressure/recovery window after each connected, unguarded player ordinary strike. The rival resumes normal fighting once the pressure expires.
 - Victory/defeat key poses are held and shown on the results screen with dedicated previews.
 - '다시 하기' rematches; after a win '계속 하기' advances; after a defeat 'Ludus로 돌아가기' returns to the title.
 
