@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.0.3</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.1</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -156,9 +156,35 @@ body{min-height:100dvh;overscroll-behavior:none}
  .stage-panel-ending .result-pose-art{width:min(100%,17dvh,136px)}
  .stage-panel-ending .end-actions button{min-width:0}
 }
+
+/* v4.1 · LUDUS progression system */
+#careerHub[hidden],#careerMini[hidden]{display:none}
+#careerHub{position:fixed;inset:0;z-index:55;overflow-y:auto;background:linear-gradient(130deg,#1c110ff5,#422917ee),url('assets/new-era/arena.webp') center/cover;color:#f6e0bf;padding:clamp(12px,3vw,30px)}
+.career-shell{max-width:1080px;margin:auto}.career-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid #b18755;padding-bottom:12px}
+.career-head h1{font:700 clamp(29px,5vw,51px) Georgia,serif;letter-spacing:.1em;color:#f9d094;margin:0}
+.career-head p{margin:0;color:#d4b892}.career-grid{display:grid;grid-template-columns:minmax(230px,1fr) minmax(0,1.65fr);gap:14px;margin-top:14px}
+.career-card{background:linear-gradient(145deg,#302018e9,#160e0de9);border:1px solid #98714b;border-radius:12px;padding:16px}
+.career-card h2{font:700 23px Georgia,serif;color:#f4cb8b;margin:0 0 9px}.career-card h3{color:#ebbe84;margin:8px 0 4px}
+.career-card p{margin:6px 0;color:#d9bda0}
+.career-avatar{width:min(100%,205px);aspect-ratio:1;margin:auto;background-size:500% 200%;background-repeat:no-repeat;background-position:0 0}
+.career-stat{display:flex;justify-content:space-between;border-bottom:1px solid #71543c70;padding:5px 0}
+.career-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.career-option{background:#412b20;color:#f8e2c3;border:1px solid #ac8054;border-radius:8px;padding:11px;text-align:left;min-width:0}
+.career-option strong{display:block;color:#f7ce90}.career-option small{display:block;color:#cbaf91;font-size:11px}
+.career-option:disabled{opacity:.45;cursor:not-allowed}.career-option:not(:disabled):hover{background:#62432e}
+.career-buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.career-buttons button,.career-head button,.career-launch{border:1px solid #f7d299;border-radius:8px;background:linear-gradient(#dfb47a,#986438);color:#21120b;font-weight:850;padding:10px 17px;min-height:41px;cursor:pointer}
+.career-buttons button:disabled{opacity:.45}.career-status{min-height:23px;color:#f3c783;font-weight:750}
+#careerMini{position:fixed;inset:0;z-index:70;background:#100b0aef;display:grid;place-items:center;padding:15px}
+.career-mini-panel{width:min(95vw,650px);background:#2b1c15;border:1px solid #d8a76f;border-radius:12px;padding:28px;text-align:center}
+.career-timing{height:37px;background:#73503b;border-radius:8px;position:relative;margin:25px 0}
+.career-hitzone{position:absolute;inset:0 auto 0 43%;width:14%;background:#ebc66a80;border:2px solid #ffe8a5}
+#careerNeedle{position:absolute;top:-5px;bottom:-5px;width:5px;background:#fff5cb;box-shadow:0 0 12px #ffe7ad}
+@media(max-width:680px){.career-grid{grid-template-columns:1fr}.career-options{grid-template-columns:1fr 1fr}.career-card{padding:12px}}
+@media(max-width:390px){.career-options{grid-template-columns:1fr}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.0.3</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.1</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -176,7 +202,7 @@ body{min-height:100dvh;overscroll-behavior:none}
    <button type="button" class="fighter-preview" data-fighter="retiarius" aria-pressed="false"><span class="preview-art" data-sprite="retiarius" aria-hidden="true"></span><span class="preview-caption">레티아리우스 <small>RETIARIUS</small></span></button>
   </div>
   <div class="selectors"><label>내 클래스<select id="classChoice"><option value="murmillo">무르밀로 · 대형 방패</option><option value="thraex">트라엑스 · 곡검</option><option value="retiarius">레티아리우스 · 삼지창/그물</option></select></label><label>상대 클래스<select id="opponentChoice"><option value="random">자동 매칭</option><option value="murmillo">무르밀로</option><option value="thraex">트라엑스</option><option value="retiarius">레티아리우스</option></select></label></div>
-  <button id="startBtn" class="start">⚔ 투기장 입장</button>
+  <button id="startBtn" class="start">⚔ 아케이드 전투</button><div style="margin:9px"><button id="careerEnter" class="career-launch">🏛 루두스 육성 모드</button></div>
   <p class="small">선택 병과: <span id="classSubtitle">MURMILLO</span> · 3회 연속 적중 후 4타 점프 돌진 · 미조작 2초 후 자동 전투</p>
   <p id="resourceStatus" class="resource-status" aria-live="polite"></p>
  </div>
@@ -476,9 +502,107 @@ function updateCamera(dt){
  CAMERA.y=FLOOR-(FLOOR-H*.5)/CAMERA.zoom;
 }
 function fxSound(type){if(!sounds)return;try{ctxAudio??=new (window.AudioContext||window.webkitAudioContext)();if(ctxAudio.state==='suspended')ctxAudio.resume();const t=ctxAudio.currentTime;const osc=ctxAudio.createOscillator(),gain=ctxAudio.createGain();osc.type=type==='hit'?'sawtooth':'triangle';osc.frequency.setValueAtTime(type==='hit'?170:390,t);osc.frequency.exponentialRampToValueAtTime(type==='hit'?65:180,t+.14);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(type==='hit'?.19:.09,t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain).connect(ctxAudio.destination);osc.start(t);osc.stop(t+.19);}catch(e){sounds=false;}}
+
+const GEAR=[
+ {id:'wood',name:'훈련용 목검',cost:0,atk:0,hp:0,desc:'기본 장비'},
+ {id:'iron',name:'단조 글라디우스',cost:90,atk:5,hp:0,desc:'공격력 +5'},
+ {id:'shield',name:'청동 방패',cost:105,atk:0,hp:24,desc:'최대 체력 +24'},
+ {id:'elite',name:'챔피언 장비',cost:220,atk:9,hp:15,desc:'공격력 +9 · 체력 +15'}
+];
+const CAREER_KEY='gladiator.ludus.v1';
+function readCareer(){
+ try{const v=JSON.parse(localStorage.getItem(CAREER_KEY));if(v&&typeof v.gold==='number'&&Array.isArray(v.roster))return v;}catch(err){}
+ return {gold:260,glory:0,fights:0,wins:0,roster:[],active:0,message:'노예시장에서 첫 검투사를 영입하세요.'};
+}
+let CAREER=readCareer(),MINI=null;
+Object.defineProperty(CAREER,'hero',{get(){return this.roster[this.active]||null;}});
+function saveCareer(){try{localStorage.setItem(CAREER_KEY,JSON.stringify({gold:CAREER.gold,glory:CAREER.glory,fights:CAREER.fights,wins:CAREER.wins,roster:CAREER.roster,active:CAREER.active,message:CAREER.message}));}catch(err){}}
+function careerMessage(t){CAREER.message=t;saveCareer();renderCareer();}
+function enterCareer(){
+ if(S.phase==='fight'||S.phase==='finisher')return;
+ $('#endScreen').hidden=true;$('#startScreen').hidden=true;
+ $('#careerHub').hidden=false;renderCareer();
+}
+function returnToCareer(){
+ S.careerMatch=false;returnToLudus();enterCareer();
+}
+function finishCareerMatch(){
+ const h=CAREER.hero,win=S.resultWin;
+ const reward=win?95+CAREER.fights*20:25+CAREER.fights*5;
+ CAREER.fights++;if(win){CAREER.wins++;CAREER.glory+=16+CAREER.fights*6;}
+ CAREER.gold+=reward;
+ h.injury=Math.min(120,h.injury+Math.max(8,Math.round(S.player.maxHp-S.player.hp)*.62));
+ h.fights++;if(win)h.wins++;
+ CAREER.message=win?'승리! '+reward+' 데나리우스 획득, 명예 상승. 치료와 훈련을 준비하세요.':'패배했습니다. '+reward+' 데나리우스 획득. 루두스에서 회복하세요.';
+ saveCareer();
+}
+function renderCareer(){
+ const h=CAREER.hero;
+ const summary='<div class="career-card"><h2>루두스 현황</h2><div class="career-stat"><span>데나리우스</span><b>'+CAREER.gold+' D</b></div><div class="career-stat"><span>명예</span><b>'+CAREER.glory+'</b></div><div class="career-stat"><span>시합 전적</span><b>'+CAREER.wins+'승 / '+CAREER.fights+'전</b></div><div class="career-stat"><span>소속 검투사</span><b>'+CAREER.roster.length+'명</b></div><p class="career-status">'+CAREER.message+'</p>'+(h?'<div class="career-avatar" style="background-image:url(&quot;'+(CLEANED_CHARACTER_URLS[h.cls]||ASSET[h.cls])+'&quot;)"></div><h3>'+h.name+' · '+DATA[h.cls].name+'</h3><div class="career-stat"><span>체력 / 부상</span><b>'+Math.max(1,DATA[h.cls].hp+h.stats.end*13-h.injury)+' / 부상 '+h.injury+'</b></div>'+Object.entries(h.stats).map(([k,v])=>'<div class="career-stat"><span>'+({str:'근력',agi:'민첩',end:'체력',focus:'집중'}[k])+'</span><b>+'+v+'</b></div>').join('')+'<p>장착: '+GEAR.find(g=>g.id===h.equipped).name+'</p>':'<p>아직 소속 검투사가 없습니다.</p>')+'</div>';
+ const hire=!h?'<div class="career-card"><h2>노예시장 · MERCATUS</h2><p>각기 다른 특징을 지닌 검투사를 구매합니다.</p><div class="career-options">'+[
+ ['murmillo','무르밀로',110,'튼튼한 방패 전사'],
+ ['thraex','트라엑스',120,'민첩한 곡검 전사'],
+ ['retiarius','레티아리우스',130,'긴 사거리의 그물 투사']
+ ].map(([id,n,c,d])=>'<button class="career-option" data-hire="'+id+'" '+(CAREER.gold<c?'disabled':'')+'><strong>'+n+' · '+c+'D</strong><small>'+d+'</small></button>').join('')+'</div></div>':
+ '<div class="career-card"><h2>훈련장 · EXERCITIUM</h2><p>훈련당 12D · 타이밍에 따라 성장 +1~3. 능력치 최대 +10.</p><div class="career-options">'+[
+ ['str','근력 · 목검 타격','공격력 증가'],
+ ['agi','민첩 · 회피 발놀림','이동 속도 증가'],
+ ['end','체력 · 지구력 훈련','최대 체력 증가'],
+ ['focus','집중 · 타격 집중','필살기 공격력 증가']
+ ].map(([id,n,d])=>'<button class="career-option" data-train="'+id+'" '+(CAREER.gold<12||h.stats[id]>=10?'disabled':'')+'><strong>'+n+'</strong><small>'+d+'</small></button>').join('')+'</div><h3>장비 공방 · ARMAMENTARIUM</h3><div class="career-options">'+GEAR.filter(g=>g.id!=='wood').map(g=>'<button class="career-option" data-gear="'+g.id+'" '+(CAREER.gold<g.cost&&!h.inventory.includes(g.id)?'disabled':'')+'><strong>'+g.name+' · '+(h.inventory.includes(g.id)?'보유':g.cost+'D')+'</strong><small>'+g.desc+(h.equipped===g.id?' · 장착 중':'')+'</small></button>').join('')+'</div><div class="career-buttons"><button id="careerHeal" '+(h.injury<=0||CAREER.gold<Math.max(12,Math.ceil(h.injury*.6))?'disabled':'')+'>치료 · '+Math.max(12,Math.ceil(h.injury*.6))+'D</button><button id="careerFight" '+(h.injury>=80?'disabled':'')+'>⚔ 시합 출전 · '+(CAREER.fights+1)+'회차</button></div></div>';
+ $('#careerBody').innerHTML=summary+hire;
+ for(const el of document.querySelectorAll('[data-hire]'))el.onclick=()=>{
+  const cls=el.dataset.hire,cost={murmillo:110,thraex:120,retiarius:130}[cls];
+  if(CAREER.gold<cost)return;
+  CAREER.gold-=cost;CAREER.roster.push({cls,name:DATA[cls].name+' '+(CAREER.roster.length+1),stats:{str:0,agi:0,end:0,focus:0},injury:0,equipped:'wood',inventory:['wood'],fights:0,wins:0});
+  CAREER.active=CAREER.roster.length-1;careerMessage('검투사를 영입했습니다. 훈련과 장비를 준비하세요.');
+ };
+ for(const el of document.querySelectorAll('[data-train]'))el.onclick=()=>startTraining(el.dataset.train);
+ for(const el of document.querySelectorAll('[data-gear]'))el.onclick=()=>{
+  const g=GEAR.find(t=>t.id===el.dataset.gear);
+  if(!h.inventory.includes(g.id)){if(CAREER.gold<g.cost)return;CAREER.gold-=g.cost;h.inventory.push(g.id);}
+  h.equipped=g.id;careerMessage(g.name+' 장착 완료!');
+ };
+ const heal=$('#careerHeal');if(heal)heal.onclick=()=>{
+  const cost=Math.max(12,Math.ceil(h.injury*.6));if(CAREER.gold<cost)return;
+  CAREER.gold-=cost;h.injury=0;careerMessage('의무실에서 치료를 마쳤습니다.');
+ };
+ const fight=$('#careerFight');if(fight)fight.onclick=()=>{
+  $('#classChoice').value=h.cls;$('#opponentChoice').value='random';$('#careerHub').hidden=true;start('career');
+ };
+}
+function startTraining(stat){
+ if(!CAREER.hero||CAREER.gold<12||CAREER.hero.stats[stat]>=10)return;
+ MINI={stat,started:performance.now(),speed:stat==='agi'?1.6:stat==='focus'?1.25:stat==='end'?.85:1.05};
+ $('#careerMiniTitle').textContent=({str:'목검 타격',agi:'발놀림 회피',end:'지구력 호흡',focus:'타격 집중'}[stat]);
+ $('#careerMiniHelp').textContent='움직이는 지시선을 중앙 황금 구간에 맞춰 멈추세요. SPACE 또는 버튼 클릭';
+ $('#careerMini').hidden=false;requestAnimationFrame(animateCareerNeedle);
+}
+function needlePosition(){
+ if(!MINI)return 0;const v=(performance.now()-MINI.started)/1000*MINI.speed;
+ return (Math.sin(v*Math.PI*1.8)+1)*.5;
+}
+function animateCareerNeedle(){
+ if(!MINI)return;$('#careerNeedle').style.left='calc('+Math.round(needlePosition()*100)+'% - 3px)';
+ requestAnimationFrame(animateCareerNeedle);
+}
+function completeTraining(){
+ if(!MINI)return;
+ const v=needlePosition(),gain=Math.abs(v-.5)<.075?3:Math.abs(v-.5)<.2?2:1;
+ const stat=MINI.stat;MINI=null;$('#careerMini').hidden=true;
+ CAREER.gold-=12;const before=CAREER.hero.stats[stat];
+ CAREER.hero.stats[stat]=Math.min(10,before+gain);
+ careerMessage('훈련 성공! '+({str:'근력',agi:'민첩',end:'체력',focus:'집중'}[stat])+' +'+(CAREER.hero.stats[stat]-before));
+}
+$('#careerEnter').onclick=enterCareer;
+$('#careerExit').onclick=()=>{if(MINI)return;$('#careerHub').hidden=true;returnToLudus();};
+$('#careerHit').onclick=completeTraining;
+$('#careerCancel').onclick=()=>{MINI=null;$('#careerMini').hidden=true;};
+window.addEventListener('keydown',e=>{if(MINI&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
 function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,footworkSeed:enemy?1.45:0.38};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 function start(mode='new'){
+ const careerMatch=mode==='career';
  if(mode==='new'){S.round=1;S.totalScore=0;}
  if(mode==='continue'){S.totalScore+=S.score;S.round++;}
  const selected=$('#classChoice').value;
@@ -487,10 +611,17 @@ function start(mode='new'){
  S.phase='fight';S.paused=false;S.time=90;S.score=0;S.combo=0;S.notice='PUGNA!';S.noticeT=1.5;S.events=[];S.sparks=[];S.parryBursts=[];S.keys.clear();S.shake=0;S.flash=0;S.slow=0;S.resultAnim=0;S.resultApplied=false;
  S.autoPlaying=false;S.lastManualInput=clock;
  S.player=fighter(selected,335,false);S.enemy=fighter(rival,940,true);CAMERA.initialized=false;
+ if(careerMatch&&CAREER.hero){
+  const t=CAREER.hero.stats;S.round=CAREER.fights+1;
+  S.player.cfg={...S.player.cfg,atk:S.player.cfg.atk+t.str*2,move:S.player.cfg.move+t.agi*12,sp:S.player.cfg.sp+t.focus*3};
+  S.player.maxHp+=t.end*13;S.player.hp=Math.max(1,S.player.maxHp-CAREER.hero.injury);
+  const item=GEAR.find(g=>g.id===CAREER.hero.equipped);
+  if(item){S.player.cfg.atk+=item.atk;S.player.maxHp+=item.hp;S.player.hp+=item.hp;}
+ }
  // Later rounds slightly tougher without increasing collision box or sprite scale.
  const level=Math.min(S.round-1,8);
- S.enemy.hp=Math.round(S.enemy.hp*(1+level*.07));S.enemy.maxHp=S.enemy.hp;
- S.enemy.cfg={...S.enemy.cfg,atk:Math.round(S.enemy.cfg.atk*(1+level*.035)),move:S.enemy.cfg.move*(1+level*.015)};
+ S.enemy.hp=Math.round(S.enemy.hp*(1+level*.07+(careerMatch?CAREER.fights*.12:0)));S.enemy.maxHp=S.enemy.hp;
+ S.enemy.cfg={...S.enemy.cfg,atk:Math.round(S.enemy.cfg.atk*(1+level*.035+(careerMatch?CAREER.fights*.045:0))),move:S.enemy.cfg.move*(1+level*.015)};S.careerMatch=careerMatch;
  $('#startScreen').hidden=true;$('#endScreen').hidden=true;$('#pauseBtn').textContent='Ⅱ';updateHud();fxSound('start');
 }
 function markManualInput(){
@@ -901,6 +1032,7 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  }
  updateHud();}
 function showEnd(){
+ if(S.careerMatch&&CAREER.hero)finishCareerMatch();
  const win=S.resultApplied?S.resultWin:(S.player.hp>S.enemy.hp||(S.enemy.dead&&!S.player.dead));
  S.lastResultWin=win;S.autoPlaying=false;S.keys.clear();
  const victor=win?S.player:S.enemy,loser=win?S.enemy:S.player;
@@ -918,7 +1050,7 @@ function showEnd(){
  $('#endReason').textContent=win?`${S.round}라운드 승리! 다음 검투사와 겨루거나 이번 시합을 다시 도전하세요.`:S.player.dead?'체력이 모두 소진되었습니다. 다시 도전하거나 Ludus로 돌아갈 수 있습니다.':'시간 종료 — 남은 체력으로 결과가 결정되었습니다.';
  $('#endStats').textContent=`ROUND ${S.round} · 획득 점수 ${S.score} · 총점 ${S.totalScore+S.score} · 남은 시간 ${Math.max(0,Math.ceil(S.time))}초`;
  $('#againBtn').textContent='다시 하기';
- $('#continueBtn').textContent=win?'계속 하기':'Ludus로 돌아가기';
+ $('#continueBtn').textContent=S.careerMatch?'루두스로 돌아가기':win?'계속 하기':'Ludus로 돌아가기';
  $('#continueBtn').classList.toggle('ludus',!win);
 }
 function updateHud(){const p=S.player,e=S.enemy;if(!p||!e)return;for(const [f,pre] of [[p,'p'],[e,'e']]){const h=$('#'+pre+'Hp'),st=$('#'+pre+'St');h.style.width=(f.hp/f.maxHp*100).toFixed(1)+'%';st.style.width=f.st.toFixed(1)+'%';$('#'+pre+'Value').textContent=Math.ceil(f.hp)+' / '+f.maxHp;}$('#pName').textContent=p.cfg.name;$('#eName').textContent=e.cfg.name;$('#clock').textContent=Math.max(0,Math.ceil(S.time));$('#roundLabel').textContent=`ROUND ${S.round}`;$('#cooldown').textContent=p.cd>0?`필살기 ${p.cd.toFixed(1)}초`:'필살기 준비 완료';$('#autoState').textContent=S.phase!=='fight'?'AUTO 대기':!S.autoplayEnabled?'AUTO OFF':S.autoPlaying?'● AUTO 전투 중 · 조작하면 해제':`AUTO ${Math.max(1,Math.ceil(AUTO_IDLE_SECONDS-(clock-S.lastManualInput)))}초 후`;$('#autoState').classList.toggle('active',S.autoPlaying);$('#combatNotice').textContent=S.noticeT>0?S.notice:'';}
@@ -1142,7 +1274,7 @@ for(const b of document.querySelectorAll('[data-key]')){const k=b.dataset.key,ho
    if(k==='guard'&&S.phase==='fight'&&!S.paused)beginGuard(S.player,.3);
   }else inputAct(k);});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{S.keys.delete(k);if(S.phase==='fight')markManualInput();});}
 function togglePause(){if(S.phase!=='fight')return;S.paused=!S.paused;if(!S.paused){S.lastManualInput=clock;S.autoPlaying=false;}$('#pauseBtn').textContent=S.paused?'▶':'Ⅱ';say(S.paused?'PAUSED':'RESUME',.8);updateHud();}
-$('#startBtn').onclick=()=>start('new');$('#againBtn').onclick=()=>start('retry');$('#continueBtn').onclick=()=>S.lastResultWin?start('continue'):returnToLudus();$('#pauseBtn').onclick=togglePause;$('#autoToggle').onclick=()=>{S.autoplayEnabled=!S.autoplayEnabled;markManualInput();S.autoPlaying=false;$('#autoToggle').textContent=S.autoplayEnabled?'AUTO ON':'AUTO OFF';updateHud();};$('#fxToggle').onclick=()=>{S.fx=!S.fx;$('#fxToggle').textContent=S.fx?'이펙트 ON':'이펙트 OFF';};$('#soundToggle').onclick=()=>{sounds=!sounds;$('#soundToggle').textContent=sounds?'사운드 ON':'사운드 OFF';};
+$('#startBtn').onclick=()=>start('new');$('#againBtn').onclick=()=>S.careerMatch?returnToCareer():start('retry');$('#continueBtn').onclick=()=>S.careerMatch?returnToCareer():S.lastResultWin?start('continue'):returnToLudus();$('#pauseBtn').onclick=togglePause;$('#autoToggle').onclick=()=>{S.autoplayEnabled=!S.autoplayEnabled;markManualInput();S.autoPlaying=false;$('#autoToggle').textContent=S.autoplayEnabled?'AUTO ON':'AUTO OFF';updateHud();};$('#fxToggle').onclick=()=>{S.fx=!S.fx;$('#fxToggle').textContent=S.fx?'이펙트 ON':'이펙트 OFF';};$('#soundToggle').onclick=()=>{sounds=!sounds;$('#soundToggle').textContent=sounds?'사운드 ON':'사운드 OFF';};
 function refreshFighterPreviews(){
   const selected=$('#classChoice').value;
   $('#classSubtitle').textContent=DATA[selected].eng;
@@ -1155,4 +1287,5 @@ $('#classSubtitle').textContent=DATA[$('#classChoice').value].eng;
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-</body></html>
+<div id="careerHub" hidden><div class="career-shell"><div class="career-head"><div><h1>LUDUS MAGNUS</h1><p>노예 시장에서 시작하는 검투사의 전설</p></div><button id="careerExit">아케이드로</button></div><div id="careerBody" class="career-grid"></div></div></div>
+<div id="careerMini" hidden role="dialog" aria-modal="true" aria-label="훈련"><div class="career-mini-panel"><h2 id="careerMiniTitle"></h2><p id="careerMiniHelp"></p><div class="career-timing"><div class="career-hitzone"></div><div id="careerNeedle"></div></div><div class="career-buttons" style="justify-content:center"><button id="careerHit">지금! (SPACE)</button><button id="careerCancel">취소</button></div></div></div></body></html>
