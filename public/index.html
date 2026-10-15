@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.1.5</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.2</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -241,7 +241,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 @media(prefers-reduced-motion:reduce){.career-training-result{animation:none}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.1.5</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.2</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -569,6 +569,10 @@ const GEAR=[
  {id:'elite',slot:'armor',name:'챔피언 갑옷',cost:220,atk:9,hp:15,desc:'공격력 +9 · 체력 +15'}
 ];
 const CAREER_KEY='gladiator.ludus.v1';
+const TRAIN_LEVELS=[['입문',42,18,.48],['초급',36,15,.60],['숙련',30,12,.73],['상급',24,10,.88],['정예',19,8,1.04],['달인',15,6,1.20],['전설',12,5,1.35]];
+function trainingDifficulty(h,stat){h.trainingAttempts=h.trainingAttempts||{};const attempts=h.trainingAttempts[stat]||0;const [name,width,perfect,speed]=TRAIN_LEVELS[Math.min(attempts,6)];return {name,width,perfect,speed,attempts};}
+const CAREER_RIVALS=[['노예 검투사',0,0,0],['초급 투사',.07,.05,.02],['숙련 검투사',.15,.10,.04],['투기장 강자',.24,.16,.07],['정예 챔피언',.34,.23,.10],['전설의 검투사',.46,.30,.13]];
+function careerRival(fights){const [name,hp,atk,move]=CAREER_RIVALS[Math.min(Math.floor(fights/2),5)];return {name,hp,atk,move};}
 function readCareer(){
  try{const v=JSON.parse(localStorage.getItem(CAREER_KEY));if(v&&typeof v.gold==='number'&&Array.isArray(v.roster))return v;}catch(err){}
  return {gold:260,glory:0,fights:0,wins:0,roster:[],active:0,message:'노예시장에서 첫 검투사를 영입하세요.'};
@@ -629,7 +633,7 @@ function renderCareer(){
  ['thraex','트라엑스',120,'민첩한 곡검 전사'],
  ['retiarius','레티아리우스',130,'긴 사거리의 그물 투사']
  ].map(([id,n,c,d])=>'<button class="career-option" data-hire="'+id+'" '+(CAREER.gold<c?'disabled':'')+'><strong>'+n+' · '+c+'D</strong><small>'+d+'</small></button>').join('')+'</div></div>':
- '<div class="career-card"><h2>훈련장 · EXERCITIUM</h2><p>훈련당 12D · 타이밍에 따라 성장 +1~3. 능력치 최대 +10.</p><div class="career-options">'+[
+ '<div class="career-card"><h2>훈련장 · EXERCITIUM</h2><p>훈련당 12D · 처음엔 느리고 넓게, 반복할수록 빠르고 좁게 · 최대 +10.</p><div class="career-options">'+[
  ['str','근력 · 목검 타격','공격력 증가'],
  ['agi','민첩 · 회피 발놀림','이동 속도 증가'],
  ['end','체력 · 지구력 훈련','최대 체력 증가'],
@@ -662,14 +666,16 @@ function renderCareer(){
 }
 function startTraining(stat){
  if(!CAREER.hero||CAREER.gold<12||CAREER.hero.stats[stat]>=10)return;
- MINI={stat,started:performance.now(),speed:stat==='agi'?1.6:stat==='focus'?1.25:stat==='end'?.85:1.05};
+ const d=trainingDifficulty(CAREER.hero,stat);
+ MINI={stat,started:performance.now(),speed:d.speed*({str:1,agi:1.10,end:.90,focus:1.03}[stat]),lower:(100-d.width)/200,upper:(100+d.width)/200,perfect:d.perfect/200,level:d.name,attempts:d.attempts};
+ const zone=$('#careerMini .career-hitzone');zone.style.left=MINI.lower*100+'%';zone.style.width=d.width+'%';
  $('#careerMiniTitle').textContent=({str:'목검 타격',agi:'발놀림 회피',end:'지구력 호흡',focus:'타격 집중'}[stat]);
  $('#careerMiniHelp').textContent=({
  str:'목검이 허수아비에 닿는 순간! 황금 구간에서 공격하세요.',
  agi:'상대의 발을 피해 리듬을 잡으세요. 황금 구간에서 회피!',
  end:'호흡을 일정하게 유지하세요. 황금 구간에 맞춰 버티기!',
  focus:'창끝의 조준이 일치하면 집중하세요. 황금 구간을 노리세요.'
- }[stat])+' · 버튼 터치 / SPACE';
+ }[stat])+' · '+d.name+' ('+(d.attempts+1)+'회차) · 버튼 터치 / SPACE';
  $('#careerHit').textContent=({str:'⚔ 타격!',agi:'↶ 회피!',end:'◆ 버티기!',focus:'✧ 집중!'}[stat]);
  $('#careerTrainingResult').hidden=true;$('#careerHit').hidden=false;$('#careerCancel').textContent='취소';
  $('#careerMini').hidden=false;requestAnimationFrame(animateCareerNeedle);
@@ -679,15 +685,17 @@ function needlePosition(){
  return (Math.sin(v*Math.PI*1.8)+1)*.5;
 }
 function animateCareerNeedle(){
- if(!MINI||MINI.finished)return;$('#careerNeedle').style.left='calc('+Math.round(needlePosition()*100)+'% - 3px)';
+ if(!MINI||MINI.finished)return;$('#careerNeedle').style.left='calc('+(needlePosition()*100).toFixed(2)+'% - 2.5px)';
  requestAnimationFrame(animateCareerNeedle);
 }
 function completeTraining(){
  if(!MINI||MINI.finished)return;
  const v=needlePosition(),difference=Math.abs(v-.5);
- // Outside the wide success area is a miss: training cost remains, no stat gain.
- const gain=difference<.075?3:difference<.20?2:0;
+ const gain=v>=MINI.lower&&v<=MINI.upper?(difference<=MINI.perfect?3:2):0;
  const stat=MINI.stat;MINI.finished=true;
+ CAREER.hero.trainingAttempts=CAREER.hero.trainingAttempts||{};
+ CAREER.hero.trainingAttempts[stat]=(CAREER.hero.trainingAttempts[stat]||0)+1;
+ $('#careerNeedle').style.left='calc('+(v*100).toFixed(2)+'% - 2.5px)';
  CAREER.gold-=12;
  const before=CAREER.hero.stats[stat];
  CAREER.hero.stats[stat]=Math.min(10,before+gain);
@@ -697,7 +705,7 @@ function completeTraining(){
  const name={str:'근력',agi:'민첩',end:'체력',focus:'집중'}[stat];
  const result=$('#careerTrainingResult');
  result.className='career-training-result '+rank;
- result.textContent=label+'  ·  '+name+' +'+applied+(gain===0?' · 훈련비 12D 소모':'');
+ result.textContent=label+'  ·  '+name+' +'+applied+' · '+MINI.level+' '+(MINI.attempts+1)+'회차'+(gain===0?' · 황금 구간 밖':'');
  result.hidden=false;
  $('#careerHit').hidden=true;
  $('#careerCancel').textContent='루두스로 돌아가기';
@@ -736,8 +744,9 @@ function start(mode='new'){
  }
  // Later rounds slightly tougher without increasing collision box or sprite scale.
  const level=Math.min(S.round-1,8);
- S.enemy.hp=Math.round(S.enemy.hp*(1+level*.07+(careerMatch?CAREER.fights*.12:0)));S.enemy.maxHp=S.enemy.hp;
- S.enemy.cfg={...S.enemy.cfg,atk:Math.round(S.enemy.cfg.atk*(1+level*.035+(careerMatch?CAREER.fights*.045:0))),move:S.enemy.cfg.move*(1+level*.015)};S.careerMatch=careerMatch;
+ const rivalTier=careerMatch?careerRival(CAREER.fights):null;
+ S.enemy.hp=Math.round(S.enemy.hp*(1+level*.07+(rivalTier?rivalTier.hp:0)));S.enemy.maxHp=S.enemy.hp;
+ S.enemy.cfg={...S.enemy.cfg,atk:Math.round(S.enemy.cfg.atk*(1+level*.035+(rivalTier?rivalTier.atk:0))),move:S.enemy.cfg.move*(1+level*.015+(rivalTier?rivalTier.move:0))};S.careerMatch=careerMatch;
  $('#startScreen').hidden=true;$('#endScreen').hidden=true;$('#pauseBtn').textContent='Ⅱ';updateHud();fxSound('start');
 }
 function markManualInput(){
