@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v2.9.7</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v2.9.8</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -84,7 +84,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 @media(prefers-reduced-motion:reduce){.result-pose-art{animation:none!important}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.9.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.9.8</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -133,8 +133,8 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 2초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=2.9.7-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=2.9.7-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=2.9.7-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=2.9.7-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=2.9.7-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=2.9.7-g753935a6", "bg": "assets/new-era/arena.webp?v=2.9.7-g753935a6"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.9.7 (expanded left/right parry range)
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=2.9.8-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=2.9.8-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=2.9.8-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=2.9.8-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=2.9.8-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=2.9.8-g753935a6", "bg": "assets/new-era/arena.webp?v=2.9.8-g753935a6"};</script>
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.9.8 (correct parry counter damage, iframe protection)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -156,7 +156,8 @@ const DATA={
 const FRAMES={idle:0,walk:1,attack:2,special:3,guard:4,dodge:5,hit:6,net:7,finisher:8,defeat:9};
 const AUTO_IDLE_SECONDS=2;
 const PARRY_WINDOW=.50, PARRY_GUARD_HOLD=.43;
-const PARRY_SIDE_BONUS=170, PARRY_MIN_DISTANCE=495; // Wide left/right parry zone; normal damage reach stays untouched.
+const PARRY_SIDE_BONUS=170, PARRY_MIN_DISTANCE=495; // Wide left/right parry zone.
+const PARRY_COUNTER_IFRAMES=.72; // After parry, defender cannot take damage during recoil.
 
  // Shadow matte cleanup runs once when a character sprite atlas finishes loading.
  // Keep solid boots, weapons and anti-aliased silhouette pixels near solid art.
@@ -317,6 +318,16 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false){
   const reachOffset=(attacker.face||1)*(kind==='retiarius'?35:kind==='thraex'?28:22);
   addFx(frame,bodyX+reachOffset,bodyY,{w,h,flip:guarded?false:flip,alpha:1,duration,atlas,owner:attacker,offsetX:reachOffset});
 }
+function finishFight(winner,loser){
+ if(loser.hp>0||S.phase!=='fight')return false;
+ loser.hp=0;loser.dead=true;winner.dead=false;
+ S.resultWin=!winner.enemy;S.resultApplied=true;S.resultAnim=0;
+ setAction(loser,'defeat',2.2);setAction(winner,'finisher',2.2);
+ S.phase='finisher';S.slow=2.05;
+ say(winner.enemy?'DEFEAT':'VICTORIA!',1.7);
+ S.shake=Math.max(S.shake,22);emitAttackFx(winner,loser,true,false,true);
+ return true;
+}
 function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stagger>0||f.attackCD>0)return;
  const cost=special?36:17;if(f.st<cost){if(!f.enemy)say('STAMINA LOW',.45);return;}if(special&&f.cd>0)return;
  f.st-=cost;f.attackCD=special?.65:.43;if(special)f.cd=6;
@@ -327,26 +338,40 @@ function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stag
  const wideParry=victim.guard&&victim.st>0&&victim.parry>0&&victim.dodge<=0&&dist<=parryDistance;
  if((dist>reach&&!wideParry)||victim.dodge>0){
   if(!f.enemy)say(dist>reach?'OUT OF RANGE':'DODGE!',.5);
-  // Even a whiffed attack produces a trail around the attacking character.
   emitAttackFx(f,victim,special,false,false);
   return;
  }
+ // This was missing: after a successful parry, the defender must NOT receive a follow-up hit.
+ if(victim.invuln>0){emitAttackFx(f,victim,special,false,false);return;}
  let dmg=special?f.cfg.sp:f.cfg.atk;
  if(special&&f.cls==='thraex')dmg+=8;
  if(wideParry){
-   // Perfect parry absorbs the attack and throws the attacker back.
-   victim.parry=0;victim.st=clamp(victim.st-(special?12:7),0,100);
+   // Damage flows from the defender's counterstrike into the ATTACKER, never vice versa.
+   // NPC counters are intentionally softer; player parries should feel rewarding.
+   const counterDamage=Math.round(victim.cfg.atk*(victim.enemy?.72:1.22)+(special?7:5));
+   const defenderHP=victim.hp;
+   victim.parry=0;victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
+   victim.st=clamp(victim.st-(special?12:7),0,100);
+   f.hp=Math.max(0,f.hp-counterDamage);
    const away=Math.sign(f.x-victim.x)||-f.face;
    f.stagger=special?.76:.6;f.attackCD=Math.max(f.attackCD,special?.85:.72);
    setAction(f,'hit',f.stagger);
    f.knockVX=away*(special?670:520);f.knockT=special?.48:.42;
    f.x=clamp(f.x+away*(special?86:64),125,1165);
    S.shake=Math.max(S.shake,special?22:17);S.flash=Math.max(S.flash,special?.29:.22);
-   S.parryBursts.push({x:victim.x+victim.face*28,y:FLOOR-170,t:0,max:.56});
+   S.parryBursts.push({x:victim.x+victim.face*28,y:FLOOR-170,t:0,max:.65,
+     damage:counterDamage,hitX:f.x,hitY:FLOOR-278});
    const atlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
    addFx(7,victim.x+victim.face*28,FLOOR-FIGHTER_DRAW_SIZE*.53,
-      {w:630,h:630,atlas,flip:victim.face<0,owner:victim,offsetX:victim.face*28,duration:.23});
-   say(victim.enemy?'PARRIED!':'PERFECT PARRY!',.85);fxSound('hit');return;
+       {w:630,h:630,atlas,flip:victim.face<0,owner:victim,offsetX:victim.face*28,duration:.23});
+   if(!victim.enemy){S.score+=counterDamage*2;S.combo++;}
+   else{S.combo=0;}
+   // Make the recipient of counter damage explicit in the feedback.
+   say(victim.enemy?'ENEMY PARRY! YOU -'+counterDamage:'PERFECT PARRY! ENEMY -'+counterDamage,.98);
+   fxSound('hit');
+   if(f.hp<=0)finishFight(victim,f);
+   else updateHud();
+   return;
  }
  if(victim.guard&&victim.st>0){dmg*=special?.45:.16;victim.st=clamp(victim.st-(special?37:18),0,100);if(victim.st===0){victim.guard=false;victim.stagger=.44;say('GUARD BREAK!');}else if(!f.enemy)say('GUARDED',.42);}
  else{victim.stagger=special?.48:.24;setAction(victim,'hit',.31);}
@@ -356,7 +381,7 @@ function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stag
  victim.hp=Math.max(0,victim.hp-dmg);victim.x=clamp(victim.x+f.face*(special?69:26),125,1165);S.shake=Math.max(S.shake,special?14:6);S.flash=Math.max(S.flash,special?.18:.09);
  emitAttackFx(f,victim,special,victim.guard&&victim.st>0,false);
  if(!f.enemy){S.score+=Math.round(dmg);S.combo++;}else S.combo=0;
- fxSound('hit');if(victim.hp<=0){victim.dead=true;S.resultWin=!f.enemy;S.resultApplied=true;S.resultAnim=0;setAction(victim,'defeat',2.2);setAction(f,'finisher',2.2);S.phase='finisher';S.slow=2.05;say(f.enemy?'DEFEAT':'VICTORIA!',1.7);S.shake=22;emitAttackFx(f,victim,true,false,true);}
+ fxSound('hit');if(victim.hp<=0)finishFight(f,victim);
 }
 function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.dodge=.34;f.invuln=.3;setAction(f,'dodge',.34);f.x=clamp(f.x+(f.enemy?-1:-1)*f.face*84,120,1160);const p=weaponPoint(f,'dodge');addFx(1,p.x,p.y,{w:148,h:92,flip:f.face<0,duration:.11});}
 function inputAct(action){if(S.phase!=='fight'||S.paused)return;if(action==='attack')attack(S.player,S.enemy);else if(action==='special')attack(S.player,S.enemy,true);else if(action==='dodge')dodge(S.player);else if(action==='guard'){S.keys.add('guard');}}
@@ -479,7 +504,15 @@ function drawParryBursts(){
      ctx.beginPath();ctx.moveTo(Math.cos(angle)*r,Math.sin(angle)*r);
      ctx.lineTo(Math.cos(angle)*outer,Math.sin(angle)*outer);ctx.stroke();
    }
-   ctx.restore();
+   if(b.damage){
+   // A floating, attacker-side damage number disambiguates who lost HP.
+   ctx.globalAlpha=Math.min(1,fade*2);
+   ctx.font='900 31px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.lineWidth=6;ctx.strokeStyle='#231309';ctx.fillStyle='#fff0be';
+   const tx=b.hitX-b.x,ty=b.hitY-b.y-44*t;
+   ctx.strokeText('-'+b.damage,tx,ty);ctx.fillText('-'+b.damage,tx,ty);
+  }
+  ctx.restore();
  }
 }
 function drawEffects(){
