@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v3.6</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v3.6.1</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -91,7 +91,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 @media(prefers-reduced-motion:reduce){.result-banner{animation:none}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 3.6</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 3.6.1</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -141,8 +141,8 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 2초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=3.6-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=3.6-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=3.6-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=3.6-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=3.6-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=3.6-g753935a6", "bg": "assets/new-era/arena.webp?v=3.6-g753935a6"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.6 (cinematic painted victory defeat and combat visual effects)
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=3.6.1-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=3.6.1-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=3.6.1-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=3.6.1-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=3.6.1-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=3.6.1-g753935a6", "bg": "assets/new-era/arena.webp?v=3.6.1-g753935a6"};</script>
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.6.1 (character-proportional cinematic FX sizing)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -156,7 +156,15 @@ const CINEMATIC_ASSETS={
  dash_trail:'assets/new-era/cinematic/dash_trail.webp?v=3.6',
  special_aura:'assets/new-era/cinematic/special_aura.webp?v=3.6'
 };
-const CINEMATIC_IMG={};
+// Character-sized illustration tuning. Keep result screen emblems full-size.
+ // Image art stays at its source resolution; ONLY world-space draw dimensions shrink.
+ const CINEMATIC_FX_SCALE={
+  hit_slash:.60,      // regular 535px sweep -> 321px, comparable to a 348px fighter
+  parry_burst:.62,    // perfect parry 635px -> 394px
+  dash_trail:.58,     // fourth-hit rush 1030px -> 597px horizontal trail
+  special_aura:.63    // specials 715px -> 450px; finisher aura -> 555px
+ };
+ const CINEMATIC_IMG={};
 for(const [key,url] of Object.entries(CINEMATIC_ASSETS)){
  const art=new Image();art.onerror=()=>console.warn('VFX art failed:',key);
  art.src=url;CINEMATIC_IMG[key]=art;
@@ -903,7 +911,9 @@ function drawIllustratedEffect(key,x,y,w,h,alpha=1,flip=false,rotation=0){
  ctx.save();ctx.translate(x,y);ctx.rotate(rotation);
  if(flip)ctx.scale(-1,1);
  ctx.globalAlpha=clamp(alpha,0,1);
- ctx.drawImage(img,-w/2,-h/2,w,h);
+ const size=CINEMATIC_FX_SCALE[key]??1;
+ const dw=w*size,dh=h*size;
+ ctx.drawImage(img,-dw/2,-dh/2,dw,dh);
  ctx.restore();return true;
 }
 function drawResultFx(){
@@ -953,8 +963,10 @@ function drawEffects(){
     v.alpha*fade,v.flip,v.rotation))continue;
   // Existing high-quality atlas art is an emergency fallback for missing WebP.
   ctx.save();ctx.translate(cx,cy);ctx.rotate(v.rotation);
-  atlasFrame(IMG[v.atlas]||IMG.fx,v.frame,-v.w/2,-v.h/2,
-    v.w,v.h,v.flip,v.alpha*fade);
+  const fallbackScale=CINEMATIC_FX_SCALE[v.art]??1;
+  const fw=v.w*fallbackScale,fh=v.h*fallbackScale;
+  atlasFrame(IMG[v.atlas]||IMG.fx,v.frame,-fw/2,-fh/2,
+    fw,fh,v.flip,v.alpha*fade);
   ctx.restore();
  }
 }
