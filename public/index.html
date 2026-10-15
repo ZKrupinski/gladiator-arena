@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · NEW ERA — 3D풍 스프라이트 전투 프로토타입 v2.5</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v2.9</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -30,13 +30,96 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 
 @media(pointer:coarse) and (orientation:landscape){.controls{bottom:8px;left:12px;right:12px}.control{width:clamp(54px,8.1vh,78px);height:clamp(54px,8.1vh,78px)}.control.attack{width:clamp(66px,10vh,91px);height:clamp(66px,10vh,91px)}.control-bank{gap:7px}}
 @media(max-width:390px){.controls{left:5px;right:5px;gap:5px}.control-bank{gap:3px}.control{width:clamp(44px,12.4vw,50px);height:clamp(44px,12.4vw,50px)}.control.attack{width:clamp(50px,14vw,57px);height:clamp(50px,14vw,57px)}.control-label{font-size:8px}}
+
+
+/* NEW ERA v2.9 · Layout-safe title and frame-accurate result display */
+.arena-wrap:has(#startScreen:not([hidden])){min-height:670px;background:#1a120d url('assets/new-era/arena.webp') center / cover no-repeat}
+.arena-wrap:has(#startScreen:not([hidden])) canvas{visibility:hidden}
+.overlay-title{background:radial-gradient(ellipse at 50% 35%,#2d1a15d9 0%,#110c0af2 82%);padding:12px}
+.stage-panel-title{width:min(100%,800px);max-width:800px;min-width:0;max-height:calc(100% - 8px);overflow-y:auto;overflow-x:hidden;padding:clamp(14px,2.5vw,29px);border:1px solid #ab7d48;box-shadow:0 0 0 5px #251810c7,0 22px 65px #000b}
+.title-lockup{max-width:100%;margin:auto;display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}
+.title-emblem{color:#cda46a;font:700 12px/1.1 Georgia,serif;letter-spacing:1em;margin:8px 0 0;padding-left:1em;white-space:nowrap}.title-emblem span{font-size:19px;letter-spacing:0;padding:0 9px}
+.stage-panel .game-logo{display:block;width:100%;max-width:100%;margin:7px 0 3px;padding:0 7px;text-align:center;font:700 clamp(30px,6.3vw,66px)/1.06 Georgia,'Times New Roman',serif;letter-spacing:.045em;white-space:nowrap;color:#ffddad;text-shadow:0 2px 0 #6b3b25,0 5px 16px #000a;overflow:visible}
+.game-logo span{display:inline-block;max-width:100%}
+.logo-subline{font:700 clamp(9px,1.6vw,12px)/1.35 Georgia,serif;color:#dfb87f;letter-spacing:clamp(.03em,.25vw,.19em);white-space:normal}
+.stage-panel .title-intro{font-size:12px;margin:14px auto 12px;line-height:1.5}
+.fighter-previews{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:10px 0 12px;width:100%}
+.fighter-preview{min-width:0;position:relative;overflow:hidden;border-radius:9px;border:1px solid #6e503d;background:radial-gradient(circle at 50% 60%,#5f422e 0%,#211714 78%);color:#f0d0a3;padding:6px 5px 9px;display:flex;align-items:center;flex-direction:column;gap:3px}
+.fighter-preview:hover,.fighter-preview.active{border-color:#f0b975;box-shadow:inset 0 0 0 1px #edc78b,0 0 13px #c88b4755}
+.preview-art{display:block;width:100%;max-width:138px;aspect-ratio:1;background-size:500% 200%;background-position:0 0;background-repeat:no-repeat}
+.preview-caption{font-size:12px;font-weight:800;white-space:nowrap;max-width:100%}.preview-caption small{display:block;color:#b6987f;font:700 9px/1.3 Georgia,serif;letter-spacing:.09em}
+.stage-panel-title .selectors{margin:11px 0 13px;gap:12px}.stage-panel-title .selectors select{padding:9px;margin-top:3px}
+.stage-panel-title .start{min-height:45px;padding:10px 20px}.stage-panel-title .small{margin:8px auto 0;font-size:10px}
+.resource-status{margin:1px auto!important;min-height:0;color:#f0a289!important;font-size:11px!important}
+.overlay-ending{background:linear-gradient(130deg,#190e0eea,#25140ee0,#190f0ded);padding:10px}
+.stage-panel-ending{width:min(96%,700px);min-width:0;max-width:700px;max-height:calc(100% - 8px);overflow-y:auto;padding:clamp(13px,2.3vw,24px)}
+.stage-panel-ending h2{margin:3px 0 5px;font-size:clamp(34px,7vw,62px)}
+.result-poses{display:grid;grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr);align-items:center;gap:5px;margin:2px auto 9px}
+.result-versus{color:#cf9452;font:700 25px Georgia,serif}
+.result-pose-card{display:flex;flex-direction:column;align-items:center;min-width:0}
+.result-pose-art{width:min(100%,185px);aspect-ratio:1;background-repeat:no-repeat;background-position:75% 100%;background-size:500% 200%;background-color:transparent}
+.defeated .result-pose-art{background-position:100% 100%}
+.victor .result-pose-art{animation:victorArrive .62s cubic-bezier(.14,.88,.3,1) both}
+.defeated .result-pose-art{animation:defeatedFall .66s ease-out both}
+.result-pose-card>span{font:800 12px/1.3 system-ui,sans-serif;color:#f1d3a5}
+.result-pose-card small{font:700 9px Georgia,serif;letter-spacing:.11em;color:#ae9171}
+.stage-panel-ending p{margin:8px auto;font-size:12px;line-height:1.5}
+.stage-panel-ending .end-actions{margin:14px auto 2px}
+@keyframes victorArrive{0%{translate:0 30px}55%{translate:0 -9px}100%{translate:0 0}}
+@keyframes defeatedFall{0%{translate:0 -24px;rotate:-6deg}65%{translate:0 11px;rotate:3deg}100%{translate:0 0;rotate:0deg}}
+@media(max-width:720px){
+ .arena-wrap:has(.overlay:not([hidden])){min-height:560px}
+ .stage-panel-title{padding:11px 10px;max-height:calc(100% - 8px)}
+ .stage-panel .game-logo{font-size:clamp(26px,8.5vw,48px);letter-spacing:.018em}
+ .title-emblem{margin-top:3px}.title-intro{display:none}
+ .fighter-previews{gap:5px;margin:8px 0}
+ .preview-art{max-width:85px}.preview-caption{font-size:10px}.preview-caption small{font-size:7px}
+ .stage-panel-title .selectors{gap:5px;margin:7px 0}.stage-panel-title .selectors label{font-size:10px;min-width:120px}
+ .stage-panel-title .selectors select{font-size:11px;padding:7px}
+ .stage-panel-title .start{min-height:39px}
+ .stage-panel-ending{max-height:calc(100% - 8px)}
+ .result-pose-art{width:min(100%,135px)}
+ .stage-panel-ending .end-actions{margin-top:8px}
+}
+@media(prefers-reduced-motion:reduce){.result-pose-art{animation:none!important}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.9</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
-<section class="overlay" id="startScreen"><div class="stage-panel"><div class="eyebrow">LUDUS · AVE, GLADIATOR</div><h1>GLADIATOR</h1><p>승인한 3D풍 검투사 그래픽으로 먼저 싸워보세요. 최종 10프레임 캐릭터 시트와 병과별 전투 이펙트, 승리·패배 모션을 적용했습니다. 5초간 조작이 없으면 자동으로 싸우고, 버튼을 누르면 즉시 수동 전투로 돌아옵니다.</p><div class="selectors"><label>내 클래스<select id="classChoice"><option value="murmillo">무르밀로 · 대형 방패</option><option value="thraex">트라엑스 · 곡검</option><option value="retiarius">레티아리우스 · 삼지창/그물</option></select></label><label>상대 클래스<select id="opponentChoice"><option value="random">자동 매칭</option><option value="murmillo">무르밀로</option><option value="thraex">트라엑스</option><option value="retiarius">레티아리우스</option></select></label></div><button id="startBtn" class="start">⚔ 투기장 입장</button><p class="small">선택 병과: <span id="classSubtitle">MURMILLO</span> · 1라운드 90초 · 키보드/터치 지원</p></div></section>
-<section class="overlay" id="endScreen" hidden><div class="stage-panel"><div class="eyebrow">THE CROWD IS WATCHING</div><h2 id="endHeading">VICTORIA</h2><p id="endReason"></p><p id="endStats"></p><div class="end-actions"><button id="againBtn" class="start">다시 하기</button><button id="continueBtn" class="start secondary">계속 하기</button></div></div></section>
+<section class="overlay overlay-title" id="startScreen">
+ <div class="stage-panel stage-panel-title">
+  <div class="title-lockup">
+   <div class="eyebrow">ROMA · LUDUS MAGNUS · THE ARENA</div>
+   <div class="title-emblem" aria-hidden="true">✦ <span>⚔</span> ✦</div>
+   <h1 class="game-logo"><span>GLADIATOR</span></h1>
+   <div class="logo-subline">SPARTACUS · THE GLADIUS RENAISSANCE</div>
+  </div>
+  <p class="title-intro">검투사의 명예를 걸고 투기장에 입장하세요. 병과를 선택한 뒤 90초 동안 결투합니다.</p>
+  <div class="fighter-previews" id="fighterPreviews" role="group" aria-label="플레이어 검투사 선택">
+   <button type="button" class="fighter-preview active" data-fighter="murmillo" aria-pressed="true"><span class="preview-art" data-sprite="murmillo" aria-hidden="true"></span><span class="preview-caption">무르밀로 <small>MURMILLO</small></span></button>
+   <button type="button" class="fighter-preview" data-fighter="thraex" aria-pressed="false"><span class="preview-art" data-sprite="thraex" aria-hidden="true"></span><span class="preview-caption">트라엑스 <small>THRAEX</small></span></button>
+   <button type="button" class="fighter-preview" data-fighter="retiarius" aria-pressed="false"><span class="preview-art" data-sprite="retiarius" aria-hidden="true"></span><span class="preview-caption">레티아리우스 <small>RETIARIUS</small></span></button>
+  </div>
+  <div class="selectors"><label>내 클래스<select id="classChoice"><option value="murmillo">무르밀로 · 대형 방패</option><option value="thraex">트라엑스 · 곡검</option><option value="retiarius">레티아리우스 · 삼지창/그물</option></select></label><label>상대 클래스<select id="opponentChoice"><option value="random">자동 매칭</option><option value="murmillo">무르밀로</option><option value="thraex">트라엑스</option><option value="retiarius">레티아리우스</option></select></label></div>
+  <button id="startBtn" class="start">⚔ 투기장 입장</button>
+  <p class="small">선택 병과: <span id="classSubtitle">MURMILLO</span> · 미조작 5초 후 자동 전투</p>
+  <p id="resourceStatus" class="resource-status" aria-live="polite"></p>
+ </div>
+</section>
+<section class="overlay overlay-ending" id="endScreen" hidden>
+ <div class="stage-panel stage-panel-ending">
+  <div class="eyebrow">THE CROWD HAS DECIDED</div>
+  <h2 id="endHeading">VICTORIA</h2>
+  <div class="result-poses" aria-label="경기 결과: 승리자와 패배자의 최종 포즈">
+   <div class="result-pose-card victor"><div class="result-pose-art" id="winnerPose" role="img" aria-label="승리한 검투사 포즈"></div><span id="winnerName">VICTOR</span><small>VICTORIA · FRAME 09</small></div>
+   <div class="result-versus" aria-hidden="true">✦</div>
+   <div class="result-pose-card defeated"><div class="result-pose-art" id="loserPose" role="img" aria-label="패배한 검투사 포즈"></div><span id="loserName">DEFEATED</span><small>DEFEAT · FRAME 10</small></div>
+  </div>
+  <p id="endReason"></p><p id="endStats"></p>
+  <div class="end-actions"><button id="againBtn" class="start">다시 하기</button><button id="continueBtn" class="start secondary">계속 하기</button></div>
+ </div>
+</section>
 <div class="controls" id="battleControls" role="group" aria-label="모바일 전투 조작">
 <div class="control-bank control-bank-left" aria-label="이동 및 회피">
 <button class="control move" data-key="left" aria-label="왼쪽 이동"><span class="control-icon" aria-hidden="true">◀</span><span class="control-label">좌이동</span></button>
@@ -48,10 +131,10 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <button class="control attack" data-key="attack" aria-label="공격"><span class="control-icon" aria-hidden="true">⚔</span><span class="control-label">공격</span></button>
 </div></div></div>
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 5초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
-<p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스의 <b>30개 정지 키포즈</b>를 투명 PNG 아틀라스로 재분리해 전투에 적용했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 클래식 전투 모드는 제거했습니다.</p>
+<p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/murmillo_atlas.png?v=2.8", "thraex": "assets/new-era/thraex_atlas.png?v=2.8", "retiarius": "assets/new-era/retiarius_atlas.png?v=2.8", "fx": "assets/new-era/fx_atlas.png?v=2.8", "fx_thraex": "assets/new-era/fx_thraex_atlas.png?v=2.8", "fx_retiarius": "assets/new-era/fx_retiarius_atlas.png?v=2.8", "bg": "assets/new-era/arena.webp?v=2.8"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.8 (full-body FX alignment)
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/murmillo_atlas.png?v=2.9-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=2.9-g753935a6", "retiarius": "assets/new-era/retiarius_atlas.png?v=2.9-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=2.9-g753935a6", "fx_thraex": "assets/new-era/fx_thraex_atlas.png?v=2.9-g753935a6", "fx_retiarius": "assets/new-era/fx_retiarius_atlas.png?v=2.9-g753935a6", "bg": "assets/new-era/arena.webp?v=2.9-g753935a6"};</script>
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.9 (title and result pose presentation)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -70,7 +153,7 @@ const DATA={
 const FRAMES={idle:0,walk:1,attack:2,special:3,guard:4,dodge:5,hit:6,net:7,finisher:8,defeat:9};
 const AUTO_IDLE_SECONDS=5; // Auto-battle starts only after 5 seconds without active player input.
 const IMG={};let loaded=0;for(const key of ['bg','murmillo','thraex','retiarius','fx','fx_thraex','fx_retiarius']){
- const im=new Image();im.onload=()=>{loaded++;};im.onerror=()=>{loaded++;console.warn('asset error',key);};im.src=ASSET[key]||('assets/'+(key==='bg'?'arena.webp':key+'_atlas.png'));IMG[key]=im;
+ const im=new Image();im.onload=()=>{loaded++;};im.onerror=()=>{if(key!=='bg'&&!im._fallback){im._fallback=true;im.src=String(ASSET[key]).replace('.png','.webp');return;}loaded++;console.error('asset failed',key,im.src);const st=$('#resourceStatus');if(st)st.textContent='일부 그래픽 파일을 읽지 못했습니다: '+key;};im.src=ASSET[key]||('assets/'+(key==='bg'?'arena.webp':key+'_atlas.png'));IMG[key]=im;
 }
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),rand=(a,b)=>a+Math.random()*(b-a);
 let S={phase:'title',time:90,round:1,player:null,enemy:null,keys:new Set(),events:[],sparks:[],notice:'',noticeT:0,shake:0,flash:0,fx:true,paused:false,slow:0,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
@@ -183,7 +266,9 @@ function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stag
 }
 function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.dodge=.34;f.invuln=.3;setAction(f,'dodge',.34);f.x=clamp(f.x+(f.enemy?-1:-1)*f.face*84,120,1160);const p=weaponPoint(f,'dodge');addFx(1,p.x,p.y,{w:148,h:92,flip:f.face<0,duration:.11});}
 function inputAct(action){if(S.phase!=='fight'||S.paused)return;if(action==='attack')attack(S.player,S.enemy);else if(action==='special')attack(S.player,S.enemy,true);else if(action==='dodge')dodge(S.player);else if(action==='guard'){S.keys.add('guard');}}
-function choosePose(f){if(S.phase==='finisher'||S.phase==='result'){if(S.resultApplied){if(f===S.player)return S.resultWin?'finisher':'defeat';return S.resultWin?'defeat':'finisher';}}if(f.dead)return 'defeat';if(f.actionT>0)return f.action;if(f.guard)return 'guard';if(Math.abs(f.vx)>7)return 'walk';return 'idle';}
+function choosePose(f){if(S.phase==='finisher'||S.phase==='result'){if(S.resultApplied){const won=(f===S.player)===S.resultWin;
+    if(S.phase==='finisher'&&S.resultAnim<.26)return won?'special':'hit';
+    return won?'finisher':'defeat';}}if(f.dead)return 'defeat';if(f.actionT>0)return f.action;if(f.guard)return 'guard';if(Math.abs(f.vx)>7)return 'walk';return 'idle';}
 function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  S.shake=Math.max(0,S.shake-dt*49);S.flash=Math.max(0,S.flash-dt*.9);S.noticeT=Math.max(0,S.noticeT-dt);
  S.sparks=S.sparks.filter(v=>(v.t+=dt)<v.max);if(S.phase==='result')return;
@@ -220,7 +305,11 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
 function showEnd(){
  const win=S.resultApplied?S.resultWin:(S.player.hp>S.enemy.hp||(S.enemy.dead&&!S.player.dead));
  S.lastResultWin=win;S.autoPlaying=false;S.keys.clear();
- $('#endScreen').hidden=false;
+ const victor=win?S.player:S.enemy,loser=win?S.enemy:S.player;
+  for(const [id,f] of [['winnerPose',victor],['loserPose',loser]]){$('#'+id).style.backgroundImage='url("'+ASSET[f.cls]+'")';}
+  $('#winnerName').textContent=victor.cfg.name;
+  $('#loserName').textContent=loser.cfg.name;
+  $('#endScreen').hidden=false;
  $('#endHeading').textContent=win?'VICTORIA':'DEFEAT';
  $('#endReason').textContent=win?`${S.round}라운드 승리! 다음 검투사와 겨루거나 이번 시합을 다시 도전하세요.`:S.player.dead?'체력이 모두 소진되었습니다. 다시 도전하거나 Ludus로 돌아갈 수 있습니다.':'시간 종료 — 남은 체력으로 결과가 결정되었습니다.';
  $('#endStats').textContent=`ROUND ${S.round} · 획득 점수 ${S.score} · 총점 ${S.totalScore+S.score} · 남은 시간 ${Math.max(0,Math.ceil(S.time))}초`;
@@ -246,8 +335,9 @@ function drawFighter(f){if(!f)return;const frame=FRAMES[choosePose(f)]??0;
  let tilt=0,scaleX=1,scaleY=1;
  if((S.phase==='finisher'||S.phase==='result')&&S.resultApplied){
   const won=(f===S.player)===S.resultWin,progress=clamp(S.resultAnim/1.15,0,1);
-  if(won){drawY-=4*(progress*progress*(3-2*progress));}
-  else{drawY+=10*progress;scaleY=1;}
+  const ease=progress*progress*(3-2*progress);
+   if(won){drawY-=15*Math.sin(Math.PI*Math.min(1,progress)) + 5*ease;}
+   else{drawY+=22*ease;tilt=(f.face<0?1:-1)*.055*ease;}
  }
  ctx.save();
  const shadowW=Math.max(46,68-(f.dodge>0?14:0));
@@ -269,7 +359,14 @@ window.addEventListener('keyup',e=>{const k=keymap[e.code];if(k)S.keys.delete(k)
 for(const b of document.querySelectorAll('[data-key]')){const k=b.dataset.key,hold=['left','right','guard'].includes(k);b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);markManualInput();if(hold)S.keys.add(k);else inputAct(k);});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{S.keys.delete(k);if(S.phase==='fight')markManualInput();});}
 function togglePause(){if(S.phase!=='fight')return;S.paused=!S.paused;if(!S.paused){S.lastManualInput=clock;S.autoPlaying=false;}$('#pauseBtn').textContent=S.paused?'▶':'Ⅱ';say(S.paused?'PAUSED':'RESUME',.8);updateHud();}
 $('#startBtn').onclick=()=>start('new');$('#againBtn').onclick=()=>start('retry');$('#continueBtn').onclick=()=>S.lastResultWin?start('continue'):returnToLudus();$('#pauseBtn').onclick=togglePause;$('#autoToggle').onclick=()=>{S.autoplayEnabled=!S.autoplayEnabled;markManualInput();S.autoPlaying=false;$('#autoToggle').textContent=S.autoplayEnabled?'AUTO ON':'AUTO OFF';updateHud();};$('#fxToggle').onclick=()=>{S.fx=!S.fx;$('#fxToggle').textContent=S.fx?'이펙트 ON':'이펙트 OFF';};$('#soundToggle').onclick=()=>{sounds=!sounds;$('#soundToggle').textContent=sounds?'사운드 ON':'사운드 OFF';};
-$('#classChoice').onchange=()=>{$('#classSubtitle').textContent=DATA[$('#classChoice').value].eng};
+function refreshFighterPreviews(){
+  const selected=$('#classChoice').value;
+  $('#classSubtitle').textContent=DATA[selected].eng;
+  for(const el of document.querySelectorAll('[data-fighter]')){const active=el.dataset.fighter===selected;el.classList.toggle('active',active);el.setAttribute('aria-pressed',String(active));}
+}
+for(const el of document.querySelectorAll('[data-sprite]')){const k=el.dataset.sprite;if(ASSET[k])el.style.backgroundImage='url("'+ASSET[k]+'")';}
+for(const el of document.querySelectorAll('[data-fighter]'))el.onclick=()=>{$('#classChoice').value=el.dataset.fighter;refreshFighterPreviews();};
+$('#classChoice').onchange=refreshFighterPreviews;refreshFighterPreviews();
 $('#classSubtitle').textContent=DATA[$('#classChoice').value].eng;
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
