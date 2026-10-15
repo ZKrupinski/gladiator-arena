@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.2.1</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.3</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -247,9 +247,10 @@ body{min-height:100dvh;overscroll-behavior:none}
 #careerHub .career-gear.is-equipped .gear-status{background:#ffe1a3;color:#2c1a0d}
 #careerHub .career-gear.is-equipped strong{color:#fff1d4}
 #careerHub .career-gear:not(.is-equipped):not(:disabled):hover{border-color:#deb77e}
+/* v4.3 Ludus XP */.career-level{margin:10px 0;padding:12px;border:1px solid #c39c53;border-radius:8px;background:linear-gradient(135deg,#624320,#302015);color:#ffe3aa}.career-level strong{font-size:16px}.career-level small{display:block;color:#ead4aa;margin-top:5px}.career-xp-track{height:9px;border:1px solid #ae834d;background:#241912;border-radius:50px;margin:8px 0 5px;overflow:hidden}.career-xp-track i{display:block;height:100%;background:linear-gradient(90deg,#e69a3b,#ffe4a0)}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.2.1</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.3</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -577,6 +578,11 @@ const GEAR=[
  {id:'elite',slot:'armor',name:'챔피언 갑옷',cost:220,atk:9,hp:15,desc:'공격력 +9 · 체력 +15'}
 ];
 const CAREER_KEY='gladiator.ludus.v1';
+function careerXpNeeded(l){return 30+l*15;}
+function careerLevel(h){return Math.max(1,Math.min(20,Number(h.level)||1));}
+function careerStage(h){const l=careerLevel(h);return l>=20?5:l>=15?4:l>=10?3:l>=5?2:1;}
+function grantCareerXp(h,a){h.level=careerLevel(h);h.xp=Math.max(0,Number(h.xp)||0)+Math.max(0,Math.floor(a));let n=0;while(h.level<20&&h.xp>=careerXpNeeded(h.level)){h.xp-=careerXpNeeded(h.level);h.level++;n++;}if(h.level===20)h.xp=0;return n;}
+function careerProgressLabel(h){const l=careerLevel(h);return 'Lv.'+l+' · 성장 '+careerStage(h)+'/5 · EXP '+(l===20?'MAX':h.xp+' / '+careerXpNeeded(l));}
 const TRAIN_LEVELS=[['입문',42,18,.48],['초급',36,15,.60],['숙련',30,12,.73],['상급',24,10,.88],['정예',19,8,1.04],['달인',15,6,1.20],['전설',12,5,1.35]];
 function trainingDifficulty(h,stat){h.trainingAttempts=h.trainingAttempts||{};const attempts=h.trainingAttempts[stat]||0;const [name,width,perfect,speed]=TRAIN_LEVELS[Math.min(attempts,6)];return {name,width,perfect,speed,attempts};}
 const CAREER_RIVALS=[['노예 검투사',0,0,0],['초급 투사',.07,.05,.02],['숙련 검투사',.15,.10,.04],['투기장 강자',.24,.16,.07],['정예 챔피언',.34,.23,.10],['전설의 검투사',.46,.30,.13]];
@@ -600,7 +606,7 @@ function normalizeEquipment(h){
  }
  delete h.equipped;
 }
-CAREER.roster.forEach(normalizeEquipment);
+CAREER.roster.forEach(h=>{normalizeEquipment(h);h.level=careerLevel(h);h.xp=Math.max(0,Number(h.xp)||0);});
 function equipmentBonus(h){
  normalizeEquipment(h);
  return Object.values(h.equipment).reduce((o,id)=>{
@@ -630,12 +636,13 @@ function finishCareerMatch(){
  CAREER.gold+=reward;
  h.injury=Math.min(120,h.injury+Math.max(8,Math.round(S.player.maxHp-S.player.hp)*.62));
  h.fights++;if(win)h.wins++;
- CAREER.message=win?'승리! '+reward+' 데나리우스 획득, 명예 상승. 치료와 훈련을 준비하세요.':'패배했습니다. '+reward+' 데나리우스 획득. 루두스에서 회복하세요.';
+ const earned=win?80+Math.min(30,h.fights*3):30+Math.min(15,h.fights),stageBefore=careerStage(h),gained=grantCareerXp(h,earned);
+ CAREER.message=(win?'승리! ':'패배. ')+reward+'D · 경험치 +'+earned+(gained?' · LEVEL UP!':'')+(careerStage(h)>stageBefore?' · 성장 '+careerStage(h)+'단계!':'')+' · 루두스로 돌아가세요.';
  saveCareer();
 }
 function renderCareer(){
  const h=CAREER.hero;
- const summary='<div class="career-card"><h2>루두스 현황</h2><div class="career-stat"><span>데나리우스</span><b>'+CAREER.gold+' D</b></div><div class="career-stat"><span>명예</span><b>'+CAREER.glory+'</b></div><div class="career-stat"><span>시합 전적</span><b>'+CAREER.wins+'승 / '+CAREER.fights+'전</b></div><div class="career-stat"><span>소속 검투사</span><b>'+CAREER.roster.length+'명</b></div><p class="career-status">'+CAREER.message+'</p>'+(h?'<div class="career-avatar" style="background-image:url(&quot;'+(CLEANED_CHARACTER_URLS[h.cls]||ASSET[h.cls])+'&quot;)"></div><h3>'+h.name+' · '+DATA[h.cls].name+'</h3><div class="career-stat"><span>체력 / 부상</span><b>'+Math.max(1,DATA[h.cls].hp+h.stats.end*13-h.injury)+' / 부상 '+h.injury+'</b></div>'+Object.entries(h.stats).map(([k,v])=>'<div class="career-stat"><span>'+({str:'근력',agi:'민첩',end:'체력',focus:'집중'}[k])+'</span><b>+'+v+'</b></div>').join('')+'<p>장착: '+['weapon','shield','armor'].map(slot=>({weapon:'무기',shield:'방패',armor:'방어구'}[slot])+': '+(GEAR.find(g=>g.id===h.equipment[slot])?.name||'없음')).join(' / ')+'</p><div class="career-stat"><span>최종 공격력</span><b>'+(DATA[h.cls].atk+h.stats.str*2+equipmentBonus(h).atk)+'</b></div><div class="career-stat"><span>최대 체력</span><b>'+(DATA[h.cls].hp+h.stats.end*13+equipmentBonus(h).hp)+'</b></div>':'<p>아직 소속 검투사가 없습니다.</p>')+'</div>';
+ const summary='<div class="career-card"><h2>루두스 현황</h2><div class="career-stat"><span>데나리우스</span><b>'+CAREER.gold+' D</b></div><div class="career-stat"><span>명예</span><b>'+CAREER.glory+'</b></div><div class="career-stat"><span>시합 전적</span><b>'+CAREER.wins+'승 / '+CAREER.fights+'전</b></div><div class="career-stat"><span>소속 검투사</span><b>'+CAREER.roster.length+'명</b></div><p class="career-status">'+CAREER.message+'</p>'+(h?'<div class="career-avatar" style="background-image:url(&quot;'+(CLEANED_CHARACTER_URLS[h.cls]||ASSET[h.cls])+'&quot;)"></div><h3>'+h.name+' · '+DATA[h.cls].name+'</h3><div class="career-level"><strong>'+careerProgressLabel(h)+'</strong><div class="career-xp-track"><i style="width:'+(careerLevel(h)===20?100:Math.round(100*h.xp/careerXpNeeded(careerLevel(h))))+'%"></i></div><small>Lv.1 / 5 / 10 / 15 / 20 성장 단계 · 훈련과 시합으로 경험치 획득</small></div><div class="career-stat"><span>체력 / 부상</span><b>'+Math.max(1,DATA[h.cls].hp+h.stats.end*13-h.injury)+' / 부상 '+h.injury+'</b></div>'+Object.entries(h.stats).map(([k,v])=>'<div class="career-stat"><span>'+({str:'근력',agi:'민첩',end:'체력',focus:'집중'}[k])+'</span><b>+'+v+'</b></div>').join('')+'<p>장착: '+['weapon','shield','armor'].map(slot=>({weapon:'무기',shield:'방패',armor:'방어구'}[slot])+': '+(GEAR.find(g=>g.id===h.equipment[slot])?.name||'없음')).join(' / ')+'</p><div class="career-stat"><span>최종 공격력</span><b>'+(DATA[h.cls].atk+h.stats.str*2+equipmentBonus(h).atk)+'</b></div><div class="career-stat"><span>최대 체력</span><b>'+(DATA[h.cls].hp+h.stats.end*13+equipmentBonus(h).hp)+'</b></div>':'<p>아직 소속 검투사가 없습니다.</p>')+'</div>';
  const hire=!h?'<div class="career-card"><h2>노예시장 · MERCATUS</h2><p>각기 다른 특징을 지닌 검투사를 구매합니다.</p><div class="career-options">'+[
  ['murmillo','무르밀로',110,'튼튼한 방패 전사'],
  ['thraex','트라엑스',120,'민첩한 곡검 전사'],
@@ -651,7 +658,7 @@ function renderCareer(){
  for(const el of document.querySelectorAll('[data-hire]'))el.onclick=()=>{
   const cls=el.dataset.hire,cost={murmillo:110,thraex:120,retiarius:130}[cls];
   if(CAREER.gold<cost)return;
-  CAREER.gold-=cost;CAREER.roster.push({cls,name:DATA[cls].name+' '+(CAREER.roster.length+1),stats:{str:0,agi:0,end:0,focus:0},injury:0,equipment:{weapon:'wood',shield:null,armor:null},inventory:['wood'],fights:0,wins:0});
+  CAREER.gold-=cost;CAREER.roster.push({cls,name:DATA[cls].name+' '+(CAREER.roster.length+1),stats:{str:0,agi:0,end:0,focus:0},injury:0,equipment:{weapon:'wood',shield:null,armor:null},inventory:['wood'],fights:0,wins:0,level:1,xp:0});
   CAREER.active=CAREER.roster.length-1;careerMessage('검투사를 영입했습니다. 훈련과 장비를 준비하세요.');
  };
  for(const el of document.querySelectorAll('[data-train]'))el.onclick=()=>startTraining(el.dataset.train);
@@ -717,7 +724,9 @@ function completeTraining(){
  result.hidden=false;
  $('#careerHit').hidden=true;
  $('#careerCancel').textContent='루두스로 돌아가기';
- CAREER.message=label+' '+name+' +'+applied;
+ const earned=gain===3?24:gain===2?16:5,stageBefore=careerStage(CAREER.hero),gained=grantCareerXp(CAREER.hero,earned);
+ CAREER.message=label+' '+name+' +'+applied+' · 경험치 +'+earned+(gained?' · LEVEL UP!':'')+(careerStage(CAREER.hero)>stageBefore?' · 성장 '+careerStage(CAREER.hero)+'단계!':'');
+ result.textContent+=' · 경험치 +'+earned+(gained?' · LEVEL UP!':'');
  saveCareer();
 }
 function closeTraining(){
