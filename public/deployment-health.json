@@ -1,0 +1,10 @@
+{
+  "project": "GLADIATOR / Spartacus",
+  "type": "cloudflare-pages-git-autodeploy-probe",
+  "probeId": "gladiator-git-cf-20261015-a1",
+  "generatedAt": "2026-10-15",
+  "branch": "main",
+  "buildOutputDirectory": "public",
+  "productionUrl": "https://gladiator-arena-git.pages.dev/",
+  "purpose": "Non-invasive proof that GitHub main file writes trigger Cloudflare Pages deployment. Does not change game behavior."
+}
