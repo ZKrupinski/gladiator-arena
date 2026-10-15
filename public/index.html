@@ -153,7 +153,12 @@ const DATA={
 const FRAMES={idle:0,walk:1,attack:2,special:3,guard:4,dodge:5,hit:6,net:7,finisher:8,defeat:9};
 const AUTO_IDLE_SECONDS=5; // Auto-battle starts only after 5 seconds without active player input.
 const IMG={};let loaded=0;for(const key of ['bg','murmillo','thraex','retiarius','fx','fx_thraex','fx_retiarius']){
- const im=new Image();im.onload=()=>{loaded++;};im.onerror=()=>{if(key!=='bg'&&!im._fallback){im._fallback=true;im.src=String(ASSET[key]).replace('.png','.webp');return;}loaded++;console.error('asset failed',key,im.src);const st=$('#resourceStatus');if(st)st.textContent='일부 그래픽 파일을 읽지 못했습니다: '+key;};im.src=ASSET[key]||('assets/'+(key==='bg'?'arena.webp':key+'_atlas.png'));IMG[key]=im;
+ const im=new Image();im.onload=()=>{loaded++;
+    // Keep selector and result thumbnails in sync with the image that actually loaded.
+    if(key!=='bg'){
+      for(const el of document.querySelectorAll('[data-sprite="'+key+'"]'))el.style.backgroundImage='url("'+im.src+'")';
+    }
+  };im.onerror=()=>{if(key!=='bg'&&!im._fallback){im._fallback=true;im.src=String(ASSET[key]).replace('.png','.webp');return;}loaded++;console.error('asset failed',key,im.src);const st=$('#resourceStatus');if(st)st.textContent='일부 그래픽 파일을 읽지 못했습니다: '+key;};im.src=ASSET[key]||('assets/'+(key==='bg'?'arena.webp':key+'_atlas.png'));IMG[key]=im;
 }
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),rand=(a,b)=>a+Math.random()*(b-a);
 let S={phase:'title',time:90,round:1,player:null,enemy:null,keys:new Set(),events:[],sparks:[],notice:'',noticeT:0,shake:0,flash:0,fx:true,paused:false,slow:0,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
@@ -306,7 +311,7 @@ function showEnd(){
  const win=S.resultApplied?S.resultWin:(S.player.hp>S.enemy.hp||(S.enemy.dead&&!S.player.dead));
  S.lastResultWin=win;S.autoPlaying=false;S.keys.clear();
  const victor=win?S.player:S.enemy,loser=win?S.enemy:S.player;
-  for(const [id,f] of [['winnerPose',victor],['loserPose',loser]]){$('#'+id).style.backgroundImage='url("'+ASSET[f.cls]+'")';}
+  for(const [id,f] of [['winnerPose',victor],['loserPose',loser]]){$('#'+id).style.backgroundImage='url("'+(IMG[f.cls]?.src||ASSET[f.cls])+'")';}
   $('#winnerName').textContent=victor.cfg.name;
   $('#loserName').textContent=loser.cfg.name;
   $('#endScreen').hidden=false;
