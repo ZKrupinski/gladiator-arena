@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v2.9.2</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v2.9.3</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -84,7 +84,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 @media(prefers-reduced-motion:reduce){.result-pose-art{animation:none!important}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.9.2</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.9.3</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -134,7 +134,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=2.9.2-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=2.9.2-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=2.9.2-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=2.9.2-g753935a6", "fx_thraex": "assets/new-era/fx_thraex_atlas.png?v=2.9.2-g753935a6", "fx_retiarius": "assets/new-era/fx_retiarius_atlas.png?v=2.9.2-g753935a6", "bg": "assets/new-era/arena.webp?v=2.9.2-g753935a6"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.9.2 (class artwork identity and 2s auto-idle)
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.9.3 (remove synthetic battle shadows)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -325,7 +325,6 @@ function showEnd(){
  $('#continueBtn').classList.toggle('ludus',!win);
 }
 function updateHud(){const p=S.player,e=S.enemy;if(!p||!e)return;for(const [f,pre] of [[p,'p'],[e,'e']]){const h=$('#'+pre+'Hp'),st=$('#'+pre+'St');h.style.width=(f.hp/f.maxHp*100).toFixed(1)+'%';st.style.width=f.st.toFixed(1)+'%';$('#'+pre+'Value').textContent=Math.ceil(f.hp)+' / '+f.maxHp;}$('#pName').textContent=p.cfg.name;$('#eName').textContent=e.cfg.name;$('#clock').textContent=Math.max(0,Math.ceil(S.time));$('#roundLabel').textContent=`ROUND ${S.round}`;$('#cooldown').textContent=p.cd>0?`필살기 ${p.cd.toFixed(1)}초`:'필살기 준비 완료';$('#autoState').textContent=S.phase!=='fight'?'AUTO 대기':!S.autoplayEnabled?'AUTO OFF':S.autoPlaying?'● AUTO 전투 중 · 조작하면 해제':`AUTO ${Math.max(1,Math.ceil(AUTO_IDLE_SECONDS-(clock-S.lastManualInput)))}초 후`;$('#autoState').classList.toggle('active',S.autoPlaying);$('#combatNotice').textContent=S.noticeT>0?S.notice:'';}
-function roundedRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
 function drawBackdrop(){const bg=IMG.bg;
  if(bg.complete&&bg.naturalWidth){const rw=bg.naturalWidth,rh=bg.naturalHeight;const scale=Math.max(W/rw,H/rh);const nw=rw*scale,nh=rh*scale;ctx.drawImage(bg,(W-nw)/2-0,(H-nh)/2,nw,nh);}else{const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#99745d');grad.addColorStop(1,'#53372d');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);}
  ctx.fillStyle='rgba(43,24,18,.12)';ctx.fillRect(0,0,W,H);const g=ctx.createLinearGradient(0,490,0,H);g.addColorStop(0,'#29140b00');g.addColorStop(1,'#180e0bbc');ctx.fillStyle=g;ctx.fillRect(0,480,W,240);
@@ -346,15 +345,13 @@ function drawFighter(f){if(!f)return;const frame=FRAMES[choosePose(f)]??0;
    if(won){drawY-=15*Math.sin(Math.PI*Math.min(1,progress)) + 5*ease;}
    else{drawY+=22*ease;tilt=(f.face<0?1:-1)*.055*ease;}
  }
- ctx.save();
- const shadowW=Math.max(46,68-(f.dodge>0?14:0));
- ctx.fillStyle='rgba(35,20,18,.35)';ctx.beginPath();ctx.ellipse(f.x,FLOOR-4,shadowW,11,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ // No procedural cast shadow. Keep the original atlas silhouette and arena floor.
  if(f.invuln>0&&Math.floor(clock*28)%2===0)ctx.globalAlpha=.5;
  if(f.net>0){ctx.strokeStyle='#dbbf78';ctx.lineWidth=4;ctx.setLineDash([11,11]);ctx.beginPath();ctx.ellipse(f.x,feet-111,86,48,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);}
  ctx.save();if(tilt||scaleY!==1){ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.scale(scaleX,scaleY);ctx.translate(-f.x,-feet);}
  atlasFrame(IMG[f.cls],frame,drawX,drawY,width,height,f.face<0,1);ctx.restore();
  ctx.globalAlpha=1;
- if(f.dead){ctx.fillStyle='rgba(22,12,9,.47)';roundedRect(ctx,f.x-85,feet-22,170,29,12);ctx.fill();}
+
 }
 function drawResultFx(){if(!S.resultApplied||S.phase!=='finisher')return;const p=S.resultWin?S.player:S.enemy;if(!p)return;const t=S.resultAnim;if(t>.15&&t<1.85){ctx.save();ctx.globalAlpha=.75*Math.min(1,(t-.15)*3);ctx.strokeStyle='#ffe0a2';ctx.lineWidth=3;const x=p.x,y=FLOOR-218;for(let i=0;i<9;i++){const a=i*Math.PI*2/9+t*.6,r=90+Math.min(t,1)*65;ctx.beginPath();ctx.moveTo(x+Math.cos(a)*(r-23),y+Math.sin(a)*(r-23));ctx.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r);ctx.stroke();}ctx.restore();}}
 function drawEffects(){
