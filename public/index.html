@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · NEW ERA — 3D풍 스프라이트 전투 프로토타입 v2.6</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · NEW ERA — 3D풍 스프라이트 전투 프로토타입 v2.5</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -6,7 +6,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 .hud{display:grid;grid-template-columns:1fr 135px 1fr;gap:10px;align-items:center;padding-bottom:12px}.hud-unit{border:1px solid #684a36;background:#291d18c4;border-radius:10px;padding:11px 14px}.hud-line{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;gap:6px}.meter{background:#49332a;border-radius:20px;overflow:hidden;height:12px;margin-top:7px}.meter>div{height:100%;background:linear-gradient(90deg,#a93b31,#eaa06e);transition:width .08s}.meter.st{height:6px;margin-top:5px}.meter.st>div{background:linear-gradient(90deg,#337b82,#aad9c0)}.timer{text-align:center;font:700 44px/.95 Georgia,serif;color:#f9d9a4}.timer small{display:block;font:700 10px system-ui;letter-spacing:.2em;color:#bca283;margin-bottom:6px}
 .arena-wrap{position:relative;background:#382a21;border:2px solid #99734b;overflow:hidden;border-radius:11px;box-shadow:0 18px 65px #0009}.arena-wrap canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}.canvas-top{position:absolute;top:13%;left:0;right:0;text-align:center;pointer-events:none;font:900 clamp(15px,4vw,40px) Georgia,serif;letter-spacing:.13em;text-shadow:0 4px 20px #220f0a,0 1px 2px #180e05;color:#fff3d5;opacity:.95}
 .overlay{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:linear-gradient(125deg,#1b110deb,#281612a8,#1a100cef)}.overlay[hidden]{display:none}.stage-panel{background:linear-gradient(140deg,#302018f7,#140f0de8);border:1px solid #ac7950;box-shadow:0 21px 55px #0008;padding:clamp(20px,4vw,46px);border-radius:14px;min-width:min(520px,92%);max-width:660px;text-align:center}.eyebrow{font-size:10px;letter-spacing:.28em;font-weight:800;color:#dfa960}.stage-panel h1{font:700 clamp(45px,9vw,91px)/.99 Georgia,serif;letter-spacing:.07em;margin:16px 0 0;color:#f9dfb2}.stage-panel h2{font:700 clamp(35px,7vw,70px) Georgia,serif;letter-spacing:.11em;color:#f7c57b;margin:8px 0}.stage-panel p{font-size:13px;color:#d3bba4;line-height:1.75;max-width:500px;margin:17px auto 22px}.selectors{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;text-align:left;margin:25px 0}.selectors label{font-size:11px;color:#d8b78c;min-width:150px;flex:1}.selectors select{width:100%;display:block;padding:11px;margin-top:6px;border-radius:6px;border:1px solid #a07851;background:#32231d;color:#f4e0c4}.start{background:linear-gradient(115deg,#f3bd70,#b8773a);border:1px solid #fbd399;color:#241208;padding:14px 26px;min-height:52px;border-radius:7px;font-size:15px;font-weight:900;letter-spacing:.09em;width:min(100%,330px)}.start:hover{filter:brightness(1.12)}.stage-panel .small{font-size:11px;color:#a9998b;margin-top:11px}
-/* v2.6: thumb-first Roman bronze circular controls. Left = movement/dodge; right = special/guard/attack. */
+/* v2.5: thumb-first Roman bronze circular controls. Left = movement/dodge; right = special/guard/attack. */
 .controls{position:absolute;bottom:13px;left:18px;right:18px;z-index:4;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;pointer-events:none;touch-action:none}
 .control-bank{display:flex;align-items:flex-end;gap:11px;pointer-events:none}
 .control{--ring:#c5a178;--inner1:#72523a;--inner2:#39251d;position:relative;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:76px;height:76px;min-height:unset;padding:0;border-radius:50%;border:3px solid var(--ring);background:radial-gradient(circle at 35% 23%,#d1ac7361,transparent 38%),linear-gradient(150deg,var(--inner1),var(--inner2));box-shadow:0 6px 14px #000a,inset 0 0 0 2px #442819,inset 0 3px 5px #fff5b74a,0 0 0 1px #3a2419;color:#fff3d8;text-shadow:0 2px 3px #120905bd;font-weight:800;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;pointer-events:auto;transition:filter .12s, transform .12s;cursor:pointer}
@@ -32,7 +32,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 @media(max-width:390px){.controls{left:5px;right:5px;gap:5px}.control-bank{gap:3px}.control{width:clamp(44px,12.4vw,50px);height:clamp(44px,12.4vw,50px)}.control.attack{width:clamp(50px,14vw,57px);height:clamp(50px,14vw,57px)}.control-label{font-size:8px}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / PROTOTYPE 2.3</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay" id="startScreen"><div class="stage-panel"><div class="eyebrow">LUDUS · AVE, GLADIATOR</div><h1>GLADIATOR</h1><p>승인한 3D풍 검투사 그래픽으로 먼저 싸워보세요. 최종 10프레임 캐릭터 시트와 병과별 전투 이펙트, 승리·패배 모션을 적용했습니다. 5초간 조작이 없으면 자동으로 싸우고, 버튼을 누르면 즉시 수동 전투로 돌아옵니다.</p><div class="selectors"><label>내 클래스<select id="classChoice"><option value="murmillo">무르밀로 · 대형 방패</option><option value="thraex">트라엑스 · 곡검</option><option value="retiarius">레티아리우스 · 삼지창/그물</option></select></label><label>상대 클래스<select id="opponentChoice"><option value="random">자동 매칭</option><option value="murmillo">무르밀로</option><option value="thraex">트라엑스</option><option value="retiarius">레티아리우스</option></select></label></div><button id="startBtn" class="start">⚔ 투기장 입장</button><p class="small">선택 병과: <span id="classSubtitle">MURMILLO</span> · 1라운드 90초 · 키보드/터치 지원</p></div></section>
@@ -48,10 +48,10 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <button class="control attack" data-key="attack" aria-label="공격"><span class="control-icon" aria-hidden="true">⚔</span><span class="control-label">공격</span></button>
 </div></div></div>
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 5초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
-<p class="notes"><b>프로토타입 리소스 상태:</b> 방금 승인된 3개 클래스의 <b>24개 정지 키포즈</b>를 실제 WebP 아틀라스로 분리해 전투에 적용했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 원본 전투 모드는 별도 보존됩니다.</p>
+<p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스의 <b>30개 정지 키포즈</b>를 투명 PNG 아틀라스로 재분리해 전투에 적용했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 클래식 전투 모드는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/murmillo_atlas.webp?v=2.6", "thraex": "assets/new-era/thraex_atlas.webp?v=2.6", "retiarius": "assets/new-era/retiarius_atlas.webp?v=2.6", "fx": "assets/new-era/fx_atlas.webp?v=2.6", "fx_thraex": "assets/new-era/fx_thraex_atlas.webp?v=2.6", "fx_retiarius": "assets/new-era/fx_retiarius_atlas.webp?v=2.6", "bg": "assets/new-era/arena.webp?v=2.6"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.6
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/murmillo_atlas.png?v=2.7", "thraex": "assets/new-era/thraex_atlas.png?v=2.7", "retiarius": "assets/new-era/retiarius_atlas.png?v=2.7", "fx": "assets/new-era/fx_atlas.png?v=2.7", "fx_thraex": "assets/new-era/fx_thraex_atlas.png?v=2.7", "fx_retiarius": "assets/new-era/fx_retiarius_atlas.png?v=2.7", "bg": "assets/new-era/arena.webp?v=2.7"};</script>
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.7
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -61,7 +61,7 @@ const W=1280,H=720,FLOOR=617,ASSET=window.GLADIATOR_ASSETS||{};
 const ATLAS_COLS=5, ATLAS_ROWS=2;
 // Characters visually occupy ~240-300px at this sprite scale. Keep bodies apart
 // and extend hit range to account for weapon reach; always render PLAYER on top.
-const MIN_FIGHTER_DISTANCE=276, AI_SPACING_BUFFER=38, FIGHTER_DRAW_SIZE=338;
+const MIN_FIGHTER_DISTANCE=276, AI_SPACING_BUFFER=38, FIGHTER_DRAW_SIZE=348;
 const DATA={
  murmillo:{name:'무르밀로',eng:'MURMILLO',hp:138,atk:17,reach:331,move:244,sp:42,color:'#ce7652',special:'SCUTUM IMPACT'},
  thraex:{name:'트라엑스',eng:'THRAEX',hp:113,atk:18,reach:347,move:290,sp:35,color:'#8baec6',special:'SICA CROSS CUT'},
@@ -70,7 +70,7 @@ const DATA={
 const FRAMES={idle:0,walk:1,attack:2,special:3,guard:4,dodge:5,hit:6,net:7,finisher:8,defeat:9};
 const AUTO_IDLE_SECONDS=5; // Auto-battle starts only after 5 seconds without active player input.
 const IMG={};let loaded=0;for(const key of ['bg','murmillo','thraex','retiarius','fx','fx_thraex','fx_retiarius']){
- const im=new Image();im.onload=()=>{loaded++;};im.onerror=()=>{loaded++;console.warn('asset error',key);};im.src=ASSET[key]||('assets/'+(key==='bg'?'arena.webp':key+'_atlas.webp'));IMG[key]=im;
+ const im=new Image();im.onload=()=>{loaded++;};im.onerror=()=>{loaded++;console.warn('asset error',key);};im.src=ASSET[key]||('assets/'+(key==='bg'?'arena.webp':key+'_atlas.png'));IMG[key]=im;
 }
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),rand=(a,b)=>a+Math.random()*(b-a);
 let S={phase:'title',time:90,round:1,player:null,enemy:null,keys:new Set(),events:[],sparks:[],notice:'',noticeT:0,shake:0,flash:0,fx:true,paused:false,slow:0,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
@@ -148,29 +148,31 @@ function impactPoint(attacker,victim,special=false){
 function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false){
  const dir=attacker.face<0;
  const atlas=attacker.cls==='thraex'?'fx_thraex':attacker.cls==='retiarius'?'fx_retiarius':'fx';
+ const targetY=FLOOR-178;
  if(ko){
-  const cfg=attacker.cls==='retiarius'?{w:286,h:286,y:FLOOR-172}:attacker.cls==='thraex'?{w:298,h:298,y:FLOOR-170}:{w:282,h:282,y:FLOOR-170};
-  addFx(6,victim.x,cfg.y,{w:cfg.w,h:cfg.h,flip:dir,duration:.18,atlas});
+  if(attacker.cls==='retiarius'){ addFx(8,victim.x,targetY-6,{w:470,h:470,flip:dir,duration:.24,atlas}); return; }
+  addFx(8,victim.x,targetY-8,{w:500,h:500,flip:dir,duration:.24,atlas});
   return;
  }
  if(special){
   if(attacker.cls==='retiarius'){
-   addFx(3,victim.x+(attacker.face||1)*18,FLOOR-192,{w:304,h:236,flip:dir,duration:.20,atlas});
+   addFx(4,victim.x,targetY-8,{w:520,h:420,flip:dir,duration:.22,atlas});
    return;
   }
-  const p=impactPoint(attacker,victim,true);
-  if(attacker.cls==='thraex') addFx(6,p.x+attacker.face*6,p.y-2,{w:292,h:292,flip:dir,duration:.14,atlas});
-  else addFx(6,p.x,p.y+4,{w:272,h:272,flip:dir,duration:.14,atlas});
+  if(attacker.cls==='thraex'){
+   addFx(3,victim.x,targetY-4,{w:520,h:520,flip:dir,duration:.18,atlas});
+   return;
+  }
+  addFx(3,victim.x,targetY-2,{w:500,h:500,flip:dir,duration:.18,atlas});
   return;
  }
  if(guarded){
-  addFx(7,victim.x-(attacker.face||1)*4,FLOOR-196,{w:122,h:122,flip:false,duration:.12,atlas});
+  addFx(7,victim.x,targetY-4,{w:360,h:360,flip:false,duration:.14,atlas});
   return;
  }
- const p=impactPoint(attacker,victim,false);
- if(attacker.cls==='retiarius') addFx(2,p.x+attacker.face*10,p.y+8,{w:238,h:238,flip:dir,duration:.11,atlas});
- else if(attacker.cls==='thraex') addFx(2,p.x+attacker.face*6,p.y-2,{w:246,h:246,flip:dir,duration:.11,atlas});
- else addFx(2,p.x,p.y+4,{w:228,h:228,flip:dir,duration:.11,atlas});
+ if(attacker.cls==='retiarius') addFx(2,victim.x,targetY,{w:420,h:420,flip:dir,duration:.12,atlas});
+ else if(attacker.cls==='thraex') addFx(2,victim.x,targetY-2,{w:440,h:440,flip:dir,duration:.12,atlas});
+ else addFx(2,victim.x,targetY,{w:420,h:420,flip:dir,duration:.12,atlas});
 }
 function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stagger>0||f.attackCD>0)return;
  const cost=special?36:17;if(f.st<cost){if(!f.enemy)say('STAMINA LOW',.45);return;}if(special&&f.cd>0)return;
