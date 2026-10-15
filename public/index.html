@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.1.4</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.1.5</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -229,9 +229,19 @@ body{min-height:100dvh;overscroll-behavior:none}
 #careerHub button{touch-action:manipulation}
 .career-timing{background:linear-gradient(90deg,#6b3d2c,#ac7443,#6b3d2c);box-shadow:inset 0 0 14px #1a100b}
 .career-hitzone{box-shadow:0 0 14px #ebc26c80,inset 0 0 12px #ffe6a9a0}
+
+/* Training grade feedback: success and failure are unambiguous. */
+.career-training-result{margin:12px auto;max-width:460px;padding:13px 15px;border:2px solid;border-radius:9px;font-size:clamp(16px,3vw,23px);font-weight:900;letter-spacing:.04em;animation:careerGradePop .28s cubic-bezier(.16,1.6,.45,1) both}
+.career-training-result[hidden]{display:none!important}
+.career-training-result.perfect{color:#fff0b4;background:#71521a;border-color:#ffe39c;box-shadow:0 0 26px #ffd7778c}
+.career-training-result.success{color:#e6ffd8;background:#31502a;border-color:#a3e78b;box-shadow:0 0 18px #a3ec766e}
+.career-training-result.fail{color:#ffdbcf;background:#622c27;border-color:#ee8d78;box-shadow:0 0 15px #ff605e42}
+#careerHit[hidden]{display:none!important}
+@keyframes careerGradePop{from{opacity:.3;transform:translateY(9px) scale(.9)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.career-training-result{animation:none}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.1.4</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.1.5</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -282,7 +292,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
 <div id="careerHub" hidden><div class="career-shell"><div class="career-head"><div><h1>LUDUS MAGNUS</h1><p>노예 시장에서 시작하는 검투사의 전설</p></div><button id="careerExit">아케이드로</button></div><div id="careerBody" class="career-grid"></div></div></div>
-<div id="careerMini" hidden role="dialog" aria-modal="true" aria-label="훈련"><div class="career-mini-panel"><h2 id="careerMiniTitle"></h2><p id="careerMiniHelp"></p><div class="career-timing"><div class="career-hitzone"></div><div id="careerNeedle"></div></div><div class="career-buttons" style="justify-content:center"><button id="careerHit">지금! (SPACE)</button><button id="careerCancel">취소</button></div></div></div>
+<div id="careerMini" hidden role="dialog" aria-modal="true" aria-label="훈련"><div class="career-mini-panel"><h2 id="careerMiniTitle"></h2><p id="careerMiniHelp"></p><div class="career-timing"><div class="career-hitzone"></div><div id="careerNeedle"></div></div><div id="careerTrainingResult" class="career-training-result" hidden aria-live="assertive"></div><div class="career-buttons" style="justify-content:center"><button id="careerHit">지금! (SPACE)</button><button id="careerCancel">취소</button></div></div></div>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
    Pose sheets extracted from user-approved 3D-look static character art.
@@ -661,6 +671,7 @@ function startTraining(stat){
  focus:'창끝의 조준이 일치하면 집중하세요. 황금 구간을 노리세요.'
  }[stat])+' · 버튼 터치 / SPACE';
  $('#careerHit').textContent=({str:'⚔ 타격!',agi:'↶ 회피!',end:'◆ 버티기!',focus:'✧ 집중!'}[stat]);
+ $('#careerTrainingResult').hidden=true;$('#careerHit').hidden=false;$('#careerCancel').textContent='취소';
  $('#careerMini').hidden=false;requestAnimationFrame(animateCareerNeedle);
 }
 function needlePosition(){
@@ -668,22 +679,39 @@ function needlePosition(){
  return (Math.sin(v*Math.PI*1.8)+1)*.5;
 }
 function animateCareerNeedle(){
- if(!MINI)return;$('#careerNeedle').style.left='calc('+Math.round(needlePosition()*100)+'% - 3px)';
+ if(!MINI||MINI.finished)return;$('#careerNeedle').style.left='calc('+Math.round(needlePosition()*100)+'% - 3px)';
  requestAnimationFrame(animateCareerNeedle);
 }
 function completeTraining(){
- if(!MINI)return;
- const v=needlePosition(),gain=Math.abs(v-.5)<.075?3:Math.abs(v-.5)<.2?2:1;
- const stat=MINI.stat;MINI=null;$('#careerMini').hidden=true;
- CAREER.gold-=12;const before=CAREER.hero.stats[stat];
+ if(!MINI||MINI.finished)return;
+ const v=needlePosition(),difference=Math.abs(v-.5);
+ // Outside the wide success area is a miss: training cost remains, no stat gain.
+ const gain=difference<.075?3:difference<.20?2:0;
+ const stat=MINI.stat;MINI.finished=true;
+ CAREER.gold-=12;
+ const before=CAREER.hero.stats[stat];
  CAREER.hero.stats[stat]=Math.min(10,before+gain);
- careerMessage('훈련 성공! '+({str:'근력',agi:'민첩',end:'체력',focus:'집중'}[stat])+' +'+(CAREER.hero.stats[stat]-before));
+ const applied=CAREER.hero.stats[stat]-before;
+ const rank=gain===3?'perfect':gain===2?'success':'fail';
+ const label=gain===3?'대성공!':gain===2?'성공!':'실패!';
+ const name={str:'근력',agi:'민첩',end:'체력',focus:'집중'}[stat];
+ const result=$('#careerTrainingResult');
+ result.className='career-training-result '+rank;
+ result.textContent=label+'  ·  '+name+' +'+applied+(gain===0?' · 훈련비 12D 소모':'');
+ result.hidden=false;
+ $('#careerHit').hidden=true;
+ $('#careerCancel').textContent='루두스로 돌아가기';
+ CAREER.message=label+' '+name+' +'+applied;
+ saveCareer();
+}
+function closeTraining(){
+ MINI=null;$('#careerMini').hidden=true;renderCareer();
 }
 $('#careerEnter').onclick=enterCareer;
 $('#careerExit').onclick=()=>{if(MINI)return;$('#careerHub').hidden=true;returnToLudus();};
 $('#careerHit').onclick=completeTraining;
-$('#careerCancel').onclick=()=>{MINI=null;$('#careerMini').hidden=true;};
-window.addEventListener('keydown',e=>{if(MINI&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
+$('#careerCancel').onclick=closeTraining;
+window.addEventListener('keydown',e=>{if(MINI&&!MINI.finished&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
 function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,footworkSeed:enemy?1.45:0.38};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 function start(mode='new'){
