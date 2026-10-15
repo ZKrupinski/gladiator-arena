@@ -158,6 +158,7 @@ const AUTO_IDLE_SECONDS=2;
 const PARRY_WINDOW=.50, PARRY_GUARD_HOLD=.43;
 const PARRY_SIDE_BONUS=170, PARRY_MIN_DISTANCE=495; // Wide left/right parry zone.
 const PARRY_COUNTER_IFRAMES=.72; // After parry, defender cannot take damage during recoil.
+const COMBO_CHAIN_SECONDS=3, COMBO_DASH_COST=20, COMBO_DASH_DURATION=.68;
 
  // Shadow matte cleanup runs once when a character sprite atlas finishes loading.
  // Keep solid boots, weapons and anti-aliased silhouette pixels near solid art.
@@ -227,8 +228,8 @@ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),rand=(a,b)=>a+Math.random()*(b-a)
 let S={phase:'title',time:90,round:1,player:null,enemy:null,keys:new Set(),events:[],sparks:[],parryBursts:[],notice:'',noticeT:0,shake:0,flash:0,fx:true,paused:false,slow:0,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
 let t0=0,clock=0,ctxAudio=null,sounds=true;
 function fxSound(type){if(!sounds)return;try{ctxAudio??=new (window.AudioContext||window.webkitAudioContext)();if(ctxAudio.state==='suspended')ctxAudio.resume();const t=ctxAudio.currentTime;const osc=ctxAudio.createOscillator(),gain=ctxAudio.createGain();osc.type=type==='hit'?'sawtooth':'triangle';osc.frequency.setValueAtTime(type==='hit'?170:390,t);osc.frequency.exponentialRampToValueAtTime(type==='hit'?65:180,t+.14);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(type==='hit'?.19:.09,t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain).connect(ctxAudio.destination);osc.start(t);osc.stop(t+.19);}catch(e){sounds=false;}}
-function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0};}
-function setAction(f,name,time){f.action=name;f.actionT=time;}
+function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null};}
+function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 function start(mode='new'){
  if(mode==='new'){S.round=1;S.totalScore=0;}
  if(mode==='continue'){S.totalScore+=S.score;S.round++;}
@@ -257,6 +258,7 @@ function beginGuard(f,hold=PARRY_GUARD_HOLD){
 function autoPilotPlayer(p,e,dt){
  if(!p||!e||p.dead||e.dead)return;
  const distance=Math.abs(e.x-p.x),dir=Math.sign(e.x-p.x)||1;
+ if(p.comboDash)return;
  p.face=dir;p.guard=p.guardHold>0&&p.st>8&&p.stagger<=0;
  if(p.stagger>0||p.dodge>0||p.net>0)return;
  if(p.guard){p.vx=0;return;}
@@ -328,22 +330,75 @@ function finishFight(winner,loser){
  S.shake=Math.max(S.shake,22);emitAttackFx(winner,loser,true,false,true);
  return true;
 }
-function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stagger>0||f.attackCD>0)return;
- const cost=special?36:17;if(f.st<cost){if(!f.enemy)say('STAMINA LOW',.45);return;}if(special&&f.cd>0)return;
- f.st-=cost;f.attackCD=special?.65:.43;if(special)f.cd=6;
- f.face=Math.sign(victim.x-f.x)||f.face;setAction(f,special?'special':'attack',special?.48:.31);fxSound('swing');
- const dist=Math.abs(f.x-victim.x),reach=f.cfg.reach+(special?40:0);
+
+function breakAttackChain(f){f.chainHits=0;f.chainExpire=0;}
+function rollAttackVariant(f){
+ // All three types occur at random, with no identical consecutive attack.
+ f.attackVariant=f.attackVariant<0?Math.floor(Math.random()*3):(f.attackVariant+1+Math.floor(Math.random()*2))%3;
+ return f.attackVariant;
+}
+function startComboDash(f,victim){
+ if(f.st<COMBO_DASH_COST||!victim||victim.dead)return false;
+ f.st-=COMBO_DASH_COST;breakAttackChain(f);
+ f.face=Math.sign(victim.x-f.x)||f.face;
+ f.attackCD=COMBO_DASH_DURATION+.08;f.guard=false;f.parry=0;
+ f.comboDash={t:0,victim,dir:f.face,hit:false};
+ setAction(f,'comboDash',COMBO_DASH_DURATION);
+ f.invuln=Math.max(f.invuln,.26);
+ say(f.enemy?'ENEMY RUSH!':'4 HIT · LEAP RUSH!',.85);
+ fxSound('swing');
+ const atlas=f.cls==='thraex'?'fx_thraex':f.cls==='retiarius'?'fx_retiarius':'fx';
+ addFx(5,f.x+f.face*26,FLOOR-FIGHTER_DRAW_SIZE*.52,
+   {w:490,h:560,atlas,flip:f.face<0,owner:f,offsetX:f.face*26,duration:.26,alpha:.72});
+ return true;
+}
+function advanceComboDash(f,dt){
+ const a=f.comboDash;if(!a||S.phase!=='fight')return;
+ a.t+=dt;
+ const target=a.victim;
+ if(!target||target.dead){f.comboDash=null;breakAttackChain(f);return;}
+ if(a.t>=.17&&a.t<.43){
+   const direction=Math.sign(target.x-f.x)||a.dir;
+   const gap=Math.max(0,Math.abs(target.x-f.x)-(MIN_FIGHTER_DISTANCE-20));
+   f.x=clamp(f.x+direction*Math.min(gap,1040*dt),105,1175);
+   f.vx=direction*1040;
+ }
+ if(!a.hit&&a.t>=.39){
+   a.hit=true;f.comboDash=null;
+   attack(f,target,false,true);
+ }
+ if(a.t>=COMBO_DASH_DURATION)f.comboDash=null;
+}
+function attack(f,victim,special=false,dashImpact=false){
+ if(!f||!victim||S.phase!=='fight'||f.dead||victim.dead||f.stagger>0)return;
+ if(!dashImpact&&(f.attackCD>0||f.comboDash))return;
+ if(!dashImpact&&f.chainHits&&clock>f.chainExpire)breakAttackChain(f);
+ if(!special&&!dashImpact&&f.chainHits>=3&&clock<=f.chainExpire){
+   if(f.st<COMBO_DASH_COST){if(!f.enemy)say('STAMINA LOW',.45);return;}
+   startComboDash(f,victim);return;
+ }
+ if(!dashImpact){
+   const cost=special?36:17;
+   if(f.st<cost){if(!f.enemy)say('STAMINA LOW',.45);return;}
+   if(special&&f.cd>0)return;
+   f.st-=cost;f.attackCD=special?.65:.43;
+   if(special){f.cd=6;breakAttackChain(f);}else rollAttackVariant(f);
+   f.face=Math.sign(victim.x-f.x)||f.face;
+   setAction(f,special?'special':'attack',special?.48:.35);fxSound('swing');
+ }
+ const dist=Math.abs(f.x-victim.x),reach=f.cfg.reach+(special?40:0)+(dashImpact?102:0);
  // Perfect parry has a separate, much wider horizontal reach. Normal hits do not.
  const parryDistance=Math.max(PARRY_MIN_DISTANCE,reach+PARRY_SIDE_BONUS);
  const wideParry=victim.guard&&victim.st>0&&victim.parry>0&&victim.dodge<=0&&dist<=parryDistance;
  if((dist>reach&&!wideParry)||victim.dodge>0){
   if(!f.enemy)say(dist>reach?'OUT OF RANGE':'DODGE!',.5);
-  emitAttackFx(f,victim,special,false,false);
+  emitAttackFx(f,victim,special,false,false,f.attackVariant,dashImpact);
+  if(!special)breakAttackChain(f);
   return;
  }
  // This was missing: after a successful parry, the defender must NOT receive a follow-up hit.
- if(victim.invuln>0){emitAttackFx(f,victim,special,false,false);return;}
- let dmg=special?f.cfg.sp:f.cfg.atk;
+ if(victim.invuln>0){emitAttackFx(f,victim,special,false,false,f.attackVariant,dashImpact);if(!special)breakAttackChain(f);return;}
+ let dmg=dashImpact?Math.round(f.cfg.atk*(f.enemy?1.55:2.25)+12):(special?f.cfg.sp:f.cfg.atk);
  if(special&&f.cls==='thraex')dmg+=8;
  if(wideParry){
    // Parry counterstrike always damages the ATTACKER, never the defender.
@@ -358,6 +413,7 @@ function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stag
    victim.parry=0;victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
    victim.st=clamp(victim.st-(special?12:7),0,100);
    f.hp=Math.max(0,f.hp-counterDamage);
+   breakAttackChain(f);f.comboDash=null;
    const away=Math.sign(f.x-victim.x)||-f.face;
    f.stagger=special?.76:.6;f.attackCD=Math.max(f.attackCD,special?.85:.72);
    setAction(f,'hit',f.stagger);
@@ -381,21 +437,62 @@ function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stag
    else updateHud();
    return;
  }
- if(victim.guard&&victim.st>0){dmg*=special?.45:.16;victim.st=clamp(victim.st-(special?37:18),0,100);if(victim.st===0){victim.guard=false;victim.stagger=.44;say('GUARD BREAK!');}else if(!f.enemy)say('GUARDED',.42);}
- else{victim.stagger=special?.48:.24;setAction(victim,'hit',.31);}
+ if(victim.guard&&victim.st>0){dmg*=special?.45:dashImpact?.32:.16;victim.st=clamp(victim.st-(special?37:dashImpact?42:18),0,100);if(victim.st===0){victim.guard=false;victim.stagger=.44;say('GUARD BREAK!');}else if(!f.enemy)say('GUARDED',.42);}
+ else{victim.stagger=dashImpact?.78:special?.48:.24;setAction(victim,'hit',dashImpact?.67:.31);}
  if(special&&f.cls==='retiarius'){victim.net=.95;victim.stagger=Math.max(victim.stagger,.85);say('NET TRAP!');}
  if(special&&f.cls==='murmillo'){victim.st=clamp(victim.st-21,0,100);say('SCUTUM IMPACT!');}
  if(special&&f.cls==='thraex')say('SICA CROSS CUT!');
- victim.hp=Math.max(0,victim.hp-dmg);victim.x=clamp(victim.x+f.face*(special?69:26),125,1165);S.shake=Math.max(S.shake,special?14:6);S.flash=Math.max(S.flash,special?.18:.09);
- emitAttackFx(f,victim,special,victim.guard&&victim.st>0,false);
+ const guarded=!!(victim.guard&&victim.st>0);
+ victim.hp=Math.max(0,victim.hp-dmg);
+ if(!guarded)breakAttackChain(victim);
+ if(dashImpact){
+  const dir=Math.sign(victim.x-f.x)||f.face;
+  victim.x=clamp(victim.x+dir*130,125,1165);
+  victim.knockVX=dir*770;victim.knockT=.57;
+  victim.stagger=Math.max(victim.stagger,.68);
+  S.shake=Math.max(S.shake,24);S.flash=Math.max(S.flash,.29);
+  say('4 HIT · RUSH BREAK!',1.05);
+ }else{
+  victim.x=clamp(victim.x+f.face*(special?69:26),125,1165);
+  S.shake=Math.max(S.shake,special?14:6);S.flash=Math.max(S.flash,special?.18:.09);
+ }
+ emitAttackFx(f,victim,special,guarded,false,f.attackVariant,dashImpact);
  if(!f.enemy){S.score+=Math.round(dmg);S.combo++;}else S.combo=0;
- fxSound('hit');if(victim.hp<=0)finishFight(f,victim);
+ if(!special&&!dashImpact){
+  if(!guarded){
+    f.chainHits=Math.min(3,f.chainHits+1);
+    f.chainExpire=clock+COMBO_CHAIN_SECONDS;
+    if(f.chainHits===3&&!f.enemy)say('3 HIT · 4TH RUSH READY!',1);
+  }else breakAttackChain(f);
+ }else if(dashImpact)breakAttackChain(f);
+ fxSound('hit');if(victim.hp<=0)finishFight(f,victim);else updateHud();
 }
 function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.dodge=.34;f.invuln=.3;setAction(f,'dodge',.34);f.x=clamp(f.x+(f.enemy?-1:-1)*f.face*84,120,1160);const p=weaponPoint(f,'dodge');addFx(1,p.x,p.y,{w:148,h:92,flip:f.face<0,duration:.11});}
 function inputAct(action){if(S.phase!=='fight'||S.paused)return;if(action==='attack')attack(S.player,S.enemy);else if(action==='special')attack(S.player,S.enemy,true);else if(action==='dodge')dodge(S.player);else if(action==='guard'){S.keys.add('guard');}}
-function choosePose(f){if(S.phase==='finisher'||S.phase==='result'){if(S.resultApplied){const won=(f===S.player)===S.resultWin;
-    if(S.phase==='finisher'&&S.resultAnim<.26)return won?'special':'hit';
-    return won?'finisher':'defeat';}}if(f.dead)return 'defeat';if(f.actionT>0)return f.action;if(f.guard)return 'guard';if(Math.abs(f.vx)>7)return 'walk';return 'idle';}
+function choosePose(f){
+ if(S.phase==='finisher'||S.phase==='result'){
+  if(S.resultApplied){const won=(f===S.player)===S.resultWin;
+   if(S.phase==='finisher'&&S.resultAnim<.26)return won?'special':'hit';
+   return won?'finisher':'defeat';}
+ }
+ if(f.dead)return 'defeat';
+ if(f.actionT>0){
+  const t=clamp(1-f.actionT/Math.max(.01,f.actionDuration),0,1);
+  if(f.action==='attack'){
+   if(f.attackVariant===1)return t<.18?'guard':'special';
+   if(f.attackVariant===2)return t<.22?'walk':'attack';
+   return 'attack';
+  }
+  if(f.action==='comboDash'){
+   if(f.comboDash&&f.comboDash.t<.17)return 'dodge';
+   return f.comboDash&&f.comboDash.t<.4?'special':'attack';
+  }
+  return f.action;
+ }
+ if(f.guard)return 'guard';
+ if(Math.abs(f.vx)>7)return 'walk';
+ return 'idle';
+}
 function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  S.shake=Math.max(0,S.shake-dt*49);S.flash=Math.max(0,S.flash-dt*.9);S.noticeT=Math.max(0,S.noticeT-dt);
  S.sparks=S.sparks.filter(v=>(v.t+=dt)<v.max);S.parryBursts=S.parryBursts.filter(v=>(v.t+=dt)<v.max);if(S.phase==='result')return;
@@ -408,7 +505,11 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  f.parry=Math.max(0,f.parry-dt);f.guardHold=Math.max(0,f.guardHold-dt);
  f.guardRecovery=Math.max(0,f.guardRecovery-dt);f.knockT=Math.max(0,f.knockT-dt);
  f.st=clamp(f.st+dt*(f.guard?3:21),0,100);f.walkT+=dt;f.vx=0;
+ if(f.chainHits>0&&clock>f.chainExpire)breakAttackChain(f);
  }
+ // Dash is simulated independently of the input/auto AI.
+ for(const f of [p,e])advanceComboDash(f,dt);
+ if(S.phase!=='fight'){updateHud();return;}
  const activeHold=S.keys.has('left')||S.keys.has('right')||S.keys.has('guard');
  S.autoPlaying=!!(S.autoplayEnabled&&!activeHold&&(clock-S.lastManualInput)>=AUTO_IDLE_SECONDS);
  if(S.autoPlaying){autoPilotPlayer(p,e,dt);}
@@ -417,10 +518,10 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
    if(wantsGuard){if(!p.guard)beginGuard(p,.3);p.guard=true;}
    else{p.guard=false;p.parry=0;p.guardHold=0;}
    if(p.guard)p.st=clamp(p.st-dt*9,0,100);
-   if(p.stagger<=0&&!p.guard){const l=S.keys.has('left'),r=S.keys.has('right');p.vx=((r?1:0)-(l?1:0))*p.cfg.move*(p.net>0?.55:1);p.x+=p.vx*dt;}
+   if(p.stagger<=0&&!p.guard&&!p.comboDash){const l=S.keys.has('left'),r=S.keys.has('right');p.vx=((r?1:0)-(l?1:0))*p.cfg.move*(p.net>0?.55:1);p.x+=p.vx*dt;}
  }
  e.guard=e.guardHold>0&&e.st>8&&e.stagger<=0;
- if(e.stagger<=0){
+ if(e.stagger<=0&&!e.comboDash){
   const dist=Math.abs(e.x-p.x),dir=Math.sign(p.x-e.x)||-1;e.face=dir;
   const preferred=Math.max(MIN_FIGHTER_DISTANCE+AI_SPACING_BUFFER,e.cfg.reach-13);
   if(!e.guard){
