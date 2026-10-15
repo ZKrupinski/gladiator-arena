@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.2</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.2.1</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -239,9 +239,17 @@ body{min-height:100dvh;overscroll-behavior:none}
 #careerHit[hidden]{display:none!important}
 @keyframes careerGradePop{from{opacity:.3;transform:translateY(9px) scale(.9)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.career-training-result{animation:none}}
+
+/* v4.2.1 equipment state visibility */
+#careerHub .career-gear{position:relative;padding-top:35px;border:2px solid #806348;background:linear-gradient(135deg,#38251c,#281b15);transition:border-color .14s,background .14s,box-shadow .14s}
+#careerHub .career-gear .gear-status{position:absolute;right:8px;top:7px;padding:3px 9px;border-radius:99px;background:#352b27;color:#c8b39b;font:800 11px/1.35 system-ui,sans-serif;letter-spacing:.01em}
+#careerHub .career-gear.is-equipped{border-color:#ffe0a0;background:linear-gradient(125deg,#89602d,#4f351c);box-shadow:inset 0 0 0 1px #ffe4ac88,0 0 18px #f0bf6a63}
+#careerHub .career-gear.is-equipped .gear-status{background:#ffe1a3;color:#2c1a0d}
+#careerHub .career-gear.is-equipped strong{color:#fff1d4}
+#careerHub .career-gear:not(.is-equipped):not(:disabled):hover{border-color:#deb77e}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.2</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.2.1</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -638,7 +646,7 @@ function renderCareer(){
  ['agi','민첩 · 회피 발놀림','이동 속도 증가'],
  ['end','체력 · 지구력 훈련','최대 체력 증가'],
  ['focus','집중 · 타격 집중','필살기 공격력 증가']
- ].map(([id,n,d])=>'<button class="career-option" data-train="'+id+'" '+(CAREER.gold<12||h.stats[id]>=10?'disabled':'')+'><strong>'+n+'</strong><small>'+d+'</small></button>').join('')+'</div><h3>장비 공방 · ARMAMENTARIUM</h3><div class="career-options">'+GEAR.filter(g=>g.id!=='wood').map(g=>'<button class="career-option" data-gear="'+g.id+'" '+(CAREER.gold<g.cost&&!h.inventory.includes(g.id)?'disabled':'')+'><strong>'+g.name+' · '+(h.inventory.includes(g.id)?'보유':g.cost+'D')+'</strong><small>'+g.desc+(h.equipment[g.slot]===g.id?' · 장착 중 (다시 눌러 해제)':' · 눌러 장착')+'</small></button>').join('')+'</div><div class="career-buttons"><button id="careerHeal" '+(h.injury<=0||CAREER.gold<Math.max(12,Math.ceil(h.injury*.6))?'disabled':'')+'>치료 · '+Math.max(12,Math.ceil(h.injury*.6))+'D</button><button id="careerFight" '+(h.injury>=80?'disabled':'')+'>⚔ 시합 출전 · '+(CAREER.fights+1)+'회차</button></div></div>';
+ ].map(([id,n,d])=>'<button class="career-option" data-train="'+id+'" '+(CAREER.gold<12||h.stats[id]>=10?'disabled':'')+'><strong>'+n+'</strong><small>'+d+'</small></button>').join('')+'</div><h3>장비 공방 · ARMAMENTARIUM</h3><div class="career-options">'+GEAR.filter(g=>g.id!=='wood').map(g=>'<button class="career-option career-gear '+(h.equipment[g.slot]===g.id?'is-equipped':'')+'" data-gear="'+g.id+'" aria-pressed="'+(h.equipment[g.slot]===g.id)+'" '+(CAREER.gold<g.cost&&!h.inventory.includes(g.id)?'disabled':'')+'><span class="gear-status">'+(h.equipment[g.slot]===g.id?'✓ 장착 중':h.inventory.includes(g.id)?'장착 가능':'미보유')+'</span><strong>'+g.name+'</strong><small>'+g.desc+' · '+(h.equipment[g.slot]===g.id?'장착 해제':h.inventory.includes(g.id)?'장착하기':g.cost+'D 구매·장착')+'</small></button>').join('')+'</div><div class="career-buttons"><button id="careerHeal" '+(h.injury<=0||CAREER.gold<Math.max(12,Math.ceil(h.injury*.6))?'disabled':'')+'>치료 · '+Math.max(12,Math.ceil(h.injury*.6))+'D</button><button id="careerFight" '+(h.injury>=80?'disabled':'')+'>⚔ 시합 출전 · '+(CAREER.fights+1)+'회차</button></div></div>';
  $('#careerBody').innerHTML=summary+hire;
  for(const el of document.querySelectorAll('[data-hire]'))el.onclick=()=>{
   const cls=el.dataset.hire,cost={murmillo:110,thraex:120,retiarius:130}[cls];
