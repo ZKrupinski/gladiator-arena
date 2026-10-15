@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v3.0</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v3.1</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -84,7 +84,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 @media(prefers-reduced-motion:reduce){.result-pose-art{animation:none!important}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 3.0</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 3.1</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -133,8 +133,8 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 2초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=3.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=3.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=3.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=3.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=3.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=3.0-g753935a6", "bg": "assets/new-era/arena.webp?v=3.0-g753935a6"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.0 (triple randomized attacks and fourth-hit leap dash)
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=3.1-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=3.1-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=3.1-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=3.1-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=3.1-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=3.1-g753935a6", "bg": "assets/new-era/arena.webp?v=3.1-g753935a6"};</script>
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.1 (less aggressive opponent and accessible four-hit combos)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -158,7 +158,10 @@ const AUTO_IDLE_SECONDS=2;
 const PARRY_WINDOW=.50, PARRY_GUARD_HOLD=.43;
 const PARRY_SIDE_BONUS=170, PARRY_MIN_DISTANCE=495; // Wide left/right parry zone.
 const PARRY_COUNTER_IFRAMES=.72; // After parry, defender cannot take damage during recoil.
-const COMBO_CHAIN_SECONDS=3, COMBO_DASH_COST=20, COMBO_DASH_DURATION=.68;
+const COMBO_CHAIN_SECONDS=3.8, COMBO_DASH_COST=20, COMBO_DASH_DURATION=.68;
+// Enemy attack/parry cadence and the short recovery after a player hit are tuned for four-hit combos.
+const ENEMY_ATTACK_RATE=.58, ENEMY_PARRY_RATE=.72, ENEMY_ATTACK_RECOVERY=.72;
+const COMBO_PRESSURE_RECOVERY=.92;
 
  // Shadow matte cleanup runs once when a character sprite atlas finishes loading.
  // Keep solid boots, weapons and anti-aliased silhouette pixels near solid art.
@@ -228,7 +231,7 @@ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),rand=(a,b)=>a+Math.random()*(b-a)
 let S={phase:'title',time:90,round:1,player:null,enemy:null,keys:new Set(),events:[],sparks:[],parryBursts:[],notice:'',noticeT:0,shake:0,flash:0,fx:true,paused:false,slow:0,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
 let t0=0,clock=0,ctxAudio=null,sounds=true;
 function fxSound(type){if(!sounds)return;try{ctxAudio??=new (window.AudioContext||window.webkitAudioContext)();if(ctxAudio.state==='suspended')ctxAudio.resume();const t=ctxAudio.currentTime;const osc=ctxAudio.createOscillator(),gain=ctxAudio.createGain();osc.type=type==='hit'?'sawtooth':'triangle';osc.frequency.setValueAtTime(type==='hit'?170:390,t);osc.frequency.exponentialRampToValueAtTime(type==='hit'?65:180,t+.14);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(type==='hit'?.19:.09,t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain).connect(ctxAudio.destination);osc.start(t);osc.stop(t+.19);}catch(e){sounds=false;}}
-function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null};}
+function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 function start(mode='new'){
  if(mode==='new'){S.round=1;S.totalScore=0;}
@@ -273,7 +276,8 @@ function autoPilotPlayer(p,e,dt){
  }
  if(distance<=e.cfg.reach && enemyWindingUp && p.st>35 && p.dodge<=0 && Math.random()<dt*.6){dodge(p);return;}
  if(distance<=p.cfg.reach+12&&p.attackCD<=0&&p.st>=17){
-   const useSpecial=p.cd<=0&&p.st>=45&&Math.random()<.36;
+   // AUTO now completes the 4th-hit rush instead of interrupting it with specials.
+  const useSpecial=p.chainHits===0&&p.cd<=0&&p.st>=45&&Math.random()<.26;
    attack(p,e,useSpecial);
  }
 }
@@ -466,6 +470,16 @@ function attack(f,victim,special=false,dashImpact=false){
  const guarded=wasGuarding;
  victim.hp=Math.max(0,victim.hp-dmg);
  if(!guarded)breakAttackChain(victim);
+ // Each connected ordinary player hit buys a short, fair window for the next hit.
+ // The rival still defends normally outside a confirmed three-hit chain.
+ if(!f.enemy&&!special&&!dashImpact&&!guarded&&victim.hp>0){
+   victim.pressureT=Math.max(victim.pressureT,COMBO_PRESSURE_RECOVERY);
+   victim.stagger=Math.max(victim.stagger,.35);
+   setAction(victim,'hit',.36);
+   victim.attackCD=Math.max(victim.attackCD,ENEMY_ATTACK_RECOVERY);
+   victim.guardRecovery=Math.max(victim.guardRecovery,COMBO_PRESSURE_RECOVERY);
+   victim.guard=false;victim.guardHold=0;victim.parry=0;
+ }
  if(dashImpact){
   const dir=Math.sign(victim.x-f.x)||f.face;
   victim.x=clamp(victim.x+dir*130,125,1165);
@@ -525,6 +539,7 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  f.invuln=Math.max(0,f.invuln-dt);f.net=Math.max(0,f.net-dt);
  f.parry=Math.max(0,f.parry-dt);f.guardHold=Math.max(0,f.guardHold-dt);
  f.guardRecovery=Math.max(0,f.guardRecovery-dt);f.knockT=Math.max(0,f.knockT-dt);
+ f.pressureT=Math.max(0,f.pressureT-dt);
  f.st=clamp(f.st+dt*(f.guard?3:21),0,100);f.walkT+=dt;f.vx=0;
  if(f.chainHits>0&&clock>f.chainExpire)breakAttackChain(f);
  }
@@ -541,7 +556,7 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
    if(p.guard)p.st=clamp(p.st-dt*9,0,100);
    if(p.stagger<=0&&!p.guard&&!p.comboDash){const l=S.keys.has('left'),r=S.keys.has('right');p.vx=((r?1:0)-(l?1:0))*p.cfg.move*(p.net>0?.55:1);p.x+=p.vx*dt;}
  }
- e.guard=e.guardHold>0&&e.st>8&&e.stagger<=0;
+ e.guard=e.pressureT<=0&&e.guardHold>0&&e.st>8&&e.stagger<=0;
  if(e.stagger<=0&&!e.comboDash){
   const dist=Math.abs(e.x-p.x),dir=Math.sign(p.x-e.x)||-1;e.face=dir;
   const preferred=Math.max(MIN_FIGHTER_DISTANCE+AI_SPACING_BUFFER,e.cfg.reach-13);
@@ -549,12 +564,20 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
    if(dist>preferred+22){e.vx=dir*e.cfg.move*.68;e.x+=e.vx*dt;}
    else if(dist<preferred-22){e.vx=-dir*e.cfg.move*.32;e.x+=e.vx*dt;}
    const threat=(p.action==='attack'||p.action==='special')&&p.actionT>.06;
-   if(dist<=Math.max(PARRY_MIN_DISTANCE,p.cfg.reach+PARRY_SIDE_BONUS)&&e.st>18&&e.guardRecovery<=0&&
-     (threat||Math.random()<dt*1.75)){
-     if(beginGuard(e,.44))e.guardRecovery=.76;
+   if(e.pressureT<=0){
+     // Occasional anticipatory parry instead of virtually guaranteed instant defence.
+     if(dist<=Math.max(PARRY_MIN_DISTANCE,p.cfg.reach+PARRY_SIDE_BONUS)&&
+       e.st>18&&e.guardRecovery<=0&&
+       ((threat&&Math.random()<dt*.85)||Math.random()<dt*ENEMY_PARRY_RATE)){
+       if(beginGuard(e,.38))e.guardRecovery=1.05;
+     }
+     // Reduce attack frequency and place a distinct gap after each enemy swing.
+     if(!e.guard&&dist<e.cfg.reach+12&&e.attackCD<=0&&
+       Math.random()<dt*(e.st<25?.17:ENEMY_ATTACK_RATE)){
+       attack(e,p,e.cd<=0&&Math.random()<.15);
+       e.attackCD=Math.max(e.attackCD,ENEMY_ATTACK_RECOVERY);
+     }
    }
-   if(!e.guard&&dist<e.cfg.reach+12&&e.attackCD<=0&&Math.random()<dt*(e.st<25?.21:1.18))
-      attack(e,p,e.cd<=0&&Math.random()<.24);
   }
  }
  p.face=Math.sign(e.x-p.x)||p.face;
