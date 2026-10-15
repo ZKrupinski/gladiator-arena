@@ -1,6 +1,6 @@
 # GLADIATOR — SPARTACUS / THE GLADIUS RENAISSANCE
 
-Version: **New Era v2.9**. One playable version only. The old **「전설의 시작」 classic combat** and its assets are no longer distributed from `public/`.
+Version: **New Era v2.9.1**. One playable version only. The old **「전설의 시작」 classic combat** and its assets are no longer distributed from `public/`.
 
 ## Play / deployment
 - Git-backed Cloudflare Pages: https://gladiator-arena-git.pages.dev/
@@ -22,7 +22,7 @@ Version: **New Era v2.9**. One playable version only. The old **「전설의 시
 - '다시 하기' rematches; after a win '계속 하기' advances; after a defeat 'Ludus로 돌아가기' returns to the title.
 
 ## Scope of the art
-The 10 frames per fighter are **key poses**, not fully in-betweened 3D skeletal animation. Movement between them uses simple runtime offsets. Current PNG art should be refined separately when clipped weapon edges, transparent fringe pixels, or art-layer misalignment is present. The source images themselves are not modified by a runtime layout update.
+The 10 frames per fighter are **key poses**, not fully in-betweened 3D skeletal animation. Movement between them uses simple runtime offsets. Attack effects follow their own attacking fighter; the title roster order is Retiarius, Thraex, Murmillo. Current PNG art should be refined separately when clipped weapon edges, transparent fringe pixels, or art-layer misalignment is present. The source images themselves are not modified by a runtime layout update.
 
 ## Local play
 ```sh
