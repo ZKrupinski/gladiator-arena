@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v3.9</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.0</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -89,9 +89,76 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 @keyframes resultBannerReveal{0%{opacity:0;transform:scale(.63) translateY(24px)}55%{opacity:1;transform:scale(1.045) translateY(-4px)}100%{opacity:1;transform:scale(1) translateY(0)}}
 @media(max-width:720px){.result-banner{max-height:132px;margin:-5px auto -3px}}
 @media(prefers-reduced-motion:reduce){.result-banner{animation:none}}
+
+/* v4.0: viewport-first arena and result composition. Browser fullscreen API is
+   gesture/UA restricted, so layout fills the viewport without needing permission. */
+html,body{width:100%;height:100%;overflow:hidden}
+body{min-height:100dvh;overscroll-behavior:none}
+.page{width:100%;max-width:none;height:100vh;height:100dvh;min-height:0;margin:0;padding:6px 12px;display:flex;flex-direction:column;overflow:hidden}
+.masthead{flex:0 0 auto;padding:2px 0 5px;min-height:31px}
+.brand{font-size:clamp(15px,1.8vw,23px)}.brand small{font-size:8px;margin-top:2px}
+.links a{padding:4px 8px}
+.headline{flex:0 0 auto;margin:4px 0;min-height:22px}
+.hud{flex:0 0 auto;padding:2px 0 6px;grid-template-columns:1fr 100px 1fr}
+.hud-unit{padding:5px 10px}.meter{height:8px;margin-top:4px}.meter.st{height:4px;margin-top:3px}
+.timer{font-size:30px}.timer small{margin-bottom:1px}
+.arena-wrap,.arena-wrap:has(#startScreen:not([hidden])){width:100%;height:100%;min-height:0;flex:1 1 auto;aspect-ratio:auto;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.arena-wrap canvas{display:block;width:100%;height:100%;aspect-ratio:auto;object-fit:contain}
+.footrow{flex:0 0 auto;margin-top:3px;gap:4px;font-size:10px;min-height:27px}
+.footrow button{padding:3px 8px}.notes{display:none}
+/* Overlays detach from the canvas sizing. Both fit the device viewport. */
+.overlay-title,.overlay-ending{position:fixed;inset:0;z-index:20;overflow:hidden;box-sizing:border-box}
+.overlay-ending{padding:8px;align-items:center;justify-content:center}
+.stage-panel-ending{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+ width:min(95vw,740px);max-width:none;min-width:0;height:auto;max-height:calc(100dvh - 16px);
+ overflow:visible;padding:clamp(8px,1.8vh,20px) clamp(12px,2.8vw,24px)}
+.stage-panel-ending .eyebrow{flex:0 0 auto;font-size:clamp(8px,1.1vh,11px)}
+.stage-panel-ending .result-banner{flex:0 1 auto;min-height:0;width:min(90%,560px);max-height:min(20dvh,140px);
+ object-fit:contain;margin:-2px auto}
+.stage-panel-ending .result-poses{flex:0 1 auto;min-height:0;width:100%;max-width:510px;margin:0 auto 4px;gap:5px}
+.stage-panel-ending .result-pose-art{width:min(100%,18dvh,164px);min-width:0;aspect-ratio:1}
+.stage-panel-ending .result-pose-card>span{font-size:clamp(9px,1.7vh,12px)}
+.stage-panel-ending .result-pose-card small{font-size:clamp(7px,1.3vh,9px)}
+.stage-panel-ending p{flex:0 0 auto;max-width:100%;margin:3px auto;font-size:clamp(10px,1.6vh,12px);line-height:1.3}
+.stage-panel-ending .end-actions{flex:0 0 auto;width:100%;margin:7px auto 0;gap:8px}
+.stage-panel-ending .end-actions button{min-height:36px;padding:7px 11px;font-size:clamp(11px,1.7vh,14px)}
+@media(max-height:620px){
+ .masthead{min-height:22px}.brand small{display:none}.headline{margin:1px 0}.headline .subtitle{display:none}
+ .hud{padding-bottom:2px}.timer{font-size:24px}.hud-unit{padding:2px 7px}
+ .footrow{min-height:22px}.footrow>span{display:none}
+ .stage-panel-ending{padding:5px 13px;max-height:calc(100dvh - 8px)}
+ .stage-panel-ending .result-banner{max-height:17dvh;width:min(82%,430px)}
+ .stage-panel-ending .result-pose-art{width:min(100%,17dvh,118px)}
+ .stage-panel-ending .result-poses{margin-bottom:0}
+ .stage-panel-ending p{margin:2px auto;font-size:10px}
+ .stage-panel-ending .end-actions{margin-top:4px}
+ .stage-panel-ending .end-actions button{min-height:32px;padding:4px 8px}
+}
+@media(max-height:390px) and (orientation:landscape){
+ .stage-panel-ending{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:
+ "eyebrow eyebrow" "banner poses" "reason poses" "stats poses" "actions actions";
+ column-gap:12px;row-gap:1px;width:min(96vw,840px)}
+ .stage-panel-ending .eyebrow{grid-area:eyebrow}
+ .stage-panel-ending .result-banner{grid-area:banner;width:100%;max-height:27dvh}
+ .stage-panel-ending .result-poses{grid-area:poses}
+ .stage-panel-ending #endReason{grid-area:reason}
+ .stage-panel-ending #endStats{grid-area:stats}
+ .stage-panel-ending .end-actions{grid-area:actions}
+ .stage-panel-ending .result-pose-art{width:min(100%,23dvh,96px)}
+}
+@media(max-width:720px){
+ .page{padding:3px 5px}
+ .masthead{padding:1px 3px}.links a{font-size:9px;padding:2px 5px}
+ .headline{padding:0 3px}.hud{grid-template-columns:1fr 58px 1fr;gap:4px}
+ .hud-line{font-size:9px}.timer{font-size:24px}
+ .stage-panel-ending{width:min(97vw,600px);min-width:0;overflow:visible}
+ .stage-panel-ending .result-banner{max-height:18dvh}
+ .stage-panel-ending .result-pose-art{width:min(100%,17dvh,136px)}
+ .stage-panel-ending .end-actions button{min-width:0}
+}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 3.9</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.0</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -141,7 +208,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 2초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=3.9-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=3.9-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=3.9-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=3.9-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=3.9-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=3.9-g753935a6", "bg": "assets/new-era/arena.webp?v=3.9-g753935a6"};</script>
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
