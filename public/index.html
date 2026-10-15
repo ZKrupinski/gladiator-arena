@@ -897,50 +897,48 @@ function drawFighter(f){if(!f)return;const frame=FRAMES[choosePose(f)]??0;
  ctx.globalAlpha=1;
 
 }
-function drawResultFx(){if(!S.resultApplied||S.phase!=='finisher')return;const p=S.resultWin?S.player:S.enemy;if(!p)return;const t=S.resultAnim;if(t>.15&&t<1.85){ctx.save();ctx.globalAlpha=.75*Math.min(1,(t-.15)*3);ctx.strokeStyle='#ffe0a2';ctx.lineWidth=3;const x=p.x,y=FLOOR-218;for(let i=0;i<9;i++){const a=i*Math.PI*2/9+t*.6,r=90+Math.min(t,1)*65;ctx.beginPath();ctx.moveTo(x+Math.cos(a)*(r-23),y+Math.sin(a)*(r-23));ctx.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r);ctx.stroke();}ctx.restore();}}
+function drawIllustratedEffect(key,x,y,w,h,alpha=1,flip=false,rotation=0){
+ const img=CINEMATIC_IMG[key];
+ if(!img||!img.complete||!img.naturalWidth)return false;
+ ctx.save();ctx.translate(x,y);ctx.rotate(rotation);
+ if(flip)ctx.scale(-1,1);
+ ctx.globalAlpha=clamp(alpha,0,1);
+ ctx.drawImage(img,-w/2,-h/2,w,h);
+ ctx.restore();return true;
+}
+function drawResultFx(){
+ if(!S.resultApplied||S.phase!=='finisher')return;
+ const winner=S.resultWin?S.player:S.enemy;
+ if(!winner||S.resultAnim<.08||S.resultAnim>1.95)return;
+ const time=S.resultAnim,fade=clamp(Math.min(time*3,(1.95-time)*2.2),0,1);
+ // Hand-painted cinematic aura instead of simple nine-line victory rays.
+ drawIllustratedEffect('special_aura',winner.x,FLOOR-187,
+   680+time*110,680+time*110,fade*.78,winner.face<0,time*.08);
+}
 function drawParryBursts(){
  for(const b of S.parryBursts){
+   // Parry graphic uses the premium parry_burst image queued in attack().
+   // Keep only the useful floating damage amount, not a procedural circle.
+   if(!b.damage)continue;
    const t=b.t/b.max,fade=Math.max(0,1-t);
-   ctx.save();ctx.translate(b.x,b.y);ctx.globalAlpha=fade*.92;ctx.strokeStyle='#ffdf9c';
-   ctx.lineWidth=6-4*t;ctx.beginPath();ctx.ellipse(0,0,50+t*145,61+t*128,0,0,Math.PI*2);ctx.stroke();
-   ctx.strokeStyle='#fff';ctx.lineWidth=2;
-   for(let i=0;i<12;i++){
-     const angle=i*Math.PI/6,r=37+t*115,outer=r+16+fade*33;
-     ctx.beginPath();ctx.moveTo(Math.cos(angle)*r,Math.sin(angle)*r);
-     ctx.lineTo(Math.cos(angle)*outer,Math.sin(angle)*outer);ctx.stroke();
-   }
-   if(b.damage){
-   // A floating, attacker-side damage number disambiguates who lost HP.
-   ctx.globalAlpha=Math.min(1,fade*2);
-   ctx.font='900 31px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.save();ctx.globalAlpha=Math.min(1,fade*2);
+   ctx.font='900 32px system-ui,sans-serif';
+   ctx.textAlign='center';ctx.textBaseline='middle';
    ctx.lineWidth=6;ctx.strokeStyle='#231309';ctx.fillStyle='#fff0be';
-   const tx=b.hitX-b.x,ty=b.hitY-b.y-44*t;
-   ctx.strokeText('-'+b.damage,tx,ty);ctx.fillText('-'+b.damage,tx,ty);
-  }
-  ctx.restore();
+   const yy=b.hitY-47*t;
+   ctx.strokeText('-'+b.damage,b.hitX,yy);ctx.fillText('-'+b.damage,b.hitX,yy);
+   ctx.restore();
  }
 }
 function drawDashStreaks(){
  if(!S.fx||S.phase!=='fight')return;
  for(const f of [S.player,S.enemy]){
-  if(!f||!f.comboDash||f.comboDash.t<.17||f.comboDash.t>.44)continue;
-  const t=clamp((f.comboDash.t-.17)/.27,0,1);
-  ctx.save();ctx.translate(f.x,floorForDash()-170);ctx.scale(f.face||1,1);
-  ctx.globalAlpha=(1-t)*.68;
-  const grad=ctx.createLinearGradient(-265,0,98,0);
-  grad.addColorStop(0,'rgba(255,221,160,0)');
-  grad.addColorStop(.7,'rgba(255,220,172,.72)');
-  grad.addColorStop(1,'rgba(255,245,213,0)');
-  ctx.strokeStyle=grad;
-  for(let i=0;i<5;i++){
-   const y=-92+i*47,depth=55+i*18;
-   ctx.lineWidth=2.3+(i%2)*1.9;
-   ctx.beginPath();ctx.moveTo(-255-depth,y);ctx.quadraticCurveTo(-105,y-14,69,y-18);ctx.stroke();
-  }
-  ctx.restore();
+   if(!f||!f.comboDash||f.comboDash.t<.17||f.comboDash.t>.44)continue;
+   const t=clamp((f.comboDash.t-.17)/.27,0,1),dir=f.face||1;
+   drawIllustratedEffect('dash_trail',f.x-dir*70,FLOOR-170,
+     945,313,(1-t)*.73,dir<0);
  }
 }
-function floorForDash(){return FLOOR;}
 function drawEffects(){
  drawResultFx();
  drawDashStreaks();
@@ -948,11 +946,16 @@ function drawEffects(){
  for(const v of S.sparks){
   const cx=v.owner?v.owner.x+v.offsetX:v.x;
   const cy=v.owner?FLOOR-FIGHTER_DRAW_SIZE*.53+v.offsetY:v.y;
-  if(v.rotation){
-   ctx.save();ctx.translate(cx,cy);ctx.rotate(v.rotation);
-   atlasFrame(IMG[v.atlas]||IMG.fx,v.frame,-v.w/2,-v.h/2,v.w,v.h,v.flip,v.alpha);
-   ctx.restore();
-  }else atlasFrame(IMG[v.atlas]||IMG.fx,v.frame,cx-v.w/2,cy-v.h/2,v.w,v.h,v.flip,v.alpha);
+  const progress=clamp(v.t/Math.max(.001,v.max),0,1);
+  const fade=clamp(Math.min(progress*8+.18,(1-progress)*3),0,1);
+  const scale=.9+.13*progress;
+  if(v.art&&drawIllustratedEffect(v.art,cx,cy,v.w*scale,v.h*scale,
+    v.alpha*fade,v.flip,v.rotation))continue;
+  // Existing high-quality atlas art is an emergency fallback for missing WebP.
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(v.rotation);
+  atlasFrame(IMG[v.atlas]||IMG.fx,v.frame,-v.w/2,-v.h/2,
+    v.w,v.h,v.flip,v.alpha*fade);
+  ctx.restore();
  }
 }
 function render(){
