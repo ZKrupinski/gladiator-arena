@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v2.9.4</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v2.9.5</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -84,7 +84,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 @media(prefers-reduced-motion:reduce){.result-pose-art{animation:none!important}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.9.4</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.9.5</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -133,8 +133,8 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 2초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=2.9.4-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=2.9.4-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=2.9.4-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=2.9.4-g753935a6", "fx_thraex": "assets/new-era/fx_thraex_atlas.png?v=2.9.4-g753935a6", "fx_retiarius": "assets/new-era/fx_retiarius_atlas.png?v=2.9.4-g753935a6", "bg": "assets/new-era/arena.webp?v=2.9.4-g753935a6"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.9.4 (remove alpha ground shadows from character atlases)
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=2.9.5-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=2.9.5-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=2.9.5-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=2.9.5-g753935a6", "fx_thraex": "assets/new-era/fx_thraex_atlas.png?v=2.9.5-g753935a6", "fx_retiarius": "assets/new-era/fx_retiarius_atlas.png?v=2.9.5-g753935a6", "bg": "assets/new-era/arena.webp?v=2.9.5-g753935a6"};</script>
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.9.5 (Retiarius hit cleanup, generous parry)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -151,7 +151,8 @@ const DATA={
  retiarius:{name:'레티아리우스',eng:'RETIARIUS',hp:116,atk:16,reach:372,move:271,sp:36,color:'#accbb6',special:'RETE CAPTURA'}
 };
 const FRAMES={idle:0,walk:1,attack:2,special:3,guard:4,dodge:5,hit:6,net:7,finisher:8,defeat:9};
-const AUTO_IDLE_SECONDS=2; // Auto-battle starts after 2 seconds without active player input.
+const AUTO_IDLE_SECONDS=2;
+const PARRY_WINDOW=.50, PARRY_GUARD_HOLD=.43; // Auto-battle starts after 2 seconds without active player input.
 
  // Shadow matte cleanup runs once when a character sprite atlas finishes loading.
  // Keep solid boots, weapons and anti-aliased silhouette pixels near solid art.
@@ -218,10 +219,10 @@ const IMG={};let loaded=0;for(const key of ['bg','murmillo','thraex','retiarius'
   };im.onerror=()=>{if(key!=='bg'&&!im._fallback){im._fallback=true;im.src=String(ASSET[key]).replace('.png','.webp');return;}loaded++;console.error('asset failed',key,im.src);const st=$('#resourceStatus');if(st)st.textContent='일부 그래픽 파일을 읽지 못했습니다: '+key;};im.src=ASSET[key]||('assets/'+(key==='bg'?'arena.webp':key+'_atlas.png'));IMG[key]=im;
 }
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),rand=(a,b)=>a+Math.random()*(b-a);
-let S={phase:'title',time:90,round:1,player:null,enemy:null,keys:new Set(),events:[],sparks:[],notice:'',noticeT:0,shake:0,flash:0,fx:true,paused:false,slow:0,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
+let S={phase:'title',time:90,round:1,player:null,enemy:null,keys:new Set(),events:[],sparks:[],parryBursts:[],notice:'',noticeT:0,shake:0,flash:0,fx:true,paused:false,slow:0,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
 let t0=0,clock=0,ctxAudio=null,sounds=true;
 function fxSound(type){if(!sounds)return;try{ctxAudio??=new (window.AudioContext||window.webkitAudioContext)();if(ctxAudio.state==='suspended')ctxAudio.resume();const t=ctxAudio.currentTime;const osc=ctxAudio.createOscillator(),gain=ctxAudio.createGain();osc.type=type==='hit'?'sawtooth':'triangle';osc.frequency.setValueAtTime(type==='hit'?170:390,t);osc.frequency.exponentialRampToValueAtTime(type==='hit'?65:180,t+.14);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(type==='hit'?.19:.09,t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain).connect(ctxAudio.destination);osc.start(t);osc.stop(t+.19);}catch(e){sounds=false;}}
-function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0};}
+function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0};}
 function setAction(f,name,time){f.action=name;f.actionT=time;}
 function start(mode='new'){
  if(mode==='new'){S.round=1;S.totalScore=0;}
@@ -229,7 +230,7 @@ function start(mode='new'){
  const selected=$('#classChoice').value;
  const opposition=['murmillo','thraex','retiarius'].filter(cls=>cls!==selected);
  const rival=$('#opponentChoice').value==='random'?opposition[(S.round-1)%2]:$('#opponentChoice').value;
- S.phase='fight';S.paused=false;S.time=90;S.score=0;S.combo=0;S.notice='PUGNA!';S.noticeT=1.5;S.events=[];S.sparks=[];S.keys.clear();S.shake=0;S.flash=0;S.slow=0;S.resultAnim=0;S.resultApplied=false;
+ S.phase='fight';S.paused=false;S.time=90;S.score=0;S.combo=0;S.notice='PUGNA!';S.noticeT=1.5;S.events=[];S.sparks=[];S.parryBursts=[];S.keys.clear();S.shake=0;S.flash=0;S.slow=0;S.resultAnim=0;S.resultApplied=false;
  S.autoPlaying=false;S.lastManualInput=clock;
  S.player=fighter(selected,335,false);S.enemy=fighter(rival,940,true);
  // Later rounds slightly tougher without increasing collision box or sprite scale.
@@ -241,20 +242,27 @@ function start(mode='new'){
 function markManualInput(){
  if(S.phase!=='fight'||S.paused)return;
  S.lastManualInput=clock;
- if(S.autoPlaying){S.autoPlaying=false;S.player.vx=0;S.player.guard=false;}
+ if(S.autoPlaying){S.autoPlaying=false;S.player.vx=0;S.player.guard=false;S.player.guardHold=0;S.player.parry=0;}
+}
+function beginGuard(f,hold=PARRY_GUARD_HOLD){
+ if(!f||f.dead||f.st<=8||f.stagger>0||f.dodge>0)return false;
+ if(!f.guard){f.parry=PARRY_WINDOW;setAction(f,'guard',.24);}
+ f.guard=true;f.guardHold=Math.max(f.guardHold,hold);return true;
 }
 function autoPilotPlayer(p,e,dt){
  if(!p||!e||p.dead||e.dead)return;
  const distance=Math.abs(e.x-p.x),dir=Math.sign(e.x-p.x)||1;
- p.face=dir;p.guard=false;
+ p.face=dir;p.guard=p.guardHold>0&&p.st>8&&p.stagger<=0;
  if(p.stagger>0||p.dodge>0||p.net>0)return;
+ if(p.guard){p.vx=0;return;}
  const ideal=Math.max(MIN_FIGHTER_DISTANCE+24, Math.min(p.cfg.reach-13,352));
  if(distance>ideal+13){p.vx=dir*p.cfg.move*.77;p.x+=p.vx*dt;}
  else if(distance<ideal-17){p.vx=-dir*p.cfg.move*.39;p.x+=p.vx*dt;}
- // The AI has to defend, dodge and use ordinary/special attacks, rather than just charge.
- const enemyWindingUp=(e.action==='attack'||e.action==='special')&&e.actionT>.16;
- if(distance<=e.cfg.reach+5 && enemyWindingUp && p.st>20 && Math.random()<dt*1.5){
-   p.guard=true;setAction(p,'guard',.16);return;
+ // Anticipatory guard: attacks apply damage immediately, so AI must guard before impact.
+ const enemyWindingUp=(e.action==='attack'||e.action==='special')&&e.actionT>.06;
+ if(distance<=e.cfg.reach+36&&p.st>18&&p.guardRecovery<=0&&
+   (enemyWindingUp||Math.random()<dt*2.5)){
+   if(beginGuard(p,.44)){p.guardRecovery=.66;return;}
  }
  if(distance<=e.cfg.reach && enemyWindingUp && p.st>35 && p.dodge<=0 && Math.random()<dt*.6){dodge(p);return;}
  if(distance<=p.cfg.reach+12&&p.attackCD<=0&&p.st>=17){
@@ -263,7 +271,7 @@ function autoPilotPlayer(p,e,dt){
  }
 }
 function returnToLudus(){
- S.phase='title';S.paused=false;S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.notice='';S.noticeT=0;S.shake=0;S.flash=0;S.resultAnim=0;S.resultApplied=false;
+ S.phase='title';S.paused=false;S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.flash=0;S.resultAnim=0;S.resultApplied=false;
  const c=$('#classChoice').value;S.player=fighter(c,335,false);S.enemy=fighter('retiarius',940,true);
  $('#endScreen').hidden=true;$('#startScreen').hidden=false;$('#pauseBtn').textContent='Ⅱ';updateHud();
 }
@@ -318,6 +326,21 @@ function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stag
  }
  let dmg=special?f.cfg.sp:f.cfg.atk;
  if(special&&f.cls==='thraex')dmg+=8;
+ if(victim.guard&&victim.st>0&&victim.parry>0){
+   // Perfect parry absorbs the attack and throws the attacker back.
+   victim.parry=0;victim.st=clamp(victim.st-(special?12:7),0,100);
+   const away=Math.sign(f.x-victim.x)||-f.face;
+   f.stagger=special?.76:.6;f.attackCD=Math.max(f.attackCD,special?.85:.72);
+   setAction(f,'hit',f.stagger);
+   f.knockVX=away*(special?670:520);f.knockT=special?.48:.42;
+   f.x=clamp(f.x+away*(special?86:64),125,1165);
+   S.shake=Math.max(S.shake,special?22:17);S.flash=Math.max(S.flash,special?.29:.22);
+   S.parryBursts.push({x:victim.x+victim.face*28,y:FLOOR-170,t:0,max:.56});
+   const atlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
+   addFx(7,victim.x+victim.face*28,FLOOR-FIGHTER_DRAW_SIZE*.53,
+      {w:630,h:630,atlas,flip:victim.face<0,owner:victim,offsetX:victim.face*28,duration:.23});
+   say(victim.enemy?'PARRIED!':'PERFECT PARRY!',.85);fxSound('hit');return;
+ }
  if(victim.guard&&victim.st>0){dmg*=special?.45:.16;victim.st=clamp(victim.st-(special?37:18),0,100);if(victim.st===0){victim.guard=false;victim.stagger=.44;say('GUARD BREAK!');}else if(!f.enemy)say('GUARDED',.42);}
  else{victim.stagger=special?.48:.24;setAction(victim,'hit',.31);}
  if(special&&f.cls==='retiarius'){victim.net=.95;victim.stagger=Math.max(victim.stagger,.85);say('NET TRAP!');}
@@ -335,25 +358,47 @@ function choosePose(f){if(S.phase==='finisher'||S.phase==='result'){if(S.resultA
     return won?'finisher':'defeat';}}if(f.dead)return 'defeat';if(f.actionT>0)return f.action;if(f.guard)return 'guard';if(Math.abs(f.vx)>7)return 'walk';return 'idle';}
 function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  S.shake=Math.max(0,S.shake-dt*49);S.flash=Math.max(0,S.flash-dt*.9);S.noticeT=Math.max(0,S.noticeT-dt);
- S.sparks=S.sparks.filter(v=>(v.t+=dt)<v.max);if(S.phase==='result')return;
+ S.sparks=S.sparks.filter(v=>(v.t+=dt)<v.max);S.parryBursts=S.parryBursts.filter(v=>(v.t+=dt)<v.max);if(S.phase==='result')return;
  if(S.phase==='finisher'){S.resultAnim+=dt;S.slow-=dt;if(S.slow<=0){S.phase='result';showEnd();}return;}
  const p=S.player,e=S.enemy;S.time-=dt;if(S.time<=0){S.resultWin=p.hp>e.hp;S.resultApplied=true;S.resultAnim=0;S.phase='finisher';S.slow=2.05;setAction(S.resultWin?p:e,'finisher',2.2);setAction(S.resultWin?e:p,'defeat',2.2);say(S.resultWin?'VICTORIA!':'DEFEAT',1.8);return;}
- for(const f of [p,e]){f.actionT=Math.max(0,f.actionT-dt);f.attackCD=Math.max(0,f.attackCD-dt);f.cd=Math.max(0,f.cd-dt);f.dodge=Math.max(0,f.dodge-dt);f.stagger=Math.max(0,f.stagger-dt);f.invuln=Math.max(0,f.invuln-dt);f.net=Math.max(0,f.net-dt);f.st=clamp(f.st+dt*(f.guard?3:21),0,100);f.walkT+=dt;f.vx=0;}
+ for(const f of [p,e]){
+ f.actionT=Math.max(0,f.actionT-dt);f.attackCD=Math.max(0,f.attackCD-dt);f.cd=Math.max(0,f.cd-dt);
+ f.dodge=Math.max(0,f.dodge-dt);f.stagger=Math.max(0,f.stagger-dt);
+ f.invuln=Math.max(0,f.invuln-dt);f.net=Math.max(0,f.net-dt);
+ f.parry=Math.max(0,f.parry-dt);f.guardHold=Math.max(0,f.guardHold-dt);
+ f.guardRecovery=Math.max(0,f.guardRecovery-dt);f.knockT=Math.max(0,f.knockT-dt);
+ f.st=clamp(f.st+dt*(f.guard?3:21),0,100);f.walkT+=dt;f.vx=0;
+ }
  const activeHold=S.keys.has('left')||S.keys.has('right')||S.keys.has('guard');
  S.autoPlaying=!!(S.autoplayEnabled&&!activeHold&&(clock-S.lastManualInput)>=AUTO_IDLE_SECONDS);
  if(S.autoPlaying){autoPilotPlayer(p,e,dt);}
  else {
-   p.guard=S.keys.has('guard')&&p.st>8&&p.stagger<=0&&p.actionT<=0;
+   const wantsGuard=S.keys.has('guard')&&p.st>8&&p.stagger<=0&&p.dodge<=0;
+   if(wantsGuard){if(!p.guard)beginGuard(p,.3);p.guard=true;}
+   else{p.guard=false;p.parry=0;p.guardHold=0;}
    if(p.guard)p.st=clamp(p.st-dt*9,0,100);
    if(p.stagger<=0&&!p.guard){const l=S.keys.has('left'),r=S.keys.has('right');p.vx=((r?1:0)-(l?1:0))*p.cfg.move*(p.net>0?.55:1);p.x+=p.vx*dt;}
  }
- e.guard=false;
- if(e.stagger<=0){const dist=Math.abs(e.x-p.x);const dir=Math.sign(p.x-e.x)||-1;e.face=dir;
- const preferred=Math.max(MIN_FIGHTER_DISTANCE+AI_SPACING_BUFFER,e.cfg.reach-13);
- if(dist>preferred+22){e.vx=dir*e.cfg.move*.68;e.x+=e.vx*dt;}
- else if(dist<preferred-22){e.vx=-dir*e.cfg.move*.32;e.x+=e.vx*dt;}
- if(dist<e.cfg.reach+12&&e.attackCD<=0&&Math.random()<dt*(e.st<25?.21:1.18)){if(Math.random()<.17&&e.st>50){e.guard=true;setAction(e,'guard',.35);}else attack(e,p,e.cd<=0&&Math.random()<.24);}}
+ e.guard=e.guardHold>0&&e.st>8&&e.stagger<=0;
+ if(e.stagger<=0){
+  const dist=Math.abs(e.x-p.x),dir=Math.sign(p.x-e.x)||-1;e.face=dir;
+  const preferred=Math.max(MIN_FIGHTER_DISTANCE+AI_SPACING_BUFFER,e.cfg.reach-13);
+  if(!e.guard){
+   if(dist>preferred+22){e.vx=dir*e.cfg.move*.68;e.x+=e.vx*dt;}
+   else if(dist<preferred-22){e.vx=-dir*e.cfg.move*.32;e.x+=e.vx*dt;}
+   const threat=(p.action==='attack'||p.action==='special')&&p.actionT>.06;
+   if(dist<=p.cfg.reach+35&&e.st>18&&e.guardRecovery<=0&&
+     (threat||Math.random()<dt*1.75)){
+     if(beginGuard(e,.44))e.guardRecovery=.76;
+   }
+   if(!e.guard&&dist<e.cfg.reach+12&&e.attackCD<=0&&Math.random()<dt*(e.st<25?.21:1.18))
+      attack(e,p,e.cd<=0&&Math.random()<.24);
+  }
+ }
  p.face=Math.sign(e.x-p.x)||p.face;
+ for(const f of [p,e])if(f.knockT>0){
+   f.x+=f.knockVX*dt*(.3+.7*clamp(f.knockT/.48,0,1));
+ }
  p.x=clamp(p.x,100,1180);e.x=clamp(e.x,100,1180);
  // Physical body separation: never let the front silhouettes merge.
  const sep=Math.abs(e.x-p.x);
@@ -406,13 +451,33 @@ function drawFighter(f){if(!f)return;const frame=FRAMES[choosePose(f)]??0;
  if(f.invuln>0&&Math.floor(clock*28)%2===0)ctx.globalAlpha=.5;
  if(f.net>0){ctx.strokeStyle='#dbbf78';ctx.lineWidth=4;ctx.setLineDash([11,11]);ctx.beginPath();ctx.ellipse(f.x,feet-111,86,48,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);}
  ctx.save();if(tilt||scaleY!==1){ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.scale(scaleX,scaleY);ctx.translate(-f.x,-feet);}
+ // Restrict the Retiarius hit pose to the current frame's silhouette, cutting off rear bleed.
+ if(f.cls==='retiarius'&&frame===FRAMES.hit){
+   const rearTrim=22,frontTrim=2;
+   ctx.beginPath();ctx.rect(drawX+(f.face<0?frontTrim:rearTrim),drawY,width-rearTrim-frontTrim,height);ctx.clip();
+ }
  atlasFrame(IMG[f.cls],frame,drawX,drawY,width,height,f.face<0,1);ctx.restore();
  ctx.globalAlpha=1;
 
 }
 function drawResultFx(){if(!S.resultApplied||S.phase!=='finisher')return;const p=S.resultWin?S.player:S.enemy;if(!p)return;const t=S.resultAnim;if(t>.15&&t<1.85){ctx.save();ctx.globalAlpha=.75*Math.min(1,(t-.15)*3);ctx.strokeStyle='#ffe0a2';ctx.lineWidth=3;const x=p.x,y=FLOOR-218;for(let i=0;i<9;i++){const a=i*Math.PI*2/9+t*.6,r=90+Math.min(t,1)*65;ctx.beginPath();ctx.moveTo(x+Math.cos(a)*(r-23),y+Math.sin(a)*(r-23));ctx.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r);ctx.stroke();}ctx.restore();}}
+function drawParryBursts(){
+ for(const b of S.parryBursts){
+   const t=b.t/b.max,fade=Math.max(0,1-t);
+   ctx.save();ctx.translate(b.x,b.y);ctx.globalAlpha=fade*.92;ctx.strokeStyle='#ffdf9c';
+   ctx.lineWidth=6-4*t;ctx.beginPath();ctx.ellipse(0,0,50+t*145,61+t*128,0,0,Math.PI*2);ctx.stroke();
+   ctx.strokeStyle='#fff';ctx.lineWidth=2;
+   for(let i=0;i<12;i++){
+     const angle=i*Math.PI/6,r=37+t*115,outer=r+16+fade*33;
+     ctx.beginPath();ctx.moveTo(Math.cos(angle)*r,Math.sin(angle)*r);
+     ctx.lineTo(Math.cos(angle)*outer,Math.sin(angle)*outer);ctx.stroke();
+   }
+   ctx.restore();
+ }
+}
 function drawEffects(){
  drawResultFx();
+ drawParryBursts();
  for(const v of S.sparks){
   const cx=v.owner?v.owner.x+v.offsetX:v.x;
   const cy=v.owner?FLOOR-FIGHTER_DRAW_SIZE*.53+v.offsetY:v.y;
