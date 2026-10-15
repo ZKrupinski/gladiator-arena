@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.1</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.1.1</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -182,9 +182,45 @@ body{min-height:100dvh;overscroll-behavior:none}
 #careerNeedle{position:absolute;top:-5px;bottom:-5px;width:5px;background:#fff5cb;box-shadow:0 0 12px #ffe7ad}
 @media(max-width:680px){.career-grid{grid-template-columns:1fr}.career-options{grid-template-columns:1fr 1fr}.career-card{padding:12px}}
 @media(max-width:390px){.career-options{grid-template-columns:1fr}}
+
+/* v4.1.1 Roman Ludus art direction using existing arena and character atlases */
+#careerHub{background:linear-gradient(90deg,#130c0bf5 0%,#281911d9 46%,#160e0cf2 100%),url('assets/new-era/arena.webp') center 33%/cover no-repeat}
+.career-shell{position:relative}
+.career-head{position:relative;padding:14px 18px 16px;border:1px solid #916943;border-radius:12px;background:linear-gradient(105deg,#261811e8,#3c281bd6),url('assets/new-era/arena.webp') center 28%/cover;box-shadow:inset 0 2px #d1a87944,0 18px 34px #0008}
+.career-head:before{content:'SPQR  ·  LUDUS MAGNUS  ·  ROMA';position:absolute;top:5px;right:19px;color:#d4ad7466;font:700 9px Georgia,serif;letter-spacing:.2em;pointer-events:none}
+.career-head h1{text-shadow:0 3px 3px #170c07,0 0 25px #c0853c55}
+.career-card{position:relative;overflow:hidden;border-color:#9d734e;background:linear-gradient(160deg,#493020ec,#1b120feb 82%);box-shadow:inset 0 0 0 1px #b58b4b29,0 15px 34px #0007}
+.career-card:before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#d9ab6a,#f6cf89,#d9ab6a,transparent);opacity:.72;pointer-events:none}
+.career-card h2{letter-spacing:.03em;text-shadow:0 1px 5px #100904}
+.career-card h2:after{content:'  ✦';font-size:11px;color:#c69a60}
+.career-stat{position:relative}.career-stat b{color:#f7d8a8;font-variant-numeric:tabular-nums}
+.career-avatar{max-width:100%;height:205px;width:210px;aspect-ratio:auto;background-size:500% 200%;background-position:0 0;border-radius:7px;border:1px solid #94704b;background-color:#241914;filter:drop-shadow(0 8px 12px #090604);box-shadow:inset 0 0 25px #0007}
+.career-option{position:relative;background:linear-gradient(130deg,#553825,#2c1e17);box-shadow:inset 0 1px #f5c68e19;transition:background .14s,transform .14s}
+.career-option:not(:disabled):active{transform:scale(.98)}
+.career-option[data-train]{min-height:104px;padding:14px 11px 12px 69px;background-image:linear-gradient(120deg,#5b3b29da,#241911ea),url('assets/new-era/arena.webp');background-size:cover;background-position:center}
+.career-option[data-train]:before{content:'⚔';position:absolute;top:20px;left:13px;width:45px;height:50px;display:grid;place-items:center;font-size:27px;color:#f4cf92;border-radius:7px;border:1px solid #bc90624d;background:linear-gradient(135deg,#86604488,#2c1b16)}
+.career-option[data-train="agi"]:before{content:'↶'}
+.career-option[data-train="end"]:before{content:'❖'}
+.career-option[data-train="focus"]:before{content:'✧'}
+.career-option[data-train] strong{font-size:13px;line-height:1.4}
+.career-option[data-gear]{min-height:82px;padding-left:49px}
+.career-option[data-gear]:before{content:'⚔';position:absolute;top:15px;left:11px;font-size:25px;color:#d8b88a}
+.career-option[data-gear="shield"]:before{content:'⬟'}
+.career-option[data-gear="elite"]:before{content:'♛'}
+.career-option[data-hire]{min-height:124px;padding-left:105px;background-image:linear-gradient(90deg,#4a2c1bd5,#211510ef),url('assets/new-era/arena.webp');background-size:cover}
+.career-option[data-hire]:before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:85px;background-image:var(--hire-art);background-size:500% 200%;background-position:0 0;background-repeat:no-repeat;filter:drop-shadow(0 4px 5px #000c)}
+.career-option[data-hire="murmillo"]{--hire-art:url('assets/new-era/retiarius_atlas.png?v=4.1.1')}
+.career-option[data-hire="thraex"]{--hire-art:url('assets/new-era/thraex_atlas.png?v=4.1.1')}
+.career-option[data-hire="retiarius"]{--hire-art:url('assets/new-era/murmillo_atlas.png?v=4.1.1')}
+.career-option[data-gear],.career-option[data-train]{border-top-color:#d1ac745e}
+.career-mini-panel{position:relative;background:linear-gradient(135deg,#49301fe8,#1c120eeb),url('assets/new-era/arena.webp') center/cover;box-shadow:0 20px 65px #000b}
+.career-mini-panel:before{content:'✦  EXERCITIUM  ✦';display:block;color:#e9c58b;letter-spacing:.23em;font:700 11px Georgia,serif;margin-bottom:12px}
+.career-timing{border:2px solid #b88d5e;box-shadow:inset 0 3px 7px #0007}
+#careerFight{font-size:15px;box-shadow:0 0 18px #cb8b4847}
+@media(max-width:680px){.career-head:before{display:none}.career-option[data-train]{padding-left:57px}.career-option[data-train]:before{left:7px;width:41px}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.1</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.1.1</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
