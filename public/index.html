@@ -50,8 +50,8 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 5초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스의 <b>30개 정지 키포즈</b>를 투명 PNG 아틀라스로 재분리해 전투에 적용했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 클래식 전투 모드는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/murmillo_atlas.png?v=2.7", "thraex": "assets/new-era/thraex_atlas.png?v=2.7", "retiarius": "assets/new-era/retiarius_atlas.png?v=2.7", "fx": "assets/new-era/fx_atlas.png?v=2.7", "fx_thraex": "assets/new-era/fx_thraex_atlas.png?v=2.7", "fx_retiarius": "assets/new-era/fx_retiarius_atlas.png?v=2.7", "bg": "assets/new-era/arena.webp?v=2.7"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.7
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/murmillo_atlas.png?v=2.8", "thraex": "assets/new-era/thraex_atlas.png?v=2.8", "retiarius": "assets/new-era/retiarius_atlas.png?v=2.8", "fx": "assets/new-era/fx_atlas.png?v=2.8", "fx_thraex": "assets/new-era/fx_thraex_atlas.png?v=2.8", "fx_retiarius": "assets/new-era/fx_retiarius_atlas.png?v=2.8", "bg": "assets/new-era/arena.webp?v=2.8"};</script>
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.8 (full-body FX alignment)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -146,33 +146,18 @@ function impactPoint(attacker,victim,special=false){
  return {x:baseX,y:baseY};
 }
 function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false){
- const dir=attacker.face<0;
- const atlas=attacker.cls==='thraex'?'fx_thraex':attacker.cls==='retiarius'?'fx_retiarius':'fx';
- const targetY=FLOOR-178;
- if(ko){
-  if(attacker.cls==='retiarius'){ addFx(8,victim.x,targetY-6,{w:470,h:470,flip:dir,duration:.24,atlas}); return; }
-  addFx(8,victim.x,targetY-8,{w:500,h:500,flip:dir,duration:.24,atlas});
-  return;
- }
- if(special){
-  if(attacker.cls==='retiarius'){
-   addFx(4,victim.x,targetY-8,{w:520,h:420,flip:dir,duration:.22,atlas});
-   return;
-  }
-  if(attacker.cls==='thraex'){
-   addFx(3,victim.x,targetY-4,{w:520,h:520,flip:dir,duration:.18,atlas});
-   return;
-  }
-  addFx(3,victim.x,targetY-2,{w:500,h:500,flip:dir,duration:.18,atlas});
-  return;
- }
- if(guarded){
-  addFx(7,victim.x,targetY-4,{w:360,h:360,flip:false,duration:.14,atlas});
-  return;
- }
- if(attacker.cls==='retiarius') addFx(2,victim.x,targetY,{w:420,h:420,flip:dir,duration:.12,atlas});
- else if(attacker.cls==='thraex') addFx(2,victim.x,targetY-2,{w:440,h:440,flip:dir,duration:.12,atlas});
- else addFx(2,victim.x,targetY,{w:420,h:420,flip:dir,duration:.12,atlas});
+  // Match the whole defender silhouette, rather than only the point of impact.
+  const flip=attacker.face<0;
+  const atlas=attacker.cls==='thraex'?'fx_thraex':attacker.cls==='retiarius'?'fx_retiarius':'fx';
+  const bodyX=victim.x, bodyY=FLOOR-FIGHTER_DRAW_SIZE*.53;
+  const kind=attacker.cls;
+  let frame=2,w=620,h=620,duration=.17;
+  if(ko){frame=8;w=730;h=690;duration=.24;}
+  else if(special){frame=kind==='retiarius'?4:3;w=kind==='retiarius'?760:730;h=kind==='retiarius'?640:720;duration=.22;}
+  else if(guarded){frame=7;w=550;h=560;duration=.15;}
+  else if(kind==='retiarius'){w=680;h=620;}
+  else if(kind==='thraex'){w=660;h=650;}
+  addFx(frame,bodyX,bodyY+(kind==='retiarius'&&special?4:0),{w,h,flip:guarded?false:flip,alpha:1,duration,atlas});
 }
 function attack(f,victim,special=false){if(!f||S.phase!=='fight'||f.dead||f.stagger>0||f.attackCD>0)return;
  const cost=special?36:17;if(f.st<cost){if(!f.enemy)say('STAMINA LOW',.45);return;}if(special&&f.cd>0)return;
