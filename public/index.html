@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v3.8</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v3.8.1</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -91,7 +91,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 @media(prefers-reduced-motion:reduce){.result-banner{animation:none}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 3.8</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 3.8.1</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -141,8 +141,8 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 2초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=3.8-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=3.8-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=3.8-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=3.8-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=3.8-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=3.8-g753935a6", "bg": "assets/new-era/arena.webp?v=3.8-g753935a6"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8 (soft victory lighting placed behind gladiator pose)
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=3.8.1-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=3.8.1-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=3.8.1-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=3.8.1-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=3.8.1-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=3.8.1-g753935a6", "bg": "assets/new-era/arena.webp?v=3.8.1-g753935a6"};</script>
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.1 (focused victory glow, strong third hit and rush VFX)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -492,13 +492,16 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
  // Preserve class-specific, illustrated atlas strikes for everyday attacks.
  // Victory/defeat, special, successful parry and dash retain the new premium WebP.
  if(!ko&&!dash&&!special&&!guarded){
-  const w=attacker.cls==='retiarius'?680:attacker.cls==='thraex'?660:620;
-  const h=attacker.cls==='thraex'?650:620;
-  const offsetX=dir*(style===2?67:style===1?38:22);
-  const offsetY=style===1?-44:style===2?14:0;
+  let w=attacker.cls==='retiarius'?680:attacker.cls==='thraex'?660:620;
+  let h=attacker.cls==='thraex'?650:620;
+  let duration=.18;
+  let offsetX=dir*(style===2?67:style===1?38:22);
+  let offsetY=style===1?-44:style===2?14:0;
   const rotation=[0,-.48,.32][style]*dir;
+  // Third strike is a heavier, wider atlas swing; first two remain unchanged.
+  if(style===2){w*=1.28;h*=1.28;duration=.22;offsetX=dir*88;offsetY=10;}
   addFx(2,attacker.x+offsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+offsetY,{
-   atlas,w,h,flip,alpha:1,duration:.18,owner:attacker,
+   atlas,w,h,flip,alpha:1,duration,owner:attacker,
    offsetX,offsetY,rotation
   });
   return;
@@ -507,16 +510,16 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
  let offsetX=dir*42,offsetY=-12,rotation=0,frame=3;
  if(guarded){art='parry_burst';w=480;h=480;offsetX=dir*52;offsetY=-6;alpha=.83;duration=.29;frame=7;}
  if(special){art='special_aura';w=715;h=715;offsetX=dir*42;offsetY=-12;duration=.43;alpha=.85;frame=3;}
- if(dash){art='dash_trail';w=1030;h=345;offsetX=dir*109;offsetY=-19;duration=.36;alpha=.92;frame=4;}
+ if(dash){art='dash_trail';w=1220;h=405;offsetX=dir*142;offsetY=-18;duration=.39;alpha=.95;frame=4;}
  if(ko){art='special_aura';w=880;h=880;offsetX=dir*44;offsetY=-16;duration=.58;alpha=.92;frame=8;}
  addFx(frame,attacker.x+offsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+offsetY,{
   art,w,h,flip,alpha,duration,owner:attacker,offsetX,offsetY,rotation,atlas
  });
  if(dash){
-  const bx=dir*135;
-  addFx(7,attacker.x+bx,FLOOR-FIGHTER_DRAW_SIZE*.53-5,{
-   art:'parry_burst',w:465,h:465,alpha:.65,duration:.3,
-   owner:attacker,offsetX:bx,offsetY:-5,atlas
+  const bx=dir*152;
+  addFx(7,attacker.x+bx,FLOOR-FIGHTER_DRAW_SIZE*.53-4,{
+   art:'parry_burst',w:560,h:560,alpha:.78,duration:.34,
+   owner:attacker,offsetX:bx,offsetY:-4,atlas
   });
  }
 }
@@ -942,33 +945,38 @@ function drawVictoryBacklight(){
  if(!S.resultApplied||!S.resultWin||S.phase!=='finisher')return;
  const f=S.player,t=S.resultAnim;
  if(!f||t<.08||t>1.95)return;
- const fade=clamp(Math.min((t-.08)*3.4,(1.95-t)*2.2),0,1);
- ctx.save();ctx.translate(f.x,FLOOR-200);ctx.globalAlpha=fade*.68;
- const wash=ctx.createRadialGradient(0,-35,25,0,0,245);
- wash.addColorStop(0,'rgba(255,239,183,.46)');
- wash.addColorStop(.4,'rgba(255,216,139,.23)');
- wash.addColorStop(1,'rgba(255,216,139,0)');
- ctx.fillStyle=wash;ctx.fillRect(-255,-295,510,570);
- // A soft irregular sunlight column fades into the upper background.
- const light=ctx.createLinearGradient(0,-385,0,180);
- light.addColorStop(0,'rgba(255,246,210,.03)');
- light.addColorStop(.35,'rgba(255,225,158,.21)');
+ const fade=clamp(Math.min((t-.08)*3.6,(1.95-t)*2.35),0,1);
+ ctx.save();ctx.translate(f.x,FLOOR-198);ctx.globalAlpha=fade*.9;
+ // Focused, brighter sunlight fits close to the silhouette without hiding it.
+ const wash=ctx.createRadialGradient(0,-20,18,0,0,170);
+ wash.addColorStop(0,'rgba(255,244,196,.68)');
+ wash.addColorStop(.34,'rgba(255,225,150,.34)');
+ wash.addColorStop(.72,'rgba(255,213,128,.14)');
+ wash.addColorStop(1,'rgba(255,213,128,0)');
+ ctx.fillStyle=wash;ctx.fillRect(-180,-225,360,430);
+ const light=ctx.createLinearGradient(0,-300,0,130);
+ light.addColorStop(0,'rgba(255,247,214,.05)');
+ light.addColorStop(.28,'rgba(255,232,176,.28)');
+ light.addColorStop(.72,'rgba(255,219,145,.16)');
  light.addColorStop(1,'rgba(255,232,177,0)');
- ctx.fillStyle=light;
- ctx.beginPath();ctx.moveTo(-48,-370);ctx.bezierCurveTo(-115,-250,-172,25,-220,176);
- ctx.lineTo(220,176);ctx.bezierCurveTo(172,25,115,-250,48,-370);
+ ctx.fillStyle=light;ctx.beginPath();
+ ctx.moveTo(-34,-290);ctx.bezierCurveTo(-82,-185,-110,-15,-130,130);
+ ctx.lineTo(130,130);ctx.bezierCurveTo(110,-15,82,-185,34,-290);
  ctx.closePath();ctx.fill();
- // Small asymmetric dust glints, dispersed outside the pose's central area.
- for(let i=0;i<33;i++){
-  const seed=Math.sin(i*127.1+9.6)*43758.5453;
-  const u=seed-Math.floor(seed);
-  const seed2=Math.sin(i*38.3+89.3)*12731.23;
-  const v=seed2-Math.floor(seed2);
-  const x=(u-.5)*470,y=(v-.5)*475-30;
-  if(Math.abs(x)<105&&y>-160&&y<150)continue;
-  const flicker=.35+.65*Math.sin(t*4+i*2.3)**2;
-  ctx.fillStyle='rgba(255,237,171,'+(flicker*.65)+')';
-  ctx.beginPath();ctx.ellipse(x,y,1.1+(i%4)*.5,1.6+(i%3)*.6,0,0,Math.PI*2);ctx.fill();
+ const sideGlow=ctx.createRadialGradient(0,0,8,0,0,88);
+ sideGlow.addColorStop(0,'rgba(255,240,189,.35)');
+ sideGlow.addColorStop(.6,'rgba(255,220,145,.12)');
+ sideGlow.addColorStop(1,'rgba(255,220,145,0)');
+ ctx.fillStyle=sideGlow;
+ for(const x of [-96,96]){ctx.save();ctx.translate(x,-32);ctx.fillRect(-90,-90,180,180);ctx.restore();}
+ for(let i=0;i<28;i++){
+  const seed=Math.sin(i*127.1+9.6)*43758.5453,u=seed-Math.floor(seed);
+  const seed2=Math.sin(i*38.3+89.3)*12731.23,v=seed2-Math.floor(seed2);
+  const x=(u-.5)*330,y=(v-.5)*360-20;
+  if(Math.abs(x)<82&&y>-135&&y<118)continue;
+  const flicker=.45+.55*Math.sin(t*4.5+i*2.1)**2;
+  ctx.fillStyle='rgba(255,239,181,'+(flicker*.78)+')';
+  ctx.beginPath();ctx.ellipse(x,y,1.2+(i%4)*.45,1.6+(i%3)*.55,0,0,Math.PI*2);ctx.fill();
  }
  ctx.restore();
 }
