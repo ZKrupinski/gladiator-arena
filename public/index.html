@@ -103,7 +103,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
   </div>
   <div class="selectors"><label>내 클래스<select id="classChoice"><option value="murmillo">무르밀로 · 대형 방패</option><option value="thraex">트라엑스 · 곡검</option><option value="retiarius">레티아리우스 · 삼지창/그물</option></select></label><label>상대 클래스<select id="opponentChoice"><option value="random">자동 매칭</option><option value="murmillo">무르밀로</option><option value="thraex">트라엑스</option><option value="retiarius">레티아리우스</option></select></label></div>
   <button id="startBtn" class="start">⚔ 투기장 입장</button>
-  <p class="small">선택 병과: <span id="classSubtitle">MURMILLO</span> · 미조작 2초 후 자동 전투</p>
+  <p class="small">선택 병과: <span id="classSubtitle">MURMILLO</span> · 3회 연속 적중 후 4타 점프 돌진 · 미조작 2초 후 자동 전투</p>
   <p id="resourceStatus" class="resource-status" aria-live="polite"></p>
  </div>
 </section>
@@ -364,6 +364,7 @@ function startComboDash(f,victim){
 }
 function advanceComboDash(f,dt){
  const a=f.comboDash;if(!a||S.phase!=='fight')return;
+ if(f.dead||f.stagger>0){f.comboDash=null;breakAttackChain(f);return;}
  a.t+=dt;
  const target=a.victim;
  if(!target||target.dead){f.comboDash=null;breakAttackChain(f);return;}
