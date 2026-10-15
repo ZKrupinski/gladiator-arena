@@ -394,6 +394,15 @@ function attack(f,victim,special=false,dashImpact=false){
    f.st-=cost;f.attackCD=special?.65:.43;
    if(special){f.cd=6;breakAttackChain(f);}else rollAttackVariant(f);
    f.face=Math.sign(victim.x-f.x)||f.face;
+   // Connect a short three-hit string without changing regular attack range.
+   // Each follow-up steps forward up to 55px, offsetting prior 26px hit pushback.
+   if(!special&&f.chainHits>0){
+     const oldGap=Math.abs(f.x-victim.x);
+     if(oldGap>f.cfg.reach-19&&oldGap<=f.cfg.reach+62){
+       const step=Math.min(55,oldGap-(f.cfg.reach-19));
+       f.x=clamp(f.x+f.face*step,110,1170);
+     }
+   }
    setAction(f,special?'special':'attack',special?.48:.35);fxSound('swing');
  }
  const dist=Math.abs(f.x-victim.x),reach=f.cfg.reach+(special?40:0)+(dashImpact?102:0);
@@ -420,7 +429,7 @@ function attack(f,victim,special=false,dashImpact=false){
      +comebackBonus+(special?11:0);
    const enemyCounter=Math.round(victim.cfg.atk*.72+(special?7:5));
    const counterDamage=victim.enemy?enemyCounter:playerCounter;
-   victim.parry=0;victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
+   victim.parry=0;breakAttackChain(victim);victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
    victim.st=clamp(victim.st-(special?12:7),0,100);
    f.hp=Math.max(0,f.hp-counterDamage);
    breakAttackChain(f);f.comboDash=null;
