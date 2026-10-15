@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v3.4</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v3.5</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -84,7 +84,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 @media(prefers-reduced-motion:reduce){.result-pose-art{animation:none!important}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 3.4</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 3.5</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -133,8 +133,8 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 2초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=3.4-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=3.4-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=3.4-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=3.4-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=3.4-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=3.4-g753935a6", "bg": "assets/new-era/arena.webp?v=3.4-g753935a6"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.4 (per-frame sprite isolation and alpha debris cleanup)
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=3.5-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=3.5-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=3.5-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=3.5-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=3.5-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=3.5-g753935a6", "bg": "assets/new-era/arena.webp?v=3.5-g753935a6"};</script>
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.5 (screenshot-based removal of large detached sprite fragments)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -256,13 +256,36 @@ const COMBO_PRESSURE_RECOVERY=.92;
      groups.sort((a,b)=>b.size-a.size);
      const body=groups[0];
      if(body){
+       // Screenshot verified failure: opaque detached spear heads and net slices
+       // survived because v3.4 always whitelisted components larger than 95px.
+       // Instead use ACTUAL pixel proximity to the largest connected figure,
+       // not its often enormous bounding box (extended weapons distort the box).
+       // An 11px dilation keeps near-touching armor/net details but not stray
+       // objects floating dozens of pixels away from the fighter.
+       const nearFigure=new Uint8Array(total),border=new Int32Array(total);
+       let head=0,tail=0;
+       for(const p of body.members){nearFigure[p]=1;border[tail++]=p;}
+       const steps=11;
+       for(let step=0;step<steps&&head<tail;step++){
+         const end=tail;
+         while(head<end){
+           const pos=border[head++],x=pos%pw,y=(pos/pw)|0;
+           for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+             if(!dx&&!dy)continue;
+             const xx=x+dx,yy=y+dy;
+             if(xx<0||yy<0||xx>=pw||yy>=ph)continue;
+             const next=yy*pw+xx;
+             if(!nearFigure[next]){nearFigure[next]=1;border[tail++]=next;}
+           }
+         }
+       }
        for(let i=1;i<groups.length;i++){
          const g=groups[i];
-         const dx=Math.max(0,body.minX-g.maxX,g.minX-body.maxX);
-         const dy=Math.max(0,body.minY-g.maxY,g.minY-body.maxY);
-         // The frame's main silhouette is protected; real loose equipment
-         // stays whenever it is appreciably sized or near the figure.
-         if(g.size>95||Math.hypot(dx,dy)<22)continue;
+         // Keep only accessories almost touching the hero, or exceptionally
+         // large independent pieces that may represent a real shield/net.
+         const substantial=g.size>=Math.max(7500,body.size*.24);
+         const near=g.members.some(p=>nearFigure[p]!==0);
+         if(substantial||near)continue;
          for(const p of g.members){data[p*4+3]=0;removed++;}
          componentsRemoved++;
        }
@@ -288,9 +311,22 @@ const IMG={};let loaded=0;for(const key of ['bg','murmillo','thraex','retiarius'
         const cleaned=removeBakedGroundShadows(im);
         CLEANED_CHARACTER_ATLASES.set(im,cleaned.canvas);
         SHADOW_CLEAN_STATS[key]=cleaned.removed;
-        isolateCharacterFrames(im);
-        // Use cleaned art in the roster and result portraits as well as combat.
-        cleaned.canvas.toBlob(blob=>{
+        const cells=isolateCharacterFrames(im);
+        // Rebuild the exact 5x2 atlas FROM the approved cleaned frame canvases.
+        // Roster and result portraits must not still show the old floating debris.
+        const spriteSheet=document.createElement('canvas');
+        spriteSheet.width=im.naturalWidth;spriteSheet.height=im.naturalHeight;
+        const sheetCtx=spriteSheet.getContext('2d');
+        const cellW=spriteSheet.width/ATLAS_COLS,cellH=spriteSheet.height/ATLAS_ROWS;
+        cells.forEach((cell,index)=>{
+          sheetCtx.drawImage(cell,(index%ATLAS_COLS)*cellW,
+            Math.floor(index/ATLAS_COLS)*cellH,cellW,cellH);
+        });
+        CLEANED_CHARACTER_ATLASES.set(im,spriteSheet);
+        const summary=FRAME_CLEAN_REPORT[im.src]||[];
+        console.info('[Gladiator sprite cleanup]',key,
+          summary.reduce((acc,entry)=>acc+entry.componentsRemoved,0),'detached fragments removed');
+        spriteSheet.toBlob(blob=>{
           if(!blob)return;
           const previous=CLEANED_CHARACTER_URLS[key];
           CLEANED_CHARACTER_URLS[key]=URL.createObjectURL(blob);
