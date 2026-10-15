@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v2.9.3</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v2.9.4</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -84,7 +84,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 @media(prefers-reduced-motion:reduce){.result-pose-art{animation:none!important}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.9.3</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 2.9.4</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -133,8 +133,8 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 2초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=2.9.2-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=2.9.2-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=2.9.2-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=2.9.2-g753935a6", "fx_thraex": "assets/new-era/fx_thraex_atlas.png?v=2.9.2-g753935a6", "fx_retiarius": "assets/new-era/fx_retiarius_atlas.png?v=2.9.2-g753935a6", "bg": "assets/new-era/arena.webp?v=2.9.2-g753935a6"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.9.3 (remove synthetic battle shadows)
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=2.9.4-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=2.9.4-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=2.9.4-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=2.9.4-g753935a6", "fx_thraex": "assets/new-era/fx_thraex_atlas.png?v=2.9.4-g753935a6", "fx_retiarius": "assets/new-era/fx_retiarius_atlas.png?v=2.9.4-g753935a6", "bg": "assets/new-era/arena.webp?v=2.9.4-g753935a6"};</script>
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v2.9.4 (remove alpha ground shadows from character atlases)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -152,8 +152,65 @@ const DATA={
 };
 const FRAMES={idle:0,walk:1,attack:2,special:3,guard:4,dodge:5,hit:6,net:7,finisher:8,defeat:9};
 const AUTO_IDLE_SECONDS=2; // Auto-battle starts after 2 seconds without active player input.
+
+ // Shadow matte cleanup runs once when a character sprite atlas finishes loading.
+ // Keep solid boots, weapons and anti-aliased silhouette pixels near solid art.
+ const CLEANED_CHARACTER_ATLASES=new WeakMap(),CLEANED_CHARACTER_URLS={};
+ const SHADOW_CLEAN_STATS={};
+ function removeBakedGroundShadows(image){
+   const w=image.naturalWidth,h=image.naturalHeight,cols=ATLAS_COLS,rows=ATLAS_ROWS;
+   const cw=Math.floor(w/cols),ch=Math.floor(h/rows),canvas=document.createElement('canvas');
+   canvas.width=w;canvas.height=h;
+   const brush=canvas.getContext('2d',{willReadFrequently:true});
+   brush.drawImage(image,0,0);
+   const pixels=brush.getImageData(0,0,w,h),d=pixels.data;
+   let removed=0;
+   for(let frameY=0;frameY<rows;frameY++)for(let frameX=0;frameX<cols;frameX++){
+     const startX=frameX*cw,startY=frameY*ch,lowest=Math.floor(ch*.76);
+     for(let y=lowest;y<ch;y++)for(let x=0;x<cw;x++){
+       const px=startX+x,py=startY+y,i=(py*w+px)*4,a=d[i+3];
+       if(a===0||a>=218)continue;
+       const red=d[i],green=d[i+1],blue=d[i+2];
+       const light=(red*3+green*5+blue*2)/10;
+       // Under-foot shadows are soft, low-alpha, mostly neutral/dark smudges.
+       // Coloured sparks and the opaque parts of boots are excluded.
+       if(light>148||Math.max(red,green,blue)-Math.min(red,green,blue)>83)continue;
+       let touchesFigure=false;
+       for(let dy=-2;dy<=2&&!touchesFigure;dy++)for(let dx=-2;dx<=2;dx++){
+         const nx=x+dx,ny=y+dy;
+         if(nx<0||nx>=cw||ny<0||ny>=ch)continue;
+         if(d[((startY+ny)*w+startX+nx)*4+3]>=245){touchesFigure=true;break;}
+       }
+       if(touchesFigure)continue;
+       // Suppress disconnected, translucent shadow haze, including near-black fringe.
+       d[i+3]=0;removed++;
+     }
+   }
+   if(removed)brush.putImageData(pixels,0,0);
+   return {canvas,removed};
+ }
+ function getCharacterAtlasImage(image){return CLEANED_CHARACTER_ATLASES.get(image)||image;}
+
 const IMG={};let loaded=0;for(const key of ['bg','murmillo','thraex','retiarius','fx','fx_thraex','fx_retiarius']){
  const im=new Image();im.onload=()=>{loaded++;
+    if(key==='murmillo'||key==='thraex'||key==='retiarius'){
+      try{
+        const cleaned=removeBakedGroundShadows(im);
+        CLEANED_CHARACTER_ATLASES.set(im,cleaned.canvas);
+        SHADOW_CLEAN_STATS[key]=cleaned.removed;
+        // Use cleaned art in the roster and result portraits as well as combat.
+        cleaned.canvas.toBlob(blob=>{
+          if(!blob)return;
+          const previous=CLEANED_CHARACTER_URLS[key];
+          CLEANED_CHARACTER_URLS[key]=URL.createObjectURL(blob);
+          for(const el of document.querySelectorAll('[data-sprite="'+key+'"]'))el.style.backgroundImage='url("'+CLEANED_CHARACTER_URLS[key]+'")';
+          for(const [id,f] of [['winnerPose',S.player],['loserPose',S.enemy]]){
+             if(f&&f.cls===key&&S.resultApplied)document.getElementById(id).style.backgroundImage='url("'+CLEANED_CHARACTER_URLS[key]+'")';
+          }
+          if(previous)URL.revokeObjectURL(previous);
+        },'image/png');
+      }catch(error){console.warn('Character shadow cleanup skipped',key,error);}
+    }
     // Keep selector and result thumbnails in sync with the image that actually loaded.
     if(key!=='bg'){
       for(const el of document.querySelectorAll('[data-sprite="'+key+'"]'))el.style.backgroundImage='url("'+im.src+'")';
@@ -313,7 +370,7 @@ function showEnd(){
  const win=S.resultApplied?S.resultWin:(S.player.hp>S.enemy.hp||(S.enemy.dead&&!S.player.dead));
  S.lastResultWin=win;S.autoPlaying=false;S.keys.clear();
  const victor=win?S.player:S.enemy,loser=win?S.enemy:S.player;
-  for(const [id,f] of [['winnerPose',victor],['loserPose',loser]]){$('#'+id).style.backgroundImage='url("'+(IMG[f.cls]?.src||ASSET[f.cls])+'")';}
+  for(const [id,f] of [['winnerPose',victor],['loserPose',loser]]){$('#'+id).style.backgroundImage='url("'+(CLEANED_CHARACTER_URLS[f.cls]||IMG[f.cls]?.src||ASSET[f.cls])+'")';}
   $('#winnerName').textContent=victor.cfg.name;
   $('#loserName').textContent=loser.cfg.name;
   $('#endScreen').hidden=false;
@@ -330,7 +387,7 @@ function drawBackdrop(){const bg=IMG.bg;
  ctx.fillStyle='rgba(43,24,18,.12)';ctx.fillRect(0,0,W,H);const g=ctx.createLinearGradient(0,490,0,H);g.addColorStop(0,'#29140b00');g.addColorStop(1,'#180e0bbc');ctx.fillStyle=g;ctx.fillRect(0,480,W,240);
  ctx.strokeStyle='#ffe2b64a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,FLOOR+4);ctx.lineTo(W,FLOOR+4);ctx.stroke();}
 function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){if(!image.complete||!image.naturalWidth)return;
- const ix=index%ATLAS_COLS,iy=Math.floor(index/ATLAS_COLS);const cw=image.naturalWidth/ATLAS_COLS,ch=image.naturalHeight/ATLAS_ROWS;ctx.save();ctx.globalAlpha=alpha;if(flip){ctx.translate(x+w/2,0);ctx.scale(-1,1);ctx.translate(-(x+w/2),0);}ctx.drawImage(image,ix*cw,iy*ch,cw,ch,x,y,w,h);ctx.restore();}
+ const ix=index%ATLAS_COLS,iy=Math.floor(index/ATLAS_COLS);const cw=image.naturalWidth/ATLAS_COLS,ch=image.naturalHeight/ATLAS_ROWS;ctx.save();ctx.globalAlpha=alpha;if(flip){ctx.translate(x+w/2,0);ctx.scale(-1,1);ctx.translate(-(x+w/2),0);}ctx.drawImage(getCharacterAtlasImage(image),ix*cw,iy*ch,cw,ch,x,y,w,h);ctx.restore();}
 function drawFighter(f){if(!f)return;const frame=FRAMES[choosePose(f)]??0;
  // Keep a fixed feet pivot for every class, image pose and character.
  const height=FIGHTER_DRAW_SIZE,width=FIGHTER_DRAW_SIZE,feet=FLOOR-1;
@@ -375,7 +432,7 @@ function refreshFighterPreviews(){
   $('#classSubtitle').textContent=DATA[selected].eng;
   for(const el of document.querySelectorAll('[data-fighter]')){const active=el.dataset.fighter===selected;el.classList.toggle('active',active);el.setAttribute('aria-pressed',String(active));}
 }
-for(const el of document.querySelectorAll('[data-sprite]')){const k=el.dataset.sprite;if(ASSET[k])el.style.backgroundImage='url("'+ASSET[k]+'")';}
+for(const el of document.querySelectorAll('[data-sprite]')){const k=el.dataset.sprite;if(ASSET[k])el.style.backgroundImage='url("'+(CLEANED_CHARACTER_URLS[k]||ASSET[k])+'")';}
 for(const el of document.querySelectorAll('[data-fighter]'))el.onclick=()=>{$('#classChoice').value=el.dataset.fighter;refreshFighterPreviews();};
 $('#classChoice').onchange=refreshFighterPreviews;refreshFighterPreviews();
 $('#classSubtitle').textContent=DATA[$('#classChoice').value].eng;
