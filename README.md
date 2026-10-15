@@ -1,6 +1,6 @@
 # GLADIATOR — SPARTACUS / THE GLADIUS RENAISSANCE
 
-Version: **New Era v2.9.1**. One playable version only. The old **「전설의 시작」 classic combat** and its assets are no longer distributed from `public/`.
+Version: **New Era v3.0**. One playable version only. The old **「전설의 시작」 classic combat** and its assets are no longer distributed from `public/`.
 
 ## Play / deployment
 - Git-backed Cloudflare Pages: https://gladiator-arena-git.pages.dev/
@@ -17,12 +17,14 @@ Version: **New Era v2.9.1**. One playable version only. The old **「전설의 �
 
 ## Game loop
 - Choose your fighter and opponent, enter the arena; move, attack, guard, dodge and special.
-- AUTO takes over after 5 seconds without manual input.
+- Basic strikes randomly alternate among **horizontal slash**, **rising strike** and **forward thrust** (no identical back-to-back move), each with matched body interpolation and rotated/offset class-specific FX.
+- **Land 3 consecutive ordinary hits** within a 3-second chain window; the **4th regular attack input** triggers a short leap followed by a high-speed dash hit that damages and powerfully knocks back the target. Guarded/missed/parried hits do not count. The chain breaks if the attacker is hit or uses a special attack.
+- AUTO takes over after **2 seconds** without manual input.
 - Victory/defeat key poses are held and shown on the results screen with dedicated previews.
 - '다시 하기' rematches; after a win '계속 하기' advances; after a defeat 'Ludus로 돌아가기' returns to the title.
 
 ## Scope of the art
-The 10 frames per fighter are **key poses**, not fully in-betweened 3D skeletal animation. Movement between them uses simple runtime offsets. Attack effects follow their own attacking fighter; the title roster order is Retiarius, Thraex, Murmillo. Current PNG art should be refined separately when clipped weapon edges, transparent fringe pixels, or art-layer misalignment is present. The source images themselves are not modified by a runtime layout update.
+The 10 frames per fighter are **key poses**, not fully in-betweened 3D skeletal animation. The additional attack styles and leap-dash are runtime combinations of existing poses, body translation/rotation/scale and FX layers—not newly illustrated sprite sheets. Attack effects follow their own attacking fighter; the title roster order is Murmillo, Thraex, Retiarius. Current PNG art should be refined separately when clipped weapon edges, transparent fringe pixels, or art-layer misalignment is present. The source images themselves are not modified by a runtime layout update.
 
 ## Local play
 ```sh
