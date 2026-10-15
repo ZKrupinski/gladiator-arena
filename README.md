@@ -1,44 +1,34 @@
-# GLADIATOR — The Gladius Renaissance
+# GLADIATOR — SPARTACUS / THE GLADIUS RENAISSANCE
 
-Korean-language HTML5 Canvas 2D gladiator game. Current playable version: **v1.3**.
+Version: **New Era v2.9**. One playable version only. The old **「전설의 시작」 classic combat** and its assets are no longer distributed from `public/`.
 
-## Source layout
+## Play / deployment
+- Git-backed Cloudflare Pages: https://gladiator-arena-git.pages.dev/
+- Repository: https://github.com/ZKrupinski/gladiator-arena
+- Deployment branch: `main`; output directory: `public`
+- No build step is required; `public/index.html` is the self-contained playable HTML5 Canvas game.
 
-- `public/index.html` — game entry point
-- `public/css/game.css` — styling
-- `public/js/game.js` — game logic and classes/manifest data
-- `public/assets/characters/{class}/composite` — original pixel frames, unchanged
-- `public/assets/characters/{class}/head` — original face assets
-- `public/assets/backgrounds/colosseum` — original painterly background
-- `public/assets/data` — game manifest and class/equipment definitions
+## Active source of truth
+- `public/index.html`: modern game runtime, responsive Ludus title, combat HUD/controls, fighter selection, winner/loser result screen, image loading and class-specific hit effects.
+- `public/assets/new-era/{murmillo,thraex,retiarius}_atlas.png`: current 5 × 2 pose atlases, **10 poses per fighter**: idle, walk, attack, special, guard, dodge, hit, net, finisher, defeat.
+- `public/assets/new-era/fx*_atlas.png`: per-class combat FX frame sheets.
+- `public/assets/new-era/arena.webp`: active arena background.
+- `public/deployment-health.json`: Cloudflare Git deploy connectivity probe.
 
-## Local test
+## Game loop
+- Choose your fighter and opponent, enter the arena; move, attack, guard, dodge and special.
+- AUTO takes over after 5 seconds without manual input.
+- Victory/defeat key poses are held and shown on the results screen with dedicated previews.
+- '다시 하기' rematches; after a win '계속 하기' advances; after a defeat 'Ludus로 돌아가기' returns to the title.
 
-From the repository root, run `python -m http.server 8000 --directory public`, then open `http://localhost:8000`.
+## Scope of the art
+The 10 frames per fighter are **key poses**, not fully in-betweened 3D skeletal animation. Movement between them uses simple runtime offsets. Current PNG art should be refined separately when clipped weapon edges, transparent fringe pixels, or art-layer misalignment is present. The source images themselves are not modified by a runtime layout update.
 
-## Cloudflare Pages auto deployment
+## Local play
+```sh
+python -m http.server 8000 --directory public
+```
+Open http://localhost:8000/ .
 
-Create a **new** Pages project using Git integration and select this repository.
-
-| Cloudflare setting | Value |
-|---|---|
-| Production branch | `main` |
-| Framework preset | `None` |
-| Build command | `exit 0` (or blank, if accepted) |
-| Build output directory | `public` |
-| Root directory | `/` (default) |
-
-Every push to `main` will deploy automatically. The existing Direct Upload project cannot be switched to Git integration, so the Git-integrated Pages project must be separate.
-
-**Note:** Original character sprites are composite images, not yet layer-separated equipment. Source imagery was preserved.
-
-
-## v1.4 Combat update (PR)
-
-- Murmillo: shield guard crush and heavy shield impact on special attack
-- Thraex: two-hit special attack with a second low strike
-- Retiarius: net combo pulls the enemy closer
-- Cinematic finisher phase of 1.25 seconds for special/counter victories
-- Keeps existing composite pixel sprites and Colosseum background unchanged
-
-This version is reviewed through a GitHub pull request before merging to main. Cloudflare Pages will publish after merge.
+## Hosting note
+A commit to `main` triggers Git-integrated Cloudflare Pages when the external Cloudflare integration is enabled. Repository commit success alone is not proof that the Cloudflare production deployment succeeded.
