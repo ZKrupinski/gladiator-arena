@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v3.3</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v3.4</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -84,7 +84,7 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 @media(prefers-reduced-motion:reduce){.result-pose-art{animation:none!important}}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
-<div class="headline"><div><span class="label">THE ARENA / NEW ERA 3.3</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
+<div class="headline"><div><span class="label">THE ARENA / NEW ERA 3.4</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
 <section class="overlay overlay-title" id="startScreen">
@@ -133,8 +133,8 @@ button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:foc
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 2초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 각 동작의 연속 중간 프레임 또는 3D 본 리깅과 무기·갑옷 실시간 탈착은 아직 없습니다. 기존 클래식 전투 진입 경로는 제거했습니다.</p>
 </div>
-<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=3.3-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=3.3-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=3.3-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=3.3-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=3.3-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=3.3-g753935a6", "bg": "assets/new-era/arena.webp?v=3.3-g753935a6"};</script>
-<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.3 (grounded wall/sand ratio and camera-safe panorama)
+<script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=3.4-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=3.4-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=3.4-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=3.4-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=3.4-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=3.4-g753935a6", "bg": "assets/new-era/arena.webp?v=3.4-g753935a6"};</script>
+<script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.4 (per-frame sprite isolation and alpha debris cleanup)
    Pose sheets extracted from user-approved 3D-look static character art.
    Not bone-rigged 3D or frame-by-frame motion; interpolation / key poses only. */
 (()=>{'use strict';
@@ -166,6 +166,8 @@ const COMBO_PRESSURE_RECOVERY=.92;
  // Shadow matte cleanup runs once when a character sprite atlas finishes loading.
  // Keep solid boots, weapons and anti-aliased silhouette pixels near solid art.
  const CLEANED_CHARACTER_ATLASES=new WeakMap(),CLEANED_CHARACTER_URLS={};
+ const INDEPENDENT_CHARACTER_FRAMES=new WeakMap();
+ const FRAME_CLEAN_REPORT={};
  const SHADOW_CLEAN_STATS={};
  function removeBakedGroundShadows(image){
    const w=image.naturalWidth,h=image.naturalHeight,cols=ATLAS_COLS,rows=ATLAS_ROWS;
@@ -200,6 +202,84 @@ const COMBO_PRESSURE_RECOVERY=.92;
    return {canvas,removed};
  }
  function getCharacterAtlasImage(image){return CLEANED_CHARACTER_ATLASES.get(image)||image;}
+ // Decode the 5x2 pose atlas into ten INDEPENDENT bitmaps once, never sample
+ // a shared atlas cell directly at runtime (especially during rotations/zoom).
+ // This is intentionally different from the retired 4x2 legacy source sheets.
+ function isolateCharacterFrames(image){
+   const w=image.naturalWidth,h=image.naturalHeight;
+   const cw=w/ATLAS_COLS,ch=h/ATLAS_ROWS;
+   const frames=[],reports=[];
+   const atlas=getCharacterAtlasImage(image);
+   for(let n=0;n<ATLAS_COLS*ATLAS_ROWS;n++){
+     const column=n%ATLAS_COLS,row=Math.floor(n/ATLAS_COLS);
+     // 3px interior safe boundary means interpolation never reads neighbor cells.
+     const inset=3;
+     const pw=Math.round(cw),ph=Math.round(ch);
+     const work=document.createElement('canvas');work.width=pw;work.height=ph;
+     const brush=work.getContext('2d',{willReadFrequently:true});
+     brush.clearRect(0,0,pw,ph);
+     brush.drawImage(atlas,column*cw+inset,row*ch+inset,
+       cw-2*inset,ch-2*inset,inset,inset,pw-2*inset,ph-2*inset);
+     let removed=0,componentsRemoved=0;
+     const pixels=brush.getImageData(0,0,pw,ph);
+     const data=pixels.data,total=pw*ph;
+     // Suppress alpha-matte dirt globally, not only near the character's boots.
+     const occupied=new Uint8Array(total);
+     for(let i=0;i<total;i++){
+       const a=data[i*4+3];
+       if(a>0&&a<19){data[i*4+3]=0;removed++;continue;}
+       occupied[i]=a>=19?1:0;
+     }
+     // Connected opaque+antialiased components. Retain the largest silhouette,
+     // and detach only small distant specks that cannot be a weapon or cloth.
+     const seen=new Uint8Array(total),queue=new Int32Array(total),groups=[];
+     for(let i=0;i<total;i++){
+       if(!occupied[i]||seen[i])continue;
+       let read=0,end=1,minX=pw,minY=ph,maxX=0,maxY=0;
+       queue[0]=i;seen[i]=1;
+       const members=[];
+       while(read<end){
+         const pos=queue[read++],x=pos%pw,y=(pos/pw)|0;
+         members.push(pos);
+         if(x<minX)minX=x;if(x>maxX)maxX=x;
+         if(y<minY)minY=y;if(y>maxY)maxY=y;
+         for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+           if(!dx&&!dy)continue;
+           const xx=x+dx,yy=y+dy;
+           if(xx<0||yy<0||xx>=pw||yy>=ph)continue;
+           const p=yy*pw+xx;
+           if(occupied[p]&&!seen[p]){seen[p]=1;queue[end++]=p;}
+         }
+       }
+       groups.push({members,minX,minY,maxX,maxY,size:end});
+     }
+     groups.sort((a,b)=>b.size-a.size);
+     const body=groups[0];
+     if(body){
+       for(let i=1;i<groups.length;i++){
+         const g=groups[i];
+         const dx=Math.max(0,body.minX-g.maxX,g.minX-body.maxX);
+         const dy=Math.max(0,body.minY-g.maxY,g.minY-body.maxY);
+         // The frame's main silhouette is protected; real loose equipment
+         // stays whenever it is appreciably sized or near the figure.
+         if(g.size>95||Math.hypot(dx,dy)<22)continue;
+         for(const p of g.members){data[p*4+3]=0;removed++;}
+         componentsRemoved++;
+       }
+     }
+     // Explicit transparent outer gutter completely separates neighboring poses.
+     for(let y=0;y<ph;y++)for(let x=0;x<pw;x++){
+       if(x<inset||x>=pw-inset||y<inset||y>=ph-inset)
+         data[(y*pw+x)*4+3]=0;
+     }
+     brush.putImageData(pixels,0,0);
+     frames.push(work);
+     reports.push({frame:n,removed,componentsRemoved});
+   }
+   INDEPENDENT_CHARACTER_FRAMES.set(image,frames);
+   FRAME_CLEAN_REPORT[image.src]=reports;
+   return frames;
+ }
 
 const IMG={};let loaded=0;for(const key of ['bg','murmillo','thraex','retiarius','fx','fx_thraex','fx_retiarius']){
  const im=new Image();im.onload=()=>{loaded++;
@@ -208,6 +288,7 @@ const IMG={};let loaded=0;for(const key of ['bg','murmillo','thraex','retiarius'
         const cleaned=removeBakedGroundShadows(im);
         CLEANED_CHARACTER_ATLASES.set(im,cleaned.canvas);
         SHADOW_CLEAN_STATS[key]=cleaned.removed;
+        isolateCharacterFrames(im);
         // Use cleaned art in the roster and result portraits as well as combat.
         cleaned.canvas.toBlob(blob=>{
           if(!blob)return;
@@ -683,8 +764,25 @@ function drawBackdrop(){
  g.addColorStop(0,'#29140b00');g.addColorStop(1,'#180e0b94');
  ctx.fillStyle=g;ctx.fillRect(-90,480,W+180,330);
 }
-function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){if(!image.complete||!image.naturalWidth)return;
- const ix=index%ATLAS_COLS,iy=Math.floor(index/ATLAS_COLS);const cw=image.naturalWidth/ATLAS_COLS,ch=image.naturalHeight/ATLAS_ROWS;ctx.save();ctx.globalAlpha=alpha;if(flip){ctx.translate(x+w/2,0);ctx.scale(-1,1);ctx.translate(-(x+w/2),0);}ctx.drawImage(getCharacterAtlasImage(image),ix*cw,iy*ch,cw,ch,x,y,w,h);ctx.restore();}
+function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
+ if(!image||!image.complete||!image.naturalWidth)return;
+ const independent=INDEPENDENT_CHARACTER_FRAMES.get(image);
+ const ix=index%ATLAS_COLS,iy=Math.floor(index/ATLAS_COLS);
+ const cw=image.naturalWidth/ATLAS_COLS,ch=image.naturalHeight/ATLAS_ROWS;
+ ctx.save();ctx.globalAlpha=alpha;
+ if(flip){ctx.translate(x+w/2,0);ctx.scale(-1,1);ctx.translate(-(x+w/2),0);}
+ if(independent&&independent[index]){
+   // Source is now a standalone canvas, so no adjacent-frame interpolation.
+   ctx.drawImage(independent[index],x,y,w,h);
+ }else{
+   // Fallback for FX atlases, with a strict half-pixel inset against edge bleed.
+   const inset=.5;
+   ctx.drawImage(getCharacterAtlasImage(image),ix*cw+inset,iy*ch+inset,
+     cw-2*inset,ch-2*inset,x+inset*w/cw,y+inset*h/ch,
+     w-2*inset*w/cw,h-2*inset*h/ch);
+ }
+ ctx.restore();
+}
 function drawFighter(f){if(!f)return;const frame=FRAMES[choosePose(f)]??0;
  // Keep a fixed feet pivot for every class, image pose and character.
  const height=FIGHTER_DRAW_SIZE,width=FIGHTER_DRAW_SIZE,feet=FLOOR-1;
@@ -728,11 +826,8 @@ function drawFighter(f){if(!f)return;const frame=FRAMES[choosePose(f)]??0;
  if(f.invuln>0&&Math.floor(clock*28)%2===0)ctx.globalAlpha=.5;
  if(f.net>0){ctx.strokeStyle='#dbbf78';ctx.lineWidth=4;ctx.setLineDash([11,11]);ctx.beginPath();ctx.ellipse(f.x,feet-111,86,48,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);}
  ctx.save();if(tilt||scaleY!==1||scaleX!==1){ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.scale(scaleX,scaleY);ctx.translate(-f.x,-feet);}
- // Restrict the Retiarius hit pose to the current frame's silhouette, cutting off rear bleed.
- if(f.cls==='retiarius'&&frame===FRAMES.hit){
-   const rearTrim=22,frontTrim=2;
-   ctx.beginPath();ctx.rect(drawX+(f.face<0?frontTrim:rearTrim),drawY,width-rearTrim-frontTrim,height);ctx.clip();
- }
+ // All ten poses have independent, pre-cleaned bitmaps; do not truncate any
+ // Retiarius attack/defeat weapon just to hide a stray neighboring frame.
  if(f.comboDash&&f.comboDash.t>=.17&&f.comboDash.t<.43){
   // Two receding silhouettes make the high-speed dash legible without new frames.
   atlasFrame(IMG[f.cls],frame,drawX-f.face*38,drawY+6,width,height,f.face<0,.19);
