@@ -1,6 +1,6 @@
 # GLADIATOR — SPARTACUS / THE GLADIUS RENAISSANCE
 
-Version: **New Era v3.1**. One playable version only. The old **「전설의 시작」 classic combat** and its assets are no longer distributed from `public/`.
+Version: **New Era v3.2**. One playable version only. The old **「전설의 시작」 classic combat** and its assets are no longer distributed from `public/`.
 
 ## Play / deployment
 - Git-backed Cloudflare Pages: https://gladiator-arena-git.pages.dev/
@@ -13,6 +13,7 @@ Version: **New Era v3.1**. One playable version only. The old **「전설의 시
 - `public/assets/new-era/{murmillo,thraex,retiarius}_atlas.png`: current 5 × 2 pose atlases, **10 poses per fighter**: idle, walk, attack, special, guard, dodge, hit, net, finisher, defeat.
 - `public/assets/new-era/fx*_atlas.png`: per-class combat FX frame sheets.
 - `public/assets/new-era/arena.webp`: active arena background.
+- v3.2 camera: smooth tracking of the fighter midpoint, proximity-aware zoom during close combat with extra emphasis on hits, parries and leap rushes; separately clamped, overscanned arena parallax so image edges cannot enter the frame.
 - `public/deployment-health.json`: Cloudflare Git deploy connectivity probe.
 
 ## Game loop
