@@ -82,3 +82,12 @@
  .slave-market-bottom{flex-direction:column;padding:10px}
  .slave-market-buy{min-width:0;font-size:21px}
 }
+
+/* The approved key art includes its mockup labels and figures. The live
+   interface paints independent opaque podiums over them to avoid double sprites. */
+.slave-market-display{background:radial-gradient(ellipse at 50% 22%,#82593d,#462a1d 82%);box-shadow:inset 0 0 45px #24100c,0 9px 15px #1c0a03}
+.slave-market-merchant-art canvas{display:block;width:100%;height:100%;object-fit:contain}
+.slave-market-dealer:before{content:'';position:absolute;inset:0 0 116px;pointer-events:none;background:linear-gradient(90deg,rgba(35,17,12,.72),rgba(47,23,17,.47) 65%,transparent);z-index:0}
+.slave-market-dealer .slave-market-merchant-art{z-index:1}
+.slave-market-banner{z-index:3}
+@media(max-width:900px){.slave-market-dealer:before{inset:0 65% 0 0}}
