@@ -1,0 +1,43 @@
+/* GLADIATOR v4.9: separate market transaction UI layer; preserves approved key visual */
+.gm-selection-ignore{pointer-events:none}
+.gm-selected-wreath[hidden],.gm-vacant[hidden],.gm-no-candidates[hidden],.gm-reaction-badge[hidden],.gm-dialog[hidden]{display:none!important}
+.gm-selected-wreath{position:absolute;z-index:6;pointer-events:none;top:245px;height:490px;border:4px solid #ffd786;border-radius:6px;box-shadow:0 0 0 2px #763711,0 0 26px #ffd96aa8,inset 0 0 20px #f8ca6877,inset 0 0 0 2px #c58f52;animation:gm-gold-pulse 2.3s ease-in-out infinite}
+.gm-selected-wreath[data-i="0"]{left:461px;width:288px}
+.gm-selected-wreath[data-i="1"]{left:801px;width:281px}
+.gm-selected-wreath[data-i="2"]{left:1139px;width:340px}
+.gm-selected-wreath:before,.gm-selected-wreath:after{content:'❧';position:absolute;top:-20px;color:#ffdf97;font:40px Georgia,serif;text-shadow:0 1px 3px #401508,0 0 8px #fbbd50}
+.gm-selected-wreath:before{left:-18px}.gm-selected-wreath:after{right:-18px;transform:scaleX(-1)}
+.gm-selected-wreath b{position:absolute;left:50%;top:-27px;transform:translateX(-50%);border:2px ridge #f2c06c;border-radius:4px;color:#ffeaab;background:linear-gradient(#853d21,#3f2114);box-shadow:0 3px 12px #120805;padding:4px 26px;font:bold 18px 'Noto Serif KR',Georgia,serif;white-space:nowrap;letter-spacing:.18em}
+.gm-selected-wreath span{position:absolute;bottom:-24px;color:#f3c36b;font:38px Georgia;text-shadow:0 1px 2px #2a1306}
+.gm-selected-wreath span:first-child{left:0}.gm-selected-wreath span:last-child{right:0;transform:scaleX(-1)}
+@keyframes gm-gold-pulse{0%,100%{box-shadow:0 0 0 2px #763711,0 0 15px #ffd96a66,inset 0 0 12px #f8ca6866,inset 0 0 0 2px #c58f52}50%{box-shadow:0 0 0 2px #9c601b,0 0 34px #ffd96ac9,inset 0 0 26px #f8ca68b9,inset 0 0 0 2px #f7c873}}
+.gm-vacant{position:absolute;z-index:5;pointer-events:none;top:257px;height:468px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#d7aa6a;overflow:hidden;border:7px ridge #977042;background:radial-gradient(ellipse at 50% 36%,#715038,#301c13 80%);box-shadow:inset 0 0 40px #140904,0 8px 12px #140805}
+.gm-vacant[data-i="0"]{left:463px;width:281px}.gm-vacant[data-i="1"]{left:808px;width:269px}.gm-vacant[data-i="2"]{left:1145px;width:330px}
+.gm-vacant:before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 32px,#d6a56e21 34px 36px,#160c0a40 38px 40px),linear-gradient(0deg,#190e0acc,#5e3b2488 48%,#23170ebb);opacity:.93}
+.gm-vacant:after{content:'✦';position:relative;font-size:74px;color:#8c6c4b;text-shadow:0 4px 10px #150904}
+.gm-vacant-badge,.gm-vacant strong,.gm-vacant small{position:relative;z-index:1;background:linear-gradient(95deg,#2a1910,#48301d,#2a1910);border:2px ridge #ad8249;padding:8px 16px;box-shadow:0 4px 12px #140803;text-shadow:0 2px 2px #140904}
+.gm-vacant-badge{font:bold 21px Georgia,'Noto Serif KR',serif;color:#d5ac6a}
+.gm-vacant strong{font-size:25px;color:#f7d99d}.gm-vacant small{font-size:15px;color:#e7bf82}
+.gm-no-candidates{position:absolute;z-index:9;left:546px;top:741px;width:998px;height:154px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#f1d495;font:700 28px/1.5 'Noto Serif KR',Georgia,serif;letter-spacing:.04em;background:linear-gradient(115deg,#38251b,#251812 55%,#48291b);border:12px solid transparent;border-image:url('assets/market/gold_detail.webp') 24 28 24 28 / 12px stretch;box-shadow:0 5px 18px #170807}
+.gm-no-candidates small{font:20px Georgia,'Noto Serif KR',serif;color:#d6a46a}
+.gm-restock{z-index:11!important;left:246px;top:849px;width:245px;height:58px!important;border:3px ridge #e2b36d!important;border-radius:6px!important;background:linear-gradient(#5b3624,#25140f)!important;color:#fbe1a4!important;box-shadow:inset 0 0 0 2px #36190e,0 6px 10px #140805!important;text-shadow:0 2px 2px #000;font-size:19px!important;font-weight:800!important}
+.gm-restock small{display:block;color:#ffe394;font:15px Georgia,serif}.gm-restock span{font:13px 'Noto Serif KR',serif;color:#d4b37c;margin-left:6px}
+.gm-restock:disabled{filter:grayscale(.38);opacity:.66;cursor:default!important}.gm-restock:hover:not(:disabled){filter:brightness(1.2)}
+.gm-reaction-badge{position:absolute;z-index:9;pointer-events:none;left:430px;top:606px;width:106px;height:116px;border:3px ridge #e7ba69;border-radius:8px;background:linear-gradient(#42291b,#1d100b);overflow:hidden;box-shadow:0 0 14px #f5b95699;animation:gm-gold-pulse 2.3s ease-in-out infinite}
+.gm-reaction-badge img{width:100%;height:100%;object-fit:contain;object-position:center bottom}
+.gm-dialog{position:absolute;z-index:30;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(17,8,4,.69);backdrop-filter:blur(3px)}
+.gm-dialog-merchant{position:relative;z-index:2;width:230px;height:345px;margin-right:-34px;align-self:center;pointer-events:none;filter:drop-shadow(0 10px 14px #110604)}
+.gm-dialog-merchant img{width:100%;height:100%;object-fit:contain;object-position:bottom center;animation:gm-merchant-breathe 1.1s ease-in-out infinite alternate}
+@keyframes gm-merchant-breathe{0%{transform:translateY(0)}100%{transform:translateY(-5px)}}
+.gm-dialog-content{position:relative;z-index:1;width:650px;min-height:342px;padding:33px 35px 25px 48px;background:radial-gradient(ellipse at 50% 30%,#67402b,#321d13 85%);color:#f8dcad;border:22px solid transparent;border-image:url('assets/market/gold_detail.webp') 24 28 24 28 / 22px stretch;box-shadow:inset 0 0 22px #140803,0 12px 42px #100603}
+.gm-dialog-eyebrow{font:700 13px Georgia,serif;letter-spacing:.2em;color:#deb77c;margin-bottom:9px}
+.gm-dialog-content h2{font:bold 36px 'Noto Serif KR',Georgia,serif;color:#ffe3ad;text-shadow:0 3px 3px #170805;margin:0 0 13px}
+.gm-dialog-content p{font:700 23px/1.45 'Noto Serif KR',Georgia,serif;color:#ffe6c0;margin:0 0 12px;word-break:keep-all}
+.gm-dialog-content small{display:block;min-height:43px;font:17px/1.45 'Noto Serif KR',Georgia,serif;color:#d9b28b}
+.gm-dialog-buttons{display:flex;justify-content:flex-end;gap:14px;margin-top:20px}
+.gm-dialog-buttons button{position:relative!important;min-width:190px!important;min-height:56px!important;padding:8px 17px!important;border:3px ridge #b8834b!important;border-radius:7px!important;background:linear-gradient(#563425,#25170f)!important;color:#fce1b2!important;box-shadow:inset 0 0 0 2px #1a0e09,0 4px 10px #140605!important;font:bold 19px 'Noto Serif KR',Georgia,serif!important}
+.gm-dialog-buttons #gmConfirm{background:linear-gradient(#ac402b,#5d2119)!important;border-color:#ffd18a!important;color:#fff2cc!important}
+.gm-dialog-buttons button:hover{filter:brightness(1.2)}
+.gm-dialog[data-mode="success"] .gm-dialog-content{background:radial-gradient(ellipse at 50% 28%,#74512a,#3c2517 85%)}
+.gm-dialog[data-mode="success"] .gm-dialog-content h2{color:#ffe9a5}
+@media (prefers-reduced-motion:reduce){.gm-selected-wreath,.gm-reaction-badge,.gm-dialog-merchant img{animation:none}}
