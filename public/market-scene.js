@@ -23,7 +23,13 @@ function say(message,p=1){
 }
 function positionMerchant(){
  const art=qs('#slaveMarketMerchant');if(!art)return;
- const p=['0% 0%','100% 0%','0% 100%','100% 100%'][pose%4];art.style.backgroundPosition=p;
+ if(!marketImage){const p=['0% 0%','100% 0%','0% 100%','100% 100%'][pose%4];art.style.backgroundPosition=p;return;}
+ const canvas=qs('#mercatorCanvas');if(!canvas)return;art.style.backgroundImage='none';
+ const c=canvas.getContext('2d');c.clearRect(0,0,canvas.width,canvas.height);
+ const cw=marketImage.naturalWidth/2,ch=marketImage.naturalHeight/2;
+ const scale=Math.min(canvas.width/cw,canvas.height/ch);
+ const w=cw*scale,h=ch*scale;
+ c.drawImage(marketImage,(pose%2)*cw,Math.floor(pose/2)*ch,cw,ch,(canvas.width-w)/2,canvas.height-h,w,h);
 }
 function paint(){
  if(!scene||scene.hidden)return;
@@ -69,11 +75,11 @@ function open(data){
  options=data;if(!scene){
   scene=document.createElement('section');scene.className='slave-market';scene.id='slaveMarket';scene.hidden=true;
   scene.setAttribute('aria-label','로마 시대 노예시장');
-  scene.innerHTML=`<div class="slave-market-scene"><header class="slave-market-top"><button id="slaveMarketBack" class="slave-market-back" type="button">◀ 루두스로</button><h1 class="slave-market-banner">노예시장</h1><div class="slave-market-wallet"><span>◉</span><b id="slaveMarketGold"></b> D</div></header><main class="slave-market-main"><aside class="slave-market-dealer"><div class="slave-market-merchant-art" id="slaveMarketMerchant" role="img" aria-label="로마 시장 상인 네 가지 손짓과 표정"></div><div class="slave-market-merchant-fallback"><span class="figure">🧔🏻‍♂️</span><small>노예 상인 · MERCATOR</small></div><div id="slaveMerchantSpeech" role="status" aria-live="polite" class="slave-market-speech"></div></aside><div class="slave-market-candidates" id="slaveMarketCards" aria-label="구매 가능한 검투사"></div></main><div class="slave-market-bottom"><div class="slave-market-selected" id="slaveMarketSelected"></div><button class="slave-market-buy" id="slaveMarketBuy" type="button"></button></div></div>`;
+  scene.innerHTML=`<div class="slave-market-scene"><header class="slave-market-top"><button id="slaveMarketBack" class="slave-market-back" type="button">◀ 루두스로</button><h1 class="slave-market-banner">노예시장</h1><div class="slave-market-wallet"><span>◉</span><b id="slaveMarketGold"></b> D</div></header><main class="slave-market-main"><aside class="slave-market-dealer"><div class="slave-market-merchant-art" id="slaveMarketMerchant" role="img" aria-label="로마 시장 상인 네 가지 손짓과 표정"><canvas id="mercatorCanvas" width="350" height="510" aria-hidden="true"></canvas></div><div class="slave-market-merchant-fallback"><span class="figure">🧔🏻‍♂️</span><small>노예 상인 · MERCATOR</small></div><div id="slaveMerchantSpeech" role="status" aria-live="polite" class="slave-market-speech"></div></aside><div class="slave-market-candidates" id="slaveMarketCards" aria-label="구매 가능한 검투사"></div></main><div class="slave-market-bottom"><div class="slave-market-selected" id="slaveMarketSelected"></div><button class="slave-market-buy" id="slaveMarketBuy" type="button"></button></div></div>`;
   document.body.appendChild(scene);
   qs('#slaveMarketBack').onclick=close;
   qs('#slaveMarketBuy').onclick=buy;
-  const img=new Image();img.onload=()=>{marketImage=img;qs('#slaveMarketMerchant')?.removeAttribute('data-missing');};
+  const img=new Image();img.onload=()=>{marketImage=img;qs('#slaveMarketMerchant')?.removeAttribute('data-missing');positionMerchant();};
   img.onerror=()=>qs('#slaveMarketMerchant')?.setAttribute('data-missing','true');
   img.src='assets/market/mercator_sheet.webp';
  }
