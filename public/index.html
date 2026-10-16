@@ -303,6 +303,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 </div>
 <div id="careerHub" hidden><div class="career-shell"><div class="career-head"><div><h1>LUDUS MAGNUS</h1><p>노예 시장에서 시작하는 검투사의 전설</p></div><button id="careerExit">아케이드로</button></div><div id="growthImport" class="growth-import"><strong>성장 시트 20장</strong><span id="growthState" role="status">성장 이미지 자동 로딩 중…</span><button id="growthRetry" hidden>다시 불러오기</button><small>검투사 종류와 성장 단계에 맞는 외형이 자동 적용됩니다.</small></div><div id="careerBody" class="career-grid"></div></div></div>
 <div id="careerMini" hidden role="dialog" aria-modal="true" aria-label="훈련"><div class="career-mini-panel"><h2 id="careerMiniTitle"></h2><p id="careerMiniHelp"></p><div class="career-timing"><div class="career-hitzone"></div><div id="careerNeedle"></div></div><div id="careerTrainingResult" class="career-training-result" hidden aria-live="assertive"></div><div class="career-buttons" style="justify-content:center"><button id="careerHit">지금! (SPACE)</button><button id="careerCancel">취소</button></div></div></div>
+<script src="growth-frames.js?v=2"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
    Pose sheets extracted from user-approved 3D-look static character art.
@@ -582,29 +583,49 @@ const GEAR=[
 const GROWTH_TYPES={thraex_a:'트라엑스 A',thraex_b:'트라엑스 B',murmillo_a:'무르밀로 A',retiarius_a:'레티아리우스 A'};
 const GROWTH_IMAGES=new Map();
 const GROWTH_POSE={idle:0,walk:1,attack:2,special:3,guard:6,dodge:8,hit:7,net:5,finisher:10,defeat:11};
-let growthLoading=null;
+let growthLoading=null,growthCuts=null;
 function growthType(h){return h?.growthType||({murmillo:'murmillo_a',thraex:'thraex_a',retiarius:'retiarius_a'}[h?.cls]);}
 function growthImage(h){return GROWTH_IMAGES.get(growthType(h)+'_L'+careerStage(h));}
 function growthStatus(message){document.getElementById('growthState').textContent=message;}
 function refreshGrowthAvatar(){
- const img=CAREER.hero&&growthImage(CAREER.hero),avatar=document.querySelector('#careerBody .career-avatar');
- if(img&&avatar){avatar.style.backgroundImage='url("'+img.src+'")';avatar.style.backgroundSize='400% 300%';}
+ const atlas=CAREER.hero&&growthImage(CAREER.hero),avatar=document.querySelector('#careerBody .career-avatar');
+ if(atlas&&avatar){
+  const frame=atlas.frames[9].canvas,canvas=document.createElement('canvas');
+  canvas.width=canvas.height=410;canvas.style.cssText='width:100%;height:100%;object-fit:contain';
+  const scale=Math.min(390/frame.width,390/frame.height),w=frame.width*scale,h=frame.height*scale;
+  canvas.getContext('2d').drawImage(frame,(410-w)/2,410-h,w,h);
+  avatar.style.backgroundImage='none';avatar.replaceChildren(canvas);
+ }
 }
 function loadGrowthAtlases(){
  if(growthLoading)return growthLoading;
  document.getElementById('growthRetry').hidden=true;
  const keys=Object.keys(GROWTH_TYPES).flatMap(type=>Array.from({length:5},(_,i)=>type+'_L'+(i+1)));
  growthLoading=(async()=>{
-  const results=await Promise.allSettled(keys.map(key=>GROWTH_IMAGES.has(key)?Promise.resolve():new Promise((resolve,reject)=>{
-   const img=new Image();
-   img.onload=()=>{GROWTH_IMAGES.set(key,img);growthStatus('성장 이미지 '+GROWTH_IMAGES.size+'/20장 준비');refreshGrowthAvatar();resolve();};
-   img.onerror=()=>reject(new Error(key));
-   img.src='assets/ludus-growth/'+key+'.png';
-  })));
-  const failed=results.filter(r=>r.status==='rejected').length;
-  growthStatus(failed?'성장 이미지 '+GROWTH_IMAGES.size+'/20장 준비 · '+failed+'장 로딩 실패':'성장 이미지 20/20장 준비 · 성장 외형 자동 적용');
-  document.getElementById('growthRetry').hidden=!failed;
-  growthLoading=null;
+  try{
+   if(!growthCuts){
+    const response=await fetch('assets/ludus-growth/frame-cuts.json?v=2');
+    if(!response.ok)throw new Error('프레임 영역 로딩 실패');
+    const cuts=await response.json();
+    if(cuts.version!==2||keys.some(key=>cuts.sheets[key]?.frames.length!==12))throw new Error('프레임 영역 데이터 오류');
+    growthCuts=cuts;
+   }
+   const results=await Promise.allSettled(keys.map(key=>GROWTH_IMAGES.has(key)?Promise.resolve():new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>{
+     try{
+      GROWTH_IMAGES.set(key,GrowthFrames.isolate(img,growthCuts.sheets[key]));
+      growthStatus('성장 이미지 '+GROWTH_IMAGES.size+'/20장 준비');refreshGrowthAvatar();resolve();
+     }catch(error){reject(error);}
+    };
+    img.onerror=()=>reject(new Error(key));
+    img.src='assets/ludus-growth/'+key+'.png';
+   })));
+   const failed=results.filter(r=>r.status==='rejected').length;
+   growthStatus(failed?'성장 이미지 '+GROWTH_IMAGES.size+'/20장 준비 · '+failed+'장 로딩 실패':'성장 이미지 20/20장 · 240개 동작 분리 완료');
+   document.getElementById('growthRetry').hidden=!failed;
+  }catch(error){growthStatus('성장 이미지 준비 실패 · 다시 불러오기를 눌러주세요.');document.getElementById('growthRetry').hidden=false;}
+  finally{growthLoading=null;}
  })();
  return growthLoading;
 }
@@ -1295,12 +1316,8 @@ function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
  ctx.restore();
 }
 function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
- const img=GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
- if(!img?.complete||!img.naturalWidth)return false;
- const index=GROWTH_POSE[pose]??0,cw=img.naturalWidth/4,ch=img.naturalHeight/3;
- const sx=(index%4)*cw,sy=Math.floor(index/4)*ch;
- ctx.save();ctx.globalAlpha=alpha;if(flip){ctx.translate(x+w/2,0);ctx.scale(-1,1);ctx.translate(-(x+w/2),0);}
- ctx.drawImage(img,sx+.4,sy+.4,cw-.8,ch-.8,x,y,w,h);ctx.restore();return true;
+ const atlas=GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
+ return GrowthFrames.draw(ctx,atlas,GROWTH_POSE[pose]??0,x,y,w,h,flip,alpha);
 }
 function drawFighter(f){if(!f)return;const pose=choosePose(f),frame=FRAMES[pose]??0;
  // Keep a fixed feet pivot for every class, image pose and character.
