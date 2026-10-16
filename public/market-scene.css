@@ -73,3 +73,7 @@
 #endScreen .result-pose-card{border-color:#bb8a49}
 #endScreen .result-pose-card span{color:#f8d396}
 #careerMini .career-mini-panel{border:15px solid transparent;border-image:url('assets/market/gold_detail.webp') 24 28 24 28 / 15px stretch;background:linear-gradient(#3e2517,#1a100b);color:#f7ddb4}
+
+/* Gold inner edging for refreshed recruits, without replacing the approved podiums. */
+.gm-card-dynamic{border:2px ridge #bd8a45;border-radius:2px;background:linear-gradient(115deg,#261810,#211710 45%,#301d13);box-shadow:inset 0 0 0 2px #4a2c17,inset 0 0 16px #100906,0 0 4px #180905}
+.gm-card-dynamic:before,.gm-card-dynamic:after{content:'❧';position:absolute;top:5px;font:19px Georgia,serif;color:#cda45e;pointer-events:none}.gm-card-dynamic:before{left:9px}.gm-card-dynamic:after{right:9px;transform:scaleX(-1)}
