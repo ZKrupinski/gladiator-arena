@@ -1,93 +1,34 @@
-
-/* MERCATUS: dedicated Roman-era recruitment screen */
-.slave-market[hidden]{display:none!important}
-.slave-market{position:fixed;inset:0;z-index:90;overflow:auto;color:#fae6b8;font-family:Georgia,'Noto Serif KR',serif;background:#392117}
-.slave-market *{box-sizing:border-box}
-.slave-market-scene{position:relative;min-height:100vh;overflow:hidden;isolation:isolate;background:linear-gradient(90deg,rgba(31,13,6,.65),transparent 33%,rgba(43,17,8,.35)),linear-gradient(0deg,#3a2014 0%,rgba(69,29,10,.05) 53%,rgba(114,51,22,.23)),url('assets/market/roman_market_environment.webp') center center/cover no-repeat,url('assets/new-era/arena.webp') center center/cover no-repeat,#613a23}
-.slave-market-scene:before{content:'';pointer-events:none;position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 52% 20%,rgba(247,199,124,.26),transparent 60%),linear-gradient(0deg,rgba(37,16,7,.85),transparent 40%)}
-.slave-market-top{position:relative;display:flex;gap:14px;justify-content:space-between;align-items:center;padding:12px max(22px,3.2vw);z-index:2}
-.slave-market-banner{position:absolute;left:50%;top:0;transform:translateX(-50%);min-width:min(36vw,420px);text-align:center;line-height:1.1;padding:9px 40px 17px;font-weight:900;letter-spacing:.08em;font-size:clamp(23px,3.8vw,42px);white-space:nowrap;text-shadow:0 3px 5px #320e06;background:linear-gradient(110deg,#671c19,#a52a20 46%,#741f1b);border:2px solid #d9a356;border-top:0;box-shadow:0 8px 28px #180a07}
-.slave-market-banner:before,.slave-market-banner:after{content:'❧';color:#efbe69;margin:0 14px;font-size:.55em}
-.slave-market-back,.slave-market-buy,.slave-market-refresh{cursor:pointer;color:#f3d69d;font:700 17px Georgia,serif;background:linear-gradient(#43251a,#20130e);border:2px solid #c69751;border-radius:6px;box-shadow:inset 0 0 0 2px #301810,0 5px 10px #160b08;padding:10px 16px}
-.slave-market-back:hover,.slave-market-refresh:hover{filter:brightness(1.2)}
-.slave-market-wallet{margin-left:auto;background:rgba(23,12,8,.9);border:2px solid #c69b55;color:#ffe1a2;border-radius:9px;padding:9px 18px;font-weight:800;font-size:22px;white-space:nowrap;text-shadow:0 2px 2px #000}
-.slave-market-wallet span{color:#ffd05a;margin-right:9px}
-.slave-market-main{display:grid;grid-template-columns:minmax(230px,26%) minmax(0,1fr);gap:22px;margin:52px auto 0;padding:0 3vw;max-width:1630px}
-.slave-market-dealer{display:flex;flex-direction:column;min-height:560px;position:relative;justify-content:end}
-.slave-market-merchant-art{position:absolute;inset:0 0 120px;pointer-events:none;background-image:url('assets/market/mercator_sheet.webp');background-repeat:no-repeat;background-size:200% 200%;background-position:0% 0%;filter:drop-shadow(0 10px 13px #1b0b06);animation:merchant-breathe 3.8s ease-in-out infinite}
-.slave-market-merchant-art:empty{background-image:url('assets/market/mercator_sheet.webp')}
-.slave-market-merchant-fallback{display:none;position:absolute;inset:15px 12% 140px;align-content:end;justify-items:center}
-.slave-market-merchant-art[data-missing="true"]{background-image:none}
-.slave-market-merchant-art[data-missing="true"]+.slave-market-merchant-fallback{display:grid}
-.slave-market-merchant-fallback .figure{font-size:clamp(78px,11vw,175px);filter:drop-shadow(2px 7px 8px #140704)}
-.slave-market-merchant-fallback small{display:block;font-size:20px;color:#f7c779;background:#321b12aa;padding:8px}
-@keyframes merchant-breathe{50%{transform:translateY(-4px)}}
-.slave-market-speech{position:relative;z-index:3;line-height:1.55;padding:16px 22px;background:linear-gradient(135deg,#f8e6bf,#e7cc92);border:4px double #5e3519;border-radius:10px;color:#492618;box-shadow:0 8px 0 #29170d,0 13px 30px #140b08;font-size:clamp(15px,1.4vw,19px);font-weight:700;min-height:102px}
-.slave-market-speech:before{content:'노예 상인 · MERCATOR';display:block;color:#7e451d;font-size:13px;margin-bottom:4px}
-.slave-market-candidates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch;padding-top:36px}
-.slave-market-podium{display:flex;min-width:0;flex-direction:column;position:relative;cursor:pointer;background:transparent;border:0;color:#ffedd0;padding:0;font-family:inherit;text-align:center;transition:transform .16s}
-.slave-market-podium:hover{transform:translateY(-5px)}
-.slave-market-podium[aria-pressed="true"] .slave-market-plaque{border-color:#f5c75c;box-shadow:0 0 0 2px #deb75a66,0 8px 28px #f3b84843,inset 0 0 15px #140906}
-.slave-market-drape{z-index:0;display:block;height:74px;max-width:90%;margin:0 auto -16px;width:100%;background:linear-gradient(90deg,#4b1814,#802a20 20%,#7e2b21 70%,#391519);clip-path:polygon(4% 0,96% 0,98% 100%,50% 87%,2% 100%);border-top:5px solid #d9ad6e}
-.slave-market-podium:nth-child(3) .slave-market-drape{background:linear-gradient(90deg,#10233b,#32506e 40%,#162840)}
-.slave-market-display{position:relative;width:100%;height:clamp(205px,25vw,345px);background:linear-gradient(90deg,#4a271b94,#9c5c323b,#5e2f2099);border-left:8px ridge #694021;border-right:8px ridge #694021;border-bottom:12px ridge #6e4627;box-shadow:0 9px 15px #1c0a03}
-.slave-market-display:before{content:'';position:absolute;inset:0;border:1px solid #ddb57b29;pointer-events:none}
-.slave-market-display canvas{width:100%;height:100%;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 12px 5px #251309)}
-.slave-market-plaque{position:relative;z-index:2;width:100%;flex:1;min-height:177px;background:linear-gradient(120deg,#2c1c15,#492c1c 48%,#251810);border:3px ridge #9b703d;padding:9px 10px 13px;box-shadow:inset 0 0 17px #160b06,0 9px 20px #140703}
-.slave-market-plaque h3{margin:0;color:#f4dba6;font-size:clamp(17px,1.8vw,27px);white-space:nowrap}
-.slave-market-plaque .class{color:#ddad68;font-weight:700;margin:3px 0}
-.slave-market-level{color:#fff0c5;font-size:20px;font-weight:800;margin:4px 0 7px}
-.slave-market-bars{display:grid;gap:6px;margin:0 auto;max-width:240px}
-.slave-market-bar{display:grid;grid-template-columns:44px 1fr;align-items:center;gap:8px;font:700 12px system-ui,sans-serif;text-align:left}
-.slave-market-track{height:10px;display:block;background:#140e0e;border:1px solid #78563e;box-shadow:inset 0 1px 2px #000}
-.slave-market-track i{display:block;height:100%;background:var(--bar-color);box-shadow:inset 0 1px 1px #ffffff33;width:var(--bar-width)}
-.slave-market-bottom{display:flex;position:relative;z-index:2;gap:14px;align-items:stretch;margin:16px 3vw 24px calc(26% + 5vw);max-width:1210px;background:linear-gradient(105deg,#321b13,#56321f,#2c1911);border:4px ridge #d2a45b;border-radius:10px;box-shadow:0 8px 18px #1a0704;padding:14px}
-.slave-market-selected{flex:1;min-width:0}
-.slave-market-selected h2{color:#ffe6ae;margin:1px 0 8px;font-size:22px}
-.slave-market-selected p{color:#eee0bf;margin:5px 0;font-size:14px;line-height:1.5}
-.slave-market-buy{background:linear-gradient(#a43d2b,#692018);border:3px ridge #ffcb75;min-width:clamp(160px,25%,270px);font-size:clamp(21px,2.3vw,34px);padding:11px 25px;color:#fff0c7}
-.slave-market-buy small{display:block;font-size:17px;font-weight:500;margin-top:3px;color:#ffd16d}
-.slave-market-buy:hover:not(:disabled){filter:brightness(1.16)}
-.slave-market-buy:disabled{opacity:.55;cursor:not-allowed}
-.slave-market-refresh{font-size:12px;margin:0 3vw 20px auto;display:block}
-.slave-market-note{display:none;position:absolute;left:25%;right:3vw;bottom:0;color:#f6cf85;font-size:13px}
-@media(max-width:900px){
- .slave-market-main{grid-template-columns:1fr;margin-top:35px;padding:0 10px;gap:8px}
- .slave-market-dealer{min-height:170px;flex-direction:row;justify-content:flex-end;align-items:end}
- .slave-market-merchant-art{inset:0 auto 0 0;width:35%;background-size:200% 200%}
- .slave-market-merchant-fallback{inset:0 auto 0 0;width:35%}
- .slave-market-merchant-fallback .figure{font-size:60px}
- .slave-market-speech{margin-left:auto;max-width:65%;min-height:100px;padding:9px;font-size:14px}
- .slave-market-candidates{gap:8px;padding-top:0}
- .slave-market-podium .slave-market-display{height:clamp(180px,25vw,250px)}
- .slave-market-plaque{min-height:158px;padding:7px 3px}
- .slave-market-bars{gap:4px}
- .slave-market-bar{grid-template-columns:31px 1fr;gap:3px;font-size:9px}
- .slave-market-plaque h3{font-size:17px}
- .slave-market-bottom{margin:12px 10px;gap:8px}
+/* Exact approved 1672×941 UI composition.
+   The underlying full-screen art owns ALL ornaments, panels, banners, podiums and text.
+   Only necessary changing data is painted on top, in the exact image locations. */
+.market-exact[hidden]{display:none!important}
+.market-exact{position:fixed;inset:0;z-index:1000;background:#100807;color:#f9e1a8;overflow:auto;overscroll-behavior:contain;font-family:Georgia,'Noto Serif KR',serif}
+.market-viewport{min-height:100%;display:flex;align-items:center;justify-content:center}
+.market-stage{position:relative;flex:none;width:min(100vw,177.6833dvh);aspect-ratio:1672/941;overflow:hidden;container-type:inline-size;isolation:isolate;background:#613e27;box-shadow:0 0 80px #080302}
+.market-plate{display:block;position:absolute;inset:0;width:100%;height:100%;user-select:none;pointer-events:none}
+.market-hit{position:absolute;z-index:2;cursor:pointer;background:transparent;border:0;color:transparent;outline:0;padding:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.market-hit:focus-visible,.market-hit:hover{box-shadow:inset 0 0 0 .25cqw #f8d580ad,0 0 1.5cqw #ffcd6490;border-radius:.5cqw}
+.market-hit[aria-pressed="true"]:not([data-index="0"]){box-shadow:inset 0 0 0 .22cqw #e4bb68bc;border-radius:.55cqw}
+.market-hit[disabled]{cursor:not-allowed}
+.market-wallet{z-index:4;position:absolute;top:2.05%;left:89.2%;width:6.4%;height:3.1%;display:flex;align-items:center;justify-content:center;color:#f9eed6;text-shadow:0 .15cqw .25cqw #000;background:linear-gradient(90deg,#1d130e,#130d09);font-size:1.48cqw;font-weight:700;line-height:1;pointer-events:none}
+.market-price{z-index:3;position:absolute;left:69.25%;top:90.45%;width:4.9%;height:3.55%;display:flex;align-items:center;justify-content:center;line-height:1;color:#ffe4aa;background:linear-gradient(95deg,#802b21,#78281d);font-size:1.6cqw;text-shadow:0 .1cqw .22cqw #250b08;pointer-events:none}
+.market-detail{z-index:3;position:absolute;left:30.8%;top:81.05%;width:30.8%;height:15.5%;pointer-events:none}
+.market-detail[hidden],.market-dialog[hidden],.market-sold[hidden]{display:none!important}
+.market-detail-portrait{position:absolute;left:1.0%;top:2.5%;width:22.5%;height:88%;display:flex;justify-content:center;align-items:end;overflow:hidden;border:.13cqw solid #a66c33;border-radius:.25cqw;background:radial-gradient(#764b33,#281b15)}
+.market-detail-portrait canvas{width:100%;height:100%;object-fit:contain}
+.market-detail-description{position:absolute;left:27.7%;top:0;width:72.3%;height:98%;background:linear-gradient(120deg,#2c1b14,#42281b 70%,#2e1b15);padding:.25cqw .6cqw;display:flex;flex-direction:column;justify-content:flex-start;gap:.25cqw;color:#f8dfb2}
+.market-detail-description h3{font-size:1.36cqw;line-height:1.16;margin:0}
+.market-detail-description small{font-size:1.23cqw;color:#ffe2b4}
+.market-detail-description p{font-family:system-ui,'Noto Sans KR',sans-serif;font-size:1.0cqw;line-height:1.35;margin:.2cqw 0;color:#f5e5d3;max-height:7.1cqw;overflow:hidden}
+.market-dialog{position:absolute;z-index:3;left:3.0%;top:78.2%;width:24.0%;height:7.1%;padding:.05cqw .6cqw;display:flex;align-items:center;background:linear-gradient(#f4e3be,#efd7ad);color:#4a2b19;font-size:1.23cqw;line-height:1.25;font-weight:700;pointer-events:none}
+.market-sold{z-index:4;position:absolute;pointer-events:none;display:flex;align-items:center;justify-content:center;background:#170c0abd;color:#f4d3a0;border:.12cqw solid #d5a65e;font-size:1.36cqw;font-weight:800;text-shadow:0 .15cqw .2cqw #190703}
+.market-merchant-mouth{position:absolute;z-index:2;left:13.8%;top:22.25%;height:2.1%;width:1.4%;opacity:0;pointer-events:none;transform:rotate(-9deg);border-radius:35% 20% 55% 40%;background:radial-gradient(ellipse at 55% 55%,#180808 43%,#c2907f 50%,#39201a 75%);filter:blur(.06cqw)}
+.market-merchant-mouth.talking{animation:market-mouth .48s steps(2) 3}
+@keyframes market-mouth{0%,100%{opacity:0;transform:scaleY(.6) rotate(-9deg)}50%{opacity:.82;transform:scaleY(1.3) rotate(-9deg)}}
+.market-announcement{position:absolute;z-index:5;bottom:15%;left:31%;width:50%;text-align:center;color:#fee1a3;font-size:1.25cqw;text-shadow:0 .2cqw .45cqw #000;pointer-events:none}
+.market-announcement:empty{display:none}
+@media (max-aspect-ratio:4/5){
+ .market-viewport{display:block;min-width:100%;min-height:100%;overflow:auto}
+ .market-stage{width:max(100vw,1050px);height:auto;margin:0}
+ .market-exact:after{content:'원본 화면 비율을 유지합니다 · 옆으로 밀어서 시장을 둘러보세요';position:fixed;pointer-events:none;bottom:0;left:0;right:0;text-align:center;background:#1c100de0;color:#e9d2ad;font-size:12px;padding:8px;z-index:10}
 }
-@media(max-width:500px){
- .slave-market-top{padding:8px 6px;gap:8px}
- .slave-market-banner{font-size:22px;padding:12px 15px;top:38px;min-width:225px}
- .slave-market-back{font-size:12px;padding:7px 10px}
- .slave-market-wallet{font-size:16px;padding:7px}
- .slave-market-main{margin-top:76px}
- .slave-market-candidates{gap:3px}
- .slave-market-drape{height:36px}
- .slave-market-podium .slave-market-display{height:140px;border-width:3px}
- .slave-market-plaque{min-height:149px;border-width:2px}
- .slave-market-plaque h3{font-size:15px}
- .slave-market-level{font-size:15px}
- .slave-market-plaque .class{font-size:11px}
- .slave-market-bottom{flex-direction:column;padding:10px}
- .slave-market-buy{min-width:0;font-size:21px}
-}
-
-/* The approved key art includes its mockup labels and figures. The live
-   interface paints independent opaque podiums over them to avoid double sprites. */
-.slave-market-display{background:radial-gradient(ellipse at 50% 22%,#82593d,#462a1d 82%);box-shadow:inset 0 0 45px #24100c,0 9px 15px #1c0a03}
-.slave-market-merchant-art canvas{display:block;width:100%;height:100%;object-fit:contain}
-.slave-market-dealer:before{content:'';position:absolute;inset:0 0 116px;pointer-events:none;background:linear-gradient(90deg,rgba(35,17,12,.72),rgba(47,23,17,.47) 65%,transparent);z-index:0}
-.slave-market-dealer .slave-market-merchant-art{z-index:1}
-.slave-market-banner{z-index:3}
-@media(max-width:900px){.slave-market-dealer:before{inset:0 65% 0 0}}
