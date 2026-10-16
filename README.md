@@ -49,3 +49,14 @@ Ludus sheets are not uniform cells: long weapons and crests cross the nominal 4�
 `public/growth-frames.js` copies only each pose's assigned original pixels into its own canvas with a 4px transparent gutter. Combat uses a common per-sheet scale, body-centred horizontal pivots and grounded feet. Ludus uses the isolated standing pose (frame 9). Arcade rendering, original atlases and career saves are unchanged. Metadata/image failures retain the existing arcade fallback and retry UI.
 
 Validation: `node tests/growth-frames.cjs` (requires `@napi-rs/canvas`) checks all 240 canvases, PNG SHA-256 values, disjoint source ownership, transparent gutters and mirrored drawing. The generator writes contact sheets to `/tmp/gladiator-cut-review` for visual inspection. Artwork already clipped at the outer source-sheet edge cannot be reconstructed by cropping.
+
+## Ludus roster and champion encounters (v4.7)
+
+- The market stays open after the first hire. Select any owned fighter to train, equip or heal them independently; money is shared, XP/stats/equipment/injury are per fighter.
+- Every match opens a deployment roster with the opponent's level and grade. Fighters with injury >=80 cannot deploy. The match snapshots its participant, so only that fighter receives XP, injury and record updates.
+- Regular opponents randomly use the four growth variants; level 1–20 maps to stages at levels 1/5/10/15/20. The pending opponent is saved and retained after defeat or cancelling selection. Wins advance the challenge; losses do not skip bosses.
+- Challenges 5/10/15 (and every fifth challenge thereafter) rotate the three original-art champions. The first win against each recruits that champion once. Recruits retain original art, use their combat idle pose in the Ludus, and can train/equip/deploy normally.
+- Growth fighters use type/stage-specific face-scale corrections (0.64–0.94), identically for allies and opponents, with unchanged ground anchors and collision rules. Victory/defeat portraits now follow the fighter's actual growth appearance.
+- Existing `gladiator.ludus.v1` saves are kept; `pendingOpponent` is additive. Arcade mode retains its existing art and opponent selection.
+
+Run `node tests/ludus-roster.cjs` for roster, encounter, reward ownership, boss recruitment and arcade regression checks. It exercises the actual career/start functions with a small DOM test harness; it is not a browser playtest.
