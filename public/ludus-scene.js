@@ -59,7 +59,7 @@ var html=[
 '<button data-action="select" data-index="2" style="left:202px;top:879px;width:79px;height:99px" aria-label="소속 검투사 3 선택"></button>',
 '<button data-action="select" data-index="3" style="left:286px;top:879px;width:79px;height:99px" aria-label="소속 검투사 4 선택"></button>',
 '<button data-action="select" data-index="4" style="left:370px;top:879px;width:79px;height:99px" aria-label="소속 검투사 5 선택"></button>',
-'</div><div class="ll-orientation" role="dialog" aria-label="가로 화면 권장"><div class="ll-rotate-icon" aria-hidden="true">↻</div><strong>가로 화면에서 플레이해 주세요</strong><p>루두스는 가로형 게임 화면으로 제작되었습니다.<br>기기를 가로로 돌리면 버튼과 검투사가 크게 보입니다.</p><button data-action="dismiss-orientation">작은 화면으로 계속 보기</button></div><div class="ll-toast" hidden role="status"></div></div>'
+'</div><div class="ll-toast" hidden role="status"></div></div><div class="ll-orientation" role="dialog" aria-label="가로 화면 권장"><div class="ll-rotate-icon" aria-hidden="true">↻</div><strong>가로 화면에서 플레이해 주세요</strong><p>루두스는 가로형 게임 화면으로 제작되었습니다.<br>기기를 가로로 돌리면 버튼과 검투사가 크게 보입니다.</p><button data-action="dismiss-orientation">작은 화면으로 계속 보기</button></div>'
 ];
 scene.innerHTML=html.join("");document.body.appendChild(scene);stage=$(".ll-stage");
 var art=$(".ll-key");art.addEventListener("load",function(){scene.classList.add("ll-has-art");});art.addEventListener("error",function(){scene.classList.remove("ll-has-art");});if(art.complete&&art.naturalWidth)scene.classList.add("ll-has-art");
