@@ -61,6 +61,7 @@ function buy(){
  const result=options.hire(o);
  if(!result)return;
  options.state.marketSeed=(Number(options.state.marketSeed)||0)+1;
+ options.save?.();
  say('축하합니다! '+o.name+'이(가) 루두스에 합류합니다. 훌륭한 투사가 될 거예요!',2);
  paint();
 }
