@@ -55,3 +55,23 @@
 .ll-bgfighters{filter:drop-shadow(0 5px 4px rgba(34,15,9,.38))}
 .ll-has-art .ll-bgfighters{opacity:.68}
 @media(prefers-reduced-motion:reduce){.ll-domina-blink{display:none}}
+
+/* v5.1 Ludus QA: do not expose concept-only currency and ghost roster. */
+.ll-scene::before{content:"";position:absolute;inset:-25px;background:linear-gradient(#160b0988,#160b09aa),url("assets/ludus/ludus_ui.webp") center/cover no-repeat;filter:blur(22px) brightness(.62);transform:scale(1.03);pointer-events:none}
+.ll-wallet,.ll-has-art .ll-wallet{left:684px;top:4px;right:auto;width:577px;height:51px;display:flex;align-items:center;justify-content:space-around;gap:8px;padding:4px 12px;background:linear-gradient(110deg,#32231cf9,#1c1210f9 55%,#39221cf9);border:2px ridge #d6a66a;border-radius:9px;font:800 19px/1.15 "Noto Sans KR",sans-serif;box-shadow:inset 0 0 7px #cda56945,0 2px 9px #1008068a}
+.ll-wallet span{white-space:nowrap;display:inline-flex;align-items:center;gap:7px}
+.ll-wallet strong{font:800 21px Georgia,"Noto Sans KR",sans-serif;color:#fff1c8}
+.ll-has-art .ll-bottom{opacity:1;pointer-events:none;z-index:11}
+.ll-has-art .ll-bottom .ll-actions{opacity:0;pointer-events:none}
+.ll-has-art .ll-bottom .ll-roster{position:relative;pointer-events:auto;opacity:1;transform:translateY(-17px);background:linear-gradient(115deg,#23140ff7,#19110dfa 70%,#332118f7);border:4px ridge #d2a25a;box-shadow:inset 0 0 10px #7c461b,0 6px 20px #150908cf}
+.ll-has-art .ll-live-counter{display:none}
+.ll-roster h3{font-size:19px;color:#ffe5b8}
+.ll-roster .ll-portraits button{border-radius:5px;overflow:hidden;touch-action:manipulation}
+.ll-roster .ll-portraits button.selected{background:linear-gradient(#825529,#49321c)}
+.ll-roster .ll-portraits button:focus-visible{outline-offset:0}
+.ll-roster .ll-portraits button.ll-add{font:bold 49px/1 Georgia,serif;color:#f0ca82;background:#33261ae8}
+.ll-has-art .ll-bgfighters{opacity:.35;mix-blend-mode:normal}
+.ll-bgfighters img{transform-origin:center bottom;will-change:transform;animation-duration:2.3s}
+.ll-has-art .ll-domina-blink{will-change:opacity}
+.ll-roster,.ll-wallet{font-variant-numeric:tabular-nums}
+@media (max-width:760px) and (orientation:portrait){.ll-scene{background:#110b08}}

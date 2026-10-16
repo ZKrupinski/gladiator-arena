@@ -9,14 +9,14 @@ function $(s){return scene&&scene.querySelector(s);}
 function bridge(){return window.LudusBridge;}
 function fit(){if(stage){var s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform="translate(-50%,-50%) scale("+s+")";}}
 function notice(msg){var t=$(".ll-toast");t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.hidden=true;},2200);}
-function close(){if(scene){scene.hidden=true;cancelAnimationFrame(raf);}}
+function close(){if(scene){scene.hidden=true;cancelAnimationFrame(raf);clearTimeout(toastTimer);}}
 function action(id,button){
 var a=bridge();if(!a)return;
 if(id==="select"){var index=Number(button&&button.dataset.index);var hero=a.state().roster[index];if(hero){a.select(index);notice(hero.name+" · 출전 검투사 선택");}else notice("비어 있는 슬롯입니다. 검투사시장에서 영입하세요.");return;}
 if(id==="back"){close();a.exit();return;}
 if(id==="market"){close();a.market();return;}
 if(id==="roster"||id==="training"||id==="basic"||id==="practice"){close();a.section(id==="roster"?"roster":"training");return;}
-if(id==="arena"){if(!a.state().roster.length){notice("검투사시장에서 검투사를 먼저 고용하세요.");return;}close();a.fight();return;}
+if(id==="arena"){var team=a.state().roster;if(!team.length){notice("검투사시장에서 검투사를 먼저 고용하세요.");return;}if(!team.some(function(h){return Number(h.injury||0)<80;})){notice("출전 가능한 검투사가 없습니다. 치료가 필요합니다.");return;}close();a.fight();return;}
 notice(({coach:"독토레 특훈",upgrade:"시설 강화",elite:"특훈",daily:"보상 수령",boost:"훈련 가속"})[id]+" 기능은 준비 중입니다.");
 }
 function setup(){
@@ -28,7 +28,7 @@ var html=[
 '<img class="ll-key" src="assets/ludus/ludus_ui.webp" alt="" aria-hidden="true">',
 '<img class="ll-domina-blink" src="assets/ludus/domina_blink.webp" alt="" aria-hidden="true">',
 '<button class="ll-title" data-action="back">❮ 루두스</button>',
-'<div class="ll-wallet"><span>🪙 <strong data-gold>0</strong></span><span>✥ <strong data-glory>0</strong></span></div>',
+'<div class="ll-wallet" aria-label="실시간 루두스 자원"><span>🪙 금화 <strong data-gold>0</strong></span><span>✥ 명예 <strong data-glory>0</strong></span><span>⚔ 소속 <strong data-roster-count>0</strong></span></div>',
 '<div class="ll-menu"><button data-action="basic">▤ 훈련장</button><button data-action="roster">♜ 관리</button><button data-action="coach">⚔ 교관</button><button data-action="upgrade">⚒ 시설 강화</button><button data-action="elite">❧ 특훈</button></div>',
 '<div class="ll-speech"><b>도미나</b>훌륭해…\n우리의 검투사들이 이렇게 성장하는 걸 보는 게 가장 큰 즐거움이란다.</div>',
 '<div class="ll-doctore"><b>독토레</b>좋다, 자세가 잡히고 있어.<br>더 거칠게! 더 강하게!</div>',
@@ -71,16 +71,17 @@ if(!scene)return;var a=bridge(),s=a&&a.state();if(!s)return;
 $("[data-gold]").textContent=(Number(s.gold)||0).toLocaleString("ko-KR");
 $("[data-glory]").textContent=(Number(s.glory)||0).toLocaleString("ko-KR");
 $("[data-count]").textContent=s.roster.length+" / 12";
+$("[data-roster-count]").textContent=s.roster.length;
 $("[data-live-counter]").textContent="소속 검투사 "+s.roster.length+"명 · "+(s.message||"훈련을 시작하세요.");
 var host=$(".ll-portraits");host.replaceChildren();
 s.roster.slice(0,6).forEach(function(h,i){
-var b=document.createElement("button");b.className=i===s.active?"selected":"";b.setAttribute("aria-label",h.name+" 선택");
+var b=document.createElement("button");b.className=i===s.active?"selected":"";b.setAttribute("aria-label",h.name+" · Lv."+h.level+" 선택");b.setAttribute("title",h.name+" · "+h.cls+" · Lv."+h.level);b.dataset.index=String(i);
 var canvas=document.createElement("canvas");canvas.width=84;canvas.height=68;b.appendChild(canvas);
 var label=document.createElement("small");label.textContent="Lv."+h.level;b.appendChild(label);host.appendChild(b);
 var src=a.portrait(i);if(src&&src.width&&src.height){var k=Math.min(82/src.width,67/src.height),ctx=canvas.getContext("2d");ctx.drawImage(src,(84-src.width*k)/2,68-src.height*k,src.width*k,src.height*k);}
-b.onclick=function(){a.select(i);refresh();notice(h.name+" 선택");};
+b.onclick=function(){a.select(i);refresh();notice(h.name+" · 출전 후보 선택");};
 });
-var add=document.createElement("button");add.setAttribute("aria-label","검투사시장");add.textContent="＋";add.style.fontSize="55px";add.onclick=function(){action("market");};host.appendChild(add);
+var add=document.createElement("button");add.setAttribute("aria-label","검투사시장으로 이동");add.textContent="＋";add.className="ll-add";add.onclick=function(){action("market");};host.appendChild(add);
 }
 function tick(){if(!scene||scene.hidden)return;count++;
 if(count%330===0){var eye=$(".ll-domina-blink");if(eye)eye.classList.add("is-blinking");}
