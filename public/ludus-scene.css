@@ -75,3 +75,12 @@
 .ll-has-art .ll-domina-blink{will-change:opacity}
 .ll-roster,.ll-wallet{font-variant-numeric:tabular-nums}
 @media (max-width:760px) and (orientation:portrait){.ll-scene{background:#110b08}}
+
+/* Real roster paging; all taps go to actual career data, not the painted dummy portraits. */
+.ll-roster h3{align-items:center;gap:10px}
+.ll-roster h3 [data-count]{margin-left:auto;font-size:17px}
+.ll-pager{display:inline-flex;align-items:center;gap:6px;color:#f2cd93;font:800 14px Georgia,serif}
+.ll-pager[hidden]{display:none!important}
+.ll-pager button{position:relative;border:1px solid #c99e60;border-radius:5px;background:#4a301d;color:#fce5b6;font:800 14px Georgia,serif;min-width:22px;min-height:22px;cursor:pointer}
+.ll-pager button:focus-visible,.ll-pager button:hover{background:#986336}
+.ll-has-art .ll-roster{z-index:12}
