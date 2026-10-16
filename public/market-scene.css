@@ -15,7 +15,7 @@
 .gm-back-hit:hover,.gm-hire-hit:hover{filter:drop-shadow(0 0 9px #f1c66c) brightness(1.12)}
 .gm-hire-hit{left:1119px;top:745px;width:421px;height:151px;border-radius:12px}
 .gm-hire-hit:disabled{cursor:not-allowed;filter:grayscale(.45) brightness(.66)}
-.gm-wallet-value{position:absolute;z-index:3;top:22px;left:1400px;width:120px;height:34px;display:flex;align-items:center;justify-content:center;text-align:center;font:27px Georgia,serif;color:#f7e9c9;text-shadow:1px 2px #000;background:linear-gradient(90deg,#201913,#18130e 40%,#1c1510 85%,#291b12)}
+.gm-wallet-value{position:absolute;z-index:3;top:22px;left:1387px;width:153px;height:34px;display:flex;align-items:center;justify-content:center;text-align:center;font:27px Georgia,serif;color:#f7e9c9;text-shadow:1px 2px #000;background:linear-gradient(90deg,#201913,#18130e 40%,#1c1510 85%,#291b12)}
 .gm-price-value{position:absolute;z-index:3;top:829px;left:1312px;min-width:102px;height:39px;display:flex;align-items:center;justify-content:center;background:linear-gradient(100deg,#7a1a12,#6e1610);font:32px Georgia,serif;color:#fff3d9;text-shadow:0 2px 3px #300e08;pointer-events:none}
 .gm-price-value[hidden],.gm-wallet-value[hidden]{display:none!important}
 .gm-card-dynamic{position:absolute;z-index:4;top:530px;width:220px;height:193px;box-sizing:border-box;padding:5px 5px 8px;color:#fbe4b8;text-align:center;background:linear-gradient(90deg,#231713,#221812 30%,#211712 78%,#291b14);box-shadow:inset 0 0 16px #110905;pointer-events:none}
@@ -31,7 +31,7 @@
 .gm-stat-name b{font-size:16px;width:20px;text-align:center}
 .gm-stat-track{flex:1;min-width:0;height:13px;border:1px solid #76614d;border-radius:2px;padding:1px;background:linear-gradient(#161615,#242424);box-shadow:inset 0 1px 3px #000}
 .gm-stat-track i{display:block;height:100%;width:var(--value);background:linear-gradient(0deg,var(--shade),var(--color) 70%,#ffffff65 100%);box-shadow:inset 0 0 2px #ffffff33;border-right:2px solid #ffffff55}
-.gm-bottom-info{position:absolute;z-index:3;left:698px;top:756px;width:418px;height:129px;padding:3px 6px 5px;background:linear-gradient(90deg,#22150f,#291911 70%,#21140f);color:#fbeccf;pointer-events:none}
+.gm-bottom-info{position:absolute;z-index:3;left:692px;top:749px;width:428px;height:143px;padding:3px 6px 5px;background:linear-gradient(90deg,#22150f,#291911 70%,#21140f);color:#fbeccf;pointer-events:none}
 .gm-bottom-info[hidden],.gm-bottom-avatar[hidden],.gm-speech-new[hidden]{display:none!important}
 .gm-bottom-info h2{margin:0 0 2px;font:24px Georgia,'Noto Serif KR',serif;color:#f9e3bd;white-space:nowrap}
 .gm-bottom-info .gm-level{font:21px Georgia,serif;margin:2px 0 3px}
@@ -62,3 +62,14 @@
 #careerHub .career-avatar{border:4px ridge #cea05b;box-shadow:inset 0 0 14px #100602,0 6px 16px #0a0402}
 #careerHub #careerMini{border-color:#d6ad69}
 #endScreen .end-card,#endScreen .result-panel{border-color:#c59952;background:linear-gradient(#45271d,#1c100d)}
+/* Carry the approved market-key-art palette into general game chrome. */
+.masthead{border-bottom:3px solid #bb8a45;background:linear-gradient(90deg,#4e2118,#2b1710 55%,#3f2118);box-shadow:0 5px 18px #100703bb;padding:13px 20px}
+.brand{color:#ffe1a4;text-shadow:0 2px 4px #140804}
+.stage-panel{border:14px solid transparent!important;border-image:url('assets/market/gold_detail.webp') 24 28 24 28 / 14px stretch!important;background:linear-gradient(135deg,#3b2119ed,#21140feb)!important;box-shadow:0 10px 22px #12070688}
+.stage-panel h1,.stage-panel h2{color:#f7d58f;text-shadow:0 2px 3px #120905;font-family:Georgia,'Noto Serif KR',serif}
+.start{background:linear-gradient(#923526,#521e16)!important;color:#fff0c8!important;border:3px ridge #d8a456!important;border-radius:6px!important;box-shadow:inset 0 0 0 2px #562418,0 4px 10px #190a06;text-shadow:0 2px 2px #310f0b}
+.start:hover{filter:brightness(1.14)}
+.control{--ring:#d7aa67;--inner1:#6d3322;--inner2:#2e1711}
+#endScreen .result-pose-card{border-color:#bb8a49}
+#endScreen .result-pose-card span{color:#f8d396}
+#careerMini .career-mini-panel{border:15px solid transparent;border-image:url('assets/market/gold_detail.webp') 24 28 24 28 / 15px stretch;background:linear-gradient(#3e2517,#1a100b);color:#f7ddb4}
