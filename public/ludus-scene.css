@@ -98,3 +98,7 @@
   .ll-orientation button{border:2px solid #d4a35d;border-radius:10px;background:linear-gradient(#8b4e29,#5b2d19);padding:13px 24px;color:#fff2d5;font:bold 18px "Noto Sans KR",sans-serif}
   .ll-allow-portrait .ll-orientation{display:none}
 }
+
+/* Render rotation guidance in physical viewport coordinates, never scaled stage coordinates. */
+.ll-has-art .ll-wallet,.ll-wallet{width:610px}
+@media(orientation:portrait) and (max-width:740px){.ll-orientation{position:fixed;inset:0}}
