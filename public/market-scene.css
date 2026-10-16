@@ -1,34 +1,64 @@
-/* Exact approved 1672×941 UI composition.
-   The underlying full-screen art owns ALL ornaments, panels, banners, podiums and text.
-   Only necessary changing data is painted on top, in the exact image locations. */
-.market-exact[hidden]{display:none!important}
-.market-exact{position:fixed;inset:0;z-index:1000;background:#100807;color:#f9e1a8;overflow:auto;overscroll-behavior:contain;font-family:Georgia,'Noto Serif KR',serif}
-.market-viewport{min-height:100%;display:flex;align-items:center;justify-content:center}
-.market-stage{position:relative;flex:none;width:min(100vw,177.6833dvh);aspect-ratio:1672/941;overflow:hidden;container-type:inline-size;isolation:isolate;background:#613e27;box-shadow:0 0 80px #080302}
-.market-plate{display:block;position:absolute;inset:0;width:100%;height:100%;user-select:none;pointer-events:none}
-.market-hit{position:absolute;z-index:2;cursor:pointer;background:transparent;border:0;color:transparent;outline:0;padding:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.market-hit:focus-visible,.market-hit:hover{box-shadow:inset 0 0 0 .25cqw #f8d580ad,0 0 1.5cqw #ffcd6490;border-radius:.5cqw}
-.market-hit[aria-pressed="true"]:not(#marketOffer0){box-shadow:inset 0 0 0 .22cqw #e4bb68bc;border-radius:.55cqw}
-.market-hit[disabled]{cursor:not-allowed}
-.market-wallet{z-index:4;position:absolute;top:2.05%;left:89.2%;width:6.4%;height:3.1%;display:flex;align-items:center;justify-content:center;color:#f9eed6;text-shadow:0 .15cqw .25cqw #000;background:linear-gradient(90deg,#1d130e,#130d09);font-size:1.48cqw;font-weight:700;line-height:1;pointer-events:none}
-.market-price{z-index:3;position:absolute;left:69.25%;top:90.45%;width:4.9%;height:3.55%;display:flex;align-items:center;justify-content:center;line-height:1;color:#ffe4aa;background:linear-gradient(95deg,#802b21,#78281d);font-size:1.6cqw;text-shadow:0 .1cqw .22cqw #250b08;pointer-events:none}
-.market-detail{z-index:3;position:absolute;left:30.8%;top:81.05%;width:30.8%;height:15.5%;pointer-events:none}
-.market-detail[hidden],.market-dialog[hidden],.market-sold[hidden]{display:none!important}
-.market-detail-portrait{position:absolute;left:1.0%;top:2.5%;width:22.5%;height:88%;display:flex;justify-content:center;align-items:end;overflow:hidden;border:.13cqw solid #a66c33;border-radius:.25cqw;background:radial-gradient(#764b33,#281b15)}
-.market-detail-portrait canvas{width:100%;height:100%;object-fit:contain}
-.market-detail-description{position:absolute;left:27.7%;top:0;width:72.3%;height:98%;background:linear-gradient(120deg,#2c1b14,#42281b 70%,#2e1b15);padding:.25cqw .6cqw;display:flex;flex-direction:column;justify-content:flex-start;gap:.25cqw;color:#f8dfb2}
-.market-detail-description h3{font-size:1.36cqw;line-height:1.16;margin:0}
-.market-detail-description small{font-size:1.23cqw;color:#ffe2b4}
-.market-detail-description p{font-family:system-ui,'Noto Sans KR',sans-serif;font-size:1.0cqw;line-height:1.35;margin:.2cqw 0;color:#f5e5d3;max-height:7.1cqw;overflow:hidden}
-.market-dialog{position:absolute;z-index:3;left:3.0%;top:78.2%;width:24.0%;height:7.1%;padding:.05cqw .6cqw;display:flex;align-items:center;background:linear-gradient(#f4e3be,#efd7ad);color:#4a2b19;font-size:1.23cqw;line-height:1.25;font-weight:700;pointer-events:none}
-.market-sold{z-index:4;position:absolute;pointer-events:none;display:flex;align-items:center;justify-content:center;background:#170c0abd;color:#f4d3a0;border:.12cqw solid #d5a65e;font-size:1.36cqw;font-weight:800;text-shadow:0 .15cqw .2cqw #190703}
-.market-merchant-mouth{position:absolute;z-index:2;left:13.8%;top:22.25%;height:2.1%;width:1.4%;opacity:0;pointer-events:none;transform:rotate(-9deg);border-radius:35% 20% 55% 40%;background:radial-gradient(ellipse at 55% 55%,#180808 43%,#c2907f 50%,#39201a 75%);filter:blur(.06cqw)}
-.market-merchant-mouth.talking{animation:market-mouth .48s steps(2) 3}
-@keyframes market-mouth{0%,100%{opacity:0;transform:scaleY(.6) rotate(-9deg)}50%{opacity:.82;transform:scaleY(1.3) rotate(-9deg)}}
-.market-announcement{position:absolute;z-index:5;bottom:15%;left:31%;width:50%;text-align:center;color:#fee1a3;font-size:1.25cqw;text-shadow:0 .2cqw .45cqw #000;pointer-events:none}
-.market-announcement:empty{display:none}
-@media (max-aspect-ratio:4/5){
- .market-viewport{display:block;min-width:100%;min-height:100%;overflow:auto}
- .market-stage{width:max(100vw,1050px);height:auto;margin:0}
- .market-exact:after{content:'원본 화면 비율을 유지합니다 · 옆으로 밀어서 시장을 둘러보세요';position:fixed;pointer-events:none;bottom:0;left:0;right:0;text-align:center;background:#1c100de0;color:#e9d2ad;font-size:12px;padding:8px;z-index:10}
-}
+/* GLADIATOR / MERCATUS : Pixel-faithful 1672 × 941 approved key visual */
+.gm-screen[hidden]{display:none!important}
+.gm-screen{position:fixed!important;inset:0!important;display:block;z-index:99999;overflow:hidden;background:#110b08;color:#f8e4b3;font-family:Georgia,'Noto Serif KR',serif;touch-action:manipulation}
+.gm-stage{position:absolute;width:1672px;height:941px;left:50%;top:50%;transform-origin:center;overflow:hidden;isolation:isolate;background:#27180e;box-shadow:0 0 70px #080503}
+.gm-key-art{position:absolute;inset:0;width:1672px;height:941px;display:block;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.gm-stage button{position:absolute;z-index:2;cursor:pointer;touch-action:manipulation;border:0;background:transparent;color:inherit;font:inherit;padding:0;outline-offset:-3px}
+.gm-stage button:focus-visible{outline:3px solid #fff0a0!important}
+.gm-card-hit{top:249px;height:484px;transition:filter .18s}
+.gm-card-hit[data-i="0"]{left:465px;width:279px}
+.gm-card-hit[data-i="1"]{left:807px;width:268px}
+.gm-card-hit[data-i="2"]{left:1144px;width:333px}
+.gm-card-hit:hover:after,.gm-card-hit:focus-visible:after{content:'';position:absolute;inset:4px 1px 4px;border:2px solid #efc575;border-radius:5px;box-shadow:inset 0 0 20px #edaa4d44,0 0 18px #ffcf6755;pointer-events:none}
+.gm-card-hit[aria-pressed="true"]:not([data-i="0"]):after{content:'';position:absolute;inset:4px 2px;border:2px solid #fcd48c;box-shadow:inset 0 0 12px #dcb15d55,0 0 13px #eec46d55;pointer-events:none}
+.gm-back-hit{left:20px;top:833px;width:214px;height:69px;border-radius:13px}
+.gm-back-hit:hover,.gm-hire-hit:hover{filter:drop-shadow(0 0 9px #f1c66c) brightness(1.12)}
+.gm-hire-hit{left:1119px;top:745px;width:421px;height:151px;border-radius:12px}
+.gm-hire-hit:disabled{cursor:not-allowed;filter:grayscale(.45) brightness(.66)}
+.gm-wallet-value{position:absolute;z-index:3;top:22px;left:1400px;width:120px;height:34px;display:flex;align-items:center;justify-content:center;text-align:center;font:27px Georgia,serif;color:#f7e9c9;text-shadow:1px 2px #000;background:linear-gradient(90deg,#201913,#18130e 40%,#1c1510 85%,#291b12)}
+.gm-price-value{position:absolute;z-index:3;top:829px;left:1312px;min-width:102px;height:39px;display:flex;align-items:center;justify-content:center;background:linear-gradient(100deg,#7a1a12,#6e1610);font:32px Georgia,serif;color:#fff3d9;text-shadow:0 2px 3px #300e08;pointer-events:none}
+.gm-price-value[hidden],.gm-wallet-value[hidden]{display:none!important}
+.gm-card-dynamic{position:absolute;z-index:4;top:530px;width:220px;height:193px;box-sizing:border-box;padding:5px 5px 8px;color:#fbe4b8;text-align:center;background:linear-gradient(90deg,#231713,#221812 30%,#211712 78%,#291b14);box-shadow:inset 0 0 16px #110905;pointer-events:none}
+.gm-card-dynamic[data-i="0"]{left:491px;width:226px}
+.gm-card-dynamic[data-i="1"]{left:838px;width:211px}
+.gm-card-dynamic[data-i="2"]{left:1179px;width:274px}
+.gm-card-dynamic[hidden]{display:none!important}
+.gm-card-dynamic .gm-roman-name{font:26px Georgia,serif;line-height:1.07;color:#f9e8be;text-shadow:0 2px 2px #000;white-space:nowrap}
+.gm-card-dynamic .gm-class{font:18px 'Noto Serif KR',serif;line-height:1.35;color:#f3deb7;white-space:nowrap}
+.gm-card-dynamic .gm-lv{font:21px Georgia,serif;line-height:1.24;color:#fff1d9}
+.gm-stat{display:flex;align-items:center;gap:9px;margin:3px auto;height:19px;white-space:nowrap;font:16px Georgia,serif;text-align:left}
+.gm-stat-name{display:inline-flex;align-items:center;gap:5px;width:65px;flex-shrink:0}
+.gm-stat-name b{font-size:16px;width:20px;text-align:center}
+.gm-stat-track{flex:1;min-width:0;height:13px;border:1px solid #76614d;border-radius:2px;padding:1px;background:linear-gradient(#161615,#242424);box-shadow:inset 0 1px 3px #000}
+.gm-stat-track i{display:block;height:100%;width:var(--value);background:linear-gradient(0deg,var(--shade),var(--color) 70%,#ffffff65 100%);box-shadow:inset 0 0 2px #ffffff33;border-right:2px solid #ffffff55}
+.gm-bottom-info{position:absolute;z-index:3;left:698px;top:756px;width:418px;height:129px;padding:3px 6px 5px;background:linear-gradient(90deg,#22150f,#291911 70%,#21140f);color:#fbeccf;pointer-events:none}
+.gm-bottom-info[hidden],.gm-bottom-avatar[hidden],.gm-speech-new[hidden]{display:none!important}
+.gm-bottom-info h2{margin:0 0 2px;font:24px Georgia,'Noto Serif KR',serif;color:#f9e3bd;white-space:nowrap}
+.gm-bottom-info .gm-level{font:21px Georgia,serif;margin:2px 0 3px}
+.gm-bottom-info p{font:17px/1.25 'Noto Sans KR',sans-serif;word-break:keep-all;white-space:normal;margin:0}
+.gm-bottom-avatar{position:absolute;z-index:3;left:563px;top:759px;width:120px;height:123px;overflow:hidden;background:radial-gradient(#75401a,#220e06);border:1px solid #a3693c;pointer-events:none}
+.gm-bottom-avatar canvas{display:block;width:100%;height:100%}
+.gm-speech-new{position:absolute;z-index:3;left:48px;top:718px;width:406px;height:82px;padding:4px 6px;background:linear-gradient(110deg,#f1e1bc,#ecd8a9);color:#22150c;font:700 23px/1.24 'Noto Serif KR',serif;white-space:pre-line;word-break:keep-all;pointer-events:none}
+.gm-message-symbol{position:absolute;left:433px;top:789px;z-index:4;color:#3a240d;animation:gm-bob 1.1s ease-in-out infinite;font-size:21px}
+@keyframes gm-bob{50%{transform:translateY(3px)}}
+.gm-merchant-talk{position:absolute;pointer-events:none;left:125px;top:155px;width:155px;height:100px;background:radial-gradient(ellipse at 50% 55%,rgba(255,211,135,.085),transparent 70%);opacity:0;mix-blend-mode:screen;animation:gm-mouth-glow .24s steps(2,end) infinite}
+.gm-merchant-talk.active{opacity:1}
+@keyframes gm-mouth-glow{50%{filter:brightness(1.35)}}
+.gm-orient{display:none;position:absolute;bottom:5px;left:0;right:0;text-align:center;color:#edca87;font:12px Georgia,serif}
+@media (orientation:portrait) and (max-width:650px){.gm-orient{display:block}}
+/* Cross-scene design language: dark walnut, aged brass, oxblood and parchment. */
+#careerHub{background:linear-gradient(110deg,#21140ded,#3e2218e6 53%,#26140eee),url('assets/new-era/arena.webp') center/cover fixed!important}
+#careerHub .career-shell{max-width:1180px;padding:22px 15px}
+#careerHub .career-head{background:linear-gradient(96deg,#531d16,#7e2921 46%,#4a1912);border:2px solid #c69a56;border-radius:6px;padding:13px 19px;margin-bottom:20px;box-shadow:inset 0 0 0 2px #4e2617,0 9px 23px #100704}
+#careerHub .career-head h1{font-family:Georgia,'Noto Serif KR',serif;color:#ffe4a3;text-shadow:0 2px 3px #180804;letter-spacing:2px}
+#careerHub .career-card,.career-draft{border:19px solid transparent!important;border-image-source:url('assets/market/gold_detail.webp')!important;border-image-slice:24 28 24 28!important;border-image-width:19px!important;border-image-repeat:stretch!important;background:linear-gradient(120deg,#352118f5,#1b120dec)!important;box-shadow:0 12px 22px #100703bb,inset 0 0 23px #07030299!important;color:#f0d5a3}
+#careerHub .career-card h2,#careerHub .career-card h3{font-family:Georgia,'Noto Serif KR',serif;color:#f6d491;text-shadow:0 2px 3px #160a05}
+#careerHub .ludus-nav button,#careerHub .career-buttons button,#careerHub .career-option{border:2px solid #b98b46;border-radius:6px;background:linear-gradient(#5c2c1d,#2a1710);box-shadow:inset 0 0 0 1px #25100b,0 4px 6px #120704;color:#ffe3b2}
+#careerHub .ludus-nav button:hover:not(:disabled),#careerHub .career-buttons button:hover:not(:disabled),#careerHub .career-option:hover:not(:disabled){border-color:#e5bf72;background:linear-gradient(#823f2a,#3a1c12)}
+#careerHub .ludus-nav button[aria-pressed=true],#careerHub #marketEnter,#careerHub #careerFightTop{background:linear-gradient(#9c3022,#501610);color:#ffeec2;border-color:#e8b666}
+#careerHub .roster-unit{border:7px solid transparent!important;border-image:url('assets/market/gold_plaque.webp') 28 26 28 26 / 7px stretch!important;background:linear-gradient(#40271b,#23170f);color:#f5dfb2}
+#careerHub .roster-unit.selected{box-shadow:0 0 17px #ecc16f88!important}
+#careerHub .career-stat{border-bottom:1px solid #c9a46a44}
+#careerHub .career-avatar{border:4px ridge #cea05b;box-shadow:inset 0 0 14px #100602,0 6px 16px #0a0402}
+#careerHub #careerMini{border-color:#d6ad69}
+#endScreen .end-card,#endScreen .result-panel{border-color:#c59952;background:linear-gradient(#45271d,#1c100d)}
