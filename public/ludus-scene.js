@@ -2,6 +2,25 @@
 "use strict";
 var scene,stage,raf=0,count=0,toastTimer=0;
 var W=1448,H=1086;
+var poses={domina:[],fighter:[[],[],[]]},sprites=new Image();
+sprites.onload=function(){
+ var sw=sprites.naturalWidth;
+ function crop(x,y,w,h){
+  var cv=document.createElement("canvas");cv.width=w;cv.height=h;
+  cv.getContext("2d").drawImage(sprites,x,y,w,h,0,0,w,h);
+  return cv.toDataURL("image/png");
+ }
+ for(var i=0;i<6;i++)poses.domina[i]=crop(Math.floor(i*sw/6),0,Math.ceil(sw/6),370);
+ [[378,567],[567,758],[758,941]].forEach(function(bounds,r){
+  for(var j=0;j<4;j++)poses.fighter[r][j]=crop(Math.floor(j*sw/4),bounds[0],Math.ceil(sw/4),bounds[1]-bounds[0]);
+ });
+ if(scene){
+  var d=$(".ll-domina img");if(d)d.src=poses.domina[0];
+  scene.querySelectorAll(".ll-bgfighters img").forEach(function(img,i){img.src=poses.fighter[i][0];});
+ }
+};
+sprites.src="assets/ludus/sprite_sheet.png";
+
 function $(s){return scene&&scene.querySelector(s);}
 function bridge(){return window.LudusBridge;}
 function fit(){if(stage){var s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform="translate(-50%,-50%) scale("+s+")";}}
@@ -20,14 +39,14 @@ if(scene)return;
 scene=document.createElement("div");scene.className="ll-scene";scene.id="ludusScene";scene.hidden=true;
 var html=[
 '<div class="ll-stage" role="region" aria-label="루두스 훈련장">',
-'<div class="ll-fallback"><div class="ll-domina"><img src="assets/ludus/domina_0.webp" alt=""><span>DOMINA · 루두스의 주인</span></div></div>',
-'<img class="ll-key" src="assets/ludus/ludus_ui.webp" alt="" aria-hidden="true">',
+'<div class="ll-fallback"><div class="ll-domina"><img src="assets/ludus/sprite_sheet.png" alt=""><span>DOMINA · 루두스의 주인</span></div></div>',
+'<img class="ll-key" src="assets/ludus/ludus_ui.png" alt="" aria-hidden="true">',
 '<button class="ll-title" data-action="back">❮ 루두스</button>',
 '<div class="ll-wallet"><span>🪙 <strong data-gold>0</strong></span><span>✥ <strong data-glory>0</strong></span></div>',
 '<div class="ll-menu"><button data-action="basic">▤ 훈련장</button><button data-action="roster">♜ 관리</button><button data-action="coach">⚔ 교관</button><button data-action="upgrade">⚒ 시설 강화</button><button data-action="elite">❧ 특훈</button></div>',
 '<div class="ll-speech"><b>도미나</b>훌륭해…\n우리의 검투사들이 이렇게 성장하는 걸 보는 게 가장 큰 즐거움이란다.</div>',
 '<div class="ll-doctore"><b>독토레</b>좋다, 자세가 잡히고 있어.<br>더 거칠게! 더 강하게!</div>',
-'<div class="ll-bgfighters"><img src="assets/ludus/fighter_0_0.webp" alt=""><img src="assets/ludus/fighter_1_0.webp" alt=""><img src="assets/ludus/fighter_2_0.webp" alt=""></div>',
+'<div class="ll-bgfighters"><img src="assets/ludus/sprite_sheet.png" alt=""><img src="assets/ludus/sprite_sheet.png" alt=""><img src="assets/ludus/sprite_sheet.png" alt=""></div>',
 '<div class="ll-special"><button data-action="training">♜ 일괄 훈련</button><button data-action="daily">♕ 보상 수령</button><button data-action="boost">⌛ 훈련 가속</button></div>',
 '<div class="ll-bottom"><div class="ll-roster"><h3>검투사 훈련 현황 <span data-count>0 / 12</span></h3><div class="ll-portraits"></div></div>',
 '<div class="ll-actions"><button data-action="basic"><span class="ll-thumb">⚔</span><strong>기초 훈련</strong><small>검투사의 기본을 다집니다.</small></button>',
@@ -72,8 +91,8 @@ b.onclick=function(){a.select(i);refresh();notice(h.name+" 선택");};
 });
 var add=document.createElement("button");add.setAttribute("aria-label","검투사시장");add.textContent="＋";add.style.fontSize="55px";add.onclick=function(){action("market");};host.appendChild(add);
 }
-function tick(){if(!scene||scene.hidden)return;count++;if(count%48===0){var n=Math.floor(count/48)%4;[...scene.querySelectorAll(".ll-bgfighters img")].forEach(function(img,i){img.src="assets/ludus/fighter_"+i+"_"+n+".webp";});}
-if(count%200===0){var img=$(".ll-domina img");img.src="assets/ludus/domina_"+Math.floor(count/200)%6+".webp";}
+function tick(){if(!scene||scene.hidden)return;count++;if(count%48===0){var n=Math.floor(count/48)%4;[...scene.querySelectorAll(".ll-bgfighters img")].forEach(function(img,i){if(poses.fighter[i][n])img.src=poses.fighter[i][n];});}
+if(count%200===0){var img=$(".ll-domina img");if(poses.domina.length)img.src=poses.domina[Math.floor(count/200)%6];}
 raf=requestAnimationFrame(tick);}
 function open(){setup();if(!bridge())return;scene.hidden=false;refresh();fit();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);}
 window.LudusScene={open:open,close:close,refresh:refresh};
