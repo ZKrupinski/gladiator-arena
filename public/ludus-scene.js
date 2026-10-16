@@ -13,6 +13,7 @@ function close(){if(scene){scene.hidden=true;cancelAnimationFrame(raf);clearTime
 function action(id,button){
 var a=bridge();if(!a)return;
 if(id==="select"){var index=Number(button&&button.dataset.index);var hero=a.state().roster[index];if(hero){a.select(index);notice(hero.name+" · 출전 검투사 선택");}else notice("비어 있는 슬롯입니다. 검투사시장에서 영입하세요.");return;}
+if(id==="dismiss-orientation"){scene.classList.add("ll-allow-portrait");return;}
 if(id==="back"){close();a.exit();return;}
 if(id==="market"){close();a.market();return;}
 if(id==="prev"||id==="next"){var max=Math.max(0,Math.ceil(a.state().roster.length/6)-1);rosterPage=Math.max(0,Math.min(max,rosterPage+(id==="next"?1:-1)));refresh();return;}
@@ -58,7 +59,7 @@ var html=[
 '<button data-action="select" data-index="2" style="left:202px;top:879px;width:79px;height:99px" aria-label="소속 검투사 3 선택"></button>',
 '<button data-action="select" data-index="3" style="left:286px;top:879px;width:79px;height:99px" aria-label="소속 검투사 4 선택"></button>',
 '<button data-action="select" data-index="4" style="left:370px;top:879px;width:79px;height:99px" aria-label="소속 검투사 5 선택"></button>',
-'</div><div class="ll-toast" hidden role="status"></div></div>'
+'</div><div class="ll-orientation" role="dialog" aria-label="가로 화면 권장"><div class="ll-rotate-icon" aria-hidden="true">↻</div><strong>가로 화면에서 플레이해 주세요</strong><p>루두스는 가로형 게임 화면으로 제작되었습니다.<br>기기를 가로로 돌리면 버튼과 검투사가 크게 보입니다.</p><button data-action="dismiss-orientation">작은 화면으로 계속 보기</button></div><div class="ll-toast" hidden role="status"></div></div>'
 ];
 scene.innerHTML=html.join("");document.body.appendChild(scene);stage=$(".ll-stage");
 var art=$(".ll-key");art.addEventListener("load",function(){scene.classList.add("ll-has-art");});art.addEventListener("error",function(){scene.classList.remove("ll-has-art");});if(art.complete&&art.naturalWidth)scene.classList.add("ll-has-art");
