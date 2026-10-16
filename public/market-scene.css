@@ -8,7 +8,7 @@
 .market-plate{display:block;position:absolute;inset:0;width:100%;height:100%;user-select:none;pointer-events:none}
 .market-hit{position:absolute;z-index:2;cursor:pointer;background:transparent;border:0;color:transparent;outline:0;padding:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .market-hit:focus-visible,.market-hit:hover{box-shadow:inset 0 0 0 .25cqw #f8d580ad,0 0 1.5cqw #ffcd6490;border-radius:.5cqw}
-.market-hit[aria-pressed="true"]:not([data-index="0"]){box-shadow:inset 0 0 0 .22cqw #e4bb68bc;border-radius:.55cqw}
+.market-hit[aria-pressed="true"]:not(#marketOffer0){box-shadow:inset 0 0 0 .22cqw #e4bb68bc;border-radius:.55cqw}
 .market-hit[disabled]{cursor:not-allowed}
 .market-wallet{z-index:4;position:absolute;top:2.05%;left:89.2%;width:6.4%;height:3.1%;display:flex;align-items:center;justify-content:center;color:#f9eed6;text-shadow:0 .15cqw .25cqw #000;background:linear-gradient(90deg,#1d130e,#130d09);font-size:1.48cqw;font-weight:700;line-height:1;pointer-events:none}
 .market-price{z-index:3;position:absolute;left:69.25%;top:90.45%;width:4.9%;height:3.55%;display:flex;align-items:center;justify-content:center;line-height:1;color:#ffe4aa;background:linear-gradient(95deg,#802b21,#78281d);font-size:1.6cqw;text-shadow:0 .1cqw .22cqw #250b08;pointer-events:none}
