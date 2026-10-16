@@ -84,3 +84,17 @@
 .ll-pager button{position:relative;border:1px solid #c99e60;border-radius:5px;background:#4a301d;color:#fce5b6;font:800 14px Georgia,serif;min-width:22px;min-height:22px;cursor:pointer}
 .ll-pager button:focus-visible,.ll-pager button:hover{background:#986336}
 .ll-has-art .ll-roster{z-index:12}
+
+/* Final QA pass: completely occlude painted demonstration values and character cards. */
+.ll-wallet,.ll-has-art .ll-wallet{left:662px;width:628px;background:linear-gradient(110deg,#281b16,#1b1210 56%,#39241a);border-color:#cfa069;box-shadow:0 2px 7px #140908,inset 0 0 11px #90622e}
+.ll-has-art .ll-bottom .ll-roster{width:740px;background:linear-gradient(110deg,#21140e,#170e0c 69%,#2a1a13);border-color:#c29851;box-shadow:inset 0 0 13px #7c461b,0 6px 20px #150908d9}
+.ll-hitbuttons button:hover{opacity:0!important;outline:0!important;background:transparent!important}
+.ll-hitbuttons button:focus-visible{opacity:1;outline:2px solid #ffe1a2!important;background:#ffe1a222!important}
+.ll-orientation{display:none}
+@media(orientation:portrait) and (max-width:740px){
+  .ll-orientation{position:absolute;inset:0;display:flex;z-index:35;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:25px;text-align:center;background:linear-gradient(145deg,#23110cf6,#361a12f6);font:700 25px/1.5 "Noto Sans KR",sans-serif;color:#ffe7b9}
+  .ll-orientation p{font-size:16px;line-height:1.8;margin:2px 0;word-break:keep-all;color:#f3d8af}
+  .ll-rotate-icon{font-size:73px;line-height:1;color:#ebbb70}
+  .ll-orientation button{border:2px solid #d4a35d;border-radius:10px;background:linear-gradient(#8b4e29,#5b2d19);padding:13px 24px;color:#fff2d5;font:bold 18px "Noto Sans KR",sans-serif}
+  .ll-allow-portrait .ll-orientation{display:none}
+}
