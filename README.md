@@ -37,3 +37,7 @@ Open http://localhost:8000/ .
 
 ## Hosting note
 A commit to `main` triggers Git-integrated Cloudflare Pages when the external Cloudflare integration is enabled. Repository commit success alone is not proof that the Cloudflare production deployment succeeded.
+
+## Ludus hosted growth sprites (v4.5)
+
+The 20 approved PNG atlases load automatically from `public/assets/ludus-growth/`: Thraex A/B, Murmillo A and Retiarius A, five stages each. PNG bytes are preserved exactly from the review ZIP. The adjacent manifest records actual packaged SHA-256 values and retains the supplied source hashes separately. ZIP import and IndexedDB image storage are no longer required. Failed image requests expose a retry button; arcade art remains the fallback. The Ludus hub preview follows the selected type and stage as images finish loading. Career saves, progression and arcade mode are preserved.

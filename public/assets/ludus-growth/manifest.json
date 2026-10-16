@@ -1,0 +1,190 @@
+{
+  "thraex_a": [
+    {
+      "path": "thraex_a_L1.png",
+      "source": "Thraex_1.png",
+      "width": 1427,
+      "height": 1102,
+      "backgroundRemoved": true,
+      "sourceSha256": "95cace42b67b3ad1fff5b9e11e2719771b30a67e5399b33704c084b85a975a1b",
+      "sha256": "13b6250536f26e1e4e3a945cf858b06dcd31f3f0786519b423b2318bf8c3aa0d"
+    },
+    {
+      "path": "thraex_a_L2.png",
+      "source": "Thraex_2.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "bded5caf44b0eeb60a49d6bcb47b06dc38a5374dac2ec9546fc862f7ae838e3b",
+      "sha256": "bded5caf44b0eeb60a49d6bcb47b06dc38a5374dac2ec9546fc862f7ae838e3b"
+    },
+    {
+      "path": "thraex_a_L3.png",
+      "source": "Thraex_3.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "9863c13b3004570ed647290bcf9bc2609aa08dd8fe823dff9c34c1fe3c15791f",
+      "sha256": "9863c13b3004570ed647290bcf9bc2609aa08dd8fe823dff9c34c1fe3c15791f"
+    },
+    {
+      "path": "thraex_a_L4.png",
+      "source": "Thraex_4.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "c51f65bd7ff32f6d2ef87592ef823e0ed4b5d415f6fa4eedd627287cf02290ce",
+      "sha256": "c51f65bd7ff32f6d2ef87592ef823e0ed4b5d415f6fa4eedd627287cf02290ce"
+    },
+    {
+      "path": "thraex_a_L5.png",
+      "source": "Thraex_5.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "e8f49c4ec2328985f53bf81c24fd9f6ac4e4201c7097df7a7b23dd05bb7d53a6",
+      "sha256": "e8f49c4ec2328985f53bf81c24fd9f6ac4e4201c7097df7a7b23dd05bb7d53a6"
+    }
+  ],
+  "thraex_b": [
+    {
+      "path": "thraex_b_L1.png",
+      "source": "Thraex_b_1.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "6ab8834baacabe09c6f6430356b61e7729b88f30bccf91810e90077dfb100f4c",
+      "sha256": "6ab8834baacabe09c6f6430356b61e7729b88f30bccf91810e90077dfb100f4c"
+    },
+    {
+      "path": "thraex_b_L2.png",
+      "source": "Thraex_b_2.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "a908b2760021ebb289706de57f5e6baf26dc3e4bb608b21fbd87c0265bb7813a",
+      "sha256": "a908b2760021ebb289706de57f5e6baf26dc3e4bb608b21fbd87c0265bb7813a"
+    },
+    {
+      "path": "thraex_b_L3.png",
+      "source": "Thraex_b_3.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "5adc4525fdf58fad6d17aeb8d234e637a9d22e39e3cd398a42d43c948e628ed8",
+      "sha256": "5adc4525fdf58fad6d17aeb8d234e637a9d22e39e3cd398a42d43c948e628ed8"
+    },
+    {
+      "path": "thraex_b_L4.png",
+      "source": "Thraex_b_4.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "b99411fc766d0dcec7cc511e8f32cd8d35ef71218c26252df83a73f690340e5a",
+      "sha256": "b99411fc766d0dcec7cc511e8f32cd8d35ef71218c26252df83a73f690340e5a"
+    },
+    {
+      "path": "thraex_b_L5.png",
+      "source": "Thraex_b_5.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "88f2dbf848b478d1994fc6e373e0db378c5e198820fe5057d98b3c2c7748c59e",
+      "sha256": "88f2dbf848b478d1994fc6e373e0db378c5e198820fe5057d98b3c2c7748c59e"
+    }
+  ],
+  "murmillo_a": [
+    {
+      "path": "murmillo_a_L1.png",
+      "source": "Murmilo_1.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "25909125ce30468fc42323f1d8c56ac790be39c26fb717da6f739ea81772411f",
+      "sha256": "25909125ce30468fc42323f1d8c56ac790be39c26fb717da6f739ea81772411f"
+    },
+    {
+      "path": "murmillo_a_L2.png",
+      "source": "Murmilo_2.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "bebd9ae65e2f175bb944dd6374cecc105d5efcad879368c8cbbefea25a6dd21e",
+      "sha256": "bebd9ae65e2f175bb944dd6374cecc105d5efcad879368c8cbbefea25a6dd21e"
+    },
+    {
+      "path": "murmillo_a_L3.png",
+      "source": "Murmilo_3.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "d218ef0342ba28f1547274ebd81df0c9bef527804a2430a463ed297979137efa",
+      "sha256": "d218ef0342ba28f1547274ebd81df0c9bef527804a2430a463ed297979137efa"
+    },
+    {
+      "path": "murmillo_a_L4.png",
+      "source": "Murmilo_4.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "5b324fc198151361c37788f63132643a934d83ba673ee8d0dd1f4dd6e2d6a3a8",
+      "sha256": "5b324fc198151361c37788f63132643a934d83ba673ee8d0dd1f4dd6e2d6a3a8"
+    },
+    {
+      "path": "murmillo_a_L5.png",
+      "source": "Murmilo_5.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "35a5a118bd3b3b7d7d353362e753f9c986084952d6350fab8d4a885950c44abd",
+      "sha256": "35a5a118bd3b3b7d7d353362e753f9c986084952d6350fab8d4a885950c44abd"
+    }
+  ],
+  "retiarius_a": [
+    {
+      "path": "retiarius_a_L1.png",
+      "source": "retiarius_L1.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "52a7e162473b8237fa35e56a1c5c7026cd763d40d148b7c5cc3b6fa2d58f602f",
+      "sha256": "52a7e162473b8237fa35e56a1c5c7026cd763d40d148b7c5cc3b6fa2d58f602f"
+    },
+    {
+      "path": "retiarius_a_L2.png",
+      "source": "retiarius_L2.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "233ef84395bd421141403ac1e514fe2f6033c1b4c3edcdf330a7a470a0cd3b7a",
+      "sha256": "233ef84395bd421141403ac1e514fe2f6033c1b4c3edcdf330a7a470a0cd3b7a"
+    },
+    {
+      "path": "retiarius_a_L3.png",
+      "source": "retiarius_L3.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "518e9a320da6b9ec8245c3b912672bacccac2eba0c639dbaae459065832739aa",
+      "sha256": "518e9a320da6b9ec8245c3b912672bacccac2eba0c639dbaae459065832739aa"
+    },
+    {
+      "path": "retiarius_a_L4.png",
+      "source": "retiarius_L4.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "1c5b2c3800f5e3ef0ccfc12b03878ebe95b077cc934c5c5139b6d73bd454cdb6",
+      "sha256": "1c5b2c3800f5e3ef0ccfc12b03878ebe95b077cc934c5c5139b6d73bd454cdb6"
+    },
+    {
+      "path": "retiarius_a_L5.png",
+      "source": "retiarius_L5.png",
+      "width": 1448,
+      "height": 1086,
+      "backgroundRemoved": false,
+      "sourceSha256": "1e447fd79a79dfe2e79508528ed51769c956bfa74f3dceb3c65d28a80aef651a",
+      "sha256": "1e447fd79a79dfe2e79508528ed51769c956bfa74f3dceb3c65d28a80aef651a"
+    }
+  ]
+}
