@@ -2,32 +2,17 @@
 "use strict";
 var scene,stage,raf=0,count=0,toastTimer=0;
 var W=1448,H=1086;
-var poses={domina:[],fighter:[[],[],[]]},sprites=new Image();
-sprites.onload=function(){
- var sw=sprites.naturalWidth;
- function crop(x,y,w,h){
-  var cv=document.createElement("canvas");cv.width=w;cv.height=h;
-  cv.getContext("2d").drawImage(sprites,x,y,w,h,0,0,w,h);
-  return cv.toDataURL("image/png");
- }
- for(var i=0;i<6;i++)poses.domina[i]=crop(Math.floor(i*sw/6),0,Math.ceil(sw/6),370);
- [[378,567],[567,758],[758,941]].forEach(function(bounds,r){
-  for(var j=0;j<4;j++)poses.fighter[r][j]=crop(Math.floor(j*sw/4),bounds[0],Math.ceil(sw/4),bounds[1]-bounds[0]);
- });
- if(scene){
-  var d=$(".ll-domina img");if(d)d.src=poses.domina[0];
-  scene.querySelectorAll(".ll-bgfighters img").forEach(function(img,i){img.src=poses.fighter[i][0];});
- }
-};
-sprites.src="assets/ludus/sprite_sheet.png";
+var poses={domina:Array.from({length:6},(_,i)=>"assets/ludus/domina_"+i+".webp"),fighter:Array.from({length:3},(_,r)=>Array.from({length:4},(_,c)=>"assets/ludus/fighter_"+r+"_"+c+".webp"))};
+var preload=[];for(var seq of [poses.domina,...poses.fighter])for(var file of seq){var pic=new Image();pic.src=file;preload.push(pic);}
 
 function $(s){return scene&&scene.querySelector(s);}
 function bridge(){return window.LudusBridge;}
 function fit(){if(stage){var s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform="translate(-50%,-50%) scale("+s+")";}}
 function notice(msg){var t=$(".ll-toast");t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.hidden=true;},2200);}
 function close(){if(scene){scene.hidden=true;cancelAnimationFrame(raf);}}
-function action(id){
+function action(id,button){
 var a=bridge();if(!a)return;
+if(id==="select"){var index=Number(button&&button.dataset.index);var hero=a.state().roster[index];if(hero){a.select(index);notice(hero.name+" · 출전 검투사 선택");}else notice("비어 있는 슬롯입니다. 검투사시장에서 영입하세요.");return;}
 if(id==="back"){close();a.exit();return;}
 if(id==="market"){close();a.market();return;}
 if(id==="roster"||id==="training"||id==="basic"||id==="practice"){close();a.section(id==="roster"?"roster":"training");return;}
@@ -39,14 +24,15 @@ if(scene)return;
 scene=document.createElement("div");scene.className="ll-scene";scene.id="ludusScene";scene.hidden=true;
 var html=[
 '<div class="ll-stage" role="region" aria-label="루두스 훈련장">',
-'<div class="ll-fallback"><div class="ll-domina"><img src="assets/ludus/sprite_sheet.png" alt=""><span>DOMINA · 루두스의 주인</span></div></div>',
-'<img class="ll-key" src="assets/ludus/ludus_ui.png" alt="" aria-hidden="true">',
+'<div class="ll-fallback"><div class="ll-domina"><img src="assets/ludus/domina_0.webp" alt=""><span>DOMINA · 루두스의 주인</span></div></div>',
+'<img class="ll-key" src="assets/ludus/ludus_ui.webp" alt="" aria-hidden="true">',
+'<img class="ll-domina-blink" src="assets/ludus/domina_blink.webp" alt="" aria-hidden="true">',
 '<button class="ll-title" data-action="back">❮ 루두스</button>',
 '<div class="ll-wallet"><span>🪙 <strong data-gold>0</strong></span><span>✥ <strong data-glory>0</strong></span></div>',
 '<div class="ll-menu"><button data-action="basic">▤ 훈련장</button><button data-action="roster">♜ 관리</button><button data-action="coach">⚔ 교관</button><button data-action="upgrade">⚒ 시설 강화</button><button data-action="elite">❧ 특훈</button></div>',
 '<div class="ll-speech"><b>도미나</b>훌륭해…\n우리의 검투사들이 이렇게 성장하는 걸 보는 게 가장 큰 즐거움이란다.</div>',
 '<div class="ll-doctore"><b>독토레</b>좋다, 자세가 잡히고 있어.<br>더 거칠게! 더 강하게!</div>',
-'<div class="ll-bgfighters"><img src="assets/ludus/sprite_sheet.png" alt=""><img src="assets/ludus/sprite_sheet.png" alt=""><img src="assets/ludus/sprite_sheet.png" alt=""></div>',
+'<div class="ll-bgfighters"><img src="assets/ludus/fighter_0_0.webp" alt=""><img src="assets/ludus/fighter_1_0.webp" alt=""><img src="assets/ludus/fighter_2_0.webp" alt=""></div>',
 '<div class="ll-special"><button data-action="training">♜ 일괄 훈련</button><button data-action="daily">♕ 보상 수령</button><button data-action="boost">⌛ 훈련 가속</button></div>',
 '<div class="ll-bottom"><div class="ll-roster"><h3>검투사 훈련 현황 <span data-count>0 / 12</span></h3><div class="ll-portraits"></div></div>',
 '<div class="ll-actions"><button data-action="basic"><span class="ll-thumb">⚔</span><strong>기초 훈련</strong><small>검투사의 기본을 다집니다.</small></button>',
@@ -66,11 +52,16 @@ var html=[
 '<button data-action="daily" style="left:540px;top:758px;width:104px;height:110px" aria-label="보상 수령"></button>',
 '<button data-action="boost" style="left:653px;top:758px;width:103px;height:110px" aria-label="훈련 가속"></button>',
 '<button data-action="market" style="left:452px;top:887px;width:77px;height:95px" aria-label="검투사시장"></button>',
+'<button data-action="select" data-index="0" style="left:34px;top:879px;width:79px;height:99px" aria-label="소속 검투사 1 선택"></button>',
+'<button data-action="select" data-index="1" style="left:118px;top:879px;width:79px;height:99px" aria-label="소속 검투사 2 선택"></button>',
+'<button data-action="select" data-index="2" style="left:202px;top:879px;width:79px;height:99px" aria-label="소속 검투사 3 선택"></button>',
+'<button data-action="select" data-index="3" style="left:286px;top:879px;width:79px;height:99px" aria-label="소속 검투사 4 선택"></button>',
+'<button data-action="select" data-index="4" style="left:370px;top:879px;width:79px;height:99px" aria-label="소속 검투사 5 선택"></button>',
 '</div><div class="ll-toast" hidden role="status"></div></div>'
 ];
 scene.innerHTML=html.join("");document.body.appendChild(scene);stage=$(".ll-stage");
 var art=$(".ll-key");art.addEventListener("load",function(){scene.classList.add("ll-has-art");});art.addEventListener("error",function(){scene.classList.remove("ll-has-art");});
-scene.addEventListener("click",function(ev){var b=ev.target.closest("button[data-action]");if(b)action(b.dataset.action);});
+scene.addEventListener("click",function(ev){var b=ev.target.closest("button[data-action]");if(b)action(b.dataset.action,b);});
 addEventListener("resize",fit,{passive:true});addEventListener("keydown",function(ev){if(!scene.hidden&&ev.key==="Escape"){ev.preventDefault();action("back");}});
 var nav=document.querySelector("#careerHub .ludus-nav");if(nav&&!nav.querySelector("#careerVisualHome")){var home=document.createElement("button");home.id="careerVisualHome";home.textContent="🏛 루두스 홈";home.onclick=function(){bridge().returnHome();open();};nav.prepend(home);}
 fit();
@@ -91,7 +82,9 @@ b.onclick=function(){a.select(i);refresh();notice(h.name+" 선택");};
 });
 var add=document.createElement("button");add.setAttribute("aria-label","검투사시장");add.textContent="＋";add.style.fontSize="55px";add.onclick=function(){action("market");};host.appendChild(add);
 }
-function tick(){if(!scene||scene.hidden)return;count++;if(count%48===0){var n=Math.floor(count/48)%4;[...scene.querySelectorAll(".ll-bgfighters img")].forEach(function(img,i){if(poses.fighter[i][n])img.src=poses.fighter[i][n];});}
+function tick(){if(!scene||scene.hidden)return;count++;
+if(count%330===0){var eye=$(".ll-domina-blink");if(eye)eye.classList.add("is-blinking");}
+if(count%330===8){var eye=$(".ll-domina-blink");if(eye)eye.classList.remove("is-blinking");}if(count%48===0){var n=Math.floor(count/48)%4;[...scene.querySelectorAll(".ll-bgfighters img")].forEach(function(img,i){if(poses.fighter[i][n])img.src=poses.fighter[i][n];});}
 if(count%200===0){var img=$(".ll-domina img");if(poses.domina.length)img.src=poses.domina[Math.floor(count/200)%6];}
 raf=requestAnimationFrame(tick);}
 function open(){setup();if(!bridge())return;scene.hidden=false;refresh();fit();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);}

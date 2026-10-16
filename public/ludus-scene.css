@@ -48,3 +48,10 @@
 .ll-toast{position:absolute;z-index:20;bottom:345px;left:50%;transform:translateX(-50%);padding:12px 25px;border:3px ridge #caa467;border-radius:10px;background:#1d100cf5;font:bold 21px "Noto Sans KR",sans-serif;color:#ffedc8;text-align:center}
 .ll-toast[hidden]{display:none}@keyframes ll-breathe{50%{transform:translateY(5px) scale(1.006)}}@keyframes ll-step{to{transform:translateY(-8px) rotate(1deg)}}
 @media(prefers-reduced-motion:reduce){.ll-scene *{animation:none!important}}
+
+/* Preserves the approved key visual; face animation is a brief eye-only overlay. */
+.ll-domina-blink{position:absolute;z-index:3;left:296px;top:338px;width:149px;height:89px;opacity:0;pointer-events:none;transition:opacity .045s ease-in-out}
+.ll-has-art .ll-domina-blink.is-blinking{opacity:1}
+.ll-bgfighters{filter:drop-shadow(0 5px 4px rgba(34,15,9,.38))}
+.ll-has-art .ll-bgfighters{opacity:.68}
+@media(prefers-reduced-motion:reduce){.ll-domina-blink{display:none}}
