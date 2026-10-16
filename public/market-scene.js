@@ -1,113 +1,94 @@
+/* GLADIATOR · MERCATUS — approved-market-art interactive scene (1672×941). */
 (function(root){
 'use strict';
-// One approved 1672x941 composition. All artwork, typography, banners, podiums,
-// merchant, cards and buttons remain baked into the approved image.
-// Invisible semantic hit targets provide input at the ORIGINAL coordinates.
-const OFFERS=[
- {id:'thraex',name:'Cassius',className:'트라엑스',cost:120,bonuses:[2,5,2,2],desc:'민첩한 움직임과 빠른 공격이 특징인 트라엑스입니다. 날카로운 시카로 적의 허점을 노립니다.'},
- {id:'murmillo',name:'Lucius',className:'무르밀로',cost:110,bonuses:[5,3,5,3],desc:'견고한 장방형 방패와 짧은 검을 사용하는 강인한 전사입니다. 방어와 근접전에 특화되어 있습니다.'},
- {id:'retiarius',name:'Marcellus',className:'레티아리우스',cost:130,bonuses:[2,4,1,5],desc:'그물과 삼지창으로 긴 사거리를 장악하는 기술형 검투사입니다. 상대의 틈을 노리는 데 능합니다.'}
+const WIDTH=1672, HEIGHT=941;
+const types=[
+ {id:'thraex',className:'트라엑스',names:['Cassius','Decimus','Aulus','Titus','Felix','Flavius'],base:[2,5,2,2],cost:500,desc:'민첩한 움직임과 빠른 공격이 특징인 트라엑스입니다. 날카로운 시카로 적의 허점을 노립니다.',face:[550,258,158,146]},
+ {id:'murmillo',className:'무르밀로',names:['Lucius','Marcus','Brutus','Gaius','Publius','Tiberius'],base:[5,3,5,3],cost:500,desc:'견고한 방패와 단검으로 전선을 지키는 강인한 무르밀로입니다. 안정적인 방어에 능합니다.',face:[856,255,163,151]},
+ {id:'retiarius',className:'레티아리우스',names:['Marcellus','Quintus','Nero','Sextus','Julius','Valerius'],base:[2,4,1,5],cost:500,desc:'그물과 삼지창으로 원거리를 장악하는 레티아리우스입니다. 높은 기술과 넓은 사거리를 가집니다.',face:[1244,264,176,150]}
 ];
-let scene=null,options=null,selected=0,sold=new Set(),speechTimeout=0;
-const $=id=>scene?.querySelector('#'+id);
-const pos=(x,y,w,h)=>'left:'+(x/1672*100)+'%;top:'+(y/941*100)+'%;width:'+(w/1672*100)+'%;height:'+(h/941*100)+'%';
-function spriteFor(o){return options?.getSprite?.(o.id)||null;}
-function updateWallet(){
- const label=$('marketExactGold');if(label)label.textContent=Number(options?.state?.gold||0).toLocaleString('ko-KR');
+const labels=[['STR','#ff5554','#bc2223','✊'],['AGI','#66f36e','#238f39','♞'],['DEF','#5796ff','#274cc2','⬟'],['TEC','#a66afa','#6028bd','✥']];
+let scene=null,stage=null,opts=null,selection=0,keyImg=null,speechReset=null,speechInterval=null,resizeHandler=null;
+const $=sel=>scene?.querySelector(sel);
+const clean=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function offers(){
+ const seed=Math.max(0,Number(opts?.state?.marketSeed)||0);
+ return types.map((t,i)=>({...t,name:t.names[seed%t.names.length],vals:t.base.map((n,j)=>{const v=seed?((seed+i+j)%3)-1:0;return Math.min(6,Math.max(1,n+v));})}));
 }
-function dialogue(text){
- const d=$('marketExactDialogue');if(!d)return;
- d.hidden=false;d.textContent=text;
- const mouth=$('marketExactMouth');if(mouth){mouth.classList.remove('talking');void mouth.offsetWidth;mouth.classList.add('talking');}
- clearTimeout(speechTimeout);speechTimeout=setTimeout(()=>{mouth?.classList.remove('talking');},1500);
+function fit(){if(!stage)return;const w=window.innerWidth,h=window.innerHeight;const z=Math.min(w/WIDTH,h/HEIGHT);stage.style.transform=`translate(-50%,-50%) scale(${z})`;}
+function getHeroArtwork(hero){const s=opts?.getSprite?.(hero.id);return s&&s.width&&s.height?s:null;}
+function drawPortrait(){const c=$('#gmPortrait');if(!c||c.parentElement.hidden)return;const ctx=c.getContext('2d');ctx.clearRect(0,0,120,123);const hero=offers()[selection],img=getHeroArtwork(hero);
+ if(img){const k=Math.min(118/img.width,121/img.height);const w=img.width*k,h=img.height*k;ctx.drawImage(img,(120-w)/2,123-h,w,h);}
+ else if(keyImg?.complete&&keyImg.naturalWidth){const [x,y,w,h]=hero.face;ctx.drawImage(keyImg,x,y,w,h,0,0,120,123);}
 }
-function drawPortrait(o){
- const img=spriteFor(o),canvas=$('marketExactPortrait');if(!canvas)return;
- const context=canvas.getContext('2d');context.clearRect(0,0,canvas.width,canvas.height);
- if(!img)return;
- const scale=Math.min((canvas.width-10)/img.width,(canvas.height-6)/img.height);
- const w=img.width*scale,h=img.height*scale;
- context.drawImage(img,(canvas.width-w)/2,canvas.height-h,w,h);
+function overlayPanel(hero,i,show){
+ const el=$('#gmPanel'+i);el.hidden=!show;if(!show)return;
+ el.innerHTML=`<div class="gm-roman-name">${clean(hero.name)}</div><div class="gm-class">${hero.className}</div><div class="gm-lv">Lv.0</div>`+
+  hero.vals.map((n,j)=>`<div class="gm-stat"><span class="gm-stat-name"><b style="color:${labels[j][1]}">${labels[j][3]}</b>${labels[j][0]}</span><span class="gm-stat-track"><i style="--value:${n*16}%;--color:${labels[j][1]};--shade:${labels[j][2]}"></i></span></div>`).join('');
 }
-function paint(){
- if(!scene||scene.hidden)return;
- updateWallet();
+function update(){if(!scene||scene.hidden)return;
+ const state=opts.state,heros=offers(),hero=heros[selection],seed=Number(state.marketSeed)||0;
+ const wallet=$('#gmWallet');wallet.hidden=Number(state.gold)===3200;wallet.textContent=Number(state.gold).toLocaleString('ko-KR');
+ const cost=$('#gmPrice');cost.hidden=hero.cost===500;cost.textContent=hero.cost.toLocaleString('ko-KR');
  for(let i=0;i<3;i++){
-  const btn=$('marketOffer'+i);btn.setAttribute('aria-pressed',String(selected===i));btn.disabled=sold.has(i);
-  const flag=$('marketSold'+i);flag.hidden=!sold.has(i);
+  const btn=$('#gmCard'+i);btn.setAttribute('aria-pressed',String(i===selection));btn.setAttribute('aria-label',heros[i].name+', '+heros[i].className+', 0레벨, '+heros[i].cost+' 데나리우스. 후보 선택');
+  overlayPanel(heros[i],i,seed>0);
  }
- const o=OFFERS[selected],alt=$('marketExactDetail');
- // The original Cassius detail panel is kept pixel-for-pixel until a different
- // candidate is selected. Dynamic detail only paints inside its existing panel.
- alt.hidden=selected===0;
- if(selected!==0){
-  $('marketExactTitle').textContent=o.name+' · '+o.className;
-  $('marketExactSummary').textContent='Lv.0';
-  $('marketExactDescription').textContent=o.desc;
-  drawPortrait(o);
- }
- $('marketExactPrice').textContent=String(o.cost);
- const buy=$('marketExactBuy');
- buy.disabled=sold.has(selected)||Number(options.state.gold)<o.cost;
- buy.setAttribute('aria-label',o.name+' '+o.className+' 고용 · '+o.cost+' 데나리우스'+(sold.has(selected)?' · 이미 고용됨':''));
+ const detail=$('#gmBottomInfo');const avatar=$('#gmPortraitWrap');detail.hidden=avatar.hidden=(seed===0&&selection===0);
+ if(!detail.hidden){detail.innerHTML=`<h2>${clean(hero.name)} · ${hero.className}</h2><div class="gm-level">Lv.0</div><p>${hero.desc}</p>`;drawPortrait();}
+ const hire=$('#gmHire');hire.disabled=Number(state.gold)<hero.cost;
+ hire.setAttribute('aria-label',hero.name+' 고용, '+hero.cost+' 데나리우스');
 }
-function select(i){
- if(sold.has(i))return;
- selected=i;paint();
- dialogue(OFFERS[i].name+'! '+(i===0?'매우 민첩한 친구죠.':i===1?'묵직한 방패로 버티는 장사가 될 겁니다.':'그물과 삼지창을 다룰 줄 아는 인재입니다.') );
+function talk(message){
+ const el=$('#gmSpeech'),glow=$('#gmTalking');clearTimeout(speechReset);
+ if(!message){el.hidden=true;glow.classList.remove('active');return;}
+ el.hidden=false;el.textContent=message;glow.classList.add('active');
+ speechReset=setTimeout(()=>{el.hidden=true;glow.classList.remove('active');},4500);
 }
-function purchase(){
- const o=OFFERS[selected];
- if(sold.has(selected)){dialogue('이 검투사는 방금 고용하셨습니다. 다른 단상을 살펴보세요!');return;}
- if(Number(options.state.gold)<o.cost){dialogue('데나리우스가 부족하군요. 투기장에 나가 승리를 거두고 오시죠.');return;}
- const same=options.state.roster.filter(h=>h.name===o.name||h.name.startsWith(o.name+' ')).length;
- const roman=['',' II',' III',' IV',' V',' VI',' VII'];
- const chosen={...o,name:o.name+(roman[same]??' '+String(same+1))};
- if(!options.hire(chosen))return;
- sold.add(selected);options.save?.();
- paint();
- dialogue('훌륭합니다! '+chosen.name+'이(가) 루두스에 합류했습니다. 다음 후보도 살펴보시겠습니까?');
+function hire(){const hero=offers()[selection];if(opts.state.gold<hero.cost){talk('데나리우스가 모자라는군요! 승리하고 돌아오시면 좋은 인재를 소개하겠소.');return;}
+ const done=opts.hire?.(hero);if(!done){talk('아쉽군요. 다시 한번 확인해 보시지요!');return;}
+ opts.state.marketSeed=(Number(opts.state.marketSeed)||0)+1;
+ opts.save?.();
+ talk(`${hero.name}을(를) 영입했군요! 멋진 선택입니다. 이제 루두스에서 훈련시키십시오!`);
+ selection=0;update();
 }
-function close(){
- if(!scene)return;
- scene.hidden=true;clearTimeout(speechTimeout);options?.onExit?.();
+function close(){if(!scene)return;scene.hidden=true;clearTimeout(speechReset);clearInterval(speechInterval);opts?.onExit?.();}
+function keydown(e){if(!scene||scene.hidden)return;
+ if(e.key==='Escape'){e.preventDefault();close();}
+ if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();selection=(selection+(e.key==='ArrowRight'?1:2))%3;update();talk(offers()[selection].name+'! 아주 훌륭한 젊은 투사입니다. 살펴보시지요!');}
+ if(e.key==='Enter'&&e.target===scene){e.preventDefault();hire();}}
+function setup(){if(scene)return;
+ scene=document.createElement('section');scene.className='gm-screen';scene.id='slaveMarket';scene.hidden=true;scene.setAttribute('role','dialog');scene.setAttribute('aria-modal','true');scene.setAttribute('aria-label','검투사시장');
+ scene.innerHTML=`<div class="gm-stage" id="gmStage">
+  <img class="gm-key-art" id="gmKey" src="assets/market/market_keyvisual.webp" alt="" aria-hidden="true" decoding="sync" draggable="false">
+  <button type="button" class="gm-back-hit" id="gmBack" aria-label="루두스로 돌아가기" title="루두스로 돌아가기"></button>
+  <button type="button" class="gm-card-hit" data-i="0" id="gmCard0" aria-label="Cassius 트라엑스 후보" aria-pressed="true"></button>
+  <button type="button" class="gm-card-hit" data-i="1" id="gmCard1" aria-label="Lucius 무르밀로 후보" aria-pressed="false"></button>
+  <button type="button" class="gm-card-hit" data-i="2" id="gmCard2" aria-label="Marcellus 레티아리우스 후보" aria-pressed="false"></button>
+  <div class="gm-card-dynamic" data-i="0" id="gmPanel0" hidden></div>
+  <div class="gm-card-dynamic" data-i="1" id="gmPanel1" hidden></div>
+  <div class="gm-card-dynamic" data-i="2" id="gmPanel2" hidden></div>
+  <div class="gm-wallet-value" id="gmWallet" hidden></div>
+  <div class="gm-bottom-avatar" id="gmPortraitWrap" hidden><canvas id="gmPortrait" width="120" height="123" aria-hidden="true"></canvas></div>
+  <div class="gm-bottom-info" id="gmBottomInfo" hidden></div>
+  <div class="gm-price-value" id="gmPrice" hidden></div>
+  <div class="gm-speech-new" id="gmSpeech" hidden role="status" aria-live="polite"></div>
+  <div class="gm-merchant-talk" id="gmTalking" aria-hidden="true"></div>
+  <button type="button" class="gm-hire-hit" id="gmHire" aria-label="선택한 검투사 고용"></button>
+  <div class="gm-orient" aria-hidden="true">넓은 화면에서는 검투사시장을 더 크게 볼 수 있습니다.</div>
+ </div>`;
+ document.body.appendChild(scene);stage=$('#gmStage');resizeHandler=fit;window.addEventListener('resize',resizeHandler,{passive:true});document.addEventListener('keydown',keydown);
+ $('#gmKey').addEventListener('load',e=>{keyImg=e.target;drawPortrait();});
+ $('#gmBack').addEventListener('click',close);$('#gmHire').addEventListener('click',hire);
+ for(let i=0;i<3;i++)$('#gmCard'+i).addEventListener('click',()=>{selection=i;update();talk('좋은 검투사를 찾으십니까? '+offers()[i].name+'의 기량을 살펴보시지요!');});
+ fit();
 }
-function makeHit(id,label,rect,extra=''){
- return '<button class="market-hit '+extra+'" type="button" id="'+id+'" aria-label="'+label+'" style="'+pos(...rect)+'"></button>';
+function open(options){opts=options;setup();
+ // The prototype began with 260D and offered 110D hires. This visual's genuine 500D market uses a one-time
+ // starter endowment only for a new empty Ludus; established savegames keep their real currency.
+ if((!opts.state.roster||opts.state.roster.length===0)&&(Number(opts.state.fights)||0)===0&&Number(opts.state.gold)<500){opts.state.gold=3200;opts.save?.();}
+ selection=0;scene.hidden=false;talk(null);fit();update();
 }
-function build(){
- scene=document.createElement('section');scene.className='market-exact';scene.id='slaveMarket';scene.hidden=true;
- scene.setAttribute('aria-label','로마 노예시장');
- scene.innerHTML='<div class="market-viewport"><div class="market-stage" id="marketExactStage">'+
- '<img class="market-plate" src="assets/market/roman_market_exact.webp" alt="승인된 로마 시대 노예시장 전체 UI — 상인, 세 개의 단상, 능력치, 이름표, 대화창, 고용 버튼" draggable="false">'+
- '<div class="market-wallet" id="marketExactGold" aria-label="현재 데나리우스"></div>'+
- OFFERS.map((o,i)=>makeHit('marketOffer'+i,o.name+' · '+o.className+' · Lv.0 후보 선택',[
- [442,265,314,487],[785,260,322,490],[1151,252,367,498]][i],'market-choice')).join('')+
- OFFERS.map((o,i)=>'<div class="market-sold" id="marketSold'+i+'" style="'+pos(...[[482,498,255,54],[828,499,255,54],[1191,499,283,54]][i])+'" hidden>고용 완료</div>').join('')+
- '<div class="market-detail" id="marketExactDetail" hidden>'+
- '<div class="market-detail-portrait"><canvas id="marketExactPortrait" width="240" height="240"></canvas></div>'+
- '<div class="market-detail-description"><h3 id="marketExactTitle"></h3><small id="marketExactSummary"></small><p id="marketExactDescription"></p></div></div>'+
- '<div class="market-price" id="marketExactPrice"></div>'+
- '<div class="market-dialog" id="marketExactDialogue" role="status" aria-live="polite" hidden></div>'+
- '<div class="market-merchant-mouth" id="marketExactMouth" aria-hidden="true"></div>'+
- makeHit('marketExactBack','루두스로 돌아가기',[16,844,180,77],'market-back')+
- makeHit('marketExactBuy','검투사 고용하기',[1031,780,337,115],'market-buy')+
- '</div></div>';
- document.body.appendChild(scene);
- $('marketExactBack').addEventListener('click',close);
- $('marketExactBuy').addEventListener('click',purchase);
- OFFERS.forEach((o,i)=>$('marketOffer'+i).addEventListener('click',()=>select(i)));
- // Tap the original parchment dialogue to hear a different short merchant line.
- const originalDialogue=document.createElement('button');originalDialogue.className='market-hit';
- originalDialogue.setAttribute('aria-label','상인에게 이야기 듣기');originalDialogue.style.cssText=pos(23,713,440,116);
- originalDialogue.onclick=()=>dialogue('세 명 모두 훌륭한 재능을 지녔습니다! 마음에 드는 후보를 고르시죠.');
- $('marketExactStage').appendChild(originalDialogue);
-}
-function open(data){
- options=data;if(!scene)build();
- selected=0;sold=new Set();scene.hidden=false;
- const dlg=$('marketExactDialogue');dlg.hidden=true;dlg.textContent='';
- paint();
-}
-root.SlaveMarket={open,close,refresh:()=>{if(scene&&!scene.hidden)paint();}};
+root.SlaveMarket={open,close,refresh:update};
+if(typeof module!=='undefined')module.exports={types,offersForTest:state=>{opts={state};return offers();}};
 })(globalThis);
