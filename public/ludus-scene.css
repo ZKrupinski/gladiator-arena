@@ -1,0 +1,50 @@
+
+.ll-scene[hidden]{display:none!important}.ll-scene{position:fixed;inset:0;z-index:90000;background:#100a08;color:#ffe7bc;font:20px Georgia,"Noto Serif KR",serif;overflow:hidden}
+.ll-stage{position:absolute;left:50%;top:50%;width:1448px;height:1086px;transform-origin:center;overflow:hidden;background:#281812;isolation:isolate}
+.ll-key{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.ll-fallback{position:absolute;inset:0;background:linear-gradient(90deg,#22100dcc,#31160e66 60%,#28140a77),url("assets/new-era/arena.webp") center/cover no-repeat}
+.ll-fallback:after{content:"LVDVS";position:absolute;left:52%;top:15%;color:#f8c56a4b;font:bold 90px Georgia;text-shadow:0 4px 20px #000}
+.ll-has-art .ll-fallback{display:none}.ll-scene:not(.ll-has-art) .ll-key{display:none}
+.ll-stage button{cursor:pointer;font:inherit;color:inherit;touch-action:manipulation}.ll-stage button:focus-visible{outline:3px solid #ffe39a!important}
+.ll-title{position:absolute;left:0;top:0;width:238px;height:70px;border:0;background:#28120ded;font:800 30px "Noto Sans KR",sans-serif!important;z-index:3}
+.ll-title:hover{color:#ffce79}
+.ll-wallet{position:absolute;right:140px;top:9px;display:flex;gap:20px;align-items:center;z-index:4;padding:9px 17px;background:linear-gradient(#261814fa,#38241bee);border:2px ridge #d2a05c;border-radius:9px;font:bold 24px Georgia}
+.ll-wallet strong{color:#ffe3a3}.ll-menu{position:absolute;left:0;top:95px;width:200px;z-index:4;display:grid;gap:7px}
+.ll-menu button{background:#311b16de;border:2px ridge #ba8d53;padding:18px 10px;min-height:67px;text-align:left;font:bold 24px "Noto Sans KR",sans-serif}
+.ll-menu button:hover{background:#724123ed}.ll-has-art .ll-menu{opacity:0;pointer-events:none}
+.ll-domina{position:absolute;left:193px;top:238px;width:480px;height:535px;background:radial-gradient(ellipse at 45% 24%,#bf874c7a,#6e2b1985 49%,#23110fcc 77%);border:8px ridge #be9656;border-radius:12px;box-shadow:0 6px 30px #0009}
+.ll-domina img{height:100%;width:100%;object-fit:contain;animation:ll-breathe 4s ease-in-out infinite}
+.ll-domina span{position:absolute;bottom:0;left:0;right:0;background:#27140edc;text-align:center;padding:10px;color:#ffdfaa;font-size:24px}
+.ll-has-art .ll-domina{display:none}
+.ll-speech{position:absolute;left:242px;top:111px;width:400px;min-height:127px;background:#f3e5c9;border:3px solid #b99160;border-radius:12px;color:#352116;padding:18px 17px;font:bold 22px/1.5 "Noto Sans KR",sans-serif;z-index:4;white-space:pre-line}
+.ll-speech b{display:block;color:#ac3426}
+.ll-doctore{position:absolute;right:21px;top:400px;max-width:290px;background:#2e1713ed;border:2px ridge #c39553;padding:18px;line-height:1.6;text-align:center;z-index:4}
+.ll-doctore b{display:block;color:#ffe19e;font-size:26px}.ll-has-art .ll-speech,.ll-has-art .ll-doctore{visibility:hidden}
+.ll-bgfighters{position:absolute;left:730px;top:484px;width:360px;height:246px;z-index:2;display:flex;align-items:flex-end;gap:5px}
+.ll-bgfighters img{object-fit:contain;width:115px;height:170px;animation:ll-step 1.7s ease-in-out infinite alternate}
+.ll-bgfighters img:nth-child(2){animation-delay:-.9s}.ll-has-art .ll-bgfighters{opacity:.22}
+.ll-bottom{position:absolute;z-index:5;bottom:62px;left:18px;right:18px;display:flex;align-items:flex-end;gap:16px}
+.ll-roster{background:#24130fe6;border:3px ridge #c09353;padding:12px;width:716px;height:163px;border-radius:9px}
+.ll-roster h3{margin:0 0 8px;display:flex;justify-content:space-between;font:800 20px "Noto Sans KR",sans-serif}
+.ll-portraits{display:flex;gap:8px;align-items:center}
+.ll-portraits button{position:relative;flex:none;width:90px;height:93px;border:2px ridge #b38b56;background:#422b22;color:#fae0af;padding:0}
+.ll-portraits button.selected{box-shadow:0 0 19px #fad876;border-color:#ffe1a2}
+.ll-portraits canvas{display:block;width:84px;height:68px}.ll-portraits small{font:800 14px "Noto Sans KR",sans-serif}
+.ll-actions{display:flex;flex:1;justify-content:flex-end;align-items:flex-end;gap:10px}
+.ll-actions button{width:202px;height:262px;flex:1;background:linear-gradient(#533523ec,#21120fe9);border:3px ridge #bd8d48;border-radius:10px;font:bold 27px "Noto Sans KR",sans-serif;text-align:center;overflow:hidden}
+.ll-actions button:last-child{background:linear-gradient(#8a3128db,#3c1210fa)}
+.ll-actions button:hover,.ll-special button:hover{filter:brightness(1.2)}
+.ll-actions .ll-thumb{display:grid;place-items:center;height:145px;font-size:70px;background:linear-gradient(#8e552078,#160d0c99),url("assets/new-era/arena.webp") center/cover}
+.ll-actions button strong{display:block;font-size:27px}.ll-actions button small{display:block;font-size:15px;line-height:1.3;margin-top:4px}
+.ll-special{position:absolute;left:410px;bottom:349px;display:flex;gap:10px;z-index:5}
+.ll-special button{padding:10px 14px;background:#321d17;border:2px ridge #c39858;border-radius:8px;font:bold 20px "Noto Sans KR",sans-serif}
+.ll-has-art .ll-bottom,.ll-has-art .ll-special{opacity:0;pointer-events:none}
+.ll-has-art .ll-hitbuttons{display:block}.ll-hitbuttons{display:none;position:absolute;inset:0;z-index:10;pointer-events:none}
+.ll-hitbuttons button{position:absolute;pointer-events:auto;border:0;background:transparent;opacity:0}
+.ll-hitbuttons button:hover,.ll-hitbuttons button:focus-visible{opacity:1;background:#f5d79437;outline:2px solid #ffe2a0}
+.ll-has-art .ll-title{opacity:0}.ll-has-art .ll-title:hover{opacity:.45}
+.ll-has-art .ll-wallet{top:1px;right:180px;font-size:19px;padding:6px 8px}
+.ll-has-art .ll-live-counter{display:block}.ll-live-counter{display:none;position:absolute;z-index:12;bottom:150px;left:32px;background:#1b0e0bf3;border:2px ridge #b28c4f;padding:5px 12px;font:bold 17px "Noto Sans KR",sans-serif}
+.ll-toast{position:absolute;z-index:20;bottom:345px;left:50%;transform:translateX(-50%);padding:12px 25px;border:3px ridge #caa467;border-radius:10px;background:#1d100cf5;font:bold 21px "Noto Sans KR",sans-serif;color:#ffedc8;text-align:center}
+.ll-toast[hidden]{display:none}@keyframes ll-breathe{50%{transform:translateY(5px) scale(1.006)}}@keyframes ll-step{to{transform:translateY(-8px) rotate(1deg)}}
+@media(prefers-reduced-motion:reduce){.ll-scene *{animation:none!important}}
