@@ -251,6 +251,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 .growth-import{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:12px auto;padding:12px;max-width:1120px;background:#251913;border:1px solid #896243;border-radius:9px}.growth-import strong{color:#ffe1a4}.growth-import small{flex-basis:100%;color:#baa488}.growth-zip-btn{cursor:pointer;background:#a97836;color:#180f07;padding:7px 12px;border-radius:5px;font-weight:800}.career-type{padding:6px 0;color:#eed4a8}.career-type select{margin-left:8px;background:#291d16;color:#ffe6b7;border:1px solid #bd8950;border-radius:4px;padding:5px}
 
 .career-roster{grid-column:1/-1}.roster-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px}.roster-unit{background:#291e17;border:1px solid #806141;border-radius:9px;padding:10px;cursor:pointer;color:#f6dfb5;text-align:left}.roster-unit.selected{border:2px solid #ecc26e;background:#49361e}.roster-unit canvas{display:block;width:100%;height:135px;object-fit:contain}.roster-unit strong,.roster-unit small{display:block;margin-top:5px}.roster-unit:disabled{opacity:.5;cursor:not-allowed}.career-draft{grid-column:1/-1}.career-draft h2{color:#f5cb7e}.career-draft .career-buttons{margin-top:18px}.career-legacy{color:#ffd27d;padding:8px 0}
+.ludus-opponent-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;margin:12px 0 18px;padding:10px;min-height:240px;border:1px solid rgba(211,168,103,.28);border-radius:12px;background:radial-gradient(ellipse at 50% 75%,rgba(134,83,34,.19),rgba(0,0,0,.21) 75%)}.ludus-opponent-preview canvas{width:min(100%,280px);height:auto;max-height:260px;object-fit:contain}.ludus-opponent-preview p{margin:4px 0 0;color:#deb787;font-size:.9rem;text-align:center}
 </style></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
@@ -619,7 +620,7 @@ function loadGrowthAtlases(){
     img.onload=()=>{
      try{
       GROWTH_IMAGES.set(key,GrowthFrames.isolate(img,growthCuts.sheets[key]));
-      growthStatus('성장 이미지 '+GROWTH_IMAGES.size+'/20장 준비');refreshGrowthAvatar();paintRosterPreviews();resolve();
+      growthStatus('성장 이미지 '+GROWTH_IMAGES.size+'/20장 준비');refreshGrowthAvatar();paintRosterPreviews();paintDraftOpponent();resolve();
      }catch(error){reject(error);}
     };
     img.onerror=()=>reject(new Error(key));
@@ -723,14 +724,39 @@ function paintRosterPreviews(){
   }
  }
 }
+function paintDraftOpponent(){
+ const canvas=document.getElementById('ludusOpponentArt');if(!canvas)return;
+ const enemy=CAREER.pendingOpponent;if(!enemy)return;
+ const g=canvas.getContext('2d');g.clearRect(0,0,canvas.width,canvas.height);
+ let source=null;
+ if(!enemy.boss){
+  const atlas=GROWTH_IMAGES.get(enemy.growthType+'_L'+enemy.stage);
+  source=atlas?.frames[9]?.canvas;
+ }else{
+  const img=IMG[enemy.cls];
+  if(!img?.complete||!img.naturalWidth)return;
+  source=INDEPENDENT_CHARACTER_FRAMES.get(img)?.[0];
+  if(!source){
+   const cw=img.naturalWidth/ATLAS_COLS,ch=img.naturalHeight/ATLAS_ROWS;
+   const scale=Math.min(260/cw,245/ch);
+   g.drawImage(getCharacterAtlasImage(img),0,0,cw,ch,(canvas.width-cw*scale)/2,canvas.height-ch*scale,cw*scale,ch*scale);
+   return;
+  }
+ }
+ if(source){
+  const scale=Math.min(260/source.width,245/source.height);
+  const w=source.width*scale,h=source.height*scale;
+  g.drawImage(source,(canvas.width-w)/2,canvas.height-h,w,h);
+ }
+}
 function openCareerDraft(){
  if(!CAREER.roster.length)return;
  CAREER_SELECTING=true;LudusRoster.encounter(CAREER,CAREER.hero);saveCareer();renderCareer();
 }
 function renderCareerDraft(){
  const enemy=LudusRoster.encounter(CAREER,CAREER.hero);
- $('#careerBody').innerHTML='<div class="career-card career-draft"><h2>출전 검투사 선택</h2><p>도전 '+enemy.round+' · '+(enemy.boss?'보스전 — 첫 격파 시 영입':'일반 시합')+'</p><h3>'+enemy.name+' · Lv.'+enemy.level+' · '+(enemy.boss?'챔피언':'성장 '+enemy.stage+'단계')+'</h3><p>출전한 검투사만 경험치와 부상을 받습니다. 패배해도 같은 상대에게 다시 도전합니다.</p><div class="roster-list">'+rosterCards(true)+'</div><div class="career-buttons"><button id="careerDraftCancel">루두스로 돌아가기</button></div></div>';
- paintRosterPreviews();
+ $('#careerBody').innerHTML='<div class="career-card career-draft"><h2>출전 검투사 선택</h2><p>도전 '+enemy.round+' · '+(enemy.boss?'보스전 — 첫 격파 시 영입':'일반 시합')+'</p><h3>'+enemy.name+' · Lv.'+enemy.level+' · '+(enemy.boss?'챔피언':'성장 '+enemy.stage+'단계')+'</h3><div class="ludus-opponent-preview"><canvas id="ludusOpponentArt" width="280" height="260" aria-label="상대 검투사의 전투 대기 자세"></canvas><p>'+ (enemy.boss?'기존 아케이드 캐릭터 · 승리 시 루두스 합류':(GROWTH_TYPES[enemy.growthType]||DATA[enemy.cls].name)+' · 성장 '+enemy.stage+'/5 · 대기 자세')+'</p></div><p>출전한 검투사만 경험치와 부상을 받습니다. 패배해도 같은 상대에게 다시 도전합니다.</p><div class="roster-list">'+rosterCards(true)+'</div><div class="career-buttons"><button id="careerDraftCancel">루두스로 돌아가기</button></div></div>';
+ paintRosterPreviews();paintDraftOpponent();
  $('#careerDraftCancel').onclick=()=>{CAREER_SELECTING=false;renderCareer();};
  for(const el of document.querySelectorAll('[data-deploy]'))el.onclick=()=>{
   const index=Number(el.dataset.deploy),hero=CAREER.roster[index];if(!hero||hero.injury>=80)return;
