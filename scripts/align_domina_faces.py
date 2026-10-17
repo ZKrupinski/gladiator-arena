@@ -9,7 +9,7 @@ native-coordinate alpha delta, not a second portrait.
 
 Asset 0: exact source face (empty alpha)
 Asset 1: short blink
-Asset 2: left-eye wink
+Asset 2: removed left-eye wink (transparent frame for older clients)
 Asset 3: right-eye wink
 Asset 4: gentle squint
 Asset 5: intentionally neutral (no patch, reserved for compatibility)
@@ -57,7 +57,7 @@ def closed_frame(eye_index):
     samples=[]
     for t in np.linspace(-1,1,35):
         q=t*e['rx']*.86
-        local_y=-3.0 + 4.8*t*t
+        local_y=1.5 + 4.8*t*t
         x=x0+q*np.cos(angle)-local_y*np.sin(angle)
         y=y0+q*np.sin(angle)+local_y*np.cos(angle)
         samples.append((round(x),round(y)))
@@ -69,7 +69,7 @@ def closed_frame(eye_index):
     crease=[]
     for t in np.linspace(-.8,.8,25):
         q=t*e['rx']*.83
-        local_y=-9.0 + 3*t*t
+        local_y=-5.5 + 3*t*t
         x=x0+q*np.cos(angle)-local_y*np.sin(angle)
         y=y0+q*np.sin(angle)+local_y*np.cos(angle)
         crease.append((round(x),round(y)))
@@ -93,7 +93,7 @@ def compose(indices,strength=1.):
 states=[
  ([],0.0),      # literal unchanged source
  ([0,1],1.0),   # genuine simultaneous blink
- ([0],1.0),     # wink left
+ ([],0.0),     # removed left-eye wink; kept as blank for old cache clients
  ([1],1.0),     # wink right
  ([0,1],.48),   # a small relaxed squint
  ([],0.0),      # neutral reserved for old cached clients
@@ -106,7 +106,7 @@ for idx,(chosen,amt) in enumerate(states):
     # Delta on precisely those eye pixels. Mouth and nose never become
     # foreign drawing parts and cannot be double-rendered.
     canvas=np.dstack([rgb,np.rint(alpha*255).astype(np.uint8)])
-    if idx in (0,5):
+    if idx in (0,2,5):
         canvas[...,3]=0
     output=Image.fromarray(canvas,'RGBA')
     output.save(ART/f'domina_face_aligned_{idx}.webp','WEBP',
