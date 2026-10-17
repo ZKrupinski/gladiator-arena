@@ -1,0 +1,38 @@
+name: Build animated training Doctore
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/build_training_doctore.py
+      - .github/workflows/build-training-doctore.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  split-npc-and-clean-keyvisual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install art-processing libraries
+        run: python -m pip install --quiet numpy pillow opencv-python-headless
+      - name: Separate Doctore and generate NPC-free training background
+        run: python scripts/build_training_doctore.py
+      - name: Commit original-quality art derivatives
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/assets/ludus/training_no_doctore.webp public/assets/ludus/doctore_pose_*.webp docs/qa/training-doctore-layer.webp
+          if git diff --cached --quiet; then
+            echo "Training actor assets are already current"
+          else
+            git commit -m "art(training): add clean approved training backdrop and 4 animated Doctore poses"
+            git push origin HEAD:main
+          fi
