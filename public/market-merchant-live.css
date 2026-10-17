@@ -12,26 +12,26 @@
   height:765px;
   object-fit:contain;
   object-position:center top;
-  clip-path:inset(0 127px 0 0);
-  -webkit-mask-image:linear-gradient(to right,#000 0%,#000 74%,transparent 83%);
-  mask-image:linear-gradient(to right,#000 0%,#000 74%,transparent 83%);
+  clip-path:none;
+  -webkit-mask-image:none;
+  mask-image:none;
   pointer-events:none;
   user-select:none;
   -webkit-user-drag:none;
   transform-origin:49% 63%;
-  filter:drop-shadow(5px 8px 9px #230a0790);
+  filter:drop-shadow(3px 5px 5px #230a075b);
   animation:gm-merchant-bust-idle 3.4s ease-in-out infinite;
   transition:filter .15s ease-out;
 }
 /* Same full-size position in every expression.
    Particularly broad 'celebrate' pose is slightly shifted but never boxed. */
-.gm-stage .gm-merchant-full.gm-pose-0{left:-151px;top:88px;width:749px;height:759px;clip-path:inset(0 124px 0 0)}
-.gm-stage .gm-merchant-full.gm-pose-1{left:-161px;top:83px;width:758px;height:765px;clip-path:inset(0 127px 0 0)}
-.gm-stage .gm-merchant-full.gm-pose-2{left:-190px;top:90px;width:795px;height:765px;clip-path:inset(0 140px 0 0)}
-.gm-stage .gm-merchant-full.gm-pose-3{left:-152px;top:87px;width:754px;height:760px;clip-path:inset(0 128px 0 0)}
+.gm-stage .gm-merchant-full.gm-pose-0{left:-151px;top:88px;width:749px;height:759px}
+.gm-stage .gm-merchant-full.gm-pose-1{left:-161px;top:83px;width:758px;height:765px}
+.gm-stage .gm-merchant-full.gm-pose-2{left:-190px;top:90px;width:795px;height:765px}
+.gm-stage .gm-merchant-full.gm-pose-3{left:-152px;top:87px;width:754px;height:760px}
 .gm-stage .gm-merchant-full.is-speaking{
   animation:gm-merchant-bust-talk .58s ease-in-out infinite alternate;
-  filter:drop-shadow(5px 8px 11px #170606b3) brightness(1.025);
+  filter:drop-shadow(3px 5px 5px #17060676) brightness(1.025);
 }
 @keyframes gm-merchant-bust-idle{
   0%,100%{transform:translateY(0) rotate(-.12deg)}
@@ -57,3 +57,20 @@
 /* The deprecated floating cover-up for the painted bottom-left arrow is
    no longer needed: the clean WebP has erased its pixels at source. */
 .gm-stage::after{display:none!important}
+
+/* The paper speech frame is baked into the original market illustration.
+   Repaint its exact source pixels above the sprite, then let the live
+   speech text sit above both. This prevents arms/robes covering parchment. */
+.gm-stage .gm-merchant-full{z-index:3!important;}
+.gm-stage .gm-paper-foreground{
+ position:absolute;left:13px;top:691px;width:491px;height:146px;z-index:8;
+ background-image:url('assets/market/market_keyvisual_no_merchant.webp');
+ background-repeat:no-repeat;background-size:1672px 941px;
+ background-position:-13px -691px;
+ pointer-events:none;
+}
+.gm-stage .gm-speech-new{z-index:15!important;}
+.gm-stage .gm-dialog{z-index:40!important;}
+.gm-stage .gm-dialog-content{position:relative;z-index:41;}
+.gm-stage .gm-wallet-value,.gm-stage .gm-bottom-info,
+.gm-stage .gm-bottom-avatar,.gm-stage .gm-price-value{z-index:12;}
