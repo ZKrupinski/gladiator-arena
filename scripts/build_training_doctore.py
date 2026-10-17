@@ -74,6 +74,34 @@ for i in range(4):
       pixels[yy(.83):,xx(.81):,3]=0
       pixels[:yy(.027),:,3]=0
       pixels[:,:,3][arc>0]=prior[arc>0]
+  # Fully erase the known *rectangular* source-image contamination. These
+  # strips have no relationship to the actor. Restrict cuts to the far-right
+  # cell edge so the textured body and face are never masked.
+  def clear_rect(x0,y0,x1,y1):
+      xa=max(0,int(pw*x0/708));xb=min(pw,int(pw*x1/708))
+      ya=max(0,int(ph*y0/540));yb=min(ph,int(ph*y1/540))
+      pixels[ya:yb,xa:xb,3]=0
+  if i==0:
+      clear_rect(534,208,708,352)
+      clear_rect(608,336,708,540)
+  elif i==1:
+      clear_rect(559,58,708,218)
+      clear_rect(531,212,708,360)
+      clear_rect(534,352,708,540)
+  elif i==2:
+      clear_rect(542,153,708,309)
+      clear_rect(610,303,708,540)
+  else:
+      saved=pixels[:,:,3].copy()
+      clear_rect(466,122,708,355)
+      clear_rect(532,351,708,540)
+      # Preserve only the narrow curved whip (not colored bands behind it).
+      arc=np.zeros((ph,pw),np.uint8)
+      coords=[(.57,.135),(.67,.05),(.83,.035),(.96,.105),
+              (.985,.22),(.965,.31),(.90,.375),(.80,.43),(.70,.475)]
+      pts=np.array([(int(pw*x),int(ph*y)) for x,y in coords],np.int32)
+      cv2.polylines(arc,[pts],False,255,thickness=15,lineType=cv2.LINE_AA)
+      pixels[:,:,3][arc>0]=saved[arc>0]
   pose=Image.fromarray(pixels,'RGBA')
   bounds=pose.getchannel("A").getbbox()
   if not bounds: raise RuntimeError(f"Empty instructor pose {i}")
