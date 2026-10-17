@@ -21,6 +21,27 @@ function changeItem(mode){const a=bridge(),list=a?.catalog()||[],gear=list.find(
 function drawRoster(parent,isTraining){parent.replaceChildren();const a=bridge(),s=a?.state();if(!s)return;
  const from=Math.max(0,Math.min(s.active-1,Math.max(0,s.roster.length-(isTraining?6:3))));
  s.roster.slice(from,from+(isTraining?6:3)).forEach((hero,n)=>{const i=from+n,b=document.createElement('button');b.type='button';b.className=i===s.active?'selected':'';b.title=hero.name+' · Lv.'+hero.level;b.setAttribute('aria-label',hero.name+' · 검투사 선택');const c=document.createElement('canvas');c.width=104;c.height=87;b.appendChild(c);let t=document.createElement('strong');t.textContent=hero.name+' Lv.'+hero.level;b.appendChild(t);parent.appendChild(b);const im=a.portrait(i);if(im?.width&&im?.height){const ctx=c.getContext('2d'),k=Math.min(100/im.width,80/im.height);try{ctx.drawImage(im,(104-im.width*k)/2,86-im.height*k,im.width*k,im.height*k);}catch(e){}}b.addEventListener('click',()=>{a.select(i);refresh();});});}
+
+// Keep the approved architecture but replace the baked sample fighter
+// with the real, currently selected Ludus roster fighter.
+function liveFighter(a,s,isTraining){
+ const source=s.roster[s.active]&&a.portrait(s.active);
+ if(!source||!source.width||!source.height)return;
+ const cover=document.createElement('div');
+ cover.className='la-live-npc-clear '+(isTraining?'training':'armory');
+ cover.setAttribute('aria-hidden','true');stage.appendChild(cover);
+ const canvas=document.createElement('canvas');
+ canvas.className='la-live-fighter '+(isTraining?'training':'armory');
+ canvas.width=isTraining?341:304;canvas.height=isTraining?331:381;
+ canvas.setAttribute('role','img');canvas.setAttribute('aria-label',s.roster[s.active].name+' · 출전 대기');
+ const ctx=canvas.getContext('2d');
+ if(ctx){
+  const scale=Math.min((canvas.width-12)/source.width,(canvas.height-12)/source.height);
+  const w=source.width*scale,h=source.height*scale;
+  try{ctx.drawImage(source,(canvas.width-w)/2,canvas.height-h-5,w,h);}catch(_){}
+ }
+ stage.appendChild(canvas);
+}
 function setup(){if(screen)return;screen=document.createElement('section');screen.className='la-screen';screen.hidden=true;screen.setAttribute('aria-label','승인된 루두스 장비실 및 훈련소');screen.innerHTML='<div class="la-stage"><img class="la-key" draggable="false" alt=""><div class="la-notice" role="status" hidden></div><div class="la-pose"></div></div><div class="la-orient">가로 화면에서 더 크게 볼 수 있습니다.<button type="button">작은 화면으로 계속</button></div>';document.body.appendChild(screen);stage=$('.la-stage');$('.la-orient button').addEventListener('click',()=>screen.classList.add('la-allow-portrait'));addEventListener('resize',fit,{passive:true});document.addEventListener('keydown',e=>{if(screen.hidden)return;if(e.key==='Escape'){e.preventDefault();goHome();}else if(e.key==='ArrowLeft'){e.preventDefault();moveHero(-1);}else if(e.key==='ArrowRight'){e.preventDefault();moveHero(1);}else if(e.key==='Enter'&&room==='training'){e.preventDefault();actionTraining();}});fit();}
 function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state();if(!s)return;const h=s.roster[s.active],training=room==='training';stage.className='la-stage '+room;
  const key=$('.la-key');const src='assets/ludus/'+(training?'training_approved':'armory_approved')+'.webp';if(!key.src.endsWith(src))key.src=src;
@@ -51,6 +72,8 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
   const roster=document.createElement('div');roster.className='la-roster armory';stage.appendChild(roster);drawRoster(roster,false);
   hit('prev','이전 검투사',349,810,49,91,()=>moveHero(-1));hit('next','다음 검투사',781,809,59,91,()=>moveHero(1));
  }
+ liveFighter(a,s,training);
+ if(training)hit('training-help','훈련 도움말',448,25,73,74,()=>toast('훈련 항목 선택 후 훈련 시작을 누르면 능력치와 경험치가 상승합니다.'));
  hit('back','루두스로 돌아가기',14,813,227,98,goHome);
  fit();}
 function open(name){setup();room=name==='gear'?'armory':'training';screen.hidden=false;render();}
