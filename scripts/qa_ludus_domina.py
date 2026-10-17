@@ -29,6 +29,11 @@ for pose in [0,1,2,3,4,5]:
     mask=mask.filter(ImageFilter.GaussianBlur(17))
     patch.putalpha(Image.fromarray(__import__('numpy').minimum(
       __import__('numpy').array(patch.getchannel('A')), __import__('numpy').array(mask)).astype('uint8')))
+    # Small, feathered facial variations. Replacing the entire portrait would
+    # duplicate the existing body and obscure the game's beautiful background.
+    # This sprite is alpha-only; it never includes a rectangular cover panel.
+    exported=root/f'public/assets/ludus/domina_expression_{pose}.webp'
+    patch.save(exported,format='WEBP',lossless=True,method=6)
     comp=base.copy()
     comp.alpha_composite(patch,(278,303))
     comp.convert('RGB').save(out/f'face-{pose}.webp','WEBP',quality=86)
