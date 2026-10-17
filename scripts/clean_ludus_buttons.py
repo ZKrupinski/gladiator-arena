@@ -33,7 +33,7 @@ cv2.rectangle(mask,(423,776),(786,907),255,-1)
 # strip, without copying a full circular knee or other button borders.
 # The playable roster covers the bottom part of this repaired band.
 yy,xx=np.indices((H,W),dtype=np.float32)
-sy=np.where(yy>=776,770.0+np.clip((yy-776)*.075,0,10),yy)
+sy=np.where(yy>=776,775.0-np.clip((yy-776)*.34,0,47),yy)
 sy=np.clip(sy,0,H-1).astype(np.float32)
 continued=cv2.remap(img,xx,sy,interpolation=cv2.INTER_CUBIC,
                     borderMode=cv2.BORDER_REFLECT)
