@@ -22,6 +22,32 @@ assert sw%2==0 and sh%2==0,(sw,sh)
 for i in range(4):
   x=(i%2)*(sw//2); y=(i//2)*(sh//2)
   pose=sheet.crop((x,y,x+sw//2,y+sh//2))
+  # The 2x2 concept sheet contains flat-colour strip fragments on the
+  # right edge of some cells. Detect ONLY broad, uniformly-filled regions,
+  # rather than cutting the character with a rectangular crop. This keeps
+  # textured fingers, hair, shields and the whip intact.
+  pixels=np.asarray(pose).copy()
+  colour=pixels[:,:,:3].astype(np.int16)
+  alpha=pixels[:,:,3]
+  ph,pw=alpha.shape
+  flat_x=np.zeros((ph,pw),bool)
+  flat_y=np.zeros((ph,pw),bool)
+  flat_x[:,12:-12]=(np.max(np.abs(colour[:,24:]-colour[:,:-24]),axis=2)<12)
+  flat_y[6:-6,:]=(np.max(np.abs(colour[12:,:,:]-colour[:-12,:,:]),axis=2)<12)
+  threshold=[.67,.71,.67,.54][i]
+  region=np.broadcast_to((np.arange(pw)[None,:]>pw*threshold),(ph,pw))
+  flat=(flat_x&flat_y&region&(alpha>45)).astype('uint8')
+  count,labels,stats,_=cv2.connectedComponentsWithStats(flat,8)
+  band=np.zeros((ph,pw),np.uint8)
+  for component in range(1,count):
+      x0,y0,ww,hh,area=stats[component]
+      if ww>36 and area>95 and (ww>hh*1.4 or area>1800):
+          band[labels==component]=255
+  # Expand inside the flat region slightly to clear anti-aliasing remnants.
+  band=cv2.dilate(band,np.ones((5,5),np.uint8),iterations=2)
+  pixels[:,:,3][band>0]=0
+  if i>=2: pixels[:8,:,3]=0  # upper neighbour frame's stray feet
+  pose=Image.fromarray(pixels,'RGBA')
   bounds=pose.getchannel("A").getbbox()
   if not bounds: raise RuntimeError(f"Empty instructor pose {i}")
   pad=8
