@@ -118,5 +118,5 @@ function draft(enemy,painter){
  root.querySelector('#lcDraftCancel').onclick=function(){chosen=-1;scrollPosition=0;a.cancelDraft();};
  root.querySelector('#lcDeploy').onclick=function(){if(chosen<0||wounded(s.roster[chosen]))return;a.deploy(chosen);};
 }
-window.LudusCardScenes={renderRoster:roster,renderDraft:draft};
+window.LudusCardScenes={renderRoster:roster,renderDraft:draft,refresh:function(){var root=$('.lc-screen');if(!root||$('#careerHub').hidden)return;drawArt(root);if(root.classList.contains('lc-draft-screen')&&typeof paintOpponent==='function')paintOpponent();}};
 })();
