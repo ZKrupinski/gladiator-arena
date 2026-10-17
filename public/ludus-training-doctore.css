@@ -1,0 +1,39 @@
+/* Approved training room: the character has been removed from the derived
+   backdrop, so this is the ONLY instructor. No CSS cover window or blur mask. */
+.la-stage.training .la-trainer-clean,
+.la-stage.training .la-pose{display:none!important;}
+.la-stage.training .la-doctore-live{
+ position:absolute;left:85px;top:102px;width:625px;height:510px;z-index:4;
+ object-fit:contain;object-position:center bottom;
+ pointer-events:none;user-select:none;-webkit-user-drag:none;
+ -webkit-mask-image:none;mask-image:none;clip-path:none;
+ filter:drop-shadow(3px 5px 5px #17070359);
+ transform-origin:50% 93%;
+ animation:la-doctore-idle 3.15s ease-in-out infinite;
+}
+.la-stage.training .la-doctore-live.is-speaking{
+ animation:la-doctore-react .56s ease-in-out infinite alternate;
+}
+/* The parchment/teacher dialogue in the approved art is visually foreground,
+   despite being baked into the original bitmap. Restore its exact, untouched
+   source pixels over the animated character (no decorative floating panel). */
+.la-stage.training .la-doctore-parchment{
+ position:absolute;left:498px;top:91px;width:360px;height:163px;z-index:7;
+ background-image:url('assets/ludus/training_no_doctore.webp');
+ background-size:1672px 941px;background-position:-498px -91px;
+ background-repeat:no-repeat;pointer-events:none;
+}
+.la-stage.training .la-notice{z-index:30}
+.la-stage.training .la-home-nav{z-index:35}
+@keyframes la-doctore-idle{
+ 0%,100%{transform:translateY(0) rotate(-.12deg)}
+ 50%{transform:translateY(-4px) rotate(.18deg)}
+}
+@keyframes la-doctore-react{
+ from{transform:translateY(0) rotate(-.25deg)}
+ to{transform:translateY(-5px) rotate(.23deg)}
+}
+@media(prefers-reduced-motion:reduce){
+ .la-stage.training .la-doctore-live,
+ .la-stage.training .la-doctore-live.is-speaking{animation:none!important}
+}
