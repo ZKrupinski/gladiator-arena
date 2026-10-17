@@ -67,7 +67,7 @@ merged = np.clip(merged * (1-fade) + filled_corner * fade, 0, 255).astype(np.uin
 # the lower information plaque. Retain the ornate border and Hire artwork.
 # The live market data renderer paints the selected candidate here instead.
 # Unlike a CSS cover, the replacement becomes actual game background pixels.
-x0,y0,x1,y1 = 563,763,1122,894
+x0,y0,x1,y1 = 563,763,1122,899
 ys,xs = np.mgrid[y0:y1,x0:x1]
 depth = (ys-y0)/max(1,(y1-y0))
 warm = 0.5 + 0.5*np.cos((xs-x0)/(x1-x0)*np.pi)
