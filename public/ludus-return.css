@@ -1,0 +1,23 @@
+/* v5.4: one predictable exit back to the Ludus lobby.
+   Scope is restricted to the legacy roster/management page: lobby art
+   and other approved screens are never covered or rearranged here. */
+#careerHub #careerVisualHome{
+  position:fixed!important;
+  left:clamp(14px,2.3vw,34px)!important;
+  bottom:clamp(18px,3.2vh,32px)!important;
+  top:auto!important;right:auto!important;
+  z-index:100!important;
+  display:inline-flex!important;align-items:center;justify-content:center;
+  min-width:192px;min-height:55px;padding:9px 23px;
+  border:4px ridge #caa168;border-radius:9px;
+  background:linear-gradient(155deg,#482818,#261510);
+  color:#ffe5b9;font:800 19px 'Noto Sans KR',system-ui,sans-serif;
+  box-shadow:inset 0 0 11px #130808,0 4px 20px #130707b3;
+  cursor:pointer;touch-action:manipulation;
+}
+#careerHub #careerVisualHome:hover,#careerHub #careerVisualHome:focus-visible{
+  background:linear-gradient(#85512d,#482316);
+  outline:2px solid #ffe2a2;outline-offset:2px;
+}
+#careerHub #careerBody{padding-bottom:100px}
+@media(max-width:740px){#careerHub #careerVisualHome{font-size:15px;min-height:49px;min-width:145px;padding:7px 13px}}
