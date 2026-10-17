@@ -103,3 +103,27 @@
 /* Render rotation guidance in physical viewport coordinates, never scaled stage coordinates. */
 .ll-has-art .ll-wallet,.ll-wallet{width:610px}
 @media(orientation:portrait) and (max-width:740px){.ll-orientation{position:fixed;inset:0}}
+
+
+/* v5.2 · NPC-backed Ludus workshop layouts. Existing career controls remain operational. */
+#careerHub:has(.ludus-workshop){background:radial-gradient(ellipse at 52% 25%,#79502955,transparent 70%),linear-gradient(#190e0bdc,#190e0bf2),url('assets/ludus/ludus_ui.webp') center / cover fixed}
+#careerBody:has(.ludus-workshop){display:block;max-width:1210px;margin:20px auto}
+#careerBody .ludus-workshop{min-height:700px;overflow:hidden;border:9px ridge #b68b53;border-radius:10px;padding:25px 30px 30px;background:linear-gradient(180deg,#120a08b8,#2b1712da 67%,#180e0cfa),url('assets/ludus/ludus_ui.webp') center/cover;box-shadow:0 24px 50px #080403d9,inset 0 0 0 2px #e4c08840}
+#careerBody .ludus-equipment{background:linear-gradient(180deg,#170c09a8,#2f2018ed 66%,#170d0af5),url('assets/market/market_keyvisual.webp') center/cover}
+#careerBody .ludus-room-head{margin:-8px auto 10px;padding:14px 20px;max-width:870px;border-block:2px solid #b68e4e;background:linear-gradient(90deg,transparent,#5d201ce8 22%,#5d201ce8 78%,transparent)}
+#careerBody .ludus-room-head h2{font-size:clamp(27px,4vw,48px)}
+#careerBody .ludus-stage{margin:10px auto 18px;max-width:1020px;border:2px ridge #b28a52;border-bottom:7px ridge #c49a59;border-radius:10px;background:radial-gradient(ellipse at 60% 85%,#cb99514d,transparent 65%),linear-gradient(#23130c88,#170e0ce8);overflow:hidden}
+#careerBody .ludus-fighter-art{min-height:335px;padding:14px 35px 8px;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:end}
+#careerBody .ludus-npc{position:relative;display:flex;align-items:center;justify-content:center;height:310px;min-width:0;flex-direction:column}
+#careerBody .ludus-npc img{display:block;height:250px;max-width:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 11px 12px #0a0505)}
+#careerBody .ludus-npc-name{font:bold 19px Georgia,'Noto Serif KR',serif;color:#ffe2a2;text-shadow:0 2px 5px #000}
+#careerBody .ludus-npc-dialogue{max-width:380px;margin-top:6px;border:1px solid #c59a61;border-radius:8px;background:#1e110de8;padding:7px 14px;color:#f5d8a8;text-align:center;font-size:13px}
+#careerBody .ludus-active-fighter{min-width:0;display:flex;align-items:center;flex-direction:column;justify-content:flex-end;padding-bottom:20px;color:#ffe3ab}
+#careerBody .ludus-active-fighter .fighter-student{display:block;height:230px;width:230px;max-width:100%;border:0;background:transparent;filter:drop-shadow(0 9px 8px #070402)}
+#careerBody .ludus-active-fighter strong{font:bold 24px Georgia,'Noto Serif KR',serif}
+#careerBody .ludus-active-fighter small{color:#d9b88e;font-size:14px}
+#careerBody .ludus-training-grid,#careerBody .ludus-equipment-grid{max-width:1050px;margin:20px auto;gap:13px}
+#careerBody .ludus-stat-tile,#careerBody .ludus-equip-tile{min-height:150px;transition:transform .14s,filter .14s;box-shadow:inset 0 0 20px #090506,0 8px 16px #0905068c}
+#careerBody .ludus-equip-tile.is-equipped{border-color:#ffdf91;box-shadow:0 0 24px #e9c05d88,inset 0 0 15px #f4bd5930}
+#careerBody .ludus-fighter-picker{max-width:1050px;border:2px ridge #a87f4b;background:#170e0ced}
+@media(max-width:700px){#careerBody .ludus-workshop{padding:12px 10px;border-width:5px}#careerBody .ludus-fighter-art{min-height:255px;gap:5px;padding:7px;grid-template-columns:1fr 1fr}#careerBody .ludus-npc{height:240px}#careerBody .ludus-npc img{height:170px}#careerBody .ludus-npc-name{font-size:14px}#careerBody .ludus-npc-dialogue{font-size:10px;padding:5px}#careerBody .ludus-active-fighter .fighter-student{width:155px;height:170px}#careerBody .ludus-active-fighter strong{font-size:15px}#careerBody .ludus-active-fighter small{font-size:11px}#careerBody .ludus-room-head p{font-size:11px}}
