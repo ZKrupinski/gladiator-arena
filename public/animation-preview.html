@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SPARTACUS · 원본 검투사 애니메이션 검수</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,"Noto Sans KR",sans-serif;background:#160f0b;color:#f8e6c9}
+*{box-sizing:border-box}body{margin:0;padding:14px;background:radial-gradient(ellipse at top,#392114,#160f0b 70%);min-height:100vh}
+main{max-width:1140px;margin:auto}h1{font-size:clamp(21px,3vw,33px);margin:7px 0;color:#eac687;letter-spacing:.015em}
+p{color:#d8b995;line-height:1.6;margin:8px 0 20px}.toolbar{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:10px 0 14px}
+label{font-size:12px;color:#caa875;display:flex;flex-direction:column;gap:5px}
+select,button,a.nav{background:#302016;color:#fff0d8;border:1px solid #ad7e45;border-radius:7px;padding:10px 12px;font:600 14px system-ui;min-height:42px}
+button{cursor:pointer}button:hover{background:#56321c}button:disabled{opacity:.4;cursor:wait}a.nav{text-decoration:none;display:inline-flex;align-items:center}
+.stage{border:2px ridge #8b5d30;border-radius:12px;background:radial-gradient(ellipse at center,#3f3025 0%,#201b19 60%,#141210 100%);padding:12px;overflow:hidden}
+.stage h2,.sheet h2{font-size:15px;color:#f4d09b;margin:8px 0 5px}
+.stage canvas{display:block;width:min(100%,470px);height:360px;margin:auto;object-fit:contain}
+.sheet{border:1px solid #8b5d30;border-radius:12px;margin-top:14px;padding:12px;background:#201812;overflow:auto}
+.sheet canvas{display:block;max-width:none;height:min(36vw,210px);width:auto;background-image:linear-gradient(45deg,#383431 25%,transparent 25%),linear-gradient(-45deg,#383431 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#383431 75%),linear-gradient(-45deg,transparent 75%,#383431 75%);background-size:22px 22px;background-position:0 0,0 11px,11px -11px,-11px 0}
+.status{margin:8px 0;color:#e8cda6;font-size:14px;min-height:22px}
+.note{font-size:13px;color:#bba58b}
+footer{padding-top:15px;font-size:12px;color:#ad9378}
+</style></head><body><main>
+<a class="nav" href="./">← 게임으로 돌아가기</a>
+<h1>검투사 원본 애니메이션 검수</h1>
+<p>우리 게임에 실제 들어 있는 SD 검투사 성장 시트의 <strong>키포즈를 그대로 유지</strong>하며, 각 포즈에서 보간한 5프레임을 확인합니다. 새 캐릭터를 생성하지 않습니다.</p>
+<div class="toolbar">
+<label>기존 캐릭터<select id="type"><option value="murmillo_a">무르밀로</option><option value="retiarius_a">레티아리우스</option><option value="thraex_a">트라엑스 A</option><option value="thraex_b">트라엑스 B</option></select></label>
+<label>성장 등급<select id="level"><option value="1">1등급</option><option value="2">2등급</option><option value="3">3등급</option><option value="4">4등급</option><option value="5">5등급</option></select></label>
+<label>키포즈<select id="pose"></select></label>
+<button id="play" aria-pressed="true">애니메이션 일시정지</button>
+<button id="export" disabled>투명 PNG 5프레임 저장</button>
+</div>
+<div id="status" class="status" role="status">원본 스프라이트 로딩 중…</div>
+<div class="stage"><h2>전투 크기 미리보기</h2><canvas id="preview" width="540" height="420"></canvas></div>
+<div class="sheet"><h2>원본 키포즈 기반 5프레임 시트</h2><canvas id="strip" width="1250" height="300"></canvas></div>
+<p class="note">5프레임은 원본 키포즈 1장 + 원본 픽셀을 변형해 만든 보간 프레임 4장입니다. 원본 화풍·무기·장비·등급은 그대로이며, 이 버전은 완전히 새로 그린 관절 애니메이션이 아닙니다.</p>
+<footer>SPARTACUS · 원본 20개 성장 시트 / 12포즈 × 5프레임 · 애니메이션 QA</footer>
+</main>
+<script src="growth-frames.js?v=2"></script><script src="sprite-inbetweens.js?v=2"></script>
+<script>
+(()=>{"use strict";
+ const qs=id=>document.getElementById(id),types=qs("type"),levels=qs("level"),poses=qs("pose"),
+ status=qs("status"),pv=qs("preview"),strip=qs("strip"),down=qs("export"),play=qs("play");
+ const poseNames=["기본 전투 자세","이동","공격 키포즈","특수공격","공격 보조","스킬/그물","방어","피격","회피","루두스 대기","승리","패배"];
+ poseNames.forEach((x,i)=>{const o=document.createElement("option");o.value=i;o.textContent=String(i+1).padStart(2,"0")+" · "+x;poses.append(o);});
+ let atlas=null,running=true,current=0,cuts=null,token=0,last=0;
+ function originals(){return atlas?.frames?.[Number(poses.value)]?.canvas;}
+ function frames(){
+  const src=originals();if(!src)return null;
+  return Array.from({length:5},(_,i)=>window.SpriteInbetweens.frame(src,Number(poses.value),i));
+ }
+ function prepareSheet(){
+  const f=frames();if(!f)return;
+  const gap=16,w=f[0].width,h=f[0].height;strip.width=w*5+gap*4;strip.height=h;
+  const g=strip.getContext("2d");g.clearRect(0,0,strip.width,strip.height);
+  f.forEach((image,i)=>g.drawImage(image,i*(w+gap),0));
+  down.disabled=false;
+ }
+ function paint(now){
+  if(!atlas){requestAnimationFrame(paint);return}
+  if(running&&now-last>105){current=(current+1)%5;last=now;}
+  const f=frames()?.[current];
+  if(f){
+   const c=pv.getContext("2d"),w=pv.width,h=pv.height;
+   c.clearRect(0,0,w,h);
+   const scale=Math.min((w-30)/f.width,(h-24)/f.height);
+   const x=(w-f.width*scale)/2,y=(h-f.height*scale)/2;
+   c.drawImage(f,x,y,f.width*scale,f.height*scale);
+  }
+  requestAnimationFrame(paint);
+ }
+ async function fetchCuts(){
+  if(cuts)return cuts;
+  const r=await fetch("assets/ludus-growth/frame-cuts.json?v=2");
+  if(!r.ok)throw Error("원본 키포즈 좌표 데이터를 불러오지 못했습니다");
+  cuts=await r.json();
+  if(cuts.version!==2)throw Error("키포즈 데이터 버전이 맞지 않습니다");
+  return cuts;
+ }
+ async function load(){
+  const ticket=++token;down.disabled=true;
+  status.textContent="우리 게임 원본 스프라이트를 불러오는 중…";
+  try{
+   const data=await fetchCuts(),key=types.value+"_L"+levels.value;
+   if(!data.sheets[key]?.frames||data.sheets[key].frames.length!==12)throw Error("선택한 키포즈 정보가 없습니다");
+   const img=new Image();img.decoding="async";
+   await new Promise((ok,fail)=>{img.onload=ok;img.onerror=()=>fail(Error("원본 이미지 로딩 실패"));img.src="assets/ludus-growth/"+key+".png";});
+   if(ticket!==token)return;
+   atlas=window.GrowthFrames.isolate(img,data.sheets[key]);
+   current=0;prepareSheet();
+   status.textContent=types.options[types.selectedIndex].text+" · "+levels.value+"등급 · 원본 12포즈에서 5프레임 보간 확인";
+  }catch(e){atlas=null;status.textContent="오류: "+(e?.message||String(e));}
+ }
+ types.addEventListener("change",load);levels.addEventListener("change",load);
+ poses.addEventListener("change",()=>{current=0;if(atlas)prepareSheet();});
+ play.addEventListener("click",()=>{running=!running;play.textContent=running?"애니메이션 일시정지":"애니메이션 재생";play.setAttribute("aria-pressed",String(running));});
+ down.addEventListener("click",()=>{
+  if(!atlas)return;
+  strip.toBlob(blob=>{
+   if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement("a");
+   a.href=url;a.download=types.value+"_L"+levels.value+"_pose"+(Number(poses.value)+1)+"_five_frames.png";
+   document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000);
+  },"image/png");
+ });
+ poses.value="0";load();requestAnimationFrame(paint);
+})();
+</script>
+</body></html>
