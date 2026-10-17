@@ -22,27 +22,25 @@ H,W=img.shape[:2]
 assert (W,H)==(1448,1086)
 # User-approved 3 icons: helmet / gift / hourglass at the knees.
 # Surround only their gold frames (not the separate major arena buttons).
-rects=[(434,788,542,892),(549,789,661,893),(670,786,774,890)]
+# All three button frames form one contiguous band over the shin/drape.
+# Treat it as ONE continuation of cloth; separately filling three rectangles
+# caused unacceptable duplicated knees and hard vertical seams.
 mask=np.zeros((H,W),np.uint8)
-for x0,y0,x1,y1 in rects:
-    cv2.rectangle(mask,(x0,y0),(x1,y1),255,-1)
-mask=cv2.dilate(mask,np.ones((5,5),np.uint8),iterations=1)
+cv2.rectangle(mask,(423,776),(786,907),255,-1)
 
-# Large-object inpainting produced blurry diamond-shaped streaks. Instead,
-# reconstruct the robe and stone underneath from the genuine undamaged
-# clothing immediately above the buttons. Vertical reflection at the border
-# continues all of the folds and painted colours without copying fake UI.
+# The character is already painted above y~780. Extend the LAST
+# uninterrupted rows of the robe, shin and white dress into the bottom
+# strip, without copying a full circular knee or other button borders.
+# The playable roster covers the bottom part of this repaired band.
 yy,xx=np.indices((H,W),dtype=np.float32)
-boundary=783.0
-sy=np.where(yy>=boundary,2*boundary-yy*1.0,yy)
+sy=np.where(yy>=776,770.0+np.clip((yy-776)*.075,0,10),yy)
 sy=np.clip(sy,0,H-1).astype(np.float32)
-reflected=cv2.remap(img,xx,sy,interpolation=cv2.INTER_CUBIC,
-                     borderMode=cv2.BORDER_REFLECT)
-# Smooth only the reflected texture in the covered area for printed WebP
-# quality; original image pixels outside the three old button silhouettes
-# remain intact (i.e. no added panel behind Domina's legs).
-clean=cv2.GaussianBlur(reflected,(0,0),.8)
-blend=cv2.GaussianBlur(mask,(0,0),7).astype(np.float32)[...,None]/255.0
+continued=cv2.remap(img,xx,sy,interpolation=cv2.INTER_CUBIC,
+                    borderMode=cv2.BORDER_REFLECT)
+# Blend vertically so the transition to the original painted dress is
+# gradual and coherent instead of having three rectangular clip seams.
+clean=cv2.GaussianBlur(continued,(0,0),1.6)
+blend=cv2.GaussianBlur(mask,(0,0),8).astype(np.float32)[...,None]/255.0
 result=np.clip(img*(1-blend)+clean*blend,0,255).astype(np.uint8)
 result[mask==0]=img[mask==0]
 
