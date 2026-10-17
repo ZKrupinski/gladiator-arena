@@ -47,6 +47,18 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  const key=$('.la-key');const src='assets/ludus/'+(training?'training_approved':'armory_approved')+'.webp';if(!key.src.endsWith(src))key.src=src;
  // Keep backdrop and transient NPC pose nodes, replace everything else atomically.
  for(const node of [...stage.children])if(!node.matches('.la-key,.la-notice,.la-pose'))node.remove();
+ if(!training&&window.LudusLiveArmory){
+  window.LudusLiveArmory.render(stage,a,{
+   selectedGear,category,sortMode,goHome,
+   selectHero:i=>{a.select(i);refresh();},
+   setGear:id=>{selectedGear=id;refresh();},
+   setCurrentGear:id=>{selectedGear=id;},
+   setCategory:c=>{category=c;refresh();},
+   sort:()=>{sortMode++;refresh();},
+   equip:mode=>changeItem(mode)
+  });
+  fit();return;
+ }
  block('la-gold',1417,27).textContent=Number(s.gold||0).toLocaleString('ko-KR');
  // The approved bottom-left back control is the only room-to-lobby action.
  if(training){
