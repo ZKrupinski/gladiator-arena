@@ -9,7 +9,7 @@
 .ra-gold{position:absolute;left:36px;top:42px;background:#1b0b07de;border:3px ridge #b88d55;border-radius:8px;padding:8px 22px;color:#ffde8a;font:bold 26px Georgia,serif}
 .ra-screen .ra-home{position:absolute;right:26px;top:19px;width:181px;height:74px;border:5px ridge #e3b36b;border-radius:11px;background:linear-gradient(#8b4e29,#3b1c13);font:900 22px 'Noto Sans KR',sans-serif;color:#ffedbf;text-shadow:0 2px #200907;cursor:pointer;box-shadow:0 3px 13px #090302}
 .ra-screen .ra-home:hover,.ra-screen .ra-home:focus-visible{filter:brightness(1.2);outline:3px solid #ffe3a8;outline-offset:2px}
-.ra-screen main{position:relative;z-index:1;flex:1;min-height:0;display:grid;grid-template-columns:38% 31% 31%;gap:13px;padding:18px 27px 12px 23px}
+.ra-screen main{position:relative;z-index:1;flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.16fr) minmax(0,1fr) minmax(0,.94fr);gap:13px;padding:18px 27px 12px 23px}
 .ra-col{box-sizing:border-box;position:relative;display:flex;flex-direction:column;min-height:0;min-width:0;border:7px ridge #b38b50;border-radius:9px;background:linear-gradient(160deg,#2c1b16f0,#160d0bf3);box-shadow:inset 0 0 30px #0603029c,0 7px 16px #080304b8;padding:13px 17px}
 .ra-col>h2{margin:0 0 10px;padding:0 3px 9px;border-bottom:2px solid #ad7e45bd;font:800 29px 'Noto Serif KR',serif;color:#f2d39b}
 .ra-col>h2 small{font:700 14px 'Noto Sans KR',sans-serif;color:#cba779;float:right;padding-top:12px}
