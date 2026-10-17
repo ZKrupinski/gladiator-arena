@@ -2,8 +2,10 @@
 "use strict";
 var scene,stage,raf=0,count=0,toastTimer=0;
 var W=1448,H=1086,rosterPage=0;
-var poses={domina:Array.from({length:6},(_,i)=>"assets/ludus/domina_"+i+".webp"),fighter:Array.from({length:3},(_,r)=>Array.from({length:4},(_,c)=>"assets/ludus/fighter_"+r+"_"+c+".webp"))};
-var preload=[];for(var seq of [poses.domina,...poses.fighter])for(var file of seq){var pic=new Image();pic.src=file;preload.push(pic);}
+// The approved lobby art already contains all the distant gladiators.
+ // Do not render smaller, semitransparent fighter sprites on top of them.
+var poses={domina:Array.from({length:6},(_,i)=>"assets/ludus/domina_"+i+".webp")};
+var preload=[];for(var file of poses.domina){var pic=new Image();pic.src=file;preload.push(pic);}
 
 function $(s){return scene&&scene.querySelector(s);}
 function bridge(){return window.LudusBridge;}
@@ -35,7 +37,6 @@ var html=[
 '<div class="ll-menu" role="navigation" aria-label="루두스 주요 시설"><button type="button" data-action="training">⚔ 훈련소</button><button type="button" data-action="roster">♜ 검투사 관리</button><button type="button" data-action="armory">🛡 장비실</button><button type="button" data-action="market">🏛 검투사시장</button><button type="button" data-action="arena">⚔ 아레나 출전</button></div>',
 '<div class="ll-speech"><b>도미나</b>훌륭해…\n우리의 검투사들이 이렇게 성장하는 걸 보는 게 가장 큰 즐거움이란다.</div>',
 '<div class="ll-doctore"><b>독토레</b>좋다, 자세가 잡히고 있어.<br>더 거칠게! 더 강하게!</div>',
-'<div class="ll-bgfighters"><img src="assets/ludus/fighter_0_0.webp" alt=""><img src="assets/ludus/fighter_1_0.webp" alt=""><img src="assets/ludus/fighter_2_0.webp" alt=""></div>',
 '<div class="ll-bottom"><div class="ll-roster"><h3>검투사 훈련 현황 <span data-count>0명</span><span class="ll-pager"><button data-action="prev" aria-label="이전 검투사">◀</button><span data-roster-page>1/1</span><button data-action="next" aria-label="다음 검투사">▶</button></span></h3><div class="ll-portraits"></div></div>',
 '<div class="ll-actions"><button data-action="basic"><span class="ll-thumb">⚔</span><strong>기초 훈련</strong><small>검투사의 기본을 다집니다.</small></button>',
 '<button data-action="practice"><span class="ll-thumb">✦</span><strong>실전 훈련</strong><small>경험치와 능력치를 향상시킵니다.</small></button>',
@@ -76,8 +77,7 @@ var add=document.createElement("button");add.setAttribute("aria-label","검투�
 }
 function tick(){if(!scene||scene.hidden)return;count++;
 if(count%330===0){var eye=$(".ll-domina-blink");if(eye)eye.classList.add("is-blinking");}
-if(count%330===8){var eye=$(".ll-domina-blink");if(eye)eye.classList.remove("is-blinking");}if(count%48===0){var n=Math.floor(count/48)%4;[...scene.querySelectorAll(".ll-bgfighters img")].forEach(function(img,i){if(poses.fighter[i][n])img.src=poses.fighter[i][n];});}
-if(count%200===0){var img=$(".ll-domina img");if(poses.domina.length)img.src=poses.domina[Math.floor(count/200)%6];}
+if(count%330===8){var eye=$(".ll-domina-blink");if(eye)eye.classList.remove("is-blinking");}if(count%200===0){var img=$(".ll-domina img");if(poses.domina.length)img.src=poses.domina[Math.floor(count/200)%6];}
 raf=requestAnimationFrame(tick);}
 function open(){setup();if(!bridge())return;rosterPage=Math.floor(Math.max(0,Number(bridge().state().active)||0)/6);scene.hidden=false;refresh();fit();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);}
 window.LudusScene={open:open,close:close,refresh:refresh};
