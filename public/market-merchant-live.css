@@ -1,0 +1,70 @@
+/* Mercatus NPC v5.8: the full market merchant is one animated scene actor.
+   The illustrative mock-up contains an unanimated merchant painted into the
+   left of the backdrop. Rebuild ONLY its footprint as a stall alcove and place
+   the existing transparent, full-body pose frames over it. Never show a second
+   reaction-thumbnail portrait or modal duplicate. */
+.gm-stage .gm-merchant-clean{
+ position:absolute;
+ z-index:1;
+ left:0;top:100px;width:474px;height:608px;
+ pointer-events:none;
+ background:
+  linear-gradient(90deg,#27110bcf 0%,#361b15d4 30%,#48241a98 70%,#2a1410e0 99%),
+  radial-gradient(ellipse at 47% 35%,#97623f79 0%,transparent 67%),
+  url('assets/new-era/arena.webp') 30% 45%/auto 700px no-repeat;
+ -webkit-mask-image:
+  linear-gradient(to right,#000 0%,#000 89%,transparent 100%);
+ mask-image:linear-gradient(to right,#000 0%,#000 89%,transparent 100%);
+}
+.gm-stage .gm-merchant-clean::before{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:
+  repeating-linear-gradient(90deg,transparent 0 114px,#8f482231 116px 119px,transparent 123px 139px),
+  linear-gradient(100deg,#301007d4,#6a302356,#2a100cd2),
+  repeating-linear-gradient(0deg,transparent 0 50px,#f2bd6f0e 52px 55px,transparent 57px 72px);
+ border-right:3px solid #8b51245a;
+ box-shadow:inset 0 0 52px #1b0a07;
+}
+.gm-stage .gm-merchant-full{
+ position:absolute;
+ z-index:3;
+ display:block;
+ left:-13px;top:115px;
+ width:477px;height:590px;
+ object-fit:fill;
+ object-position:bottom left;
+ pointer-events:none;
+ user-select:none;
+ -webkit-user-drag:none;
+ transform-origin:48% 96%;
+ transform:translateY(0);
+ filter:drop-shadow(5px 7px 9px #140806bf);
+ animation:gm-market-merchant-idle 3.1s ease-in-out infinite;
+ transition:transform .2s ease-out,filter .2s ease-out;
+}
+.gm-stage .gm-merchant-full.gm-pose-0{left:-11px;top:115px;width:476px}
+.gm-stage .gm-merchant-full.gm-pose-1{left:-12px;top:113px;width:477px}
+.gm-stage .gm-merchant-full.gm-pose-2{left:-31px;top:114px;width:520px;height:587px}
+.gm-stage .gm-merchant-full.gm-pose-3{left:-9px;top:113px;width:476px}
+.gm-stage .gm-merchant-full.is-speaking{
+ animation:gm-market-merchant-talk .52s ease-in-out infinite alternate;
+ filter:drop-shadow(5px 8px 11px #200a05db) brightness(1.045);
+}
+@keyframes gm-market-merchant-idle{
+ 0%,100%{transform:translateY(0) rotate(-.15deg)}
+ 50%{transform:translateY(-4px) rotate(.22deg)}
+}
+@keyframes gm-market-merchant-talk{
+ from{transform:translateY(0) rotate(-.35deg)}
+ to{transform:translateY(-5px) rotate(.55deg)}
+}
+.gm-stage .gm-reaction-badge,.gm-stage .gm-dialog-merchant{display:none!important}
+/* The main merchant is allowed to change pose while modal confirmation is
+   open; the parchment contract has no separately duplicated merchant. */
+.gm-stage .gm-dialog-content{margin:0 auto;padding-left:35px}
+.gm-stage .gm-merchant-talk{left:123px;top:155px;z-index:4;mix-blend-mode:screen}
+@media(prefers-reduced-motion:reduce){
+ .gm-stage .gm-merchant-full,.gm-stage .gm-merchant-full.is-speaking{
+  animation:none!important;transition:none!important
+ }
+}
