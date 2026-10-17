@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-var scene,stage,raf=0,count=0,toastTimer=0,dominaTimer=0,lastDominaPose=0;
+var scene,stage,toastTimer=0,dominaTimer=0,lastDominaPose=0;
 var W=1448,H=1086,rosterPage=0;
 // The approved lobby art already contains all the distant gladiators.
  // Do not render smaller, semitransparent fighter sprites on top of them.
@@ -19,7 +19,7 @@ function fit(){if(stage){var s=Math.min(innerWidth/W,innerHeight/H);stage.style.
 function notice(msg){var t=$(".ll-toast");t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.hidden=true;},2200);}
 function close(){
  clearTimeout(dominaTimer);dominaTimer=0;
- if(scene){scene.hidden=true;cancelAnimationFrame(raf);raf=0;clearTimeout(toastTimer);}
+ if(scene){scene.hidden=true;clearTimeout(toastTimer);}
 }
 function animateDomina(){
  if(!scene||scene.hidden)return;
@@ -106,14 +106,13 @@ b.onclick=function(){a.select(i);refresh();notice(h.name+" · 출전 후보 선�
 });
 var add=document.createElement("button");add.setAttribute("aria-label","검투사시장으로 이동");add.textContent="＋";add.className="ll-add";add.onclick=function(){action("market");};host.appendChild(add);
 }
-function tick(){if(!scene||scene.hidden)return;count++;raf=requestAnimationFrame(tick);}
 function open(){
  setup();if(!bridge())return;
  rosterPage=Math.floor(Math.max(0,Number(bridge().state().active)||0)/6);
  scene.hidden=false;refresh();fit();
  clearTimeout(dominaTimer);
  dominaTimer=setTimeout(animateDomina,600+Math.random()*650);
- cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
+ // No requestAnimationFrame loop: avoids unnecessary 60fps work on mobile.
 }
 window.LudusScene={open:open,close:close,refresh:refresh};
 })();
