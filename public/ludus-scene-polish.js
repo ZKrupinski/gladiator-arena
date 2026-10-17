@@ -58,7 +58,7 @@
       MENU.forEach(function(pair){
         var btn=document.createElement('button');
         btn.type='button';btn.dataset.action=pair[0];btn.textContent=pair[1];
-        btn.setAttribute('aria-label',pair[1].replace(/[^\\uAC00-\\uD7A3\\w ]/g,'').trim());
+        btn.setAttribute('aria-label',pair[1].split('  ').pop());
         menu.appendChild(btn);
       });
     }
