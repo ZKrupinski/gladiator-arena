@@ -48,7 +48,7 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  // Keep backdrop and transient NPC pose nodes, replace everything else atomically.
  for(const node of [...stage.children])if(!node.matches('.la-key,.la-notice,.la-pose'))node.remove();
  block('la-gold',1417,27).textContent=Number(s.gold||0).toLocaleString('ko-KR');
- hit('home','루두스 홈',1565,0,95,85,goHome);
+ // The approved bottom-left back control is the only room-to-lobby action.
  if(training){
   const cleanedTrainer=document.createElement('div');cleanedTrainer.className='la-trainer-clean';cleanedTrainer.setAttribute('aria-hidden','true');stage.appendChild(cleanedTrainer);
   const st=block('la-training-stats',1471,241);st.innerHTML=h?['str','agi','end','focus'].map(k=>'<div>'+Number(h.stats?.[k]||0)+'</div>').join(''):'—';
