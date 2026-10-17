@@ -1,0 +1,46 @@
+/* Real armory room v5.7: clean art, no painted sample UI or text. */
+.la-stage.armory .la-key,.la-stage.armory .la-pose{display:none!important}
+.la-stage.armory{background:#1a0f0c}
+.ra-screen{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;overflow:hidden;color:#ffebbc;background:linear-gradient(110deg,#210f0be8 0%,#30180cdb 46%,#1a0d0aef 100%),url('assets/new-era/arena.webp') center/cover;font-family:Georgia,'Noto Serif KR',serif}
+.ra-screen:before{content:'';position:absolute;inset:7px;border:9px ridge #aa7b43;pointer-events:none;box-shadow:inset 0 0 70px #080302ae;z-index:0}
+.ra-screen header{position:relative;z-index:2;flex:none;height:123px;padding:10px 25px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#2c130cfb,#491d13ee 70%,#21100be9);border-bottom:6px ridge #c69b5b;box-shadow:0 8px 15px #160606}
+.ra-title{text-align:center;margin:auto}.ra-title small{display:block;letter-spacing:.3em;font-size:16px;color:#dbb77e}
+.ra-title h1{font:900 62px/1.05 'Noto Serif KR',serif;letter-spacing:.09em;margin:2px;color:#ffebb9;text-shadow:0 4px #522315,0 8px 14px #090402}
+.ra-gold{position:absolute;left:36px;top:42px;background:#1b0b07de;border:3px ridge #b88d55;border-radius:8px;padding:8px 22px;color:#ffde8a;font:bold 26px Georgia,serif}
+.ra-screen .ra-home{position:absolute;right:26px;top:19px;width:181px;height:74px;border:5px ridge #e3b36b;border-radius:11px;background:linear-gradient(#8b4e29,#3b1c13);font:900 22px 'Noto Sans KR',sans-serif;color:#ffedbf;text-shadow:0 2px #200907;cursor:pointer;box-shadow:0 3px 13px #090302}
+.ra-screen .ra-home:hover,.ra-screen .ra-home:focus-visible{filter:brightness(1.2);outline:3px solid #ffe3a8;outline-offset:2px}
+.ra-screen main{position:relative;z-index:1;flex:1;min-height:0;display:grid;grid-template-columns:38% 31% 31%;gap:13px;padding:18px 27px 12px 23px}
+.ra-col{box-sizing:border-box;position:relative;display:flex;flex-direction:column;min-height:0;min-width:0;border:7px ridge #b38b50;border-radius:9px;background:linear-gradient(160deg,#2c1b16f0,#160d0bf3);box-shadow:inset 0 0 30px #0603029c,0 7px 16px #080304b8;padding:13px 17px}
+.ra-col>h2{margin:0 0 10px;padding:0 3px 9px;border-bottom:2px solid #ad7e45bd;font:800 29px 'Noto Serif KR',serif;color:#f2d39b}
+.ra-col>h2 small{font:700 14px 'Noto Sans KR',sans-serif;color:#cba779;float:right;padding-top:12px}
+.ra-roster{display:flex;gap:10px;overflow-x:auto;flex:none;max-width:100%;padding:2px 3px 9px}
+.ra-portrait{flex:none;box-sizing:border-box;position:relative;width:116px;height:151px;padding:0;border:4px ridge #886035;border-radius:6px;background:linear-gradient(#704328,#24120f);color:#f6d6a7;cursor:pointer;overflow:hidden}
+.ra-portrait.selected{border-color:#ffe5a5;box-shadow:0 0 14px #f8c268c2}
+.ra-portrait canvas{display:block;width:108px;height:100px}
+.ra-portrait strong,.ra-portrait small{display:block;max-width:100%;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:800 13px Georgia,serif}
+.ra-portrait small{font-size:12px;color:#d7bd91}
+.ra-stage{flex:1;min-height:200px;position:relative;display:flex;justify-content:center;align-items:flex-end;overflow:hidden;background:radial-gradient(ellipse at 50% 73%,#9e693e7a 0%,#3a1d17a8 50%,transparent 75%);border-radius:50% 50% 7% 7%}
+.ra-stage:after{content:'';position:absolute;bottom:-4px;left:8%;right:8%;height:22px;border:6px ridge #aa7b43;border-radius:45%;background:linear-gradient(120deg,#75502d,#b88b4e,#53301f);box-shadow:0 7px 12px #140703}
+.ra-stage canvas{max-height:100%;max-width:100%;object-fit:contain;filter:drop-shadow(0 11px 9px #110706)}
+.ra-hero-info{display:flex;gap:10px;justify-content:center;align-items:baseline;padding:6px;color:#f3d0a4}
+.ra-hero-info strong{font:900 25px Georgia,serif}.ra-hero-info small{font:700 17px 'Noto Serif KR',serif}
+.ra-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.ra-stats span{display:flex;justify-content:space-between;gap:7px;padding:7px 9px;font:800 16px Georgia,serif;border:2px ridge #8b6033;background:#1c0c0a}.ra-stats b{color:#ffce82}
+.ra-cats{display:flex;gap:5px;flex:none;margin-bottom:11px}.ra-cats button{flex:1;min-height:55px;cursor:pointer;border:3px ridge #9e7745;border-radius:6px;background:#322015;color:#dfc39a;font:bold 20px 'Noto Serif KR',serif}
+.ra-cats button.selected{background:linear-gradient(#a46e35,#58321d);border-color:#ffda85;color:#fff1c5}
+.ra-list{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:3px 4px}
+.ra-item{position:relative;flex:none;min-height:110px;display:flex;gap:11px;align-items:center;text-align:left;cursor:pointer;padding:11px;border:4px ridge #8c6739;border-radius:7px;background:linear-gradient(105deg,#3c251b,#1f130f);color:#f0d9b2}
+.ra-item.selected{border-color:#fbe0a4;box-shadow:0 0 14px #f8bc67a8;background:linear-gradient(100deg,#5c3524,#2b170e)}
+.ra-item>b{display:grid;place-items:center;flex:none;width:74px;height:74px;font-size:42px;border:3px ridge #ab7e47;background:radial-gradient(#8a5932,#2b170f)}
+.ra-item span{flex:1;min-width:0}.ra-item strong{display:block;font:bold 22px 'Noto Serif KR',serif}.ra-item small{display:block;font:700 16px/1.4 'Noto Sans KR',sans-serif;color:#cbb08a}
+.ra-item em{font:800 15px 'Noto Sans KR',sans-serif;white-space:nowrap;color:#f7ce83;font-style:normal}
+.ra-sort{height:51px;margin-top:10px;background:#3b2419;color:#f6d89d;border:3px ridge #a57d4a;border-radius:7px;font:bold 18px 'Noto Serif KR',serif;cursor:pointer}
+.ra-selected{border:4px ridge #c2965a;border-radius:9px;background:radial-gradient(ellipse at 50% 18%,#8c56386b,#25110ef5);text-align:center;padding:18px 12px 14px;flex:none;min-height:230px}
+.ra-icon{font-size:75px;line-height:1.3}.ra-selected h3{font:900 32px 'Noto Serif KR',serif;margin:8px 0;color:#ffe0a4}.ra-selected p{font:600 18px 'Noto Sans KR',sans-serif;margin:5px;color:#dfbf92}
+.ra-selected small{color:#ffd386;font:700 17px 'Noto Sans KR',sans-serif}
+.ra-equipped{flex:1;min-height:0;overflow:auto;padding:13px 8px}.ra-equipped h3{font:800 23px 'Noto Serif KR',serif;color:#e8bc75;margin:0 0 12px}
+.ra-equipped div{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 8px;border-bottom:1px solid #a1784b6e;font:700 16px 'Noto Sans KR',sans-serif}
+.ra-equipped strong{color:#f4d49e;text-align:right}
+.ra-buttons{display:flex;gap:10px;flex:none}.ra-buttons button{flex:1;min-height:77px;border:5px ridge #c69b60;border-radius:7px;background:linear-gradient(#a44d2e,#512016);color:#ffedd2;font:900 20px 'Noto Sans KR',sans-serif;cursor:pointer}
+.ra-buttons button+button{background:linear-gradient(#64513d,#2d1a13)}
+.ra-buttons button:disabled{opacity:.36;cursor:not-allowed}
+.ra-screen footer{flex:none;text-align:center;background:#1d0f0ce9;border-top:3px ridge #ad854e;color:#d2b188;padding:9px;font:700 15px 'Noto Sans KR',sans-serif}
