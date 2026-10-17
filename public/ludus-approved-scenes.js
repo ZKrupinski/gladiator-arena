@@ -11,12 +11,24 @@ function hit(id,label,x,y,w,h,fn){let b=document.createElement('button');b.class
 function block(cls,x,y){let d=document.createElement('div');d.className='la-v '+cls;d.style.left=x+'px';d.style.top=y+'px';stage.appendChild(d);return d;}
 function fit(){if(!stage)return;const z=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${z})`;}
 function toast(msg){let n=$('.la-notice');if(!n)return;n.textContent=msg;n.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>n.hidden=true,2800);}
-function pose(index){const p=$('.la-pose');if(!p)return;clearTimeout(poseTimer);if(index<0){p.classList.remove('active');return;}p.style.backgroundPosition=['0% 0%','100% 0%','0% 100%','100% 100%'][index%4];p.classList.add('active');poseTimer=setTimeout(()=>{p.classList.remove('active');if(room==='training')p.style.backgroundPosition='100% 0%';},1400);}
+function pose(index){
+ const actor=$('.la-doctore-live');if(!actor)return;
+ clearTimeout(poseTimer);actor.classList.remove('is-speaking');
+ if(index<0){actor.src='assets/ludus/doctore_pose_0.webp';return;}
+ const n=index%4;actor.src='assets/ludus/doctore_pose_'+n+'.webp';
+ actor.dataset.pose=String(n);actor.classList.add('is-speaking');
+ poseTimer=setTimeout(()=>{
+   if(actor.isConnected&&!screen?.hidden){
+     actor.src='assets/ludus/doctore_pose_0.webp';
+     actor.dataset.pose='0';actor.classList.remove('is-speaking');
+   }
+ },1700);
+}
 function moveHero(step){let a=bridge(),s=a?.state();if(!s?.roster?.length){toast('검투사시장에서 먼저 영입하세요.');return;}let i=((s.active||0)+step+s.roster.length)%s.roster.length;a.select(i);refresh();}
 function changeRoom(next){room=next;bridge()?.section(next);screen.hidden=false;render();}
 function goHome(){screen.hidden=true;clearTimeout(toastTimer);clearTimeout(poseTimer);pose(-1);bridge()?.returnHome();document.getElementById('careerHub').hidden=true;window.LudusScene?.open();}
 function actionTraining(){const s=bridge()?.state();if(!s?.roster?.length){toast('훈련할 검투사가 없습니다.');return;}const opt=tiles[selectedTraining],h=s.roster[s.active];if(s.gold<12){toast('훈련 비용 12D가 부족합니다.');pose(2);return;}if(Number(h.stats[opt.stat])>=10){toast('해당 능력치의 훈련이 완료되었습니다.');pose(2);return;}
- bridge().train(opt.stat);pose(Math.random()<.5?1:3);toast(h.name+' · '+opt.name+' 완료!');refresh();}
+ bridge().train(opt.stat);refresh();pose(Math.random()<.5?1:3);toast(h.name+' · '+opt.name+' 완료!');}
 function changeItem(mode){const a=bridge(),list=a?.catalog()||[],gear=list.find(g=>g.id===selectedGear);if(!gear){toast('장비를 먼저 선택하세요.');return;}const outcome=a.equip(selectedGear,mode);toast(outcome||'장비 상태가 갱신되었습니다.');refresh();}
 function drawRoster(parent,isTraining){parent.replaceChildren();const a=bridge(),s=a?.state();if(!s)return;
  const from=Math.max(0,Math.min(s.active-1,Math.max(0,s.roster.length-(isTraining?6:3))));
@@ -44,7 +56,7 @@ function liveFighter(a,s,isTraining){
 }
 function setup(){if(screen)return;screen=document.createElement('section');screen.className='la-screen';screen.hidden=true;screen.setAttribute('aria-label','승인된 루두스 장비실 및 훈련소');screen.innerHTML='<div class="la-stage"><img class="la-key" draggable="false" alt=""><div class="la-notice" role="status" hidden></div><div class="la-pose"></div></div><div class="la-orient">가로 화면에서 더 크게 볼 수 있습니다.<button type="button">작은 화면으로 계속</button></div>';document.body.appendChild(screen);stage=$('.la-stage');$('.la-orient button').addEventListener('click',()=>screen.classList.add('la-allow-portrait'));addEventListener('resize',fit,{passive:true});document.addEventListener('keydown',e=>{if(screen.hidden)return;if(e.key==='Escape'){e.preventDefault();goHome();}else if(e.key==='ArrowLeft'){e.preventDefault();moveHero(-1);}else if(e.key==='ArrowRight'){e.preventDefault();moveHero(1);}else if(e.key==='Enter'&&room==='training'){e.preventDefault();actionTraining();}});fit();}
 function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state();if(!s)return;const h=s.roster[s.active],training=room==='training';stage.className='la-stage '+room;
- const key=$('.la-key');const src='assets/ludus/'+(training?'training_approved':'armory_approved')+'.webp';if(!key.src.endsWith(src))key.src=src;
+ const key=$('.la-key');const src=training?'assets/ludus/training_no_doctore.webp':'assets/ludus/armory_approved.webp';if(!key.src.endsWith(src))key.src=src;
  // Keep backdrop and transient NPC pose nodes, replace everything else atomically.
  for(const node of [...stage.children])if(!node.matches('.la-key,.la-notice,.la-pose'))node.remove();
  if(!training&&window.LudusLiveArmory){
@@ -62,7 +74,15 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  block('la-gold',1417,27).textContent=Number(s.gold||0).toLocaleString('ko-KR');
  // The approved bottom-left back control is the only room-to-lobby action.
  if(training){
-  const cleanedTrainer=document.createElement('div');cleanedTrainer.className='la-trainer-clean';cleanedTrainer.setAttribute('aria-hidden','true');stage.appendChild(cleanedTrainer);
+  // Native-size transparent instructor is part of the scene, NOT a popup.
+  // Its figure has already been removed from the clean background bitmap.
+  const instructor=document.createElement('img');instructor.className='la-doctore-live';
+  instructor.dataset.pose='0';instructor.src='assets/ludus/doctore_pose_0.webp';
+  instructor.alt='';instructor.setAttribute('aria-hidden','true');
+  instructor.draggable=false;stage.appendChild(instructor);
+  const parchment=document.createElement('div');
+  parchment.className='la-doctore-parchment';parchment.setAttribute('aria-hidden','true');
+  stage.appendChild(parchment);
   const st=block('la-training-stats',1471,241);st.innerHTML=h?['str','agi','end','focus'].map(k=>'<div>'+Number(h.stats?.[k]||0)+'</div>').join(''):'—';
   let nm=block('la-training-name',1413,151);nm.innerHTML=h?'<strong>'+escapeHtml(h.name)+'</strong><small>'+escapeHtml(h.cls)+' · Lv.'+Number(h.level||1)+'</small>':'검투사 없음';
   const eff=block('la-training-effect',1309,455);eff.textContent=tiles[selectedTraining].help+'\n훈련 비용 12 D\n훈련 성공 시 경험치 획득';
