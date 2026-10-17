@@ -28,19 +28,22 @@ for x0,y0,x1,y1 in rects:
     cv2.rectangle(mask,(x0,y0),(x1,y1),255,-1)
 mask=cv2.dilate(mask,np.ones((5,5),np.uint8),iterations=1)
 
-# Large buttons contain high-contrast glyphs. Use multiscale neighbourhood
-# synthesis to prevent their outlines ghosting through a tiny-radius inpaint.
-small=cv2.resize(img,(W//2,H//2),interpolation=cv2.INTER_AREA)
-small_mask=cv2.resize(mask,(W//2,H//2),interpolation=cv2.INTER_NEAREST)
-inpaint_small=cv2.inpaint(small,small_mask,7,cv2.INPAINT_TELEA)
-structure=cv2.resize(inpaint_small,(W,H),interpolation=cv2.INTER_CUBIC)
-detail=cv2.inpaint(img,mask,9,cv2.INPAINT_NS)
-clean=cv2.addWeighted(structure,.68,detail,.32,0)
-# Feather the irregular deletion edges, not rectangular panels, and preserve
-# every pixel outside those small button masks.
-blend=cv2.GaussianBlur(mask,(0,0),4).astype(np.float32)[...,None]/255.0
+# Large-object inpainting produced blurry diamond-shaped streaks. Instead,
+# reconstruct the robe and stone underneath from the genuine undamaged
+# clothing immediately above the buttons. Vertical reflection at the border
+# continues all of the folds and painted colours without copying fake UI.
+yy,xx=np.indices((H,W),dtype=np.float32)
+boundary=783.0
+sy=np.where(yy>=boundary,2*boundary-yy*1.0,yy)
+sy=np.clip(sy,0,H-1).astype(np.float32)
+reflected=cv2.remap(img,xx,sy,interpolation=cv2.INTER_CUBIC,
+                     borderMode=cv2.BORDER_REFLECT)
+# Smooth only the reflected texture in the covered area for printed WebP
+# quality; original image pixels outside the three old button silhouettes
+# remain intact (i.e. no added panel behind Domina's legs).
+clean=cv2.GaussianBlur(reflected,(0,0),.8)
+blend=cv2.GaussianBlur(mask,(0,0),7).astype(np.float32)[...,None]/255.0
 result=np.clip(img*(1-blend)+clean*blend,0,255).astype(np.uint8)
-# Keep edge feather strictly INSIDE the deletion footprint.
 result[mask==0]=img[mask==0]
 
 Image.fromarray(cv2.cvtColor(result,cv2.COLOR_BGR2RGB)).save(OUT,"WEBP",quality=96,method=6)
