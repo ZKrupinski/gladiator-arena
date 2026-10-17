@@ -13,6 +13,8 @@
   object-fit:contain;
   object-position:center top;
   clip-path:inset(0 127px 0 0);
+  -webkit-mask-image:linear-gradient(to right,#000 0%,#000 74%,transparent 83%);
+  mask-image:linear-gradient(to right,#000 0%,#000 74%,transparent 83%);
   pointer-events:none;
   user-select:none;
   -webkit-user-drag:none;
@@ -51,3 +53,7 @@
   .gm-stage .gm-merchant-full,
   .gm-stage .gm-merchant-full.is-speaking{animation:none!important}
 }
+
+/* The deprecated floating cover-up for the painted bottom-left arrow is
+   no longer needed: the clean WebP has erased its pixels at source. */
+.gm-stage::after{display:none!important}
