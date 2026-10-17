@@ -44,3 +44,40 @@
 .ra-buttons button+button{background:linear-gradient(#64513d,#2d1a13)}
 .ra-buttons button:disabled{opacity:.36;cursor:not-allowed}
 .ra-screen footer{flex:none;text-align:center;background:#1d0f0ce9;border-top:3px ridge #ad854e;color:#d2b188;padding:9px;font:700 15px 'Noto Sans KR',sans-serif}
+
+/* Training-room QA: suppress demonstration gladiator under the real selected
+   fighter and keep the previously approved instructor/background intact.
+   The non-loaded v5.3 polish CSS had never positioned these live canvases. */
+.la-stage.training .la-trainer-clean,.la-stage.training .la-pose{display:none!important}
+.la-stage.training .la-live-npc-clear.training{
+ position:absolute;z-index:4;left:799px;top:241px;width:371px;height:332px;
+ box-sizing:border-box;pointer-events:none;border:4px ridge #b58952;
+ border-radius:45% 45% 8% 8%;
+ background:radial-gradient(ellipse at 51% 75%,#93613d 0%,#513023ec 43%,#28140ff4 86%),
+  url('assets/new-era/arena.webp') center/cover;
+ box-shadow:inset 0 0 38px #160808,0 7px 16px #16070690;
+}
+.la-stage.training .la-live-fighter.training{
+ position:absolute;z-index:5;left:824px;top:244px;width:322px;height:328px;
+ pointer-events:none;object-fit:contain;transform-origin:center bottom;
+ filter:drop-shadow(0 9px 8px #120805ad);animation:la-live-stand 3.3s ease-in-out infinite alternate;
+}
+.la-stage.training .la-roster.training{
+ background:linear-gradient(120deg,#352114f7,#180f0bf8);
+ border:4px ridge #bd9358;border-radius:7px;
+ padding:2px 9px;box-sizing:border-box;z-index:10;overflow:hidden;
+}
+@keyframes la-live-stand{0%{transform:translateY(0)}100%{transform:translateY(-4px)}}
+@media(prefers-reduced-motion:reduce){.la-stage.training .la-live-fighter.training{animation:none}}
+/* Market: the outdated painted bottom-left back arrow is not an extra action.
+   Reconstruct the gravel underneath from a nearby empty region of the same art.
+   The real lobby button is consistently top-right. */
+.gm-stage::after{
+ content:'';position:absolute;pointer-events:none;z-index:1;
+ left:18px;top:832px;width:220px;height:70px;
+ background-image:url('assets/market/market_keyvisual.webp');
+ background-repeat:no-repeat;background-size:1672px 941px;
+ background-position:-265px -827px;
+ -webkit-mask-image:radial-gradient(ellipse at center,#000 70%,transparent 100%);
+ mask-image:radial-gradient(ellipse at center,#000 70%,transparent 100%);
+}
