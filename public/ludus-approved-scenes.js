@@ -11,7 +11,7 @@ function hit(id,label,x,y,w,h,fn){let b=document.createElement('button');b.class
 function block(cls,x,y){let d=document.createElement('div');d.className='la-v '+cls;d.style.left=x+'px';d.style.top=y+'px';stage.appendChild(d);return d;}
 function fit(){if(!stage)return;const z=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${z})`;}
 function toast(msg){let n=$('.la-notice');if(!n)return;n.textContent=msg;n.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>n.hidden=true,2800);}
-function pose(index){const p=$('.la-pose');if(!p)return;clearTimeout(poseTimer);if(index<0){p.classList.remove('active');return;}p.style.backgroundPosition=['0% 0%','100% 0%','0% 100%','100% 100%'][index%4];p.classList.add('active');poseTimer=setTimeout(()=>p.classList.remove('active'),1400);}
+function pose(index){const p=$('.la-pose');if(!p)return;clearTimeout(poseTimer);if(index<0){p.classList.remove('active');return;}p.style.backgroundPosition=['0% 0%','100% 0%','0% 100%','100% 100%'][index%4];p.classList.add('active');poseTimer=setTimeout(()=>{p.classList.remove('active');if(room==='training')p.style.backgroundPosition='100% 0%';},1400);}
 function moveHero(step){let a=bridge(),s=a?.state();if(!s?.roster?.length){toast('검투사시장에서 먼저 영입하세요.');return;}let i=((s.active||0)+step+s.roster.length)%s.roster.length;a.select(i);refresh();}
 function changeRoom(next){room=next;bridge()?.section(next);screen.hidden=false;render();}
 function goHome(){screen.hidden=true;clearTimeout(toastTimer);clearTimeout(poseTimer);pose(-1);bridge()?.returnHome();document.getElementById('careerHub').hidden=true;window.LudusScene?.open();}
@@ -50,6 +50,7 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  block('la-gold',1417,27).textContent=Number(s.gold||0).toLocaleString('ko-KR');
  hit('home','루두스 홈',1565,0,95,85,goHome);
  if(training){
+  const cleanedTrainer=document.createElement('div');cleanedTrainer.className='la-trainer-clean';cleanedTrainer.setAttribute('aria-hidden','true');stage.appendChild(cleanedTrainer);
   const st=block('la-training-stats',1471,241);st.innerHTML=h?['str','agi','end','focus'].map(k=>'<div>'+Number(h.stats?.[k]||0)+'</div>').join(''):'—';
   let nm=block('la-training-name',1413,151);nm.innerHTML=h?'<strong>'+escapeHtml(h.name)+'</strong><small>'+escapeHtml(h.cls)+' · Lv.'+Number(h.level||1)+'</small>':'검투사 없음';
   const eff=block('la-training-effect',1309,455);eff.textContent=tiles[selectedTraining].help+'\n훈련 비용 12 D\n훈련 성공 시 경험치 획득';
