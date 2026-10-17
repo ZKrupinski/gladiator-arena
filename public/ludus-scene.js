@@ -83,10 +83,6 @@ var html=[
 '<button data-action="practice"><span class="ll-thumb">✦</span><strong>실전 훈련</strong><small>경험치와 능력치를 향상시킵니다.</small></button>',
 '<button data-action="arena"><span class="ll-thumb">🏟</span><strong>아레나 출전</strong><small>가장 강한 자를 가립니다.</small></button></div></div>',
 '<div class="ll-live-counter" data-live-counter>소속 검투사 0명</div>',
-'<div class="ll-hitbuttons" aria-label="로비 하단 바로가기">',
-'<button data-action="training" style="left:775px;top:762px;width:196px;height:255px" aria-label="훈련소로 이동"></button>',
-'<button data-action="training" style="left:981px;top:762px;width:196px;height:255px" aria-label="훈련소로 이동"></button>',
-'<button data-action="arena" style="left:1184px;top:762px;width:207px;height:255px" aria-label="아레나 출전"></button>',
 '</div><div class="ll-toast" hidden role="status"></div></div><div class="ll-orientation" role="dialog" aria-label="가로 화면 권장"><div class="ll-rotate-icon" aria-hidden="true">↻</div><strong>가로 화면에서 플레이해 주세요</strong><p>루두스는 가로형 게임 화면으로 제작되었습니다.<br>기기를 가로로 돌리면 버튼과 검투사가 크게 보입니다.</p><button data-action="dismiss-orientation">작은 화면으로 계속 보기</button></div>'
 ];
 scene.innerHTML=html.join("");document.body.appendChild(scene);stage=$(".ll-stage");
