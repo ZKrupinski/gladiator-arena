@@ -90,3 +90,4 @@ preview = ROOT / "docs/qa/market-merchant-layout.webp"
 preview.parent.mkdir(parents=True, exist_ok=True)
 prev.convert("RGB").save(preview, format="WEBP", quality=84, method=5)
 print(f"Wrote QA composition {preview} ({pose.width}x{pose.height} source sprite)")
+# Rebuild after all frontend source and style updates are committed.
