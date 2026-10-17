@@ -153,7 +153,7 @@ function open(options){opts=options;setup();
  // Preserve prior careers; an untouched new Ludus begins with the concept-art starting wallet.
  if((!opts.state.roster||opts.state.roster.length===0)&&(Number(opts.state.fights)||0)===0&&Number(opts.state.gold)<500){opts.state.gold=3200;opts.save?.();}
  ensureInventory();selection=pick(0);mode='idle';$('#gmDialog').hidden=true;
- scene.hidden=false;fit();render();
+ scene.hidden=false;fit();render();reaction(available().length?merchantLines.hello:merchantLines.empty,available().length?'hello':'empty',5400);
 }
 root.SlaveMarket={open,close,refresh:render};
 if(typeof module!=='undefined')module.exports={types,newOffer,RESTOCK_COST};
