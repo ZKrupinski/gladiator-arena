@@ -53,3 +53,17 @@
 .ll-roster .ll-portraits button.ll-add{font-size:42px}
 .ll-stage .ll-toast{z-index:35}
 @media(prefers-reduced-motion:reduce){.ll-doctore-art{animation:none!important}}
+
+/* Dynamic approved-room fighter slots. A unique selected fighter is shown,
+   rather than a second, painted sample character underneath. */
+.la-live-npc-clear{position:absolute;z-index:4;pointer-events:none;box-sizing:border-box;border:3px ridge #b88745;border-radius:36% 36% 11% 11%;background:radial-gradient(ellipse at 50% 66%,#895436 0%,#57331fe9 41%,#2a170fe9 84%),repeating-linear-gradient(90deg,#4b2c20 0 18px,#6d3925 20px 25px,#2d170f 27px 33px);box-shadow:inset 0 0 36px #1a0b09,0 0 10px #1b0b07e6}
+.la-live-npc-clear.armory{left:477px;top:289px;width:303px;height:378px}
+.la-live-npc-clear.training{left:797px;top:241px;width:352px;height:334px}
+.la-live-fighter{position:absolute;z-index:5;pointer-events:none;object-fit:contain;transform-origin:center bottom;animation:la-idle-npc 3s ease-in-out infinite alternate;filter:drop-shadow(0 9px 7px #0d0504b5)}
+.la-live-fighter.armory{left:477px;top:286px;width:304px;height:381px}
+.la-live-fighter.training{left:801px;top:244px;width:341px;height:331px}
+@keyframes la-idle-npc{from{transform:translateY(1px) rotate(-.5deg)}to{transform:translateY(-4px) rotate(.5deg)}}
+/* The inventory expansion '+' in the concept was not implemented. Hide it;
+   category, item, sort, equip and remove controls remain truly interactive. */
+.la-stage.armory::before{content:"";position:absolute;z-index:11;left:1580px;top:364px;width:57px;height:48px;background:linear-gradient(100deg,#271a13,#1e120e);border-radius:2px;pointer-events:none}
+@media(prefers-reduced-motion:reduce){.la-live-fighter{animation:none!important}}
