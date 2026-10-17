@@ -40,6 +40,8 @@ clean=cv2.addWeighted(structure,.68,detail,.32,0)
 # every pixel outside those small button masks.
 blend=cv2.GaussianBlur(mask,(0,0),4).astype(np.float32)[...,None]/255.0
 result=np.clip(img*(1-blend)+clean*blend,0,255).astype(np.uint8)
+# Keep edge feather strictly INSIDE the deletion footprint.
+result[mask==0]=img[mask==0]
 
 Image.fromarray(cv2.cvtColor(result,cv2.COLOR_BGR2RGB)).save(OUT,"WEBP",quality=96,method=6)
 Image.fromarray(cv2.cvtColor(result,cv2.COLOR_BGR2RGB)).save(QA/"full.webp","WEBP",quality=89,method=5)
