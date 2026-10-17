@@ -1,0 +1,55 @@
+
+/* Ludus scene v5.3: replace baked-in concept UI with real, accessible controls. */
+.ll-stage .ll-art-scrim{position:absolute;inset:0;z-index:1;pointer-events:none}
+.ll-stage .ll-clean{position:absolute;pointer-events:none}
+.ll-clean-hud{left:0;top:0;width:1448px;height:87px;background:linear-gradient(90deg,#28100df7,#411e16ec 39%,#210d0ef9 73%,#35190ff4);box-shadow:0 8px 12px #1c090da6;border-bottom:4px ridge #b98c4b}
+.ll-clean-rail{left:0;top:87px;width:220px;height:705px;background:linear-gradient(90deg,#160c0b,#371d18 65%,#1e110ff7);border-right:5px ridge #af8147;box-shadow:8px 2px 19px #150908a8}
+.ll-clean-domina{left:218px;top:241px;width:492px;height:551px;background:radial-gradient(ellipse at 45% 50%,#773d278c 0%,#421d1ae7 55%,#250e0ef8 100%),repeating-linear-gradient(93deg,#491d17 0 22px,#712b21 23px 38px,#351812 40px 48px);border-inline:4px ridge #ae7a42;box-shadow:inset 0 0 65px #150606,0 0 17px #180809}
+.ll-clean-domina:before{content:"";position:absolute;inset:20px;border:6px double #cba36680;border-radius:48% 48% 10px 10px;box-shadow:inset 0 0 35px #1907068a}
+.ll-clean-training{left:705px;top:517px;width:505px;height:272px;background:linear-gradient(180deg,#2c1608b0,#442516bd 30%,#6e3b1def 83%,#21110bed),repeating-linear-gradient(12deg,#98633d 0 11px,#be8152 13px 15px,#78411f 16px 25px);border:5px ridge #a8763e;box-shadow:inset 0 0 38px #1e0e0ae8,0 4px 12px #13070598}
+.ll-clean-doctore{right:13px;top:530px;width:224px;height:259px;background:linear-gradient(120deg,#381912dc,#583021ee,#170d0cef);border-inline:3px ridge #9d6637}
+.ll-clean-lower{left:0;bottom:0;width:1448px;height:296px;background:linear-gradient(#26110cf9,#382018 25%,#24120ffb 80%,#160d0b);border-top:5px ridge #cf9958;box-shadow:0 -10px 18px #200a088c}
+.ll-clean-upper-dialog{left:230px;top:96px;width:421px;height:154px;background:linear-gradient(160deg,#3d1814,#28130fdc 75%,#1a0b0cd9);border:4px ridge #ae7b42;border-radius:10px}
+.ll-clean-doctore-dialog{right:0;top:435px;width:251px;height:116px;background:linear-gradient(#2d1310f9,#210e0df9);border:3px ridge #c08c51;border-radius:6px}
+.ll-has-art .ll-title,.ll-title{z-index:14;opacity:1;left:16px;top:10px;width:181px;height:55px;border:3px ridge #b98c50;border-radius:8px;background:linear-gradient(#6f3a20,#2e160f);font:800 25px 'Noto Sans KR',sans-serif!important;box-shadow:inset 0 0 15px #180808a6}
+.ll-has-art .ll-title:hover{opacity:1;background:linear-gradient(#8b4b2b,#462110)}
+.ll-wallet,.ll-has-art .ll-wallet{z-index:14;top:10px;left:705px;right:auto;width:531px;height:52px;font:800 19px 'Noto Sans KR',sans-serif;box-sizing:border-box}
+.ll-has-art .ll-menu,.ll-menu{display:flex;opacity:1;visibility:visible;pointer-events:auto;position:absolute;left:8px;top:110px;width:203px;z-index:15;gap:11px;flex-direction:column}
+.ll-menu button{box-sizing:border-box;min-height:63px;text-align:left;background:linear-gradient(115deg,#2e1716,#59351d 72%,#2d160e);border:3px ridge #bb8d53;border-radius:8px;padding:10px 15px;color:#ffe3ac;font:800 23px 'Noto Sans KR',sans-serif;box-shadow:inset 0 0 12px #100609,0 3px 8px #180908}
+.ll-menu button:hover,.ll-menu button:focus-visible{background:linear-gradient(115deg,#54231f,#99552b);transform:translateX(2px);border-color:#f5cf82}
+.ll-menu button[aria-current="page"]{background:linear-gradient(115deg,#8d3223,#593019);border-color:#f9d897}
+.ll-stage .ll-domina,.ll-has-art .ll-domina{display:block;z-index:6;position:absolute;left:230px;top:216px;width:495px;height:579px;border:0;background:transparent;box-shadow:none;overflow:visible;pointer-events:none}
+.ll-domina img{width:100%;height:100%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 12px 9px #0c0509a6);animation:ll-breathe 4s ease-in-out infinite}
+.ll-domina span{display:none}
+.ll-domina-blink,.ll-has-art .ll-domina-blink{display:none!important}
+.ll-stage .ll-doctore-art{position:absolute;z-index:7;left:1216px;top:526px;width:208px;height:265px;object-fit:contain;object-position:center bottom;pointer-events:none;filter:drop-shadow(0 5px 6px #1d0a07);transform-origin:center 93%;animation:ll-coach-motion 3.8s ease-in-out infinite}
+@keyframes ll-coach-motion{0%,100%{transform:rotate(-.5deg) translateY(0)}45%{transform:rotate(.75deg) translateY(-5px)}}
+.ll-stage .ll-speech,.ll-has-art .ll-speech{visibility:visible;z-index:8;left:245px;top:106px;width:390px;min-height:113px;padding:13px 19px;border:3px ridge #e1c38a;border-radius:8px;background:linear-gradient(#faedce,#dfbe8e);box-shadow:0 5px 12px #120607c9;color:#422218;font:800 21px/1.4 'Noto Sans KR',sans-serif}
+.ll-stage .ll-doctore,.ll-has-art .ll-doctore{visibility:visible;z-index:8;left:1173px;right:auto;top:409px;width:248px;max-width:none;box-sizing:border-box;padding:9px 12px;background:#f4debc;color:#492519;border:3px ridge #c49e62;border-radius:7px;line-height:1.35;font-size:18px;box-shadow:0 4px 15px #19090894}
+.ll-stage .ll-doctore b{color:#9d3426;font-size:22px}
+.ll-stage .ll-bgfighters,.ll-has-art .ll-bgfighters{position:absolute;left:785px;top:568px;width:395px;height:199px;opacity:1;filter:drop-shadow(0 6px 5px #1d0b08);z-index:7;justify-content:space-around;align-items:flex-end;gap:4px}
+.ll-bgfighters img{width:121px;height:177px;object-fit:contain;object-position:center bottom;animation:ll-step 1.4s ease-in-out infinite alternate}
+.ll-bgfighters img:nth-child(2){animation-delay:-.47s}
+.ll-bgfighters img:nth-child(3){animation-delay:-.91s}
+.ll-has-art .ll-special{display:none}
+.ll-has-art .ll-hitbuttons,.ll-hitbuttons{display:none!important}
+.ll-has-art .ll-live-counter,.ll-live-counter{display:none!important}
+.ll-stage .ll-bottom,.ll-has-art .ll-bottom{opacity:1;pointer-events:auto;display:flex;z-index:13;left:20px;right:20px;bottom:37px;gap:22px;align-items:flex-end}
+.ll-stage .ll-bottom .ll-roster,.ll-has-art .ll-bottom .ll-roster{box-sizing:border-box;flex:none;width:753px;height:180px;transform:none;opacity:1;pointer-events:auto;padding:12px 16px;border:5px ridge #c59651;border-radius:9px;background:linear-gradient(#462e1df8,#1d0f0df8);box-shadow:inset 0 0 22px #060302,0 5px 12px #100806}
+.ll-stage .ll-bottom .ll-actions,.ll-has-art .ll-bottom .ll-actions{display:flex;opacity:1;visibility:visible;pointer-events:auto;flex:1;gap:10px;align-items:end}
+.ll-actions button{position:relative;height:221px;min-width:0;width:33.3%;padding:0 6px 15px;border:5px ridge #c09653;background-image:linear-gradient(180deg,#140b0a18,#21100a88 58%,#1a0909e3 80%),url('assets/ludus/ludus_ui.webp');background-repeat:no-repeat;background-size:1448px 1086px;border-radius:9px;box-shadow:inset 0 0 12px #211009,0 5px 11px #100506;transition:filter .12s,transform .12s}
+.ll-actions button:first-child{background-position:0 0,-801px -790px}
+.ll-actions button:nth-child(2){background-position:0 0,-1008px -790px}
+.ll-actions button:last-child{background-position:0 0,-1217px -790px;border-color:#e1a375}
+.ll-actions button:hover,.ll-actions button:focus-visible{filter:brightness(1.22);transform:translateY(-4px)}
+.ll-actions button .ll-thumb{display:none}
+.ll-actions button strong{position:absolute;bottom:29px;left:1px;right:1px;color:#fff1d1;font:900 21px 'Noto Sans KR',sans-serif;text-shadow:0 3px 5px #180505,0 -1px #260908}
+.ll-actions button small{position:absolute;bottom:4px;left:2px;right:2px;color:#eed7b9;font:800 10px 'Noto Sans KR',sans-serif;text-shadow:0 2px 4px #000;margin:0}
+.ll-roster h3{font-size:20px}
+.ll-roster .ll-portraits{gap:7px}
+.ll-roster .ll-portraits button{width:89px;height:101px}
+.ll-roster .ll-portraits canvas{width:82px;height:76px}
+.ll-roster .ll-portraits button.selected{border-color:#ffe08d;box-shadow:0 0 15px #f7c94a}
+.ll-roster .ll-portraits button.ll-add{font-size:42px}
+.ll-stage .ll-toast{z-index:35}
+@media(prefers-reduced-motion:reduce){.ll-doctore-art{animation:none!important}}
