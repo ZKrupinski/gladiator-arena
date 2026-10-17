@@ -1,0 +1,31 @@
+name: Build clean Ludus lobby artwork
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/clean_ludus_buttons.py
+      - .github/workflows/clean-ludus-buttons.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  clean-lobby:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: true}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install --quiet numpy pillow opencv-python-headless
+      - name: Remove three baked, nonfunctional icons from lobby
+        run: python scripts/clean_ludus_buttons.py
+      - name: Commit cleaned WebP game resource and previews
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/assets/ludus/ludus_lobby_no_buttons.webp docs/qa/ludus-lobby-buttons/*.webp
+          if ! git diff --cached --quiet; then
+            git commit -m "art(ludus): remove obsolete helmet, gift and hourglass tiles from lobby key visual"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
