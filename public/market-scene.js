@@ -50,9 +50,13 @@ function render(){if(!scene||scene.hidden)return;
   $('#gmSelection'+i).hidden=!selected;
  }
  const hero=selection<0?null:list[selection],detail=$('#gmBottomInfo'),avatar=$('#gmPortraitWrap');
- const untouched=!!hero&&selection===0&&Number(state.marketSeed||0)===0&&list.every(Boolean);
- detail.hidden=avatar.hidden=untouched||!hero;
- if(hero&&!detail.hidden){detail.innerHTML=`<h2>${clean(hero.name)} · ${hero.className}</h2><div class="gm-level">Lv.0 · ${hero.cost} D</div><p>${hero.desc}</p>`;drawPortrait(hero);}
+ // Never trust the screenshot-baked Cassius card: all three recruits must
+ // always use the selected offer's portrait, class, price and description.
+ detail.hidden=avatar.hidden=!hero;
+ if(hero){
+  detail.innerHTML=`<h2>${clean(hero.name)} <span class="gm-divider">·</span> ${clean(hero.className)}</h2><div class="gm-level"><strong>Lv.0</strong><span>◉ ${Number(hero.cost).toLocaleString('ko-KR')} D</span></div><p>${clean(hero.desc)}</p>`;
+  drawPortrait(hero);
+ }
  const hire=$('#gmHire'),price=$('#gmPrice');hire.disabled=!hero||Number(state.gold)<hero.cost;
  hire.setAttribute('aria-label',hero?hero.name+' 구매 확인, '+hero.cost+' 데나리우스':'구매 가능한 검투사가 없습니다');
  price.hidden=!hero||hero.cost===500;price.textContent=hero?Number(hero.cost).toLocaleString('ko-KR'):'';
@@ -62,6 +66,7 @@ function render(){if(!scene||scene.hidden)return;
  $('#gmRestockCount').textContent=list.filter(h=>h===null).length+'자리';
 }
 function face(pose){
+ if(pose===2)pose=1;
  // One actor at the full-sized merchant position, not a floating reaction thumbnail.
  const actor=$('#gmMerchantMain');if(!actor)return;
  actor.className='gm-merchant-full gm-pose-'+pose+(actor.classList.contains('is-speaking')?' is-speaking':'');
@@ -73,7 +78,10 @@ function reaction(line,mood='select',duration=4800){
  const text=$('#gmSpeech'),glow=$('#gmTalking'),actor=$('#gmMerchantMain');
  text.hidden=false;text.textContent=line;glow.classList.add('active');
  actor?.classList.add('is-speaking');
- const poses={hello:[1,2],select:[0,1],confirm:[1,0],cancel:[3],success:[2,1],poor:[3],empty:[3,0],refresh:[2,1]};
+ // Never play the double-outstretched-arm frame 2: its right hand would
+ // cover the first auction podium and would be chopped by stage edges.
+ // Reactions use arm-at-waist (0), single-hand greeting (1), calm hand (3).
+ const poses={hello:[1,0],select:[0,1],confirm:[1,0],cancel:[3],success:[1,3,1],poor:[3],empty:[3,0],refresh:[3,1]};
  const frames=poses[mood]||poses.select;let index=0;face(frames[0]);
  if(frames.length>1)animateTimer=setInterval(()=>{index=(index+1)%frames.length;face(frames[index]);},490);
  speechReset=setTimeout(()=>{
