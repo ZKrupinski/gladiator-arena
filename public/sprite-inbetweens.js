@@ -103,10 +103,15 @@ function drawGrowth(ctx,atlas,pose,x,y,w,h,flip=false,alpha=1,clock=0,progress=n
 }
 function drawLegacy(ctx,source,pose,x,y,w,h,flip=false,alpha=1,clock=0,progress=null,offset=0){
  if(!source||!source.width||!source.height)return false;
- // Legacy atlas cells are already independently segmented, with no extra
- // cropping or source-frame leakage. Preserve the original rectangle scale.
- return render(ctx,source,pose,x,y,w,h,flip,alpha,clock,progress,offset,
-   source.width/2,source.height,Math.min(w/source.width,h/source.height));
+ const pack=framesFor(source,pose);if(!pack)return false;
+ const pic=pack.variants[phaseFor(pose,clock,progress,offset)];
+ // Legacy uses a screen-sized sprite cell, not growth-sheet foot pivots.
+ // Keep EXACT existing x/y/w/h while expanding the crop gutter outside it.
+ const padX=PAD*w/source.width,padY=PAD*h/source.height;
+ ctx.save();ctx.globalAlpha*=alpha;
+ if(flip){ctx.translate(x+w/2,0);ctx.scale(-1,1);ctx.translate(-(x+w/2),0);}
+ ctx.drawImage(pic,x-padX,y-padY,w+padX*2,h+padY*2);
+ ctx.restore();return true;
 }
 root.SpriteInbetweens={drawGrowth,drawLegacy,phaseFor,clear(){
  for(const pack of cache.values())for(const canvas of pack.variants){canvas.width=1;canvas.height=1;}
