@@ -26,7 +26,7 @@ function pose(index){
 }
 function moveHero(step){let a=bridge(),s=a?.state();if(!s?.roster?.length){toast('검투사시장에서 먼저 영입하세요.');return;}let i=((s.active||0)+step+s.roster.length)%s.roster.length;a.select(i);refresh();}
 function changeRoom(next){room=next;bridge()?.section(next);screen.hidden=false;render();}
-function goHome(){screen.hidden=true;clearTimeout(toastTimer);clearTimeout(poseTimer);pose(-1);bridge()?.returnHome();document.getElementById('careerHub').hidden=true;window.LudusScene?.open();}
+function goHome(){window.LudusTrainingV2?.stop();screen.hidden=true;clearTimeout(toastTimer);clearTimeout(poseTimer);pose(-1);bridge()?.returnHome();document.getElementById('careerHub').hidden=true;window.LudusScene?.open();}
 function actionTraining(){const s=bridge()?.state();if(!s?.roster?.length){toast('훈련할 검투사가 없습니다.');return;}const opt=tiles[selectedTraining],h=s.roster[s.active];if(s.gold<12){toast('훈련 비용 12D가 부족합니다.');pose(2);return;}if(Number(h.stats[opt.stat])>=10){toast('해당 능력치의 훈련이 완료되었습니다.');pose(2);return;}
  bridge().train(opt.stat);refresh();pose(Math.random()<.5?1:3);toast(h.name+' · '+opt.name+' 완료!');}
 function changeItem(mode){const a=bridge(),list=a?.catalog()||[],gear=list.find(g=>g.id===selectedGear);if(!gear){toast('장비를 먼저 선택하세요.');return;}const outcome=a.equip(selectedGear,mode);toast(outcome||'장비 상태가 갱신되었습니다.');refresh();}
@@ -72,7 +72,23 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
   fit();return;
  }
  block('la-gold',1417,27).textContent=Number(s.gold||0).toLocaleString('ko-KR');
- // The approved bottom-left back control is the only room-to-lobby action.
+ if(training&&window.LudusTrainingV2){
+  // Replace baked NPC, obsolete information window and fake roster with
+  // real artwork-independent actor, live stats and actual owned gladiators.
+  const trainer=document.createElement('img');
+  trainer.className='la-doctore-live';trainer.dataset.pose='0';
+  trainer.src='assets/ludus/doctore_pose_0.webp';trainer.alt='';
+  trainer.setAttribute('aria-hidden','true');trainer.draggable=false;
+  stage.appendChild(trainer);
+  window.LudusTrainingV2.mount(stage,a,s,{
+   selectedTraining,tiles,onHome:goHome,move:moveHero,
+   onSelect:i=>{a.select(i);refresh();},
+   onTrainingChoice:i=>{selectedTraining=i;refresh();pose(1);},
+   onTrain:actionTraining
+  });
+  fit();return;
+ }
+ // Legacy fallback for clients that have not yet loaded the new module.
  if(training){
   // Native-size transparent instructor is part of the scene, NOT a popup.
   // Its figure has already been removed from the clean background bitmap.
@@ -114,7 +130,7 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  home.addEventListener('click',goHome);stage.appendChild(home);
  fit();}
 function open(name){setup();room=name==='gear'?'armory':'training';screen.hidden=false;render();}
-function close(){if(screen)screen.hidden=true;}
+function close(){window.LudusTrainingV2?.stop();if(screen)screen.hidden=true;}
 function refresh(){if(screen&&!screen.hidden)render();}
 window.LudusApprovedScenes={open,close,refresh,goHome};
 // Career navigation is still handled by the original engine; these listeners only replace its view.
