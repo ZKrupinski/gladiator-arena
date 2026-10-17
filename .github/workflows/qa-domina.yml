@@ -20,7 +20,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/qa/domina/*.webp
+          git add docs/qa/domina/*.webp public/assets/ludus/domina_expression_*.webp
           if ! git diff --cached --quiet; then
             git commit -m "test(ludus): visual QA of Domina poses against original lobby"
             git push origin HEAD:main
