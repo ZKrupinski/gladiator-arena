@@ -164,3 +164,17 @@ output=ROOT/"docs/qa/training-doctore-layer.webp"
 output.parent.mkdir(parents=True,exist_ok=True)
 composed.convert("RGB").save(output,format="WEBP",quality=84)
 print("preview",output.stat().st_size)
+
+# Audit all four runtime action frames over the actual NPC-free scene.
+for frame_index in range(4):
+    art=Image.open(ART/f"doctore_pose_{frame_index}.webp").convert("RGBA")
+    k=min(dw/art.width,dh/art.height)
+    art=art.resize((round(art.width*k),round(art.height*k)),Image.Resampling.LANCZOS)
+    frame=clean.convert("RGBA")
+    frame.alpha_composite(art,(85+(dw-art.width)//2,102+dh-art.height))
+    frame.alpha_composite(box,(499,92))
+    frame.convert("RGB").save(
+        ROOT/f"docs/qa/training-doctore-action-{frame_index}.webp",
+        format="WEBP",quality=78,method=4
+    )
+
