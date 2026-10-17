@@ -647,7 +647,7 @@ function loadGrowthAtlases(){
     img.onload=()=>{
      try{
       GROWTH_IMAGES.set(key,GrowthFrames.isolate(img,growthCuts.sheets[key]));
-      growthStatus('성장 이미지 '+GROWTH_IMAGES.size+'/20장 준비');refreshGrowthAvatar();paintRosterPreviews();paintDraftOpponent();window.LudusScene?.refresh();resolve();
+      growthStatus('성장 이미지 '+GROWTH_IMAGES.size+'/20장 준비');refreshGrowthAvatar();paintRosterPreviews();paintDraftOpponent();window.LudusScene?.refresh();window.LudusCardScenes?.refresh();resolve();
      }catch(error){reject(error);}
     };
     img.onerror=()=>reject(new Error(key));
@@ -801,13 +801,13 @@ function paintDraftOpponent(){
   source=INDEPENDENT_CHARACTER_FRAMES.get(img)?.[0];
   if(!source){
    const cw=img.naturalWidth/ATLAS_COLS,ch=img.naturalHeight/ATLAS_ROWS;
-   const scale=Math.min(260/cw,245/ch);
+   const scale=Math.min((canvas.width-22)/cw,(canvas.height-44)/ch);
    g.drawImage(getCharacterAtlasImage(img),0,0,cw,ch,(canvas.width-cw*scale)/2,canvas.height-ch*scale,cw*scale,ch*scale);
    return;
   }
  }
  if(source){
-  const scale=Math.min(260/source.width,245/source.height);
+  const scale=Math.min((canvas.width-22)/source.width,(canvas.height-44)/source.height);
   const w=source.width*scale,h=source.height*scale;
   g.drawImage(source,(canvas.width-w)/2,canvas.height-h,w,h);
  }
@@ -1730,5 +1730,5 @@ window.LudusBridge={
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=9"></script><script src="ludus-approved-scenes.js?v=5"></script><script src="ludus-cards.js?v=1"></script>
+<script src="ludus-scene.js?v=9"></script><script src="ludus-approved-scenes.js?v=5"></script><script src="ludus-cards.js?v=2"></script>
 </body></html>
