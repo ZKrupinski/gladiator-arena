@@ -58,7 +58,7 @@
 @media(prefers-reduced-motion:reduce){.ll-domina-blink{display:none}}
 
 /* v5.1 Ludus QA: do not expose concept-only currency and ghost roster. */
-.ll-scene::before{content:"";position:absolute;inset:-25px;background:linear-gradient(#160b0988,#160b09aa),url("assets/ludus/ludus_ui.webp") center/cover no-repeat;filter:blur(22px) brightness(.62);transform:scale(1.03);pointer-events:none}
+.ll-scene::before{content:"";position:absolute;inset:-25px;background:linear-gradient(#160b0988,#160b09aa),url("assets/ludus/ludus_lobby_no_buttons.webp?v=1") center/cover no-repeat;filter:blur(22px) brightness(.62);transform:scale(1.03);pointer-events:none}
 .ll-wallet,.ll-has-art .ll-wallet{left:684px;top:4px;right:auto;width:577px;height:51px;display:flex;align-items:center;justify-content:space-around;gap:8px;padding:4px 12px;background:linear-gradient(110deg,#32231cf9,#1c1210f9 55%,#39221cf9);border:2px ridge #d6a66a;border-radius:9px;font:800 19px/1.15 "Noto Sans KR",sans-serif;box-shadow:inset 0 0 7px #cda56945,0 2px 9px #1008068a}
 .ll-wallet span{white-space:nowrap;display:inline-flex;align-items:center;gap:7px}
 .ll-wallet strong{font:800 21px Georgia,"Noto Sans KR",sans-serif;color:#fff1c8}
