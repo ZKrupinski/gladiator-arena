@@ -1,11 +1,10 @@
-/* LUDUS v6.4 — non-destructive Domina expressions.
- * Approved full-size Domina stays painted on the original key art.
- * Only her matched face area changes; no duplicate seated body, no panel. */
+/* v6.5 Domina corrected registration: the expression asset itself is
+ * transparent at the exact native 1448x1086 lobby resolution.
+ * Neither the base face nor the source portrait is resized separately. */
 .ll-stage .ll-domina-expression{
- position:absolute;left:278px;top:303px;width:200px;height:145px;z-index:4;
- display:none;object-fit:fill;
- opacity:1;pointer-events:none;user-select:none;
- -webkit-user-drag:none;
+ position:absolute;inset:0;left:0;top:0;width:1448px;height:1086px;
+ z-index:4;display:none;pointer-events:none;user-select:none;
+ -webkit-user-drag:none;object-fit:fill;opacity:1;
  filter:none;transform:none;mix-blend-mode:normal;
 }
 .ll-scene.ll-has-art .ll-domina-expression{display:block}
