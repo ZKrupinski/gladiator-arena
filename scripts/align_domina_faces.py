@@ -68,7 +68,16 @@ for pose in range(6):
         flags=cv2.INTER_CUBIC,borderMode=cv2.BORDER_CONSTANT,
         borderValue=(0,0,0,0))
     if pose==0:
-        warped[:,:,3]=0  # Always render the UNCHANGED original resting face.
+        warped[:,:,3]=0  # EXACT approved idle artwork, no change.
+    elif pose in (3,4,5):
+        # Some source smiles land above the fixed mouth landmarks, causing
+        # doubled lips and an artificial jaw. Preserve the painted original
+        # mouth/nose completely. Use only eye-expression differences here.
+        eyes=np.zeros((H,W),np.uint8)
+        for x,y,rx,ry,angle in features[:2]:
+            cv2.ellipse(eyes,(x,y),(rx,ry),angle,0,360,255,-1,cv2.LINE_AA)
+        eye_alpha=cv2.GaussianBlur(eyes,(0,0),4).astype(np.float32)/255
+        warped[:,:,3]=np.clip(warped[:,:,3].astype(np.float32)*eye_alpha,0,255).astype('uint8')
     else:
         warped[:,:,3]=np.clip(warped[:,:,3].astype(np.float32)*mask,0,255).astype('uint8')
     overlay=Image.fromarray(warped,'RGBA')
