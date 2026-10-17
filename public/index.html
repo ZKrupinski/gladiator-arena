@@ -1024,7 +1024,7 @@ function autoPilotPlayer(p,e,dt){
  else if(distance<ideal-17){p.vx=-dir*p.cfg.move*.39;p.x+=p.vx*dt;}
  // Anticipatory guard: attacks apply damage immediately, so AI must guard before impact.
  const enemyWindingUp=(e.action==='attack'||e.action==='special')&&e.actionT>.06;
- if(distance<=Math.max(PARRY_MIN_DISTANCE,e.cfg.reach+PARRY_SIDE_BONUS)&&p.st>18&&p.guardRecovery<=0&&
+ if(distance<=e.cfg.reach+26&&p.st>18&&p.guardRecovery<=0&&
    (enemyWindingUp||Math.random()<dt*2.5)){
    if(beginGuard(p,.44)){p.guardRecovery=.66;return;}
  }
@@ -1379,7 +1379,7 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
    const threat=(p.action==='attack'||p.action==='special')&&p.actionT>.06;
    if(e.pressureT<=0){
      // Occasional anticipatory parry instead of virtually guaranteed instant defence.
-     if(dist<=Math.max(PARRY_MIN_DISTANCE,p.cfg.reach+PARRY_SIDE_BONUS)&&
+     if(dist<=p.cfg.reach+42&&
        e.st>18&&e.guardRecovery<=0&&
        ((threat&&Math.random()<dt*.85)||Math.random()<dt*ENEMY_PARRY_RATE)){
        if(beginGuard(e,.38))e.guardRecovery=1.05;
