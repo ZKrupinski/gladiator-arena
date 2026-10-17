@@ -29,9 +29,32 @@ function available(){return inventory().map((o,i)=>o?i:-1).filter(i=>i>=0);}
 function pick(preferred){const live=available();return live.includes(preferred)?preferred:live[0]??-1;}
 function fit(){if(!stage)return;const z=Math.min(innerWidth/WIDTH,innerHeight/HEIGHT);stage.style.transform=`translate(-50%,-50%) scale(${z})`;}
 function getHeroArtwork(h){if(!h)return null;const art=opts?.getSprite?.(h.id);return art&&art.width&&art.height?art:null;}
-function drawPortrait(h){const c=$('#gmPortrait');if(!c||c.parentElement.hidden||!h)return;const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);const image=getHeroArtwork(h);
- if(image){const k=Math.min((c.width-2)/image.width,(c.height-2)/image.height),w=image.width*k,ht=image.height*k;ctx.drawImage(image,(c.width-w)/2,c.height-ht,w,ht);}
- else if(keyImg?.complete&&keyImg.naturalWidth){const [x,y,w,ht]=h.face;ctx.drawImage(keyImg,x,y,w,ht,0,0,c.width,c.height);}
+function drawPortrait(h){
+ const c=$('#gmPortrait');if(!c||c.parentElement.hidden||!h)return;
+ const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);
+ const image=getHeroArtwork(h);
+ if(image){
+  // Frame the head and torso instead of shrinking the entire fighter to a
+  // thumbnail. Determine the actual nontransparent silhouette dynamically.
+  const tmp=document.createElement('canvas');tmp.width=image.width;tmp.height=image.height;
+  const off=tmp.getContext('2d',{willReadFrequently:true});off.drawImage(image,0,0);
+  const data=off.getImageData(0,0,tmp.width,tmp.height).data;
+  let l=tmp.width,t=tmp.height,r=0,b=0;
+  for(let y=0;y<tmp.height;y+=2)for(let x=0;x<tmp.width;x+=2){
+   if(data[(y*tmp.width+x)*4+3]>18){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y);}
+  }
+  if(r>l&&b>t){
+   const width=Math.max(1,r-l+2),height=Math.min(b-t+2,Math.max(75,width*.95));
+   const k=Math.min((c.width-9)/width,(c.height-9)/height);
+   const dw=width*k,dh=height*k;
+   ctx.drawImage(image,l,t,width,height,(c.width-dw)/2,(c.height-dh)/2,dw,dh);
+  }else{
+   const k=Math.min(c.width/image.width,c.height/image.height);
+   ctx.drawImage(image,0,0,image.width*k,image.height*k);
+  }
+ }else if(keyImg?.complete&&keyImg.naturalWidth){
+  const [x,y,w,ht]=h.face;ctx.drawImage(keyImg,x,y,w,ht,0,0,c.width,c.height);
+ }
 }
 function overlayPanel(hero,i,visible){const el=$('#gmPanel'+i);el.hidden=!visible;if(!visible)return;
  el.innerHTML=`<div class="gm-roman-name">${clean(hero.name)}</div><div class="gm-class">${hero.className}</div><div class="gm-lv">Lv.0</div>`+
