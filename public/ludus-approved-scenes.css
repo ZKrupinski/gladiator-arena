@@ -1,0 +1,48 @@
+/* Approved 1672×941 visual scenes; imagery is preserved, all gameplay data is live. */
+.la-screen[hidden]{display:none!important}
+.la-screen{position:fixed;inset:0;z-index:95000;background:#0c0807;color:#ffebbb;font:19px Georgia,'Noto Serif KR',serif;overflow:hidden}
+.la-stage{position:absolute;left:50%;top:50%;width:1672px;height:941px;transform-origin:center center;overflow:hidden;background:#261510;isolation:isolate;box-shadow:0 0 48px #000}
+.la-key{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.la-hit{position:absolute;z-index:12;border:0;background:transparent;cursor:pointer;color:transparent;touch-action:manipulation;font-size:0}
+.la-hit:focus-visible,.la-hit:hover{outline:3px solid #ffdc8a;outline-offset:-4px;background:#fff4a313;color:transparent}
+.la-hit[disabled]{cursor:not-allowed}
+.la-v{position:absolute;z-index:8;pointer-events:none;text-align:center}
+.la-mask{background:linear-gradient(#1a130eea,#120c0be9);border:1px solid #9d743a;box-shadow:inset 0 0 13px #0008}
+.la-gold{left:1417px;top:27px;width:111px;height:36px;background:#120c0cf0;font:bold 29px Georgia,serif;color:#fff1c7;line-height:36px}
+.la-hero-title{left:531px;top:149px;width:210px;height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;background:#140d0bed;color:#ffdaa0}
+.la-hero-title strong{display:block;font-size:28px;line-height:1.15}.la-hero-title small{font-size:17px}.la-hero-title b{font-size:19px}
+.la-armory-values{left:1115px;top:148px;width:155px;height:196px;display:flex;flex-direction:column;justify-content:space-between;padding:0 9px 7px;background:#13110ff0;text-align:right;font:bold 22px/36px Georgia,serif;color:#eee2d5}
+.la-armory-values div{display:flex;align-items:center;justify-content:space-between;gap:5px}.la-armory-values em{font:600 16px Georgia,serif;color:#63ee96}
+.la-detail-values{left:1502px;top:153px;width:90px;height:194px;display:flex;flex-direction:column;justify-content:space-between;padding:1px 4px 8px;background:#13110fee;text-align:right;font:21px/23px Georgia,serif}
+.la-inventory-count{left:1462px;top:375px;width:95px;height:30px;font:bold 19px Georgia,serif;background:#170f0ef2;line-height:30px}
+.la-inventory-live{left:992px;top:486px;width:579px;height:321px;display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:99px;gap:8px 8px;padding:2px;background:linear-gradient(#130e0be7,#180f0ade);border-radius:6px;pointer-events:auto}
+.la-item{position:relative;border:2px solid #b48c4a;border-radius:5px;background:linear-gradient(#3c2419,#160e0c);color:#fbe1ac;font:700 12px/1.1 system-ui,sans-serif;padding:0;cursor:pointer;overflow:hidden}
+.la-item .la-item-art{display:block;margin:auto;width:90px;height:80px;background-image:url('assets/ludus/armory_approved.webp');background-size:1672px 941px;background-repeat:no-repeat;filter:drop-shadow(0 2px 2px #000)}
+.la-item strong{position:absolute;bottom:2px;right:3px;font:800 11px system-ui,sans-serif;padding:2px 3px;background:#160c0adb;color:#fff2c3}
+.la-item.selected{border:3px solid #ffe4a0;box-shadow:0 0 15px #ffe080,inset 0 0 8px #ffdc9e}
+.la-item:disabled{opacity:.47}
+.la-item-empty{border:1px solid #74533267;border-radius:5px;background:#24171359}
+.la-roster{position:absolute;z-index:9;display:flex;gap:6px;align-items:center;pointer-events:auto;max-width:595px;overflow:hidden}
+.la-roster.armory{left:409px;top:811px;width:365px;height:98px}
+.la-roster.training{left:285px;top:773px;width:851px;height:122px;gap:9px}
+.la-roster button{position:relative;width:105px;height:97px;flex:none;cursor:pointer;border:3px ridge #b08850;border-radius:4px;background:linear-gradient(#422818,#180e0a);padding:1px;color:#ffe9ac}
+.la-roster.training button{width:119px;height:118px}
+.la-roster button.selected{border-color:#ffe9a2;box-shadow:0 0 15px 5px #ffe27a8c}
+.la-roster canvas{width:100%;height:75%;object-fit:contain}
+.la-roster strong{position:absolute;left:1px;right:1px;bottom:1px;display:block;font:800 12px/19px system-ui,sans-serif;background:#150b09d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#ffdf9b}
+.la-training-stats{left:1471px;top:241px;width:103px;height:130px;display:flex;flex-direction:column;justify-content:space-between;background:#140c0bf3;font:bold 20px Georgia,serif;text-align:right}
+.la-training-name{left:1413px;top:151px;width:177px;height:92px;display:flex;flex-direction:column;align-items:start;justify-content:center;background:#140d0bf0;text-align:left;padding:7px 5px;color:#f6d9a5;font:24px Georgia,serif}
+.la-training-name small{font:16px system-ui,sans-serif}.la-training-name strong{font-size:25px}
+.la-training-effect{left:1309px;top:455px;width:275px;height:145px;text-align:left;background:#160e0be9;padding:7px 10px;font:20px/1.4 'Noto Sans KR',system-ui,sans-serif;color:#ffe7c2;white-space:pre-line}
+.la-training-selected{position:absolute;z-index:6;width:197px;height:148px;top:608px;border:4px solid #ffe7aa;border-radius:13px;pointer-events:none;box-shadow:0 0 15px #f9d56fbb;transition:left .12s}
+.la-notice{position:absolute;z-index:22;bottom:135px;left:50%;transform:translateX(-50%);max-width:700px;min-width:350px;padding:10px 20px;border:3px ridge #d3aa63;border-radius:7px;background:#1b0e0cf7;color:#ffe5b0;text-align:center;font:700 19px/1.4 'Noto Sans KR',system-ui,sans-serif;box-shadow:0 8px 25px #080302}
+.la-notice[hidden]{display:none}
+.la-pose{position:absolute;left:80px;top:140px;width:560px;height:440px;background-image:url('assets/ludus/domina_poses_approved.webp');background-size:200% 200%;background-repeat:no-repeat;opacity:0;z-index:5;pointer-events:none;filter:drop-shadow(0 8px 8px #180703);transition:opacity .2s}
+.la-pose.active{opacity:1}
+.la-stage.training .la-hero-title,.la-stage.armory .la-training-name{display:none}
+.la-modal{position:absolute;inset:0;z-index:25;display:grid;place-items:center;background:#130908d6;backdrop-filter:blur(2px)}
+.la-modal[hidden]{display:none}.la-modal section{background:linear-gradient(#462b1f,#1a100c);border:16px ridge #b58c4e;border-radius:12px;padding:30px;min-width:450px;max-width:690px;text-align:center;box-shadow:0 16px 50px #000c}
+.la-modal h2{font-size:32px;color:#ffe0a6;margin:5px}.la-modal p{font-size:20px;color:#f6ddb3}.la-modal button{font:800 21px 'Noto Sans KR',sans-serif;color:#ffeac3;background:linear-gradient(#933822,#582113);border:3px ridge #d19d59;padding:13px 29px;margin:8px;cursor:pointer}
+.la-orient{display:none}
+@media(orientation:portrait) and (max-width:700px){.la-orient{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#24110eee;padding:25px;font:700 22px 'Noto Sans KR',sans-serif;text-align:center;color:#ffe2aa;gap:17px}.la-orient button{border:2px ridge #cc9d57;background:#60351f;padding:12px;color:#ffeac9;font:inherit}.la-allow-portrait .la-orient{display:none}}
+@media(prefers-reduced-motion:reduce){.la-pose,.la-training-selected{transition:none}}
