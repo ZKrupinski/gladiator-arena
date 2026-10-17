@@ -43,3 +43,26 @@ merged = np.clip(im * (1 - a) + inpainted * a, 0, 255).astype(np.uint8)
 rgb = cv2.cvtColor(merged, cv2.COLOR_BGR2RGB)
 Image.fromarray(rgb).save(OUT, format="WEBP", quality=95, method=6)
 print(f"Wrote {OUT} ({OUT.stat().st_size} bytes) at {width}x{height}")
+
+
+# Build a local-composition QA preview (not used by the game).
+# It validates the merchant's live sprite footprint against the real game
+# background without needing a screenshot from a running browser.
+from PIL import ImageOps
+pose = Image.open(ROOT / "public/assets/market/merchant_pose_1.webp").convert("RGBA")
+box_w, box_h = 758, 765
+k = min(box_w / pose.width, box_h / pose.height)
+sprite = pose.resize((round(pose.width*k), round(pose.height*k)), Image.Resampling.LANCZOS)
+block = Image.new("RGBA", (box_w, box_h))
+block.alpha_composite(sprite, ((box_w-sprite.width)//2, 0))
+# CSS left=-161, top=83, right inset 127. The stage itself clips at x=0.
+cropped = block.crop((161, 0, box_w-127, box_h))
+prev = Image.fromarray(rgb).convert("RGBA")
+prev.alpha_composite(cropped, (0, 83))
+# The existing speech plate is a foreground game graphic.
+raw = Image.open(SRC).convert("RGBA")
+prev.alpha_composite(raw.crop((0, 708, 495, 843)), (0, 708))
+preview = ROOT / "docs/qa/market-merchant-layout.webp"
+preview.parent.mkdir(parents=True, exist_ok=True)
+prev.convert("RGB").save(preview, format="WEBP", quality=84, method=5)
+print(f"Wrote QA composition {preview} ({pose.width}x{pose.height} source sprite)")
