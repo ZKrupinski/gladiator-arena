@@ -67,3 +67,11 @@
    category, item, sort, equip and remove controls remain truly interactive. */
 .la-stage.armory::before{content:"";position:absolute;z-index:11;left:1580px;top:364px;width:57px;height:48px;background:linear-gradient(100deg,#271a13,#1e120e);border-radius:2px;pointer-events:none}
 @media(prefers-reduced-motion:reduce){.la-live-fighter{animation:none!important}}
+
+/* Independently animated Doctore/training-master pose, cut from the approved
+   transparent 2x2 sheet. The baked-in trainer is concealed below the sprite. */
+.la-trainer-clean{position:absolute;z-index:4;left:121px;top:188px;width:577px;height:400px;pointer-events:none;border:3px ridge #aa7944;border-radius:43% 43% 9% 9%;background:radial-gradient(ellipse at 55% 67%,#71412ad9,#402419f2 55%,#23110dfb),repeating-linear-gradient(87deg,#46281d 0 26px,#6b2e1e 27px 45px,#25140d 47px 57px);box-shadow:inset 0 0 39px #100708e3}
+.la-stage.training .la-pose{opacity:1;z-index:5;left:126px;top:137px;width:565px;height:458px;background-position:100% 0%;background-size:200% 200%;filter:drop-shadow(0 8px 7px #1e0c05aa);animation:la-coach-breathe 3.2s ease-in-out infinite alternate}
+.la-stage.armory .la-pose{display:none}
+@keyframes la-coach-breathe{from{transform:translateY(1px) rotate(-.4deg)}to{transform:translateY(-3px) rotate(.5deg)}}
+@media(prefers-reduced-motion:reduce){.la-stage.training .la-pose{animation:none!important}}
