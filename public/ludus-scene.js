@@ -66,7 +66,7 @@ scene.innerHTML=html.join("");document.body.appendChild(scene);stage=$(".ll-stag
 var art=$(".ll-key");art.addEventListener("load",function(){scene.classList.add("ll-has-art");});art.addEventListener("error",function(){scene.classList.remove("ll-has-art");});if(art.complete&&art.naturalWidth)scene.classList.add("ll-has-art");
 scene.addEventListener("click",function(ev){var b=ev.target.closest("button[data-action]");if(b)action(b.dataset.action,b);});
 addEventListener("resize",fit,{passive:true});addEventListener("keydown",function(ev){if(!scene.hidden&&ev.key==="Escape"){ev.preventDefault();action("back");}});
-var nav=document.querySelector("#careerHub .ludus-nav");if(nav&&!nav.querySelector("#careerVisualHome")){var home=document.createElement("button");home.id="careerVisualHome";home.textContent="🏛 루두스 홈";home.onclick=function(){bridge().returnHome();open();};nav.prepend(home);}
+var hub=document.getElementById("careerHub");if(hub&&!hub.querySelector("#careerVisualHome")){var home=document.createElement("button");home.id="careerVisualHome";home.type="button";home.textContent="❮ 루두스 로비";home.setAttribute("aria-label","루두스 메인 로비로 돌아가기");home.onclick=function(){bridge().returnHome();hub.hidden=true;open();};hub.appendChild(home);}
 fit();
 }
 function refresh(){
