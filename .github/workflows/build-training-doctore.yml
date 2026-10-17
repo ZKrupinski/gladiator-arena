@@ -29,7 +29,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/assets/ludus/training_no_doctore.webp public/assets/ludus/doctore_pose_*.webp docs/qa/training-doctore-layer.webp
+          git add public/assets/ludus/training_no_doctore.webp public/assets/ludus/doctore_pose_*.webp docs/qa/training-doctore-layer.webp docs/qa/training-doctore-action-*.webp
           if git diff --cached --quiet; then
             echo "Training actor assets are already current"
           else
