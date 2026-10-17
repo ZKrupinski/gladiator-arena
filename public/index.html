@@ -278,7 +278,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 .ludus-item-icon{font-size:51px}
 @media(max-width:700px){.ludus-workshop{padding:8px;border-width:7px}.ludus-training-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ludus-equipment-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ludus-fighter-art{min-height:160px}.ludus-portrait{height:150px;width:140px}.ludus-stat-tile strong{font-size:16px}}
 
-</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=6"></head><body>
+</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=6"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
@@ -1680,9 +1680,26 @@ window.LudusBridge={
   const img=IMG[h.cls];return (img&&INDEPENDENT_CHARACTER_FRAMES.get(img)?.[0])||null;
  },
  select:(i)=>{if(!CAREER.roster[i])return;CAREER.active=i;saveCareer();renderCareer();},
- section:(tab)=>{CAREER_SELECTING=false;CAREER_TAB=tab==='roster'?'roster':'training';$('#careerHub').hidden=false;renderCareer();},
- returnHome:()=>{CAREER_SELECTING=false;CAREER_TAB='roster';$('#careerHub').hidden=false;renderCareer();},
+ section:(tab)=>{CAREER_SELECTING=false;CAREER_TAB=tab==='gear'?'gear':tab==='roster'?'roster':'training';$('#careerHub').hidden=false;renderCareer();if(CAREER_TAB==='roster')window.LudusApprovedScenes?.close();else window.LudusApprovedScenes?.open(CAREER_TAB);},
+ returnHome:()=>{CAREER_SELECTING=false;CAREER_TAB='roster';$('#careerHub').hidden=false;renderCareer();window.LudusApprovedScenes?.close();},
  market:openSlaveMarket,
+ catalog:()=>GEAR.map(g=>({...g})),
+ train:(stat)=>{autoCareerTrain(stat);return CAREER.message;},
+ equip:(id,mode='equip')=>{
+  const h=CAREER.hero,g=GEAR.find(x=>x.id===id);
+  if(!h||!g)return '검투사와 장비를 선택하세요.';
+  normalizeEquipment(h);
+  if(mode==='remove'){
+   if(h.equipment[g.slot]!==g.id)return '선택된 장비가 장착되어 있지 않습니다.';
+   h.equipment[g.slot]=null;careerMessage(g.name+' 장착을 해제했습니다.');return CAREER.message;
+  }
+  if(!h.inventory.includes(g.id)){
+   if(CAREER.gold<g.cost)return '데나리우스가 부족합니다: '+g.cost+'D';
+   CAREER.gold-=g.cost;h.inventory.push(g.id);
+  }
+  h.equipment[g.slot]=g.id;
+  careerMessage(g.name+' 장착 완료!');return CAREER.message;
+ },
  fight:openCareerDraft,
  exit:()=>{$('#careerHub').hidden=true;returnToLudus();}
 };
@@ -1690,5 +1707,5 @@ window.LudusBridge={
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=6"></script>
+<script src="ludus-scene.js?v=6"></script><script src="ludus-approved-scenes.js?v=1"></script>
 </body></html>
