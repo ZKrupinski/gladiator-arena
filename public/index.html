@@ -262,7 +262,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 .ludus-fighter-art{display:flex;min-height:240px;align-items:end;justify-content:space-around;position:relative}
 .ludus-fighter-art p{position:absolute;bottom:-20px;color:#edc78d;font-size:14px}
 .ludus-portrait{height:200px;width:190px;display:flex;align-items:center;justify-content:center;background-position:center;background-repeat:no-repeat;background-size:contain;font-size:70px;filter:drop-shadow(0 8px 8px #140808)}
-.fighter-coach{background-image:url('assets/market/mercator_sheet.webp');background-size:200% 200%;background-position:left top;font-size:0}
+.fighter-coach{background:radial-gradient(ellipse at 55% 30%,#ad614f66,#31130b66);font-size:72px;color:#f1c07d}.fighter-coach:before{content:'여성 교관';position:absolute;font-size:13px;transform:translateY(108px);color:#f5d495}
 .fighter-student{font-size:20px;color:#f5dbad;background:radial-gradient(ellipse,#6e402c,#210e0966)}
 .ludus-training-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;max-width:960px;margin:36px auto 18px}
 .ludus-stat-tile,.ludus-equip-tile{border:4px ridge #e3b565;color:#ffe8bb;background:linear-gradient(#782116,#2a120d);min-height:145px;border-radius:10px;cursor:pointer;box-shadow:inset 0 0 15px #0d0807,0 8px 12px #120706;display:flex;align-items:center;flex-direction:column;justify-content:center;gap:7px;padding:10px}
@@ -840,7 +840,7 @@ function renderCareer(){
  ].map(([id,n,d])=>'<button class="career-option" data-train="'+id+'" '+(CAREER.gold<12||h.stats[id]>=10?'disabled':'')+'><strong>'+n+'</strong><small>'+d+'</small></button>').join('')+'</div><h3>장비 공방 · ARMAMENTARIUM</h3><div class="career-options">'+GEAR.filter(g=>g.id!=='wood').map(g=>'<button class="career-option career-gear '+(h.equipment[g.slot]===g.id?'is-equipped':'')+'" data-gear="'+g.id+'" aria-pressed="'+(h.equipment[g.slot]===g.id)+'" '+(CAREER.gold<g.cost&&!h.inventory.includes(g.id)?'disabled':'')+'><span class="gear-status">'+(h.equipment[g.slot]===g.id?'✓ 장착 중':h.inventory.includes(g.id)?'장착 가능':'미보유')+'</span><strong>'+g.name+'</strong><small>'+g.desc+' · '+(h.equipment[g.slot]===g.id?'장착 해제':h.inventory.includes(g.id)?'장착하기':g.cost+'D 구매·장착')+'</small></button>').join('')+'</div><div class="career-buttons"><button id="careerHeal" '+(h.injury<=0||CAREER.gold<Math.max(12,Math.ceil(h.injury*.6))?'disabled':'')+'>치료 · '+Math.max(12,Math.ceil(h.injury*.6))+'D</button><button id="careerFight" '+''+'>⚔ 출전 검투사 선택 · '+(CAREER.wins+1)+'회차</button></div></div>':'';
  const roster='<div class="career-card career-roster"><h2>소속 검투사 · '+CAREER.roster.length+'명</h2><p>검투사를 선택해 개별 훈련·장비·치료를 진행하세요. 매 5번째 도전은 챔피언 영입전입니다.</p><div class="roster-list">'+rosterCards()+'</div></div>';
  const statTiles=[['str','⚔','공격 훈련','공격력 상승'],['end','🛡','방어 훈련','최대 HP 상승'],['agi','👟','민첩 훈련','이동 속도 상승'],['focus','✦','기술 훈련','필살기 강화']];
- const cards=h?'<div class="ludus-stage"><div class="ludus-fighter-art"><div class="ludus-portrait fighter-coach">⚔</div><div class="ludus-portrait fighter-student">검투사</div><p>교관의 지도 아래 · '+h.name+' · Lv.'+careerLevel(h)+'</p></div></div>':'<div class="career-card">검투사시장에서 검투사를 영입하세요.</div>';
+ const cards=h?'<div class="ludus-stage"><div class="ludus-fighter-art"><div class="ludus-portrait fighter-coach" aria-label="여성 교관">⚔</div><canvas class="ludus-portrait fighter-student" id="workshopFighter" width="240" height="240" aria-label="훈련 대상 검투사"></canvas><p>교관의 지도 아래 · '+h.name+' · Lv.'+careerLevel(h)+'</p></div></div>':'<div class="career-card">검투사시장에서 검투사를 영입하세요.</div>';
  const nav=h?'<div class="ludus-fighter-picker"><h3>훈련 / 장비 대상 선택</h3><div class="roster-list">'+rosterCards()+'</div></div>':'';
  const trainingUI='<div class="ludus-workshop ludus-training"><div class="ludus-room-head"><h2>훈련소 · EXERCITIUM</h2><p>교관과 대치하여 훈련합니다. 항목을 누르면 자동으로 성공합니다 · 회당 12D</p></div>'+cards+'<div class="ludus-training-grid">'+statTiles.map(([k,ic,n,d])=>'<button class="ludus-stat-tile stat-'+k+'" data-autotrain="'+k+'" '+(!h||CAREER.gold<12||h.stats[k]>=10?'disabled':'')+'><span class="ludus-stat-icon">'+ic+'</span><strong>'+n+'</strong><small>'+d+'</small><em>현재 '+(h?.stats[k]??0)+' / 10</em></button>').join('')+'</div>'+nav+'</div>';
  const gearUI='<div class="ludus-workshop ludus-equipment"><div class="ludus-room-head"><h2>장비실 · ARMAMENTARIUM</h2><p>무기 · 방패 · 방어구 장착 / 해제 및 구입</p></div>'+cards+'<div class="ludus-equipment-grid">'+(h?GEAR.filter(g=>g.id!=='wood').map(g=>'<button data-gear="'+g.id+'" class="ludus-equip-tile '+(h.equipment[g.slot]===g.id?'is-equipped':'')+'" '+(CAREER.gold<g.cost&&!h.inventory.includes(g.id)?'disabled':'')+'><span class="ludus-item-icon">'+({weapon:'⚔',shield:'🛡',armor:'♜'}[g.slot])+'</span><strong>'+g.name+'</strong><small>'+g.desc+'</small><em>'+(h.equipment[g.slot]===g.id?'✓ 장착 중':h.inventory.includes(g.id)?'장착 가능':g.cost+'D 구매')+'</em></button>').join(''):'검투사 없음')+'</div>'+nav+'</div>';
@@ -850,6 +850,13 @@ function renderCareer(){
  $('#careerGearTab').setAttribute('aria-pressed',String(CAREER_TAB==='gear'));
  $('#careerFightTop').disabled=!CAREER.roster.some(x=>x.injury<80);
  paintRosterPreviews();
+ const workshopCanvas=document.getElementById('workshopFighter');
+ if(workshopCanvas&&h){
+  const gg=workshopCanvas.getContext('2d'),atl=growthImage(h);
+  gg.clearRect(0,0,240,240);
+  if(atl?.frames?.[0]?.canvas){const im=atl.frames[0].canvas,scale=Math.min(220/im.width,220/im.height);gg.drawImage(im,(240-im.width*scale)/2,235-im.height*scale,im.width*scale,im.height*scale);}
+  else {const img=IMG[h.cls],im=img&&INDEPENDENT_CHARACTER_FRAMES.get(img)?.[0];if(im)gg.drawImage(im,12,8,216,216);}
+ }
  for(const el of document.querySelectorAll('[data-select]'))el.onclick=()=>{if(MINI)return;CAREER.active=Number(el.dataset.select);saveCareer();renderCareer();};
  refreshGrowthAvatar();
  const growthSelect=document.getElementById('careerGrowthType');
@@ -874,7 +881,7 @@ function renderCareer(){
 function autoCareerTrain(stat){
  const h=CAREER.hero;
  if(!h||!['str','agi','end','focus'].includes(stat)||CAREER.gold<12||h.stats[stat]>=10)return;
- const before=h.stats[stat],gained=grantCareerXp(h,16),oldStage=careerStage(h);
+ const before=h.stats[stat],gained=grantCareerXp(h,16);
  CAREER.gold-=12;
  h.stats[stat]=Math.min(10,before+2);
  h.trainingAttempts=h.trainingAttempts||{};
