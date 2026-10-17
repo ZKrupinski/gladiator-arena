@@ -63,8 +63,8 @@ def closed_frame(eye_index):
         samples.append((round(x),round(y)))
     # Strongest in centre, narrowing toward corner.
     for i in range(len(samples)-1):
-        thick=max(1,round(3.5*(1-abs((i+0.5)/(len(samples)-1)*2-1)*.46)))
-        cv2.line(clean,samples[i],samples[i+1],(80,48,44),thick,cv2.LINE_AA)
+        thick=max(1,round(2.0*(1-abs((i+0.5)/(len(samples)-1)*2-1)*.40)))
+        cv2.line(clean,samples[i],samples[i+1],(88,53,47),thick,cv2.LINE_AA)
     # Soft blush/eyelid crease just above the lash, matching skin colors.
     crease=[]
     for t in np.linspace(-.8,.8,25):
