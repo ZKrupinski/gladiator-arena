@@ -34,12 +34,24 @@ cv2.fillPoly(mask, [merchant], 255)
 # Do not let the inpaint affect any of the game illustration outside the
 # exact removed area. Preserve original UI, columns and all 3 gladiators.
 # The new transparent actor will occupy most of the retouched area.
-inpainted = cv2.inpaint(im, mask, 7, cv2.INPAINT_TELEA)
-# Preserve untouched source pixels exactly while fading only at the irregular
-# merchant silhouette edge so no dark rectangular frame can appear.
-a = cv2.GaussianBlur(mask, (0, 0), 4).astype(np.float32) / 255.0
+# Large-object inpainting alone creates blurry radial streaks. For the void
+# behind the new actor, take *actual textured Roman architecture* from the
+# project's approved clean arena art and merge it directly into the bitmap.
+# There is no floating CSS panel or viewport; this is now background pixels.
+environment = cv2.imread(str(ROOT / "public/assets/new-era/arena.webp"), cv2.IMREAD_COLOR)
+if environment is None:
+    raise RuntimeError("Arena architecture reference unavailable")
+eh, ew = environment.shape[:2]
+stone_and_banners = environment[:, int(ew * .12):int(ew * .58)]
+patch = cv2.resize(stone_and_banners, (550, height), interpolation=cv2.INTER_CUBIC)
+patch = cv2.convertScaleAbs(patch, alpha=1.08, beta=9)
+staged = im.copy()
+staged[:, :550] = patch
+# Feather only along the silhouette perimeter to preserve all art/UI outside
+# the old merchant, never cut a rectangular seam into the market scene.
+a = cv2.GaussianBlur(mask, (0, 0), 12).astype(np.float32) / 255.0
 a = a[..., None]
-merged = np.clip(im * (1 - a) + inpainted * a, 0, 255).astype(np.uint8)
+merged = np.clip(im * (1 - a) + staged * a, 0, 255).astype(np.uint8)
 rgb = cv2.cvtColor(merged, cv2.COLOR_BGR2RGB)
 Image.fromarray(rgb).save(OUT, format="WEBP", quality=95, method=6)
 print(f"Wrote {OUT} ({OUT.stat().st_size} bytes) at {width}x{height}")
