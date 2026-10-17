@@ -1,17 +1,48 @@
 (function(){
 "use strict";
-var scene,stage,raf=0,count=0,toastTimer=0;
+var scene,stage,raf=0,count=0,toastTimer=0,dominaTimer=0,lastDominaPose=0;
 var W=1448,H=1086,rosterPage=0;
 // The approved lobby art already contains all the distant gladiators.
  // Do not render smaller, semitransparent fighter sprites on top of them.
 var poses={domina:Array.from({length:6},(_,i)=>"assets/ludus/domina_"+i+".webp")};
-var preload=[];for(var file of poses.domina){var pic=new Image();pic.src=file;preload.push(pic);}
+// All six source artworks are retained. The no-duplicate-body facial sprites
+// were visually checked against the approved 1448x1086 lobby key visual.
+var dominaExpressions=[0,1,2,3,5];
+var preload=[];
+for(var i=0;i<6;i++){
+ var pic=new Image();pic.src="assets/ludus/domina_expression_"+i+".webp?v=1";preload.push(pic);
+}
 
 function $(s){return scene&&scene.querySelector(s);}
 function bridge(){return window.LudusBridge;}
 function fit(){if(stage){var s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform="translate(-50%,-50%) scale("+s+")";}}
 function notice(msg){var t=$(".ll-toast");t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.hidden=true;},2200);}
-function close(){if(scene){scene.hidden=true;cancelAnimationFrame(raf);clearTimeout(toastTimer);}}
+function close(){
+ clearTimeout(dominaTimer);dominaTimer=0;
+ if(scene){scene.hidden=true;cancelAnimationFrame(raf);raf=0;clearTimeout(toastTimer);}
+}
+function animateDomina(){
+ if(!scene||scene.hidden)return;
+ var patch=$(".ll-domina-expression");
+ if(!patch||!scene.classList.contains("ll-has-art")){
+  dominaTimer=setTimeout(animateDomina,650);return;
+ }
+ // Draw a genuinely random expression: never immediately repeat the same
+ // pose; laughing and winking get more chances. Drinking frame 4 is omitted
+ // because the baked artwork already has a cup in her other hand.
+ var candidates=dominaExpressions.filter(function(p){return p!==lastDominaPose;});
+ var weights={0:1,1:3,2:3,3:2,5:2};
+ var total=candidates.reduce(function(n,p){return n+weights[p];},0);
+ var roll=Math.random()*total,next=candidates[0];
+ for(var i=0;i<candidates.length;i++){
+  roll-=weights[candidates[i]];
+  if(roll<0){next=candidates[i];break;}
+ }
+ patch.src="assets/ludus/domina_expression_"+next+".webp?v=1";
+ patch.dataset.pose=String(next);
+ lastDominaPose=next;
+ dominaTimer=setTimeout(animateDomina,1750+Math.random()*2050);
+}
 function action(id,button){
 var a=bridge();if(!a)return;
 if(id==="select"){var index=Number(button&&button.dataset.index);var hero=a.state().roster[index];if(hero){a.select(index);rosterPage=Math.floor(index/6);refresh();notice(hero.name+" · 출전 검투사 선택");}else notice("비어 있는 슬롯입니다. 검투사시장에서 영입하세요.");return;}
@@ -31,7 +62,7 @@ var html=[
 '<div class="ll-stage" role="region" aria-label="루두스 훈련장">',
 '<div class="ll-fallback"><div class="ll-domina"><img src="assets/ludus/domina_0.webp" alt=""><span>DOMINA · 루두스의 주인</span></div></div>',
 '<img class="ll-key" src="assets/ludus/ludus_ui.webp" alt="" aria-hidden="true">',
-'<img class="ll-domina-blink" src="assets/ludus/domina_blink.webp" alt="" aria-hidden="true">',
+'<img class="ll-domina-expression" src="assets/ludus/domina_expression_0.webp?v=1" alt="" aria-hidden="true" draggable="false">',
 '<button class="ll-title" data-action="back">❮ 루두스</button>',
 '<div class="ll-wallet" aria-label="실시간 루두스 자원"><span>🪙 금화 <strong data-gold>0</strong></span><span>✥ 명예 <strong data-glory>0</strong></span><span>⚔ 소속 <strong data-roster-count>0</strong></span></div>',
 '<div class="ll-menu" role="navigation" aria-label="루두스 주요 시설"><button type="button" data-action="training">⚔ 훈련소</button><button type="button" data-action="roster">♜ 검투사 관리</button><button type="button" data-action="armory">🛡 장비실</button><button type="button" data-action="market">🏛 검투사시장</button><button type="button" data-action="arena">⚔ 아레나 출전</button></div>',
@@ -75,10 +106,14 @@ b.onclick=function(){a.select(i);refresh();notice(h.name+" · 출전 후보 선�
 });
 var add=document.createElement("button");add.setAttribute("aria-label","검투사시장으로 이동");add.textContent="＋";add.className="ll-add";add.onclick=function(){action("market");};host.appendChild(add);
 }
-function tick(){if(!scene||scene.hidden)return;count++;
-if(count%330===0){var eye=$(".ll-domina-blink");if(eye)eye.classList.add("is-blinking");}
-if(count%330===8){var eye=$(".ll-domina-blink");if(eye)eye.classList.remove("is-blinking");}if(count%200===0){var img=$(".ll-domina img");if(poses.domina.length)img.src=poses.domina[Math.floor(count/200)%6];}
-raf=requestAnimationFrame(tick);}
-function open(){setup();if(!bridge())return;rosterPage=Math.floor(Math.max(0,Number(bridge().state().active)||0)/6);scene.hidden=false;refresh();fit();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);}
+function tick(){if(!scene||scene.hidden)return;count++;raf=requestAnimationFrame(tick);}
+function open(){
+ setup();if(!bridge())return;
+ rosterPage=Math.floor(Math.max(0,Number(bridge().state().active)||0)/6);
+ scene.hidden=false;refresh();fit();
+ clearTimeout(dominaTimer);
+ dominaTimer=setTimeout(animateDomina,600+Math.random()*650);
+ cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
+}
 window.LudusScene={open:open,close:close,refresh:refresh};
 })();
