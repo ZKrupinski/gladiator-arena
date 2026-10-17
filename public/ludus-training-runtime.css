@@ -1,0 +1,133 @@
+/* Training v6.2 — data-driven in-scene NPC and gladiator.
+ * No fake menu tiles, no painted roster underneath, no character portrait box.
+ * 1672x941 stage; the parent scene scales to the device aspect ratio. */
+.la-stage.training .la-live-npc-clear,
+.la-stage.training .la-live-fighter,
+.la-stage.training .la-roster.training,
+.la-stage.training .la-training-stats,
+.la-stage.training .la-training-name,
+.la-stage.training .la-training-effect,
+.la-stage.training .la-doctore-parchment{display:none!important}
+.la-stage.training .lt-fighter-zone{
+ position:absolute;left:768px;top:207px;width:423px;height:391px;
+ z-index:5;overflow:visible;pointer-events:none;
+}
+.la-stage.training .lt-fighter-canvas{
+ display:block;position:absolute;inset:0;width:100%;height:100%;
+ object-fit:contain;object-position:center bottom;
+ transform-origin:center bottom;
+ filter:drop-shadow(3px 6px 5px #160a08a1);
+ transition:transform .16s ease-out;
+}
+.la-stage.training .lt-motion-slash{
+ position:absolute;inset:0;pointer-events:none;opacity:0;
+ background:radial-gradient(ellipse at 39% 46%,#f9d6a030,transparent 42%);
+ transform-origin:center;
+}
+.la-stage.training .lt-motion-slash.active{opacity:.76;animation:lt-combat-glimmer .35s ease-out 1}
+@keyframes lt-combat-glimmer{0%{opacity:0;transform:translateX(5px)}45%{opacity:.76}100%{opacity:0;transform:translateX(-12px)}}
+.la-stage.training .lt-info{
+ position:absolute;left:1225px;top:78px;width:418px;height:529px;
+ z-index:9;box-sizing:border-box;padding:14px 17px 12px;
+ display:flex;flex-direction:column;gap:8px;
+ border:9px ridge #c89b57;border-radius:10px;
+ background:linear-gradient(120deg,#2e1b13fa,#110b09fa);
+ box-shadow:inset 0 0 30px #0a0404,0 8px 23px #0c0507bd;
+ color:#f8e4bc;font:800 17px/1.4 'Noto Serif KR','Noto Sans KR',serif;
+}
+.la-stage.training .lt-info h2{
+ margin:0;padding:0 6px 8px;font:900 24px 'Noto Serif KR',serif;
+ text-align:center;border-bottom:3px double #a47b45;color:#ffe3ac;
+}
+.la-stage.training .lt-selected-unit{
+ display:flex;gap:11px;min-height:104px;align-items:center;border:3px ridge #a9844e;
+ background:linear-gradient(95deg,#54311d,#28130d);border-radius:7px;padding:3px 8px;
+}
+.la-stage.training .lt-selected-unit canvas{flex:none;width:86px;height:91px;object-fit:contain;}
+.la-stage.training .lt-selected-unit>div{display:flex;flex-direction:column;min-width:0;gap:4px}
+.la-stage.training .lt-selected-unit strong{
+ font:900 23px Georgia,'Noto Serif KR',serif;color:#ffe3a7;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.la-stage.training .lt-selected-unit small{font:700 13px/1.3 'Noto Sans KR',sans-serif;color:#dcc4a1}
+.la-stage.training .lt-no-unit{padding:25px 5px;font-size:18px;text-align:center;color:#edc997}
+.la-stage.training .lt-info-head{
+ flex:none;font:900 17px Georgia,'Noto Serif KR',serif;text-align:center;color:#e5bf80;
+ border-bottom:1px solid #b0834385;margin-top:2px;
+}
+.la-stage.training .lt-stat-list{
+ display:grid;grid-template-columns:1fr 1fr;gap:7px;flex:none;
+}
+.la-stage.training .lt-stat-list>div{
+ display:flex;align-items:center;justify-content:space-between;min-height:39px;
+ padding:5px 9px;border:2px ridge #8e6943;background:#1d110f;border-radius:4px;
+}
+.la-stage.training .lt-stat-list>div span{font:bold 16px Georgia,serif;color:#eec88a}
+.la-stage.training .lt-stat-list small{font:700 11px 'Noto Sans KR',sans-serif;color:#cbb18e}
+.la-stage.training .lt-stat-list strong{font:bold 23px Georgia,serif;color:#ffe0a3}
+.la-stage.training .lt-effect{padding:6px 10px;background:#1c100df5;border:2px ridge #785537;border-radius:6px}
+.la-stage.training .lt-effect>strong{font:900 19px 'Noto Serif KR',serif;color:#fff0bc}
+.la-stage.training .lt-effect p{margin:3px 0 7px;color:#ddc19a;font-size:13px}
+.la-stage.training .lt-cost{
+ display:flex;align-items:center;justify-content:space-between;
+ border-top:1px solid #99734575;padding:5px 0;
+ font:700 13px 'Noto Sans KR',sans-serif;
+}
+.la-stage.training .lt-cost b{color:#f6d793;font-size:16px}
+.la-stage.training .lt-guidance{margin-top:auto;font:700 12px 'Noto Sans KR',sans-serif;color:#ecd1a4;text-align:center}
+.la-stage.training .lt-roster{
+ position:absolute;left:20px;top:768px;width:1192px;height:157px;
+ z-index:13;display:flex;align-items:center;box-sizing:border-box;
+ padding:9px 12px;gap:11px;overflow:hidden;
+ border:6px ridge #c19a5d;border-radius:11px;
+ background:linear-gradient(155deg,#50331eea,#28150ded 70%,#1a0d0bf8);
+ box-shadow:inset 0 0 24px #0c0503a8,0 5px 15px #1d0b07a6;
+}
+.la-stage.training .lt-roster-title{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;flex:none;width:186px}
+.la-stage.training .lt-roster-title strong{font:900 24px 'Noto Serif KR',serif;color:#f9dda9}
+.la-stage.training .lt-roster-title span{font:700 14px 'Noto Sans KR',sans-serif;color:#d3b58d}
+.la-stage.training .lt-step{display:flex;gap:8px}
+.la-stage.training .lt-step button{
+ display:grid;place-items:center;width:56px;height:38px;padding:0;
+ border:3px ridge #be8f55;border-radius:6px;cursor:pointer;
+ background:linear-gradient(#704125,#36180e);color:#ffe8b5;font:bold 19px Georgia,serif;
+}
+.la-stage.training .lt-roster-items{
+ display:flex;align-items:stretch;gap:9px;flex:1;min-width:0;height:132px;
+ overflow-x:auto;overflow-y:hidden;scrollbar-color:#b99052 #25150f;
+}
+.la-stage.training .lt-roster-items>button{
+ position:relative;display:flex;flex-direction:column;align-items:center;
+ flex:none;width:115px;height:128px;padding:0 4px 1px;
+ border:4px ridge #8b6638;border-radius:6px;cursor:pointer;
+ background:linear-gradient(#58321d,#1d110e);color:#f5ddaf;
+ overflow:hidden;box-sizing:border-box;
+}
+.la-stage.training .lt-roster-items button.selected{
+ border-color:#ffe4a5;box-shadow:0 0 13px #ffe0a269,inset 0 0 12px #b078316f;
+}
+.la-stage.training .lt-roster-items canvas{width:105px;height:89px;object-fit:contain}
+.la-stage.training .lt-roster-items strong{font:800 13px Georgia,serif;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.la-stage.training .lt-roster-items small{font:700 12px Georgia,serif;color:#d9b484}
+.la-stage.training .lt-empty{display:grid;place-items:center;width:100%;height:100%;color:#e4c291;font-size:18px}
+.la-stage.training .lt-tile-button,
+.la-stage.training .lt-start-button{
+ position:absolute;z-index:17;height:158px;border:0;background:transparent;
+ cursor:pointer;touch-action:manipulation;
+}
+.la-stage.training .lt-tile-button:hover,.la-stage.training .lt-tile-button:focus-visible,
+.la-stage.training .lt-start-button:hover,.la-stage.training .lt-start-button:focus-visible{
+ outline:4px solid #f9db8b;outline-offset:-4px;
+ background:#e9b85617;
+}
+.la-stage.training .lt-start-button:disabled{cursor:not-allowed;opacity:.4}
+.la-stage.training .lt-tile-selected{
+ position:absolute;top:603px;height:158px;z-index:16;
+ border:4px solid #ffe5a6;border-radius:10px;pointer-events:none;
+ box-shadow:0 0 17px #f5c8699c,inset 0 0 9px #fdc76b60;
+}
+.la-stage.training .lt-home{z-index:35!important}
+@media(prefers-reduced-motion:reduce){
+ .la-stage.training .lt-motion-slash.active{animation:none}
+ .la-stage.training .lt-fighter-canvas{transition:none}
+}
