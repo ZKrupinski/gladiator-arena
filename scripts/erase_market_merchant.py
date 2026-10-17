@@ -58,12 +58,11 @@ merged = np.clip(im * (1 - a) + staged * a, 0, 255).astype(np.uint8)
 # the derivative, using the neighboring cobblestone/crate texture.
 dead_back = np.zeros((height, width), dtype=np.uint8)
 cv2.rectangle(dead_back, (16, 840), (242, 918), 255, -1)
-clone = merged.copy()
-clone[840:919, 16:243] = cv2.resize(
-    im[840:919, 257:484], (227, 79), interpolation=cv2.INTER_LINEAR
-)
-fade = cv2.GaussianBlur(dead_back, (0, 0), 7).astype(np.float32)[..., None] / 255.0
-merged = np.clip(merged * (1-fade) + clone * fade, 0, 255).astype(np.uint8)
+# This small, relatively featureless corner can be filled from its
+# immediate surroundings; a pasted rectangle caused an obvious seam.
+filled_corner = cv2.inpaint(merged, dead_back, 7, cv2.INPAINT_TELEA)
+fade = cv2.GaussianBlur(dead_back, (0, 0), 8).astype(np.float32)[..., None] / 255.0
+merged = np.clip(merged * (1-fade) + filled_corner * fade, 0, 255).astype(np.uint8)
 rgb = cv2.cvtColor(merged, cv2.COLOR_BGR2RGB)
 Image.fromarray(rgb).save(OUT, format="WEBP", quality=95, method=6)
 print(f"Wrote {OUT} ({OUT.stat().st_size} bytes) at {width}x{height}")
