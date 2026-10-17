@@ -12,7 +12,7 @@ function notice(msg){var t=$(".ll-toast");t.textContent=msg;t.hidden=false;clear
 function close(){if(scene){scene.hidden=true;cancelAnimationFrame(raf);clearTimeout(toastTimer);}}
 function action(id,button){
 var a=bridge();if(!a)return;
-if(id==="select"){var index=Number(button&&button.dataset.index);var hero=a.state().roster[index];if(hero){a.select(index);notice(hero.name+" · 출전 검투사 선택");}else notice("비어 있는 슬롯입니다. 검투사시장에서 영입하세요.");return;}
+if(id==="select"){var index=Number(button&&button.dataset.index);var hero=a.state().roster[index];if(hero){a.select(index);rosterPage=Math.floor(index/6);refresh();notice(hero.name+" · 출전 검투사 선택");}else notice("비어 있는 슬롯입니다. 검투사시장에서 영입하세요.");return;}
 if(id==="dismiss-orientation"){scene.classList.add("ll-allow-portrait");return;}
 if(id==="back"){close();a.exit();return;}
 if(id==="market"){close();a.market();return;}
