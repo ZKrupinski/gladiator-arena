@@ -1,0 +1,53 @@
+/* MERCATUS v6.3 — only current selection in the restored lower plaque.
+   The screenshot-baked Cassius portrait/text were removed from
+   market_keyvisual_no_merchant.webp. This layer is the source of truth. */
+.gm-stage .gm-bottom-avatar{
+ position:absolute;z-index:14;left:569px;top:766px;width:125px;height:127px;
+ box-sizing:border-box;overflow:hidden;
+ border:4px ridge #d2a262;border-radius:8px;
+ background:radial-gradient(ellipse at 50% 35%,#765039,#24130e 76%);
+ box-shadow:inset 0 0 11px #120806,0 0 9px #ca9a5a45;
+ pointer-events:none;
+}
+.gm-stage .gm-bottom-avatar canvas{display:block;width:100%;height:100%;object-fit:contain}
+.gm-stage .gm-bottom-info{
+ position:absolute;z-index:14;left:708px;top:766px;width:402px;height:129px;
+ box-sizing:border-box;display:flex;flex-direction:column;
+ overflow:hidden;padding:0 6px 4px;
+ background:transparent!important;box-shadow:none!important;
+ color:#ffe8c4;text-shadow:0 2px 2px #110804;
+ pointer-events:none;
+}
+.gm-stage .gm-bottom-avatar[hidden],.gm-stage .gm-bottom-info[hidden]{display:none!important}
+.gm-stage .gm-bottom-info h2{
+ margin:0 0 2px;font:800 22px/1.15 Georgia,'Noto Serif KR',serif;
+ color:#ffe5ad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+ letter-spacing:.01em;
+}
+.gm-stage .gm-bottom-info .gm-divider{color:#ae8457;padding:0 2px}
+.gm-stage .gm-bottom-info .gm-level{
+ display:flex;gap:18px;align-items:center;
+ margin:0 0 4px;font:700 17px/1.22 Georgia,'Noto Serif KR',serif;
+ color:#e5c18b;
+}
+.gm-stage .gm-bottom-info .gm-level strong{font:bold 17px Georgia,serif;color:#fce3ba}
+.gm-stage .gm-bottom-info .gm-level span{font:700 16px Georgia,serif;color:#edbd66}
+.gm-stage .gm-bottom-info p{
+ margin:0;color:#e9d0ac;
+ font:700 15.5px/1.3 'Noto Sans KR',sans-serif;
+ overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;
+ -webkit-line-clamp:3;line-clamp:3;
+ word-break:keep-all;white-space:normal;
+}
+.gm-stage .gm-hire-hit{z-index:17;}
+/* Calm, one-arm merchant poses only. Even if a previous script caches the
+   double-arm frame, it will render inside its own left staging area. */
+.gm-stage .gm-merchant-full.gm-pose-0,
+.gm-stage .gm-merchant-full.gm-pose-1,
+.gm-stage .gm-merchant-full.gm-pose-3{
+ max-width:758px;max-height:765px;
+}
+/* Disable the now unused two-arm pose without hiding the actual merchant. */
+.gm-stage .gm-merchant-full.gm-pose-2{
+ left:-161px;top:83px;width:758px;height:765px;
+}
