@@ -64,7 +64,7 @@ function render(){if(!scene||scene.hidden)return;
 function face(pose){
  // One actor at the full-sized merchant position, not a floating reaction thumbnail.
  const actor=$('#gmMerchantMain');if(!actor)return;
- actor.className='gm-merchant-full gm-pose-'+pose;
+ actor.className='gm-merchant-full gm-pose-'+pose+(actor.classList.contains('is-speaking')?' is-speaking':'');
  const src=merchantFrames[pose]?.src;
  if(src&&actor.src!==src)actor.src=src;
 }
