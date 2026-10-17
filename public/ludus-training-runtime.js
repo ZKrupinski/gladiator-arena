@@ -22,8 +22,10 @@ function animate(a,stage,selected){
  if(!canvas||selected==null)return;
  const draw=()=>{
   if(!canvas.isConnected){stop();return;}
-  const phase=moves[tick%moves.length];
-  const src=a.trainingFrame?.(selected,phase)||a.portrait(selected);
+  // Hold each action for several ticks while its five authentic-source
+  // motion frames animate; retain the original training action cadence.
+  const phase=moves[Math.floor(tick/4)%moves.length];
+  const src=a.trainingFrame?.(selected,phase,tick%5)||a.portrait(selected);
   paint(canvas,src);
   canvas.dataset.attack=phase;
   canvas.style.transform=phase==='thrust'?'translateX(-9px)':phase==='heavy'?'translateX(-5px)':'translateX(0)';
@@ -31,7 +33,7 @@ function animate(a,stage,selected){
   if(ribbon){ribbon.classList.toggle('active',!['idle'].includes(phase));ribbon.dataset.action=phase;}
   tick++;
  };
- draw();timer=setInterval(draw,350);
+ draw();timer=setInterval(draw,88);
  current=canvas;
 }
 function mount(stage,a,s,cbs){
