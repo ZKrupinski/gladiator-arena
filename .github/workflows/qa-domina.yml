@@ -1,0 +1,27 @@
+name: Inspect lobby Domina animation artwork
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/qa_ludus_domina.py','.github/workflows/qa-domina.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: true}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install --quiet pillow numpy
+      - run: python scripts/qa_ludus_domina.py
+      - name: Save preview files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/qa/domina/*.webp
+          if ! git diff --cached --quiet; then
+            git commit -m "test(ludus): visual QA of Domina poses against original lobby"
+            git push origin HEAD:main
+          fi
