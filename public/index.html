@@ -278,7 +278,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 .ludus-item-icon{font-size:51px}
 @media(max-width:700px){.ludus-workshop{padding:8px;border-width:7px}.ludus-training-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ludus-equipment-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ludus-fighter-art{min-height:160px}.ludus-portrait{height:150px;width:140px}.ludus-stat-tile strong{font-size:16px}}
 
-</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=6"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=1"><link rel="stylesheet" href="ludus-menu-live.css?v=1"></head><body>
+</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=6"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=1"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-cards.css?v=1"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
@@ -820,6 +820,7 @@ function openCareerDraft(){
 }
 function renderCareerDraft(){
  const enemy=LudusRoster.encounter(CAREER,CAREER.hero);
+ if(window.LudusCardScenes){window.LudusCardScenes.renderDraft(enemy,paintDraftOpponent);return;}
  $('#careerBody').innerHTML='<div class="career-card career-draft"><h2>출전 검투사 선택</h2><p>도전 '+enemy.round+' · '+(enemy.boss?'보스전 — 첫 격파 시 영입':'일반 시합')+'</p><h3>'+enemy.name+' · Lv.'+enemy.level+' · '+(enemy.boss?'챔피언':'성장 '+enemy.stage+'단계')+'</h3><div class="ludus-opponent-preview"><canvas id="ludusOpponentArt" width="280" height="260" aria-label="상대 검투사의 전투 대기 자세"></canvas><p>'+ (enemy.boss?'기존 아케이드 캐릭터 · 승리 시 루두스 합류':(GROWTH_TYPES[enemy.growthType]||DATA[enemy.cls].name)+' · 성장 '+enemy.stage+'/5 · 대기 자세')+'</p></div><p>출전한 검투사만 경험치와 부상을 받습니다. 패배해도 같은 상대에게 다시 도전합니다.</p><div class="roster-list">'+rosterCards(true)+'</div><div class="career-buttons"><button id="careerDraftCancel">루두스로 돌아가기</button></div></div>';
  paintRosterPreviews();paintDraftOpponent();
  $('#careerDraftCancel').onclick=()=>{CAREER_SELECTING=false;renderCareer();window.LudusScene?.open();};
@@ -830,6 +831,14 @@ function renderCareerDraft(){
 }
 function renderCareer(){
  if(CAREER_SELECTING){renderCareerDraft();return;}
+ if(CAREER_TAB==='roster'&&window.LudusCardScenes){
+  $('#careerRosterTab').setAttribute('aria-pressed','true');
+  $('#careerTrainTab').setAttribute('aria-pressed','false');
+  $('#careerGearTab').setAttribute('aria-pressed','false');
+  window.LudusCardScenes.renderRoster();
+  window.LudusScene?.refresh();
+  return;
+ }
  const h=CAREER.hero;
  const summary='<div class="career-card"><h2>루두스 현황</h2><div class="career-stat"><span>데나리우스</span><b>'+CAREER.gold+' D</b></div><div class="career-stat"><span>명예</span><b>'+CAREER.glory+'</b></div><div class="career-stat"><span>시합 전적</span><b>'+CAREER.wins+'승 / '+CAREER.fights+'전</b></div><div class="career-stat"><span>소속 검투사</span><b>'+CAREER.roster.length+'명</b></div><p class="career-status">'+CAREER.message+'</p>'+(h?'<div class="career-avatar" style="background-image:url(&quot;'+(CLEANED_CHARACTER_URLS[h.cls]||ASSET[h.cls])+'&quot;)"></div><h3>'+h.name+' · '+DATA[h.cls].name+'</h3><div class="career-type"><label>외형 타입 <select id="careerGrowthType">'+Object.entries(GROWTH_TYPES).filter(([key])=>key.startsWith(h.cls==='murmillo'?'murmillo':h.cls==='thraex'?'thraex':'retiarius')).map(([key,name])=>'<option value="'+key+'" '+(growthType(h)===key?'selected':'')+'>'+name+'</option>').join('')+'</select></label></div><div class="career-level"><strong>'+careerProgressLabel(h)+'</strong><div class="career-xp-track"><i style="width:'+(careerLevel(h)===20?100:Math.round(100*h.xp/careerXpNeeded(careerLevel(h))))+'%"></i></div><small>Lv.1 / 5 / 10 / 15 / 20 성장 단계 · 훈련과 시합으로 경험치 획득</small></div><div class="career-stat"><span>체력 / 부상</span><b>'+careerHealth(h).current+' / 부상 '+h.injury+'</b></div>'+Object.entries(h.stats).map(([k,v])=>'<div class="career-stat"><span>'+({str:'근력',agi:'민첩',end:'체력',focus:'집중'}[k])+'</span><b>+'+v+'</b></div>').join('')+'<p>장착: '+['weapon','shield','armor'].map(slot=>({weapon:'무기',shield:'방패',armor:'방어구'}[slot])+': '+(GEAR.find(g=>g.id===h.equipment[slot])?.name||'없음')).join(' / ')+'</p><div class="career-stat"><span>최종 공격력</span><b>'+(DATA[h.cls].atk+h.stats.str*2+equipmentBonus(h).atk)+'</b></div><div class="career-stat"><span>최대 체력</span><b>'+(DATA[h.cls].hp+h.stats.end*13+equipmentBonus(h).hp)+'</b></div>':'<p>아직 소속 검투사가 없습니다.</p>')+'</div>';
  const hire=h?'<div class="career-card"><h2>훈련장 · EXERCITIUM</h2><p>훈련당 12D · 처음엔 느리고 넓게, 반복할수록 빠르고 좁게 · 최대 +10.</p><div class="career-options">'+[
@@ -1701,11 +1710,25 @@ window.LudusBridge={
   careerMessage(g.name+' 장착 완료!');return CAREER.message;
  },
  fight:openCareerDraft,
+ heal:()=>{
+  const h=CAREER.hero;if(!h)return '검투사를 먼저 영입하세요.';
+  const cost=Math.max(12,Math.ceil((Number(h.injury)||0)*.6));
+  if(!h.injury)return '치료할 부상이 없습니다.';
+  if(CAREER.gold<cost)return '치료 비용이 부족합니다.';
+  CAREER.gold-=cost;h.injury=0;careerMessage(h.name+' · 치료를 마쳤습니다.');return CAREER.message;
+ },
+ cancelDraft:()=>{
+  CAREER_SELECTING=false;CAREER_TAB='roster';renderCareer();
+ },
+ deploy:(i)=>{
+  const h=CAREER.roster[i];if(!CAREER_SELECTING||!h||Number(h.injury||0)>=80)return;
+  CAREER.active=i;CAREER_SELECTING=false;saveCareer();start('career');
+ },
  exit:()=>{$('#careerHub').hidden=true;returnToLudus();}
 };
 
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=9"></script><script src="ludus-approved-scenes.js?v=3"></script>
+<script src="ludus-scene.js?v=9"></script><script src="ludus-approved-scenes.js?v=4"></script><script src="ludus-cards.js?v=1"></script>
 </body></html>
