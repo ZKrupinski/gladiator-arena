@@ -10,7 +10,7 @@ var poses={domina:Array.from({length:6},(_,i)=>"assets/ludus/domina_"+i+".webp")
 var dominaExpressions=[0,1,2,3,5];
 var preload=[];
 for(var i=0;i<6;i++){
- var pic=new Image();pic.src="assets/ludus/domina_expression_"+i+".webp?v=1";preload.push(pic);
+ var pic=new Image();pic.src="assets/ludus/domina_face_aligned_"+i+".webp?v=3";preload.push(pic);
 }
 
 function $(s){return scene&&scene.querySelector(s);}
@@ -38,7 +38,7 @@ function animateDomina(){
   roll-=weights[candidates[i]];
   if(roll<0){next=candidates[i];break;}
  }
- patch.src="assets/ludus/domina_expression_"+next+".webp?v=1";
+ patch.src="assets/ludus/domina_face_aligned_"+next+".webp?v=3";
  patch.dataset.pose=String(next);
  lastDominaPose=next;
  dominaTimer=setTimeout(animateDomina,1750+Math.random()*2050);
@@ -62,7 +62,7 @@ var html=[
 '<div class="ll-stage" role="region" aria-label="루두스 훈련장">',
 '<div class="ll-fallback"><div class="ll-domina"><img src="assets/ludus/domina_0.webp" alt=""><span>DOMINA · 루두스의 주인</span></div></div>',
 '<img class="ll-key" src="assets/ludus/ludus_ui.webp" alt="" aria-hidden="true">',
-'<img class="ll-domina-expression" src="assets/ludus/domina_expression_0.webp?v=1" alt="" aria-hidden="true" draggable="false">',
+'<img class="ll-domina-expression" src="assets/ludus/domina_face_aligned_0.webp?v=3" alt="" aria-hidden="true" draggable="false">',
 '<button class="ll-title" data-action="back">❮ 루두스</button>',
 '<div class="ll-wallet" aria-label="실시간 루두스 자원"><span>🪙 금화 <strong data-gold>0</strong></span><span>✥ 명예 <strong data-glory>0</strong></span><span>⚔ 소속 <strong data-roster-count>0</strong></span></div>',
 '<div class="ll-menu" role="navigation" aria-label="루두스 주요 시설"><button type="button" data-action="training">⚔ 훈련소</button><button type="button" data-action="roster">♜ 검투사 관리</button><button type="button" data-action="armory">🛡 장비실</button><button type="button" data-action="market">🏛 검투사시장</button><button type="button" data-action="arena">⚔ 아레나 출전</button></div>',
