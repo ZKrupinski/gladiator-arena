@@ -97,3 +97,32 @@
  .lc-portrait{max-height:none}
 }
 @media(prefers-reduced-motion:reduce){.lc-fighter-card{transition:none!important}}
+
+/* Visible navigation used in the approved full-screen training & armory views. */
+.la-stage .la-home-nav{
+ position:absolute;right:10px;top:9px;z-index:34;width:132px;height:69px;
+ box-sizing:border-box;border:4px ridge #e4b877;border-radius:10px;
+ padding:4px 6px;display:flex;align-items:center;justify-content:center;
+ background:linear-gradient(150deg,#7c4427,#321810);
+ color:#ffe8b9;font:900 17px/1.25 'Noto Sans KR',sans-serif;
+ text-align:center;text-shadow:0 2px 3px #1b0b07;
+ box-shadow:0 5px 12px #100403bd,inset 0 0 10px #220d07;
+ cursor:pointer;touch-action:manipulation;white-space:normal;
+}
+.la-stage .la-home-nav:hover,.la-stage .la-home-nav:focus-visible{
+ border-color:#ffdd92;background:linear-gradient(#9f6131,#512518);
+ outline:3px solid #ffe5a3;outline-offset:2px;
+}
+/* Market uses the very same upper-right action. */
+.gm-stage .gm-back-hit{
+ left:auto;right:11px;top:9px;width:132px;height:67px;
+ border:4px ridge #e4b877!important;border-radius:10px;
+ background:linear-gradient(150deg,#7c4427,#321810)!important;
+ box-shadow:0 5px 12px #100403bf,inset 0 0 10px #220d07;
+ color:#ffe8b9;font:900 17px/1.25 'Noto Sans KR',sans-serif;
+ display:flex;align-items:center;justify-content:center;
+ text-align:center;padding:4px 7px;text-shadow:0 2px 3px #1b0b07;
+}
+.gm-stage .gm-back-hit:hover,.gm-stage .gm-back-hit:focus-visible{
+ outline:3px solid #ffe3a0;outline-offset:2px;filter:brightness(1.15);
+}
