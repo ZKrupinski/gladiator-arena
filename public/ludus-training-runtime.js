@@ -19,7 +19,7 @@ function paint(canvas,img){
 function animate(a,stage,selected){
  stop();
  const canvas=stage.querySelector('.lt-fighter-canvas');
- if(!canvas||!selected)return;
+ if(!canvas||selected==null)return;
  const draw=()=>{
   if(!canvas.isConnected){stop();return;}
   const phase=moves[tick%moves.length];
