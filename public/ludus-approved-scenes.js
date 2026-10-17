@@ -75,7 +75,11 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  }
  liveFighter(a,s,training);
  if(training)hit('training-help','훈련 도움말',448,25,73,74,()=>toast('훈련 항목 선택 후 훈련 시작을 누르면 능력치와 경험치가 상승합니다.'));
- hit('back','루두스로 돌아가기',14,813,227,98,goHome);
+ const home=document.createElement('button');
+ home.type='button';home.className='la-home-nav';home.textContent='⌂ 루두스 로비';
+ home.setAttribute('aria-label','메인 루두스 로비로 돌아가기');
+ home.title='메인 루두스 로비로 돌아가기';
+ home.addEventListener('click',goHome);stage.appendChild(home);
  fit();}
 function open(name){setup();room=name==='gear'?'armory':'training';screen.hidden=false;render();}
 function close(){if(screen)screen.hidden=true;}
