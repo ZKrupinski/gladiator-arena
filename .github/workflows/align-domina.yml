@@ -27,5 +27,6 @@ jobs:
           git add public/assets/ludus/domina_face_aligned_*.webp docs/qa/domina-corrected/*.webp
           if ! git diff --cached --quiet; then
             git commit -m "art(ludus): correctly scaled facial animation masks aligned to approved Domina"
+            git pull --rebase origin main
             git push origin HEAD:main
           fi
