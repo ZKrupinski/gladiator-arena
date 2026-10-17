@@ -63,6 +63,28 @@ cv2.rectangle(dead_back, (16, 840), (242, 918), 255, -1)
 filled_corner = cv2.inpaint(merged, dead_back, 7, cv2.INPAINT_TELEA)
 fade = cv2.GaussianBlur(dead_back, (0, 0), 8).astype(np.float32)[..., None] / 255.0
 merged = np.clip(merged * (1-fade) + filled_corner * fade, 0, 255).astype(np.uint8)
+# Clear the *painted* Cassius portrait, name and sample description in
+# the lower information plaque. Retain the ornate border and Hire artwork.
+# The live market data renderer paints the selected candidate here instead.
+# Unlike a CSS cover, the replacement becomes actual game background pixels.
+x0,y0,x1,y1 = 563,763,1122,894
+ys,xs = np.mgrid[y0:y1,x0:x1]
+depth = (ys-y0)/max(1,(y1-y0))
+warm = 0.5 + 0.5*np.cos((xs-x0)/(x1-x0)*np.pi)
+rng = np.random.default_rng(20261017)
+grain = rng.normal(0,1.7,(y1-y0,x1-x0))
+# OpenCV BGR: naturally aged, dark walnut interior, not a solid black block.
+bgr = np.stack([
+  15 + 9*warm - 3*depth + grain,
+  27 + 8*warm - 4*depth + grain,
+  41 + 9*warm - 3*depth + grain,
+],axis=-1)
+bgr = np.clip(bgr,0,255).astype(np.uint8)
+# Subtle planked-leather texture in the center without baked glyphs.
+for ty in range(0,bgr.shape[0],19):
+    bgr[ty:ty+1,:,0:3] = np.clip(bgr[ty:ty+1,:,0:3].astype('int16') + 3,0,255)
+# Keep all outer brass trim: only the already-black interior is repainted.
+merged[y0:y1,x0:x1] = bgr
 rgb = cv2.cvtColor(merged, cv2.COLOR_BGR2RGB)
 Image.fromarray(rgb).save(OUT, format="WEBP", quality=95, method=6)
 print(f"Wrote {OUT} ({OUT.stat().st_size} bytes) at {width}x{height}")
