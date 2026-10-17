@@ -142,6 +142,27 @@ staged=image.copy()
 staged[:,:750]=patch
 mix=cv2.GaussianBlur(mask,(0,0),8).astype(np.float32)[...,None]/255
 result=np.clip(image*(1-mix)+staged*mix,0,255).astype(np.uint8)
+# Remove the baked example gladiator, example stats and example bottom roster.
+# These aren't actual game objects; real data-driven layers render on top.
+# Use a textured architectural derivative and feather only the boundaries.
+source_atlas=cv2.imread(str(ROOT/"public/assets/new-era/arena.webp"))
+source_h,source_w=source_atlas.shape[:2]
+architecture=cv2.resize(source_atlas[:,int(source_w*.21):int(source_w*.79)],
+                        (1672,941),interpolation=cv2.INTER_CUBIC)
+architecture=cv2.convertScaleAbs(architecture,alpha=1.02,beta=4)
+old_ui=np.zeros((941,1672),np.uint8)
+# Training dummy / baked fighter / bottom roster / baked sample stats.
+cv2.fillPoly(old_ui,[np.array([
+ (803,250),(881,224),(994,216),(1090,251),(1165,312),(1172,559),
+ (1143,596),(783,594),(765,548),(786,318)
+],np.int32)],255)
+# Old selected-fighter card and fake stats; the live panel replaces these.
+cv2.rectangle(old_ui,(1211,75),(1668,624),255,-1)
+# Preserve coin balance and lobby return icon above 75px.
+# Old roster is embedded in the bitmap, should not show below true roster.
+cv2.rectangle(old_ui,(0,765),(1228,938),255,-1)
+old_alpha=cv2.GaussianBlur(old_ui,(0,0),9).astype(np.float32)[...,None]/255
+result=np.clip(result*(1-old_alpha)+architecture*old_alpha,0,255).astype(np.uint8)
 clean=Image.fromarray(cv2.cvtColor(result,cv2.COLOR_BGR2RGB))
 out=ART/"training_no_doctore.webp"
 clean.save(out,"WEBP",quality=94,method=6)
@@ -158,8 +179,8 @@ layer=Image.new("RGBA",(dw,dh))
 layer.alpha_composite(actor,((dw-actor.width)//2,dh-actor.height))
 composed.alpha_composite(layer,(85,102))
 # Speech bubble overlay over the NPC's pointing arm.
-box=clean.crop((499,92,854,249)).convert("RGBA")
-composed.alpha_composite(box,(499,92))
+# Approved paper dialogue remains baked behind the separate instructor.
+# Do not crop a hard-edged rectangle over the instructor's fingers.
 output=ROOT/"docs/qa/training-doctore-layer.webp"
 output.parent.mkdir(parents=True,exist_ok=True)
 composed.convert("RGB").save(output,format="WEBP",quality=84)
@@ -172,7 +193,7 @@ for frame_index in range(4):
     art=art.resize((round(art.width*k),round(art.height*k)),Image.Resampling.LANCZOS)
     frame=clean.convert("RGBA")
     frame.alpha_composite(art,(85+(dw-art.width)//2,102+dh-art.height))
-    frame.alpha_composite(box,(499,92))
+    # Instructor fingers draw above the already-present parchment background.
     frame.convert("RGB").save(
         ROOT/f"docs/qa/training-doctore-action-{frame_index}.webp",
         format="WEBP",quality=78,method=4
