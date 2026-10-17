@@ -11,6 +11,7 @@ const labels=[['STR','#ff5554','#bc2223','✊'],['AGI','#66f36e','#238f39','♞'
 const merchantLines={hello:'좋은 검투사가 필요하신가요? 방금 들어온 유망한 후보들입니다!',select:'훈련만 잘 시킨다면 훌륭한 투사가 될 겁니다!',confirm:'정말 이 검투사를 영입하시겠습니까? 데나리우스를 지불하면 거래가 성사됩니다.',cancel:'마음이 바뀌셨습니까? 다른 후보도 살펴보시지요.',success:'하하하! 안목이 훌륭하시군요! 이 검투사는 이제 당신의 루두스 소속입니다!',poor:'금화가 부족하다니 아쉽군요. 시합에서 승리하고 다시 방문하세요.',empty:'모든 단상이 비었습니다! 후보 갱신으로 새로운 검투사를 불러오십시오.',refresh:'새로운 후보들이 단상에 올랐습니다! 천천히 살펴보시지요.'};
 let scene=null,stage=null,opts=null,selection=0,keyImg=null,mode='idle',dialogOffer=null;
 let speechReset=null,animateTimer=null,moodTimer=null,previousFocus=null;
+const merchantFrames=Array.from({length:4},(_,n)=>{const im=new Image();im.src='assets/market/merchant_pose_'+n+'.webp';return im;});
 const $=s=>scene?.querySelector(s);
 const clean=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function newOffer(i,seed){const t=types[i];return {id:t.id,className:t.className,name:t.names[seed%t.names.length],vals:t.base.map((v,j)=>Math.max(1,Math.min(6,v+(seed?((seed+i+j)%3)-1:0)))),cost:t.cost,desc:t.desc,face:t.face};}
@@ -60,18 +61,25 @@ function render(){if(!scene||scene.hidden)return;
  restock.setAttribute('aria-label','빈 단상을 새 검투사로 갱신. 비용 '+RESTOCK_COST+' 데나리우스');
  $('#gmRestockCount').textContent=list.filter(h=>h===null).length+'자리';
 }
-function face(pose){const img=$('#gmMerchantExpression'),tiny=$('#gmReactionFace');
- if(img)img.src='assets/market/merchant_pose_'+pose+'.webp';
- if(tiny)tiny.src='assets/market/merchant_pose_'+pose+'.webp';
+function face(pose){
+ // One actor at the full-sized merchant position, not a floating reaction thumbnail.
+ const actor=$('#gmMerchantMain');if(!actor)return;
+ actor.className='gm-merchant-full gm-pose-'+pose;
+ const src=merchantFrames[pose]?.src;
+ if(src&&actor.src!==src)actor.src=src;
 }
 function reaction(line,mood='select',duration=4800){
  clearTimeout(speechReset);clearInterval(animateTimer);clearTimeout(moodTimer);
- const text=$('#gmSpeech'),glow=$('#gmTalking'),badge=$('#gmReactionBadge');
- text.hidden=false;text.textContent=line;glow.classList.add('active');badge.hidden=false;
+ const text=$('#gmSpeech'),glow=$('#gmTalking'),actor=$('#gmMerchantMain');
+ text.hidden=false;text.textContent=line;glow.classList.add('active');
+ actor?.classList.add('is-speaking');
  const poses={hello:[1,2],select:[0,1],confirm:[1,0],cancel:[3],success:[2,1],poor:[3],empty:[3,0],refresh:[2,1]};
  const frames=poses[mood]||poses.select;let index=0;face(frames[0]);
  if(frames.length>1)animateTimer=setInterval(()=>{index=(index+1)%frames.length;face(frames[index]);},490);
- speechReset=setTimeout(()=>{text.hidden=true;glow.classList.remove('active');badge.hidden=true;clearInterval(animateTimer);},duration);
+ speechReset=setTimeout(()=>{
+  text.hidden=true;glow.classList.remove('active');clearInterval(animateTimer);
+  face(1);$('#gmMerchantMain')?.classList.remove('is-speaking');
+ },duration);
 }
 function hideDialog(){const modal=$('#gmDialog');modal.hidden=true;dialogOffer=null;mode='idle';previousFocus?.focus?.();previousFocus=null;}
 function askPurchase(){if(mode!=='idle')return;const hero=selection>=0?inventory()[selection]:null;
@@ -107,7 +115,7 @@ function restock(){if(mode!=='idle')return;const state=opts.state,stock=inventor
  for(let i=0;i<stock.length;i++)if(stock[i]===null)stock[i]=newOffer(i,state.marketSeed);
  selection=pick(selection);opts.save?.();render();reaction(merchantLines.refresh,'refresh');
 }
-function close(){if(!scene)return;if(mode==='confirm')cancel();if(mode==='success')hideDialog();scene.hidden=true;clearTimeout(speechReset);clearTimeout(moodTimer);clearInterval(animateTimer);opts?.onExit?.();}
+function close(){if(!scene)return;if(mode==='confirm')cancel();if(mode==='success')hideDialog();scene.hidden=true;clearTimeout(speechReset);clearTimeout(moodTimer);clearInterval(animateTimer);face(1);opts?.onExit?.();}
 function keydown(e){if(!scene||scene.hidden)return;
  if(e.key==='Escape'){e.preventDefault();if(mode==='confirm'||mode==='success')cancel();else close();return;}
  if(mode!=='idle'){
@@ -123,6 +131,8 @@ function setup(){if(scene)return;
  scene=document.createElement('section');scene.className='gm-screen';scene.id='slaveMarket';scene.hidden=true;scene.setAttribute('role','dialog');scene.setAttribute('aria-label','검투사시장');
  scene.innerHTML=`<div class="gm-stage" id="gmStage">
   <img class="gm-key-art" id="gmKey" src="assets/market/market_keyvisual.webp" alt="" aria-hidden="true" decoding="sync" draggable="false">
+  <div class="gm-merchant-clean" aria-hidden="true"></div>
+  <img class="gm-merchant-full gm-pose-1" id="gmMerchantMain" src="assets/market/merchant_pose_1.webp" alt="" aria-hidden="true" draggable="false">
   <button type="button" class="gm-back-hit" id="gmBack" aria-label="루두스로 돌아가기" title="루두스로 돌아가기"></button>
   ${types.map((t,i)=>`<button type="button" class="gm-card-hit" data-i="${i}" id="gmCard${i}" aria-label="${t.names[0]} ${t.className} 후보" aria-pressed="${i===0}"></button><div class="gm-selected-wreath" id="gmSelection${i}" data-i="${i}" aria-hidden="true" hidden><span>❧</span><b>선택</b><span>❧</span></div><div class="gm-vacant" id="gmVacant${i}" data-i="${i}" hidden><span class="gm-vacant-badge">✦ 판매 완료 ✦</span><strong>빈 단상</strong><small>신규 후보를 갱신하세요</small></div><div class="gm-card-dynamic" data-i="${i}" id="gmPanel${i}" hidden></div>`).join('')}
   <div class="gm-wallet-value" id="gmWallet" hidden></div>
@@ -132,11 +142,9 @@ function setup(){if(scene)return;
   <div class="gm-no-candidates" id="gmNoCandidates" hidden>검투사 모집 완료<br><small>빈 단상을 갱신하세요</small></div>
   <div class="gm-speech-new" id="gmSpeech" hidden role="status" aria-live="polite"></div>
   <div class="gm-merchant-talk" id="gmTalking" aria-hidden="true"></div>
-  <div class="gm-reaction-badge" id="gmReactionBadge" hidden aria-hidden="true"><img id="gmReactionFace" src="assets/market/merchant_pose_0.webp" alt=""></div>
   <button type="button" class="gm-hire-hit" id="gmHire" aria-label="선택한 검투사 구매 확인"></button>
   <button type="button" class="gm-restock" id="gmRestock">✥ 후보 갱신 <span id="gmRestockCount">0자리</span><small>◉ ${RESTOCK_COST} D</small></button>
   <div class="gm-dialog" id="gmDialog" data-mode="confirm" hidden role="dialog" aria-modal="true" aria-label="검투사 구매 계약 확인">
-   <div class="gm-dialog-merchant"><img id="gmMerchantExpression" src="assets/market/merchant_pose_0.webp" alt="시장 상인이 말을 건넵니다"></div>
    <div class="gm-dialog-content"><div class="gm-dialog-eyebrow">MERCATUS · 계약 확인</div><h2 id="gmDialogHeading">검투사 고용 계약</h2><p id="gmDialogBody"></p><small id="gmDialogDetail"></small><div class="gm-dialog-buttons"><button id="gmCancel" type="button">취소하기</button><button id="gmConfirm" type="button">고용 확정</button></div></div>
   </div>
   <div class="gm-orient" aria-hidden="true">가로 화면에서 시장을 더 크게 볼 수 있습니다.</div>
