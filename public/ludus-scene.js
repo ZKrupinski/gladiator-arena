@@ -7,10 +7,10 @@ var W=1448,H=1086,rosterPage=0;
 var poses={domina:Array.from({length:6},(_,i)=>"assets/ludus/domina_"+i+".webp")};
 // All six source artworks are retained. The no-duplicate-body facial sprites
 // were visually checked against the approved 1448x1086 lobby key visual.
-var dominaExpressions=[1,3,4];
+var dominaExpressions=[1];
 var preload=[];
 for(var i=0;i<6;i++){
- var pic=new Image();pic.src="assets/ludus/domina_face_aligned_"+i+".webp?v=6";preload.push(pic);
+ var pic=new Image();pic.src="assets/ludus/domina_face_aligned_"+i+".webp?v=7";preload.push(pic);
 }
 
 function $(s){return scene&&scene.querySelector(s);}
@@ -20,7 +20,7 @@ function notice(msg){var t=$(".ll-toast");t.textContent=msg;t.hidden=false;clear
 function close(){
  clearTimeout(dominaTimer);clearTimeout(dominaReturnTimer);
  dominaTimer=0;dominaReturnTimer=0;lastDominaPose=0;
- if(scene){scene.hidden=true;var patch=$('.ll-domina-expression');if(patch)patch.src='assets/ludus/domina_face_aligned_0.webp?v=6';clearTimeout(toastTimer);}
+ if(scene){scene.hidden=true;var patch=$('.ll-domina-expression');if(patch)patch.src='assets/ludus/domina_face_aligned_0.webp?v=7';clearTimeout(toastTimer);}
 }
 function animateDomina(){
  if(!scene||scene.hidden)return;
@@ -28,30 +28,17 @@ function animateDomina(){
  if(!patch||!scene.classList.contains("ll-has-art")){
   dominaTimer=setTimeout(animateDomina,650);return;
  }
- // Draw a genuinely random expression: never immediately repeat the same
- // pose; laughing and winking get more chances. Drinking frame 4 is omitted
- // because the baked artwork already has a cup in her other hand.
- var candidates=dominaExpressions.filter(function(p){return p!==lastDominaPose;});
- var weights={1:5,3:3,4:2};
- var total=candidates.reduce(function(n,p){return n+weights[p];},0);
- var roll=Math.random()*total,next=candidates[0];
- for(var i=0;i<candidates.length;i++){
-  roll-=weights[candidates[i]];
-  if(roll<0){next=candidates[i];break;}
- }
- patch.src="assets/ludus/domina_face_aligned_"+next+".webp?v=6";
- patch.dataset.pose=String(next);
- lastDominaPose=next;
- // A blink is 0.22 seconds, a wink 0.42, a squint 0.62.
- // Never hold shut eyes for several seconds.
- var hold=next===1?220:next===4?620:420;
+ // Use ONLY a short natural two-eye blink. No single-eye wink, no
+ // semi-transparent squint that merely blurs the iris.
+ patch.src='assets/ludus/domina_face_aligned_1.webp?v=7';
+ patch.dataset.pose='1';
  clearTimeout(dominaReturnTimer);
  dominaReturnTimer=setTimeout(function(){
   if(!scene||scene.hidden)return;
-  patch.src='assets/ludus/domina_face_aligned_0.webp?v=6';
+  patch.src='assets/ludus/domina_face_aligned_0.webp?v=7';
   patch.dataset.pose='0';
   dominaTimer=setTimeout(animateDomina,1700+Math.random()*1700);
- },hold);
+ },220);
 }
 function action(id,button){
 var a=bridge();if(!a)return;
@@ -72,7 +59,7 @@ var html=[
 '<div class="ll-stage" role="region" aria-label="루두스 훈련장">',
 '<div class="ll-fallback"><div class="ll-domina"><img src="assets/ludus/domina_0.webp" alt=""><span>DOMINA · 루두스의 주인</span></div></div>',
 '<img class="ll-key" src="assets/ludus/ludus_lobby_no_buttons.webp?v=1" alt="" aria-hidden="true">',
-'<img class="ll-domina-expression" src="assets/ludus/domina_face_aligned_0.webp?v=6" alt="" aria-hidden="true" draggable="false">',
+'<img class="ll-domina-expression" src="assets/ludus/domina_face_aligned_0.webp?v=7" alt="" aria-hidden="true" draggable="false">',
 '<button class="ll-title" data-action="back">❮ 루두스</button>',
 '<div class="ll-wallet" aria-label="실시간 루두스 자원"><span>🪙 금화 <strong data-gold>0</strong></span><span>✥ 명예 <strong data-glory>0</strong></span><span>⚔ 소속 <strong data-roster-count>0</strong></span></div>',
 '<div class="ll-menu" role="navigation" aria-label="루두스 주요 시설"><button type="button" data-action="training">⚔ 훈련소</button><button type="button" data-action="roster">♜ 검투사 관리</button><button type="button" data-action="armory">🛡 장비실</button><button type="button" data-action="market">🏛 검투사시장</button><button type="button" data-action="arena">⚔ 아레나 출전</button></div>',
