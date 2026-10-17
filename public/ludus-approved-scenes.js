@@ -14,12 +14,12 @@ function toast(msg){let n=$('.la-notice');if(!n)return;n.textContent=msg;n.hidde
 function pose(index){
  const actor=$('.la-doctore-live');if(!actor)return;
  clearTimeout(poseTimer);actor.classList.remove('is-speaking');
- if(index<0){actor.src='assets/ludus/doctore_pose_0.webp';return;}
- const n=index%4;actor.src='assets/ludus/doctore_pose_'+n+'.webp';
+ if(index<0){actor.src='assets/ludus/doctore_pose_0.webp?v=3';return;}
+ const n=index%4;actor.src='assets/ludus/doctore_pose_'+n+'.webp?v=3';
  actor.dataset.pose=String(n);actor.classList.add('is-speaking');
  poseTimer=setTimeout(()=>{
    if(actor.isConnected&&!screen?.hidden){
-     actor.src='assets/ludus/doctore_pose_0.webp';
+     actor.src='assets/ludus/doctore_pose_0.webp?v=3';
      actor.dataset.pose='0';actor.classList.remove('is-speaking');
    }
  },1700);
@@ -56,7 +56,7 @@ function liveFighter(a,s,isTraining){
 }
 function setup(){if(screen)return;screen=document.createElement('section');screen.className='la-screen';screen.hidden=true;screen.setAttribute('aria-label','승인된 루두스 장비실 및 훈련소');screen.innerHTML='<div class="la-stage"><img class="la-key" draggable="false" alt=""><div class="la-notice" role="status" hidden></div><div class="la-pose"></div></div><div class="la-orient">가로 화면에서 더 크게 볼 수 있습니다.<button type="button">작은 화면으로 계속</button></div>';document.body.appendChild(screen);stage=$('.la-stage');$('.la-orient button').addEventListener('click',()=>screen.classList.add('la-allow-portrait'));addEventListener('resize',fit,{passive:true});document.addEventListener('keydown',e=>{if(screen.hidden)return;if(e.key==='Escape'){e.preventDefault();goHome();}else if(e.key==='ArrowLeft'){e.preventDefault();moveHero(-1);}else if(e.key==='ArrowRight'){e.preventDefault();moveHero(1);}else if(e.key==='Enter'&&room==='training'){e.preventDefault();actionTraining();}});fit();}
 function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state();if(!s)return;const h=s.roster[s.active],training=room==='training';stage.className='la-stage '+room;
- const key=$('.la-key');const src=training?'assets/ludus/training_no_doctore.webp':'assets/ludus/armory_approved.webp';if(!key.src.endsWith(src))key.src=src;
+ const key=$('.la-key');const src=training?'assets/ludus/training_no_doctore.webp?v=2':'assets/ludus/armory_approved.webp';if(!key.src.endsWith(src))key.src=src;
  // Keep backdrop and transient NPC pose nodes, replace everything else atomically.
  for(const node of [...stage.children])if(!node.matches('.la-key,.la-notice,.la-pose'))node.remove();
  if(!training&&window.LudusLiveArmory){
@@ -77,7 +77,7 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
   // real artwork-independent actor, live stats and actual owned gladiators.
   const trainer=document.createElement('img');
   trainer.className='la-doctore-live';trainer.dataset.pose='0';
-  trainer.src='assets/ludus/doctore_pose_0.webp';trainer.alt='';
+  trainer.src='assets/ludus/doctore_pose_0.webp?v=3';trainer.alt='';
   trainer.setAttribute('aria-hidden','true');trainer.draggable=false;
   stage.appendChild(trainer);
   window.LudusTrainingV2.mount(stage,a,s,{
@@ -93,7 +93,7 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
   // Native-size transparent instructor is part of the scene, NOT a popup.
   // Its figure has already been removed from the clean background bitmap.
   const instructor=document.createElement('img');instructor.className='la-doctore-live';
-  instructor.dataset.pose='0';instructor.src='assets/ludus/doctore_pose_0.webp';
+  instructor.dataset.pose='0';instructor.src='assets/ludus/doctore_pose_0.webp?v=3';
   instructor.alt='';instructor.setAttribute('aria-hidden','true');
   instructor.draggable=false;stage.appendChild(instructor);
   const parchment=document.createElement('div');
