@@ -334,7 +334,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <div id="careerMini" hidden role="dialog" aria-modal="true" aria-label="훈련"><div class="career-mini-panel"><h2 id="careerMiniTitle"></h2><p id="careerMiniHelp"></p><div class="career-timing"><div class="career-hitzone"></div><div id="careerNeedle"></div></div><div id="careerTrainingResult" class="career-training-result" hidden aria-live="assertive"></div><div class="career-buttons" style="justify-content:center"><button id="careerHit">지금! (SPACE)</button><button id="careerCancel">취소</button></div></div></div>
 <script src="market-scene.js?v=12"></script>
 <script src="growth-frames.js?v=2"></script>
-<script src="sprite-inbetweens.js?v=1"></script>
+<script src="sprite-inbetweens.js?v=2"></script>
 <script src="ludus-roster.js?v=1"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -1494,9 +1494,7 @@ function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
  if(independent&&independent[index]){
    // Original isolated 10-pose legacy fighter, expanded to five living frames.
    const source=independent[index];
-   const progress=(S.phase==='fight'&&S.player&&
-      (S.player.actionT>0||S.enemy?.actionT>0))?null:null;
-   if(!window.SpriteInbetweens?.drawLegacy(ctx,source,index,x,y,w,h,false,1,clock,progress))
+    if(!window.SpriteInbetweens?.drawLegacy(ctx,source,index,x,y,w,h,false,1,clock))
       ctx.drawImage(source,x,y,w,h);
  }else{
    // Fallback for FX atlases, with a strict half-pixel inset against edge bleed.
@@ -1701,16 +1699,17 @@ window.LudusBridge={
   const g=growthImage(h);if(g?.frames?.[9]?.canvas)return g.frames[9].canvas;
   const img=IMG[h.cls];return (img&&INDEPENDENT_CHARACTER_FRAMES.get(img)?.[0])||null;
  },
- trainingFrame:(i,kind='idle')=>{
+ trainingFrame:(i,kind='idle',tick=0)=>{
   const h=CAREER.roster[i];if(!h)return null;
   const ids={idle:9,slash:2,sweep:3,thrust:4,heavy:5};
   const frameIndex=ids[kind]??9;
   const sheet=growthImage(h);
   const frame=sheet?.frames?.[frameIndex]?.canvas;
-  if(frame?.width&&frame?.height)return frame;
+  if(frame?.width&&frame?.height)
+   return window.SpriteInbetweens?.frame(frame,frameIndex,tick)||frame;
   const image=IMG[h.cls],frames=image&&INDEPENDENT_CHARACTER_FRAMES.get(image);
-  const legacy=frames?.[frameIndex]||frames?.[0];
-  return legacy?.canvas||legacy||null;
+  const legacy=frames?.[frameIndex]||frames?.[0],source=legacy?.canvas||legacy||null;
+  return source?window.SpriteInbetweens?.frame(source,frameIndex,tick)||source:null;
  },
  select:(i)=>{if(!CAREER.roster[i])return;CAREER.active=i;saveCareer();renderCareer();},
  section:(tab)=>{CAREER_SELECTING=false;CAREER_TAB=tab==='gear'?'gear':tab==='roster'?'roster':'training';$('#careerHub').hidden=false;renderCareer();if(CAREER_TAB==='roster')window.LudusApprovedScenes?.close();else window.LudusApprovedScenes?.open(CAREER_TAB);},
