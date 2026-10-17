@@ -1494,7 +1494,9 @@ function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
  if(independent&&independent[index]){
    // Original isolated 10-pose legacy fighter, expanded to five living frames.
    const source=independent[index];
-    if(!window.SpriteInbetweens?.drawLegacy(ctx,source,index,x,y,w,h,false,1,clock))
+    // Murmillo pilot: no procedural slice-warp. Keep 100% source pixels
+    // until separately authored animation frames are approved.
+    if(image===IMG.murmillo || !window.SpriteInbetweens?.drawLegacy(ctx,source,index,x,y,w,h,false,1,clock))
       ctx.drawImage(source,x,y,w,h);
  }else{
    // Fallback for FX atlases, with a strict half-pixel inset against edge bleed.
@@ -1514,6 +1516,9 @@ function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
   ((S.phase==='finisher'||S.phase==='result')&&S.resultApplied)?
    clamp(S.resultAnim/1.2,0,.999):null;
  const x0=x+w*(1-scale)/2,y0=y+h*(1-scale),w0=w*scale,h0=h*scale;
+ // Preserve exactly the original Murmillo SD pixels. Do NOT use
+ // the rejected real-time deformation while true drawn frames are pending.
+ if(f.cls==='murmillo')return GrowthFrames.draw(ctx,atlas,index,x0,y0,w0,h0,flip,alpha);
  return window.SpriteInbetweens?.drawGrowth(ctx,atlas,index,x0,y0,w0,h0,flip,alpha,
      clock,progress,(f.footworkSeed||0)*.017)||
   GrowthFrames.draw(ctx,atlas,index,x0,y0,w0,h0,flip,alpha);
@@ -1706,10 +1711,10 @@ window.LudusBridge={
   const sheet=growthImage(h);
   const frame=sheet?.frames?.[frameIndex]?.canvas;
   if(frame?.width&&frame?.height)
-   return window.SpriteInbetweens?.frame(frame,frameIndex,tick)||frame;
+   return h.cls==='murmillo'?frame:(window.SpriteInbetweens?.frame(frame,frameIndex,tick)||frame);
   const image=IMG[h.cls],frames=image&&INDEPENDENT_CHARACTER_FRAMES.get(image);
   const legacy=frames?.[frameIndex]||frames?.[0],source=legacy?.canvas||legacy||null;
-  return source?window.SpriteInbetweens?.frame(source,frameIndex,tick)||source:null;
+  return source?(h.cls==='murmillo'?source:(window.SpriteInbetweens?.frame(source,frameIndex,tick)||source)):null;
  },
  select:(i)=>{if(!CAREER.roster[i])return;CAREER.active=i;saveCareer();renderCareer();},
  section:(tab)=>{CAREER_SELECTING=false;CAREER_TAB=tab==='gear'?'gear':tab==='roster'?'roster':'training';$('#careerHub').hidden=false;renderCareer();if(CAREER_TAB==='roster')window.LudusApprovedScenes?.close();else window.LudusApprovedScenes?.open(CAREER_TAB);},
