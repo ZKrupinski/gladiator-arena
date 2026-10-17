@@ -113,7 +113,13 @@ function drawLegacy(ctx,source,pose,x,y,w,h,flip=false,alpha=1,clock=0,progress=
  ctx.drawImage(pic,x-padX,y-padY,w+padX*2,h+padY*2);
  ctx.restore();return true;
 }
-root.SpriteInbetweens={drawGrowth,drawLegacy,phaseFor,clear(){
+root.SpriteInbetweens={drawGrowth,drawLegacy,phaseFor,
+ // Exposes only additional ORIGINAL-ART frames, suitable for training UI.
+ frame(source,pose,phase=0){
+  const pack=framesFor(source,pose);
+  return pack?.variants?.[Math.abs(Math.floor(phase))%5]||source;
+ },
+ clear(){
  for(const pack of cache.values())for(const canvas of pack.variants){canvas.width=1;canvas.height=1;}
  cache.clear();
 }};
