@@ -11,7 +11,7 @@
 .ll-wallet{position:absolute;right:140px;top:9px;display:flex;gap:20px;align-items:center;z-index:4;padding:9px 17px;background:linear-gradient(#261814fa,#38241bee);border:2px ridge #d2a05c;border-radius:9px;font:bold 24px Georgia}
 .ll-wallet strong{color:#ffe3a3}.ll-menu{position:absolute;left:0;top:95px;width:200px;z-index:4;display:grid;gap:7px}
 .ll-menu button{background:#311b16de;border:2px ridge #ba8d53;padding:18px 10px;min-height:67px;text-align:left;font:bold 24px "Noto Sans KR",sans-serif}
-.ll-menu button:hover{background:#724123ed}.ll-has-art .ll-menu{opacity:0;pointer-events:none}
+.ll-menu button:hover{background:#724123ed}.ll-has-art .ll-menu{opacity:0;visibility:hidden;pointer-events:none}
 .ll-domina{position:absolute;left:193px;top:238px;width:480px;height:535px;background:radial-gradient(ellipse at 45% 24%,#bf874c7a,#6e2b1985 49%,#23110fcc 77%);border:8px ridge #be9656;border-radius:12px;box-shadow:0 6px 30px #0009}
 .ll-domina img{height:100%;width:100%;object-fit:contain;animation:ll-breathe 4s ease-in-out infinite}
 .ll-domina span{position:absolute;bottom:0;left:0;right:0;background:#27140edc;text-align:center;padding:10px;color:#ffdfaa;font-size:24px}
@@ -39,6 +39,7 @@
 .ll-special{position:absolute;left:410px;bottom:349px;display:flex;gap:10px;z-index:5}
 .ll-special button{padding:10px 14px;background:#321d17;border:2px ridge #c39858;border-radius:8px;font:bold 20px "Noto Sans KR",sans-serif}
 .ll-has-art .ll-bottom,.ll-has-art .ll-special{opacity:0;pointer-events:none}
+.ll-has-art .ll-special{visibility:hidden}
 .ll-has-art .ll-hitbuttons{display:block}.ll-hitbuttons{display:none;position:absolute;inset:0;z-index:10;pointer-events:none}
 .ll-hitbuttons button{position:absolute;pointer-events:auto;border:0;background:transparent;opacity:0}
 .ll-hitbuttons button:hover,.ll-hitbuttons button:focus-visible{opacity:1;background:#f5d79437;outline:2px solid #ffe2a0}
@@ -62,7 +63,7 @@
 .ll-wallet span{white-space:nowrap;display:inline-flex;align-items:center;gap:7px}
 .ll-wallet strong{font:800 21px Georgia,"Noto Sans KR",sans-serif;color:#fff1c8}
 .ll-has-art .ll-bottom{opacity:1;pointer-events:none;z-index:11}
-.ll-has-art .ll-bottom .ll-actions{opacity:0;pointer-events:none}
+.ll-has-art .ll-bottom .ll-actions{opacity:0;visibility:hidden;pointer-events:none}
 .ll-has-art .ll-bottom .ll-roster{position:relative;pointer-events:auto;opacity:1;transform:translateY(-17px);background:linear-gradient(115deg,#23140ff7,#19110dfa 70%,#332118f7);border:4px ridge #d2a25a;box-shadow:inset 0 0 10px #7c461b,0 6px 20px #150908cf}
 .ll-has-art .ll-live-counter{display:none}
 .ll-roster h3{font-size:19px;color:#ffe5b8}

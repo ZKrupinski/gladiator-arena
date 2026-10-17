@@ -110,7 +110,10 @@ function restock(){if(mode!=='idle')return;const state=opts.state,stock=inventor
 function close(){if(!scene)return;if(mode==='confirm')cancel();if(mode==='success')hideDialog();scene.hidden=true;clearTimeout(speechReset);clearTimeout(moodTimer);clearInterval(animateTimer);opts?.onExit?.();}
 function keydown(e){if(!scene||scene.hidden)return;
  if(e.key==='Escape'){e.preventDefault();if(mode==='confirm'||mode==='success')cancel();else close();return;}
- if(mode!=='idle')return;
+ if(mode!=='idle'){
+  if(e.key==='Tab'){e.preventDefault();const confirm=$('#gmConfirm'),cancel=$('#gmCancel');(document.activeElement===confirm?cancel:confirm).focus();}
+  e.stopPropagation();return;
+ }
  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
   e.preventDefault();const live=available();if(!live.length)return;
   const x=live.indexOf(selection);selection=live[(x+(e.key==='ArrowRight'?1:live.length-1))%live.length];render();reaction(inventory()[selection].name+'! '+merchantLines.select,'select');

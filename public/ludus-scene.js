@@ -36,7 +36,7 @@ var html=[
 '<div class="ll-doctore"><b>독토레</b>좋다, 자세가 잡히고 있어.<br>더 거칠게! 더 강하게!</div>',
 '<div class="ll-bgfighters"><img src="assets/ludus/fighter_0_0.webp" alt=""><img src="assets/ludus/fighter_1_0.webp" alt=""><img src="assets/ludus/fighter_2_0.webp" alt=""></div>',
 '<div class="ll-special"><button data-action="training">♜ 일괄 훈련</button><button data-action="daily">♕ 보상 수령</button><button data-action="boost">⌛ 훈련 가속</button></div>',
-'<div class="ll-bottom"><div class="ll-roster"><h3>검투사 훈련 현황 <span data-count>0 / 12</span><span class="ll-pager"><button data-action="prev" aria-label="이전 검투사">◀</button><span data-roster-page>1/1</span><button data-action="next" aria-label="다음 검투사">▶</button></span></h3><div class="ll-portraits"></div></div>',
+'<div class="ll-bottom"><div class="ll-roster"><h3>검투사 훈련 현황 <span data-count>0명</span><span class="ll-pager"><button data-action="prev" aria-label="이전 검투사">◀</button><span data-roster-page>1/1</span><button data-action="next" aria-label="다음 검투사">▶</button></span></h3><div class="ll-portraits"></div></div>',
 '<div class="ll-actions"><button data-action="basic"><span class="ll-thumb">⚔</span><strong>기초 훈련</strong><small>검투사의 기본을 다집니다.</small></button>',
 '<button data-action="practice"><span class="ll-thumb">✦</span><strong>실전 훈련</strong><small>경험치와 능력치를 향상시킵니다.</small></button>',
 '<button data-action="arena"><span class="ll-thumb">🏟</span><strong>아레나 출전</strong><small>가장 강한 자를 가립니다.</small></button></div></div>',
@@ -72,7 +72,7 @@ function refresh(){
 if(!scene)return;var a=bridge(),s=a&&a.state();if(!s)return;
 $("[data-gold]").textContent=(Number(s.gold)||0).toLocaleString("ko-KR");
 $("[data-glory]").textContent=(Number(s.glory)||0).toLocaleString("ko-KR");
-$("[data-count]").textContent=s.roster.length+" / 12";
+$("[data-count]").textContent=s.roster.length+"명";
 $("[data-roster-count]").textContent=s.roster.length;
 $("[data-live-counter]").textContent="소속 검투사 "+s.roster.length+"명 · "+(s.message||"훈련을 시작하세요.");
 var host=$(".ll-portraits");host.replaceChildren();
