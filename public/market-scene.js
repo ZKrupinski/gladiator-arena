@@ -144,7 +144,7 @@ function setup(){if(scene)return;
  document.body.appendChild(scene);stage=$('#gmStage');
  window.addEventListener('resize',fit,{passive:true});document.addEventListener('keydown',keydown);
  $('#gmKey').addEventListener('load',e=>{keyImg=e.target;const o=selection<0?null:inventory()[selection];drawPortrait(o);});
- $('#gmBack').addEventListener('click',close);$('#gmHire').addEventListener('click',askPurchase);
+ $('#gmBack').textContent='⌂ 루두스 로비';$('#gmBack').setAttribute('aria-label','메인 루두스 로비로 돌아가기');$('#gmBack').addEventListener('click',close);$('#gmHire').addEventListener('click',askPurchase);
  $('#gmRestock').addEventListener('click',restock);$('#gmCancel').addEventListener('click',cancel);$('#gmConfirm').addEventListener('click',confirm);
  for(let i=0;i<3;i++)$('#gmCard'+i).addEventListener('click',()=>{if(mode!=='idle'||!inventory()[i])return;selection=i;render();reaction(inventory()[i].name+'! '+merchantLines.select,'select');});
  fit();
