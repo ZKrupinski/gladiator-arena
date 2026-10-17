@@ -43,6 +43,12 @@ for i,(sx,sy) in enumerate(source_centres):
     yy,xx=np.ogrid[:H,:W]
     oval=((xx-target[0])/79.)**2+((yy-target[1])/74.)**2
     fade=np.clip((1.15-oval)/.40,0,1)
+    # Remove double neckline/fingers: only eyes, cheeks and mouth may change.
+    fade*=np.clip((452-yy)/17,0,1)
+    fade*=np.clip((444-xx)/18,0,1)
+    if i==0:
+        # Resting state always shows exactly the approved original face.
+        fade*=0
     warp[:,:,3]=np.clip(warp[:,:,3].astype(np.float32)*fade,0,255).astype(np.uint8)
     overlay=Image.fromarray(warp,'RGBA')
     overlay.save(ART/f"domina_face_aligned_{i}.webp",format="WEBP",lossless=True,method=6)
