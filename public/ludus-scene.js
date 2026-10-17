@@ -17,6 +17,7 @@ if(id==="dismiss-orientation"){scene.classList.add("ll-allow-portrait");return;}
 if(id==="back"){close();a.exit();return;}
 if(id==="market"){close();a.market();return;}
 if(id==="prev"||id==="next"){var max=Math.max(0,Math.ceil(a.state().roster.length/6)-1);rosterPage=Math.max(0,Math.min(max,rosterPage+(id==="next"?1:-1)));refresh();return;}
+if(id==="armory"){close();a.section("gear");return;}
 if(id==="roster"||id==="training"||id==="basic"||id==="practice"){close();a.section(id==="roster"?"roster":"training");return;}
 if(id==="arena"){var team=a.state().roster;if(!team.length){notice("검투사시장에서 검투사를 먼저 고용하세요.");return;}if(!team.some(function(h){return Number(h.injury||0)<80;})){notice("출전 가능한 검투사가 없습니다. 치료가 필요합니다.");return;}close();a.fight();return;}
 notice(({coach:"독토레 특훈",upgrade:"시설 강화",elite:"특훈",daily:"보상 수령",boost:"훈련 가속"})[id]+" 기능은 준비 중입니다.");
