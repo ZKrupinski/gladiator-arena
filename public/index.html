@@ -370,13 +370,13 @@ for(const [key,url] of Object.entries(CINEMATIC_ASSETS)){
 // the same visual identity. Do not swap the class keys in emitAttackFx().
 // Sprite atlases are content-aware repacked into exact 420px cells to avoid clipped weapon tips and frame bleed.
 const ATLAS_COLS=5, ATLAS_ROWS=2;
-// Characters visually occupy ~240-300px at this sprite scale. Keep bodies apart
-// and extend hit range to account for weapon reach; always render PLAYER on top.
-const MIN_FIGHTER_DISTANCE=276, AI_SPACING_BUFFER=38, FIGHTER_DRAW_SIZE=348;
+// v5.7: body collision follows the visible torsos rather than the full 348px sprite frame.
+// Weapons may extend beyond the body pivot; keep a small stance gap without giant invisible walls.
+const MIN_FIGHTER_DISTANCE=200, AI_SPACING_BUFFER=18, FIGHTER_DRAW_SIZE=348;
 const DATA={
- murmillo:{name:'무르밀로',eng:'MURMILLO',hp:138,atk:17,reach:331,move:244,sp:42,color:'#ce7652',special:'SCUTUM IMPACT'},
- thraex:{name:'트라엑스',eng:'THRAEX',hp:113,atk:18,reach:347,move:290,sp:35,color:'#8baec6',special:'SICA CROSS CUT'},
- retiarius:{name:'레티아리우스',eng:'RETIARIUS',hp:116,atk:16,reach:372,move:271,sp:36,color:'#accbb6',special:'RETE CAPTURA'}
+ murmillo:{name:'무르밀로',eng:'MURMILLO',hp:138,atk:17,reach:279,move:244,sp:42,color:'#ce7652',special:'SCUTUM IMPACT'},
+ thraex:{name:'트라엑스',eng:'THRAEX',hp:113,atk:18,reach:292,move:290,sp:35,color:'#8baec6',special:'SICA CROSS CUT'},
+ retiarius:{name:'레티아리우스',eng:'RETIARIUS',hp:116,atk:16,reach:312,move:271,sp:36,color:'#accbb6',special:'RETE CAPTURA'}
 };
 const FRAMES={idle:0,walk:1,attack:2,special:3,guard:4,dodge:5,hit:6,net:7,finisher:8,defeat:9};
 const AUTO_IDLE_SECONDS=2;
@@ -1019,7 +1019,7 @@ function autoPilotPlayer(p,e,dt){
  p.face=dir;p.guard=p.guardHold>0&&p.st>8&&p.stagger<=0;
  if(p.stagger>0||p.dodge>0||p.net>0)return;
  if(p.guard){p.vx=0;return;}
- const ideal=Math.max(MIN_FIGHTER_DISTANCE+24, Math.min(p.cfg.reach-13,352));
+ const ideal=Math.max(MIN_FIGHTER_DISTANCE+24,Math.min(p.cfg.reach-52,302));
  if(distance>ideal+13){p.vx=dir*p.cfg.move*.77;p.x+=p.vx*dt;}
  else if(distance<ideal-17){p.vx=-dir*p.cfg.move*.39;p.x+=p.vx*dt;}
  // Anticipatory guard: attacks apply damage immediately, so AI must guard before impact.
@@ -1372,7 +1372,7 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  e.guard=e.pressureT<=0&&e.guardHold>0&&e.st>8&&e.stagger<=0;
  if(e.stagger<=0&&!e.comboDash){
   const dist=Math.abs(e.x-p.x),dir=Math.sign(p.x-e.x)||-1;e.face=dir;
-  const preferred=Math.max(MIN_FIGHTER_DISTANCE+AI_SPACING_BUFFER,e.cfg.reach-13);
+  const preferred=Math.max(MIN_FIGHTER_DISTANCE+AI_SPACING_BUFFER,e.cfg.reach-55);
   if(!e.guard){
    if(dist>preferred+22){if(!preEngagementFootwork(e,p,dt)){e.vx=dir*e.cfg.move*.68;e.x+=e.vx*dt;}}
    else if(dist<preferred-22){e.vx=-dir*e.cfg.move*.32;e.x+=e.vx*dt;}
