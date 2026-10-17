@@ -25,10 +25,10 @@ W,H=base.size
 assert (W,H)==(1448,1086)
 # Fixed real facial location in the approved key visual (1448x1086).
 # The head remains painted at its original scale, expression-only coverage.
-target=(352.,385.)
+target=(375.,394.)
 # Manually anchored landmark centres based on the existing original poses.
 source_centres=[(173,128),(173,134),(175,130),(174,132),(180,140),(178,135)]
-scale=1.00
+scale=1.32
 for i,(sx,sy) in enumerate(source_centres):
     im=Image.open(ART/f"domina_{i}.webp").convert("RGBA")
     rgba=np.asarray(im)
@@ -41,7 +41,7 @@ for i,(sx,sy) in enumerate(source_centres):
     # Soft oval of expression only; transparent elsewhere. Face never changes
     # size, retains original coiffure, arms, posture and background.
     yy,xx=np.ogrid[:H,:W]
-    oval=((xx-target[0])/65.)**2+((yy-target[1])/61.)**2
+    oval=((xx-target[0])/79.)**2+((yy-target[1])/74.)**2
     fade=np.clip((1.15-oval)/.40,0,1)
     warp[:,:,3]=np.clip(warp[:,:,3].astype(np.float32)*fade,0,255).astype(np.uint8)
     overlay=Image.fromarray(warp,'RGBA')
