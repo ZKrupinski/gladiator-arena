@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SPARTACUS · 원본 검투사 5프레임 애니메이션 검수</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#170e0d;color:#f4deb4;font:14px/1.5 system-ui,'Noto Sans KR',sans-serif}
+header{padding:15px 18px;background:linear-gradient(130deg,#562820,#291711);border-bottom:2px solid #ab7842}
+h1{margin:0;font:800 22px/1.4 Georgia,serif}header p{margin:5px 0 0;color:#d2b58a}
+main{max-width:1120px;margin:auto;padding:15px;display:grid;gap:13px}
+nav{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+label{display:flex;align-items:center;gap:7px;color:#e6c995}
+select,button{font:inherit;color:#f8e4bf;background:#3e251a;border:1px solid #b68a4f;border-radius:7px;padding:10px 11px;cursor:pointer}
+select:focus,button:focus-visible{outline:3px solid #e7b85c}
+button[aria-pressed="true"]{background:#925024;border-color:#f4d498}
+.stage{background:radial-gradient(ellipse at center,#513d2a,#1a1412 74%);border:3px ridge #ba874e;box-shadow:0 12px 36px #05030290;border-radius:9px;overflow:hidden}
+canvas{display:block;max-width:100%;height:auto;margin:auto}
+#mainCanvas{width:min(100%,750px)}
+#strip{width:100%;background:repeating-conic-gradient(#483b35 0% 25%,#342a26 0% 50%) 50% / 20px 20px}
+.caption{font-size:12px;color:#c4a780}.note{color:#dbbf96;background:#291a14;padding:9px 12px;border-left:3px solid #be8843}
+a{color:#ffd894}
+</style></head><body><header><h1>SPARTACUS · 실제 검투사 프레임 검수</h1>
+<p>교체용 캐릭터가 아닌 게임 원본 성장 시트 20장 · 240개 키포즈의 5프레임 보강</p></header>
+<main>
+<nav>
+<label>검투사 <select id="type"><option value="murmillo_a">무르밀로</option><option value="thraex_a">트라엑스 A</option><option value="thraex_b">트라엑스 B</option><option value="retiarius_a">레티아리우스</option></select></label>
+<label>등급 <select id="tier"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
+<label>키포즈 <select id="pose"></select></label>
+<button type="button" id="animate" aria-pressed="true">5프레임 재생</button>
+<button type="button" id="original" aria-pressed="false">원본 1프레임 비교</button>
+</nav>
+<div class="stage"><canvas id="mainCanvas" width="750" height="540" aria-label="선택된 검투사 애니메이션"></canvas></div>
+<div class="stage"><canvas id="strip" width="1090" height="260" aria-label="원본 및 추가 4프레임 나란히 보기"></canvas></div>
+<div id="status" aria-live="polite" class="caption">원본 성장 시트 로딩 중...</div>
+<div class="note">동작 보강은 원본 이미지를 기반으로 한 제한적인 변형입니다. 기존 키포즈, 등급별 장비와 캐릭터 정체성은 유지하지만, 별도로 그린 고난도 액션 인비트윈과 동일하지는 않습니다.</div>
+<a href="./">← 실제 게임으로 돌아가기</a>
+</main>
+<script src="growth-frames.js?v=2"></script>
+<script src="sprite-inbetweens.js?v=2"></script>
+<script>
+(()=>{'use strict';
+const $=q=>document.querySelector(q),canvas=$('#mainCanvas'),ctx=canvas.getContext('2d'),strip=$('#strip'),stripCtx=strip.getContext('2d');
+const poseNames=['기본자세','이동','공격','특수 공격','키포즈 4','키포즈 5','방어','피격','회피','기본 스탠딩','승리','패배'];
+$('#pose').innerHTML=poseNames.map((name,i)=>'<option value="'+i+'">'+i+' · '+name+'</option>').join('');
+let cuts=null,atlas=null,ready=false,mode='animate',selectedKey='',loadId=0;
+const status=$('#status');
+async function load(){
+ const id=++loadId;ready=false;atlas=null;status.textContent='실제 원본 스프라이트를 불러오는 중...';
+ try{
+  if(!cuts){const res=await fetch('assets/ludus-growth/frame-cuts.json?v=2');if(!res.ok)throw Error('키포즈 영역 다운로드 실패');cuts=await res.json();}
+  const key=$('#type').value+'_L'+$('#tier').value;
+  const image=new Image();await new Promise((resolve,reject)=>{
+   image.onload=resolve;image.onerror=()=>reject(Error('원본 이미지 다운로드 실패'));image.src='assets/ludus-growth/'+key+'.png';
+  });
+  if(id!==loadId)return;
+  atlas=GrowthFrames.isolate(image,cuts.sheets[key]);selectedKey=key;ready=true;
+  status.textContent='원본: '+key+' · 키포즈 12개 · 각 원본+추가 4프레임 · 총 60프레임';
+  drawStrip();
+ }catch(e){status.textContent='로딩 오류: '+e.message;console.error(e);}
+}
+function drawStrip(){
+ stripCtx.clearRect(0,0,strip.width,strip.height);
+ if(!ready)return;
+ const p=Number($('#pose').value),f=atlas.frames[p];
+ for(let i=0;i<5;i++){
+  const img=SpriteInbetweens.frame(f.canvas,p,i);
+  const areaX=i*strip.width/5,cellW=strip.width/5;
+  const scale=Math.min((cellW-17)/img.width,(strip.height-18)/img.height);
+  const w=img.width*scale,h=img.height*scale;
+  stripCtx.drawImage(img,areaX+(cellW-w)/2,strip.height-h-8,w,h);
+  stripCtx.fillStyle='#fff0c7';stripCtx.font='bold 16px Georgia';
+  stripCtx.fillText(i===0?'원본':'추가 '+i,areaX+11,22);
+ }
+}
+function draw(now){
+ requestAnimationFrame(draw);
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ if(!ready)return;
+ const p=Number($('#pose').value),time=now/1000;
+ if(mode==='original') GrowthFrames.draw(ctx,atlas,p,74,22,610,500,false,1);
+ else SpriteInbetweens.drawGrowth(ctx,atlas,p,74,22,610,500,false,1,time);
+}
+for(const q of ['#type','#tier'])$(q).addEventListener('change',load);
+$('#pose').addEventListener('change',drawStrip);
+for(const id of ['animate','original'])$('#'+id).onclick=()=>{
+ mode=id;
+ for(const q of ['animate','original'])$('#'+q).setAttribute('aria-pressed',String(q===id));
+};
+load();requestAnimationFrame(draw);
+})();
+</script></body></html>
