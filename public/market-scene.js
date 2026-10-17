@@ -161,7 +161,7 @@ function keydown(e){if(!scene||scene.hidden)return;
 function setup(){if(scene)return;
  scene=document.createElement('section');scene.className='gm-screen';scene.id='slaveMarket';scene.hidden=true;scene.setAttribute('role','dialog');scene.setAttribute('aria-label','검투사시장');
  scene.innerHTML=`<div class="gm-stage" id="gmStage">
-  <img class="gm-key-art" id="gmKey" src="assets/market/market_keyvisual_no_merchant.webp" alt="" aria-hidden="true" decoding="sync" draggable="false">
+  <img class="gm-key-art" id="gmKey" src="assets/market/market_keyvisual_no_merchant.webp?v=3" alt="" aria-hidden="true" decoding="sync" draggable="false">
   <img class="gm-merchant-full gm-pose-1" id="gmMerchantMain" src="assets/market/merchant_pose_1.webp" alt="" aria-hidden="true" draggable="false">
   <div class="gm-paper-foreground" aria-hidden="true"></div>
   <button type="button" class="gm-back-hit" id="gmBack" aria-label="루두스로 돌아가기" title="루두스로 돌아가기"></button>
