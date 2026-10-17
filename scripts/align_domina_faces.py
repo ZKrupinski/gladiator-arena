@@ -16,6 +16,11 @@ ART=ROOT/"public/assets/ludus"
 PREVIEW=ROOT/"docs/qa/domina-corrected"
 PREVIEW.mkdir(parents=True,exist_ok=True)
 base=Image.open(ART/"ludus_ui.webp").convert("RGBA")
+# Reference crop uses original image to confirm real eyes/nose/lips location.
+original=Image.open(ART/"ludus_ui.webp").convert("RGB")
+original.crop((228,260,492,495)).resize((528,470),Image.Resampling.NEAREST).save(
+    PREVIEW/"zoom_original.webp","WEBP",quality=95)
+
 W,H=base.size
 assert (W,H)==(1448,1086)
 # Fixed real facial location in the approved key visual (1448x1086).
