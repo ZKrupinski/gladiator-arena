@@ -46,7 +46,34 @@ for i in range(4):
   # Expand inside the flat region slightly to clear anti-aliasing remnants.
   band=cv2.dilate(band,np.ones((5,5),np.uint8),iterations=2)
   pixels[:,:,3][band>0]=0
-  if i>=2: pixels[:8,:,3]=0  # upper neighbour frame's stray feet
+  # The contact sheet has rectangular stray pixels bleeding in from the
+  # adjacent cell. Clip these ONLY on the original right edge outside the
+  # instructor's contour; never blur the real silhouette.
+  yy=lambda f:int(round(ph*f))
+  xx=lambda f:int(round(pw*f))
+  if i==0:
+      pixels[yy(.40):yy(.64),xx(.76):,3]=0
+  elif i==1:
+      pixels[yy(.15):yy(.68),xx(.78):,3]=0
+      pixels[yy(.43):yy(.64),xx(.755):,3]=0
+  elif i==2:
+      pixels[:yy(.027),:,3]=0
+      pixels[yy(.28):yy(.57),xx(.77):,3]=0
+  else:
+      # Whip is an independently thin arc on the right; retain it while
+      # clearing the underlying rectangular red concept-sheet residue.
+      arc=np.zeros((ph,pw),np.uint8)
+      trace=np.array([(int(pw*x),int(ph*y)) for x,y in [
+          (.55,.13),(.67,.05),(.83,.03),(.96,.11),
+          (.98,.24),(.95,.34),(.86,.43),(.74,.48),(.69,.49)
+      ]],np.int32)
+      cv2.polylines(arc,[trace],False,255,thickness=20,lineType=cv2.LINE_AA)
+      prior=pixels[:,:,3].copy()
+      pixels[yy(.18):yy(.65),xx(.69):,3]=0
+      pixels[yy(.30):yy(.50),xx(.62):,3]=0
+      pixels[yy(.83):,xx(.81):,3]=0
+      pixels[:yy(.027),:,3]=0
+      pixels[:,:,3][arc>0]=prior[arc>0]
   pose=Image.fromarray(pixels,'RGBA')
   bounds=pose.getchannel("A").getbbox()
   if not bounds: raise RuntimeError(f"Empty instructor pose {i}")
