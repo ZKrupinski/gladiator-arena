@@ -12,7 +12,7 @@ function rank(h){if(h.appearance==='legacy')return 'CHAMPION';var lv=level(h);re
 function className(h){var n={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};return n[h.cls]||h.cls||'검투사';}
 function injury(h){return Math.max(0,Number(h.injury)||0);}
 function wounded(h){return injury(h)>=80;}
-function percent(h){return Math.min(100,Math.max(0,Math.round((h.xp||0)/(30+level(h)*15)*100)));}
+function percent(h){return level(h)>=20?100:Math.min(100,Math.max(0,Math.round((h.xp||0)/(30+level(h)*15)*100)));}
 function card(h,i,selected,draft){
  var off=draft&&wounded(h),condition=wounded(h)?'출전 불가':injury(h)>0?'부상 '+injury(h):'정상';
  return '<button type="button" class="lc-fighter-card '+(selected?'is-selected ':'')+(off?'is-blocked':'')+'" data-'+(draft?'candidate':'unit')+'="'+i+'" '+(off?'disabled ':'')+'aria-pressed="'+selected+'" aria-label="'+safe(h.name)+' '+className(h)+' '+condition+'">'+
@@ -106,7 +106,7 @@ function draft(enemy,painter){
  '<div class="lc-opponent"><div class="lc-section-head"><h2>⚔ 이번 경기의 상대</h2><small>'+(enemy.boss?'보스 · 승리 시 영입':'일반 경기')+'</small></div>'+
  '<div class="lc-enemy-frame"><span class="lc-rank lc-enemy-rank">'+(enemy.boss?'LEGENDARY':'GRADE '+enemy.stage)+'</span>'+
  '<canvas id="ludusOpponentArt" width="355" height="350" aria-label="상대 검투사 대기 자세"></canvas>'+
- '<div class="lc-enemy-name">'+safe(enemy.name)+'<small>'+safe((enemy.boss?enemy.cls:enemy.growthType)||'')+' · Lv.'+Number(enemy.level||1)+'</small></div></div>'+
+ '<div class="lc-enemy-name">'+safe(enemy.name)+'<small>'+className(enemy)+' · '+(enemy.boss?'챔피언':'성장 '+Number(enemy.stage||1)+'단계')+' · Lv.'+Number(enemy.level||1)+'</small></div></div>'+
  '<div class="lc-matchup"><div><small>나의 출전 후보</small><strong>'+safe(pick?pick.name:'선택 필요')+'</strong></div><span>VS</span><div><small>상대 검투사</small><strong>'+safe(enemy.name)+'</strong></div></div>'+
  '<div class="lc-buttons lc-draft-actions"><button id="lcDraftCancel">선택 취소</button><button class="lc-emphasis" id="lcDeploy" '+(!pick?'disabled':'')+'>⚔ '+(pick?safe(pick.name)+' 출전 확정':'출전 불가')+'</button></div>'+
  '</div></div><div class="lc-hint">부상 80 이상은 출전할 수 없습니다. 선택한 검투사만 경험치와 부상을 받습니다.</div></section>';
