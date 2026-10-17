@@ -20,7 +20,7 @@ if(id==="prev"||id==="next"){var max=Math.max(0,Math.ceil(a.state().roster.lengt
 if(id==="armory"){close();a.section("gear");return;}
 if(id==="roster"||id==="training"||id==="basic"||id==="practice"){close();a.section(id==="roster"?"roster":"training");return;}
 if(id==="arena"){var team=a.state().roster;if(!team.length){notice("검투사시장에서 검투사를 먼저 고용하세요.");return;}if(!team.some(function(h){return Number(h.injury||0)<80;})){notice("출전 가능한 검투사가 없습니다. 치료가 필요합니다.");return;}close();a.fight();return;}
-notice(({coach:"독토레 특훈",upgrade:"시설 강화",elite:"특훈",daily:"보상 수령",boost:"훈련 가속"})[id]+" 기능은 준비 중입니다.");
+/* Lobby actions are intentionally limited to playable destinations. */
 }
 function setup(){
 if(scene)return;
@@ -32,34 +32,19 @@ var html=[
 '<img class="ll-domina-blink" src="assets/ludus/domina_blink.webp" alt="" aria-hidden="true">',
 '<button class="ll-title" data-action="back">❮ 루두스</button>',
 '<div class="ll-wallet" aria-label="실시간 루두스 자원"><span>🪙 금화 <strong data-gold>0</strong></span><span>✥ 명예 <strong data-glory>0</strong></span><span>⚔ 소속 <strong data-roster-count>0</strong></span></div>',
-'<div class="ll-menu"><button data-action="basic">▤ 훈련장</button><button data-action="roster">♜ 관리</button><button data-action="coach">⚔ 교관</button><button data-action="upgrade">⚒ 시설 강화</button><button data-action="elite">❧ 특훈</button></div>',
+'<div class="ll-menu" role="navigation" aria-label="루두스 주요 시설"><button type="button" data-action="training">⚔ 훈련소</button><button type="button" data-action="roster">♜ 검투사 관리</button><button type="button" data-action="armory">🛡 장비실</button><button type="button" data-action="market">🏛 검투사시장</button><button type="button" data-action="arena">⚔ 아레나 출전</button></div>',
 '<div class="ll-speech"><b>도미나</b>훌륭해…\n우리의 검투사들이 이렇게 성장하는 걸 보는 게 가장 큰 즐거움이란다.</div>',
 '<div class="ll-doctore"><b>독토레</b>좋다, 자세가 잡히고 있어.<br>더 거칠게! 더 강하게!</div>',
 '<div class="ll-bgfighters"><img src="assets/ludus/fighter_0_0.webp" alt=""><img src="assets/ludus/fighter_1_0.webp" alt=""><img src="assets/ludus/fighter_2_0.webp" alt=""></div>',
-'<div class="ll-special"><button data-action="training">♜ 일괄 훈련</button><button data-action="daily">♕ 보상 수령</button><button data-action="boost">⌛ 훈련 가속</button></div>',
 '<div class="ll-bottom"><div class="ll-roster"><h3>검투사 훈련 현황 <span data-count>0명</span><span class="ll-pager"><button data-action="prev" aria-label="이전 검투사">◀</button><span data-roster-page>1/1</span><button data-action="next" aria-label="다음 검투사">▶</button></span></h3><div class="ll-portraits"></div></div>',
 '<div class="ll-actions"><button data-action="basic"><span class="ll-thumb">⚔</span><strong>기초 훈련</strong><small>검투사의 기본을 다집니다.</small></button>',
 '<button data-action="practice"><span class="ll-thumb">✦</span><strong>실전 훈련</strong><small>경험치와 능력치를 향상시킵니다.</small></button>',
 '<button data-action="arena"><span class="ll-thumb">🏟</span><strong>아레나 출전</strong><small>가장 강한 자를 가립니다.</small></button></div></div>',
 '<div class="ll-live-counter" data-live-counter>소속 검투사 0명</div>',
-'<div class="ll-hitbuttons">',
-'<button data-action="basic" style="left:0;top:95px;width:206px;height:83px" aria-label="훈련장"></button>',
-'<button data-action="roster" style="left:0;top:180px;width:206px;height:75px" aria-label="관리"></button>',
-'<button data-action="coach" style="left:0;top:260px;width:206px;height:77px" aria-label="교관"></button>',
-'<button data-action="upgrade" style="left:0;top:340px;width:206px;height:74px" aria-label="시설 강화"></button>',
-'<button data-action="elite" style="left:0;top:418px;width:206px;height:78px" aria-label="특훈"></button>',
-'<button data-action="basic" style="left:775px;top:762px;width:196px;height:255px" aria-label="기초 훈련"></button>',
-'<button data-action="practice" style="left:981px;top:762px;width:196px;height:255px" aria-label="실전 훈련"></button>',
+'<div class="ll-hitbuttons" aria-label="로비 하단 바로가기">',
+'<button data-action="training" style="left:775px;top:762px;width:196px;height:255px" aria-label="훈련소로 이동"></button>',
+'<button data-action="training" style="left:981px;top:762px;width:196px;height:255px" aria-label="훈련소로 이동"></button>',
 '<button data-action="arena" style="left:1184px;top:762px;width:207px;height:255px" aria-label="아레나 출전"></button>',
-'<button data-action="training" style="left:439px;top:758px;width:93px;height:110px" aria-label="일괄 훈련"></button>',
-'<button data-action="daily" style="left:540px;top:758px;width:104px;height:110px" aria-label="보상 수령"></button>',
-'<button data-action="boost" style="left:653px;top:758px;width:103px;height:110px" aria-label="훈련 가속"></button>',
-'<button data-action="market" style="left:452px;top:887px;width:77px;height:95px" aria-label="검투사시장"></button>',
-'<button data-action="select" data-index="0" style="left:34px;top:879px;width:79px;height:99px" aria-label="소속 검투사 1 선택"></button>',
-'<button data-action="select" data-index="1" style="left:118px;top:879px;width:79px;height:99px" aria-label="소속 검투사 2 선택"></button>',
-'<button data-action="select" data-index="2" style="left:202px;top:879px;width:79px;height:99px" aria-label="소속 검투사 3 선택"></button>',
-'<button data-action="select" data-index="3" style="left:286px;top:879px;width:79px;height:99px" aria-label="소속 검투사 4 선택"></button>',
-'<button data-action="select" data-index="4" style="left:370px;top:879px;width:79px;height:99px" aria-label="소속 검투사 5 선택"></button>',
 '</div><div class="ll-toast" hidden role="status"></div></div><div class="ll-orientation" role="dialog" aria-label="가로 화면 권장"><div class="ll-rotate-icon" aria-hidden="true">↻</div><strong>가로 화면에서 플레이해 주세요</strong><p>루두스는 가로형 게임 화면으로 제작되었습니다.<br>기기를 가로로 돌리면 버튼과 검투사가 크게 보입니다.</p><button data-action="dismiss-orientation">작은 화면으로 계속 보기</button></div>'
 ];
 scene.innerHTML=html.join("");document.body.appendChild(scene);stage=$(".ll-stage");
