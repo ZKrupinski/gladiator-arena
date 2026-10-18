@@ -7,7 +7,7 @@
 const TIME={arrive:.96,grip:.48,haul:1.92,exit:.34};
 TIME.total=TIME.arrive+TIME.grip+TIME.haul+TIME.exit;
 const W=1280,FLOOR=617,ATLAS_COLS=8,CELL_W=340,CELL_H=370;
-const SD_ART='assets/npc/carnifex-sd-atlas.webp?v=3';
+const SD_ART='assets/npc/carnifex-sd-atlas.webp?v=4';
 const OLD_ART='assets/npc/carnifex-executioner.svg?v=1';
 const EASE=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
 const LERP=(a,b,t)=>a+(b-a)*t;
@@ -71,7 +71,6 @@ function drawExecutioner(ctx,seq,pose,floorY){
  const backup=fallback?.complete&&fallback.naturalWidth?fallback:null;
  if(!art&&!backup)return;
  const side=seq.side;
- const travel=pose.phase==='walk'? -side:side;
  // Walk into the arena facing the fallen fighter. Turn during the grip,
  // then move out with the dragging hand behind the character, next to the corpse.
  const inward=pose.phase==='walk'||(pose.phase==='grab'&&pose.frame<=1);
@@ -88,7 +87,7 @@ function drawExecutioner(ctx,seq,pose,floorY){
  if(art){
   const row=pose.phase==='walk'?0:1;
   const frame=pose.frame;
-  // Feet of both rows are aligned at precisely the same atlas y=356.
+  // All sixteen sprites have a cleaned toe silhouette and atlas baseline y=335.
   ctx.drawImage(art,frame*CELL_W,row*CELL_H,CELL_W,CELL_H,
    -218,-444,436,466);
  }else{
@@ -100,20 +99,24 @@ function draw(ctx,seq,drawBody,floorY=FLOOR){
  if(!ctx||!seq||typeof drawBody!=='function')return;
  const pose=positions(seq);
  // Subtly recessed depth, while feet and the collected corpse remain on the sand.
- ctx.save();ctx.translate(0,-14);
+ ctx.save();
+ // Place the bulky executioner 10px farther upstage than the corpse;
+ // the new painted atlas also gives the boots a raised, uncropped baseline.
+ ctx.save();ctx.translate(0,-24);
  drawExecutioner(ctx,seq,pose,floorY);
+ ctx.restore();
  if(pose.bodyVisible){
   const corpse={...seq.body,x:pose.bodyX,dead:true,hp:0,
    action:'defeat',actionT:0,comboDash:null,vx:0,dodge:0,invuln:0};
-  ctx.save();ctx.filter='saturate(.82) brightness(.86)';
+  ctx.save();ctx.translate(0,-14);ctx.filter='saturate(.82) brightness(.86)';
   drawBody(corpse);
   ctx.restore();
  }
  ctx.restore();
 }
-root.ArenaCarnifex={version:'3.0.0',TIME,begin,advance,positions,draw,preload,
+root.ArenaCarnifex={version:'4.0.0',TIME,begin,advance,positions,draw,preload,
  isReady:()=>!!(artwork?.complete&&artwork.naturalWidth===ATLAS_COLS*CELL_W),
- sprite:{width:2720,height:740,frameWidth:CELL_W,frameHeight:CELL_H,frames:8,source:SD_ART}
+ sprite:{width:2720,height:740,frameWidth:CELL_W,frameHeight:CELL_H,frames:8,baselineY:335,source:SD_ART}
 };
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaCarnifex;
 })(globalThis);
