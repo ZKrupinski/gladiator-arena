@@ -185,6 +185,21 @@ function advance(battle,dt,commands={}){
   }
   if(f.attackT<=0&&f.stagger<=0&&f.guard<=0)f.action=Math.abs(distance)>f.range?'walk':'idle';
  }
+ // Same-lane allies maintain readable formation spacing instead of
+ // collapsing into the same sprite when chasing one remaining opponent.
+ for(const team of [battle.party,battle.foes]){
+  const members=alive(team);
+  for(let i=0;i<members.length;i++)for(let j=i+1;j<members.length;j++){
+   const left=members[i],right=members[j];
+   if(left.lane!==right.lane)continue;
+   const delta=right.x-left.x;
+   if(Math.abs(delta)>=96)continue;
+   const push=(96-Math.abs(delta))*.5;
+   const sign=delta>=0?1:-1;
+   left.x=clamp(left.x-sign*push,105,1175);
+   right.x=clamp(right.x+sign*push,105,1175);
+  }
+ }
  const a=alive(battle.party),e=alive(battle.foes);
  if(!a.length||!e.length||battle.t>=battle.maxTime){
   battle.state='finished';
