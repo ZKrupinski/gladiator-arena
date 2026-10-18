@@ -1,0 +1,28 @@
+{
+  "testedAt": "2026-10-18T03:12:24.400Z",
+  "source": "local GitHub Pages public/",
+  "samples": {
+    "idle": {
+      "changedChannels": 36143,
+      "totalDifference": 2722433
+    },
+    "walk": {
+      "changedChannels": 240565,
+      "totalDifference": 21077272
+    },
+    "slash": {
+      "changedChannels": 221609,
+      "totalDifference": 20111219
+    },
+    "thrust": {
+      "changedChannels": 260029,
+      "totalDifference": 23331364
+    },
+    "victory": {
+      "changedChannels": 11702,
+      "totalDifference": 1325881
+    }
+  },
+  "version": "3.0.0",
+  "status": "PASS"
+}
