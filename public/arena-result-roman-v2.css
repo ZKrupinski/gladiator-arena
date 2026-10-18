@@ -6,7 +6,7 @@
  min-height:0;max-height:calc(100dvh - 22px);
  padding:clamp(33px,5vh,63px) clamp(36px,6vw,82px) clamp(34px,5vh,57px);
  border:0;border-radius:0;color:#ffe6b8;
- background:linear-gradient(0deg,#230f0bd4,#270f0db1 25%,#24120aa5 77%,#160a08bb),
+ background:linear-gradient(0deg,#230f0ba6,#270f0b70 28%,#24120a78 77%,#160a08b2),
  url('assets/new-era/arena.webp') center 58% / cover no-repeat;
  box-shadow:0 24px 65px #060101ec,0 0 65px #edb6591f;
 }
@@ -25,8 +25,9 @@
 #endScreen .roman-results-pennant.left{left:7.5%}
 #endScreen .roman-results-pennant.right{right:7.5%}
 #endScreen .roman-results-pennant::after{
- content:'❧';display:block;margin:32% auto 0;color:#f4c36c;
- font:900 clamp(19px,4vw,35px)/1 Georgia,serif;text-shadow:0 1px #4b190c;text-align:center
+ content:'';display:block;width:70%;aspect-ratio:1;max-height:58%;margin:16% auto 0;
+ background:url('assets/new-era/cinematic/roman-laurel-badge.svg?v=1') center/contain no-repeat;
+ filter:drop-shadow(0 2px 2px #431309);
 }
 #endScreen .stage-panel-ending .eyebrow{font:700 clamp(9px,1.3vw,13px)/1.2 Georgia,serif;letter-spacing:.24em;color:#ffe5a2;text-shadow:0 2px 7px #100501;margin:0 auto 3px}
 #endScreen .stage-panel-ending .result-banner{display:block;width:min(94%,680px);max-height:clamp(83px,20dvh,170px);height:auto;object-fit:contain;margin:0 auto -1px;filter:drop-shadow(0 5px 8px #000c)}
