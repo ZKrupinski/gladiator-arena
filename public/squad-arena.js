@@ -57,6 +57,17 @@ function makeBattle(mode,party,opponent,random=Math.random){
  // Solo survival has multiple coordinated threats, but must remain
  // realistically beatable by a trained fighter using dodges and class skills.
  // Small pressure scaling avoids the old three-enemy stun-lock death spiral.
+ if(spec.allies===spec.enemies&&spec.allies>=2){
+  // Coordinated opposing formations need genuine preparation, not just an
+  // extra body count. The bonus applies only to team-versus-team modes.
+  for(const foe of foes){
+   foe.atk=Math.round(foe.atk*1.20);
+   foe.sp=Math.round(foe.sp*1.16);
+   foe.maxHp=Math.round(foe.maxHp*1.18);
+   foe.hp=foe.maxHp;
+   foe.armor=clamp(foe.armor+.025,0,.46);
+  }
+ }
  if(spec.allies===1&&spec.enemies>=2){
   const factor=spec.enemies===3?.70:.84;
   for(const foe of foes){
