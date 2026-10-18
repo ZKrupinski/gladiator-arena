@@ -1103,6 +1103,135 @@ function start(mode='new',requestedRosterIndex=null){
  S.careerMatch=careerMatch;
  $('#startScreen').hidden=true;$('#endScreen').hidden=true;$('#pauseBtn').textContent='Ⅱ';updateHud();fxSound('start');
 }
+/* Ordered arena events: one REAL original duel at a time. The original
+ * fighter renderer, camera, mobile buttons, hotkeys, effects and collision
+ * system are preserved; only the participants rotate after each elimination.
+ */
+function updateLineupHud(){
+ const hud=document.getElementById('lineupHud');
+ if(!hud)return;
+ const q=S.gauntlet;
+ hud.hidden=!q||S.phase==='title'||S.phase==='result';
+ if(!q)return;
+ const names=q.allies.map((i,n)=>(n<q.allyIndex?'✕ ':n===q.allyIndex?'▶ ':'')+(n+1)+'. '+(CAREER.roster[i]?.name||'검투사'));
+ const enemy=q.enemies.map((f,n)=>(n<q.enemyIndex?'✕ ':n===q.enemyIndex?'▶ ':'')+(n+1)+'. '+f.name);
+ hud.textContent='순차 대진 '+q.mode+' · '+q.round+'번째 결투  |  아군 '+names.join(' / ')+'  |  상대 '+enemy.join(' / ');
+}
+function lineupHero(index){
+ const h=CAREER.roster[index],f=fighter(h.cls,335,false);
+ if(isChampionMurmillo(h)){f.championVariant=CHAMPION_MURMILLO_VARIANT;f.growthType='murmillo_a';f.growthLevel=5;}
+ else if(isAnimatedMurmillo(h)){f.motionVariant=ANIMATED_MURMILLO_VARIANT;f.growthType='murmillo_a';f.growthLevel=5;}
+ else if(h.appearance!=='legacy'){f.growthType=growthType(h);f.growthLevel=careerStage(h);}
+ const cfg=ArenaBalance.heroStats(h,f.cfg,equipmentBonus(h));
+ f.cfg={...f.cfg,name:h.name+' · Lv.'+careerLevel(h),atk:cfg.atk,move:cfg.move,sp:cfg.sp};
+ f.maxHp=cfg.hp;f.hp=Math.max(1,cfg.hp-(Number(h.injury)||0));
+ f.armor=cfg.armor;f.focus=cfg.focus;f.staminaRegen=cfg.staminaRegen;
+ f.specialCooldown=cfg.specialCooldown;
+ f.st=Math.max(60,100-(Number(h.fatigue)||0)*.35);
+ f.invuln=.60;
+ return f;
+}
+function lineupEnemy(opponent){
+ const f=fighter(opponent.cls,940,true),profile=ArenaBalance.duelEnemy(f.cfg,opponent,S.round);
+ if(opponent.appearance===CHAMPION_MURMILLO_VARIANT){
+  f.championVariant=CHAMPION_MURMILLO_VARIANT;f.growthType='murmillo_a';f.growthLevel=5;
+ }else if(!opponent.boss){
+  f.growthType=opponent.growthType;f.growthLevel=opponent.stage;
+ }
+ f.cfg={...f.cfg,name:(opponent.boss?'BOSS · ':'')+opponent.name+' · Lv.'+opponent.level,
+  atk:profile.atk,sp:profile.sp,move:profile.move};
+ f.hp=profile.hp;f.maxHp=profile.hp;
+ f.armor=profile.armor;f.championBoss=!!profile.boss;f.rank=profile.tier;
+ f.bossPhase=0;f.invuln=.60;
+ return f;
+}
+function cleanDuelSurvivor(f,x,face){
+ f.x=x;f.face=face;f.vx=0;f.guard=false;f.guardHold=0;f.parry=0;
+ f.stagger=0;f.net=0;f.dodge=0;f.knockT=0;f.knockVX=0;
+ f.attackCD=0;f.actionT=0;f.action='idle';f.comboDash=null;
+ f.chainHits=0;f.chainExpire=0;f.pressureT=0;f.invuln=.65;
+ f.st=Math.min(100,f.st+18);
+}
+function startLineupMatch(mode,indices){
+ const spec=ArenaBalance.MODES[mode];
+ if(!spec||mode==='1v1')return false;
+ const chosen=[...new Set(indices.map(Number))];
+ if(chosen.length!==spec.allies||chosen.some(i=>!Number.isInteger(i)||!careerEligible(CAREER.roster[i]))){
+  CAREER.message='대진 순서와 출전 가능한 검투사를 확인하세요.';saveCareer();return false;
+ }
+ const leader={...LudusRoster.encounter(CAREER,CAREER.roster[chosen[0]])};
+ const q=ArenaLineup.create(mode,chosen,CAREER.roster,leader);
+ CAREER.active=chosen[0];CAREER_SELECTING=false;saveCareer();
+ start('career',chosen[0]);
+ if(S.phase!=='fight')return false;
+ S.gauntlet=q;S.gauntlet.records={};S.gauntlet.bouts={};
+ S.gauntlet.records[chosen[0]]={initialHp:S.player.hp,lastHp:S.player.hp,bouts:0};
+ S.careerParticipant=chosen[0];S.careerOpponent={...q.enemies[0]};
+ S.enemy=lineupEnemy(q.enemies[0]);
+ S.time=90;S.lastManualInput=clock;S.autoPlaying=false;
+ S.notice='1차전 · '+q.enemies[0].name;S.noticeT=2;
+ updateLineupHud();updateHud();
+ return true;
+}
+function resolveLineupBout(allyWon,timedOut=false){
+ const q=S.gauntlet;if(!q||q.finished)return false;
+ const activeRoster=q.allies[q.allyIndex],record=q.records[activeRoster];
+ if(record){record.bouts++;record.lastHp=allyWon?Math.max(0,S.player.hp):0;}
+ const losing=allyWon?S.enemy:S.player;
+ losing.hp=0;losing.dead=true;setAction(losing,'defeat',.6);
+ const step=ArenaLineup.resolve(q,allyWon);
+ S.keys.clear();S.sparks=[];S.parryBursts=[];S.combo=0;
+ S.autoPlaying=false;S.lastManualInput=clock;S.shake=Math.max(S.shake,12);
+ if(step.finished){
+  S.resultWin=!!step.win;S.resultApplied=true;S.resultAnim=0;
+  S.phase='finisher';S.slow=1.65;
+  setAction(step.win?S.player:S.enemy,'finisher',1.9);
+  say(step.win?'VICTORIA · 모든 상대 격파!':'DEFEAT · 출전 전원 탈락',1.8);
+  updateLineupHud();return true;
+ }
+ if(allyWon){
+  cleanDuelSurvivor(S.player,335,1);
+  S.careerOpponent={...step.nextEnemy};
+  S.enemy=lineupEnemy(step.nextEnemy);
+ }else{
+  S.careerParticipant=step.nextAllyIndex;
+  CAREER.active=step.nextAllyIndex;
+  S.player=lineupHero(step.nextAllyIndex);
+  q.records[step.nextAllyIndex]={initialHp:S.player.hp,lastHp:S.player.hp,bouts:0};
+  cleanDuelSurvivor(S.enemy,940,-1);
+ }
+ S.time=90;S.phase='fight';S.resultApplied=false;
+ S.notice=q.round+'차전 · '+(allyWon?'다음 상대 등장!':'다음 아군 출전!');
+ S.noticeT=1.6;
+ updateLineupHud();updateHud();
+ return true;
+}
+function finishLineupCareerMatch(){
+ if(S.careerRewardApplied)return;
+ S.careerRewardApplied=true;
+ const q=S.gauntlet;if(!q)return;
+ const win=!!q.won,leader=q.encounterLeader;
+ const payout=ArenaBalance.rewards(win,leader.round||1,q.mode);
+ CAREER.fights++;if(win){CAREER.wins++;CAREER.glory+=payout.glory;}
+ CAREER.gold+=payout.gold;
+ const participants=Object.keys(q.records);
+ for(const key of participants){
+  const idx=Number(key),h=CAREER.roster[idx],entry=q.records[key];if(!h)continue;
+  const damage=Math.max(0,entry.initialHp-entry.lastHp);
+  h.injury=Math.min(120,(Number(h.injury)||0)+Math.max(3,Math.round(damage*.48))+(entry.lastHp<=0?12:0));
+  h.fatigue=Math.min(100,(Number(h.fatigue)||0)+ArenaLineup.fatigueGain(entry.initialHp,entry.lastHp,entry.bouts));
+  h.fights=(h.fights||0)+1;if(win)h.wins=(h.wins||0)+1;
+  grantCareerXp(h,Math.max(5,Math.round(payout.xp*(q.allies.length>1?.78:1))));
+ }
+ CAREER.message=(win?'순차 대진 승리! ':'순차 대진 패배. ')+q.mode+
+  ' · '+payout.gold+'D · 출전자 '+participants.length+'명 경험치/부상/피로 반영';
+ if(win){
+  const recruit=LudusRoster.recruitBoss(CAREER,leader);
+  if(recruit)CAREER.message+=' · '+recruit.name+' 영입!';
+  CAREER.pendingOpponent=null;
+ }
+ saveCareer();
+}
 function markManualInput(){
  if(S.phase!=='fight'||S.paused)return;
  S.lastManualInput=clock;
