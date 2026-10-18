@@ -1,0 +1,74 @@
+[
+  {
+    "pose": "idle",
+    "flat_colours": 0,
+    "removed_pixels": 0,
+    "source_area": 147030
+  },
+  {
+    "pose": "walk",
+    "flat_colours": 0,
+    "removed_pixels": 0,
+    "source_area": 144319
+  },
+  {
+    "pose": "slash",
+    "flat_colours": 0,
+    "removed_pixels": 0,
+    "source_area": 159975
+  },
+  {
+    "pose": "sweep",
+    "flat_colours": 0,
+    "removed_pixels": 0,
+    "source_area": 112993
+  },
+  {
+    "pose": "thrust",
+    "flat_colours": 0,
+    "removed_pixels": 0,
+    "source_area": 146880
+  },
+  {
+    "pose": "heavy",
+    "flat_colours": 0,
+    "removed_pixels": 0,
+    "source_area": 123101
+  },
+  {
+    "pose": "guard",
+    "flat_colours": 0,
+    "removed_pixels": 0,
+    "source_area": 121994
+  },
+  {
+    "pose": "hit",
+    "flat_colours": 0,
+    "removed_pixels": 0,
+    "source_area": 109480
+  },
+  {
+    "pose": "dodge",
+    "flat_colours": 0,
+    "removed_pixels": 0,
+    "source_area": 117710
+  },
+  {
+    "pose": "ready",
+    "flat_colours": 0,
+    "removed_pixels": 0,
+    "source_area": 124200
+  },
+  {
+    "pose": "victory",
+    "flat_colours": 0,
+    "removed_pixels": 0,
+    "source_area": 118336
+  },
+  {
+    "pose": "defeat",
+    "flat_colours": 0,
+    "removed_pixels": 0,
+    "source_area": 101136
+  }
+]
