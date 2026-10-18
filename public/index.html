@@ -1096,6 +1096,7 @@ function start(mode='new',requestedRosterIndex=null){
   S.player.maxHp=tuned.hp;S.player.hp=Math.max(1,tuned.hp-CAREER.hero.injury);
   S.careerStartingHp=S.player.hp;S.player.armor=tuned.armor;S.player.focus=tuned.focus;
   S.player.staminaRegen=tuned.staminaRegen;S.player.specialCooldown=tuned.specialCooldown;
+  S.player.st=Math.max(60,100-(Number(CAREER.hero.fatigue)||0)*.35);
  }
  // Later rounds slightly tougher without increasing collision box or sprite scale.
  const level=Math.min(S.round-1,8);
@@ -1125,7 +1126,7 @@ function updateLineupHud(){
  if(!q)return;
  const names=q.allies.map((i,n)=>(n<q.allyIndex?'✕ ':n===q.allyIndex?'▶ ':'')+(n+1)+'. '+(CAREER.roster[i]?.name||'검투사'));
  const enemy=q.enemies.map((f,n)=>(n<q.enemyIndex?'✕ ':n===q.enemyIndex?'▶ ':'')+(n+1)+'. '+f.name);
- hud.textContent='순차 대진 '+q.mode+' · '+q.round+'번째 결투  |  아군 '+names.join(' / ')+'  |  상대 '+enemy.join(' / ');
+ hud.textContent='순차 대진 '+q.mode+' · '+(q.finished?'모든 대진 종료':q.round+'번째 결투')+'  |  아군 '+names.join(' / ')+'  |  상대 '+enemy.join(' / ');
 }
 function lineupHero(index){
  const h=CAREER.roster[index],f=fighter(h.cls,335,false);
