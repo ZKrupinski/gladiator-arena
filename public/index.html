@@ -339,7 +339,8 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=6"></script>
 <script src="champion-murmillo.js?v=2"></script>
-<script src="ludus-roster.js?v=2"></script>
+<script src="arena-balance.js?v=1"></script>
+<script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
    Pose sheets extracted from user-approved 3D-look static character art.
@@ -691,7 +692,7 @@ const CHAMPION_MURMILLO_SCALE=.86;
 function isChampionMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===CHAMPION_MURMILLO_VARIANT;}
 const ANIMATED_MURMILLO_SCALE=.75; // Face-size match; original growth classes retain their own tier scales.
 function isAnimatedMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===ANIMATED_MURMILLO_VARIANT;}
-function careerXpNeeded(l){return 30+l*15;}
+function careerXpNeeded(l){return 36+l*19;}
 function careerLevel(h){return Math.max(1,Math.min(20,Number(h.level)||1));}
 function careerStage(h){const l=careerLevel(h);return l>=20?5:l>=15?4:l>=10?3:l>=5?2:1;}
 function grantCareerXp(h,a){h.level=careerLevel(h);h.xp=Math.max(0,Number(h.xp)||0)+Math.max(0,Math.floor(a));let n=0;while(h.level<20&&h.xp>=careerXpNeeded(h.level)){h.xp-=careerXpNeeded(h.level);h.level++;n++;}if(h.level===20)h.xp=0;return n;}
@@ -730,7 +731,7 @@ function equipmentBonus(h){
  },{atk:0,hp:0});
 }
 Object.defineProperty(CAREER,'hero',{get(){return this.roster[this.active]||null;}});
-function careerHealth(h){const max=DATA[h.cls].hp+h.stats.end*13+equipmentBonus(h).hp;return {max,current:Math.max(1,max-h.injury)};}
+function careerHealth(h){const max=ArenaBalance.heroStats(h,DATA[h.cls],equipmentBonus(h)).hp;return {max,current:Math.max(1,max-h.injury)};}
 function saveCareer(){try{localStorage.setItem(CAREER_KEY,JSON.stringify({gold:CAREER.gold,glory:CAREER.glory,fights:CAREER.fights,wins:CAREER.wins,roster:CAREER.roster,active:CAREER.active,message:CAREER.message,pendingOpponent:CAREER.pendingOpponent||null,marketSeed:CAREER.marketSeed||0,marketInventory:CAREER.marketInventory||null}));}catch(err){}}
 // Add one dedicated fighter to existing saves without changing old fighters.
 function installAnimatedMurmilloStarter(){
@@ -807,12 +808,13 @@ function finishCareerMatch(){
  if(S.careerRewardApplied)return;
  S.careerRewardApplied=true;
  const h=CAREER.roster[S.careerParticipant],win=S.resultWin;
- const reward=win?95+CAREER.fights*20:25+CAREER.fights*5;
- CAREER.fights++;if(win){CAREER.wins++;CAREER.glory+=16+CAREER.fights*6;}
+ const payout=ArenaBalance.rewards(win,S.careerOpponent?.round||1,'1v1');
+ const reward=payout.gold;
+ CAREER.fights++;if(win){CAREER.wins++;CAREER.glory+=payout.glory;}
  CAREER.gold+=reward;
  h.injury=Math.min(120,h.injury+Math.max(8,Math.round(Math.max(0,S.careerStartingHp-S.player.hp)*.62)));
  h.fights++;if(win)h.wins++;
- const earned=win?80+Math.min(30,h.fights*3):30+Math.min(15,h.fights),stageBefore=careerStage(h),gained=grantCareerXp(h,earned);
+ const earned=payout.xp,stageBefore=careerStage(h),gained=grantCareerXp(h,earned);
  CAREER.message=(win?'승리! ':'패배. ')+reward+'D · 경험치 +'+earned+(gained?' · LEVEL UP!':'')+(careerStage(h)>stageBefore?' · 성장 '+careerStage(h)+'단계!':'')+' · 루두스로 돌아가세요.';
  if(win){
   const joined=LudusRoster.recruitBoss(CAREER,S.careerOpponent);
@@ -957,20 +959,22 @@ function renderCareer(){
 }
 function autoCareerTrain(stat){
  const h=CAREER.hero;
- if(!h||!['str','agi','end','focus'].includes(stat)||CAREER.gold<12||h.stats[stat]>=10)return;
- const before=h.stats[stat],gained=grantCareerXp(h,16);
- CAREER.gold-=12;
- h.stats[stat]=Math.min(10,before+2);
+ if(!h||!['str','agi','end','focus'].includes(stat)||h.stats[stat]>=10)return;
+ const cost=ArenaBalance.trainingCost(h,stat);
+ if(CAREER.gold<cost){careerMessage('훈련 비용 '+cost+'D가 부족합니다.');return;}
+ const before=h.stats[stat],gained=grantCareerXp(h,Math.max(7,17-Math.floor(before/3)));
+ CAREER.gold-=cost;
+ h.stats[stat]=Math.min(10,before+(before<3?2:1));
  h.trainingAttempts=h.trainingAttempts||{};
  h.trainingAttempts[stat]=(h.trainingAttempts[stat]||0)+1;
  const names={str:'공격',agi:'민첩',end:'체력',focus:'기술'};
- CAREER.message='훈련 성공! '+h.name+' · '+names[stat]+' +'+(h.stats[stat]-before)+' · 경험치 +16'+(gained?' · LEVEL UP!':'');
+ CAREER.message='훈련 성공! '+h.name+' · '+names[stat]+' +'+(h.stats[stat]-before)+' · 훈련비 '+cost+'D'+(gained?' · LEVEL UP!':'');
  saveCareer();renderCareer();
  const tile=document.querySelector('[data-autotrain="'+stat+'"]');
  if(tile){tile.classList.add('ludus-training-success');setTimeout(()=>tile.classList.remove('ludus-training-success'),800);}
 }
 function startTraining(stat){
- if(!CAREER.hero||CAREER.gold<12||CAREER.hero.stats[stat]>=10)return;
+ if(!CAREER.hero||CAREER.gold<ArenaBalance.trainingCost(CAREER.hero,stat)||CAREER.hero.stats[stat]>=10)return;
  const d=trainingDifficulty(CAREER.hero,stat);
  MINI={stat,started:performance.now(),speed:d.speed*({str:1,agi:1.10,end:.90,focus:1.03}[stat]),lower:(100-d.width)/200,upper:(100+d.width)/200,perfect:d.perfect/200,level:d.name,attempts:d.attempts};
  const zone=$('#careerMini .career-hitzone');zone.style.left=MINI.lower*100+'%';zone.style.width=d.width+'%';
@@ -1001,7 +1005,7 @@ function completeTraining(){
  CAREER.hero.trainingAttempts=CAREER.hero.trainingAttempts||{};
  CAREER.hero.trainingAttempts[stat]=(CAREER.hero.trainingAttempts[stat]||0)+1;
  $('#careerNeedle').style.left='calc('+(v*100).toFixed(2)+'% - 2.5px)';
- CAREER.gold-=12;
+ CAREER.gold-=ArenaBalance.trainingCost(CAREER.hero,stat);
  const before=CAREER.hero.stats[stat];
  CAREER.hero.stats[stat]=Math.min(10,before+gain);
  const applied=CAREER.hero.stats[stat]-before;
@@ -1014,7 +1018,7 @@ function completeTraining(){
  result.hidden=false;
  $('#careerHit').hidden=true;
  $('#careerCancel').textContent='루두스로 돌아가기';
- const earned=gain===3?24:gain===2?16:5,stageBefore=careerStage(CAREER.hero),gained=grantCareerXp(CAREER.hero,earned);
+ const earned=gain===3?19:gain===2?13:4,stageBefore=careerStage(CAREER.hero),gained=grantCareerXp(CAREER.hero,earned);
  CAREER.message=label+' '+name+' +'+applied+' · 경험치 +'+earned+(gained?' · LEVEL UP!':'')+(careerStage(CAREER.hero)>stageBefore?' · 성장 '+careerStage(CAREER.hero)+'단계!':'');
  result.textContent+=' · 경험치 +'+earned+(gained?' · LEVEL UP!':'');
  saveCareer();
@@ -1073,17 +1077,26 @@ function start(mode='new',requestedRosterIndex=null){
   S.notice=opponent.boss?'CHAMPION · 승리하면 영입!':'PUGNA!';
  }
  if(careerMatch&&CAREER.hero){
-  const t=CAREER.hero.stats;
-  S.player.cfg={...S.player.cfg,atk:S.player.cfg.atk+t.str*2,move:S.player.cfg.move+t.agi*12,sp:S.player.cfg.sp+t.focus*3};
-  const health=careerHealth(CAREER.hero);S.player.maxHp=health.max;S.player.hp=health.current;S.careerStartingHp=health.current;
-  const bonus=equipmentBonus(CAREER.hero);
-  S.player.cfg.atk+=bonus.atk;
+  const tuned=ArenaBalance.heroStats(CAREER.hero,S.player.cfg,equipmentBonus(CAREER.hero));
+  S.player.cfg={...S.player.cfg,atk:tuned.atk,move:tuned.move,sp:tuned.sp};
+  S.player.maxHp=tuned.hp;S.player.hp=Math.max(1,tuned.hp-CAREER.hero.injury);
+  S.careerStartingHp=S.player.hp;S.player.armor=tuned.armor;S.player.focus=tuned.focus;
+  S.player.staminaRegen=tuned.staminaRegen;S.player.specialCooldown=tuned.specialCooldown;
  }
  // Later rounds slightly tougher without increasing collision box or sprite scale.
  const level=Math.min(S.round-1,8);
- const rivalTier=careerMatch?{hp:(S.careerOpponent.level-1)*.025+(S.careerOpponent.boss ? .18 : 0),atk:(S.careerOpponent.level-1)*.018+(S.careerOpponent.boss ? .10 : 0),move:(S.careerOpponent.level-1)*.003}:null;
- S.enemy.hp=Math.round(S.enemy.hp*(1+level*.07+(rivalTier?rivalTier.hp:0)));S.enemy.maxHp=S.enemy.hp;
- S.enemy.cfg={...S.enemy.cfg,atk:Math.round(S.enemy.cfg.atk*(1+level*.035+(rivalTier?rivalTier.atk:0))),move:S.enemy.cfg.move*(1+level*.015+(rivalTier?rivalTier.move:0))};S.careerMatch=careerMatch;
+ if(careerMatch){
+  const profile=ArenaBalance.duelEnemy(S.enemy.cfg,S.careerOpponent,S.round);
+  S.enemy.hp=profile.hp;S.enemy.maxHp=profile.hp;
+  S.enemy.cfg={...S.enemy.cfg,atk:profile.atk,sp:profile.sp,move:profile.move};
+  S.enemy.armor=profile.armor;S.enemy.championBoss=!!profile.boss;
+  S.enemy.rank=profile.tier;S.enemy.bossPhase=0;
+  S.notice=profile.boss?'CHAMPION · '+ArenaBalance.TRAITS[S.enemy.cls].role+' · 위험!':'ARENA · '+profile.tier;
+ }else{
+  S.enemy.hp=Math.round(S.enemy.hp*(1+level*.07));S.enemy.maxHp=S.enemy.hp;
+  S.enemy.cfg={...S.enemy.cfg,atk:Math.round(S.enemy.cfg.atk*(1+level*.035)),move:S.enemy.cfg.move*(1+level*.015)};
+ }
+ S.careerMatch=careerMatch;
  $('#startScreen').hidden=true;$('#endScreen').hidden=true;$('#pauseBtn').textContent='Ⅱ';updateHud();fxSound('start');
 }
 function markManualInput(){
