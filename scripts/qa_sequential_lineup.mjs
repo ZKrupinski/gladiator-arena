@@ -141,7 +141,7 @@ const build=()=>{
  assert.ok(career.roster[0].fatigue>5&&career.roster[1].fatigue>5);
 }
 assert.match(html,/id="lineupHud"/);
-assert.match(html,/arena-carnifex\.js\?v=3/);
+assert.match(html,/arena-carnifex\.js\?v=4/);
 assert.match(html,/arena-lineup-visual\.css\?v=2/);
 assert.match(html,/arena-lineup-visual\.js\?v=2/);
 assert.match(source('arena-lineup-visual.css'),/background:none;border:0;box-shadow:none/);
