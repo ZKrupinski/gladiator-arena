@@ -13,7 +13,7 @@
 .la-stage.training.lt-runtime-ready .la-doctore-parchment{display:none!important}
 .la-stage.training .lt-fighter-zone{
  /* Preserve the Doctore's dominance, but make every fighter clearly visible. */
- position:absolute;left:748px;top:184px;width:458px;height:423px;
+ position:absolute;left:681px;top:168px;width:540px;height:440px;
  z-index:5;overflow:visible;pointer-events:none;
 }
 .la-stage.training .lt-fighter-canvas{
