@@ -65,6 +65,11 @@ var html=[
 '<div class="ll-menu" role="navigation" aria-label="루두스 주요 시설"><button type="button" data-action="training">⚔ 훈련소</button><button type="button" data-action="roster">♜ 검투사 관리</button><button type="button" data-action="armory">🛡 장비실</button><button type="button" data-action="market">🏛 검투사시장</button><button type="button" data-action="arena">⚔ 아레나 출전</button></div>',
 '<div class="ll-speech"><b>도미나</b>훌륭해…\n우리의 검투사들이 이렇게 성장하는 걸 보는 게 가장 큰 즐거움이란다.</div>',
 '<div class="ll-doctore"><b>독토레</b>좋다, 자세가 잡히고 있어.<br>더 거칠게! 더 강하게!</div>',
+'<div class="ll-hitbuttons" role="group" aria-label="루두스 메인 그림 속 훈련 및 출전 버튼">',
+'<button type="button" class="ll-hit-basic" data-action="basic" aria-label="기초 훈련 이동" title="기초 훈련"></button>',
+'<button type="button" class="ll-hit-practice" data-action="practice" aria-label="실전 훈련 이동" title="실전 훈련"></button>',
+'<button type="button" class="ll-hit-arena" data-action="arena" aria-label="아레나 출전 - 검투사 선택 화면" title="아레나 출전"></button>',
+'</div>',
 '<div class="ll-bottom"><div class="ll-roster"><h3>검투사 훈련 현황 <span data-count>0명</span><span class="ll-pager"><button data-action="prev" aria-label="이전 검투사">◀</button><span data-roster-page>1/1</span><button data-action="next" aria-label="다음 검투사">▶</button></span></h3><div class="ll-portraits"></div></div>',
 '<div class="ll-actions"><button data-action="basic"><span class="ll-thumb">⚔</span><strong>기초 훈련</strong><small>검투사의 기본을 다집니다.</small></button>',
 '<button data-action="practice"><span class="ll-thumb">✦</span><strong>실전 훈련</strong><small>경험치와 능력치를 향상시킵니다.</small></button>',
@@ -74,7 +79,12 @@ var html=[
 ];
 scene.innerHTML=html.join("");document.body.appendChild(scene);stage=$(".ll-stage");
 var art=$(".ll-key");art.addEventListener("load",function(){scene.classList.add("ll-has-art");});art.addEventListener("error",function(){scene.classList.remove("ll-has-art");});if(art.complete&&art.naturalWidth)scene.classList.add("ll-has-art");
-scene.addEventListener("click",function(ev){var b=ev.target.closest("button[data-action]");if(b)action(b.dataset.action,b);});
+scene.addEventListener("click",function(ev){
+ var b=ev.target.closest("button[data-action]");
+ if(!b||!scene.contains(b))return;
+ ev.preventDefault();
+ action(b.dataset.action,b);
+});
 addEventListener("resize",fit,{passive:true});addEventListener("keydown",function(ev){if(!scene.hidden&&ev.key==="Escape"){ev.preventDefault();action("back");}});
 var hub=document.getElementById("careerHub");if(hub&&!hub.querySelector("#careerVisualHome")){var home=document.createElement("button");home.id="careerVisualHome";home.type="button";home.textContent="❮ 루두스 로비";home.setAttribute("aria-label","루두스 메인 로비로 돌아가기");home.onclick=function(){bridge().returnHome();hub.hidden=true;open();};hub.appendChild(home);}
 fit();
