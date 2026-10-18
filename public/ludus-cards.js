@@ -11,16 +11,21 @@ function level(h){return Math.max(1,Math.min(20,Number(h.level)||1));}
 function rank(h){if(h.appearance==='murmillo_champion_red')return 'CHAMPION';if(h.appearance==='murmillo_motion_v3')return 'MOTION';if(h.appearance==='legacy')return 'CHAMPION';var lv=level(h);return 'GRADE '+(lv>=20?5:lv>=15?4:lv>=10?3:lv>=5?2:1);}
 function className(h){var n={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};return h.appearance==='murmillo_champion_red'?'신규 챔피언 무르밀로':h.appearance==='murmillo_motion_v3'?'무르밀로 · 애니메이션':(n[h.cls]||h.cls||'검투사');}
 function injury(h){return Math.max(0,Number(h.injury)||0);}
-function wounded(h){return injury(h)>=80;}
+function fatigue(h){return Math.max(0,Math.min(100,Number(h?.fatigue)||0));}
+function wounded(h){return injury(h)>=80||fatigue(h)>=80;}
+function conditionText(h){return injury(h)>=80?'중상 · 출전 불가':fatigue(h)>=80?'탈진 · 출전 불가':injury(h)>0||fatigue(h)>0?'부상 '+injury(h)+' · 피로 '+fatigue(h):'출전 가능';}
 function percent(h){return level(h)>=20?100:Math.min(100,Math.max(0,Math.round((h.xp||0)/(36+level(h)*19)*100)));}
 function card(h,i,selected,draft){
- var off=draft&&wounded(h),condition=wounded(h)?'출전 불가':injury(h)>0?'부상 '+injury(h):'정상';
- return '<button type="button" class="lc-fighter-card '+(selected?'is-selected ':'')+(off?'is-blocked':'')+'" data-'+(draft?'candidate':'unit')+'="'+i+'" '+(off?'disabled ':'')+'aria-pressed="'+selected+'" aria-label="'+safe(h.name)+' '+className(h)+' '+condition+'">'+
+ const off=draft&&wounded(h),order=draft?squadPicks.indexOf(i)+1:0;
+ const severity=injury(h)>=80?'중상':fatigue(h)>=80?'탈진':'';
+ return '<button type="button" class="lc-fighter-card '+(selected?'is-selected ':'')+(off?'is-blocked':'')+'" data-'+(draft?'candidate':'unit')+'="'+i+'" '+(off?'disabled ':'')+'aria-pressed="'+selected+'" aria-label="'+safe(h.name)+' · '+safe(conditionText(h))+' · '+(order?'출전 '+order+'번':'출전 미선택')+'">'+
  '<span class="lc-card-corner lc-card-corner-a">✦</span><span class="lc-card-corner lc-card-corner-b">✦</span>'+
+ (draft&&order?'<span class="lc-queue-order" aria-label="출전 순서 '+order+'번">'+order+'번 출전</span>':'')+
+ (severity?'<span class="lc-unavailable" role="status">'+severity+' · 출전 불가</span>':'')+
  '<span class="lc-rank">'+rank(h)+'</span><span class="lc-portrait"><canvas width="222" height="235" data-card-art="'+i+'" aria-hidden="true"></canvas></span>'+
  '<span class="lc-card-title">'+safe(h.name)+'</span><span class="lc-card-class">'+className(h)+' · Lv.'+level(h)+'</span>'+
- '<span class="lc-card-meta"><b>⚔ '+(Number(h.wins)||0)+'승</b><b class="'+(wounded(h)?'lc-danger':'')+'">'+condition+'</b></span>'+
- '<span class="lc-card-foot">'+(draft?(off?'치료 후 출전 가능':selected?'◆ 출전 후보 선택됨':'출전 선수로 선택'):(selected?'◆ 관리 중':'선택하여 관리'))+'</span></button>';
+ '<span class="lc-card-meta"><b>⚔ '+(Number(h.wins)||0)+'승</b><b class="'+(wounded(h)?'lc-danger':'')+'">부상 '+injury(h)+' / 피로 '+fatigue(h)+'</b></span>'+
+ '<span class="lc-card-foot">'+(draft?(off?'치료 또는 휴식 필요':order?order+'번 출전 · 누르면 제외':'출전 순서에 등록'):(selected?'◆ 관리 중':'선택하여 관리'))+'</span></button>';
 }
 function header(heading,s){
  return '<div class="lc-banner"><span class="lc-laurel">❧</span><div><div class="lc-kicker">LVDVS · GLADIATORVM</div><h1>'+heading+'</h1></div><span class="lc-laurel">❧</span></div>'+
@@ -74,10 +79,11 @@ function roster(){
  '<div class="lc-nameplate"><h2>'+safe(h.name)+'</h2><span>'+className(h)+' · Lv.'+level(h)+'</span></div>'+
  '<div class="lc-xp"><div><strong>LEVEL '+level(h)+'</strong><small>경험치 '+Number(h.xp||0)+'</small></div><i><b style="width:'+percent(h)+'%"></b></i></div>'+
  '<div class="lc-stats">'+stats.map(function(p){return '<span><small>'+p[0]+' · '+p[1]+'</small><strong>'+p[2]+'</strong></span>';}).join('')+'</div>'+
- '<div class="lc-record"><span>시합 <b>'+(Number(h.fights)||0)+'전 '+(Number(h.wins)||0)+'승</b></span><span>부상 <b class="'+(wounded(h)?'lc-danger':'')+'">'+injury(h)+'</b></span></div>'+
+ '<div class="lc-record"><span>시합 <b>'+(Number(h.fights)||0)+'전 '+(Number(h.wins)||0)+'승</b></span><span>부상 <b class="'+(injury(h)>=80?'lc-danger':'')+'">'+injury(h)+'</b></span><span>피로 <b class="'+(fatigue(h)>=80?'lc-danger':'')+'">'+fatigue(h)+'</b></span></div>'+
  '<div class="lc-equipment">'+equip+'</div>'+
  '<div class="lc-buttons"><button id="lcTraining">⚔ 훈련소</button><button id="lcArmory">🛡 장비실</button>'+
  '<button id="lcHeal" '+(injury(h)===0||Number(s.gold)<Math.max(12,Math.ceil(injury(h)*.6))?'disabled':'')+'>✚ 치료 '+Math.max(12,Math.ceil(injury(h)*.6))+' D</button>'+
+ '<button id="lcRest" '+(fatigue(h)===0||Number(s.gold)<Math.max(18,Math.round(16+fatigue(h)*.75))?'disabled':'')+'>☾ 휴식 '+Math.max(18,Math.round(16+fatigue(h)*.75))+' D</button>'+
  '<button class="lc-emphasis" id="lcReady" '+(wounded(h)?'disabled':'')+'>⚔ 출전 준비</button></div>':
  '<div class="lc-empty"><strong>아직 소속 검투사가 없습니다</strong><p>검투사시장에서 첫 검투사를 영입하세요.</p></div>')+
  '</div></div><div class="lc-hint">'+safe(s.message||'선수를 선택해 훈련하거나 아레나에 출전하세요.')+'</div></section>';
@@ -92,6 +98,7 @@ function roster(){
  var training=root.querySelector('#lcTraining');if(training)training.onclick=function(){a.section('training');};
  var armory=root.querySelector('#lcArmory');if(armory)armory.onclick=function(){a.section('gear');};
  var heal=root.querySelector('#lcHeal');if(heal)heal.onclick=function(){a.heal();};
+ var rest=root.querySelector('#lcRest');if(rest)rest.onclick=function(){a.rest?.();};
  var ready=root.querySelector('#lcReady');if(ready)ready.onclick=function(){a.fight();};
 }
 function beginDraft(selectedIndex){
