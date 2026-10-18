@@ -320,7 +320,7 @@ body{min-height:100dvh;overscroll-behavior:none}
   <div class="eyebrow">THE CROWD HAS DECIDED</div>
   <img id="endBanner" class="result-banner" src="assets/new-era/cinematic/victory_banner.webp?v=3.6" alt="VICTORY · 경기 승리" decoding="async">
    <h2 id="endHeading" class="sr-only">VICTORIA</h2>
-  <div class="result-poses" aria-label="경기 결과: 승리자와 패배자의 최종 포즈">
+  <div class="result-poses" aria-label="경기 결과: 왼쪽 내 검투사, 오른쪽 상대 검투사">
    <div class="result-pose-card victor"><div class="result-pose-art" id="winnerPose" role="img" aria-label="승리한 검투사 포즈"></div><span id="winnerName">VICTOR</span><small>VICTORIA · FRAME 09</small></div>
    <div class="result-versus" aria-hidden="true">✦</div>
    <div class="result-pose-card defeated"><div class="result-pose-art" id="loserPose" role="img" aria-label="패배한 검투사 포즈"></div><span id="loserName">DEFEATED</span><small>DEFEAT · FRAME 10</small></div>
@@ -1692,6 +1692,15 @@ function showEnd(){
   for(const [id,f] of [['winnerPose',victor],['loserPose',loser]])renderResultPortrait(id,f,id==='winnerPose'?10:11);
   $('#winnerName').textContent=victor.cfg.name;
   $('#loserName').textContent=loser.cfg.name;
+  // Screen positions are always PLAYER (left) and OPPONENT (right), while
+  // the card's VICTOR/DEFEATED pose, caption and sizing follow the actual result.
+  const poses=$('.result-poses');
+  const victorCard=$('#winnerPose').parentElement;
+  const defeatedCard=$('#loserPose').parentElement;
+  const separator=poses?.querySelector('.result-versus');
+  if(poses&&separator)poses.append(
+   win?victorCard:defeatedCard,separator,win?defeatedCard:victorCard
+  );
   $('#endScreen').hidden=false;
  const endBanner=$('#endBanner'),endTitle=$('#endHeading');
  endTitle.textContent=win?'VICTORIA':'DEFEAT';
