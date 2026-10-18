@@ -838,7 +838,7 @@ function finishCareerMatch(){
  saveCareer();
 }
 function rosterCards(deploy=false){
- return CAREER.roster.map((h,i)=>'<button class="roster-unit '+(i===CAREER.active?'selected':'')+'" '+(deploy?'data-deploy':'data-select')+'="'+i+'" '+(deploy&&h.injury>=80?'disabled':'')+'><canvas data-roster-art="'+i+'" width="300" height="230"></canvas><strong>'+h.name+'</strong><small>Lv.'+careerLevel(h)+' · '+(isChampionMurmillo(h)?'신규 챔피언':isAnimatedMurmillo(h)?'신규 애니메이션':h.appearance==='legacy'?'챔피언':'성장 '+careerStage(h)+'단계')+'</small><small>부상 '+h.injury+' · '+h.wins+'승 / '+h.fights+'전</small><small>'+(deploy?(h.injury>=80?'치료 필요':'이 검투사로 출전'):i===CAREER.active?'✓ 관리 중':'선택하여 훈련 · 장비 · 치료')+'</small></button>').join('');
+ return CAREER.roster.map((h,i)=>'<button class="roster-unit '+(i===CAREER.active?'selected':'')+'" '+(deploy?'data-deploy':'data-select')+'="'+i+'" '+(deploy&&!careerEligible(h)?'disabled':'')+'><canvas data-roster-art="'+i+'" width="300" height="230"></canvas><strong>'+h.name+'</strong><small>Lv.'+careerLevel(h)+' · '+(isChampionMurmillo(h)?'신규 챔피언':isAnimatedMurmillo(h)?'신규 애니메이션':h.appearance==='legacy'?'챔피언':'성장 '+careerStage(h)+'단계')+'</small><small>부상 '+h.injury+' · 피로 '+(h.fatigue||0)+' · '+h.wins+'승 / '+h.fights+'전</small><small>'+(deploy?(!careerEligible(h)?(h.injury>=80?'중상 · 치료 필요':'탈진 · 휴식 필요'):'이 검투사로 출전'):i===CAREER.active?'✓ 관리 중':'선택하여 훈련 · 장비 · 치료')+'</small></button>').join('');
 }
 function paintRosterPreviews(){
  for(const canvas of document.querySelectorAll('[data-roster-art]')){
@@ -903,7 +903,7 @@ function renderCareerDraft(){
  paintRosterPreviews();paintDraftOpponent();
  $('#careerDraftCancel').onclick=()=>{CAREER_SELECTING=false;renderCareer();window.LudusScene?.open();};
  for(const el of document.querySelectorAll('[data-deploy]'))el.onclick=()=>{
-  const index=Number(el.dataset.deploy),hero=CAREER.roster[index];if(!hero||hero.injury>=80)return;
+  const index=Number(el.dataset.deploy),hero=CAREER.roster[index];if(!hero||!careerEligible(hero))return;
   CAREER.active=index;CAREER_SELECTING=false;saveCareer();start('career',index);
  };
 }
@@ -2127,6 +2127,6 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=19"></script><script src="ludus-training-runtime.js?v=6"></script><script src="ludus-approved-scenes.js?v=11"></script><script src="ludus-armory-live.js?v=2"></script><script src="ludus-cards.js?v=7"></script>
+<script src="ludus-scene.js?v=20"></script><script src="ludus-training-runtime.js?v=6"></script><script src="ludus-approved-scenes.js?v=11"></script><script src="ludus-armory-live.js?v=2"></script><script src="ludus-cards.js?v=7"></script>
 
 </body></html>
