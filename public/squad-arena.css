@@ -1,0 +1,53 @@
+/* Team Arena · full-screen multi-gladiator combat scene; does not touch classic duel. */
+.sa-screen{position:fixed;inset:0;z-index:99950;background:#120804;color:#f9dfac;
+ font-family:Georgia,'Noto Serif KR',serif;display:grid;place-items:center;overflow:hidden}
+.sa-layout{position:relative;width:min(100vw,calc(100dvh * 16 / 9));aspect-ratio:16/9;
+ box-sizing:border-box;overflow:hidden;border:6px ridge #ae8148;
+ box-shadow:inset 0 0 38px #110705,0 0 55px #000}
+.sa-layout:before{content:'';position:absolute;inset:0;pointer-events:none;
+ border:9px solid #0004;box-shadow:inset 0 0 80px #1206038a;z-index:1}
+.sa-layout canvas{display:block;width:100%;height:100%}
+.sa-top{position:absolute;z-index:3;left:12px;right:12px;top:9px;
+ display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+.sa-top button,.sa-controls button,.sa-outcome button{
+ border:3px ridge #cca05e;border-radius:6px;
+ background:linear-gradient(#864b27,#3b1a0e);color:#ffedbc;
+ box-shadow:0 3px 9px #100503d9;cursor:pointer;
+ text-shadow:0 1px #210a04;font:bold clamp(11px,1.4vw,19px) 'Noto Sans KR',sans-serif}
+.sa-top button{min-height:36px;padding:4px 13px}
+.sa-top span{flex:1;display:block;text-align:center;white-space:nowrap;
+ font:bold clamp(12px,1.35vw,19px) Georgia,serif;
+ color:#f8dba0;background:#160906b9;padding:8px 6px;margin:0 8px;border-radius:4px}
+.sa-controls{position:absolute;z-index:3;left:0;right:0;bottom:10px;
+ display:flex;justify-content:space-between;align-items:end;padding:0 13px;gap:14px;
+ pointer-events:none}
+.sa-controls>div{display:flex;gap:8px}
+.sa-controls button{pointer-events:auto;min-width:clamp(51px,7.8vw,102px);
+ min-height:clamp(42px,7.8vh,76px);padding:6px 11px;
+ background:linear-gradient(160deg,#68422bdd,#2e170ee8)}
+.sa-controls button[data-action="attack"],.sa-controls button[data-action="special"]{
+ background:linear-gradient(155deg,#a64728,#601c15)}
+.sa-controls button:active,.sa-top button:active{filter:brightness(1.3);transform:translateY(2px)}
+.sa-controls button:focus-visible,.sa-top button:focus-visible{outline:3px solid #ffe9bd}
+.sa-outcome:not([hidden]){position:absolute;inset:16% 25% 18%;z-index:9;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;
+ border:10px ridge #c99b54;border-radius:11px;
+ background:linear-gradient(160deg,#3b1b10f7,#150b09fd);text-align:center;
+ box-shadow:0 0 160px #090201df}
+.sa-outcome h2{font:900 clamp(22px,3.7vw,58px) Georgia,'Noto Serif KR',serif;color:#ffe8ad;
+ text-shadow:0 3px #542216;margin:0}
+.sa-outcome p{font:700 clamp(13px,1.5vw,21px) 'Noto Sans KR',sans-serif;
+ margin:0 16px;line-height:1.6;color:#f0cea1}
+.sa-outcome button{padding:13px 21px;font-size:clamp(14px,1.7vw,24px)}
+.sa-outcome[hidden]{display:none!important}
+@media(max-width:720px){
+ .sa-layout{border-width:3px}
+ .sa-top{left:5px;right:5px;top:3px}
+ .sa-top button{min-height:24px;padding:2px 6px;border-width:2px}
+ .sa-top span{padding:3px;margin:0 2px}
+ .sa-controls{padding:0 4px;bottom:2px;gap:4px}
+ .sa-controls>div{gap:3px}
+ .sa-controls button{padding:2px 3px;border-width:2px}
+ .sa-outcome:not([hidden]){inset:9% 12% 15%;gap:7px}
+}
+@media(prefers-reduced-motion:reduce){.sa-controls button:active{transform:none}}
