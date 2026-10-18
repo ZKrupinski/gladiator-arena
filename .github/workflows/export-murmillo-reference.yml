@@ -1,0 +1,30 @@
+name: Extract original Murmillo animation reference
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/export_murmillo_reference.py
+      - .github/workflows/export-murmillo-reference.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: true}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install --quiet pillow
+      - run: python scripts/export_murmillo_reference.py
+      - name: Commit exact source-pose reference and cut-review
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/qa/murmillo-animation-reference/
+          if ! git diff --cached --quiet; then
+            git commit -m "art(qa): export original Murmillo L5 combat-ready pose without neighboring frame cuts"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
