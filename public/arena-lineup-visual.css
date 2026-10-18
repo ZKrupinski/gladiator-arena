@@ -150,3 +150,58 @@
  .arena-seal{width:26px;height:29px}
 }
 @media(prefers-reduced-motion:reduce){.arena-seal--active{animation:none}}
+
+/* Art-direction pass: float class badges directly over the arena panorama.
+ * No rectangles, window backplates, boxed headings or artificial base shadows. */
+.lineup-hud:not([hidden]){border:0!important;background:transparent!important;box-shadow:none!important}
+.lineup-hud .arena-march,
+.lineup-hud .arena-march--enemy{
+ background:transparent!important;border:0!important;clip-path:none!important;
+ box-shadow:none!important;border-radius:0!important;padding:3px 7px 8px;
+ filter:drop-shadow(0 5px 8px #0c0505d9);
+}
+.lineup-hud .arena-march-head{
+ border-bottom:none!important;justify-content:center;
+ font:900 clamp(11px,1.16vw,17px)/1.1 'Palatino Linotype','Book Antiqua',Georgia,serif;
+ letter-spacing:.18em;
+ text-shadow:0 2px 1px #3f180b,0 4px 8px #000,0 0 14px #ecbb70bd;
+ padding-bottom:8px;position:relative;
+}
+.lineup-hud .arena-march-head::after{
+ content:'✦ ❧ ✦';position:absolute;left:50%;bottom:-1px;
+ transform:translateX(-50%);font-size:9px;letter-spacing:.34em;
+ color:#dfb977;text-shadow:0 2px 5px #000;
+}
+.lineup-hud .arena-march--enemy .arena-march-head{
+ color:#ffc3a2;text-shadow:0 2px 2px #4b1815,0 4px 9px #000,0 0 13px #e68a6aab;
+}
+.lineup-hud .arena-march-counter{
+ background:transparent;border:0;box-shadow:none;padding:0 3px;
+ color:#ffdfae;text-shadow:0 2px 4px #110703,0 0 9px #bd7f3e;
+}
+.lineup-hud .arena-march-tokens{
+ justify-content:center!important;
+ filter:drop-shadow(0 9px 6px #000c);
+}
+.lineup-hud .arena-seal{
+ box-shadow:0 8px 9px #090302c7,0 2px 4px #210c06,
+ inset 0 0 0 2px #f4c88161,0 0 9px #c28c4077;
+}
+.lineup-hud .arena-seal--fallen{
+ box-shadow:0 4px 9px #070404dd,inset 0 0 0 1px #89745a4d;
+}
+.lineup-hud .arena-march-centre{
+ filter:drop-shadow(0 6px 11px #110404c0);
+}
+.lineup-hud .arena-march-roman{
+ font-family:'Palatino Linotype','Book Antiqua',Georgia,serif;
+ font-style:italic;font-variant:small-caps;font-weight:900;
+ color:#ffdfa1;letter-spacing:.20em;
+ text-shadow:0 2px 1px #5a230e,0 3px 7px #000,0 0 15px #d89b4f;
+}
+@media(max-width:720px){
+ .lineup-hud .arena-march,.lineup-hud .arena-march--enemy{padding:2px 0 6px}
+ .lineup-hud .arena-march-head{letter-spacing:.035em;font-size:clamp(8px,1.6vw,11px);padding-bottom:6px}
+ .lineup-hud .arena-march-head::after{font-size:7px}
+ .lineup-hud .arena-march-tokens{gap:clamp(3px,1.5vw,8px)}
+}
