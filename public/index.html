@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=1"></script>
-<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script>
+<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -594,7 +594,7 @@ const IMG={};let loaded=0;for(const key of ['bg','murmillo','thraex','retiarius'
   };im.onerror=()=>{if(key!=='bg'&&!im._fallback){im._fallback=true;im.src=String(ASSET[key]).replace('.png','.webp');return;}loaded++;console.error('asset failed',key,im.src);const st=$('#resourceStatus');if(st)st.textContent='일부 그래픽 파일을 읽지 못했습니다: '+key;};im.src=ASSET[key]||('assets/'+(key==='bg'?'arena.webp':key+'_atlas.png'));IMG[key]=im;
 }
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),rand=(a,b)=>a+Math.random()*(b-a);
-let S={phase:'title',time:90,round:1,player:null,enemy:null,keys:new Set(),events:[],sparks:[],parryBursts:[],notice:'',noticeT:0,shake:0,flash:0,fx:true,paused:false,slow:0,cinematic:null,focusFrame:null,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
+let S={phase:'title',time:90,round:1,player:null,enemy:null,keys:new Set(),events:[],sparks:[],parryBursts:[],notice:'',noticeT:0,shake:0,cameraKick:null,flash:0,fx:true,paused:false,slow:0,cinematic:null,focusFrame:null,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
 let t0=0,clock=0,ctxAudio=null,sounds=true;
 const CAMERA={x:W*.5,y:H*.5,zoom:1,initialized:false};
 // Follow both fighters with spring-like smoothing; the arena art uses slower parallax.
@@ -1058,7 +1058,7 @@ $('#careerExit').onclick=()=>{if(MINI)return;window.LudusScene?.close();$('#care
 $('#careerHit').onclick=completeTraining;
 $('#careerCancel').onclick=closeTraining;
 window.addEventListener('keydown',e=>{if(MINI&&!MINI.finished&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
-function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,footworkSeed:enemy?1.45:0.38};}
+function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,footworkSeed:enemy?1.45:0.38};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 function start(mode='new',requestedRosterIndex=null){
  const careerMatch=mode==='career';
@@ -1079,7 +1079,7 @@ function start(mode='new',requestedRosterIndex=null){
  const selected=careerMatch?CAREER.hero.cls:$('#classChoice').value;
  const opposition=['murmillo','thraex','retiarius'].filter(cls=>cls!==selected);
  const rival=careerMatch?S.careerOpponent.cls:$('#opponentChoice').value==='random'?opposition[(S.round-1)%2]:$('#opponentChoice').value;
- S.phase='fight';S.paused=false;S.time=90;S.score=0;S.combo=0;S.notice='PUGNA!';S.noticeT=1.5;S.events=[];S.sparks=[];S.parryBursts=[];S.keys.clear();S.shake=0;S.flash=0;S.slow=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
+ S.phase='fight';S.paused=false;S.time=90;S.score=0;S.combo=0;S.notice='PUGNA!';S.noticeT=1.5;S.events=[];S.sparks=[];S.parryBursts=[];S.keys.clear();S.shake=0;S.cameraKick=null;S.flash=0;S.slow=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
  S.autoPlaying=false;S.lastManualInput=clock;S.careerRewardApplied=false;
  S.player=fighter(selected,335,false);S.enemy=fighter(rival,940,true);CAMERA.initialized=false;
  if(careerMatch){
@@ -1325,7 +1325,7 @@ function autoPilotPlayer(p,e,dt){
  }
 }
 function returnToLudus(){
- S.phase='title';S.paused=false;S.gauntlet=null;S.cleanup=null;updateLineupHud();S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.flash=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
+ S.phase='title';S.paused=false;S.gauntlet=null;S.cleanup=null;updateLineupHud();S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.cameraKick=null;S.flash=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
  const c=$('#classChoice').value;S.player=fighter(c,335,false);S.enemy=fighter('retiarius',940,true);CAMERA.initialized=false;
  $('#endScreen').hidden=true;$('#startScreen').hidden=false;$('#pauseBtn').textContent='Ⅱ';updateHud();
 }
@@ -1529,6 +1529,9 @@ function attack(f,victim,special=false,dashImpact=false){
    f.x=clamp(f.x+away*(special?86:64),125,1165);
    S.shake=Math.max(S.shake,victim.enemy?(special?22:17):(special?28:24));
    S.flash=Math.max(S.flash,victim.enemy?(special?.29:.22):.32);
+   window.ArenaMotion?.pulse?.(victim,'parry','source',victim.face);
+   window.ArenaMotion?.pulse?.(f,'parry','target',victim.face);
+   window.ArenaMotion?.shake?.(S,'parry',victim.face);
    triggerCinematic('parry',(victim.x+f.x)*.5,victim.face);
    S.parryBursts.push({x:victim.x+victim.face*28,y:FLOOR-170,t:0,max:.65,
      damage:counterDamage,hitX:f.x,hitY:FLOOR-278});
@@ -1573,6 +1576,21 @@ function attack(f,victim,special=false,dashImpact=false){
   dmg=Math.max(1,Math.round(dmg*(1-ArenaBalance.damageReduction(victim,false))));
  }
  victim.hp=Math.max(0,victim.hp-dmg);
+ // Short, foot-anchored compress/rebound envelopes make every actual clash
+ // visibly connect without changing attack reach, frames, or damage amounts.
+ const collisionStyle=guarded?'guard':dashImpact?'dash':special?'special':'strike';
+ window.ArenaMotion?.pulse?.(f,collisionStyle,'source',f.face);
+ window.ArenaMotion?.pulse?.(victim,collisionStyle,'target',f.face);
+ window.ArenaMotion?.shake?.(S,collisionStyle,f.face);
+ if(!dashImpact){
+  // The striker also absorbs a little recoil: bodies compress together,
+  // rebound apart, then land back on the established 200px spacing.
+  f.x=clamp(f.x-f.face*(guarded?5:special?9:7),105,1175);
+  if(!guarded&&!special){
+   victim.knockVX=f.face*140;
+   victim.knockT=Math.max(victim.knockT,.15);
+  }
+ }
  if(!guarded)breakAttackChain(victim);
  // Each connected ordinary player hit buys a short, fair window for the next hit.
  // The rival still defends normally outside a confirmed three-hit chain.
@@ -1609,7 +1627,9 @@ function attack(f,victim,special=false,dashImpact=false){
  }else if(dashImpact)breakAttackChain(f);
  fxSound('hit');if(victim.hp<=0)finishFight(f,victim);else updateHud();
 }
-function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.dodge=.34;f.invuln=.3;setAction(f,'dodge',.34);f.x=clamp(f.x+(f.enemy?-1:-1)*f.face*84,120,1160);const p=weaponPoint(f,'dodge');addFx(1,p.x,p.y,{art:'dash_trail',w:360,h:120,flip:f.face<0,alpha:.48,owner:f,offsetX:-f.face*32,offsetY:110,duration:.2});}
+function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.dodge=.34;f.invuln=.3;setAction(f,'dodge',.34);
+ // Visible takeoff and landing energy without changing dodge i-frames.
+ window.ArenaMotion?.pulse?.(f,'contact','source',f.face);f.x=clamp(f.x+(f.enemy?-1:-1)*f.face*84,120,1160);const p=weaponPoint(f,'dodge');addFx(1,p.x,p.y,{art:'dash_trail',w:360,h:120,flip:f.face<0,alpha:.48,owner:f,offsetX:-f.face*32,offsetY:110,duration:.2});}
 function inputAct(action){if(S.phase!=='fight'||S.paused)return;if(action==='attack')attack(S.player,S.enemy);else if(action==='special')attack(S.player,S.enemy,true);else if(action==='dodge')dodge(S.player);else if(action==='guard'){S.keys.add('guard');}}
 function choosePose(f){
  if(S.phase==='finisher'||S.phase==='result'){
@@ -1654,7 +1674,9 @@ function preEngagementFootwork(f,other,dt,playerIdle=false){
 }
 function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  // Presentation keeps its real-time timing during the simulated slow-motion.
- S.shake=Math.max(0,S.shake-realDt*(S.focusFrame?.active?94:49));S.flash=Math.max(0,S.flash-realDt*.9);S.noticeT=Math.max(0,S.noticeT-realDt);
+ S.shake=Math.max(0,S.shake-realDt*(S.focusFrame?.active?94:49));
+ window.ArenaMotion?.advanceShake?.(S,realDt);
+ S.flash=Math.max(0,S.flash-realDt*.9);S.noticeT=Math.max(0,S.noticeT-realDt);
  S.sparks=S.sparks.filter(v=>(v.t+=realDt)<v.max);S.parryBursts=S.parryBursts.filter(v=>(v.t+=realDt)<v.max);if(S.phase==='result')return;
  if(S.phase==='cleanup'){
   if(!S.cleanup||!window.ArenaCarnifex||window.ArenaCarnifex.advance(S.cleanup,dt))finishLineupCleanup();
@@ -1671,6 +1693,8 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
  f.parry=Math.max(0,f.parry-dt);f.guardHold=Math.max(0,f.guardHold-dt);
  f.guardRecovery=Math.max(0,f.guardRecovery-dt);f.knockT=Math.max(0,f.knockT-dt);
  f.pressureT=Math.max(0,f.pressureT-dt);
+ f.contactCooldown=Math.max(0,(f.contactCooldown||0)-dt);
+ window.ArenaMotion?.advance?.(f,dt);
  if((f.bleedT||0)>0){
    f.bleedT=Math.max(0,f.bleedT-dt);
    f.hp=Math.max(0,f.hp-(f.bleedDPS||2)*dt);
@@ -1738,6 +1762,9 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
  // Physical body separation: never let the front silhouettes merge.
  const sep=Math.abs(e.x-p.x);
  if(sep<MIN_FIGHTER_DISTANCE){
+  if(window.ArenaMotion?.contactPulse?.(p,e,MIN_FIGHTER_DISTANCE)){
+   window.ArenaMotion.shake(S,'contact',p.x<e.x?1:-1);
+  }
   const dir=p.x<=e.x?1:-1,half=(MIN_FIGHTER_DISTANCE-sep)*.5;
   p.x=clamp(p.x-dir*half,100,1180);
   e.x=clamp(e.x+dir*half,100,1180);
@@ -1981,9 +2008,20 @@ function drawFighter(f){if(!f||f.removedFromArena)return;const pose=choosePose(f
  // The animated fighter supplies its own foot-anchored motion, so do not
  // compound a second whole-body combat transform.
  if(f.motionVariant===ANIMATED_MURMILLO_VARIANT||f.championVariant===CHAMPION_MURMILLO_VARIANT){tilt=0;scaleX=1;scaleY=1;}
- // Remove rapid transparency strobing from all original classes.
- // Dashed vector net ring removed; net-trap uses character art and class VFX.
- ctx.save();if(tilt||scaleY!==1||scaleX!==1){ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.scale(scaleX,scaleY);ctx.translate(-f.x,-feet);}
+ // Add a subtle independent secondary-action response to every fighter
+ // class, including champion and custom-animation variants. Pivot remains at
+ // the planted toe/floor location; even idle breathing cannot float boots.
+ const secondary=window.ArenaMotion?.pose?.(f,clock,
+  !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
+ if(secondary){
+  tilt+=secondary.tilt;
+  scaleX*=secondary.sx;scaleY*=secondary.sy;
+  drawX+=secondary.x;drawY+=secondary.y;
+ }
+ // No transparency strobing or new vector weapon layer.
+ ctx.save();if(tilt||scaleY!==1||scaleX!==1){
+  ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.scale(scaleX,scaleY);ctx.translate(-f.x,-feet);
+ }
  // All ten poses have independent, pre-cleaned bitmaps; do not truncate any
  // Retiarius attack/defeat weapon just to hide a stray neighboring frame.
  if(f.comboDash&&f.comboDash.t>=.17&&f.comboDash.t<.43){
@@ -2140,8 +2178,15 @@ function drawCinematicFocus(){
 }
 function render(){
  ctx.save();
- const dx=S.shake>0?rand(-S.shake,S.shake):0,dy=S.shake>0?rand(-S.shake*.45,S.shake*.45):0;
+ // Three distinct directional vibration profiles: brief contact,
+ // horizontal guard recoil, vertical heavy strike, and double parry shock.
+ // Sampled from real elapsed time, no frame-to-frame random jitter.
+ const shake=window.ArenaMotion?.sampleShake?.(S,
+  !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
+ const dx=shake?shake.x:S.shake>0?rand(-S.shake,S.shake):0;
+ const dy=shake?shake.y:S.shake>0?rand(-S.shake*.45,S.shake*.45):0;
  ctx.translate(dx,dy);
+ if(shake?.angle){ctx.translate(W/2,H/2);ctx.rotate(shake.angle);ctx.translate(-W/2,-H/2);}
  // Background is a separately clamped screen-sized parallax layer.
  drawBackdrop();
  ctx.save();
