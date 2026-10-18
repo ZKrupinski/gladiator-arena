@@ -114,7 +114,7 @@ function draft(enemy,painter){
  const config=draftConfig();
  squadPicks=squadPicks.filter(i=>s.roster[i]&&!wounded(s.roster[i])).slice(0,config.allies);
  if(!squadPicks.length&&chosen>=0)squadPicks=[chosen];
- if(matchMode==='1v1')squadPicks=[chosen];
+ if(matchMode==='1v1')squadPicks=chosen>=0?[chosen]:[];
  const ready=squadPicks.length===config.allies,pick=s.roster[squadPicks[0]??chosen];
  const choices=['1v1','1v2','1v3','2v2','3v3'];
  const controls='<div class="lc-mode-picker" role="group" aria-label="아레나 대전 형식">'+choices.map(mode=>{
