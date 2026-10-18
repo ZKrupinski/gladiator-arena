@@ -1,15 +1,39 @@
 {
-  "testedAt": "2026-10-18T15:04:57.307Z",
+  "testedAt": "2026-10-18T15:08:56.739Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 640,
-      "totalDifference": 355514
+      "changedChannels": 28065,
+      "totalDifference": 1757849
+    },
+    "walk": {
+      "changedChannels": 106878,
+      "totalDifference": 9409610
+    },
+    "sweep": {
+      "changedChannels": 119212,
+      "totalDifference": 10438348
+    },
+    "defeat": {
+      "changedChannels": 93990,
+      "totalDifference": 8302582
+    },
+    "slash": {
+      "changedChannels": 113268,
+      "totalDifference": 9890535
+    },
+    "thrust": {
+      "changedChannels": 119982,
+      "totalDifference": 10015641
+    },
+    "victory": {
+      "changedChannels": 54744,
+      "totalDifference": 4187891
     }
   },
   "spritePack": "B ready · 24 transparent frames",
   "version": "4.0.0",
   "status": "FAIL",
-  "error": "AssertionError [ERR_ASSERTION]: idle rendered image is not moving: {\"changedChannels\":640,\"totalDifference\":355514}",
+  "error": "AssertionError [ERR_ASSERTION]: one additional starter must be appended\n\n4 !== 3\n",
   "consoleErrors": []
 }
