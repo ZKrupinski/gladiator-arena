@@ -28,7 +28,7 @@ function unit(hero,side,i,round,mainEnemy=false){
  const injury=side==='ally'?Math.max(0,hero.injury||0):0;
  return {
   side,id:side+'-'+i,index:i,hero,cls,lane,x,face:side==='ally'?1:-1,
-  y:near?580:459,size:near?252:207,boss,
+  y:near?580:459,size:boss?(near?280:237):(near?252:207),boss,
   hp:Math.max(1,maxHp-injury),maxHp,atk:rank.atk,sp:rank.sp,
   speed:rank.move,range:BASE[cls].reach,armor:rank.armor??B.TRAITS[cls].armor,
   stamina:100,regen:rank.staminaRegen||1,focus:rank.focus||0,
@@ -48,7 +48,7 @@ function makeBattle(mode,party,opponent,random=Math.random){
   const cls=i===spec.enemies-1?opponent.cls:CLASSES[(CLASSES.indexOf(opponent.cls)+i+1)%3];
   const level=clamp((opponent.level||1)+(i%2===0?0:-1),1,20);
   const hero={cls,level,stage:B?.encounterLevel?.(round,level)||level,boss:i===spec.enemies-1&&opponent.boss,
-   appearance:i===spec.enemies-1?opponent.appearance:null,
+   appearance:i===spec.enemies-1&&opponent.boss?(opponent.appearance||'legacy'):null,
    name:i===spec.enemies-1?opponent.name:B.TRAITS[cls].role,
    growthType:i===spec.enemies-1?opponent.growthType:cls+'_a'};
   hero.stage=level>=20?5:level>=15?4:level>=10?3:level>=5?2:1;
@@ -224,6 +224,11 @@ function spriteBounds(img){
 function drawUnit(ctx,u,bridge,battle){
  const rectY=u.y+(u.lane?0:8),time=battle.t;
  ctx.save();ctx.globalAlpha=u.dead?.35:1;
+ if(u.boss){
+  ctx.strokeStyle=u.hp<u.maxHp*.5?'#ee554e':'#e7ae50';
+  ctx.lineWidth=5;
+  ctx.beginPath();ctx.ellipse(u.x,rectY+11,81,21,0,0,Math.PI*2);ctx.stroke();
+ }
  if(u===battle.party[battle.focusAlly]){
   ctx.strokeStyle='#fbe09b';ctx.lineWidth=4;
   ctx.beginPath();ctx.ellipse(u.x,rectY+10,77,19,0,0,Math.PI*2);ctx.stroke();
