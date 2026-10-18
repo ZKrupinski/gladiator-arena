@@ -27,10 +27,10 @@ try {
   const ended=finishLineupCleanup(),removed=s.enemy.removedFromArena;
   s.phase='result';showEnd();
   const element=document.getElementById('loserPose');
-  const hidden=element.children.length===0&&element.style.backgroundImage==='none';
+  const visible=element.children.length>0||element.style.backgroundImage.includes('url(');
   if(window.ArenaLineupVisual)window.ArenaLineupVisual.paint=old;
-  return {parry,dash,ended,removed,hidden};
+  return {parry,dash,ended,removed,visible};
  });
- assert.deepEqual(result,{parry:'parry',dash:'dash',ended:true,removed:true,hidden:true});
+ assert.deepEqual(result,{parry:'parry',dash:'dash',ended:true,removed:true,visible:true});
  console.log('PASS: real browser parry, dash, permanent removed corpse:',result);
 }finally{await browser.close();}
