@@ -351,6 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=1"></script>
+<script src="arena-carnifex.js?v=1"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -813,7 +814,7 @@ function enterCareer(){
  $('#careerHub').hidden=false;renderCareer();window.LudusScene?.open();
 }
 function returnToCareer(){
- S.careerMatch=false;S.gauntlet=null;updateLineupHud();CAREER_SELECTING=false;MINI=null;$('#careerMini').hidden=true;
+ S.careerMatch=false;S.gauntlet=null;S.cleanup=null;updateLineupHud();CAREER_SELECTING=false;MINI=null;$('#careerMini').hidden=true;
  returnToLudus();enterCareer();
 }
 function finishCareerMatch(){
@@ -1051,7 +1052,7 @@ function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 function start(mode='new',requestedRosterIndex=null){
  const careerMatch=mode==='career';
- S.gauntlet=null;updateLineupHud();
+ S.gauntlet=null;S.cleanup=null;updateLineupHud();
  if(careerMatch&&requestedRosterIndex!==null){
   const i=Number(requestedRosterIndex),candidate=CAREER.roster[i];
   if(!Number.isInteger(i)||!candidate||!careerEligible(candidate)){
@@ -1189,26 +1190,44 @@ function startLineupMatch(mode,indices){
  S.gauntlet.records[chosen[0]]={initialHp:S.player.hp,lastHp:S.player.hp,bouts:0};
  S.careerParticipant=chosen[0];S.careerOpponent={...q.enemies[0]};
  S.enemy=lineupEnemy(q.enemies[0]);
- S.time=90;S.lastManualInput=clock;S.autoPlaying=false;
+ S.time=90;S.lastManualInput=clock;S.autoPlaying=false;S.cleanup=null;
+ window.ArenaCarnifex?.preload?.();
  S.notice='1차전 · '+q.enemies[0].name;S.noticeT=2;
  updateLineupHud();updateHud();
  return true;
 }
 function resolveLineupBout(allyWon,timedOut=false){
- const q=S.gauntlet;if(!q||q.finished)return false;
+ const q=S.gauntlet;if(!q||q.finished||S.phase!=='fight')return false;
  const activeRoster=q.allies[q.allyIndex],record=q.records[activeRoster];
  if(record){record.bouts++;record.lastHp=allyWon?Math.max(0,S.player.hp):0;}
- const losing=allyWon?S.enemy:S.player;
+ const losing=allyWon?S.enemy:S.player,survivor=allyWon?S.player:S.enemy;
  losing.hp=0;losing.dead=true;setAction(losing,'defeat',.6);
  const step=ArenaLineup.resolve(q,allyWon);
  S.keys.clear();S.sparks=[];S.parryBursts=[];S.combo=0;
  S.autoPlaying=false;S.lastManualInput=clock;S.shake=Math.max(S.shake,12);
+ // Freeze original controls and fighter AI. The real defeat sprite is
+ // captured BEFORE either active fighter is replaced with the next contender.
+ survivor.vx=0;survivor.action='idle';survivor.actionT=0;
+ survivor.guard=false;survivor.comboDash=null;
+ S.phase='cleanup';
+ S.cleanup=window.ArenaCarnifex?.begin?.(losing,allyWon,step)||
+  {body:{...losing,dead:true},allyWon,step,t:0,finished:true};
+ S.notice=timedOut?'TEMPUS FINITUM · CARNIFEX':'CARNIFEX · CORPUS';
+ S.noticeT=1.4;
+ updateLineupHud();updateHud();
+ if(!window.ArenaCarnifex)finishLineupCleanup();
+ return true;
+}
+function finishLineupCleanup(){
+ const recovery=S.cleanup;if(!recovery||S.phase!=='cleanup')return false;
+ const {step,allyWon}=recovery;
+ S.cleanup=null;
  if(step.finished){
   S.resultWin=!!step.win;S.resultApplied=true;S.resultAnim=0;
   S.phase='finisher';S.slow=1.65;
   setAction(step.win?S.player:S.enemy,'finisher',1.9);
   say(step.win?'VICTORIA · 모든 상대 격파!':'DEFEAT · 출전 전원 탈락',1.8);
-  updateLineupHud();return true;
+  updateLineupHud();updateHud();return true;
  }
  if(allyWon){
   cleanDuelSurvivor(S.player,335,1);
@@ -1218,11 +1237,11 @@ function resolveLineupBout(allyWon,timedOut=false){
   S.careerParticipant=step.nextAllyIndex;
   CAREER.active=step.nextAllyIndex;
   S.player=lineupHero(step.nextAllyIndex);
-  q.records[step.nextAllyIndex]={initialHp:S.player.hp,lastHp:S.player.hp,bouts:0};
+  S.gauntlet.records[step.nextAllyIndex]={initialHp:S.player.hp,lastHp:S.player.hp,bouts:0};
   cleanDuelSurvivor(S.enemy,940,-1);
  }
  S.time=90;S.phase='fight';S.resultApplied=false;
- S.notice=q.round+'차전 · '+(allyWon?'다음 상대 등장!':'다음 아군 출전!');
+ S.notice=S.gauntlet.round+'차전 · '+(allyWon?'다음 상대 등장!':'다음 아군 출전!');
  S.noticeT=1.6;
  updateLineupHud();updateHud();
  return true;
@@ -1288,7 +1307,7 @@ function autoPilotPlayer(p,e,dt){
  }
 }
 function returnToLudus(){
- S.phase='title';S.paused=false;S.gauntlet=null;updateLineupHud();S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.flash=0;S.resultAnim=0;S.resultApplied=false;
+ S.phase='title';S.paused=false;S.gauntlet=null;S.cleanup=null;updateLineupHud();S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.flash=0;S.resultAnim=0;S.resultApplied=false;
  const c=$('#classChoice').value;S.player=fighter(c,335,false);S.enemy=fighter('retiarius',940,true);CAMERA.initialized=false;
  $('#endScreen').hidden=true;$('#startScreen').hidden=false;$('#pauseBtn').textContent='Ⅱ';updateHud();
 }
@@ -1606,6 +1625,10 @@ function preEngagementFootwork(f,other,dt,playerIdle=false){
 function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  S.shake=Math.max(0,S.shake-dt*49);S.flash=Math.max(0,S.flash-dt*.9);S.noticeT=Math.max(0,S.noticeT-dt);
  S.sparks=S.sparks.filter(v=>(v.t+=dt)<v.max);S.parryBursts=S.parryBursts.filter(v=>(v.t+=dt)<v.max);if(S.phase==='result')return;
+ if(S.phase==='cleanup'){
+  if(!S.cleanup||!window.ArenaCarnifex||window.ArenaCarnifex.advance(S.cleanup,dt))finishLineupCleanup();
+  return;
+ }
  if(S.phase==='finisher'){S.resultAnim+=dt;S.slow-=dt;if(S.slow<=0){S.phase='result';showEnd();}return;}
  const p=S.player,e=S.enemy;S.time-=dt;
  if(S.time<=0&&S.gauntlet){return resolveLineupBout(p.hp/p.maxHp>e.hp/e.maxHp,true);}
@@ -1997,7 +2020,16 @@ function render(){
  ctx.scale(CAMERA.zoom,CAMERA.zoom);
  ctx.translate(-CAMERA.x,-CAMERA.y);
  // Arena floor is painted in the backdrop; do not draw a hovering horizon line.
- drawVictoryBacklight();drawFighter(S.enemy);drawFighter(S.player);drawEffects();
+ drawVictoryBacklight();
+ if(S.phase==='cleanup'&&S.cleanup){
+  // Arena workers and the original knocked-down sprite are on the rear layer.
+  window.ArenaCarnifex?.draw?.(ctx,S.cleanup,drawFighter,FLOOR);
+  // Only the surviving combatant stays in the forward playing plane.
+  drawFighter(S.cleanup.allyWon?S.player:S.enemy);
+ }else{
+  drawFighter(S.enemy);drawFighter(S.player);
+ }
+ drawEffects();
  ctx.restore();
  // Damage flashes stay screen-fixed; HUD and on-screen buttons are never zoomed.
  if(S.flash>0){ctx.fillStyle=`rgba(255,235,204,${Math.min(.65,S.flash)})`;ctx.fillRect(-45,-45,W+90,H+90);}
