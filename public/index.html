@@ -1827,7 +1827,10 @@ function render(){
 function loop(t){
  if(!t0)t0=t;
  const dt=clamp((t-t0)/1000,0,.04);
- t0=t;update(dt);updateCamera(dt);render();requestAnimationFrame(loop);
+ t0=t;
+ // The squad arena owns the foreground while the classic duel stays suspended.
+ if(!window.SquadArena?.active?.()){update(dt);updateCamera(dt);render();}
+ requestAnimationFrame(loop);
 }
 const keymap={KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right',KeyJ:'attack',Space:'attack',KeyK:'guard',KeyL:'dodge',KeyI:'special'};
 window.addEventListener('keydown',e=>{if(S.phase!=='fight'||e.defaultPrevented||e.target?.closest?.('input,select,textarea,[contenteditable="true"]')||(['Space','Enter'].includes(e.code)&&e.target?.closest?.('button')))return;const k=keymap[e.code];if(k){if(e.code==='Space'||e.code.startsWith('Arrow'))e.preventDefault();if(S.paused)return;markManualInput();if(['left','right','guard'].includes(k)){
