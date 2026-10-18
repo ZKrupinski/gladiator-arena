@@ -6,15 +6,72 @@
 const E=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let timer=null,tick=0,current=null,frameIndex=-1;
 const names={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};
-const moves=['idle','idle','slash','slash','idle','sweep','sweep','idle','thrust','thrust','idle','heavy','heavy','idle'];
+const FRAME_MS=88;
+const ACTION_CYCLE=[
+ {name:'slash',ticks:12},{name:'sweep',ticks:12},
+ {name:'thrust',ticks:11},{name:'heavy',ticks:13}
+];
+const artBounds=new WeakMap();
 function stop(){if(timer!==null){clearInterval(timer);timer=null;}current=null;tick=0;frameIndex=-1;}
-function paint(canvas,img){
- if(!canvas||!img||!img.width||!img.height)return;
+function visibleBounds(img){
+ if(artBounds.has(img))return artBounds.get(img);
+ // Scan a quarter-resolution copy so padded 960×540 champion frames do not
+ // turn into tiny fighters or cause full-resolution per-frame readbacks.
+ const sample=document.createElement('canvas'),step=4;
+ sample.width=Math.max(1,Math.ceil(img.width/step));
+ sample.height=Math.max(1,Math.ceil(img.height/step));
+ const g=sample.getContext('2d',{willReadFrequently:true});
+ let box={x:0,y:0,w:img.width,h:img.height};
+ try{
+  g.drawImage(img,0,0,sample.width,sample.height);
+  const pixels=g.getImageData(0,0,sample.width,sample.height).data;
+  let left=sample.width,top=sample.height,right=-1,bottom=-1;
+  for(let y=0;y<sample.height;y++)for(let x=0;x<sample.width;x++){
+   if(pixels[(y*sample.width+x)*4+3]<72)continue;
+   if(x<left)left=x;if(x>right)right=x;if(y<top)top=y;if(y>bottom)bottom=y;
+  }
+  if(right>=left&&bottom>=top){
+   const x=Math.max(0,(left-1)*step),y=Math.max(0,(top-1)*step);
+   box={x,y,w:Math.min(img.width,(right+2)*step)-x,
+    h:Math.min(img.height,(bottom+2)*step)-y};
+  }
+ }catch(error){/* A readable on-site bitmap is expected; keep a safe fallback. */}
+ artBounds.set(img,box);
+ return box;
+}
+function paintTrainingFighter(canvas,img,action,progress){
+ if(!canvas)return;
  const ctx=canvas.getContext('2d');if(!ctx)return;
  ctx.clearRect(0,0,canvas.width,canvas.height);
- const scale=Math.min((canvas.width-14)/img.width,(canvas.height-13)/img.height);
- const w=img.width*scale,h=img.height*scale;
- try{ctx.drawImage(img,(canvas.width-w)/2,canvas.height-h-5,w,h);}catch(e){}
+ if(!img?.width||!img?.height)return;
+ const box=visibleBounds(img),maxHeight=340,maxWidth=canvas.width-38;
+ const scale=Math.min(maxWidth/box.w,maxHeight/box.h);
+ const width=box.w*scale,height=box.h*scale;
+ const strike=action!=='idle'?Math.sin(Math.PI*progress):0;
+ const anticipation=action!=='idle'?Math.sin(Math.PI*Math.min(1,progress*2))*.015:0;
+ // Every class faces LEFT toward Doctore. Keep the same planted floor pivot
+ // while gently extending into the attack; the strike never shifts the canvas.
+ const towardDoctore=(action==='thrust'?15:action==='heavy'?10:8)*strike;
+ const lean=(action==='slash'?.055:action==='sweep'?.038:action==='thrust'?.025:.045)*strike-anticipation;
+ ctx.save();
+ ctx.translate(canvas.width/2-towardDoctore,canvas.height-9);
+ ctx.rotate(-lean);
+ ctx.scale(-1,1);
+ try{ctx.drawImage(img,box.x,box.y,box.w,box.h,-width/2,-height,width,height);}catch(error){}
+ ctx.restore();
+}
+function actionAt(t){
+ let at=t%ACTION_CYCLE.reduce((sum,x)=>sum+x.ticks,0);
+ for(const part of ACTION_CYCLE){
+  if(at<part.ticks){
+   const progress=at/Math.max(1,part.ticks-1);
+   // One brief guard/reset between attacks, most frames use real strike poses.
+   const attacking=progress>=.12&&progress<.89;
+   return {action:attacking?part.name:'idle',progress,frame:Math.min(7,Math.floor(progress*8))};
+  }
+  at-=part.ticks;
+ }
+ return {action:'idle',progress:0,frame:0};
 }
 function animate(a,stage,selected){
  stop();
@@ -22,18 +79,16 @@ function animate(a,stage,selected){
  if(!canvas||selected==null)return;
  const draw=()=>{
   if(!canvas.isConnected){stop();return;}
-  // Hold each action for several ticks while its five authentic-source
-  // motion frames animate; retain the original training action cadence.
-  const phase=moves[Math.floor(tick/4)%moves.length];
-  const src=a.trainingFrame?.(selected,phase,tick%5)||a.portrait(selected);
-  paint(canvas,src);
-  canvas.dataset.attack=phase;
-  canvas.style.transform=phase==='thrust'?'translateX(-9px)':phase==='heavy'?'translateX(-5px)':'translateX(0)';
+  const motion=actionAt(tick);
+  const src=a.trainingFrame?.(selected,motion.action,motion.frame)||a.portrait(selected);
+  paintTrainingFighter(canvas,src,motion.action,motion.progress);
+  canvas.dataset.attack=motion.action;
+  canvas.dataset.face='left';
   const ribbon=stage.querySelector('.lt-motion-slash');
-  if(ribbon){ribbon.classList.toggle('active',!['idle'].includes(phase));ribbon.dataset.action=phase;}
+  if(ribbon){ribbon.classList.toggle('active',motion.action!=='idle');ribbon.dataset.action=motion.action;}
   tick++;
  };
- draw();timer=setInterval(draw,88);
+ draw();timer=setInterval(draw,FRAME_MS);
  current=canvas;
 }
 function mount(stage,a,s,cbs){
@@ -60,7 +115,7 @@ function mount(stage,a,s,cbs){
  if(h)paint(panel.querySelector('#ltInfoPortrait'),a.portrait(s.active));
  const fighter=document.createElement('div');fighter.className='lt-fighter-zone';
  fighter.setAttribute('aria-label',h?h.name+' · 교관을 바라보고 제자리에서 공격 연습 중':'훈련 중인 검투사 없음');
- fighter.innerHTML='<canvas class="lt-fighter-canvas" width="400" height="390"></canvas><div class="lt-motion-slash" aria-hidden="true"></div>';
+ fighter.innerHTML='<canvas class="lt-fighter-canvas" width="460" height="425"></canvas><div class="lt-motion-slash" aria-hidden="true"></div>';
  stage.appendChild(fighter);
  const roster=document.createElement('section');roster.className='lt-roster';
  roster.innerHTML='<div class="lt-roster-title"><strong>♜ 소속 검투사</strong><span>'+s.roster.length+'명 · 선택 중 '+(s.roster.length?s.active+1:0)+'명</span>'+
