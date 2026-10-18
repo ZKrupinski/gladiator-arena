@@ -31,7 +31,7 @@
  function positions(seq){
   const side=seq.side,cx=seq.initialX;
   const near=cx+side*148,enter=side>0?1510:-230;
-  const beyond=side>0?1530:-250;
+  const beyond=side>0?1740:-470; // Entire 348px death sprite clears viewport before disappearance.
   const t=Math.max(0,Math.min(TIME.total,seq.t));
   if(t<TIME.arrive){
    return {executionerX:LERP(enter,near,EASE(t/TIME.arrive)),bodyX:cx,
