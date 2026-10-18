@@ -135,7 +135,24 @@ function draw(ctx,o){
  ctx.restore();
  return !!ok;
 }
-root.MurmilloMotion={version:'4.0.0',pose,tracks,cycleTracks,stateAt,poseAt,motionAt,draw,loadAssets,
+// Training-room-only key-frame access. This uses the actual independent
+// Murmillo-B attack artwork rather than the older static growth sheet.
+const TRAINING_FRAMES={
+ idle:[0,12,0,13,0,12,0,13],
+ slash:[9,6,5,19,19,5,2,9],
+ sweep:[9,6,3,20,20,3,3,9],
+ thrust:[9,8,4,4,4,4,9,9],
+ heavy:[6,9,5,5,5,5,9,9]
+};
+function trainingFrame(action='idle',index=0){
+ const source=independentAtlas?.frames;
+ if(!source?.length)return null;
+ const sequence=TRAINING_FRAMES[action]||TRAINING_FRAMES.idle;
+ const selected=sequence[Math.max(0,Math.min(7,Math.floor(index)))];
+ const legacy={idle:0,slash:2,sweep:3,thrust:4,heavy:5};
+ return (source[selected]||source[legacy[action]??0]||source[0])?.canvas||null;
+}
+root.MurmilloMotion={version:'4.0.0',pose,tracks,cycleTracks,stateAt,poseAt,motionAt,draw,loadAssets,trainingFrame,
  hasStandaloneAssets:()=>!!independentAtlas,assetStatus:()=>assetState};
 if(typeof document!=='undefined'&&typeof fetch==='function')loadAssets();
 if(typeof module!=='undefined'&&module.exports)module.exports=root.MurmilloMotion;
