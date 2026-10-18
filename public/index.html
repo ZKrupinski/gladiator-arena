@@ -278,11 +278,20 @@ body{min-height:100dvh;overscroll-behavior:none}
 .ludus-item-icon{font-size:51px}
 @media(max-width:700px){.ludus-workshop{padding:8px;border-width:7px}.ludus-training-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ludus-equipment-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ludus-fighter-art{min-height:160px}.ludus-portrait{height:150px;width:140px}.ludus-stat-tile strong{font-size:16px}}
 
+
+.lineup-hud:not([hidden]){position:absolute;left:50%;top:10.5%;transform:translateX(-50%);z-index:11;
+ max-width:94%;width:max-content;background:linear-gradient(135deg,#35180de9,#130905ed);
+ border:2px ridge #daa762;border-radius:6px;padding:6px 12px;
+ color:#ffe9b9;font:800 clamp(10px,1.25vw,17px)/1.45 'Noto Sans KR',sans-serif;
+ text-shadow:0 2px 3px #130501;box-shadow:0 5px 16px #1106039c;
+ text-align:center;pointer-events:none;white-space:normal}
+.lineup-hud[hidden]{display:none!important}
+@media(max-width:720px){.lineup-hud:not([hidden]){top:10%;font-size:10px;max-width:98%;padding:3px 6px}}
 </style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=3"><link rel="stylesheet" href="ludus-armory-live.css?v=2"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=2"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="squad-arena.css?v=2"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
-<div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div>
+<div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div><div id="lineupHud" class="lineup-hud" aria-live="polite" hidden></div>
 <section class="overlay overlay-title" id="startScreen">
  <div class="stage-panel stage-panel-title">
   <div class="title-lockup">
@@ -803,7 +812,7 @@ function enterCareer(){
  $('#careerHub').hidden=false;renderCareer();window.LudusScene?.open();
 }
 function returnToCareer(){
- S.careerMatch=false;CAREER_SELECTING=false;MINI=null;$('#careerMini').hidden=true;
+ S.careerMatch=false;S.gauntlet=null;updateLineupHud();CAREER_SELECTING=false;MINI=null;$('#careerMini').hidden=true;
  returnToLudus();enterCareer();
 }
 function finishCareerMatch(){
@@ -1347,6 +1356,7 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
 }
 function finishFight(winner,loser){
  if(loser.hp>0||S.phase!=='fight')return false;
+ if(S.gauntlet)return resolveLineupBout(!winner.enemy);
  loser.hp=0;loser.dead=true;winner.dead=false;
  S.resultWin=!winner.enemy;S.resultApplied=true;S.resultAnim=0;
  setAction(loser,'defeat',2.2);setAction(winner,'finisher',2.2);
@@ -1585,7 +1595,9 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  S.shake=Math.max(0,S.shake-dt*49);S.flash=Math.max(0,S.flash-dt*.9);S.noticeT=Math.max(0,S.noticeT-dt);
  S.sparks=S.sparks.filter(v=>(v.t+=dt)<v.max);S.parryBursts=S.parryBursts.filter(v=>(v.t+=dt)<v.max);if(S.phase==='result')return;
  if(S.phase==='finisher'){S.resultAnim+=dt;S.slow-=dt;if(S.slow<=0){S.phase='result';showEnd();}return;}
- const p=S.player,e=S.enemy;S.time-=dt;if(S.time<=0){S.resultWin=p.hp>e.hp;S.resultApplied=true;S.resultAnim=0;S.phase='finisher';S.slow=2.05;setAction(S.resultWin?p:e,'finisher',2.2);setAction(S.resultWin?e:p,'defeat',2.2);say(S.resultWin?'VICTORIA!':'DEFEAT',1.8);return;}
+ const p=S.player,e=S.enemy;S.time-=dt;
+ if(S.time<=0&&S.gauntlet){return resolveLineupBout(p.hp/p.maxHp>e.hp/e.maxHp,true);}
+ if(S.time<=0){S.resultWin=p.hp>e.hp;S.resultApplied=true;S.resultAnim=0;S.phase='finisher';S.slow=2.05;setAction(S.resultWin?p:e,'finisher',2.2);setAction(S.resultWin?e:p,'defeat',2.2);say(S.resultWin?'VICTORIA!':'DEFEAT',1.8);return;}
  for(const f of [p,e]){
  f.actionT=Math.max(0,f.actionT-dt);f.attackCD=Math.max(0,f.attackCD-dt);f.cd=Math.max(0,f.cd-dt);
  f.dodge=Math.max(0,f.dodge-dt);f.stagger=Math.max(0,f.stagger-dt);
@@ -1609,7 +1621,8 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  const activeHold=S.keys.has('left')||S.keys.has('right')||S.keys.has('guard');
  S.autoPlaying=!!(S.autoplayEnabled&&!activeHold&&(clock-S.lastManualInput)>=AUTO_IDLE_SECONDS);
  if(S.autoPlaying){autoPilotPlayer(p,e,dt);}
- else {
+ if(S.gauntlet&&(S.player!==p||S.enemy!==e)){updateHud();return;}
+ if(!S.autoPlaying){
    const wantsGuard=!p.comboDash&&S.keys.has('guard')&&p.st>8&&p.stagger<=0&&p.dodge<=0;
    if(wantsGuard){if(!p.guard)beginGuard(p,.3);p.guard=true;}
    else{p.guard=false;p.parry=0;p.guardHold=0;}
@@ -1650,6 +1663,7 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
    }
   }
  }
+ if(S.gauntlet&&(S.player!==p||S.enemy!==e)){updateHud();return;}
  p.face=Math.sign(e.x-p.x)||p.face;
  for(const f of [p,e])if(f.knockT>0){
    f.x+=f.knockVX*dt*(.3+.7*clamp(f.knockT/.48,0,1));
