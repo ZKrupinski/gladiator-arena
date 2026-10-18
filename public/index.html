@@ -2097,6 +2097,11 @@ function loop(t){
  }else{S.cinematic=null;S.focusFrame=null;}
  update(gameDt,dt);updateCamera(dt);render();requestAnimationFrame(loop);
 }
+// Opt-in QA hook: actual game internals only on the explicit smoke-test URL.
+if(new URLSearchParams(window.location.search).has('__arena_qa')){
+ Object.defineProperty(window,'__arenaQA',{configurable:true,
+  value:{state:S,attack,finishLineupCleanup,showEnd}});
+}
 const keymap={KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right',KeyJ:'attack',Space:'attack',KeyK:'guard',KeyL:'dodge',KeyI:'special'};
 window.addEventListener('keydown',e=>{if(S.phase!=='fight'||e.defaultPrevented||e.target?.closest?.('input,select,textarea,[contenteditable="true"]')||(['Space','Enter'].includes(e.code)&&e.target?.closest?.('button')))return;const k=keymap[e.code];if(k){if(e.code==='Space'||e.code.startsWith('Arrow'))e.preventDefault();if(S.paused)return;markManualInput();if(['left','right','guard'].includes(k)){
    S.keys.add(k);
