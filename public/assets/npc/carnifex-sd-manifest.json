@@ -1,0 +1,14 @@
+{
+  "version": 3,
+  "src": "assets/npc/carnifex-sd-atlas.webp",
+  "imageWidth": 2720,
+  "imageHeight": 740,
+  "frameWidth": 340,
+  "frameHeight": 370,
+  "rows": {
+    "walk": 0,
+    "drag": 1
+  },
+  "frames": 8,
+  "notes": "Stable 8-keyframe runtime atlas with original-image overlap cleanup and matched floor contacts."
+}
