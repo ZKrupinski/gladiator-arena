@@ -1,0 +1,216 @@
+{
+  "version": 3,
+  "baseVersion": 2,
+  "source": "murmillo_a_L5",
+  "cellWidth": 362.0,
+  "cellHeight": 362.0,
+  "frames": [
+    {
+      "name": "idle",
+      "file": "00-idle.webp",
+      "pivotX": 225.97,
+      "footY": 402,
+      "width": 401,
+      "height": 414
+    },
+    {
+      "name": "walk",
+      "file": "01-walk.webp",
+      "pivotX": 219.18,
+      "footY": 401,
+      "width": 395,
+      "height": 413
+    },
+    {
+      "name": "slash",
+      "file": "02-slash.webp",
+      "pivotX": 257.35,
+      "footY": 407,
+      "width": 429,
+      "height": 419
+    },
+    {
+      "name": "sweep",
+      "file": "03-sweep.webp",
+      "pivotX": 188.12,
+      "footY": 373,
+      "width": 337,
+      "height": 385
+    },
+    {
+      "name": "thrust",
+      "file": "04-thrust.webp",
+      "pivotX": 229.48,
+      "footY": 352,
+      "width": 456,
+      "height": 364
+    },
+    {
+      "name": "heavy",
+      "file": "05-heavy.webp",
+      "pivotX": 192.55,
+      "footY": 373,
+      "width": 365,
+      "height": 385
+    },
+    {
+      "name": "guard",
+      "file": "06-guard.webp",
+      "pivotX": 187.16,
+      "footY": 374,
+      "width": 361,
+      "height": 386
+    },
+    {
+      "name": "hit",
+      "file": "07-hit.webp",
+      "pivotX": 184.37,
+      "footY": 352,
+      "width": 346,
+      "height": 364
+    },
+    {
+      "name": "dodge",
+      "file": "08-dodge.webp",
+      "pivotX": 235.84,
+      "footY": 310,
+      "width": 419,
+      "height": 322
+    },
+    {
+      "name": "ready",
+      "file": "09-ready.webp",
+      "pivotX": 197.67,
+      "footY": 372,
+      "width": 369,
+      "height": 384
+    },
+    {
+      "name": "victory",
+      "file": "10-victory.webp",
+      "pivotX": 185.89,
+      "footY": 356,
+      "width": 368,
+      "height": 368
+    },
+    {
+      "name": "defeat",
+      "file": "11-defeat.webp",
+      "pivotX": 193.8,
+      "footY": 313,
+      "width": 360,
+      "height": 325
+    },
+    {
+      "name": "idle-inhale",
+      "file": "12-idle-inhale.webp",
+      "pivotX": 280,
+      "footY": 476,
+      "width": 560,
+      "height": 520
+    },
+    {
+      "name": "idle-exhale",
+      "file": "13-idle-exhale.webp",
+      "pivotX": 280,
+      "footY": 476,
+      "width": 560,
+      "height": 520
+    },
+    {
+      "name": "idle-settle",
+      "file": "14-idle-settle.webp",
+      "pivotX": 280,
+      "footY": 476,
+      "width": 560,
+      "height": 520
+    },
+    {
+      "name": "walk-contact-a",
+      "file": "15-walk-contact-a.webp",
+      "pivotX": 280,
+      "footY": 476,
+      "width": 560,
+      "height": 520
+    },
+    {
+      "name": "walk-pass-a",
+      "file": "16-walk-pass-a.webp",
+      "pivotX": 280,
+      "footY": 476,
+      "width": 560,
+      "height": 520
+    },
+    {
+      "name": "walk-contact-b",
+      "file": "17-walk-contact-b.webp",
+      "pivotX": 280,
+      "footY": 476,
+      "width": 560,
+      "height": 520
+    },
+    {
+      "name": "walk-pass-b",
+      "file": "18-walk-pass-b.webp",
+      "pivotX": 280,
+      "footY": 476,
+      "width": 560,
+      "height": 520
+    },
+    {
+      "name": "slash-forward",
+      "file": "19-slash-forward.webp",
+      "pivotX": 280,
+      "footY": 476,
+      "width": 560,
+      "height": 520
+    },
+    {
+      "name": "sweep-forward",
+      "file": "20-sweep-forward.webp",
+      "pivotX": 280,
+      "footY": 476,
+      "width": 560,
+      "height": 520
+    },
+    {
+      "name": "fall-stagger",
+      "file": "21-fall-stagger.webp",
+      "pivotX": 280,
+      "footY": 476,
+      "width": 560,
+      "height": 520
+    },
+    {
+      "name": "fall-collapse",
+      "file": "22-fall-collapse.webp",
+      "pivotX": 280,
+      "footY": 476,
+      "width": 560,
+      "height": 520
+    },
+    {
+      "name": "fall-final",
+      "file": "23-fall-final.webp",
+      "pivotX": 280,
+      "footY": 476,
+      "width": 560,
+      "height": 520
+    }
+  ],
+  "extra": {
+    "idle_inhale": 12,
+    "idle_exhale": 13,
+    "idle_settle": 14,
+    "walk_contact_a": 15,
+    "walk_pass_a": 16,
+    "walk_contact_b": 17,
+    "walk_pass_b": 18,
+    "slash_forward": 19,
+    "sweep_forward": 20,
+    "fall_stagger": 21,
+    "fall_collapse": 22,
+    "fall_final": 23
+  },
+  "description": "Independent authored composite frames, fixed foot pivot and forward sword keyposes"
+}
