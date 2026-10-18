@@ -30,10 +30,12 @@ try {
  await page.waitForFunction(()=>window.MurmilloMotion?.hasStandaloneAssets?.()===true,{timeout:40000});
  await page.waitForFunction(()=>document.getElementById('status')?.textContent?.includes('재생 중'),{timeout:40000});
  report.version=await page.evaluate(()=>window.MurmilloMotion.version);
- assert.equal(report.version,'3.0.0');
+ assert.equal(report.version,'4.0.0');
  await page.locator('#auto').uncheck();
  await check('idle','[data-motion="idle"]',920,700);
  await check('walk','[data-motion="walk"]',260,1200);
+ await check('sweep','[data-motion="sweep"]',240,2500);
+ await check('defeat','[data-motion="defeat"]',320,1000);
  await check('slash','[data-motion="slash"]',200,2500);
  await check('thrust','[data-motion="thrust"]',220,2500);
  await check('victory','[data-motion="victory"]',550,700);
@@ -80,13 +82,47 @@ try {
  assert.equal(output.wobbleScriptPresent,false,'old flutter engine not loaded');
  assert.equal(output.growthMotionGenerator,false,'old scanline frame generator removed');
  assert.equal(output.originalL5Scale,.64,'animated sprite must match original L5 scale');
- assert.equal(output.motionScriptVersion,'3.0.0');
+ assert.equal(output.motionScriptVersion,'4.0.0');
  report.roster={originalKept:true,addedOnce:true,activePreserved:true,levelPreserved:true,
   inventoryPreserved:true,flutterRemoved:true,scale:.64,rosterAfterMigration:s.roster.length};
  await game.reload({waitUntil:'domcontentloaded'});
  await game.waitForFunction(()=>!!window.LudusBridge?.state);
  s=await read();
  assert.equal(s.roster.length,3,'second reload must never duplicate animation fighter');
+ // End-to-end user paths: main title -> draft -> explicit roster fighter.
+ async function startFromDraft(index){
+   await game.waitForSelector('.lc-draft-screen',{state:'visible',timeout:15000});
+   const cards=game.locator('.lc-draft-screen [data-candidate]');
+   assert.equal(await cards.count(),3,'the restored roster must offer all 3 fighters');
+   await cards.nth(index).click();
+   const expectedName=(await read()).roster[index].name;
+   const confirm=game.locator('.lc-draft-screen #lcDeploy');
+   assert.ok((await confirm.textContent()).includes(expectedName),'confirm action identifies selection');
+   await confirm.click();
+   await game.waitForFunction(()=>document.getElementById('startScreen').hidden &&
+     document.getElementById('careerHub').hidden,{timeout:12000});
+   assert.ok((await game.locator('#pName').textContent()).includes(expectedName),
+    'deployed HUD must show explicitly selected fighter: '+expectedName);
+   assert.equal((await read()).active,index,'roster active index preserved through deployment');
+   return expectedName;
+ }
+ await game.locator('#titleCareerFight').click();
+ const initial=await startFromDraft(0);
+ assert.equal(initial,'기존 무르밀로');
+ await game.reload({waitUntil:'domcontentloaded'});
+ await game.waitForFunction(()=>!!window.LudusBridge?.state);
+ await game.locator('#titleCareerFight').click();
+ const animated=await startFromDraft(2);
+ assert.equal(animated,'무르밀로 · 애니메이션');
+ await game.reload({waitUntil:'domcontentloaded'});
+ await game.waitForFunction(()=>!!window.LudusBridge?.state);
+ await game.locator('#careerEnter').click();
+ await game.waitForSelector('#ludusScene:not([hidden])',{timeout:15000});
+ await game.locator('#ludusScene button[data-action="arena"]').first().click();
+ const other=await startFromDraft(1);
+ assert.equal(other,'기존 레티아리우스');
+ report.deployment={mainCTA:true,ludusCTA:true,selectOld:true,selectAnimated:true,
+  selectOther:true,names:[initial,animated,other]};
  await game.close();
  assert.deepEqual(errors,[],'uncaught JS runtime errors');
  report.status='PASS';
