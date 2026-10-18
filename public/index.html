@@ -1358,7 +1358,11 @@ function attack(f,victim,special=false,dashImpact=false){
  else{victim.stagger=dashImpact?.78:special?.48:.24;setAction(victim,'hit',dashImpact?.67:.31);}
  if(special&&f.cls==='retiarius'){victim.net=.95;victim.stagger=Math.max(victim.stagger,.85);say('NET TRAP!');}
  if(special&&f.cls==='murmillo'){victim.st=clamp(victim.st-21,0,100);say('SCUTUM IMPACT!');}
- if(special&&f.cls==='thraex')say('SICA CROSS CUT!');
+ if(special&&f.cls==='thraex'){
+  victim.bleedT=Math.max(victim.bleedT||0,2.6);
+  victim.bleedDPS=Math.max(2,Math.round(f.cfg.atk*.18));
+  say('SICA · BLEED!');
+ }
  const guarded=wasGuarding;
  if(!f.enemy&&S.autoPlaying)dmg*=.88; // Manual timing is rewarded over unattended play.
  if(S.careerMatch){
@@ -1456,9 +1460,16 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  f.parry=Math.max(0,f.parry-dt);f.guardHold=Math.max(0,f.guardHold-dt);
  f.guardRecovery=Math.max(0,f.guardRecovery-dt);f.knockT=Math.max(0,f.knockT-dt);
  f.pressureT=Math.max(0,f.pressureT-dt);
- f.st=clamp(f.st+dt*(f.guard?3:21)*(f.staminaRegen||1),0,100);f.walkT+=dt;f.vx=0;
+ if((f.bleedT||0)>0){
+   f.bleedT=Math.max(0,f.bleedT-dt);
+   f.hp=Math.max(0,f.hp-(f.bleedDPS||2)*dt);
+  }
+  f.st=clamp(f.st+dt*(f.guard?3:21)*(f.staminaRegen||1),0,100);f.walkT+=dt;f.vx=0;
  if(f.chainHits>0&&clock>f.chainExpire)breakAttackChain(f);
  }
+ // Damage-over-time defeat resolves exactly like a direct finishing blow.
+ if(S.phase==='fight'&&p.hp<=0){finishFight(e,p);return;}
+ if(S.phase==='fight'&&e.hp<=0){finishFight(p,e);return;}
  // Dash is simulated independently of the input/auto AI.
  for(const f of [p,e])advanceComboDash(f,dt);
  if(S.phase!=='fight'){updateHud();return;}
@@ -1999,5 +2010,5 @@ S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);upd
 })();
 </script>
 <script src="ludus-scene.js?v=19"></script><script src="ludus-training-runtime.js?v=6"></script><script src="ludus-approved-scenes.js?v=11"></script><script src="ludus-armory-live.js?v=2"></script><script src="ludus-cards.js?v=6"></script>
-<script src="squad-arena.js?v=2"></script>
+<script src="squad-arena.js?v=3"></script>
 </body></html>
