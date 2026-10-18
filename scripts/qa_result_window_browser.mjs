@@ -58,6 +58,7 @@ async function check(size,preview){
     !panelCSS.backgroundImage.includes(',')&&!panelCSS.backgroundImage.includes('linear-gradient');
    const cbox=canvas?.getBoundingClientRect();
    const pixelRatio=canvas?cbox.width/cbox.height:null;
+   const spriteFit=canvas?getComputedStyle(canvas).objectFit:null;
    return {
     imgOK:art.ok,imgType:art.headers.get('content-type'),
     actualWidth:img.naturalWidth,actualHeight:img.naturalHeight,
@@ -73,6 +74,7 @@ async function check(size,preview){
     originalLoserStillGone:window.__arenaQA.state.enemy.removedFromArena,
     canvasNaturalRatio:canvas?canvas.width/canvas.height:null,
     canvasDisplayedRatio:pixelRatio,
+    canvasObjectFit:spriteFit,
     alphaBox,loserSize:{w:loserRect.width,h:loserRect.height},panelSize:{w:rect.width,h:rect.height}
    };
   },photo);
@@ -90,8 +92,7 @@ async function check(size,preview){
   assert.ok(Math.abs(result.ratio-4/3)<.015,'the approved artwork cannot be distorted');
   assert.equal(result.withinViewport,true,'no cropped gold frame');
   assert.equal(result.buttonsInside,true,'native buttons are interactive within frame');
-  if(result.canvasNaturalRatio!=null)
-   assert.ok(Math.abs(result.canvasDisplayedRatio-result.canvasNaturalRatio)<.03,'lose sprite aspect ratio preserved');
+  assert.equal(result.canvasObjectFit,'contain','sprite source must retain natural aspect inside portrait viewport');
   console.log('RESULT_RASTER_QA_PASS '+JSON.stringify({viewport:size,...result}));
   if(preview&&process.env.RESULT_PREVIEW==='1'){
    const buffer=await page.screenshot({type:'jpeg',quality:75});
