@@ -4,7 +4,7 @@
 <canvas id="stage" width="1000" height="620"></canvas><div id="buttons"></div>
 <footer><span id="status" role="status">원본 리소스 로딩 중...</span><label><input id="repeat" type="checkbox" checked> 자동 반복</label><button id="flip">방향 반전</button><a href="./">게임으로 이동</a></footer>
 <p><small>이번 단계는 원본 12개의 독립 키포즈를 실제 전투 상태에 맞춰 재생하는 테스트입니다. 신규 원화 프레임이나 자동 변형 프레임을 사용하지 않습니다.</small></p></main>
-<script src="growth-frames.js?v=2"></script><script src="murmillo-motion-v2.js?v=1"></script><script>
+<script src="growth-frames.js?v=2"></script><script src="murmillo-motion-v2.js?v=2"></script><script>
 (()=>{
 const cvs=document.querySelector('#stage'),ctx=cvs.getContext('2d'),status=document.querySelector('#status');
 const labels={idle:'기본',walk:'이동',slash:'종베기',sweep:'횡베기',thrust:'찌르기',heavy:'강베기',guard:'방어',dodge:'회피',hit:'피격',dash:'돌진',victory:'승리',defeat:'패배'};
