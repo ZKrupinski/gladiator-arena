@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=1"></script>
-<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=1"></script>
+<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -615,18 +615,18 @@ function updateCamera(dt){
  // Stay wide at range; make approach, hits, parries and leap-rush feel cinematic.
  const emphasis=(striking?.036:0)+(rushing?.07:0)+(parrying?.065:0);
  const focus=S.focusFrame?.active?S.focusFrame:null;
- const targetZoom=clamp(1+pressure*.205+emphasis*(.35+.65*close)+(focus?.zoom||0),1,1.48);
+ const targetZoom=clamp(1+pressure*.205+emphasis*(.35+.65*close)+(focus?.zoom||0),1,1.7);
  const targetX=clamp(focus?midX*.35+focus.centerX*.65:midX,110,1170);
  if(!CAMERA.initialized){
   CAMERA.x=targetX;CAMERA.zoom=targetZoom;CAMERA.initialized=true;
  }else if(!S.paused){
-  const follow=1-Math.exp(-dt*4.4);
-  const zSpeed=focus?19:targetZoom>CAMERA.zoom?7.6:3.7;
+  const follow=1-Math.exp(-dt*(focus?14:4.4));
+  const zSpeed=focus?24:targetZoom>CAMERA.zoom?7.6:3.7;
   const blend=1-Math.exp(-dt*zSpeed);
   CAMERA.x+=(targetX-CAMERA.x)*follow;
   CAMERA.zoom+=(targetZoom-CAMERA.zoom)*blend;
  }
- CAMERA.zoom=clamp(CAMERA.zoom,1,1.48);
+ CAMERA.zoom=clamp(CAMERA.zoom,1,1.7);
  // Keep feet aligned with the floor near screen y=617 during zoom-in.
  CAMERA.y=FLOOR-(FLOOR-H*.5)/CAMERA.zoom;
 }
@@ -1331,13 +1331,15 @@ function returnToLudus(){
 }
 
 function say(t,dur=.82){S.notice=t;S.noticeT=dur;$('#combatNotice').textContent=t;}
-function triggerCinematic(kind,contactX){
+function triggerCinematic(kind,contactX,dir=1){
  if(S.phase!=='fight'||S.paused||!window.ArenaFocus)return;
- const candidate=window.ArenaFocus.start(kind,contactX);
+ const candidate=window.ArenaFocus.start(kind,contactX,dir);
  if(!candidate)return;
  S.cinematic=candidate;
  S.focusFrame=window.ArenaFocus.advance(candidate,0,
    !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
+ if(S.fx&&!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches)
+  S.shake=Math.max(S.shake,kind==='parry'?32:36);
 }
 function addFx(frame,x,y,opt={}){
  if(!S.fx)return;
@@ -1527,7 +1529,7 @@ function attack(f,victim,special=false,dashImpact=false){
    f.x=clamp(f.x+away*(special?86:64),125,1165);
    S.shake=Math.max(S.shake,victim.enemy?(special?22:17):(special?28:24));
    S.flash=Math.max(S.flash,victim.enemy?(special?.29:.22):.32);
-   triggerCinematic('parry',(victim.x+f.x)*.5);
+   triggerCinematic('parry',(victim.x+f.x)*.5,victim.face);
    S.parryBursts.push({x:victim.x+victim.face*28,y:FLOOR-170,t:0,max:.65,
      damage:counterDamage,hitX:f.x,hitY:FLOOR-278});
    const atlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
@@ -1590,7 +1592,7 @@ function attack(f,victim,special=false,dashImpact=false){
   victim.knockVX=dir*770;victim.knockT=.57;
   victim.stagger=Math.max(victim.stagger,.68);
   S.shake=Math.max(S.shake,24);S.flash=Math.max(S.flash,.29);
-  if(!guarded)triggerCinematic('dash',(f.x+victim.x)*.5);
+  if(!guarded)triggerCinematic('dash',(f.x+victim.x)*.5,f.face);
   say('4 HIT · RUSH BREAK!',1.05);
  }else{
   victim.x=clamp(victim.x+f.face*(special?69:26),125,1165);
@@ -1652,7 +1654,7 @@ function preEngagementFootwork(f,other,dt,playerIdle=false){
 }
 function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  // Presentation keeps its real-time timing during the simulated slow-motion.
- S.shake=Math.max(0,S.shake-realDt*49);S.flash=Math.max(0,S.flash-realDt*.9);S.noticeT=Math.max(0,S.noticeT-realDt);
+ S.shake=Math.max(0,S.shake-realDt*(S.focusFrame?.active?94:49));S.flash=Math.max(0,S.flash-realDt*.9);S.noticeT=Math.max(0,S.noticeT-realDt);
  S.sparks=S.sparks.filter(v=>(v.t+=realDt)<v.max);S.parryBursts=S.parryBursts.filter(v=>(v.t+=realDt)<v.max);if(S.phase==='result')return;
  if(S.phase==='cleanup'){
   if(!S.cleanup||!window.ArenaCarnifex||window.ArenaCarnifex.advance(S.cleanup,dt))finishLineupCleanup();
@@ -2020,6 +2022,25 @@ function drawResultFx(){
  // End-of-battle burst removed. Victory illumination is now placed behind
  // the fighter by drawVictoryBacklight in the world rendering order.
 }
+// Proven painted WebP combat art marks the actual success collision; no
+// procedural/vector swords or flashing geometry are introduced.
+function drawCinematicWorldAccent(){
+ const f=S.focusFrame;
+ if(!S.fx||!f?.active||f.reduced)return;
+ const t=f.elapsed,x=f.centerX,y=FLOOR-173;
+ const scale=1+Math.min(.22,t*1.6),punch=Math.max(0,f.pulse);
+ ctx.save();ctx.globalCompositeOperation='screen';
+ if(f.kind==='parry'){
+  drawIllustratedEffect('parry_burst',x,y,1040*scale,970*scale,Math.min(.88,punch*.77));
+  if(t<.22)drawIllustratedEffect('special_aura',x,y,920,920,Math.min(.28,punch*.38));
+ }else{
+  drawIllustratedEffect('dash_trail',x-f.dir*120,y+32,1610,540,
+   Math.min(.95,punch*.9),f.dir<0);
+  drawIllustratedEffect('hit_slash',x+f.dir*30,y,1050*scale,940*scale,
+   Math.min(.9,punch*.82),f.dir<0,f.dir*.04);
+ }
+ ctx.restore();
+}
 function drawParryBursts(){
  for(const b of S.parryBursts){
    // Parry graphic uses the premium parry_burst image queued in attack().
@@ -2047,6 +2068,7 @@ function drawDashStreaks(){
 function drawEffects(){
  drawResultFx();
  drawDashStreaks();
+ drawCinematicWorldAccent();
  drawParryBursts();
  for(const v of S.sparks){
   const cx=v.owner?v.owner.x+v.offsetX:v.x;
@@ -2065,22 +2087,55 @@ function drawEffects(){
   ctx.restore();
  }
 }
-// Focused Roman-arena lens treatment: transient edge focus only; never dim
-// or change the defeated actor's actual image pixels.
+// Real-time post layer: moving light concentration, cinematic bars and
+// sharp Roman callouts. Never alter the fighter sprite's own color values.
 function drawCinematicFocus(){
  const f=S.focusFrame;
- if(!f?.active||!f.shade||!S.fx)return;
+ if(!f?.active||f.reduced||!S.fx)return;
+ const sx=clamp((f.centerX-CAMERA.x)*CAMERA.zoom+W*.5,W*.19,W*.81);
+ const sy=clamp((FLOOR-173-CAMERA.y)*CAMERA.zoom+H*.5,H*.24,H*.76);
  ctx.save();
- const c=ctx.createRadialGradient(W*.5,H*.52,H*.18,W*.5,H*.52,W*.82);
- c.addColorStop(0,'rgba(18,12,9,0)');
- c.addColorStop(.57,'rgba(18,12,9,0)');
- c.addColorStop(1,'rgba(18,12,9,'+Math.min(.26,f.shade)+')');
- ctx.fillStyle=c;ctx.fillRect(-50,-50,W+100,H+100);
- const strength=Math.min(.85,f.shade*3);
- ctx.fillStyle='rgba(13,10,9,'+strength+')';
- const bar=Math.round(2+strength*17);
- ctx.fillRect(0,0,W,bar);
- ctx.fillRect(0,H-bar,W,bar);
+ if(f.bloom>0){
+  ctx.globalCompositeOperation='screen';
+  const shine=ctx.createRadialGradient(sx,sy,4,sx,sy,390);
+  const tint=f.kind==='parry'?'216,233,255':'255,213,145';
+  shine.addColorStop(0,'rgba('+tint+','+Math.min(.7,f.bloom*1.3)+')');
+  shine.addColorStop(.28,'rgba('+tint+','+Math.min(.32,f.bloom*.46)+')');
+  shine.addColorStop(1,'rgba('+tint+',0)');
+  ctx.fillStyle=shine;ctx.fillRect(0,0,W,H);
+  ctx.globalCompositeOperation='source-over';
+ }
+ const rim=ctx.createRadialGradient(sx,sy,85,sx,sy,W*.76);
+ rim.addColorStop(0,'rgba(12,8,9,0)');
+ rim.addColorStop(.46,'rgba(12,8,9,0)');
+ rim.addColorStop(1,'rgba(10,6,8,'+Math.min(.68,f.shade*1.55)+')');
+ ctx.fillStyle=rim;ctx.fillRect(0,0,W,H);
+ const bar=Math.max(0,Math.round(f.cinemaBars));
+ if(bar){
+  const veil=ctx.createLinearGradient(0,0,0,bar);
+  veil.addColorStop(0,'rgba(5,3,3,.99)');veil.addColorStop(1,'rgba(9,5,5,.87)');
+  ctx.fillStyle=veil;ctx.fillRect(0,0,W,bar);
+  ctx.fillRect(0,H-bar,W,bar);
+  ctx.fillStyle='rgba(244,200,116,'+Math.min(.4,f.shade*.9)+')';
+  ctx.fillRect(0,bar,W,1);ctx.fillRect(0,H-bar-1,W,1);
+ }
+ const reveal=clamp((f.elapsed-.065)/.12,0,1);
+ const dissolve=clamp((f.duration-f.elapsed)/.29,0,1);
+ const textAlpha=Math.min(.94,reveal,dissolve);
+ if(textAlpha>0){
+  const legend=f.kind==='parry'?'PARRY PERFECTA':'IMPETUS';
+  const subtitle=f.kind==='parry'?'COUNTERSTRIKE':'RUSH IMPACT';
+  ctx.globalAlpha=textAlpha;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.shadowColor='#090507';ctx.shadowBlur=22;
+  ctx.font='900 34px Georgia,serif';ctx.lineWidth=5;ctx.strokeStyle='#1e1010';
+  const labelY=H*.22;
+  ctx.strokeText(legend,W*.5,labelY);
+  ctx.fillStyle=f.kind==='parry'?'#ecf3ff':'#ffe8b1';
+  ctx.fillText(legend,W*.5,labelY);
+  ctx.shadowBlur=8;ctx.font='700 13px Georgia,serif';
+  ctx.fillStyle=f.kind==='parry'?'#cbdcff':'#eac280';
+  ctx.fillText(subtitle,W*.5,labelY+30);
+ }
  ctx.restore();
 }
 function render(){
