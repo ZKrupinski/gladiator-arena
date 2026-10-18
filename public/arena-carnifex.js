@@ -1,108 +1,119 @@
-/* CARNIFEX — illustrated executioner and dead-sprite retrieval transition.
- * Never redraws or recreates gladiator art: drawBody() receives the *actual*
- * defeated character snapshot and the original drawFighter()/death pose.
- * No team depth changes. Small rear-stage offset keeps collection behind action.
+/* CARNIFEX SD — oversized Roman arena executioner, using the approved animated sprite artwork.
+ * Defeated fighter is NEVER baked into this atlas. drawBody always receives
+ * the original, already-knocked-out combat sprite from the real duel renderer.
  */
 (function(root){
- 'use strict';
- const TIME={arrive:.66,grip:.36,haul:1.50,exit:.34};
- TIME.total=TIME.arrive+TIME.grip+TIME.haul+TIME.exit;
- const EASE=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
- const LERP=(a,b,t)=>a+(b-a)*t;
- let artwork=null;
- function preload(){
-  if(artwork)return artwork;
-  if(typeof Image==='undefined')return null;
-  artwork=new Image();
-  artwork.decoding='async';
-  artwork.src='assets/npc/carnifex-executioner.svg?v=1';
-  return artwork;
+'use strict';
+const TIME={arrive:.96,grip:.48,haul:1.92,exit:.34};
+TIME.total=TIME.arrive+TIME.grip+TIME.haul+TIME.exit;
+const W=1280,FLOOR=617,ATLAS_COLS=8,CELL_W=340,CELL_H=370;
+const SD_ART='assets/npc/carnifex-sd-atlas.webp?v=3';
+const OLD_ART='assets/npc/carnifex-executioner.svg?v=1';
+const EASE=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
+const LERP=(a,b,t)=>a+(b-a)*t;
+let artwork=null,fallback=null;
+function image(source){
+ if(typeof Image==='undefined')return null;
+ const img=new Image();img.decoding='async';img.src=source;
+ return img;
+}
+function preload(){
+ if(!artwork)artwork=image(SD_ART);
+ if(!fallback)fallback=image(OLD_ART);
+ return artwork||fallback;
+}
+function begin(loser,allyWon,step){
+ if(!loser)throw Error('Missing defeated gladiator for Carnifex retrieval');
+ preload();
+ const side=loser.enemy?1:-1;
+ const body={...loser,cfg:loser.cfg,dead:true,hp:0,
+  action:'defeat',actionT:0,actionDuration:0,stagger:0,
+  comboDash:null,attackCD:0,vx:0,dodge:0,knockT:0,invuln:0};
+ return {body,initialX:loser.x,side,allyWon:!!allyWon,step,
+  t:0,total:TIME.total,finished:false,pickedUp:false};
+}
+function positions(seq){
+ const side=seq.side,cx=seq.initialX;
+ const near=cx+side*145,enter=side>0?1510:-230;
+ const beyond=side>0?W+480:-480;
+ const t=Math.max(0,Math.min(TIME.total,seq.t));
+ if(t<TIME.arrive){
+  const k=EASE(t/TIME.arrive);
+  return {executionerX:LERP(enter,near,k),bodyX:cx,
+   rope:0,lift:0,exiting:false,bodyVisible:true,phase:'walk',frame:Math.min(7,Math.floor(t/TIME.arrive*8))};
  }
- function begin(loser,allyWon,step){
-  if(!loser)throw Error('Missing defeated gladiator for Carnifex retrieval');
-  preload();
-  const side=loser.enemy?1:-1;
-  const body={...loser,cfg:loser.cfg,dead:true,hp:0,
-   action:'defeat',actionT:0,actionDuration:0,stagger:0,
-   comboDash:null,attackCD:0,vx:0,dodge:0,knockT:0,invuln:0};
-  return {body,initialX:loser.x,side,allyWon:!!allyWon,step,
-   t:0,total:TIME.total,finished:false,pickedUp:false};
+ if(t<TIME.arrive+TIME.grip){
+  const grip=(t-TIME.arrive)/TIME.grip;
+  return {executionerX:near,bodyX:cx,rope:EASE(grip),lift:0,
+   exiting:false,bodyVisible:true,phase:'grab',frame:Math.min(3,Math.floor(grip*4))};
  }
- function positions(seq){
-  const side=seq.side,cx=seq.initialX;
-  const near=cx+side*148,enter=side>0?1510:-230;
-  const beyond=side>0?1740:-470; // Entire 348px death sprite clears viewport before disappearance.
-  const t=Math.max(0,Math.min(TIME.total,seq.t));
-  if(t<TIME.arrive){
-   return {executionerX:LERP(enter,near,EASE(t/TIME.arrive)),bodyX:cx,
-    rope:0,lift:0,exiting:false,bodyVisible:true};
-  }
-  if(t<TIME.arrive+TIME.grip){
-   const grip=(t-TIME.arrive)/TIME.grip;
-   return {executionerX:near,bodyX:cx,rope:EASE(grip),lift:grip*4,
-    exiting:false,bodyVisible:true};
-  }
-  if(t<TIME.arrive+TIME.grip+TIME.haul){
-   const k=(t-TIME.arrive-TIME.grip)/TIME.haul;
-   // Keep the exact original defeated sprite in tow, with foot/body contact.
-   const haul=EASE(k);
-   const bodyX=LERP(cx,beyond-side*145,haul);
-   return {executionerX:bodyX+side*148,bodyX,rope:1,lift:2+Math.sin(k*Math.PI*7)*1.8,
-    exiting:true,bodyVisible:true};
-  }
-  return {executionerX:beyond,bodyX:beyond-side*148,rope:1,
-   lift:0,exiting:true,bodyVisible:false};
+ if(t<TIME.arrive+TIME.grip+TIME.haul){
+  const k=(t-TIME.arrive-TIME.grip)/TIME.haul;
+  // The hand and the body stay locked to the same contact point throughout retreat.
+  const bodyX=LERP(cx,beyond-side*145,EASE(k));
+  const last=Math.min(3,Math.floor(k*4));
+  return {executionerX:bodyX+side*145,bodyX,rope:1,lift:0,
+   exiting:true,bodyVisible:true,phase:'drag',frame:4+last};
  }
- function advance(seq,dt){
-  if(!seq||seq.finished)return true;
-  seq.t=Math.min(TIME.total,seq.t+Math.max(0,Number(dt)||0));
-  seq.pickedUp=seq.t>=TIME.arrive+TIME.grip;
-  seq.finished=seq.t>=TIME.total-.000001;
-  return seq.finished;
+ return {executionerX:beyond,bodyX:beyond-side*145,rope:1,
+  lift:0,exiting:true,bodyVisible:false,phase:'exit',frame:7};
+}
+function advance(seq,dt){
+ if(!seq||seq.finished)return true;
+ seq.t=Math.min(TIME.total,seq.t+Math.max(0,Number(dt)||0));
+ seq.pickedUp=seq.t>=TIME.arrive+TIME.grip;
+ seq.finished=seq.t>=TIME.total-.000001;
+ return seq.finished;
+}
+function drawExecutioner(ctx,seq,pose,floorY){
+ const art=artwork?.complete&&artwork.naturalWidth===ATLAS_COLS*CELL_W&&artwork.naturalHeight===2*CELL_H
+  ?artwork:null;
+ const backup=fallback?.complete&&fallback.naturalWidth?fallback:null;
+ if(!art&&!backup)return;
+ const side=seq.side;
+ const travel=pose.phase==='walk'? -side:side;
+ // Walk into the arena facing the fallen fighter. Turn during the grip,
+ // then move out with the dragging hand behind the character, next to the corpse.
+ const inward=pose.phase==='walk'||(pose.phase==='grab'&&pose.frame<=1);
+ const facing=inward?-side:side;
+ const flip=facing<0;
+ const gait=pose.phase==='walk'?Math.sin(seq.t*22)*3.1:
+   pose.exiting?Math.sin(seq.t*14)*2.0:0;
+ const tilt=pose.phase==='walk'?Math.sin(seq.t*9)*.010:pose.exiting?Math.sin(seq.t*8)*.008:0;
+ ctx.save();
+ ctx.translate(pose.executionerX,floorY+gait);
+ ctx.scale(flip?-1:1,1);
+ ctx.rotate(tilt);
+ ctx.filter='contrast(1.03) saturate(.93) brightness(.92)';
+ if(art){
+  const row=pose.phase==='walk'?0:1;
+  const frame=pose.frame;
+  // Feet of both rows are aligned at precisely the same atlas y=356.
+  ctx.drawImage(art,frame*CELL_W,row*CELL_H,CELL_W,CELL_H,
+   -218,-444,436,466);
+ }else{
+  ctx.drawImage(backup,-205,-447,410,466);
  }
- function draw(ctx,seq,drawBody,floorY=617){
-  if(!ctx||!seq||typeof drawBody!=='function')return;
-  const pose=positions(seq),side=seq.side;
-  // Rear stage is 26px above the front figures and 15% lower in contrast.
-  ctx.save();ctx.translate(0,-25);
-  const arrival=EASE(seq.t/Math.max(.01,TIME.arrive));
-  if(artwork?.complete&&artwork.naturalWidth){
-   ctx.save();
-   const stride=pose.exiting?Math.sin(seq.t*18)*5:Math.sin(seq.t*21)*7;
-   ctx.translate(pose.executionerX,floorY-15+stride);
-   if(side>0)ctx.scale(-1,1);
-   const gait=pose.exiting?Math.sin(seq.t*14)*.028:Math.sin(seq.t*18)*.022;
-   ctx.rotate(gait);
-   ctx.filter='contrast(1.08) saturate(.79) brightness(.82)';
-   // 415 px NPC silhouette versus 348 px regular fighter.
-   ctx.drawImage(artwork,-169,-421,338,444);
-   ctx.restore();
-  }
-  if(pose.rope>.01){
-   const handX=pose.executionerX-side*98,hipX=pose.bodyX+side*29;
-   const handY=floorY-111,hipY=floorY-74-pose.lift;
-   ctx.save();ctx.strokeStyle='#27180f';ctx.lineWidth=10;ctx.lineCap='round';
-   ctx.beginPath();ctx.moveTo(handX,handY);
-   ctx.quadraticCurveTo((handX+hipX)/2,floorY-120,hipX,hipY);ctx.stroke();
-   ctx.strokeStyle='#ac8457';ctx.lineWidth=5;
-   ctx.beginPath();ctx.moveTo(handX,handY);
-   ctx.quadraticCurveTo((handX+hipX)/2,floorY-120,hipX,hipY);ctx.stroke();
-   ctx.strokeStyle='#e5c19777';ctx.lineWidth=1.7;ctx.stroke();
-   ctx.restore();
-  }
-  if(pose.bodyVisible){
-   const corpse={...seq.body,x:pose.bodyX,dead:true,hp:0,action:'defeat',actionT:0,
-    comboDash:null,vx:0,dodge:0,invuln:0};
-   ctx.save();
-   ctx.translate(0,-pose.lift);
-   // Tint through canvas context, not by modifying or substituting sprite art.
-   ctx.filter='saturate(.78) brightness(.84)';
-   drawBody(corpse);
-   ctx.restore();
-  }
+ ctx.restore();
+}
+function draw(ctx,seq,drawBody,floorY=FLOOR){
+ if(!ctx||!seq||typeof drawBody!=='function')return;
+ const pose=positions(seq);
+ // Subtly recessed depth, while feet and the collected corpse remain on the sand.
+ ctx.save();ctx.translate(0,-14);
+ drawExecutioner(ctx,seq,pose,floorY);
+ if(pose.bodyVisible){
+  const corpse={...seq.body,x:pose.bodyX,dead:true,hp:0,
+   action:'defeat',actionT:0,comboDash:null,vx:0,dodge:0,invuln:0};
+  ctx.save();ctx.filter='saturate(.82) brightness(.86)';
+  drawBody(corpse);
   ctx.restore();
  }
- root.ArenaCarnifex={version:'1.0.0',TIME,begin,advance,positions,draw,preload,
-  isReady:()=>!!(artwork?.complete&&artwork.naturalWidth)};
- if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaCarnifex;
+ ctx.restore();
+}
+root.ArenaCarnifex={version:'3.0.0',TIME,begin,advance,positions,draw,preload,
+ isReady:()=>!!(artwork?.complete&&artwork.naturalWidth===ATLAS_COLS*CELL_W),
+ sprite:{width:2720,height:740,frameWidth:CELL_W,frameHeight:CELL_H,frames:8,source:SD_ART}
+};
+if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaCarnifex;
 })(globalThis);
