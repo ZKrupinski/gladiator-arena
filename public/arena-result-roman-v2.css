@@ -1,0 +1,71 @@
+/* Arena Result V2 — architectural rectangular frame, distinct from the art and winner/loser sprites. */
+#endScreen.overlay-ending{background:linear-gradient(155deg,#100908e8,#180d0bdf 62%,#130b0aea);padding:clamp(8px,1.5vh,18px)}
+#endScreen .stage-panel-ending{
+ position:relative;isolation:isolate;box-sizing:border-box;overflow:hidden;
+ width:min(95vw,960px);max-width:960px;min-width:0;
+ min-height:0;max-height:calc(100dvh - 22px);
+ padding:clamp(33px,5vh,63px) clamp(36px,6vw,82px) clamp(34px,5vh,57px);
+ border:0;border-radius:0;color:#ffe6b8;
+ background:linear-gradient(0deg,#230f0bd4,#270f0db1 25%,#24120aa5 77%,#160a08bb),
+ url('assets/new-era/arena.webp') center 58% / cover no-repeat;
+ box-shadow:0 24px 65px #060101ec,0 0 65px #edb6591f;
+}
+#endScreen .stage-panel-ending > :not(.roman-results-frame){position:relative;z-index:2}
+#endScreen .roman-results-frame{
+ position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;
+ background:url('assets/new-era/cinematic/roman-result-frame-v2.svg?v=2') center / 100% 100% no-repeat;
+}
+#endScreen .roman-results-pennant{
+ position:absolute;top:4%;width:clamp(35px,8.4%,86px);height:28%;
+ background:linear-gradient(90deg,#400807,#a82319 23%,#9a1711 52%,#53100b);
+ clip-path:polygon(0 0,100% 0,100% 100%,50% 85%,0 100%);
+ border-inline:2px solid #cb8f3e;
+ opacity:.96;filter:drop-shadow(3px 6px 5px #100502a6);
+}
+#endScreen .roman-results-pennant.left{left:7.5%}
+#endScreen .roman-results-pennant.right{right:7.5%}
+#endScreen .roman-results-pennant::after{
+ content:'❧';display:block;margin:32% auto 0;color:#f4c36c;
+ font:900 clamp(19px,4vw,35px)/1 Georgia,serif;text-shadow:0 1px #4b190c;text-align:center
+}
+#endScreen .stage-panel-ending .eyebrow{font:700 clamp(9px,1.3vw,13px)/1.2 Georgia,serif;letter-spacing:.24em;color:#ffe5a2;text-shadow:0 2px 7px #100501;margin:0 auto 3px}
+#endScreen .stage-panel-ending .result-banner{display:block;width:min(94%,680px);max-height:clamp(83px,20dvh,170px);height:auto;object-fit:contain;margin:0 auto -1px;filter:drop-shadow(0 5px 8px #000c)}
+#endScreen .stage-panel-ending .result-poses{width:100%;max-width:780px;grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr);gap:clamp(4px,1vw,15px);margin:4px auto 9px}
+#endScreen .stage-panel-ending .result-pose-art{width:clamp(100px,19dvh,190px);max-width:100%;aspect-ratio:5/4;min-height:0;display:flex;align-items:end;justify-content:center;overflow:visible}
+#endScreen .stage-panel-ending .result-pose-art canvas{width:100%;height:100%;object-fit:contain}
+#endScreen .stage-panel-ending .result-pose-card>span{max-width:100%;font:850 clamp(10px,1.45vw,15px)/1.3 system-ui,sans-serif;color:#ffe1a2;text-shadow:0 2px 5px #160804;text-wrap:balance}
+#endScreen .stage-panel-ending .result-pose-card small{font:750 clamp(8px,.95vw,12px)/1.3 Georgia,serif;letter-spacing:.1em;color:#dcc69d}
+#endScreen .stage-panel-ending #endReason,#endScreen .stage-panel-ending #endStats{font-size:clamp(10px,1.25vw,14px);line-height:1.35;color:#f3e1c9;text-shadow:0 1px 4px #080303;margin:4px auto}
+#endScreen .stage-panel-ending .end-actions{width:min(100%,650px);gap:12px;margin:clamp(7px,1.6vh,16px) auto 0}
+#endScreen .stage-panel-ending .end-actions button{
+ flex:1 1 0;max-width:none;min-width:0;border:3px double #f4c977;border-radius:6px;
+ background:linear-gradient(#9b382a,#6f1814 60%,#4e1110);color:#fff3db;
+ box-shadow:inset 0 0 0 2px #5c2114,0 5px 1px #160905,0 8px 13px #07020199;
+ font:850 clamp(12px,1.55vw,17px)/1.2 system-ui,sans-serif;text-shadow:0 2px 5px #220704;
+ padding:clamp(8px,1.5vh,15px) 7px;min-height:42px;cursor:pointer;
+}
+#endScreen .stage-panel-ending .end-actions button:hover{filter:brightness(1.15)}
+#endScreen .stage-panel-ending .end-actions button:focus-visible{outline:3px solid #fff2bf;outline-offset:3px}
+@media(max-height:690px){
+ #endScreen .stage-panel-ending{padding-top:27px;padding-bottom:28px}
+ #endScreen .stage-panel-ending .result-banner{max-height:19dvh}
+ #endScreen .stage-panel-ending .result-pose-art{width:min(100%,16dvh,140px)}
+ #endScreen .stage-panel-ending .end-actions button{min-height:33px;padding:5px 7px}
+}
+@media(max-width:720px){
+ #endScreen .stage-panel-ending{width:min(98vw,620px);padding:clamp(30px,4vh,43px) clamp(28px,7vw,45px) clamp(32px,4vh,47px)}
+ #endScreen .roman-results-pennant{width:9%;height:24%;top:4%}
+ #endScreen .stage-panel-ending .result-banner{max-height:16dvh}
+ #endScreen .stage-panel-ending .result-pose-art{width:min(100%,16dvh,138px)}
+ #endScreen .stage-panel-ending .end-actions{gap:6px}
+}
+@media(max-height:390px) and (orientation:landscape){
+ #endScreen .stage-panel-ending{display:grid;grid-template-columns:42% 58%;grid-template-areas:"eyebrow eyebrow" "banner poses" "reason poses" "stats poses" "actions actions";row-gap:1px}
+ #endScreen .stage-panel-ending .result-poses{grid-area:poses}
+ #endScreen .stage-panel-ending .result-banner{grid-area:banner;max-height:23dvh}
+ #endScreen .stage-panel-ending .eyebrow{grid-area:eyebrow}
+ #endScreen .stage-panel-ending #endReason{grid-area:reason}
+ #endScreen .stage-panel-ending #endStats{grid-area:stats}
+ #endScreen .stage-panel-ending .end-actions{grid-area:actions}
+}
+@media(prefers-reduced-motion:reduce){#endScreen .stage-panel-ending .result-pose-art{animation:none}}
