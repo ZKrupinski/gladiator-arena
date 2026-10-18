@@ -8,6 +8,7 @@ on:
       - public/arena-focus.js
       - scripts/qa_arena_focus_and_cleanup.mjs
       - scripts/qa_arena_focus_browser.mjs
+      - scripts/qa_arena_impact_browser.mjs
       - .github/workflows/arena-cinematic-qa.yml
   workflow_dispatch:
 jobs:
