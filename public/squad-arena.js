@@ -54,6 +54,20 @@ function makeBattle(mode,party,opponent,random=Math.random){
   hero.stage=level>=20?5:level>=15?4:level>=10?3:level>=5?2:1;
   return unit(hero,'enemy',i,round,i===spec.enemies-1);
  });
+ // Solo survival has multiple coordinated threats, but must remain
+ // realistically beatable by a trained fighter using dodges and class skills.
+ // Small pressure scaling avoids the old three-enemy stun-lock death spiral.
+ if(spec.allies===1&&spec.enemies>=2){
+  const factor=spec.enemies===3?.70:.84;
+  for(const foe of foes){
+   foe.atk=Math.max(8,Math.round(foe.atk*factor));
+   foe.sp=Math.max(15,Math.round(foe.sp*(factor+.06)));
+   foe.maxHp=Math.round(foe.maxHp*(spec.enemies===3?.83:.90));
+   foe.hp=foe.maxHp;
+  }
+  friends[0].regen*=1.15;
+  friends[0].specialCooldown=Math.max(3.2,friends[0].specialCooldown*.83);
+ }
  return {mode,spec,round,party:friends,foes,all:[...friends,...foes],t:0,
   maxTime:mode==='1v3'||mode==='3v3'?150:125,state:'fight',win:false,
   champion:foes.some(x=>x.boss),events:[],log:[],focusAlly:0,focusEnemy:0,reported:false,
@@ -96,6 +110,20 @@ function performAttack(battle,unit,target,special=false){
   if(unit.cls==='retiarius'){target.rooted=1.9;target.stagger=.38;}
   if(unit.cls==='thraex'){target.bleed=3.2;target.bleedPower=Math.max(1,unit.atk*.1);}
   if(unit.cls==='murmillo'){target.stamina=Math.max(0,target.stamina-28);target.guard=0;}
+ }
+ // Heroic crowd-control attacks are the counterplay to 1v2 / 1v3.
+ // Splash is modest and limited to nearby enemies; single-target duels retain
+ // precise damage and class-specific special effects.
+ if(special&&unit.side==='ally'&&battle.spec.enemies>1){
+  for(const nearby of battle.foes){
+   if(nearby===target||nearby.dead)continue;
+   if(Math.abs(nearby.x-target.x)+Math.abs(nearby.lane-target.lane)*35>175)continue;
+   const splash=Math.max(1,Math.round(dmg*.38*(1-B.damageReduction(nearby,false))));
+   nearby.hp=Math.max(0,nearby.hp-splash);unit.damageDone+=splash;
+   nearby.stagger=Math.max(nearby.stagger,.24);
+   battle.events.push({x:nearby.x,y:nearby.y-110,t:.36,text:'-'+splash,critical:false,side:unit.side});
+   if(nearby.hp<=0){nearby.dead=true;nearby.action='death';nearby.attackT=.8;}
+  }
  }
  battle.events.push({x:target.x,y:target.y-120,t:.36,text:'-'+dmg,critical,side:unit.side});
  if(target.hp<=0){target.dead=true;target.action='death';target.attackT=.8;}
