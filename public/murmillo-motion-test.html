@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MURMILLO v3 · Animating in Game</title>
+<title>MURMILLO B · New Keyframes</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,sans-serif}*{box-sizing:border-box}
 body{margin:0;background:#17120e;color:#f0dfbe}main{max-width:1100px;margin:0 auto;padding:18px}
@@ -22,7 +22,7 @@ a{color:#edd198}#status{display:inline-block;min-width:240px;font-weight:700}
 <a href="./">실제 게임 열기 ↗</a></div>
 <p><small>왼쪽 기존 무르밀로는 성장 5단계를 유지하며 원본 고정 키포즈를 사용합니다. 오른쪽은 독립 소속 검투사로 실제 경기에서 선택할 수 있습니다. 다른 검투사에는 떨림 프레임을 적용하지 않습니다.</small></p>
 </main><script src="growth-frames.js?v=2"></script>
-<script src="murmillo-motion-v2.js?v=3"></script>
+<script src="murmillo-motion-v2.js?v=4"></script>
 <script>
 (()=>{'use strict';
 const c=document.getElementById('stage'),g=c.getContext('2d');
@@ -73,9 +73,13 @@ function frame(now){
    f.action='attack';f.attackVariant=['slash','sweep','thrust'].indexOf(current);
  }else if(current==='heavy')f.action='special';
  else if(current==='dash')f.action='comboDash';
- else if(current==='victory'||current==='defeat'){
+ else if(current==='victory'){
    f.action='idle';f.actionT=0;scene.phase='result';scene.resultApplied=true;
-   scene.resultWin=current==='victory';scene.resultAnim=2;
+   scene.resultWin=true;scene.resultAnim=2;
+ }else if(current==='defeat'){
+   f.action='defeat';f.actionT=0;
+   scene.phase=elapsed<d?'finisher':'result';
+   scene.resultApplied=true;scene.resultWin=false;scene.resultAnim=1.15*phase;
  }else{
    f.action=current;
    if(current==='idle'||current==='walk')f.actionT=0;
