@@ -672,6 +672,7 @@ document.getElementById('growthRetry').onclick=()=>loadGrowthAtlases();
 setTimeout(loadGrowthAtlases,0);
 const CAREER_KEY='gladiator.ludus.v1';
 const ANIMATED_MURMILLO_VARIANT='murmillo_motion_v3';
+const ANIMATED_MURMILLO_SCALE=.70; // Face-size match; old growth tiers untouched.
 function isAnimatedMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===ANIMATED_MURMILLO_VARIANT;}
 function careerXpNeeded(l){return 30+l*15;}
 function careerLevel(h){return Math.max(1,Math.min(20,Number(h.level)||1));}
@@ -1548,7 +1549,7 @@ function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
  // original L5 head height, not drawn full-size.
  // B-version fighter: match neighboring gladiators' face size while
  // anchoring each full-action sprite to the same ground point.
- const scale=animated?.70:LudusRoster.scale(f.growthType,f.growthLevel);
+ const scale=animated?ANIMATED_MURMILLO_SCALE:LudusRoster.scale(f.growthType,f.growthLevel);
  const x0=x+w*(1-scale)/2,y0=y+h*(1-scale),w0=w*scale,h0=h*scale;
  if(animated){
   if(window.MurmilloMotion?.draw(ctx,{atlas,fighter:f,scene:S,clock,x:x0,y:y0,w:w0,h:h0,flip,alpha}))return true;
@@ -1735,6 +1736,7 @@ $('#classSubtitle').textContent=DATA[$('#classChoice').value].eng;
 
 /* Visual Ludus adapter; the existing career state remains authoritative. */
 window.LudusBridge={
+ motionScale:()=>ANIMATED_MURMILLO_SCALE,
  state:()=>({gold:CAREER.gold,glory:CAREER.glory,roster:CAREER.roster,active:CAREER.active,message:CAREER.message}),
  portrait:(i)=>{
   const h=CAREER.roster[i];if(!h)return null;
