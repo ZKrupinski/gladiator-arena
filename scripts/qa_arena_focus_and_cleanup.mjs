@@ -33,6 +33,8 @@ for(const name of ['dash','parry']){
  const peak=F.advance(F.start(name,575),.12);
  assert.ok(peak.cinemaBars>12,'letterbox bars must appear');
  assert.ok(peak.bloom>.08,'premium impact bloom must appear');
+ assert.equal(peak.duration,F.PRESETS[name].duration,'title fade must receive a finite duration');
+ assert.ok(peak.duration-peak.elapsed>.5,'cinematic text should remain visible during freeze');
  const reduced=F.advance(F.start(name,575),.04,true);
  assert.equal(reduced.timeScale,1,'reduced motion is respected');
 }
