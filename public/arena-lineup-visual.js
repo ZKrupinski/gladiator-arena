@@ -34,8 +34,9 @@ function paint(hud,queue,roster,player,enemy){
  if(!queue||!queue.allies?.length||!queue.enemies?.length){
   hud.hidden=true;cache.delete(hud);return false;
  }
- const active=!queue.finished;
- const signature=[queue.mode,queue.allyIndex,queue.enemyIndex,queue.round,queue.finished,
+ const recovering=!!queue.inCleanup;
+ const active=!queue.finished&&!recovering;
+ const signature=[queue.mode,queue.allyIndex,queue.enemyIndex,queue.round,queue.finished,recovering,
   queue.allies.join(','),queue.enemies.map(x=>x.name+'-'+x.cls+(x.boss?'B':'')).join(',')].join('|');
  hud.hidden=false;
  if(cache.get(hud)!==signature){
@@ -47,7 +48,7 @@ function paint(hud,queue,roster,player,enemy){
    '<div class="arena-march-head"><span class="arena-march-flourish" aria-hidden="true">❦</span><strong>LUDUS NOSTER</strong>'+
    '<span class="arena-march-counter">'+Math.max(0,queue.allies.length-queue.allyIndex)+' / '+queue.allies.length+'</span></div>'+
    '<div class="arena-march-tokens">'+allies+'</div></div>'+
-   '<div class="arena-march-centre" aria-hidden="true"><span class="arena-march-roman">'+(active?'PUGNA':'FINIS')+'</span>'+
+   '<div class="arena-march-centre" aria-hidden="true"><span class="arena-march-roman">'+(recovering?'CARNIFEX':active?'PUGNA':'FINIS')+'</span>'+
    '<span class="arena-march-number">'+numeral(active?queue.round:Math.max(1,queue.round-1))+'</span>'+
    '<span class="arena-march-score">'+(queue.defeatedEnemies||0)+' <b>✶</b> '+(queue.defeatedAllies||0)+'</span></div>'+
    '<div class="arena-march arena-march--enemy" role="group" aria-label="상대 출전 순서">'+
