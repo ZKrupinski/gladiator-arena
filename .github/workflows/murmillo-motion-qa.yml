@@ -1,0 +1,38 @@
+name: Murmillo motion v2 checks
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/murmillo-motion-v2.js'
+      - 'public/murmillo-motion-test.html'
+      - 'public/index.html'
+      - 'tests/murmillo-motion.test.cjs'
+      - '.github/workflows/murmillo-motion-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  timeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check module and combat timelines
+        run: |
+          node --check public/murmillo-motion-v2.js
+          node tests/murmillo-motion.test.cjs
+      - name: Check inline JS syntax of live game and motion lab
+        run: |
+          python - <<'PY'
+          import pathlib,re,subprocess
+          for html in ('public/index.html','public/murmillo-motion-test.html'):
+              source=pathlib.Path(html).read_text()
+              inline=re.findall(r'<script(?![^>]*\bsrc\s*=)[^>]*>(.*?)</script>',source,re.S|re.I)
+              path=pathlib.Path('/tmp/murmillo-inline-check.js')
+              for ix,code in enumerate(inline):
+                  path.write_text(code)
+                  subprocess.run(['node','--check',str(path)],check=True)
+                  print(html,'inline script',ix,'syntax OK')
+          PY
