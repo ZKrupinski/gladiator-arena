@@ -125,6 +125,19 @@ manifest = {
     "version": 2, "source": KEY, "cellWidth": sheet["size"][0]/4,
     "cellHeight": sheet["size"][1]/3, "frames": rows
 }
+# Opaque QA proof: checks real alpha compositing, not hidden RGB channels
+# that some image viewers mistakenly display inside transparent pixels.
+board=Image.new('RGBA',(4*256,3*286),(34,39,47,255))
+pen=ImageDraw.Draw(board)
+for i,item in enumerate(rows):
+    sprite=Image.open(DEST/item["file"]).convert("RGBA")
+    scale=min(242/sprite.width,245/sprite.height)
+    pic=sprite.resize((round(sprite.width*scale),round(sprite.height*scale)),Image.Resampling.LANCZOS)
+    x=(i%4)*256+(256-pic.width)//2
+    y=(i//4)*286+250-pic.height
+    board.alpha_composite(pic,(x,y))
+    pen.text(((i%4)*256+10,(i//4)*286+260),item["name"],fill=(255,226,182,255))
+board.convert("RGB").save(DEST/"qa-contact-opaque.webp","WEBP",quality=90)
 (DEST / "qa-report.json").write_text(json.dumps(quality,indent=2)+"\n",encoding="utf-8")
 (DEST / "manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 print("exported",len(rows),"independent alpha-isolated sprites",DEST,flush=True)
