@@ -1,0 +1,1466 @@
+{
+  "version": 2,
+  "processing": "connected-dominant-region+seam-recovery+front-toe-anchor",
+  "source": "original 4x2 user artwork",
+  "actions": {
+    "idle": [
+      {
+        "toeSource": [
+          337,
+          457
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          29,
+          48,
+          406,
+          458
+        ],
+        "visualBBox": [
+          252,
+          103,
+          629,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          325,
+          457
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          6,
+          43,
+          393,
+          458
+        ],
+        "visualBBox": [
+          241,
+          98,
+          628,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          321,
+          457
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          20,
+          49,
+          387,
+          458
+        ],
+        "visualBBox": [
+          259,
+          104,
+          626,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          318,
+          455
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          0,
+          47,
+          392,
+          456
+        ],
+        "visualBBox": [
+          242,
+          104,
+          634,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          337,
+          425
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          29,
+          23,
+          407,
+          426
+        ],
+        "visualBBox": [
+          252,
+          110,
+          630,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          335,
+          430
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          16,
+          8,
+          411,
+          431
+        ],
+        "visualBBox": [
+          241,
+          90,
+          636,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          332,
+          428
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          19,
+          27,
+          407,
+          429
+        ],
+        "visualBBox": [
+          247,
+          111,
+          635,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          328,
+          426
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          0,
+          24,
+          399,
+          428
+        ],
+        "visualBBox": [
+          232,
+          110,
+          631,
+          514
+        ]
+      }
+    ],
+    "walk": [
+      {
+        "toeSource": [
+          279,
+          456
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          18,
+          60,
+          387,
+          457
+        ],
+        "visualBBox": [
+          299,
+          116,
+          668,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          299,
+          456
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          11,
+          58,
+          395,
+          457
+        ],
+        "visualBBox": [
+          272,
+          114,
+          656,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          342,
+          460
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          28,
+          52,
+          418,
+          462
+        ],
+        "visualBBox": [
+          246,
+          104,
+          636,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          360,
+          458
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          27,
+          53,
+          410,
+          460
+        ],
+        "visualBBox": [
+          227,
+          107,
+          610,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          316,
+          416
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 47,
+        "sourceBBox": [
+          25,
+          28,
+          426,
+          418
+        ],
+        "visualBBox": [
+          269,
+          124,
+          670,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          359,
+          431
+        ],
+        "removedForeignPixels": 47,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          25,
+          26,
+          409,
+          434
+        ],
+        "visualBBox": [
+          226,
+          107,
+          610,
+          515
+        ]
+      },
+      {
+        "toeSource": [
+          368,
+          435
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          31,
+          24,
+          417,
+          437
+        ],
+        "visualBBox": [
+          223,
+          101,
+          609,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          346,
+          423
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          21,
+          25,
+          406,
+          424
+        ],
+        "visualBBox": [
+          235,
+          114,
+          620,
+          513
+        ]
+      }
+    ],
+    "slash": [
+      {
+        "toeSource": [
+          354,
+          462
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          34,
+          99,
+          412,
+          464
+        ],
+        "visualBBox": [
+          240,
+          149,
+          618,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          339,
+          462
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 20,
+        "sourceBBox": [
+          29,
+          60,
+          421,
+          463
+        ],
+        "visualBBox": [
+          250,
+          110,
+          642,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          302,
+          466
+        ],
+        "removedForeignPixels": 93,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          24,
+          25,
+          385,
+          468
+        ],
+        "visualBBox": [
+          282,
+          71,
+          643,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          271,
+          466
+        ],
+        "removedForeignPixels": 15,
+        "recoveredSeamPixels": 73,
+        "sourceBBox": [
+          -8,
+          99,
+          381,
+          468
+        ],
+        "visualBBox": [
+          281,
+          145,
+          670,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          392,
+          414
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 18,
+        "sourceBBox": [
+          52,
+          57,
+          420,
+          415
+        ],
+        "visualBBox": [
+          220,
+          155,
+          588,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          338,
+          434
+        ],
+        "removedForeignPixels": 1620,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          38,
+          46,
+          394,
+          438
+        ],
+        "visualBBox": [
+          260,
+          124,
+          616,
+          516
+        ]
+      },
+      {
+        "toeSource": [
+          413,
+          409
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 371,
+        "sourceBBox": [
+          24,
+          52,
+          450,
+          410
+        ],
+        "visualBBox": [
+          171,
+          155,
+          597,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          392,
+          413
+        ],
+        "removedForeignPixels": 371,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          10,
+          57,
+          403,
+          415
+        ],
+        "visualBBox": [
+          178,
+          156,
+          571,
+          514
+        ]
+      }
+    ],
+    "sweep": [
+      {
+        "toeSource": [
+          310,
+          432
+        ],
+        "removedForeignPixels": 1,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          20,
+          48,
+          373,
+          433
+        ],
+        "visualBBox": [
+          270,
+          128,
+          623,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          288,
+          432
+        ],
+        "removedForeignPixels": 255,
+        "recoveredSeamPixels": 1,
+        "sourceBBox": [
+          -1,
+          44,
+          374,
+          433
+        ],
+        "visualBBox": [
+          271,
+          124,
+          646,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          270,
+          429
+        ],
+        "removedForeignPixels": 422,
+        "recoveredSeamPixels": 255,
+        "sourceBBox": [
+          -12,
+          47,
+          410,
+          430
+        ],
+        "visualBBox": [
+          278,
+          130,
+          700,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          271,
+          432
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 422,
+        "sourceBBox": [
+          -25,
+          47,
+          414,
+          433
+        ],
+        "visualBBox": [
+          264,
+          127,
+          703,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          302,
+          411
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 1033,
+        "sourceBBox": [
+          17,
+          25,
+          479,
+          412
+        ],
+        "visualBBox": [
+          275,
+          126,
+          737,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          309,
+          412
+        ],
+        "removedForeignPixels": 1247,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          23,
+          23,
+          383,
+          413
+        ],
+        "visualBBox": [
+          274,
+          123,
+          634,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          304,
+          413
+        ],
+        "removedForeignPixels": 30,
+        "recoveredSeamPixels": 214,
+        "sourceBBox": [
+          -12,
+          26,
+          379,
+          415
+        ],
+        "visualBBox": [
+          244,
+          125,
+          635,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          296,
+          413
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 30,
+        "sourceBBox": [
+          -3,
+          23,
+          367,
+          414
+        ],
+        "visualBBox": [
+          261,
+          122,
+          631,
+          513
+        ]
+      }
+    ],
+    "thrust": [
+      {
+        "toeSource": [
+          295,
+          429
+        ],
+        "removedForeignPixels": 14,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          16,
+          89,
+          360,
+          430
+        ],
+        "visualBBox": [
+          281,
+          172,
+          625,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          297,
+          429
+        ],
+        "removedForeignPixels": 390,
+        "recoveredSeamPixels": 14,
+        "sourceBBox": [
+          -3,
+          87,
+          374,
+          431
+        ],
+        "visualBBox": [
+          260,
+          170,
+          637,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          294,
+          430
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 1077,
+        "sourceBBox": [
+          -23,
+          86,
+          468,
+          431
+        ],
+        "visualBBox": [
+          243,
+          168,
+          734,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          313,
+          429
+        ],
+        "removedForeignPixels": 691,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          22,
+          85,
+          406,
+          430
+        ],
+        "visualBBox": [
+          269,
+          168,
+          653,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          289,
+          387
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          23,
+          36,
+          414,
+          388
+        ],
+        "visualBBox": [
+          294,
+          161,
+          685,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          317,
+          387
+        ],
+        "removedForeignPixels": 28,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          14,
+          36,
+          374,
+          388
+        ],
+        "visualBBox": [
+          257,
+          161,
+          617,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          295,
+          390
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 28,
+        "sourceBBox": [
+          -4,
+          37,
+          361,
+          392
+        ],
+        "visualBBox": [
+          261,
+          159,
+          626,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          302,
+          390
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          16,
+          41,
+          370,
+          391
+        ],
+        "visualBBox": [
+          274,
+          163,
+          628,
+          513
+        ]
+      }
+    ],
+    "heavy": [
+      {
+        "toeSource": [
+          335,
+          452
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          20,
+          43,
+          414,
+          454
+        ],
+        "visualBBox": [
+          245,
+          103,
+          639,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          305,
+          452
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          21,
+          48,
+          403,
+          453
+        ],
+        "visualBBox": [
+          276,
+          108,
+          658,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          303,
+          453
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 78,
+        "sourceBBox": [
+          5,
+          54,
+          430,
+          454
+        ],
+        "visualBBox": [
+          262,
+          113,
+          687,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          307,
+          453
+        ],
+        "removedForeignPixels": 78,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          23,
+          55,
+          412,
+          454
+        ],
+        "visualBBox": [
+          276,
+          114,
+          665,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          340,
+          418
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 976,
+        "sourceBBox": [
+          19,
+          19,
+          472,
+          419
+        ],
+        "visualBBox": [
+          239,
+          113,
+          692,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          309,
+          419
+        ],
+        "removedForeignPixels": 976,
+        "recoveredSeamPixels": 229,
+        "sourceBBox": [
+          25,
+          20,
+          441,
+          420
+        ],
+        "visualBBox": [
+          276,
+          113,
+          692,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          391,
+          419
+        ],
+        "removedForeignPixels": 229,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          21,
+          22,
+          401,
+          420
+        ],
+        "visualBBox": [
+          190,
+          115,
+          570,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          374,
+          418
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          33,
+          23,
+          386,
+          419
+        ],
+        "visualBBox": [
+          219,
+          117,
+          572,
+          513
+        ]
+      }
+    ],
+    "guard": [
+      {
+        "toeSource": [
+          307,
+          427
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          22,
+          42,
+          416,
+          428
+        ],
+        "visualBBox": [
+          275,
+          127,
+          669,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          338,
+          427
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          31,
+          43,
+          418,
+          428
+        ],
+        "visualBBox": [
+          253,
+          128,
+          640,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          394,
+          427
+        ],
+        "removedForeignPixels": 309,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          26,
+          43,
+          413,
+          428
+        ],
+        "visualBBox": [
+          192,
+          128,
+          579,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          335,
+          427
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          32,
+          45,
+          401,
+          428
+        ],
+        "visualBBox": [
+          257,
+          130,
+          626,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          346,
+          420
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          22,
+          32,
+          418,
+          421
+        ],
+        "visualBBox": [
+          236,
+          124,
+          632,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          348,
+          419
+        ],
+        "removedForeignPixels": 111,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          43,
+          29,
+          418,
+          420
+        ],
+        "visualBBox": [
+          255,
+          122,
+          630,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          335,
+          420
+        ],
+        "removedForeignPixels": 115,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          29,
+          30,
+          413,
+          421
+        ],
+        "visualBBox": [
+          254,
+          122,
+          638,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          336,
+          419
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          35,
+          30,
+          401,
+          420
+        ],
+        "visualBBox": [
+          259,
+          123,
+          625,
+          513
+        ]
+      }
+    ],
+    "hit": [
+      {
+        "toeSource": [
+          306,
+          469
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          15,
+          66,
+          395,
+          470
+        ],
+        "visualBBox": [
+          269,
+          109,
+          649,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          413,
+          469
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          14,
+          98,
+          418,
+          470
+        ],
+        "visualBBox": [
+          161,
+          141,
+          565,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          409,
+          469
+        ],
+        "removedForeignPixels": 3,
+        "recoveredSeamPixels": 64,
+        "sourceBBox": [
+          15,
+          81,
+          424,
+          470
+        ],
+        "visualBBox": [
+          166,
+          124,
+          575,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          389,
+          469
+        ],
+        "removedForeignPixels": 64,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          24,
+          121,
+          407,
+          470
+        ],
+        "visualBBox": [
+          195,
+          164,
+          578,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          402,
+          433
+        ],
+        "removedForeignPixels": 33,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          33,
+          84,
+          418,
+          435
+        ],
+        "visualBBox": [
+          191,
+          163,
+          576,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          333,
+          430
+        ],
+        "removedForeignPixels": 362,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          34,
+          44,
+          400,
+          432
+        ],
+        "visualBBox": [
+          261,
+          126,
+          627,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          322,
+          431
+        ],
+        "removedForeignPixels": 48,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          29,
+          31,
+          399,
+          432
+        ],
+        "visualBBox": [
+          267,
+          112,
+          637,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          327,
+          430
+        ],
+        "removedForeignPixels": 228,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          8,
+          35,
+          400,
+          432
+        ],
+        "visualBBox": [
+          241,
+          117,
+          633,
+          514
+        ]
+      }
+    ],
+    "death": [
+      {
+        "toeSource": [
+          415,
+          467
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          20,
+          74,
+          418,
+          468
+        ],
+        "visualBBox": [
+          165,
+          119,
+          563,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          346,
+          467
+        ],
+        "removedForeignPixels": 46,
+        "recoveredSeamPixels": 186,
+        "sourceBBox": [
+          27,
+          81,
+          431,
+          468
+        ],
+        "visualBBox": [
+          241,
+          126,
+          645,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          414,
+          469
+        ],
+        "removedForeignPixels": 186,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          22,
+          111,
+          418,
+          470
+        ],
+        "visualBBox": [
+          168,
+          154,
+          564,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          375,
+          469
+        ],
+        "removedForeignPixels": 833,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          31,
+          163,
+          407,
+          470
+        ],
+        "visualBBox": [
+          216,
+          206,
+          592,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          330,
+          392
+        ],
+        "removedForeignPixels": 0,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          23,
+          90,
+          381,
+          393
+        ],
+        "visualBBox": [
+          253,
+          210,
+          611,
+          513
+        ]
+      },
+      {
+        "toeSource": [
+          378,
+          386
+        ],
+        "removedForeignPixels": 255,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          10,
+          118,
+          390,
+          388
+        ],
+        "visualBBox": [
+          192,
+          244,
+          572,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          380,
+          385
+        ],
+        "removedForeignPixels": 497,
+        "recoveredSeamPixels": 255,
+        "sourceBBox": [
+          -12,
+          160,
+          396,
+          387
+        ],
+        "visualBBox": [
+          168,
+          287,
+          576,
+          514
+        ]
+      },
+      {
+        "toeSource": [
+          392,
+          398
+        ],
+        "removedForeignPixels": 231,
+        "recoveredSeamPixels": 0,
+        "sourceBBox": [
+          0,
+          204,
+          399,
+          399
+        ],
+        "visualBBox": [
+          168,
+          318,
+          567,
+          513
+        ]
+      }
+    ]
+  },
+  "borderWarnings": []
+}
