@@ -27,7 +27,8 @@ async function check(label,selector,wait,threshold){
 }
 try {
  await page.goto('http://127.0.0.1:8765/murmillo-motion-test.html',{waitUntil:'domcontentloaded'});
- await page.waitForFunction(()=>window.MurmilloMotion?.hasStandaloneAssets?.()===true,{timeout:40000});
+ await page.waitForFunction(()=>window.MurmilloMotion?.assetStatus?.()==='B ready',{timeout:40000});
+ report.spritePack='B ready · 24 transparent frames';
  await page.waitForFunction(()=>document.getElementById('status')?.textContent?.includes('재생 중'),{timeout:40000});
  report.version=await page.evaluate(()=>window.MurmilloMotion.version);
  assert.equal(report.version,'4.0.0');
