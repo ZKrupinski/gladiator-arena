@@ -1515,26 +1515,55 @@ function showEnd(){
  $('#continueBtn').textContent=S.careerMatch?'루두스로 돌아가기':win?'계속 하기':'Ludus로 돌아가기';
  $('#continueBtn').classList.toggle('ludus',!win);
 }
+// Result-only portrait sizing: measure visible art, not transparent sheet padding.
+// The victor is intentionally ~15% larger than the defeated fighter.
+function drawSizedResultPortrait(element,source,isWinner){
+ const canvas=document.createElement('canvas');canvas.width=500;canvas.height=400;
+ canvas.style.cssText='width:100%;height:100%;object-fit:contain';
+ const output=canvas.getContext('2d');
+ let bounds={x:0,y:0,w:source.width,h:source.height};
+ try{
+  const sample=document.createElement('canvas');sample.width=source.width;sample.height=source.height;
+  const sc=sample.getContext('2d',{willReadFrequently:true});sc.drawImage(source,0,0);
+  const data=sc.getImageData(0,0,source.width,source.height).data;
+  let left=source.width,top=source.height,right=-1,bottom=-1;
+  // Ignore almost-transparent stray edge pixels. All key art is opaque enough.
+  for(let y=0;y<source.height;y+=2){
+   for(let x=0;x<source.width;x+=2){
+    if(data[(y*source.width+x)*4+3]<64)continue;
+    if(x<left)left=x;if(x>right)right=x;
+    if(y<top)top=y;if(y>bottom)bottom=y;
+   }
+  }
+  if(right>=left&&bottom>=top){
+   bounds={x:Math.max(0,left-3),y:Math.max(0,top-3),
+    w:Math.min(source.width,right+5)-Math.max(0,left-3),
+    h:Math.min(source.height,bottom+5)-Math.max(0,top-3)};
+  }
+ }catch(error){/* Same-origin assets normally permit reading; safe full-frame fallback. */}
+ const maxW=isWinner?462:416,maxH=isWinner?375:324;
+ const scale=Math.min(maxW/bounds.w,maxH/bounds.h);
+ const drawW=bounds.w*scale,drawH=bounds.h*scale;
+ output.drawImage(source,bounds.x,bounds.y,bounds.w,bounds.h,
+  (500-drawW)/2,400-drawH,drawW,drawH);
+ element.style.backgroundImage='none';
+ element.appendChild(canvas);
+}
 function renderResultPortrait(id,f,index){
- const element=$('#'+id),atlas=f.championVariant===CHAMPION_MURMILLO_VARIANT?null:GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
+ const element=$('#'+id),isWinner=id==='winnerPose';
+ const atlas=f.championVariant===CHAMPION_MURMILLO_VARIANT?null:GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
  element.replaceChildren();
  if(f.championVariant===CHAMPION_MURMILLO_VARIANT){
   element.style.backgroundImage='none';
   const source=window.ChampionMurmillo?.frame(f.dead?'death':'idle',f.dead?7:0)||window.ChampionMurmillo?.portrait();
-  if(source){const canvas=document.createElement('canvas');canvas.width=500;canvas.height=400;
-   const scale=Math.min(480/source.width,380/source.height);
-   canvas.style.cssText='width:100%;height:100%;object-fit:contain';
-   canvas.getContext('2d').drawImage(source,(500-source.width*scale)/2,400-source.height*scale,source.width*scale,source.height*scale);
-   element.appendChild(canvas);
-  }
+  if(source)drawSizedResultPortrait(element,source,isWinner);
   return;
  }
  if(atlas){
-  const source=atlas.frames[index].canvas,canvas=document.createElement('canvas');canvas.width=500;canvas.height=400;
-  const scale=Math.min(480/source.width,380/source.height);canvas.style.cssText='width:100%;height:100%;object-fit:contain';
-  canvas.getContext('2d').drawImage(source,(500-source.width*scale)/2,400-source.height*scale,source.width*scale,source.height*scale);
-  element.style.backgroundImage='none';element.appendChild(canvas);
- }else element.style.backgroundImage='url("'+(CLEANED_CHARACTER_URLS[f.cls]||IMG[f.cls]?.src||ASSET[f.cls])+'")';
+  drawSizedResultPortrait(element,atlas.frames[index].canvas,isWinner);
+ }else{
+  element.style.backgroundImage='url("'+(CLEANED_CHARACTER_URLS[f.cls]||IMG[f.cls]?.src||ASSET[f.cls])+'")';
+ }
 }
 function updateHud(){const p=S.player,e=S.enemy;if(!p||!e)return;for(const [f,pre] of [[p,'p'],[e,'e']]){const h=$('#'+pre+'Hp'),st=$('#'+pre+'St');h.style.width=(f.hp/f.maxHp*100).toFixed(1)+'%';st.style.width=f.st.toFixed(1)+'%';$('#'+pre+'Value').textContent=Math.ceil(f.hp)+' / '+f.maxHp;}$('#pName').textContent=p.cfg.name;$('#eName').textContent=e.cfg.name;$('#clock').textContent=Math.max(0,Math.ceil(S.time));$('#roundLabel').textContent=`ROUND ${S.round}`;$('#cooldown').textContent=p.cd>0?`필살기 ${p.cd.toFixed(1)}초`:'필살기 준비 완료';$('#autoState').textContent=S.phase!=='fight'?'AUTO 대기':!S.autoplayEnabled?'AUTO OFF':S.autoPlaying?'● AUTO 전투 중 · 조작하면 해제':`AUTO ${Math.max(1,Math.ceil(AUTO_IDLE_SECONDS-(clock-S.lastManualInput)))}초 후`;$('#autoState').classList.toggle('active',S.autoPlaying);$('#combatNotice').textContent=S.noticeT>0?S.notice:'';}
 // One coherent arena panorama, separated at its own architectural ground line.
