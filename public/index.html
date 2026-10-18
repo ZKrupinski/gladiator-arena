@@ -672,7 +672,7 @@ document.getElementById('growthRetry').onclick=()=>loadGrowthAtlases();
 setTimeout(loadGrowthAtlases,0);
 const CAREER_KEY='gladiator.ludus.v1';
 const ANIMATED_MURMILLO_VARIANT='murmillo_motion_v3';
-const ANIMATED_MURMILLO_SCALE=.70; // Face-size match; old growth tiers untouched.
+const ANIMATED_MURMILLO_SCALE=.75; // Face-size match; original growth classes retain their own tier scales.
 function isAnimatedMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===ANIMATED_MURMILLO_VARIANT;}
 function careerXpNeeded(l){return 30+l*15;}
 function careerLevel(h){return Math.max(1,Math.min(20,Number(h.level)||1));}
