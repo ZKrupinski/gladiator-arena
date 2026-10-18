@@ -12,15 +12,15 @@ button.active{background:#977241;color:white;border-color:#f0d49a}
 .panel{display:flex;gap:12px 22px;flex-wrap:wrap;align-items:center;margin-top:8px}
 a{color:#edd198}#status{display:inline-block;min-width:240px;font-weight:700}
 </style></head><body><main>
-<h1>무르밀로 · 실제 움직이는 애니메이션 v3</h1>
-<p>자동 시연은 기본자세 → 이동 → 공격 → 방어 → 승패 순서로 계속 재생됩니다. 아래 버튼을 누르면 해당 동작만 반복합니다.</p>
+<h1>무르밀로 · 원본 vs 신규 애니메이션</h1>
+<p>왼쪽은 원본 5등급, 오른쪽은 별도 소속 검투사로 추가된 신규 버전입니다. 실제 전투와 동일한 64% 스케일로 두 캐릭터를 비교합니다.</p>
 <canvas id="stage" width="1000" height="620" aria-label="검투사 동작 프레임 시연"></canvas>
 <div class="controls" id="controls"></div>
 <div class="panel"><strong id="status" role="status">원본 전투 프레임 로딩 중…</strong>
 <label><input id="auto" type="checkbox" checked> 전체 동작 자동 시연</label>
 <button id="flip">좌우 반전</button>
 <a href="./">실제 게임 열기 ↗</a></div>
-<p><small>실제 게임에 적용된 키포즈 기반 애니메이션입니다. 무기와 방패의 원본 프레임을 유지하면서 기본 호흡, 전투 자세 변경, 이동과 공격의 연속 움직임을 넣었습니다. 완전히 새로 그린 중간 프레임은 아직 아닙니다.</small></p>
+<p><small>왼쪽 기존 무르밀로는 성장 5단계를 유지하며 원본 고정 키포즈를 사용합니다. 오른쪽은 독립 소속 검투사로 실제 경기에서 선택할 수 있습니다. 다른 검투사에는 떨림 프레임을 적용하지 않습니다.</small></p>
 </main><script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=3"></script>
 <script>
@@ -52,11 +52,11 @@ function loadFallback(){
  new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src='assets/ludus-growth/murmillo_a_L5.png';})
  ]).then(([cuts,img])=>GrowthFrames.isolate(img,cuts.sheets.murmillo_a_L5));
 }
-MurmilloMotion.loadAssets().then(result=>{
- if(result){ready=true;status.textContent='12개 독립 프레임 로딩 성공 · 재생 중';}
- else loadFallback().then(a=>{fallback=a;ready=true;status.textContent='원본 시트 대체 로딩 · 재생 중';})
- .catch(e=>status.textContent='이미지 로딩 실패: '+e.message);
-});
+Promise.all([MurmilloMotion.loadAssets(),loadFallback()])
+ .then(([asset,atlas])=>{
+   fallback=atlas;ready=true;
+   status.textContent=(asset?'개별 프레임 준비':'원본 시트 대체 로딩')+' · 비교 재생 중';
+ }).catch(e=>status.textContent='이미지 로딩 실패: '+e.message);
 function frame(now){
  const t=now/1000;
  if(auto.checked && now-segment>2350){
@@ -90,8 +90,16 @@ function frame(now){
  g.font='bold 26px system-ui';g.fillStyle='#fff3d4';
  g.fillText('MURMILLO · '+labels[current],24,44);
  if(ready){
-  const worldX=250+(current==='walk'?95*Math.sin(t*2):0);
-  const drawn=MurmilloMotion.draw(g,{atlas:fallback,fighter:f,scene,clock:t,x:worldX,y:166,w:500,h:405,flip:flipped,alpha:1});
+  // Same combat size for both: 348px arena cell * 0.64 L5 scale.
+  const combatSize=348*.64;
+  const standingY=570-combatSize;
+  g.font='bold 21px system-ui';g.fillStyle='#fce5b9';
+  g.fillText('기존 무르밀로 · L5',170,190);
+  g.fillText('신규 · 애니메이션',570,190);
+  GrowthFrames.draw(g,fallback,0,190,standingY,combatSize,combatSize,false,1);
+  const worldX=575+(current==='walk'?32*Math.sin(t*2):0);
+  const drawn=MurmilloMotion.draw(g,{atlas:fallback,fighter:f,scene,clock:t,
+    x:worldX,y:standingY,w:combatSize,h:combatSize,flip:flipped,alpha:1});
   if(drawn){
    const motion=MurmilloMotion.motionAt(f,scene,t);
    g.font='18px system-ui';g.fillStyle='#f9e5ba';
