@@ -1,4 +1,4 @@
-/* LUDUS TRAINING v6.1: actual selected gladiator, real stats, action poses.
+/* LUDUS TRAINING v6.4: actual selected gladiator, real stats, action poses.
  * Approved training buttons and Doctore art stay in their original positions.
  * Nothing in the original image is a clickable dummy or a baked-in roster. */
 (function(){
@@ -38,6 +38,24 @@ function visibleBounds(img){
  }catch(error){/* A readable on-site bitmap is expected; keep a safe fallback. */}
  artBounds.set(img,box);
  return box;
+}
+// Portraits in the training roster and Doctore-side information panel are
+// separate from the large animated fighter. This function must stay available
+// when mount() paints the first selected gladiator.
+function paint(canvas,img){
+ if(!canvas)return false;
+ const ctx=canvas.getContext('2d');if(!ctx)return false;
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ if(!img?.width||!img?.height)return false;
+ const size=visibleBounds(img);
+ const scale=Math.min((canvas.width-8)/Math.max(1,size.w),
+                      (canvas.height-7)/Math.max(1,size.h));
+ const w=size.w*scale,h=size.h*scale;
+ try{
+  ctx.drawImage(img,size.x,size.y,size.w,size.h,
+    (canvas.width-w)/2,canvas.height-h-3,w,h);
+  return true;
+ }catch(error){return false;}
 }
 function paintTrainingFighter(canvas,img,action,progress){
  if(!canvas)return;
