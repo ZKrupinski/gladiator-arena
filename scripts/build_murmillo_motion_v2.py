@@ -40,13 +40,14 @@ def remove_flat_edge_blocks(tile):
     colours=[rgb for rgb,total in flat.items() if total>=30]
     if not colours:
         return tile,0,len(colours)
+    palette=set(colours)
     removal=Image.new('L',(w,h),0);dest=removal.load()
     count=0
     for y in range(h):
         for x in range(w):
             r,g,b,a=p[x,y]
             if a<8:continue
-            if any(max(abs(r-R),abs(g-G),abs(b-B))<=3 for R,G,B in colours):
+            if (r,g,b) in palette:
                 dest[x,y]=255;count+=1
     # Keep anti-aliased original art, removing only 1px around flat blocks.
     if count:
