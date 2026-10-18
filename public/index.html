@@ -334,6 +334,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <div id="careerMini" hidden role="dialog" aria-modal="true" aria-label="훈련"><div class="career-mini-panel"><h2 id="careerMiniTitle"></h2><p id="careerMiniHelp"></p><div class="career-timing"><div class="career-hitzone"></div><div id="careerNeedle"></div></div><div id="careerTrainingResult" class="career-training-result" hidden aria-live="assertive"></div><div class="career-buttons" style="justify-content:center"><button id="careerHit">지금! (SPACE)</button><button id="careerCancel">취소</button></div></div></div>
 <script src="market-scene.js?v=12"></script>
 <script src="growth-frames.js?v=2"></script>
+<script src="murmillo-motion-v2.js?v=1"></script>
 <script src="sprite-inbetweens.js?v=2"></script>
 <script src="ludus-roster.js?v=1"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
@@ -1508,6 +1509,12 @@ function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
  ctx.restore();
 }
 function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
+ // Pilot: all Murmillo grades use one battle-ready L5 art set, sequenced
+ // by discrete authored poses. No slice-warp or flickering cross-fades.
+ if(f.cls==='murmillo' && window.MurmilloMotion?.draw(ctx,{
+  atlas:GROWTH_IMAGES.get('murmillo_a_L5'),fighter:f,scene:S,clock,
+  x,y,w,h,flip,alpha
+ }))return true;
  const atlas=GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
  const scale=LudusRoster.scale(f.growthType,f.growthLevel);
  const index=GROWTH_POSE[pose]??0;
@@ -1562,6 +1569,9 @@ function drawFighter(f){if(!f)return;const pose=choosePose(f),frame=FRAMES[pose]
    if(won){drawY-=15*Math.sin(Math.PI*Math.min(1,progress)) + 5*ease;}
    else{drawY+=22*ease;tilt=(f.face<0?1:-1)*.055*ease;}
  }
+ // The Murmillo pilot never stretches or rotates the painted silhouette.
+ // Position shifts remain gameplay movement; boots and weapons remain intact.
+ if(f.cls==='murmillo'){tilt=0;scaleX=1;scaleY=1;}
  // No procedural cast shadow. Keep the original atlas silhouette and arena floor.
  if(f.invuln>0&&Math.floor(clock*28)%2===0)ctx.globalAlpha=.5;
  // Dashed vector net ring removed; net-trap uses character art and class VFX.
