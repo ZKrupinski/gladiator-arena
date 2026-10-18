@@ -791,7 +791,7 @@ function finishCareerMatch(){
  saveCareer();
 }
 function rosterCards(deploy=false){
- return CAREER.roster.map((h,i)=>'<button class="roster-unit '+(i===CAREER.active?'selected':'')+'" '+(deploy?'data-deploy':'data-select')+'="'+i+'" '+(deploy&&h.injury>=80?'disabled':'')+'><canvas data-roster-art="'+i+'" width="300" height="230"></canvas><strong>'+h.name+'</strong><small>Lv.'+careerLevel(h)+' · '+(h.appearance==='legacy'?'챔피언':'성장 '+careerStage(h)+'단계')+'</small><small>부상 '+h.injury+' · '+h.wins+'승 / '+h.fights+'전</small><small>'+(deploy?(h.injury>=80?'치료 필요':'이 검투사로 출전'):i===CAREER.active?'✓ 관리 중':'선택하여 훈련 · 장비 · 치료')+'</small></button>').join('');
+ return CAREER.roster.map((h,i)=>'<button class="roster-unit '+(i===CAREER.active?'selected':'')+'" '+(deploy?'data-deploy':'data-select')+'="'+i+'" '+(deploy&&h.injury>=80?'disabled':'')+'><canvas data-roster-art="'+i+'" width="300" height="230"></canvas><strong>'+h.name+'</strong><small>Lv.'+careerLevel(h)+' · '+(isAnimatedMurmillo(h)?'신규 애니메이션':h.appearance==='legacy'?'챔피언':'성장 '+careerStage(h)+'단계')+'</small><small>부상 '+h.injury+' · '+h.wins+'승 / '+h.fights+'전</small><small>'+(deploy?(h.injury>=80?'치료 필요':'이 검투사로 출전'):i===CAREER.active?'✓ 관리 중':'선택하여 훈련 · 장비 · 치료')+'</small></button>').join('');
 }
 function paintRosterPreviews(){
  for(const canvas of document.querySelectorAll('[data-roster-art]')){
@@ -1516,12 +1516,7 @@ function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
  ctx.save();ctx.globalAlpha=alpha;
  if(flip){ctx.translate(x+w/2,0);ctx.scale(-1,1);ctx.translate(-(x+w/2),0);}
  if(independent&&independent[index]){
-   // Original isolated 10-pose legacy fighter, expanded to five living frames.
-   const source=independent[index];
-    // Murmillo pilot: no procedural slice-warp. Keep 100% source pixels
-    // until separately authored animation frames are approved.
-    if(image===IMG.murmillo || !window.SpriteInbetweens?.drawLegacy(ctx,source,index,x,y,w,h,false,1,clock))
-      ctx.drawImage(source,x,y,w,h);
+  ctx.drawImage(independent[index],x,y,w,h);
  }else{
    // Fallback for FX atlases, with a strict half-pixel inset against edge bleed.
    const inset=.5;
@@ -1532,26 +1527,20 @@ function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
  ctx.restore();
 }
 function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
- // Pilot: all Murmillo grades use one battle-ready L5 art set, sequenced
- // by discrete authored poses. No slice-warp or flickering cross-fades.
- if(f.cls==='murmillo' && window.MurmilloMotion?.draw(ctx,{
-  atlas:GROWTH_IMAGES.get('murmillo_a_L5'),fighter:f,scene:S,clock,
-  x,y,w,h,flip,alpha
- }))return true;
- const atlas=GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
- const scale=LudusRoster.scale(f.growthType,f.growthLevel);
- const index=GROWTH_POSE[pose]??0;
- const progress=(f.actionT>0&&f.actionDuration>0&&pose!=='idle'&&pose!=='walk')?
-  clamp(1-f.actionT/f.actionDuration,0,.999):
-  ((S.phase==='finisher'||S.phase==='result')&&S.resultApplied)?
-   clamp(S.resultAnim/1.2,0,.999):null;
+ // Restore approved original 5-stage appearances, independently of v3 art.
+ const animated=f.motionVariant===ANIMATED_MURMILLO_VARIANT;
+ const atlas=animated?GROWTH_IMAGES.get('murmillo_a_L5'):
+  GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
+ // The new animated sprite is based on L5 and must be scaled to match the
+ // original L5 head height, not drawn full-size.
+ const scale=animated?.64:LudusRoster.scale(f.growthType,f.growthLevel);
  const x0=x+w*(1-scale)/2,y0=y+h*(1-scale),w0=w*scale,h0=h*scale;
- // Preserve exactly the original Murmillo SD pixels. Do NOT use
- // the rejected real-time deformation while true drawn frames are pending.
- if(f.cls==='murmillo')return GrowthFrames.draw(ctx,atlas,index,x0,y0,w0,h0,flip,alpha);
- return window.SpriteInbetweens?.drawGrowth(ctx,atlas,index,x0,y0,w0,h0,flip,alpha,
-     clock,progress,(f.footworkSeed||0)*.017)||
-  GrowthFrames.draw(ctx,atlas,index,x0,y0,w0,h0,flip,alpha);
+ if(animated){
+  if(window.MurmilloMotion?.draw(ctx,{atlas,fighter:f,scene:S,clock,x:x0,y:y0,w:w0,h:h0,flip,alpha}))return true;
+  return GrowthFrames.draw(ctx,atlas,GROWTH_POSE[pose]??0,x0,y0,w0,h0,flip,alpha);
+ }
+ // Original Murmillo / Thraex / Retiarius never use wobbling inbetweens.
+ return GrowthFrames.draw(ctx,atlas,GROWTH_POSE[pose]??0,x0,y0,w0,h0,flip,alpha);
 }
 function drawFighter(f){if(!f)return;const pose=choosePose(f),frame=FRAMES[pose]??0;
  // Keep a fixed feet pivot for every class, image pose and character.
@@ -1592,11 +1581,10 @@ function drawFighter(f){if(!f)return;const pose=choosePose(f),frame=FRAMES[pose]
    if(won){drawY-=15*Math.sin(Math.PI*Math.min(1,progress)) + 5*ease;}
    else{drawY+=22*ease;tilt=(f.face<0?1:-1)*.055*ease;}
  }
- // The Murmillo pilot never stretches or rotates the painted silhouette.
- // Position shifts remain gameplay movement; boots and weapons remain intact.
- if(f.cls==='murmillo'){tilt=0;scaleX=1;scaleY=1;}
- // No procedural cast shadow. Keep the original atlas silhouette and arena floor.
- if(f.cls!=='murmillo'&&f.invuln>0&&Math.floor(clock*28)%2===0)ctx.globalAlpha=.5;
+ // The animated fighter supplies its own foot-anchored motion, so do not
+ // compound a second whole-body combat transform.
+ if(f.motionVariant===ANIMATED_MURMILLO_VARIANT){tilt=0;scaleX=1;scaleY=1;}
+ // Remove rapid transparency strobing from all original classes.
  // Dashed vector net ring removed; net-trap uses character art and class VFX.
  ctx.save();if(tilt||scaleY!==1||scaleX!==1){ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.scale(scaleX,scaleY);ctx.translate(-f.x,-feet);}
  // All ten poses have independent, pre-cleaned bitmaps; do not truncate any
@@ -1743,11 +1731,10 @@ window.LudusBridge={
   const frameIndex=ids[kind]??9;
   const sheet=growthImage(h);
   const frame=sheet?.frames?.[frameIndex]?.canvas;
-  if(frame?.width&&frame?.height)
-   return h.cls==='murmillo'?frame:(window.SpriteInbetweens?.frame(frame,frameIndex,tick)||frame);
+  if(frame?.width&&frame?.height)return frame;
   const image=IMG[h.cls],frames=image&&INDEPENDENT_CHARACTER_FRAMES.get(image);
   const legacy=frames?.[frameIndex]||frames?.[0],source=legacy?.canvas||legacy||null;
-  return source?(h.cls==='murmillo'?source:(window.SpriteInbetweens?.frame(source,frameIndex,tick)||source)):null;
+  return source;
  },
  select:(i)=>{if(!CAREER.roster[i])return;CAREER.active=i;saveCareer();renderCareer();},
  section:(tab)=>{CAREER_SELECTING=false;CAREER_TAB=tab==='gear'?'gear':tab==='roster'?'roster':'training';$('#careerHub').hidden=false;renderCareer();if(CAREER_TAB==='roster')window.LudusApprovedScenes?.close();else window.LudusApprovedScenes?.open(CAREER_TAB);},
