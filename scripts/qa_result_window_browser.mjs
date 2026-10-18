@@ -1,73 +1,100 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
+
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-try{
- const page=await browser.newPage({viewport:{width:1182,height:1312},deviceScaleFactor:1});
- await page.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
- await page.waitForFunction(()=>Boolean(window.__arenaQA),{timeout:18000});
- await page.locator('#startBtn').click();
- await page.waitForFunction(()=>window.__arenaQA.state.phase==='fight',{timeout:18000});
- const before=await page.evaluate(()=>{
-  const s=window.__arenaQA.state;
-  s.careerMatch=false;s.gauntlet={round:30,inCleanup:false};
-  s.player.dead=false;s.player.removedFromArena=false;s.player.hp=s.player.maxHp;
-  s.enemy.dead=true;s.enemy.hp=0;s.enemy.removedFromArena=true;
-  s.resultApplied=true;s.resultWin=true;s.phase='result';
-  window.__arenaQA.showEnd();
-  return {removed:s.enemy.removedFromArena,screen:document.querySelector('#endScreen').hidden};
- });
- assert.equal(before.removed,true,'no corpse resurrection in actual arena state');
- assert.equal(before.screen,false,'result opens');
- await page.waitForTimeout(650);
- const data=await page.evaluate(async()=>{
-  const modal=document.querySelector('#endScreen');
-  const panel=modal.querySelector('.stage-panel-ending');
-  const frame=modal.querySelector('.roman-results-frame');
-  const loser=modal.querySelector('#loserPose');
-  const winner=modal.querySelector('#winnerPose');
-  const rect=panel.getBoundingClientRect();
-  const loserRect=loser.getBoundingClientRect();
-  const btn=modal.querySelector('#againBtn').getBoundingClientRect();
-  const canvas=loser.querySelector('canvas');
-  let nonTransparent=0;
-  if(canvas){
-   const c=canvas.getContext('2d');
-   const im=c.getImageData(0,0,canvas.width,canvas.height).data;
-   for(let i=3;i<im.length;i+=4*113)if(im[i]>30)nonTransparent++;
+const photo='assets/new-era/cinematic/roman-colosseum-result-v1.webp?v=1';
+async function check(size,preview){
+ const page=await browser.newPage({viewport:size,deviceScaleFactor:1});
+ try{
+  await page.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(window.__arenaQA),{timeout:20000});
+  await page.locator('#startBtn').click();
+  await page.waitForFunction(()=>window.__arenaQA.state.phase==='fight',{timeout:20000});
+  await page.evaluate(()=>{
+   const s=window.__arenaQA.state;
+   s.careerMatch=false;s.gauntlet={round:30,inCleanup:false};
+   s.player.dead=false;s.player.removedFromArena=false;s.player.hp=s.player.maxHp;
+   s.enemy.dead=true;s.enemy.hp=0;s.enemy.removedFromArena=true;
+   s.resultApplied=true;s.resultWin=true;s.phase='result';
+   window.__arenaQA.showEnd();
+  });
+  await page.locator('#endBanner').waitFor({state:'visible',timeout:10000});
+  await page.waitForTimeout(750);
+  const result=await page.evaluate(async path=>{
+   const modal=document.querySelector('#endScreen');
+   const panel=modal.querySelector('.stage-panel-ending');
+   const loser=modal.querySelector('#loserPose');
+   const winner=modal.querySelector('#winnerPose');
+   const rect=panel.getBoundingClientRect();
+   const loserRect=loser.getBoundingClientRect();
+   const actions=modal.querySelector('.end-actions').getBoundingClientRect();
+   const canvas=loser.querySelector('canvas');
+   let pixelCount=0, alphaBox=null;
+   if(canvas){
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});
+    const pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+    let l=canvas.width,t=canvas.height,r=0,b=0;
+    for(let y=0;y<canvas.height;y+=2)for(let x=0;x<canvas.width;x+=2){
+     if(pixels[(y*canvas.width+x)*4+3]>42){
+      pixelCount++;
+      l=Math.min(l,x);r=Math.max(r,x);
+      t=Math.min(t,y);b=Math.max(b,y);
+     }
+    }
+    if(pixelCount)alphaBox={left:l,top:t,width:r-l+1,height:b-t+1};
+   }
+   const art=await fetch(path);
+   const img=new Image();
+   img.src=path;await img.decode();
+   const test=document.createElement('canvas');test.width=img.width;test.height=img.height;
+   const tctx=test.getContext('2d',{willReadFrequently:true});
+   tctx.drawImage(img,0,0);
+   const corner=tctx.getImageData(0,0,1,1).data[3];
+   const inside=tctx.getImageData(Math.round(img.width/2),Math.round(img.height/2),1,1).data[3];
+   const panelCSS=getComputedStyle(panel);
+   const photoOnly=panelCSS.backgroundImage.includes('roman-colosseum-result-v1.webp') &&
+    !panelCSS.backgroundImage.includes(',')&&!panelCSS.backgroundImage.includes('linear-gradient');
+   const cbox=canvas?.getBoundingClientRect();
+   const pixelRatio=canvas?cbox.width/cbox.height:null;
+   return {
+    imgOK:art.ok,imgType:art.headers.get('content-type'),
+    actualWidth:img.naturalWidth,actualHeight:img.naturalHeight,
+    transparentOutside:corner<10,opaqueInside:inside>200,
+    panelImageOnly:photoOnly,panelImage:panelCSS.backgroundImage,
+    oldOrnaments:modal.querySelectorAll('.roman-results-frame,.roman-results-pennant').length,
+    resultHidden:modal.hidden,
+    winnerVisible:!!winner.querySelector('canvas')||getComputedStyle(winner).backgroundImage.includes('url('),
+    loserVisible:(pixelCount>20)||getComputedStyle(loser).backgroundImage.includes('url('),
+    ratio:rect.width/rect.height,
+    withinViewport:rect.left>=0&&rect.top>=0&&rect.right<=innerWidth+1&&rect.bottom<=innerHeight+1,
+    buttonsInside:actions.left>=rect.left&&actions.right<=rect.right&&actions.bottom<=rect.bottom,
+    originalLoserStillGone:window.__arenaQA.state.enemy.removedFromArena,
+    canvasNaturalRatio:canvas?canvas.width/canvas.height:null,
+    canvasDisplayedRatio:pixelRatio,
+    alphaBox,loserSize:{w:loserRect.width,h:loserRect.height},panelSize:{w:rect.width,h:rect.height}
+   };
+  },photo);
+  assert.equal(result.imgOK,true,'real approved raster image must be served');
+  assert.equal(result.actualWidth,1448);assert.equal(result.actualHeight,1086);
+  assert.equal(result.transparentOutside,true,'the outer frame must be alpha-transparent');
+  assert.equal(result.opaqueInside,true,'the Colosseum must be visible');
+  assert.equal(result.panelImageOnly,true,'exactly ONE picture; no duplicate SVG or arena background');
+  assert.equal(result.oldOrnaments,0,'remove all built-in geometric vector decorations');
+  assert.equal(result.winnerVisible,true);assert.equal(result.loserVisible,true);
+  assert.equal(result.originalLoserStillGone,true,'never restore the body in the real arena');
+  assert.ok(Math.abs(result.ratio-4/3)<.015,'the approved artwork cannot be distorted');
+  assert.equal(result.withinViewport,true,'no cropped gold frame');
+  assert.equal(result.buttonsInside,true,'native buttons are interactive within frame');
+  if(result.canvasNaturalRatio!=null)
+   assert.ok(Math.abs(result.canvasDisplayedRatio-result.canvasNaturalRatio)<.03,'lose sprite aspect ratio preserved');
+  console.log('RESULT_RASTER_QA_PASS '+JSON.stringify({viewport:size,...result}));
+  if(preview&&process.env.RESULT_PREVIEW==='1'){
+   const buffer=await page.screenshot({type:'jpeg',quality:75});
+   console.log('RESULT_RASTER_PREVIEW_JPEG:'+buffer.toString('base64'));
   }
-  const hasCanvas=!!canvas && nonTransparent>20;
-  const hasBg=getComputedStyle(loser).backgroundImage.includes('url(');
-  const svgResponse=await fetch('assets/new-era/cinematic/roman-result-frame-v2.svg?v=2');
-  const stylesheet=await fetch('arena-result-roman-v2.css?v=2');
-  return {
-   modalVisible:getComputedStyle(modal).display!=='none',
-   frameImage:getComputedStyle(frame).backgroundImage,
-   framePresent:!!frame,
-   frameUrlOK:svgResponse.ok,
-   cssOK:stylesheet.ok,
-   winnerVisible:!!winner.querySelector('canvas')||getComputedStyle(winner).backgroundImage.includes('url('),
-   loserVisible:hasCanvas||hasBg,
-   croppedPanel:rect.top<0||rect.left<0||rect.right>innerWidth+1||rect.bottom>innerHeight+1,
-   panelBox:{x:rect.x,y:rect.y,w:rect.width,h:rect.height},
-   loserBox:{x:loserRect.x,y:loserRect.y,w:loserRect.width,h:loserRect.height},
-   buttonsInside:btn.bottom<=rect.bottom&&btn.left>=rect.left&&btn.right<=rect.right,
-   opponentRemoved:window.__arenaQA.state.enemy.removedFromArena,
-   crowns:modal.querySelectorAll('.roman-results-pennant').length
-  };
- });
- assert.equal(data.framePresent,true);
- assert.equal(data.frameUrlOK,true,'ornate SVG frame is loadable');
- assert.equal(data.cssOK,true,'result CSS is loadable');
- assert.ok(data.frameImage.includes('roman-result-frame-v2.svg'),'frame styling active');
- assert.equal(data.loserVisible,true,'defeated fighter portrait remains in final window');
- assert.equal(data.winnerVisible,true,'winner portrait remains in final window');
- assert.equal(data.opponentRemoved,true,'body stays absent from arena state');
- assert.equal(data.buttonsInside,true,'buttons stay inside ornamented window');
- assert.equal(data.croppedPanel,false,'frame cannot clip outside device viewport');
- assert.equal(data.crowns,2,'balanced Roman standards');
- console.log('RESULT_WINDOW_QA_PASS '+JSON.stringify(data));
- if(process.env.RESULT_PREVIEW==='1'){
-  const screenshot=await page.screenshot({type:'jpeg',quality:65});
-  console.log('RESULT_WINDOW_PREVIEW_JPEG:'+screenshot.toString('base64'));
- }
+ }finally{await page.close()}
+}
+try{
+ await check({width:1182,height:1312},true);
+ await check({width:390,height:844},false);
 }finally{await browser.close()}
