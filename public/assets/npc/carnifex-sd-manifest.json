@@ -1,16 +1,15 @@
 {
-  "version": 4,
-  "src": "assets/npc/carnifex-sd-atlas.webp",
-  "imageWidth": 2720,
-  "imageHeight": 740,
-  "frameWidth": 340,
-  "frameHeight": 370,
+  "version": 5,
+  "src": "assets/npc/carnifex-casual-v5.webp",
+  "imageWidth": 2560,
+  "imageHeight": 780,
+  "frameWidth": 320,
+  "frameHeight": 390,
   "rows": {
     "walk": 0,
     "drag": 1
   },
   "frames": 8,
-  "baselineY": 335,
-  "source": "approved hooded SD executioner sprite sheet, 2026-10-18",
-  "notes": "All 16 frames isolated from new art, consistent baseline and safe margins under boots. Draw executioner behind and above the original defeated fighter."
+  "baselineY": 352,
+  "notes": "Approved casual 3D paint; component-separated 16 frames, clean boots, axe and ground-level hand. Corpse is the original defeated fighter sprite, not baked into atlas."
 }

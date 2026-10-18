@@ -1,0 +1,27 @@
+name: Approved NPC SD sprite integration
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/assets/ludus/doctore-sd-v1.webp
+      - public/assets/npc/carnifex-casual-v5.webp
+      - public/ludus-doctore-anim.js
+      - public/ludus-training-doctore.css
+      - public/ludus-approved-scenes.js
+      - public/arena-carnifex.js
+      - public/index.html
+      - scripts/qa_npc_sprite_adoption.mjs
+      - .github/workflows/qa-npc-sprites.yml
+  workflow_dispatch:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify both new NPC sprite sheets are wired into the game
+        run: |
+          node scripts/qa_npc_sprite_adoption.mjs
+          node scripts/qa_carnifex_sd.mjs
+          node scripts/qa_training_recovery.mjs

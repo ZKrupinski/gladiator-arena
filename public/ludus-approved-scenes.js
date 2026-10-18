@@ -11,22 +11,10 @@ function hit(id,label,x,y,w,h,fn){let b=document.createElement('button');b.class
 function block(cls,x,y){let d=document.createElement('div');d.className='la-v '+cls;d.style.left=x+'px';d.style.top=y+'px';stage.appendChild(d);return d;}
 function fit(){if(!stage)return;const z=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${z})`;}
 function toast(msg){let n=$('.la-notice');if(!n)return;n.textContent=msg;n.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>n.hidden=true,2800);}
-function pose(index){
- const actor=$('.la-doctore-live');if(!actor)return;
- clearTimeout(poseTimer);actor.classList.remove('is-speaking');
- if(index<0){actor.src='assets/ludus/doctore_pose_0.webp?v=3';return;}
- const n=index%4;actor.src='assets/ludus/doctore_pose_'+n+'.webp?v=3';
- actor.dataset.pose=String(n);actor.classList.add('is-speaking');
- poseTimer=setTimeout(()=>{
-   if(actor.isConnected&&!screen?.hidden){
-     actor.src='assets/ludus/doctore_pose_0.webp?v=3';
-     actor.dataset.pose='0';actor.classList.remove('is-speaking');
-   }
- },1700);
-}
+function pose(index){window.LudusDoctoreAnim?.react?.(index);}
 function moveHero(step){let a=bridge(),s=a?.state();if(!s?.roster?.length){toast('검투사시장에서 먼저 영입하세요.');return;}let i=((s.active||0)+step+s.roster.length)%s.roster.length;a.select(i);refresh();}
 function changeRoom(next){room=next;bridge()?.section(next);screen.hidden=false;render();}
-function goHome(){window.LudusTrainingV2?.stop();screen.hidden=true;clearTimeout(toastTimer);clearTimeout(poseTimer);pose(-1);bridge()?.returnHome();document.getElementById('careerHub').hidden=true;window.LudusScene?.open();}
+function goHome(){window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();screen.hidden=true;clearTimeout(toastTimer);clearTimeout(poseTimer);pose(-1);bridge()?.returnHome();document.getElementById('careerHub').hidden=true;window.LudusScene?.open();}
 function actionTraining(){const s=bridge()?.state();if(!s?.roster?.length){toast('훈련할 검투사가 없습니다.');return;}const opt=tiles[selectedTraining],h=s.roster[s.active];const cost=bridge()?.trainingCost?.(s.active,opt.stat)||12;if(s.gold<cost){toast('훈련 비용 '+cost+'D가 부족합니다.');pose(2);return;}if(Number(h.stats[opt.stat])>=10){toast('해당 능력치의 훈련이 완료되었습니다.');pose(2);return;}
  bridge().train(opt.stat);refresh();pose(Math.random()<.5?1:3);toast(h.name+' · '+opt.name+' 완료!');}
 function changeItem(mode){const a=bridge(),list=a?.catalog()||[],gear=list.find(g=>g.id===selectedGear);if(!gear){toast('장비를 먼저 선택하세요.');return;}const outcome=a.equip(selectedGear,mode);toast(outcome||'장비 상태가 갱신되었습니다.');refresh();}
@@ -57,6 +45,8 @@ function liveFighter(a,s,isTraining){
 function setup(){if(screen)return;screen=document.createElement('section');screen.className='la-screen';screen.hidden=true;screen.setAttribute('aria-label','승인된 루두스 장비실 및 훈련소');screen.innerHTML='<div class="la-stage"><img class="la-key" draggable="false" alt=""><div class="la-notice" role="status" hidden></div><div class="la-pose"></div></div><div class="la-orient">가로 화면에서 더 크게 볼 수 있습니다.<button type="button">작은 화면으로 계속</button></div>';document.body.appendChild(screen);stage=$('.la-stage');$('.la-orient button').addEventListener('click',()=>screen.classList.add('la-allow-portrait'));addEventListener('resize',fit,{passive:true});document.addEventListener('keydown',e=>{if(screen.hidden)return;if(e.key==='Escape'){e.preventDefault();goHome();}else if(e.key==='ArrowLeft'){e.preventDefault();moveHero(-1);}else if(e.key==='ArrowRight'){e.preventDefault();moveHero(1);}else if(e.key==='Enter'&&room==='training'){e.preventDefault();actionTraining();}});fit();}
 function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state();if(!s)return;const h=s.roster[s.active],training=room==='training';stage.className='la-stage '+room;
  const key=$('.la-key');const src=training?'assets/ludus/training_no_doctore.webp?v=2':'assets/ludus/armory_approved.webp';if(!key.src.endsWith(src))key.src=src;
+ // Halt the old RAF before replacing this scene's character node.
+ window.LudusDoctoreAnim?.unmount?.();
  // Keep backdrop and transient NPC pose nodes, replace everything else atomically.
  for(const node of [...stage.children])if(!node.matches('.la-key,.la-notice,.la-pose'))node.remove();
  if(!training&&window.LudusLiveArmory){
@@ -76,11 +66,10 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
   // The independent roster and actor must BOTH exist before we consider
   // replacement mounted. Otherwise show the older functional training UI.
   try{
-   const trainer=document.createElement('img');
+   const trainer=document.createElement('div');
    trainer.className='la-doctore-live';trainer.dataset.pose='0';
-   trainer.src='assets/ludus/doctore_pose_0.webp?v=3';trainer.alt='';
-   trainer.setAttribute('aria-hidden','true');trainer.draggable=false;
-   stage.appendChild(trainer);
+   trainer.setAttribute('aria-hidden','true');stage.appendChild(trainer);
+   window.LudusDoctoreAnim?.mount?.(trainer);
    window.LudusTrainingV2.mount(stage,a,s,{
     selectedTraining,tiles,onHome:goHome,move:moveHero,
     onSelect:i=>{a.select(i);refresh();},
@@ -105,10 +94,9 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  if(training){
   // Native-size transparent instructor is part of the scene, NOT a popup.
   // Its figure has already been removed from the clean background bitmap.
-  const instructor=document.createElement('img');instructor.className='la-doctore-live';
-  instructor.dataset.pose='0';instructor.src='assets/ludus/doctore_pose_0.webp?v=3';
-  instructor.alt='';instructor.setAttribute('aria-hidden','true');
-  instructor.draggable=false;stage.appendChild(instructor);
+  const instructor=document.createElement('div');instructor.className='la-doctore-live';
+  instructor.dataset.pose='0';instructor.setAttribute('aria-hidden','true');
+  stage.appendChild(instructor);window.LudusDoctoreAnim?.mount?.(instructor);
   const parchment=document.createElement('div');
   parchment.className='la-doctore-parchment';parchment.setAttribute('aria-hidden','true');
   stage.appendChild(parchment);
@@ -143,7 +131,7 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  home.addEventListener('click',goHome);stage.appendChild(home);
  fit();}
 function open(name){setup();room=name==='gear'?'armory':'training';screen.hidden=false;render();}
-function close(){window.LudusTrainingV2?.stop();if(screen)screen.hidden=true;}
+function close(){window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();if(screen)screen.hidden=true;}
 function refresh(){if(screen&&!screen.hidden)render();}
 window.LudusApprovedScenes={open,close,refresh,goHome};
 // Career navigation is still handled by the original engine; these listeners only replace its view.

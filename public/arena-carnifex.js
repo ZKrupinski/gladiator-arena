@@ -6,8 +6,8 @@
 'use strict';
 const TIME={arrive:.96,grip:.48,haul:1.92,exit:.34};
 TIME.total=TIME.arrive+TIME.grip+TIME.haul+TIME.exit;
-const W=1280,FLOOR=617,ATLAS_COLS=8,CELL_W=340,CELL_H=370;
-const SD_ART='assets/npc/carnifex-sd-atlas.webp?v=4';
+const W=1280,FLOOR=617,ATLAS_COLS=8,CELL_W=320,CELL_H=390;
+const SD_ART='assets/npc/carnifex-casual-v5.webp?v=5';
 const OLD_ART='assets/npc/carnifex-executioner.svg?v=1';
 const EASE=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
 const LERP=(a,b,t)=>a+(b-a)*t;
@@ -83,11 +83,11 @@ function drawExecutioner(ctx,seq,pose,floorY){
  ctx.translate(pose.executionerX,floorY+gait);
  ctx.scale(flip?-1:1,1);
  ctx.rotate(tilt);
- ctx.filter='contrast(1.03) saturate(.93) brightness(.92)';
+ ctx.filter='none'; // the approved soft 3D-style shading is baked in
  if(art){
   const row=pose.phase==='walk'?0:1;
   const frame=pose.frame;
-  // All sixteen sprites have a cleaned toe silhouette and atlas baseline y=335.
+  // All sixteen independent sprites have toe baseline y=352 and clear axe/boot margins.
   ctx.drawImage(art,frame*CELL_W,row*CELL_H,CELL_W,CELL_H,
    -218,-444,436,466);
  }else{
@@ -115,9 +115,9 @@ function draw(ctx,seq,drawBody,floorY=FLOOR){
  }
  ctx.restore();
 }
-root.ArenaCarnifex={version:'4.0.0',TIME,begin,advance,positions,draw,preload,
+root.ArenaCarnifex={version:'5.0.0',TIME,begin,advance,positions,draw,preload,
  isReady:()=>!!(artwork?.complete&&artwork.naturalWidth===ATLAS_COLS*CELL_W),
- sprite:{width:2720,height:740,frameWidth:CELL_W,frameHeight:CELL_H,frames:8,baselineY:335,source:SD_ART}
+ sprite:{width:2560,height:780,frameWidth:CELL_W,frameHeight:CELL_H,frames:8,baselineY:352,source:SD_ART}
 };
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaCarnifex;
 })(globalThis);

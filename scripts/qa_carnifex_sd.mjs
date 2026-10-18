@@ -2,32 +2,32 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const bin=fs.readFileSync(new URL('../public/assets/npc/carnifex-sd-atlas.webp',import.meta.url));
+const bin=fs.readFileSync(new URL('../public/assets/npc/carnifex-casual-v5.webp',import.meta.url));
 const manifest=JSON.parse(fs.readFileSync(new URL('../public/assets/npc/carnifex-sd-manifest.json',import.meta.url),'utf8'));
 const html=fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
 assert.equal(bin.toString('ascii',0,4),'RIFF');
 assert.equal(bin.toString('ascii',8,12),'WEBP');
 assert.ok(bin.length>100000,'The actual approved painted sprites must be committed, not a placeholder');
-assert.equal(manifest.imageWidth,2720);
-assert.equal(manifest.imageHeight,740);
-assert.equal(manifest.frameWidth,340);
-assert.equal(manifest.frameHeight,370);
-assert.equal(manifest.baselineY,335,'new atlas must lift boots clear of ground and corpse');
-assert.match(html,/arena-carnifex\.js\?v=4/);
+assert.equal(manifest.imageWidth,2560);
+assert.equal(manifest.imageHeight,780);
+assert.equal(manifest.frameWidth,320);
+assert.equal(manifest.frameHeight,390);
+assert.equal(manifest.baselineY,352,'new atlas must lift boots clear of ground and corpse');
+assert.match(html,/arena-carnifex\.js\?v=5/);
 const source=fs.readFileSync(new URL('../public/arena-carnifex.js',import.meta.url),'utf8');
 let requested=[];
 class Sprite {
- constructor(){this.complete=true;this.naturalWidth=2720;this.naturalHeight=740;}
+ constructor(){this.complete=true;this.naturalWidth=2560;this.naturalHeight=780;}
  set src(x){requested.push(x);}
 }
 const root={};
 vm.runInNewContext(source,{globalThis:root,Image:Sprite});
 const C=root.ArenaCarnifex;
-assert.equal(C.version,'4.0.0');
-assert.equal(C.sprite.baselineY,335);
+assert.equal(C.version,'5.0.0');
+assert.equal(C.sprite.baselineY,352);
 const enemy={enemy:true,cls:'thraex',x:940,hp:0,cfg:{name:'Fallen gladiator'}};
 const s=C.begin(enemy,true,{finished:false});
-assert.ok(requested.some(x=>x.includes('carnifex-sd-atlas.webp')),'preload the new WebP');
+assert.ok(requested.some(x=>x.includes('carnifex-casual-v5.webp')),'preload the new WebP');
 assert.equal(s.body.cfg,enemy.cfg,'retain defeated fighter configuration/sprite');
 const arriving=C.positions({...s,t:C.TIME.arrive*.4});
 assert.equal(arriving.phase,'walk');
@@ -50,7 +50,7 @@ assert.equal(actualBodies,1,'must draw the original fallen gladiator behind the 
 assert.deepEqual(verticalPlanes,[-24,-14],'executioner stands higher upstage than the corpse');
 assert.equal(draws.length,1,'draw just the executioner from the clean SD sprite sheet');
 assert.equal(draws[0].length,9);
-assert.equal(draws[0][2],370,'dragging animation must read row 2');
+assert.equal(draws[0][2],390,'dragging animation must read row 2');
 const front=ctx;
 assert.equal(C.advance(s,C.TIME.total),true);
 assert.equal(C.positions(s).bodyVisible,false);
