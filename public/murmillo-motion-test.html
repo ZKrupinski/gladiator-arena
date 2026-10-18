@@ -1,0 +1,43 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Murmillo Motion Lab v2</title>
+<style>:root{color-scheme:dark;font-family:system-ui,sans-serif}*{box-sizing:border-box}body{margin:0;background:#17120e;color:#f0dfbe}main{max-width:1100px;margin:0 auto;padding:20px}h1{margin:0;font-size:28px;letter-spacing:.05em}p{color:#c5b39c;line-height:1.6}canvas{display:block;width:100%;height:auto;border:1px solid #6b5435;border-radius:12px}#buttons{display:flex;flex-wrap:wrap;gap:7px;margin:15px 0}button{min-height:44px;padding:10px 14px;color:#e9d5ab;background:#30271c;border:1px solid #776045;border-radius:7px;cursor:pointer;font-weight:700}button.active{background:#916c3a;color:white}footer{display:flex;gap:20px;flex-wrap:wrap;align-items:center}a{color:#e8bd78}small{color:#bda78a}</style>
+</head><body><main><h1>MURMILLO · MOTION LAB v2</h1><p>실제 게임과 동일한 전투 포즈 재생기 · 하나의 외형과 공통 발 기준점 사용 · 찌그러짐 없는 독립 원본 프레임</p>
+<canvas id="stage" width="1000" height="620"></canvas><div id="buttons"></div>
+<footer><span id="status" role="status">원본 리소스 로딩 중...</span><label><input id="repeat" type="checkbox" checked> 자동 반복</label><button id="flip">방향 반전</button><a href="./">게임으로 이동</a></footer>
+<p><small>이번 단계는 원본 12개의 독립 키포즈를 실제 전투 상태에 맞춰 재생하는 테스트입니다. 신규 원화 프레임이나 자동 변형 프레임을 사용하지 않습니다.</small></p></main>
+<script src="growth-frames.js?v=2"></script><script src="murmillo-motion-v2.js?v=1"></script><script>
+(()=>{
+const cvs=document.querySelector('#stage'),ctx=cvs.getContext('2d'),status=document.querySelector('#status');
+const labels={idle:'기본',walk:'이동',slash:'종베기',sweep:'횡베기',thrust:'찌르기',heavy:'강베기',guard:'방어',dodge:'회피',hit:'피격',dash:'돌진',victory:'승리',defeat:'패배'};
+const duration={idle:1.5,walk:1.5,slash:.35,sweep:.35,thrust:.35,heavy:.48,guard:.52,dodge:.34,hit:.31,dash:.56,victory:1.5,defeat:1.5};
+let current='slash',start=performance.now(),atlas=null,flip=false;
+const f={cls:'murmillo',action:'attack',actionT:0,actionDuration:.35,attackVariant:0,guard:false,dead:false,vx:0};
+const scene={phase:'fight',player:f,resultApplied:false,resultWin:true,resultAnim:0};
+function select(key){current=key;start=performance.now();document.querySelectorAll('[data-motion]').forEach(b=>b.classList.toggle('active',b.dataset.motion===key));}
+for(const [key,name] of Object.entries(labels)){const b=document.createElement('button');b.textContent=name;b.dataset.motion=key;b.onclick=()=>select(key);document.querySelector('#buttons').append(b);}
+document.querySelector('#flip').onclick=()=>{flip=!flip;};
+select('slash');
+function loop(now){
+ let seconds=(now-start)/1000,dur=duration[current];if(document.querySelector('#repeat').checked&&seconds>dur+.6){start=now;seconds=0;}
+ f.actionT=Math.max(0,dur-seconds);f.actionDuration=dur;f.attackVariant=0;f.vx=0;f.guard=false;f.dead=false;
+ scene.phase='fight';scene.resultApplied=false;
+ if(['slash','sweep','thrust'].includes(current)){f.action='attack';f.attackVariant=['slash','sweep','thrust'].indexOf(current);}
+ else if(current==='heavy')f.action='special';
+ else if(current==='dash')f.action='comboDash';
+ else if(current==='victory'||current==='defeat'){f.action='idle';f.actionT=0;scene.phase='result';scene.resultApplied=true;scene.resultWin=current==='victory';}
+ else {f.action=current;if(current==='idle'||current==='walk')f.actionT=0;if(current==='walk')f.vx=100;if(current==='guard')f.guard=true;}
+ const bg=ctx.createLinearGradient(0,0,0,620);bg.addColorStop(0,'#392a20');bg.addColorStop(.91,'#75563b');bg.addColorStop(1,'#493321');ctx.fillStyle=bg;ctx.fillRect(0,0,1000,620);
+ ctx.fillStyle='#cb9a61';ctx.fillRect(0,570,1000,50);ctx.fillStyle='#e3b984';ctx.fillRect(0,568,1000,2);
+ ctx.font='24px system-ui';ctx.fillStyle='#fff2d5';ctx.fillText('MURMILLO / '+labels[current],30,46);
+ if(atlas){
+  const ok=MurmilloMotion.draw(ctx,{atlas,fighter:f,scene,clock:now/1000,x:260,y:165,w:480,h:405,flip,alpha:1});
+  const pose=MurmilloMotion.poseAt(f,scene,now/1000);
+  status.textContent=(ok?'렌더링 OK':'오류')+' · '+labels[current]+' · 원본 포즈 #'+pose.index;
+ }
+ requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+Promise.all([fetch('assets/ludus-growth/frame-cuts.json?v=2').then(r=>{if(!r.ok)throw Error('마스크 로딩 실패');return r.json();}),
+new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src='assets/ludus-growth/murmillo_a_L5.png';})
+]).then(([cuts,img])=>{atlas=GrowthFrames.isolate(img,cuts.sheets.murmillo_a_L5);status.textContent='프레임 12개 준비 완료';}).catch(err=>status.textContent='리소스 오류: '+err.message);
+})();
+</script></body></html>
