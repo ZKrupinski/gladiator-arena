@@ -123,20 +123,29 @@ function draft(enemy,painter){
    '" aria-pressed="'+(mode===matchMode)+'">'+mode+' <small>'+safe(option.label||'')+'</small></button>';
  }).join('')+'</div>';
  const info=matchMode==='1v1'?'정규 1:1 결투':
-  '아군 '+config.allies+'명 / 적 '+config.enemies+'명 · 출전 '+squadPicks.length+'/'+config.allies+'명';
+  '연속 1:1 · 아군 '+config.allies+'명 / 적 '+config.enemies+'명 · 선택 '+squadPicks.length+'/'+config.allies+'명';
+ const enemies=a.previewMatch?.(matchMode,enemy)||[enemy];
+ const ourSequence=squadPicks.map((i,order)=>'<span class="lc-lineup-ally"><em>'+(order+1)+'번</em>'+safe(s.roster[i]?.name||'')+'</span>').join('')||
+  '<span class="lc-lineup-empty">출전할 검투사를 선택하세요</span>';
+ const theirSequence=enemies.map((unit,order)=>'<div class="lc-enemy-slot '+(unit.boss?'is-boss':'')+'"><em>'+(order+1)+'번</em>'+
+  '<div><strong>'+safe(unit.name)+'</strong><small>'+safe(className(unit))+' · Lv.'+Number(unit.level||1)+
+  (unit.boss?' · ★ 보스급':' · '+safe(window.ArenaBalance?.TRAITS?.[unit.cls]?.role||'일반 도전자'))+'</small></div></div>').join('');
  const strength=squadPicks.reduce((total,i)=>total+(window.ArenaBalance?.heroPower?.(s.roster[i])||0),0);
  const rivalRole=window.ArenaBalance?.TRAITS?.[enemy.cls]?.role||'투기장 도전자';
  const host='<section class="lc-screen lc-draft-screen" aria-label="아레나 출전 선수 선택"><div class="lc-top">'+header('아레나 출전',s)+'</div>'+
- '<div class="lc-match-top"><span>도전 '+Number(enemy.round||1)+'회차</span><strong>⚔ '+info+'</strong><span>'+(enemy.boss?'CHAMPION BATTLE':'ARENA CHALLENGE')+'</span></div>'+controls+
+ '<div class="lc-match-top"><span>도전 '+Number(enemy.round||1)+'회차</span><strong>⚔ '+info+'</strong><span>'+(enemy.boss?'CHAMPION BATTLE':'ARENA CHALLENGE')+'</span></div>'+
+ '<div class="lc-mode-note">경기 형태 선택은 현재 개발 확인용 임시 메뉴 · 향후 이벤트에 따라 자동 지정</div>'+controls+
  '<div class="lc-screen-body lc-draft-body"><div class="lc-gallery"><div class="lc-section-head"><h2>♜ 나의 검투사</h2><small>출전 선수 '+config.allies+'명 선택</small></div>'+
+ '<div class="lc-ally-order"><strong>아군 출전 순서 · 승자는 다음 상대와 연전</strong><div>'+ourSequence+'</div></div>'+
  '<div class="lc-card-grid">'+s.roster.map((h,i)=>card(h,i,squadPicks.includes(i),true)).join('')+'</div></div>'+
  '<div class="lc-opponent"><div class="lc-section-head"><h2>⚔ 이번 경기의 상대</h2><small>'+(enemy.boss?'보스 · 승리 시 영입':'일반 경기')+'</small></div>'+
  '<div class="lc-enemy-frame"><span class="lc-rank lc-enemy-rank">'+(enemy.boss?'LEGENDARY':'GRADE '+enemy.stage)+'</span>'+
  '<canvas id="ludusOpponentArt" width="355" height="350" aria-label="상대 검투사 대기 자세"></canvas>'+
  '<div class="lc-enemy-name">'+safe(enemy.name)+'<small>'+className(enemy)+' · '+(enemy.boss?'챔피언':'성장 '+Number(enemy.stage||1)+'단계')+' · Lv.'+Number(enemy.level||1)+'</small></div></div>'+
+ '<div class="lc-enemy-lineup"><strong>상대 출전 명단 · 1:1 순차 등장</strong><div>'+theirSequence+'</div></div>'+
  '<div class="lc-matchup"><div><small>아군 전력</small><strong>'+safe(pick?pick.name:'선택 필요')+' · '+strength+'</strong></div><span>VS</span><div><small>상대 전술 · '+safe(rivalRole)+'</small><strong>'+safe(enemy.name)+'</strong></div></div>'+
- '<div class="lc-buttons lc-draft-actions"><button id="lcDraftCancel">선택 취소</button><button class="lc-emphasis" id="lcDeploy" '+(!ready?'disabled':'')+'>⚔ '+(ready?(matchMode==='1v1'?safe(pick.name)+' 출전':'팀 아레나 '+matchMode+' 시작'):'검투사 '+config.allies+'명 필요')+'</button></div>'+
- '</div></div><div class="lc-hint">근경과 원경의 2개 전투 라인 · 부상 80 이상 출전 불가 · 참가 검투사별 경험치·부상 반영</div></section>';
+ '<div class="lc-buttons lc-draft-actions"><button id="lcDraftCancel">선택 취소</button><button class="lc-emphasis" id="lcDeploy" '+(!ready?'disabled':'')+'>⚔ '+(ready?(matchMode==='1v1'?safe(pick.name)+' 출전':'연속 1:1 대진 '+matchMode+' 시작'):'검투사 '+config.allies+'명 필요')+'</button></div>'+
+ '</div></div><div class="lc-hint">현재 출전한 검투사는 기존 전투 조작 그대로 사용 · 승자는 남은 체력으로 다음 상대와 싸움 · 부상 80 / 피로 80 이상 출전 불가</div></section>';
  const old=$('.lc-gallery .lc-card-grid');if(old)scrollPosition=old.scrollTop;
  reveal(host,'draft');
  const root=$('.lc-screen'),grid=root.querySelector('.lc-card-grid');if(grid)grid.scrollTop=scrollPosition;
