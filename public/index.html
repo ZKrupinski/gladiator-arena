@@ -1167,11 +1167,13 @@ function startLineupMatch(mode,indices){
  const spec=ArenaBalance.MODES[mode];
  if(!spec||mode==='1v1')return false;
  const chosen=[...new Set(indices.map(Number))];
- if(chosen.length!==spec.allies||chosen.some(i=>!Number.isInteger(i)||!careerEligible(CAREER.roster[i]))){
+ if(chosen.length!==spec.allies||chosen.some(i=>!Number.isInteger(i)||!CAREER.roster[i]||!careerEligible(CAREER.roster[i]))){
   CAREER.message='대진 순서와 출전 가능한 검투사를 확인하세요.';saveCareer();return false;
  }
  const leader={...LudusRoster.encounter(CAREER,CAREER.roster[chosen[0]])};
- const q=ArenaLineup.create(mode,chosen,CAREER.roster,leader);
+ let q;
+ try{q=ArenaLineup.create(mode,chosen,CAREER.roster,leader);}
+ catch(error){CAREER.message='출전할 수 없습니다: '+error.message;saveCareer();return false;}
  CAREER.active=chosen[0];CAREER_SELECTING=false;saveCareer();
  start('career',chosen[0]);
  if(S.phase!=='fight')return false;
