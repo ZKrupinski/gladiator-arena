@@ -335,7 +335,6 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="market-scene.js?v=12"></script>
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=3"></script>
-<script src="sprite-inbetweens.js?v=2"></script>
 <script src="ludus-roster.js?v=1"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -618,7 +617,9 @@ const GROWTH_IMAGES=new Map();
 const GROWTH_POSE={idle:0,walk:1,attack:2,special:3,guard:6,dodge:8,hit:7,net:5,finisher:10,defeat:11};
 let growthLoading=null,growthCuts=null;
 function growthType(h){return h?.growthType||({murmillo:'murmillo_a',thraex:'thraex_a',retiarius:'retiarius_a'}[h?.cls]);}
-function growthImage(h){if(h?.appearance==='legacy')return null;return GROWTH_IMAGES.get(growthType(h)+'_L'+careerStage(h));}
+function growthImage(h){if(h?.appearance==='legacy')return null;
+ if(isAnimatedMurmillo(h))return GROWTH_IMAGES.get('murmillo_a_L5')||null;
+ return GROWTH_IMAGES.get(growthType(h)+'_L'+careerStage(h))||null;}
 function growthStatus(message){document.getElementById('growthState').textContent=message;}
 function refreshGrowthAvatar(){
  const atlas=CAREER.hero&&growthImage(CAREER.hero),avatar=document.querySelector('#careerBody .career-avatar');
@@ -667,11 +668,14 @@ document.getElementById('growthRetry').onclick=()=>loadGrowthAtlases();
 // Defer until career state is initialized. Arcade assets and rendering stay separate.
 setTimeout(loadGrowthAtlases,0);
 const CAREER_KEY='gladiator.ludus.v1';
+const ANIMATED_MURMILLO_VARIANT='murmillo_motion_v3';
+function isAnimatedMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===ANIMATED_MURMILLO_VARIANT;}
 function careerXpNeeded(l){return 30+l*15;}
 function careerLevel(h){return Math.max(1,Math.min(20,Number(h.level)||1));}
 function careerStage(h){const l=careerLevel(h);return l>=20?5:l>=15?4:l>=10?3:l>=5?2:1;}
 function grantCareerXp(h,a){h.level=careerLevel(h);h.xp=Math.max(0,Number(h.xp)||0)+Math.max(0,Math.floor(a));let n=0;while(h.level<20&&h.xp>=careerXpNeeded(h.level)){h.xp-=careerXpNeeded(h.level);h.level++;n++;}if(h.level===20)h.xp=0;return n;}
-function careerProgressLabel(h){const l=careerLevel(h);return 'Lv.'+l+' · 성장 '+careerStage(h)+'/5 · EXP '+(l===20?'MAX':h.xp+' / '+careerXpNeeded(l));}
+function careerProgressLabel(h){const l=careerLevel(h);
+ return 'Lv.'+l+' · '+(isAnimatedMurmillo(h)?'모션 전용 외형':'성장 '+careerStage(h)+'/5')+' · EXP '+(l===20?'MAX':h.xp+' / '+careerXpNeeded(l));}
 const TRAIN_LEVELS=[['입문',42,18,.48],['초급',36,15,.60],['숙련',30,12,.73],['상급',24,10,.88],['정예',19,8,1.04],['달인',15,6,1.20],['전설',12,5,1.35]];
 function trainingDifficulty(h,stat){h.trainingAttempts=h.trainingAttempts||{};const attempts=h.trainingAttempts[stat]||0;const [name,width,perfect,speed]=TRAIN_LEVELS[Math.min(attempts,6)];return {name,width,perfect,speed,attempts};}
 const CAREER_RIVALS=[['노예 검투사',0,0,0],['초급 투사',.07,.05,.02],['숙련 검투사',.15,.10,.04],['투기장 강자',.24,.16,.07],['정예 챔피언',.34,.23,.10],['전설의 검투사',.46,.30,.13]];
@@ -707,6 +711,20 @@ function equipmentBonus(h){
 Object.defineProperty(CAREER,'hero',{get(){return this.roster[this.active]||null;}});
 function careerHealth(h){const max=DATA[h.cls].hp+h.stats.end*13+equipmentBonus(h).hp;return {max,current:Math.max(1,max-h.injury)};}
 function saveCareer(){try{localStorage.setItem(CAREER_KEY,JSON.stringify({gold:CAREER.gold,glory:CAREER.glory,fights:CAREER.fights,wins:CAREER.wins,roster:CAREER.roster,active:CAREER.active,message:CAREER.message,pendingOpponent:CAREER.pendingOpponent||null,marketSeed:CAREER.marketSeed||0,marketInventory:CAREER.marketInventory||null}));}catch(err){}}
+// Add one dedicated fighter to existing saves without changing old fighters.
+function installAnimatedMurmilloStarter(){
+ if(CAREER.roster.some(isAnimatedMurmillo))return false;
+ const empty=CAREER.roster.length===0;
+ const hero=LudusRoster.create('murmillo',CAREER.roster.length+1,{
+  name:'무르밀로 · 애니메이션',appearance:ANIMATED_MURMILLO_VARIANT,
+  variantId:'starter-murmillo-motion-v3',growthType:'murmillo_a'
+ });
+ CAREER.roster.push(hero);
+ if(empty)CAREER.active=0;
+ saveCareer();
+ return true;
+}
+installAnimatedMurmilloStarter();
 function careerMessage(t){CAREER.message=t;saveCareer();renderCareer();}
 function openSlaveMarket(){
  if(S.phase==='fight'||S.phase==='finisher'||MINI)return;
@@ -983,7 +1001,12 @@ function start(mode='new'){
  S.autoPlaying=false;S.lastManualInput=clock;S.careerRewardApplied=false;
  S.player=fighter(selected,335,false);S.enemy=fighter(rival,940,true);CAMERA.initialized=false;
  if(careerMatch){
-  if(CAREER.hero.appearance!=='legacy'){S.player.growthType=growthType(CAREER.hero);S.player.growthLevel=careerStage(CAREER.hero);}
+  if(isAnimatedMurmillo(CAREER.hero)){
+   S.player.motionVariant=ANIMATED_MURMILLO_VARIANT;
+   S.player.growthType='murmillo_a';S.player.growthLevel=5;
+  }else if(CAREER.hero.appearance!=='legacy'){
+   S.player.growthType=growthType(CAREER.hero);S.player.growthLevel=careerStage(CAREER.hero);
+  }
   S.player.cfg={...S.player.cfg,name:CAREER.hero.name+' · Lv.'+careerLevel(CAREER.hero)};
   const opponent=S.careerOpponent;
   if(!opponent.boss){S.enemy.growthType=opponent.growthType;S.enemy.growthLevel=opponent.stage;}
@@ -1711,7 +1734,7 @@ window.LudusBridge={
  state:()=>({gold:CAREER.gold,glory:CAREER.glory,roster:CAREER.roster,active:CAREER.active,message:CAREER.message}),
  portrait:(i)=>{
   const h=CAREER.roster[i];if(!h)return null;
-  const g=growthImage(h);if(g?.frames?.[9]?.canvas)return g.frames[9].canvas;
+  const g=growthImage(h);if(g?.frames?.[isAnimatedMurmillo(h)?0:9]?.canvas)return g.frames[isAnimatedMurmillo(h)?0:9].canvas;
   const img=IMG[h.cls];return (img&&INDEPENDENT_CHARACTER_FRAMES.get(img)?.[0])||null;
  },
  trainingFrame:(i,kind='idle',tick=0)=>{
