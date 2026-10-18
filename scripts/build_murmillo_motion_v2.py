@@ -61,6 +61,7 @@ original = Image.open(SRC / f"{KEY}.png").convert("RGBA")
 assert tuple(sheet["size"]) == original.size
 assert len(sheet["frames"]) == len(NAMES) == 12
 rows = []
+quality = []
 for idx, (name, spec) in enumerate(zip(NAMES, sheet["frames"])):
     x, y, w, h = spec["box"]
     assert 0 <= x and 0 <= y and x+w <= original.width and y+h <= original.height
@@ -73,6 +74,7 @@ for idx, (name, spec) in enumerate(zip(NAMES, sheet["frames"])):
     mask = Image.frombytes("L", (w,h), bytes(alpha))
     cutout.putalpha(ImageChops.multiply(cutout.getchannel("A"), mask))
     cutout,removed,colors=remove_flat_edge_blocks(cutout)
+    quality.append({"pose":name,"flat_colours":colors,"removed_pixels":removed,"source_area":w*h})
     print(f"cleanup {name}: removed {removed} flat-colour pixels from {colors} atlas colours",flush=True)
     assert cutout.getchannel("A").getbbox(), f"Empty pose: {name}"
     padded = Image.new("RGBA", (w+GUTTER*2, h+GUTTER*2), (0,0,0,0))
@@ -88,5 +90,6 @@ manifest = {
     "version": 2, "source": KEY, "cellWidth": sheet["size"][0]/4,
     "cellHeight": sheet["size"][1]/3, "frames": rows
 }
+(DEST / "qa-report.json").write_text(json.dumps(quality,indent=2)+"\n",encoding="utf-8")
 (DEST / "manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 print("exported",len(rows),"independent alpha-isolated sprites",DEST,flush=True)
