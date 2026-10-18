@@ -56,6 +56,12 @@ async function check(size,preview){
    const panelCSS=getComputedStyle(panel);
    const photoOnly=panelCSS.backgroundImage.includes('roman-colosseum-result-v1.webp') &&
     !panelCSS.backgroundImage.includes(',')&&!panelCSS.backgroundImage.includes('linear-gradient');
+   const winnerArt=winner;
+   const winnerCSS=getComputedStyle(winnerArt);
+   const winnerMatrix=new DOMMatrixReadOnly(winnerCSS.transform);
+   const winBox=winnerArt.getBoundingClientRect();
+   const rawWinHeight=winnerArt.offsetHeight;
+   const winnerScale=rawWinHeight?winBox.height/rawWinHeight:0;
    const cbox=canvas?.getBoundingClientRect();
    const pixelRatio=canvas?cbox.width/cbox.height:null;
    const spriteFit=canvas?getComputedStyle(canvas).objectFit:null;
@@ -72,6 +78,9 @@ async function check(size,preview){
     withinViewport:rect.left>=0&&rect.top>=0&&rect.right<=innerWidth+1&&rect.bottom<=innerHeight+1,
     buttonsInside:actions.left>=rect.left&&actions.right<=rect.right&&actions.bottom<=rect.bottom,
     originalLoserStillGone:window.__arenaQA.state.enemy.removedFromArena,
+    winnerScale,winnerCssScale:winnerMatrix.a,winnerAnchor:winnerCSS.transformOrigin,
+    winnerLayoutBottom:winnerArt.offsetTop+winnerArt.offsetHeight,
+    winnerVisualHeight:winBox.height,
     canvasNaturalRatio:canvas?canvas.width/canvas.height:null,
     canvasDisplayedRatio:pixelRatio,
     canvasObjectFit:spriteFit,
@@ -92,6 +101,9 @@ async function check(size,preview){
   assert.ok(Math.abs(result.ratio-4/3)<.015,'the approved artwork cannot be distorted');
   assert.equal(result.withinViewport,true,'no cropped gold frame');
   assert.equal(result.buttonsInside,true,'native buttons are interactive within frame');
+  assert.ok(result.winnerScale>=1.23&&result.winnerScale<=1.27,'winner is 25% larger than last result layout');
+  assert.ok(Math.abs(result.winnerCssScale-1.25)<.005,'winner enlargement comes from proportional uniform scaling');
+  assert.ok(result.winnerAnchor.includes('100%')||result.winnerAnchor.endsWith('px'),'victory art has grounded origin');
   assert.equal(result.canvasObjectFit,'contain','sprite source must retain natural aspect inside portrait viewport');
   console.log('RESULT_RASTER_QA_PASS '+JSON.stringify({viewport:size,...result}));
   if(preview&&process.env.RESULT_PREVIEW==='1'){
