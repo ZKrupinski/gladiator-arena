@@ -126,3 +126,31 @@
 .gm-stage .gm-back-hit:hover,.gm-stage .gm-back-hit:focus-visible{
  outline:3px solid #ffe3a0;outline-offset:2px;filter:brightness(1.15);
 }
+
+/* Ludus challenge selector, independent from the existing illustrated cards. */
+.lc-draft-screen .lc-mode-picker{
+ display:flex;justify-content:center;align-items:stretch;gap:8px;
+ flex:none;padding:6px 20px 10px;background:#180907e8;border-bottom:2px solid #996f3f85;
+ overflow-x:auto;scrollbar-width:thin;
+}
+.lc-draft-screen .lc-mode-picker button{
+ flex:1;min-width:76px;max-width:184px;min-height:49px;cursor:pointer;
+ border:3px ridge #956737;border-radius:6px;background:linear-gradient(#3a2115,#1c0d0a);
+ color:#ebca8f;font:900 clamp(15px,1.9vw,25px) Georgia,serif;
+ text-shadow:0 2px #0a0302;white-space:nowrap;
+}
+.lc-draft-screen .lc-mode-picker button small{
+ display:block;color:#c9ae84;font:700 clamp(9px,.9vw,12px) 'Noto Sans KR',sans-serif;white-space:nowrap;
+}
+.lc-draft-screen .lc-mode-picker button.selected{
+ background:linear-gradient(#ae6630,#6a321c);color:#fff2c3;
+ border-color:#ffdc8b;box-shadow:inset 0 0 13px #ffe6a441,0 0 12px #f5bd6e72;
+}
+.lc-draft-screen .lc-mode-picker button:focus-visible{outline:3px solid #ffe9a8;outline-offset:2px}
+.lc-draft-screen .lc-mode-picker button:hover{filter:brightness(1.12)}
+.lc-draft-screen .lc-buttons #lcDeploy:disabled{opacity:.42;cursor:not-allowed}
+@media(max-height:650px){
+ .lc-draft-screen .lc-mode-picker{gap:5px;padding:3px 10px 5px}
+ .lc-draft-screen .lc-mode-picker button{min-height:35px;font-size:17px;border-width:2px}
+ .lc-draft-screen .lc-mode-picker button small{font-size:9px}
+}
