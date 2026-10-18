@@ -1225,6 +1225,10 @@ function finishLineupCleanup(){
  S.cleanup=null;
  if(S.gauntlet)S.gauntlet.inCleanup=false;
  if(step.finished){
+  // Carnifex has physically removed the corpse. Do not briefly redraw the
+  // original defeated actor at its old X during the victory finisher.
+  const removedFighter=allyWon?S.enemy:S.player;
+  if(removedFighter?.dead)removedFighter.x=recovery.side>0?W+420:-420;
   S.resultWin=!!step.win;S.resultApplied=true;S.resultAnim=0;
   S.phase='finisher';S.slow=1.65;
   setAction(step.win?S.player:S.enemy,'finisher',1.9);
