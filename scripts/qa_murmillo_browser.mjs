@@ -83,11 +83,9 @@ try {
  assert.equal(output.wobbleScriptPresent,false,'old flutter engine not loaded');
  assert.equal(output.growthMotionGenerator,false,'old scanline frame generator removed');
  assert.equal(output.originalL5Scale,.64,'original tier 5 scale must remain unchanged');
- const battleScale=await game.evaluate(()=>{
-  const main=document.querySelector('#startScreen');
-  return [...document.scripts].some(s=>s.src.includes('murmillo-motion-v2.js'));
- });
- assert.ok(battleScale,'motion runtime must load alongside preserved old atlas');
+ const battleScale=await game.evaluate(()=>window.LudusBridge.motionScale());
+ assert.equal(battleScale,.70,'new animated Murmillo must scale to 70% without changing the original');
+ report.animatedMurmilloScale=battleScale;
  assert.equal(output.motionScriptVersion,'4.0.0');
  report.roster={originalKept:true,addedOnce:true,activePreserved:true,levelPreserved:true,
   inventoryPreserved:true,flutterRemoved:true,originalTier5Scale:.64,
