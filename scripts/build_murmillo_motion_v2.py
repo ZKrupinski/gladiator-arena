@@ -74,7 +74,21 @@ for idx, (name, spec) in enumerate(zip(NAMES, sheet["frames"])):
     mask = Image.frombytes("L", (w,h), bytes(alpha))
     cutout.putalpha(ImageChops.multiply(cutout.getchannel("A"), mask))
     cutout,removed,colors=remove_flat_edge_blocks(cutout)
-    quality.append({"pose":name,"flat_colours":colors,"removed_pixels":removed,"source_area":w*h})
+    edge_info=[]
+    px=cutout.load()
+    for fy in (.07,.17,.29,.43,.57,.71,.86,.94):
+        yy=min(h-1,int(h*fy))
+        xx=w-1
+        while xx>=0 and px[xx,yy][3]<40:xx-=1
+        if xx<0:continue
+        base=px[xx,yy]
+        length=0
+        for kk in range(xx,-1,-1):
+            col=px[kk,yy]
+            if col[3]<20 or max(abs(col[j]-base[j]) for j in range(3))>18:break
+            length+=1
+        edge_info.append({"y":yy,"x":xx,"rgba":list(base),"near_run18":length})
+    quality.append({"pose":name,"flat_colours":colors,"removed_pixels":removed,"source_area":w*h,"edge":edge_info})
     print(f"cleanup {name}: removed {removed} flat-colour pixels from {colors} atlas colours",flush=True)
     assert cutout.getchannel("A").getbbox(), f"Empty pose: {name}"
     padded = Image.new("RGBA", (w+GUTTER*2, h+GUTTER*2), (0,0,0,0))
