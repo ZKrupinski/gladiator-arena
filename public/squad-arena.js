@@ -259,7 +259,12 @@ function drawUnit(ctx,u,bridge,battle){
 }
 function canvasRender(battle,ctx,background,bridge){
  const w=1280,h=720;ctx.clearRect(0,0,w,h);
- if(background.complete&&background.naturalWidth){ctx.drawImage(background,0,0,w,h);}
+ if(background.complete&&background.naturalWidth){
+  // Fill 16:9 without stretching the panoramic Colosseum artwork.
+  const rw=background.naturalWidth,rh=background.naturalHeight;
+  const cropW=Math.min(rw,rh*w/h),cropH=Math.min(rh,rw*h/w);
+  ctx.drawImage(background,(rw-cropW)/2,(rh-cropH)/2,cropW,cropH,0,0,w,h);
+ }
  else {ctx.fillStyle='#24120d';ctx.fillRect(0,0,w,h);}
  ctx.fillStyle='#1a100c63';ctx.fillRect(0,400,w,260);
  ctx.fillStyle='#e7b56c23';ctx.fillRect(0,464,w,2);
