@@ -1122,13 +1122,14 @@ function autoPilotPlayer(p,e,dt){
  // Anticipatory guard: attacks apply damage immediately, so AI must guard before impact.
  const enemyWindingUp=(e.action==='attack'||e.action==='special')&&e.actionT>.06;
  if(distance<=e.cfg.reach+26&&p.st>18&&p.guardRecovery<=0&&
-   (enemyWindingUp||Math.random()<dt*2.5)){
+   (S.careerMatch?(Math.random()<dt*(enemyWindingUp?1.8:1.15)):(enemyWindingUp||Math.random()<dt*2.5))){
    if(beginGuard(p,.44)){p.guardRecovery=.66;return;}
  }
  if(distance<=e.cfg.reach && enemyWindingUp && p.st>35 && p.dodge<=0 && Math.random()<dt*.6){dodge(p);return;}
  if(distance<=p.cfg.reach+12&&p.attackCD<=0&&p.st>=17){
-   // AUTO now completes the 4th-hit rush instead of interrupting it with specials.
-  const useSpecial=p.chainHits===0&&p.cd<=0&&p.st>=45&&Math.random()<.26;
+   // Career AUTO assists, but deliberate timing and training outperform it.
+   if(S.careerMatch&&Math.random()<.38)return;
+   const useSpecial=p.chainHits===0&&p.cd<=0&&p.st>=45&&Math.random()<(S.careerMatch?.13:.26);
    attack(p,e,useSpecial);
  }
 }
@@ -1277,7 +1278,7 @@ function attack(f,victim,special=false,dashImpact=false){
    if(f.st<cost){if(!f.enemy)say('STAMINA LOW',.45);return;}
    if(special&&f.cd>0)return;
    f.st-=cost;f.attackCD=special?.65:.43;
-   if(special){f.cd=6;breakAttackChain(f);}else rollAttackVariant(f);
+   if(special){f.cd=f.specialCooldown||6;breakAttackChain(f);}else rollAttackVariant(f);
    f.face=Math.sign(victim.x-f.x)||f.face;
    // Connect a short three-hit string without changing regular attack range.
    // Each follow-up steps forward up to 55px, offsetting prior 26px hit pushback.
@@ -1313,7 +1314,8 @@ function attack(f,victim,special=false,dashImpact=false){
    const playerCounter=Math.max(48,Math.round(victim.cfg.atk*2.8))
      +comebackBonus+(special?11:0);
    const enemyCounter=Math.round(victim.cfg.atk*.72+(special?7:5));
-   const counterDamage=victim.enemy?enemyCounter:playerCounter;
+   const careerCounter=S.careerMatch?ArenaBalance.playerParryDamage(victim,f,true):null;
+   const counterDamage=victim.enemy?Math.round(enemyCounter*(S.careerMatch?(victim.championBoss?1.45:1.18):1)):(careerCounter??playerCounter);
    victim.parry=0;breakAttackChain(victim);victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
    victim.st=clamp(victim.st-(special?12:7),0,100);
    f.hp=Math.max(0,f.hp-counterDamage);
@@ -1358,16 +1360,22 @@ function attack(f,victim,special=false,dashImpact=false){
  if(special&&f.cls==='murmillo'){victim.st=clamp(victim.st-21,0,100);say('SCUTUM IMPACT!');}
  if(special&&f.cls==='thraex')say('SICA CROSS CUT!');
  const guarded=wasGuarding;
+ if(S.careerMatch){
+  // Shields and endurance mitigate hits without a permanent invulnerability.
+  dmg=Math.max(1,Math.round(dmg*(1-ArenaBalance.damageReduction(victim,false))));
+ }
  victim.hp=Math.max(0,victim.hp-dmg);
  if(!guarded)breakAttackChain(victim);
  // Each connected ordinary player hit buys a short, fair window for the next hit.
  // The rival still defends normally outside a confirmed three-hit chain.
  if(!f.enemy&&!special&&!dashImpact&&!guarded&&victim.hp>0){
-   victim.pressureT=Math.max(victim.pressureT,COMBO_PRESSURE_RECOVERY);
-   victim.stagger=Math.max(victim.stagger,.35);
-   setAction(victim,'hit',.36);
-   victim.attackCD=Math.max(victim.attackCD,ENEMY_ATTACK_RECOVERY);
-   victim.guardRecovery=Math.max(victim.guardRecovery,COMBO_PRESSURE_RECOVERY);
+   // Trained champions recover rapidly from combos. Never perma-stunlock.
+   const recover=S.careerMatch?(victim.championBoss?.09:.29):COMBO_PRESSURE_RECOVERY;
+   victim.pressureT=Math.max(victim.pressureT,recover);
+   victim.stagger=Math.max(victim.stagger,recover);
+   setAction(victim,'hit',recover);
+   victim.attackCD=Math.max(victim.attackCD,S.careerMatch?.24:ENEMY_ATTACK_RECOVERY);
+   victim.guardRecovery=Math.max(victim.guardRecovery,recover);
    victim.guard=false;victim.guardHold=0;victim.parry=0;
  }
  if(dashImpact){
@@ -1447,7 +1455,7 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
  f.parry=Math.max(0,f.parry-dt);f.guardHold=Math.max(0,f.guardHold-dt);
  f.guardRecovery=Math.max(0,f.guardRecovery-dt);f.knockT=Math.max(0,f.knockT-dt);
  f.pressureT=Math.max(0,f.pressureT-dt);
- f.st=clamp(f.st+dt*(f.guard?3:21),0,100);f.walkT+=dt;f.vx=0;
+ f.st=clamp(f.st+dt*(f.guard?3:21)*(f.staminaRegen||1),0,100);f.walkT+=dt;f.vx=0;
  if(f.chainHits>0&&clock>f.chainExpire)breakAttackChain(f);
  }
  // Dash is simulated independently of the input/auto AI.
@@ -1466,27 +1474,34 @@ function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
     if(!l&&!r&&p.net<=0)preEngagementFootwork(p,e,dt,true);
    }
  }
+ const ai=S.careerMatch?ArenaBalance.enemyAi(S.careerOpponent?.level||1,!!S.careerOpponent?.boss,e.cls,e.hp/Math.max(1,e.maxHp)):null;
+ // Champions become relentless below half HP; ordinary fighters don't.
+ if(ai?.retaliate&&e.bossPhase!==2){
+  e.bossPhase=2;e.st=Math.min(100,e.st+25);e.attackCD=Math.min(e.attackCD,.18);
+  say('BOSS · SECOND WIND!',1);
+ }
  e.guard=e.pressureT<=0&&e.guardHold>0&&e.st>8&&e.stagger<=0;
  if(e.stagger<=0&&!e.comboDash){
   const dist=Math.abs(e.x-p.x),dir=Math.sign(p.x-e.x)||-1;e.face=dir;
   const preferred=Math.max(MIN_FIGHTER_DISTANCE+AI_SPACING_BUFFER,e.cfg.reach-55);
   if(!e.guard){
-   if(dist>preferred+22){if(!preEngagementFootwork(e,p,dt)){e.vx=dir*e.cfg.move*.68;e.x+=e.vx*dt;}}
-   else if(dist<preferred-22){e.vx=-dir*e.cfg.move*.32;e.x+=e.vx*dt;}
+   if(dist>preferred+22){
+    if(!preEngagementFootwork(e,p,dt)){
+     e.vx=dir*e.cfg.move*(ai?.retaliate?.88:.68);e.x+=e.vx*dt;
+    }
+   }else if(dist<preferred-22){e.vx=-dir*e.cfg.move*.32;e.x+=e.vx*dt;}
    const threat=(p.action==='attack'||p.action==='special')&&p.actionT>.06;
    if(e.pressureT<=0){
-     // Occasional anticipatory parry instead of virtually guaranteed instant defence.
-     if(dist<=p.cfg.reach+42&&
-       e.st>18&&e.guardRecovery<=0&&
-       ((threat&&Math.random()<dt*.85)||Math.random()<dt*ENEMY_PARRY_RATE)){
-       if(beginGuard(e,.38))e.guardRecovery=1.05;
-     }
-     // Reduce attack frequency and place a distinct gap after each enemy swing.
-     if(!e.guard&&dist<e.cfg.reach+12&&e.attackCD<=0&&
-       Math.random()<dt*(e.st<25?.17:ENEMY_ATTACK_RATE)){
-       attack(e,p,e.cd<=0&&Math.random()<.15);
-       e.attackCD=Math.max(e.attackCD,ENEMY_ATTACK_RECOVERY);
-     }
+    const parryRate=ai?.parriesPerSecond||ENEMY_PARRY_RATE;
+    if(dist<=p.cfg.reach+42&&e.st>18&&e.guardRecovery<=0&&
+      ((threat&&Math.random()<dt*parryRate*1.1)||Math.random()<dt*parryRate)){
+     if(beginGuard(e,ai?.retaliate?.44:.38))e.guardRecovery=ai?.parryInterval||1.05;
+    }
+    if(!e.guard&&dist<e.cfg.reach+12&&e.attackCD<=0&&
+      Math.random()<dt*(e.st<25?.25:(ai?.attacksPerSecond||ENEMY_ATTACK_RATE))){
+      attack(e,p,e.cd<=0&&Math.random()<(ai?.specialChance||.15));
+      e.attackCD=Math.max(e.attackCD,ai?.recovery||ENEMY_ATTACK_RECOVERY);
+    }
    }
   }
  }
