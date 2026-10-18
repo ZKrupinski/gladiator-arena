@@ -1839,20 +1839,23 @@ window.LudusBridge={
  },
  trainingFrame:(i,kind='idle',tick=0)=>{
   const h=CAREER.roster[i];if(!h)return null;
+  // Training explicitly excludes fall/defeat/dodge/net poses for ALL classes.
   if(isChampionMurmillo(h))return window.ChampionMurmillo?.frame(kind,tick)||null;
-  // Original animated Murmillo uses its own independent combat key drawings.
   if(isAnimatedMurmillo(h)){
    const artwork=window.MurmilloMotion?.trainingFrame(kind,tick);
    if(artwork)return artwork;
   }
-  const ids={idle:9,slash:2,sweep:3,thrust:4,heavy:5};
-  const frameIndex=ids[kind]??9;
-  const sheet=growthImage(h);
-  const frame=sheet?.frames?.[frameIndex]?.canvas;
-  if(frame?.width&&frame?.height)return frame;
-  const image=IMG[h.cls],frames=image&&INDEPENDENT_CHARACTER_FRAMES.get(image);
-  const legacy=frames?.[frameIndex]||frames?.[0],source=legacy?.canvas||legacy||null;
-  return source;
+  if(h.appearance==='legacy'){
+   const image=IMG[h.cls],frames=image&&INDEPENDENT_CHARACTER_FRAMES.get(image);
+   const id=kind==='idle'?0:kind==='heavy'?3:2;
+   const pose=frames?.[id]||frames?.[0];
+   return pose?.canvas||pose||null;
+  }
+  // Growth atlas: 0 = idle, 2 = attack, 3 = special attack.
+  // 4 and 5 are NOT approved attack keyposes: they caused death-like moves
+  // and dramatic shifts of sprite extents in the training area.
+  const safePose=kind==='idle'?0:kind==='heavy'?3:2;
+  return growthImage(h)?.frames?.[safePose]?.canvas||null;
  },
  select:(i)=>{if(!CAREER.roster[i])return;CAREER.active=i;saveCareer();renderCareer();},
  section:(tab)=>{CAREER_SELECTING=false;CAREER_TAB=tab==='gear'?'gear':tab==='roster'?'roster':'training';$('#careerHub').hidden=false;renderCareer();if(CAREER_TAB==='roster')window.LudusApprovedScenes?.close();else window.LudusApprovedScenes?.open(CAREER_TAB);},
