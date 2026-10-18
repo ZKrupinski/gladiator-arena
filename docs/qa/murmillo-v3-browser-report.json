@@ -1,34 +1,34 @@
 {
-  "testedAt": "2026-10-18T23:34:38.660Z",
+  "testedAt": "2026-10-18T23:58:48.608Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 33839,
-      "totalDifference": 2133170
+      "changedChannels": 62304,
+      "totalDifference": 4580924
     },
     "walk": {
-      "changedChannels": 130058,
-      "totalDifference": 10752201
+      "changedChannels": 22289,
+      "totalDifference": 1473599
     },
     "sweep": {
-      "changedChannels": 88795,
-      "totalDifference": 7970558
+      "changedChannels": 95022,
+      "totalDifference": 8525929
     },
     "defeat": {
-      "changedChannels": 93990,
-      "totalDifference": 8302582
+      "changedChannels": 89601,
+      "totalDifference": 7643553
     },
     "slash": {
-      "changedChannels": 112330,
-      "totalDifference": 9818090
+      "changedChannels": 72375,
+      "totalDifference": 5780886
     },
     "thrust": {
-      "changedChannels": 95720,
-      "totalDifference": 8583647
+      "changedChannels": 40818,
+      "totalDifference": 2903320
     },
     "victory": {
-      "changedChannels": 67784,
-      "totalDifference": 5548240
+      "changedChannels": 54540,
+      "totalDifference": 4160230
     }
   },
   "spritePack": "B ready · 24 transparent frames",
