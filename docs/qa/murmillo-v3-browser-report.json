@@ -1,39 +1,39 @@
 {
-  "testedAt": "2026-10-18T04:16:11.657Z",
+  "testedAt": "2026-10-18T05:35:56.005Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 55298,
-      "totalDifference": 4090706
+      "changedChannels": 62970,
+      "totalDifference": 4641774
     },
     "walk": {
-      "changedChannels": 67754,
-      "totalDifference": 5532738
+      "changedChannels": 41890,
+      "totalDifference": 2803847
     },
     "sweep": {
-      "changedChannels": 94898,
-      "totalDifference": 8219387
+      "changedChannels": 103380,
+      "totalDifference": 8965948
     },
     "defeat": {
-      "changedChannels": 77485,
-      "totalDifference": 6605836
+      "changedChannels": 89601,
+      "totalDifference": 7643553
     },
     "slash": {
-      "changedChannels": 96693,
-      "totalDifference": 8612492
+      "changedChannels": 91450,
+      "totalDifference": 8061679
     },
     "thrust": {
-      "changedChannels": 83400,
-      "totalDifference": 7328953
+      "changedChannels": 90420,
+      "totalDifference": 8016373
     },
     "victory": {
-      "changedChannels": 41523,
-      "totalDifference": 3001431
+      "changedChannels": 10181,
+      "totalDifference": 811642
     }
   },
   "spritePack": "B ready · 24 transparent frames",
   "version": "4.0.0",
   "status": "FAIL",
-  "error": "AssertionError [ERR_ASSERTION]: new animated Murmillo must scale to 70% without changing the original\n\n0.75 !== 0.7\n",
+  "error": "AssertionError [ERR_ASSERTION]: one additional starter must be appended\n\n4 !== 3\n",
   "consoleErrors": []
 }
