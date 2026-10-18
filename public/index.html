@@ -287,7 +287,7 @@ body{min-height:100dvh;overscroll-behavior:none}
  text-align:center;pointer-events:none;white-space:normal}
 .lineup-hud[hidden]{display:none!important}
 @media(max-width:720px){.lineup-hud:not([hidden]){top:10%;font-size:10px;max-width:98%;padding:3px 6px}}
-</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=5"><link rel="stylesheet" href="ludus-armory-live.css?v=3"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=4"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=1"></head><body>
+</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=5"><link rel="stylesheet" href="ludus-armory-live.css?v=3"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=4"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=1"><link rel="stylesheet" href="arena-result-roman-v2.css?v=2"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
@@ -317,6 +317,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 </section>
 <section class="overlay overlay-ending" id="endScreen" hidden>
  <div class="stage-panel stage-panel-ending">
+  <div class="roman-results-frame" aria-hidden="true"><div class="roman-results-pennant left"></div><div class="roman-results-pennant right"></div></div>
   <div class="eyebrow">THE CROWD HAS DECIDED</div>
   <img id="endBanner" class="result-banner" src="assets/new-era/cinematic/victory_banner.webp?v=3.6" alt="VICTORY · 경기 승리" decoding="async">
    <h2 id="endHeading" class="sr-only">VICTORIA</h2>
@@ -1743,11 +1744,11 @@ function showEnd(){
  const win=S.resultApplied?S.resultWin:(S.player.hp>S.enemy.hp||(S.enemy.dead&&!S.player.dead));
  S.lastResultWin=win;S.autoPlaying=false;S.keys.clear();
  const victor=win?S.player:S.enemy,loser=win?S.enemy:S.player;
+  // Scene removal does NOT remove the historical result portrait. A dragged
+  // corpse stays absent from the arena, while its defeat keypose belongs in
+  // the result window (both fighters visible, as in the approved layout).
   for(const [id,f] of [['winnerPose',victor],['loserPose',loser]]){
-   if(id==='loserPose'&&S.gauntlet&&f.removedFromArena){
-    const art=$('#loserPose');art.replaceChildren();art.style.backgroundImage='none';
-    art.setAttribute('aria-label','회수되어 퇴장한 검투사');
-   }else renderResultPortrait(id,f,id==='winnerPose'?10:11);
+   renderResultPortrait(id,f,id==='winnerPose'?10:11);
   }
   $('#winnerName').textContent=victor.cfg.name;
   $('#loserName').textContent=loser.cfg.name;
