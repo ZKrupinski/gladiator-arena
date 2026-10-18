@@ -37,6 +37,57 @@ try {
  await check('slash','[data-motion="slash"]',200,2500);
  await check('thrust','[data-motion="thrust"]',220,2500);
  await check('victory','[data-motion="victory"]',550,700);
+ // The new fighter is a separate roster entry, not a blanket replacement of
+ // the original class. Verify fresh saves, repeat launches, and old save migration.
+ const game=await browser.newPage({viewport:{width:1200,height:900}});
+ await game.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
+ await game.waitForFunction(()=>!!window.LudusBridge?.state,{timeout:30000});
+ const read=()=>game.evaluate(()=>window.LudusBridge.state());
+ let s=await read();
+ assert.equal(s.roster.filter(h=>h.appearance==='murmillo_motion_v3').length,1,'fresh save has exactly one motion fighter');
+ await game.reload({waitUntil:'domcontentloaded'});
+ await game.waitForFunction(()=>!!window.LudusBridge?.state);
+ s=await read();
+ assert.equal(s.roster.filter(h=>h.appearance==='murmillo_motion_v3').length,1,'reloading must not duplicate starter');
+ await game.evaluate(()=>{
+  localStorage.setItem('gladiator.ludus.v1',JSON.stringify({
+   gold:729,glory:14,fights:10,wins:6,active:1,
+   roster:[
+    {cls:'murmillo',name:'기존 무르밀로',level:12,xp:38,growthType:'murmillo_a',
+     injury:7,stats:{str:2,agi:1,end:1,focus:1},inventory:['wood'],equipment:{weapon:'wood'},fights:4,wins:3},
+    {cls:'retiarius',name:'기존 레티아리우스',level:5,xp:10,growthType:'retiarius_a',
+     injury:4,stats:{str:0,agi:2,end:1,focus:0},inventory:['wood'],equipment:{weapon:'wood'},fights:2,wins:1}
+   ]
+  }));
+ });
+ await game.reload({waitUntil:'domcontentloaded'});
+ await game.waitForFunction(()=>!!window.LudusBridge?.state);
+ s=await read();
+ assert.equal(s.roster.length,3,'one additional starter must be appended');
+ assert.equal(s.active,1,'existing active fighter must be preserved');
+ assert.equal(s.gold,729,'saved money must be preserved');
+ assert.equal(s.roster[0].level,12,'original Murmillo growth level restored');
+ assert.equal(s.roster[0].growthType,'murmillo_a','original Murmillo atlas retained');
+ assert.equal(s.roster[0].injury,7,'original fighter injury remains');
+ assert.equal(s.roster[1].wins,1,'existing fighter battle history remains');
+ assert.equal(s.roster[2].appearance,'murmillo_motion_v3','new fighter separately flagged');
+ const output=await game.evaluate(()=>({
+  wobbleScriptPresent:[...document.scripts].some(x=>x.src.includes('sprite-inbetweens')),
+  growthMotionGenerator:'drawMotion' in window.GrowthFrames,
+  originalL5Scale:window.LudusRoster.scale('murmillo_a',5),
+  motionScriptVersion:window.MurmilloMotion.version
+ }));
+ assert.equal(output.wobbleScriptPresent,false,'old flutter engine not loaded');
+ assert.equal(output.growthMotionGenerator,false,'old scanline frame generator removed');
+ assert.equal(output.originalL5Scale,.64,'animated sprite must match original L5 scale');
+ assert.equal(output.motionScriptVersion,'3.0.0');
+ report.roster={originalKept:true,addedOnce:true,activePreserved:true,levelPreserved:true,
+  inventoryPreserved:true,flutterRemoved:true,scale:.64,rosterAfterMigration:s.roster.length};
+ await game.reload({waitUntil:'domcontentloaded'});
+ await game.waitForFunction(()=>!!window.LudusBridge?.state);
+ s=await read();
+ assert.equal(s.roster.length,3,'second reload must never duplicate animation fighter');
+ await game.close();
  assert.deepEqual(errors,[],'uncaught JS runtime errors');
  report.status='PASS';
 } catch(e){
