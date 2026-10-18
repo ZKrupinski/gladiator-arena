@@ -51,6 +51,15 @@
  background-repeat:no-repeat;background-position:center bottom;background-color:transparent;
  filter:drop-shadow(0 5px 4px #13060694);
 }
+/* Result presentation only: enlarge the victorious fighter 25% around the
+ * planted-foot baseline. Does not resize the defeated gladiator, nameplate,
+ * victory logo or interactive buttons. Applies to both canvas and fallback art.
+ */
+#endScreen .stage-panel-ending .result-pose-card.victor .result-pose-art{
+ transform:scale(1.25);
+ transform-origin:50% 100%;
+ z-index:4;
+}
 #endScreen .stage-panel-ending .result-pose-art canvas{
  display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
  object-fit:contain!important;image-rendering:auto;
