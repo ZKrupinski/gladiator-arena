@@ -40,7 +40,7 @@ assert.match(html,/if\(!f\|\|f\.removedFromArena\)return;/,'removed actors are n
 assert.match(html,/removedFighter\.removedFromArena=true/,'corpse removal persists after cleanup');
 assert.match(html,/renderResultPortrait\(id,f,id==='winnerPose'\?10:11\)/,'result portrait remains visible after body removal');
 assert.doesNotMatch(html,/id==='loserPose'&&S\.gauntlet&&f\.removedFromArena/,'retired body must NOT hide its historical defeat portrait');
-assert.match(html,/arena-result-roman-v2\.css\?v=2/,'new ornate result styling loaded');
+assert.match(html,/arena-result-roman-v2\.css\?v=3/,'new ornate result styling loaded');
 assert.doesNotMatch(carnifex,/brightness\(\.86\)/,'no darkening filter applied to corpses');
 assert.doesNotMatch(carnifex,/saturate\(\.82\)/,'no saturation reduction on corpses');
 console.log('PASS: dash/parry hitstop, follow-through, recovery, reduced motion, corpse saturation, permanent retirement.');
