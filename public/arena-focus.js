@@ -1,37 +1,59 @@
-/* Arena impact focus — real-time cinematic clock, independent of fight dt.
- * Short hitstop -> slow follow-through -> smooth recovery, with soft focal zoom.
- * No gameplay damage, hit detection, or fighter state is altered here.
+/* Arena Focus 2.0 — real-time cinematic envelopes independent of simulated combat.
+ * Strong visual punctuation for a connected fourth-hit dash or successful parry.
+ * The struck pose is frozen during hitstop, the action recovers in deliberately
+ * slow time, and all effects are driven by unscaled real elapsed time.
  */
 (function(root){
 'use strict';
 const PRESETS=Object.freeze({
- dash:{duration:.62,hitstop:.075,slowEnd:.39,minRate:.19,zoom:.19,vignette:.17},
- parry:{duration:.69,hitstop:.09,slowEnd:.46,minRate:.15,zoom:.25,vignette:.21}
+ dash:Object.freeze({
+   duration:.96,hitstop:.125,slowEnd:.61,minRate:.12,
+   zoom:.32,vignette:.34,bloom:.47,letterbox:28
+ }),
+ parry:Object.freeze({
+   duration:1.12,hitstop:.18,slowEnd:.74,minRate:.085,
+   zoom:.39,vignette:.42,bloom:.53,letterbox:34
+ })
 });
 const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
-function ease(t){const x=clamp(t);return x*x*(3-2*x);}
-function start(kind,x){
- const spec=PRESETS[kind];if(!spec)return null;
- return {kind,centerX:clamp(Number(x)||640,100,1180),elapsed:0,duration:spec.duration};
+const ease=t=>{const x=clamp(t);return x*x*(3-2*x);};
+const empty=dt=>({active:false,state:null,kind:null,elapsed:0,gameDt:dt,timeScale:1,
+    zoom:0,shade:0,bloom:0,pulse:0,cinemaBars:0,centerX:null,dir:1,reduced:false});
+function start(kind,x,dir=1){
+ const preset=PRESETS[kind];
+ if(!preset)return null;
+ const supplied=Number(x);
+ return {kind,centerX:clamp(Number.isFinite(supplied)?supplied:640,100,1180),
+         dir:dir<0?-1:1,elapsed:0,duration:preset.duration};
 }
 function advance(state,realDt,reducedMotion=false){
  const dt=clamp(Number(realDt)||0,0,.05);
- if(!state||!PRESETS[state.kind]||state.elapsed>=state.duration)
-  return {active:false,state:null,gameDt:dt,timeScale:1,zoom:0,shade:0,centerX:null};
- const p=PRESETS[state.kind];
- state.elapsed=Math.min(p.duration,state.elapsed+dt);
+ if(!state||!PRESETS[state.kind]||state.elapsed>=state.duration)return empty(dt);
+ const spec=PRESETS[state.kind];
+ state.elapsed=Math.min(spec.duration,state.elapsed+dt);
  const t=state.elapsed;
- const recovery=ease((t-p.slowEnd)/(p.duration-p.slowEnd));
- const slowRate=t<p.hitstop?.035:p.minRate+(1-p.minRate)*recovery;
- const rate=reducedMotion?1:slowRate;
- const intro=ease(t/.07);
- const emphasis=intro*(1-recovery);
- const active=t<p.duration;
- return {active,state:active?state:null,gameDt:dt*rate,timeScale:rate,
-   zoom:active?p.zoom*emphasis*(reducedMotion?.35:1):0,
-   shade:active?p.vignette*emphasis*(reducedMotion?.2:1):0,
-   centerX:state.centerX};
+ const recovery=ease((t-spec.slowEnd)/(spec.duration-spec.slowEnd));
+ const rate=t<spec.hitstop?.03:spec.minRate+(1-spec.minRate)*recovery;
+ const intro=ease(t/.065);
+ const intensity=intro*(1-recovery);
+ // Fast brilliant impact -> sustained action pause -> receding aftermath.
+ const flash=clamp(1-t/.26,0,1);
+ const pulse=(1-ease((t-spec.hitstop)/.23));
+ const active=t<spec.duration;
+ if(!active)return empty(dt);
+ const factor=reducedMotion?0:1;
+ return {
+  active,state,kind:state.kind,elapsed:t,
+  gameDt:dt*(reducedMotion?1:rate),
+  timeScale:reducedMotion?1:rate,
+  zoom:spec.zoom*intensity*factor,
+  shade:spec.vignette*intensity*factor,
+  bloom:spec.bloom*flash*factor,
+  pulse:pulse*factor,
+  cinemaBars:spec.letterbox*intensity*factor,
+  centerX:state.centerX,dir:state.dir,reduced:!!reducedMotion
+ };
 }
-root.ArenaFocus={version:'1.0.0',start,advance,PRESETS};
+root.ArenaFocus={version:'2.0.0',PRESETS,start,advance};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaFocus;
 })(globalThis);
