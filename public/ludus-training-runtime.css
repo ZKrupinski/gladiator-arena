@@ -9,7 +9,8 @@
 .la-stage.training .la-training-effect,
 .la-stage.training .la-doctore-parchment{display:none!important}
 .la-stage.training .lt-fighter-zone{
- position:absolute;left:768px;top:207px;width:423px;height:391px;
+ /* Preserve the Doctore's dominance, but make every fighter clearly visible. */
+ position:absolute;left:748px;top:184px;width:458px;height:423px;
  z-index:5;overflow:visible;pointer-events:none;
 }
 .la-stage.training .lt-fighter-canvas{
@@ -17,7 +18,7 @@
  object-fit:contain;object-position:center bottom;
  transform-origin:center bottom;
  filter:drop-shadow(3px 6px 5px #160a08a1);
- transition:transform .16s ease-out;
+ /* Ground contact and forward lunge are rendered in canvas, without CSS wobble. */
 }
 .la-stage.training .lt-motion-slash{
  position:absolute;inset:0;pointer-events:none;opacity:0;
