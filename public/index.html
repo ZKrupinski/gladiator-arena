@@ -574,8 +574,14 @@ const IMG={};let loaded=0;for(const key of ['bg','murmillo','thraex','retiarius'
           const previous=CLEANED_CHARACTER_URLS[key];
           CLEANED_CHARACTER_URLS[key]=URL.createObjectURL(blob);
           for(const el of document.querySelectorAll('[data-sprite="'+key+'"]'))el.style.backgroundImage='url("'+CLEANED_CHARACTER_URLS[key]+'")';
-          for(const [id,f] of [['winnerPose',S.player],['loserPose',S.enemy]]){
-             if(f&&f.cls===key&&S.resultApplied)document.getElementById(id).style.backgroundImage='url("'+CLEANED_CHARACTER_URLS[key]+'")';
+          // An asynchronous cleaned-sheet update must never replace a
+          // proportion-preserving portrait canvas with a stretched CSS sprite.
+          if(S.resultApplied&&S.player&&S.enemy){
+            const win=S.resultWin;
+            for(const [id,f,frame] of [['winnerPose',win?S.player:S.enemy,10],
+                                       ['loserPose',win?S.enemy:S.player,11]]){
+              if(f?.cls===key)renderResultPortrait(id,f,frame);
+            }
           }
           if(previous)URL.revokeObjectURL(previous);
         },'image/png');
@@ -1823,7 +1829,27 @@ function renderResultPortrait(id,f,index){
  if(atlas){
   drawSizedResultPortrait(element,atlas.frames[index].canvas,isWinner);
  }else{
-  element.style.backgroundImage='url("'+(CLEANED_CHARACTER_URLS[f.cls]||IMG[f.cls]?.src||ASSET[f.cls])+'")';
+  // Basic 5x2 gladiator atlases also require independently isolated 9/10
+  // keypose frames. CSS background-size 500% 200% on a wide portrait slot
+  // was making both fighters short and horizontally stretched.
+  const img=IMG[f.cls];
+  const cell=img&&INDEPENDENT_CHARACTER_FRAMES.get(img)?.[index===11?9:8];
+  if(cell){
+   drawSizedResultPortrait(element,cell,isWinner);
+  }else if(img?.complete&&img.naturalWidth&&img.naturalHeight){
+   const cols=ATLAS_COLS,rows=ATLAS_ROWS;
+   const pw=Math.floor(img.naturalWidth/cols),ph=Math.floor(img.naturalHeight/rows);
+   const resultFrame=document.createElement('canvas');
+   resultFrame.width=pw;resultFrame.height=ph;
+   const n=index===11?9:8;
+   resultFrame.getContext('2d').drawImage(getCharacterAtlasImage(img),
+    (n%cols)*pw,Math.floor(n/cols)*ph,pw,ph,0,0,pw,ph);
+   drawSizedResultPortrait(element,resultFrame,isWinner);
+  }else{
+   element.style.backgroundImage='none';
+   // IMG load callback rebuilds this native-size portrait as soon as the
+   // corresponding fighter atlas has finished decoding.
+  }
  }
 }
 function updateHud(){const p=S.player,e=S.enemy;if(!p||!e)return;for(const [f,pre] of [[p,'p'],[e,'e']]){const h=$('#'+pre+'Hp'),st=$('#'+pre+'St');h.style.width=(f.hp/f.maxHp*100).toFixed(1)+'%';st.style.width=f.st.toFixed(1)+'%';$('#'+pre+'Value').textContent=Math.ceil(f.hp)+' / '+f.maxHp;}$('#pName').textContent=p.cfg.name;$('#eName').textContent=e.cfg.name;$('#clock').textContent=Math.max(0,Math.ceil(S.time));$('#roundLabel').textContent=`ROUND ${S.round}`;$('#cooldown').textContent=p.cd>0?`필살기 ${p.cd.toFixed(1)}초`:'필살기 준비 완료';$('#autoState').textContent=S.phase!=='fight'?'AUTO 대기':!S.autoplayEnabled?'AUTO OFF':S.autoPlaying?'● AUTO 전투 중 · 조작하면 해제':`AUTO ${Math.max(1,Math.ceil(AUTO_IDLE_SECONDS-(clock-S.lastManualInput)))}초 후`;$('#autoState').classList.toggle('active',S.autoPlaying);const announcement=S.noticeT>0?S.notice:'';$('#combatNotice').textContent=announcement;window.ArenaHerald?.sync(announcement,{lineup:!!S.gauntlet,round:S.gauntlet?.round||0,phase:S.phase});if(S.gauntlet)updateLineupHud();}
