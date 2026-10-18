@@ -1,0 +1,71 @@
+// Deterministic bouncy-combat v1 unit tests, not an aesthetic screenshot guess.
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const context={globalThis:{}};
+vm.runInNewContext(fs.readFileSync(new URL('../public/arena-motion.js',import.meta.url),'utf8'),context);
+const M=context.globalThis.ArenaMotion;
+assert.equal(M.version,'1.0.0');
+const actor=(enemy=false)=>({
+ enemy,dead:false,face:enemy?-1:1,
+ x:enemy?700:480,vx:0,walkT:0,action:'idle',actionT:0,
+ actionDuration:0,stagger:0,dodge:0,guard:false,bodySpring:null
+});
+const almost=(a,b,tol=.00001)=>Math.abs(a-b)<tol;
+const p=actor();
+const idle=M.pose(p,1.4);
+assert.ok(idle.sy>.985&&idle.sy<1.015,'standing breaths are subtle');
+assert.ok(idle.y===0,'idle may not lift boots');
+p.vx=235;p.walkT=.1;
+const walk=M.pose(p,1.4);
+assert.ok(walk.y>=-5.6&&walk.y<=0,'stepping has no big bouncing camera-agnostic lift');
+assert.ok(Math.abs(walk.x)<=3,'walk never teleports the pivot');
+p.vx=0;p.action='attack';p.actionDuration=.35;p.actionT=.17;
+const strike=M.pose(p,1.4);
+assert.ok(strike.x>idle.x+2,'sword pose pushes forward');
+assert.ok(strike.sx>idle.sx,'punch pose stretches horizontally');
+p.actionT=0;p.action='idle';
+for(const type of Object.keys(M.RESPONSE)){
+ const a=actor(),b=actor(true);
+ M.pulse(a,type,'source',1);M.pulse(b,type,'target',1);
+ const hit=M.pose(b,0);
+ assert.ok(hit.sy<1&&hit.sx>1, type+' contact compression');
+ assert.ok(hit.y>=-11&&hit.x>=-28, 'world-space pivot never leaps off-floor');
+ M.advance(b,.09);
+ const rebound=M.pose(b,0);
+ assert.ok(rebound.x!==hit.x||rebound.sy!==hit.sy,type+' has secondary rebound');
+ for(let i=0;i<20;i++)M.advance(b,.04);
+ assert.equal(b.bodySpring,null,type+' must terminate so it cannot wobble forever');
+}
+const immobile=actor();
+M.pulse(immobile,'special','target',1);
+assert.equal(JSON.stringify(M.pose(immobile,1,true)),JSON.stringify({x:0,y:0,sx:1,sy:1,tilt:0}),'reduced motion leaves sprites fixed');
+for(const [type,preset] of Object.entries(M.PRESETS)){
+ const s={fx:true};
+ M.shake(s,type,-1);
+ assert.equal(s.cameraKick.kind,type);
+ let peak=0,x=0,y=0;
+ for(let i=0;i<10;i++){
+  M.advanceShake(s,.012);
+  const offset=M.sampleShake(s);
+  peak=Math.max(peak,Math.abs(offset.x)+Math.abs(offset.y));
+  x+=Math.abs(offset.x);y+=Math.abs(offset.y);
+ }
+ assert.ok(peak>.08,'camera shake must be visible on connected hits');
+ if(type==='special')assert.ok(y>x*.8,'heavy impact emphasizes vertical motion');
+ if(type==='guard')assert.ok(x>y,'guard favors horizontal response');
+ assert.deepEqual(JSON.parse(JSON.stringify(M.sampleShake(s,true))),{x:0,y:0,angle:0},'reduced motion disables shake');
+ s.fx=false;
+ assert.equal(M.sampleShake(s).x,0,'FX disabled stops shaking');
+ for(let i=0;i<30;i++)M.advanceShake(s,.04);
+ assert.equal(s.cameraKick,null,'camera kick returns to zero');
+}
+const clashA=actor(),clashB=actor(true);
+clashA.x=500;clashB.x=685;clashA.vx=210;clashB.vx=-90;
+assert.equal(M.contactPulse(clashA,clashB,200),true,'approach collision produces body recoil');
+assert.ok(clashA.bodySpring&&clashB.bodySpring,'both bodies respond to impact');
+assert.equal(M.contactPulse(clashA,clashB,200),false,'no per-frame vibration spam');
+clashA.contactCooldown=0;clashB.contactCooldown=0;
+clashA.vx=0;clashB.vx=0;
+assert.equal(M.contactPulse(clashA,clashB,200),false,'idle near-stationary contact is silent');
+console.log('PASS: all base poses, anchored feet, spring rebound, seven directional shakes, accessibility, cooldown.');
