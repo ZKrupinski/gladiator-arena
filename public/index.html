@@ -287,7 +287,7 @@ body{min-height:100dvh;overscroll-behavior:none}
  text-align:center;pointer-events:none;white-space:normal}
 .lineup-hud[hidden]{display:none!important}
 @media(max-width:720px){.lineup-hud:not([hidden]){top:10%;font-size:10px;max-width:98%;padding:3px 6px}}
-</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=5"><link rel="stylesheet" href="ludus-armory-live.css?v=3"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=2"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"></head><body>
+</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=5"><link rel="stylesheet" href="ludus-armory-live.css?v=3"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=2"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="arena-lineup-visual.css?v=1"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
@@ -350,6 +350,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="champion-murmillo.js?v=2"></script>
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
+<script src="arena-lineup-visual.js?v=1"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -1122,11 +1123,18 @@ function updateLineupHud(){
  const hud=document.getElementById('lineupHud');
  if(!hud)return;
  const q=S.gauntlet;
- hud.hidden=!q||S.phase==='title'||S.phase==='result';
- if(!q)return;
- const names=q.allies.map((i,n)=>(n<q.allyIndex?'✕ ':n===q.allyIndex?'▶ ':'')+(n+1)+'. '+(CAREER.roster[i]?.name||'검투사'));
- const enemy=q.enemies.map((f,n)=>(n<q.enemyIndex?'✕ ':n===q.enemyIndex?'▶ ':'')+(n+1)+'. '+f.name);
- hud.textContent='순차 대진 '+q.mode+' · '+(q.finished?'모든 대진 종료':q.round+'번째 결투')+'  |  아군 '+names.join(' / ')+'  |  상대 '+enemy.join(' / ');
+ if(!q||S.phase==='title'||S.phase==='result'){
+  hud.hidden=true;return;
+ }
+ // Heraldic icons remain mounted across frame ticks; only the combatants'
+ // tiny real-time HP strips update during the original 1:1 combat loop.
+ if(window.ArenaLineupVisual?.paint){
+  window.ArenaLineupVisual.paint(hud,q,CAREER.roster,S.player,S.enemy);
+ }else{
+  // Fail safe for offline script loading, without changing duel progression.
+  hud.hidden=false;
+  hud.textContent='PUGNA '+q.round+' · '+q.mode;
+ }
 }
 function lineupHero(index){
  const h=CAREER.roster[index],f=fighter(h.cls,335,false);
@@ -1765,7 +1773,7 @@ function renderResultPortrait(id,f,index){
   element.style.backgroundImage='url("'+(CLEANED_CHARACTER_URLS[f.cls]||IMG[f.cls]?.src||ASSET[f.cls])+'")';
  }
 }
-function updateHud(){const p=S.player,e=S.enemy;if(!p||!e)return;for(const [f,pre] of [[p,'p'],[e,'e']]){const h=$('#'+pre+'Hp'),st=$('#'+pre+'St');h.style.width=(f.hp/f.maxHp*100).toFixed(1)+'%';st.style.width=f.st.toFixed(1)+'%';$('#'+pre+'Value').textContent=Math.ceil(f.hp)+' / '+f.maxHp;}$('#pName').textContent=p.cfg.name;$('#eName').textContent=e.cfg.name;$('#clock').textContent=Math.max(0,Math.ceil(S.time));$('#roundLabel').textContent=`ROUND ${S.round}`;$('#cooldown').textContent=p.cd>0?`필살기 ${p.cd.toFixed(1)}초`:'필살기 준비 완료';$('#autoState').textContent=S.phase!=='fight'?'AUTO 대기':!S.autoplayEnabled?'AUTO OFF':S.autoPlaying?'● AUTO 전투 중 · 조작하면 해제':`AUTO ${Math.max(1,Math.ceil(AUTO_IDLE_SECONDS-(clock-S.lastManualInput)))}초 후`;$('#autoState').classList.toggle('active',S.autoPlaying);$('#combatNotice').textContent=S.noticeT>0?S.notice:'';}
+function updateHud(){const p=S.player,e=S.enemy;if(!p||!e)return;for(const [f,pre] of [[p,'p'],[e,'e']]){const h=$('#'+pre+'Hp'),st=$('#'+pre+'St');h.style.width=(f.hp/f.maxHp*100).toFixed(1)+'%';st.style.width=f.st.toFixed(1)+'%';$('#'+pre+'Value').textContent=Math.ceil(f.hp)+' / '+f.maxHp;}$('#pName').textContent=p.cfg.name;$('#eName').textContent=e.cfg.name;$('#clock').textContent=Math.max(0,Math.ceil(S.time));$('#roundLabel').textContent=`ROUND ${S.round}`;$('#cooldown').textContent=p.cd>0?`필살기 ${p.cd.toFixed(1)}초`:'필살기 준비 완료';$('#autoState').textContent=S.phase!=='fight'?'AUTO 대기':!S.autoplayEnabled?'AUTO OFF':S.autoPlaying?'● AUTO 전투 중 · 조작하면 해제':`AUTO ${Math.max(1,Math.ceil(AUTO_IDLE_SECONDS-(clock-S.lastManualInput)))}초 후`;$('#autoState').classList.toggle('active',S.autoPlaying);$('#combatNotice').textContent=S.noticeT>0?S.notice:'';if(S.gauntlet)updateLineupHud();}
 // One coherent arena panorama, separated at its own architectural ground line.
 // The source art is very wide (about 3:1), with its sand beginning near 75%.
 // Draw wall and sand with different vertical scales so the characters STAND
