@@ -94,6 +94,12 @@ function roster(){
  var heal=root.querySelector('#lcHeal');if(heal)heal.onclick=function(){a.heal();};
  var ready=root.querySelector('#lcReady');if(ready)ready.onclick=function(){a.fight();};
 }
+function beginDraft(selectedIndex){
+ // A new match MUST use the currently selected roster member, never the
+ // previously selected candidate from another match or saved game.
+ chosen=Number.isInteger(selectedIndex)?selectedIndex:-1;
+ scrollPosition=0;
+}
 function draft(enemy,painter){
  var a=bridge(),s=state();if(!s||!enemy)return;
  paintOpponent=painter||paintOpponent;
@@ -118,5 +124,5 @@ function draft(enemy,painter){
  root.querySelector('#lcDraftCancel').onclick=function(){chosen=-1;scrollPosition=0;a.cancelDraft();};
  root.querySelector('#lcDeploy').onclick=function(){if(chosen<0||wounded(s.roster[chosen]))return;a.deploy(chosen);};
 }
-window.LudusCardScenes={renderRoster:roster,renderDraft:draft,refresh:function(){var root=$('.lc-screen');if(!root||$('#careerHub').hidden)return;drawArt(root);if(root.classList.contains('lc-draft-screen')&&typeof paintOpponent==='function')paintOpponent();}};
+window.LudusCardScenes={beginDraft:beginDraft,renderRoster:roster,renderDraft:draft,refresh:function(){var root=$('.lc-screen');if(!root||$('#careerHub').hidden)return;drawArt(root);if(root.classList.contains('lc-draft-screen')&&typeof paintOpponent==='function')paintOpponent();}};
 })();
