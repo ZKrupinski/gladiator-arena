@@ -338,6 +338,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="market-scene.js?v=12"></script>
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=4"></script>
+<script src="champion-murmillo.js?v=1"></script>
 <script src="ludus-roster.js?v=2"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -621,6 +622,7 @@ const GROWTH_POSE={idle:0,walk:1,attack:2,special:3,guard:6,dodge:8,hit:7,net:5,
 let growthLoading=null,growthCuts=null;
 function growthType(h){return h?.growthType||({murmillo:'murmillo_a',thraex:'thraex_a',retiarius:'retiarius_a'}[h?.cls]);}
 function growthImage(h){if(h?.appearance==='legacy')return null;
+ if(isChampionMurmillo(h))return GROWTH_IMAGES.get('murmillo_a_L5')||null;
  if(isAnimatedMurmillo(h))return GROWTH_IMAGES.get('murmillo_a_L5')||null;
  return GROWTH_IMAGES.get(growthType(h)+'_L'+careerStage(h))||null;}
 function growthStatus(message){document.getElementById('growthState').textContent=message;}
@@ -672,6 +674,9 @@ document.getElementById('growthRetry').onclick=()=>loadGrowthAtlases();
 setTimeout(loadGrowthAtlases,0);
 const CAREER_KEY='gladiator.ludus.v1';
 const ANIMATED_MURMILLO_VARIANT='murmillo_motion_v3';
+const CHAMPION_MURMILLO_VARIANT='murmillo_champion_red';
+const CHAMPION_MURMILLO_SCALE=.86;
+function isChampionMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===CHAMPION_MURMILLO_VARIANT;}
 const ANIMATED_MURMILLO_SCALE=.75; // Face-size match; original growth classes retain their own tier scales.
 function isAnimatedMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===ANIMATED_MURMILLO_VARIANT;}
 function careerXpNeeded(l){return 30+l*15;}
@@ -679,7 +684,7 @@ function careerLevel(h){return Math.max(1,Math.min(20,Number(h.level)||1));}
 function careerStage(h){const l=careerLevel(h);return l>=20?5:l>=15?4:l>=10?3:l>=5?2:1;}
 function grantCareerXp(h,a){h.level=careerLevel(h);h.xp=Math.max(0,Number(h.xp)||0)+Math.max(0,Math.floor(a));let n=0;while(h.level<20&&h.xp>=careerXpNeeded(h.level)){h.xp-=careerXpNeeded(h.level);h.level++;n++;}if(h.level===20)h.xp=0;return n;}
 function careerProgressLabel(h){const l=careerLevel(h);
- return 'Lv.'+l+' · '+(isAnimatedMurmillo(h)?'모션 전용 외형':'성장 '+careerStage(h)+'/5')+' · EXP '+(l===20?'MAX':h.xp+' / '+careerXpNeeded(l));}
+ return 'Lv.'+l+' · '+(isChampionMurmillo(h)?'챔피언 전용 외형':isAnimatedMurmillo(h)?'모션 전용 외형':'성장 '+careerStage(h)+'/5')+' · EXP '+(l===20?'MAX':h.xp+' / '+careerXpNeeded(l));}
 const TRAIN_LEVELS=[['입문',42,18,.48],['초급',36,15,.60],['숙련',30,12,.73],['상급',24,10,.88],['정예',19,8,1.04],['달인',15,6,1.20],['전설',12,5,1.35]];
 function trainingDifficulty(h,stat){h.trainingAttempts=h.trainingAttempts||{};const attempts=h.trainingAttempts[stat]||0;const [name,width,perfect,speed]=TRAIN_LEVELS[Math.min(attempts,6)];return {name,width,perfect,speed,attempts};}
 const CAREER_RIVALS=[['노예 검투사',0,0,0],['초급 투사',.07,.05,.02],['숙련 검투사',.15,.10,.04],['투기장 강자',.24,.16,.07],['정예 챔피언',.34,.23,.10],['전설의 검투사',.46,.30,.13]];
@@ -729,6 +734,17 @@ function installAnimatedMurmilloStarter(){
  return true;
 }
 installAnimatedMurmilloStarter();
+function installChampionMurmillo(){
+ // Preserve all existing units, stages, selected participant, gold and records.
+ if(CAREER.roster.some(isChampionMurmillo))return false;
+ const h=LudusRoster.create('murmillo',CAREER.roster.length+1,{
+  name:'신규 챔피언 무르밀로',appearance:CHAMPION_MURMILLO_VARIANT,
+  variantId:'starter-champion-murmillo-red-01',bossId:CHAMPION_MURMILLO_VARIANT,
+  growthType:'murmillo_a',stats:{str:3,agi:2,end:3,focus:2}
+ });
+ CAREER.roster.push(h);saveCareer();return true;
+}
+installChampionMurmillo();
 function careerMessage(t){CAREER.message=t;saveCareer();renderCareer();}
 function openSlaveMarket(){
  if(S.phase==='fight'||S.phase==='finisher'||MINI)return;
@@ -795,7 +811,7 @@ function finishCareerMatch(){
  saveCareer();
 }
 function rosterCards(deploy=false){
- return CAREER.roster.map((h,i)=>'<button class="roster-unit '+(i===CAREER.active?'selected':'')+'" '+(deploy?'data-deploy':'data-select')+'="'+i+'" '+(deploy&&h.injury>=80?'disabled':'')+'><canvas data-roster-art="'+i+'" width="300" height="230"></canvas><strong>'+h.name+'</strong><small>Lv.'+careerLevel(h)+' · '+(isAnimatedMurmillo(h)?'신규 애니메이션':h.appearance==='legacy'?'챔피언':'성장 '+careerStage(h)+'단계')+'</small><small>부상 '+h.injury+' · '+h.wins+'승 / '+h.fights+'전</small><small>'+(deploy?(h.injury>=80?'치료 필요':'이 검투사로 출전'):i===CAREER.active?'✓ 관리 중':'선택하여 훈련 · 장비 · 치료')+'</small></button>').join('');
+ return CAREER.roster.map((h,i)=>'<button class="roster-unit '+(i===CAREER.active?'selected':'')+'" '+(deploy?'data-deploy':'data-select')+'="'+i+'" '+(deploy&&h.injury>=80?'disabled':'')+'><canvas data-roster-art="'+i+'" width="300" height="230"></canvas><strong>'+h.name+'</strong><small>Lv.'+careerLevel(h)+' · '+(isChampionMurmillo(h)?'신규 챔피언':isAnimatedMurmillo(h)?'신규 애니메이션':h.appearance==='legacy'?'챔피언':'성장 '+careerStage(h)+'단계')+'</small><small>부상 '+h.injury+' · '+h.wins+'승 / '+h.fights+'전</small><small>'+(deploy?(h.injury>=80?'치료 필요':'이 검투사로 출전'):i===CAREER.active?'✓ 관리 중':'선택하여 훈련 · 장비 · 치료')+'</small></button>').join('');
 }
 function paintRosterPreviews(){
  for(const canvas of document.querySelectorAll('[data-roster-art]')){
@@ -1015,7 +1031,10 @@ function start(mode='new',requestedRosterIndex=null){
  S.autoPlaying=false;S.lastManualInput=clock;S.careerRewardApplied=false;
  S.player=fighter(selected,335,false);S.enemy=fighter(rival,940,true);CAMERA.initialized=false;
  if(careerMatch){
-  if(isAnimatedMurmillo(CAREER.hero)){
+  if(isChampionMurmillo(CAREER.hero)){
+   S.player.championVariant=CHAMPION_MURMILLO_VARIANT;
+   S.player.growthType='murmillo_a';S.player.growthLevel=5;
+  }else if(isAnimatedMurmillo(CAREER.hero)){
    S.player.motionVariant=ANIMATED_MURMILLO_VARIANT;
    S.player.growthType='murmillo_a';S.player.growthLevel=5;
   }else if(CAREER.hero.appearance!=='legacy'){
@@ -1023,7 +1042,11 @@ function start(mode='new',requestedRosterIndex=null){
   }
   S.player.cfg={...S.player.cfg,name:CAREER.hero.name+' · Lv.'+careerLevel(CAREER.hero)};
   const opponent=S.careerOpponent;
-  if(!opponent.boss){S.enemy.growthType=opponent.growthType;S.enemy.growthLevel=opponent.stage;}
+  if(opponent.appearance===CHAMPION_MURMILLO_VARIANT){
+   S.enemy.championVariant=CHAMPION_MURMILLO_VARIANT;
+   S.enemy.championBoss=true;
+   S.enemy.growthType='murmillo_a';S.enemy.growthLevel=5;
+  }else if(!opponent.boss){S.enemy.growthType=opponent.growthType;S.enemy.growthLevel=opponent.stage;}
   S.enemy.cfg={...S.enemy.cfg,name:(opponent.boss?'BOSS · ':'')+opponent.name+' · Lv.'+opponent.level};
   S.notice=opponent.boss?'CHAMPION · 승리하면 영입!':'PUGNA!';
  }
@@ -1541,6 +1564,12 @@ function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
  ctx.restore();
 }
 function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
+ if(f.championVariant===CHAMPION_MURMILLO_VARIANT){
+  const scale=f.championBoss?CHAMPION_MURMILLO_SCALE*1.08:CHAMPION_MURMILLO_SCALE;
+  const x0=x+w*(1-scale)/2,y0=y+h*(1-scale),w0=w*scale,h0=h*scale;
+  if(window.ChampionMurmillo?.draw(ctx,{fighter:f,scene:S,clock,x:x0,y:y0,w:w0,h:h0,flip,alpha}))return true;
+  return GrowthFrames.draw(ctx,GROWTH_IMAGES.get('murmillo_a_L5'),GROWTH_POSE[pose]??0,x0,y0,w0,h0,flip,alpha);
+ }
  // Restore approved original 5-stage appearances, independently of v3 art.
  const animated=f.motionVariant===ANIMATED_MURMILLO_VARIANT;
  const atlas=animated?GROWTH_IMAGES.get('murmillo_a_L5'):
@@ -1599,7 +1628,7 @@ function drawFighter(f){if(!f)return;const pose=choosePose(f),frame=FRAMES[pose]
  }
  // The animated fighter supplies its own foot-anchored motion, so do not
  // compound a second whole-body combat transform.
- if(f.motionVariant===ANIMATED_MURMILLO_VARIANT){tilt=0;scaleX=1;scaleY=1;}
+ if(f.motionVariant===ANIMATED_MURMILLO_VARIANT||f.championVariant===CHAMPION_MURMILLO_VARIANT){tilt=0;scaleX=1;scaleY=1;}
  // Remove rapid transparency strobing from all original classes.
  // Dashed vector net ring removed; net-trap uses character art and class VFX.
  ctx.save();if(tilt||scaleY!==1||scaleX!==1){ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.scale(scaleX,scaleY);ctx.translate(-f.x,-feet);}
@@ -1737,6 +1766,7 @@ $('#classSubtitle').textContent=DATA[$('#classChoice').value].eng;
 /* Visual Ludus adapter; the existing career state remains authoritative. */
 window.LudusBridge={
  motionScale:()=>ANIMATED_MURMILLO_SCALE,
+ championScale:()=>CHAMPION_MURMILLO_SCALE,
  state:()=>({gold:CAREER.gold,glory:CAREER.glory,roster:CAREER.roster,active:CAREER.active,message:CAREER.message}),
  portrait:(i)=>{
   const h=CAREER.roster[i];if(!h)return null;
