@@ -154,3 +154,68 @@
  .lc-draft-screen .lc-mode-picker button{min-height:35px;font-size:17px;border-width:2px}
  .lc-draft-screen .lc-mode-picker button small{font-size:9px}
 }
+
+/* Ordered duel event drafting. Original illustrated cards and boss hero art remain. */
+.lc-mode-note{flex:none;text-align:center;padding:3px 10px 2px;
+ background:#2d170ef0;color:#d8b782;font:700 11px 'Noto Sans KR',sans-serif}
+.lc-draft-screen .lc-mode-picker{padding-block:4px 6px}
+.lc-draft-screen .lc-mode-picker button{min-height:43px}
+.lc-draft-screen .lc-match-top{min-height:42px}
+.lc-ally-order,.lc-enemy-lineup{flex:none;display:flex;flex-direction:column;gap:5px;
+ border:2px ridge #977346;border-radius:6px;
+ background:linear-gradient(135deg,#331a11,#170c09);padding:8px 10px;
+ color:#f6d9a8}
+.lc-ally-order{margin:0 0 8px}
+.lc-ally-order>strong,.lc-enemy-lineup>strong{color:#f9d78e;
+ font:800 12px 'Noto Sans KR',sans-serif}
+.lc-ally-order>div{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.lc-lineup-ally,.lc-lineup-empty{display:flex;gap:6px;align-items:center;
+ padding:4px 7px;border:1px solid #c89b58;border-radius:3px;background:#3b291c;
+ color:#ffe3a9;font:800 11px 'Noto Sans KR',sans-serif;
+ max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.lc-lineup-ally em{font-style:normal;color:#201007;background:#f6cc77;
+ font-size:11px;border-radius:2px;padding:1px 5px;white-space:nowrap}
+.lc-lineup-empty{color:#c7a57b}
+.lc-queue-order{position:absolute;top:38px;left:4px;z-index:5;
+ padding:4px 7px;background:#ffe1a6;color:#341407;border:2px solid #7a381b;
+ border-radius:5px;font:900 13px 'Noto Sans KR',sans-serif;
+ box-shadow:0 2px 11px #150501d0;pointer-events:none}
+.lc-unavailable{position:absolute;top:35%;left:3%;right:3%;z-index:6;
+ background:#6e1c17f2;border:2px solid #f7ae8d;border-radius:3px;
+ color:#ffe2ce;box-shadow:0 2px 12px #150403;
+ font:900 13px 'Noto Sans KR',sans-serif;padding:7px 1px;text-align:center;
+ pointer-events:none}
+.lc-fighter-card.is-blocked{opacity:.74;filter:saturate(.59)}
+.lc-fighter-card.is-selected:not(.is-blocked){border-color:#ffe8a8}
+.lc-card-meta{font-size:10px}
+.lc-card-meta b:last-child{white-space:nowrap}
+.lc-draft-screen .lc-opponent .lc-enemy-frame{min-height:160px;max-height:31vh;flex:1}
+.lc-enemy-lineup{max-height:24vh;min-height:78px;margin-top:8px;overflow-y:auto;
+ scroll-behavior:smooth;scrollbar-color:#b88a50 #170a08}
+.lc-enemy-slot{display:flex;gap:9px;align-items:center;
+ padding:5px 6px;border:1px solid #74563a;border-radius:4px;
+ background:linear-gradient(90deg,#3a2316,#22110b)}
+.lc-enemy-slot em{flex:none;display:grid;place-items:center;width:32px;height:30px;
+ color:#2c1209;background:#e6bc79;font:900 11px 'Noto Sans KR',sans-serif;
+ border-radius:3px;font-style:normal}
+.lc-enemy-slot div{display:flex;min-width:0;flex-direction:column;gap:2px}
+.lc-enemy-slot strong{font:800 13px 'Noto Sans KR',sans-serif;color:#f8e0b3;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc-enemy-slot small{font:700 11px 'Noto Sans KR',sans-serif;color:#bd9e7f}
+.lc-enemy-slot.is-boss{border:2px solid #d2a35d;background:linear-gradient(90deg,#654026,#29130d)}
+.lc-enemy-slot.is-boss strong{color:#ffe28d}
+.lc-draft-screen .lc-matchup{margin-top:6px}
+.lc-draft-screen .lc-hint{white-space:normal;min-height:32px}
+@media(max-height:790px) and (min-width:681px){
+ .lc-draft-screen .lc-opponent .lc-enemy-frame{min-height:115px;max-height:25vh}
+ .lc-enemy-lineup{max-height:20vh}
+ .lc-draft-screen .lc-portrait{height:155px}
+ .lc-draft-screen .lc-fighter-card{min-height:266px}
+}
+@media(max-width:680px){
+ .lc-ally-order,.lc-enemy-lineup{padding:6px}
+ .lc-enemy-lineup{max-height:260px}
+ .lc-draft-screen .lc-opponent .lc-enemy-frame{min-height:215px;max-height:300px}
+ .lc-queue-order{top:33px;font-size:11px}
+ .lc-unavailable{font-size:11px}
+}
