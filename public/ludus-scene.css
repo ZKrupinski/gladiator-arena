@@ -127,3 +127,41 @@
 #careerBody .ludus-equip-tile.is-equipped{border-color:#ffdf91;box-shadow:0 0 24px #e9c05d88,inset 0 0 15px #f4bd5930}
 #careerBody .ludus-fighter-picker{max-width:1050px;border:2px ridge #a87f4b;background:#170e0ced}
 @media(max-width:700px){#careerBody .ludus-workshop{padding:12px 10px;border-width:5px}#careerBody .ludus-fighter-art{min-height:255px;gap:5px;padding:7px;grid-template-columns:1fr 1fr}#careerBody .ludus-npc{height:240px}#careerBody .ludus-npc img{height:170px}#careerBody .ludus-npc-name{font-size:14px}#careerBody .ludus-npc-dialogue{font-size:10px;padding:5px}#careerBody .ludus-active-fighter .fighter-student{width:155px;height:170px}#careerBody .ludus-active-fighter strong{font-size:15px}#careerBody .ludus-active-fighter small{font-size:11px}#careerBody .ludus-room-head p{font-size:11px}}
+
+
+/* v5.8: the approved full lobby illustration contains three bottom-right
+   buttons. Legacy .ll-actions was hidden when the key image loaded, leaving
+   those pictured controls inert. Match actual 1448x1086 image coordinates.
+   Transparent native buttons preserve every pixel of the approved art. */
+.ll-scene.ll-has-art .ll-hitbuttons{
+ display:block;
+ position:absolute;
+ inset:0;
+ z-index:15;
+ pointer-events:none;
+}
+.ll-scene.ll-has-art .ll-hitbuttons button{
+ display:block;
+ position:absolute;
+ top:786px;
+ height:256px;
+ border:0;
+ border-radius:14px;
+ padding:0;
+ margin:0;
+ opacity:0;
+ pointer-events:auto;
+ cursor:pointer;
+ touch-action:manipulation;
+ appearance:none;
+}
+.ll-scene.ll-has-art .ll-hit-basic{left:801px;width:205px}
+.ll-scene.ll-has-art .ll-hit-practice{left:1008px;width:210px}
+.ll-scene.ll-has-art .ll-hit-arena{left:1223px;width:214px}
+/* Show focus for keyboard access without replacing the baked buttons. */
+.ll-scene.ll-has-art .ll-hitbuttons button:focus-visible{
+ opacity:1!important;
+ outline:4px solid #ffe0a0!important;
+ outline-offset:-7px;
+ background:#ffda882a!important;
+}
