@@ -43,7 +43,7 @@ function advance(state,realDt,reducedMotion=false){
  if(!active)return empty(dt);
  const factor=reducedMotion?0:1;
  return {
-  active,state,kind:state.kind,elapsed:t,
+  active,state,kind:state.kind,elapsed:t,duration:spec.duration,
   gameDt:dt*(reducedMotion?1:rate),
   timeScale:reducedMotion?1:rate,
   zoom:spec.zoom*intensity*factor,
