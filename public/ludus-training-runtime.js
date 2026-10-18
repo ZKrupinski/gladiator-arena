@@ -1,4 +1,4 @@
-/* LUDUS TRAINING v6.4: actual selected gladiator, real stats, action poses.
+/* LUDUS TRAINING v6.5: actual selected gladiator, real stats, action poses.
  * Approved training buttons and Doctore art stay in their original positions.
  * Nothing in the original image is a clickable dummy or a baked-in roster. */
 (function(){
@@ -57,20 +57,29 @@ function paint(canvas,img){
   return true;
  }catch(error){return false;}
 }
-function paintTrainingFighter(canvas,img,action,progress){
+function profileFor(canvas,reference){
+ if(!reference?.width||!reference?.height)return null;
+ const box=visibleBounds(reference);
+ // Use the selected fighter's idle silhouette as the ONLY scale reference.
+ // We do not resize their body to fit each attacking sword, cape or crouch.
+ const height=350;
+ const scale=Math.min(height/Math.max(1,box.h),
+  (canvas.width-40)/Math.max(1,box.w));
+ return {source:reference,scale};
+}
+function paintTrainingFighter(canvas,img,action,progress,profile){
  if(!canvas)return;
  const ctx=canvas.getContext('2d');if(!ctx)return;
  ctx.clearRect(0,0,canvas.width,canvas.height);
  if(!img?.width||!img?.height)return;
- const box=visibleBounds(img),maxHeight=340,maxWidth=canvas.width-38;
- const scale=Math.min(maxWidth/box.w,maxHeight/box.h);
+ const box=visibleBounds(img);
+ const scale=profile?.scale??profileFor(canvas,img)?.scale??1;
  const width=box.w*scale,height=box.h*scale;
  const strike=action!=='idle'?Math.sin(Math.PI*progress):0;
- const anticipation=action!=='idle'?Math.sin(Math.PI*Math.min(1,progress*2))*.015:0;
- // Every class faces LEFT toward Doctore. Keep the same planted floor pivot
- // while gently extending into the attack; the strike never shifts the canvas.
+ // The scale is fixed for the entire fighter; grounded, restrained forward
+ // motion supports the attack artwork without distorting its proportions.
  const towardDoctore=(action==='thrust'?15:action==='heavy'?10:8)*strike;
- const lean=(action==='slash'?.055:action==='sweep'?.038:action==='thrust'?.025:.045)*strike-anticipation;
+ const lean=(action==='slash'?.04:action==='sweep'?.033:action==='thrust'?.018:.027)*strike;
  ctx.save();
  ctx.translate(canvas.width/2-towardDoctore,canvas.height-9);
  ctx.rotate(-lean);
@@ -95,13 +104,19 @@ function animate(a,stage,selected){
  stop();
  const canvas=stage.querySelector('.lt-fighter-canvas');
  if(!canvas||selected==null)return;
+ let profile=null;
  const draw=()=>{
   if(!canvas.isConnected){stop();return;}
+  // Lazily re-establish the single calibration if the higher-quality idle
+  // asset loads asynchronously; never recalibrate for a sword attack frame.
+  const idle=a.trainingFrame?.(selected,'idle',0)||a.portrait(selected);
+  if(idle&&profile?.source!==idle)profile=profileFor(canvas,idle);
   const motion=actionAt(tick);
-  const src=a.trainingFrame?.(selected,motion.action,motion.frame)||a.portrait(selected);
-  paintTrainingFighter(canvas,src,motion.action,motion.progress);
+  const src=a.trainingFrame?.(selected,motion.action,motion.frame)||idle;
+  paintTrainingFighter(canvas,src,motion.action,motion.progress,profile);
   canvas.dataset.attack=motion.action;
   canvas.dataset.face='left';
+  canvas.dataset.fixedScale=profile?String(profile.scale):'pending';
   const ribbon=stage.querySelector('.lt-motion-slash');
   if(ribbon){ribbon.classList.toggle('active',motion.action!=='idle');ribbon.dataset.action=motion.action;}
   tick++;
@@ -133,7 +148,7 @@ function mount(stage,a,s,cbs){
  if(h)paint(panel.querySelector('#ltInfoPortrait'),a.portrait(s.active));
  const fighter=document.createElement('div');fighter.className='lt-fighter-zone';
  fighter.setAttribute('aria-label',h?h.name+' · 교관을 바라보고 제자리에서 공격 연습 중':'훈련 중인 검투사 없음');
- fighter.innerHTML='<canvas class="lt-fighter-canvas" width="460" height="425"></canvas><div class="lt-motion-slash" aria-hidden="true"></div>';
+ fighter.innerHTML='<canvas class="lt-fighter-canvas" width="560" height="440"></canvas><div class="lt-motion-slash" aria-hidden="true"></div>';
  stage.appendChild(fighter);
  const roster=document.createElement('section');roster.className='lt-roster';
  roster.innerHTML='<div class="lt-roster-title"><strong>♜ 소속 검투사</strong><span>'+s.roster.length+'명 · 선택 중 '+(s.roster.length?s.active+1:0)+'명</span>'+
