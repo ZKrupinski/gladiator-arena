@@ -1,26 +1,26 @@
 {
-  "testedAt": "2026-10-18T03:20:34.289Z",
+  "testedAt": "2026-10-18T03:23:33.765Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 217960,
-      "totalDifference": 17162812
+      "changedChannels": 70570,
+      "totalDifference": 5693578
     },
     "walk": {
-      "changedChannels": 366281,
-      "totalDifference": 28778934
+      "changedChannels": 91312,
+      "totalDifference": 7690350
     },
     "slash": {
-      "changedChannels": 286475,
-      "totalDifference": 25091308
+      "changedChannels": 71453,
+      "totalDifference": 6340966
     },
     "thrust": {
-      "changedChannels": 279205,
-      "totalDifference": 24426992
+      "changedChannels": 73012,
+      "totalDifference": 6506237
     },
     "victory": {
-      "changedChannels": 145555,
-      "totalDifference": 11350953
+      "changedChannels": 61591,
+      "totalDifference": 5219782
     }
   },
   "version": "3.0.0",
