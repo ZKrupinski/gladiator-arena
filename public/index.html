@@ -1203,6 +1203,7 @@ function resolveLineupBout(allyWon,timedOut=false){
  const losing=allyWon?S.enemy:S.player,survivor=allyWon?S.player:S.enemy;
  losing.hp=0;losing.dead=true;setAction(losing,'defeat',.6);
  const step=ArenaLineup.resolve(q,allyWon);
+ q.inCleanup=true;
  S.keys.clear();S.sparks=[];S.parryBursts=[];S.combo=0;
  S.autoPlaying=false;S.lastManualInput=clock;S.shake=Math.max(S.shake,12);
  // Freeze original controls and fighter AI. The real defeat sprite is
@@ -1222,6 +1223,7 @@ function finishLineupCleanup(){
  const recovery=S.cleanup;if(!recovery||S.phase!=='cleanup')return false;
  const {step,allyWon}=recovery;
  S.cleanup=null;
+ if(S.gauntlet)S.gauntlet.inCleanup=false;
  if(step.finished){
   S.resultWin=!!step.win;S.resultApplied=true;S.resultAnim=0;
   S.phase='finisher';S.slow=1.65;
