@@ -2,7 +2,7 @@
    Visual-only module: all persistence and combat stay in LudusBridge. */
 (function(){
 'use strict';
-var chosen=-1, scrollPosition=0, paintOpponent=null;
+var chosen=-1, scrollPosition=0, paintOpponent=null, matchMode='1v1', squadPicks=[];
 var $=function(q){return document.querySelector(q);};
 function safe(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;','\'':'&#39;'}[c];});}
 function bridge(){return window.LudusBridge;}
@@ -12,7 +12,7 @@ function rank(h){if(h.appearance==='murmillo_champion_red')return 'CHAMPION';if(
 function className(h){var n={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};return h.appearance==='murmillo_champion_red'?'신규 챔피언 무르밀로':h.appearance==='murmillo_motion_v3'?'무르밀로 · 애니메이션':(n[h.cls]||h.cls||'검투사');}
 function injury(h){return Math.max(0,Number(h.injury)||0);}
 function wounded(h){return injury(h)>=80;}
-function percent(h){return level(h)>=20?100:Math.min(100,Math.max(0,Math.round((h.xp||0)/(30+level(h)*15)*100)));}
+function percent(h){return level(h)>=20?100:Math.min(100,Math.max(0,Math.round((h.xp||0)/(36+level(h)*19)*100)));}
 function card(h,i,selected,draft){
  var off=draft&&wounded(h),condition=wounded(h)?'출전 불가':injury(h)>0?'부상 '+injury(h):'정상';
  return '<button type="button" class="lc-fighter-card '+(selected?'is-selected ':'')+(off?'is-blocked':'')+'" data-'+(draft?'candidate':'unit')+'="'+i+'" '+(off?'disabled ':'')+'aria-pressed="'+selected+'" aria-label="'+safe(h.name)+' '+className(h)+' '+condition+'">'+
@@ -95,34 +95,68 @@ function roster(){
  var ready=root.querySelector('#lcReady');if(ready)ready.onclick=function(){a.fight();};
 }
 function beginDraft(selectedIndex){
- // A new match MUST use the currently selected roster member, never the
- // previously selected candidate from another match or saved game.
  chosen=Number.isInteger(selectedIndex)?selectedIndex:-1;
- scrollPosition=0;
+ matchMode='1v1';squadPicks=chosen>=0?[chosen]:[];scrollPosition=0;
 }
+function draftConfig(){return window.ArenaBalance?.MODES?.[matchMode]||{allies:1,enemies:1,label:'정규 결투'};}
 function draft(enemy,painter){
- var a=bridge(),s=state();if(!s||!enemy)return;
+ const a=bridge(),s=state();if(!s||!enemy)return;
  paintOpponent=painter||paintOpponent;
- if(chosen<0||!s.roster[chosen]||wounded(s.roster[chosen]))chosen=!wounded(s.roster[s.active])?s.active:s.roster.findIndex(function(h){return !wounded(h);});
- var pick=s.roster[chosen];
- var host='<section class="lc-screen lc-draft-screen" aria-label="아레나 출전 선수 선택"><div class="lc-top">'+header('아레나 출전',s)+'</div>'+
- '<div class="lc-match-top"><span>도전 '+Number(enemy.round||1)+'회차</span><strong>⚔ 출전 검투사를 선택하세요</strong><span>'+(enemy.boss?'CHAMPION BATTLE':'ARENA CHALLENGE')+'</span></div>'+
- '<div class="lc-screen-body lc-draft-body"><div class="lc-gallery"><div class="lc-section-head"><h2>♜ 나의 검투사</h2><small>카드 선택 후 출전 확정</small></div>'+
- '<div class="lc-card-grid">'+s.roster.map(function(h,i){return card(h,i,i===chosen,true);}).join('')+'</div></div>'+
+ if(chosen<0||!s.roster[chosen]||wounded(s.roster[chosen]))
+  chosen=!wounded(s.roster[s.active])?s.active:s.roster.findIndex(h=>!wounded(h));
+ const config=draftConfig();
+ squadPicks=squadPicks.filter(i=>s.roster[i]&&!wounded(s.roster[i])).slice(0,config.allies);
+ if(!squadPicks.length&&chosen>=0)squadPicks=[chosen];
+ if(matchMode==='1v1')squadPicks=[chosen];
+ const ready=squadPicks.length===config.allies,pick=s.roster[squadPicks[0]??chosen];
+ const choices=['1v1','1v2','1v3','2v2','3v3'];
+ const controls='<div class="lc-mode-picker" role="group" aria-label="아레나 대전 형식">'+choices.map(mode=>{
+  const option=window.ArenaBalance?.MODES?.[mode]||{};
+  return '<button type="button" class="'+(mode===matchMode?'selected':'')+'" data-battle-mode="'+mode+
+   '" aria-pressed="'+(mode===matchMode)+'">'+mode+' <small>'+safe(option.label||'')+'</small></button>';
+ }).join('')+'</div>';
+ const info=matchMode==='1v1'?'정규 1:1 결투':
+  '아군 '+config.allies+'명 / 적 '+config.enemies+'명 · 출전 '+squadPicks.length+'/'+config.allies+'명';
+ const strength=window.ArenaBalance?.heroPower?.(pick)||0;
+ const host='<section class="lc-screen lc-draft-screen" aria-label="아레나 출전 선수 선택"><div class="lc-top">'+header('아레나 출전',s)+'</div>'+
+ '<div class="lc-match-top"><span>도전 '+Number(enemy.round||1)+'회차</span><strong>⚔ '+info+'</strong><span>'+(enemy.boss?'CHAMPION BATTLE':'ARENA CHALLENGE')+'</span></div>'+controls+
+ '<div class="lc-screen-body lc-draft-body"><div class="lc-gallery"><div class="lc-section-head"><h2>♜ 나의 검투사</h2><small>출전 선수 '+config.allies+'명 선택</small></div>'+
+ '<div class="lc-card-grid">'+s.roster.map((h,i)=>card(h,i,squadPicks.includes(i),true)).join('')+'</div></div>'+
  '<div class="lc-opponent"><div class="lc-section-head"><h2>⚔ 이번 경기의 상대</h2><small>'+(enemy.boss?'보스 · 승리 시 영입':'일반 경기')+'</small></div>'+
  '<div class="lc-enemy-frame"><span class="lc-rank lc-enemy-rank">'+(enemy.boss?'LEGENDARY':'GRADE '+enemy.stage)+'</span>'+
  '<canvas id="ludusOpponentArt" width="355" height="350" aria-label="상대 검투사 대기 자세"></canvas>'+
  '<div class="lc-enemy-name">'+safe(enemy.name)+'<small>'+className(enemy)+' · '+(enemy.boss?'챔피언':'성장 '+Number(enemy.stage||1)+'단계')+' · Lv.'+Number(enemy.level||1)+'</small></div></div>'+
- '<div class="lc-matchup"><div><small>나의 출전 후보</small><strong>'+safe(pick?pick.name:'선택 필요')+'</strong></div><span>VS</span><div><small>상대 검투사</small><strong>'+safe(enemy.name)+'</strong></div></div>'+
- '<div class="lc-buttons lc-draft-actions"><button id="lcDraftCancel">선택 취소</button><button class="lc-emphasis" id="lcDeploy" '+(!pick?'disabled':'')+'>⚔ '+(pick?safe(pick.name)+' 출전 확정':'출전 불가')+'</button></div>'+
- '</div></div><div class="lc-hint">부상 80 이상은 출전할 수 없습니다. 선택한 검투사만 경험치와 부상을 받습니다.</div></section>';
- var old=$('.lc-gallery .lc-card-grid');if(old)scrollPosition=old.scrollTop;
+ '<div class="lc-matchup"><div><small>아군 전력</small><strong>'+safe(pick?pick.name:'선택 필요')+' · '+strength+'</strong></div><span>VS</span><div><small>상대</small><strong>'+safe(enemy.name)+'</strong></div></div>'+
+ '<div class="lc-buttons lc-draft-actions"><button id="lcDraftCancel">선택 취소</button><button class="lc-emphasis" id="lcDeploy" '+(!ready?'disabled':'')+'>⚔ '+(ready?(matchMode==='1v1'?safe(pick.name)+' 출전':'팀 아레나 '+matchMode+' 시작'):'검투사 '+config.allies+'명 필요')+'</button></div>'+
+ '</div></div><div class="lc-hint">근경과 원경의 2개 전투 라인 · 부상 80 이상 출전 불가 · 참가 검투사별 경험치·부상 반영</div></section>';
+ const old=$('.lc-gallery .lc-card-grid');if(old)scrollPosition=old.scrollTop;
  reveal(host,'draft');
- var root=$('.lc-screen'),grid=root.querySelector('.lc-card-grid');if(grid)grid.scrollTop=scrollPosition;
+ const root=$('.lc-screen'),grid=root.querySelector('.lc-card-grid');if(grid)grid.scrollTop=scrollPosition;
  drawArt(root);if(typeof paintOpponent==='function')paintOpponent();
- root.querySelectorAll('[data-candidate]').forEach(function(b){b.onclick=function(){scrollPosition=grid.scrollTop;chosen=Number(b.dataset.candidate);draft(enemy,paintOpponent);};});
- root.querySelector('#lcDraftCancel').onclick=function(){chosen=-1;scrollPosition=0;a.cancelDraft();};
- root.querySelector('#lcDeploy').onclick=function(){if(chosen<0||wounded(s.roster[chosen]))return;a.deploy(chosen);};
+ root.querySelectorAll('[data-battle-mode]').forEach(button=>{
+  button.onclick=()=>{scrollPosition=grid.scrollTop;matchMode=button.dataset.battleMode;
+   squadPicks=squadPicks.slice(0,draftConfig().allies);draft(enemy,paintOpponent);};
+ });
+ root.querySelectorAll('[data-candidate]').forEach(button=>{
+  button.onclick=()=>{
+   const i=Number(button.dataset.candidate);if(wounded(s.roster[i]))return;
+   scrollPosition=grid.scrollTop;
+   if(matchMode==='1v1'){chosen=i;squadPicks=[i];}
+   else if(squadPicks.includes(i)){
+    if(squadPicks.length>1)squadPicks=squadPicks.filter(n=>n!==i);
+   }else{
+    if(squadPicks.length>=draftConfig().allies)squadPicks.shift();
+    squadPicks.push(i);chosen=squadPicks[0];
+   }
+   draft(enemy,paintOpponent);
+  };
+ });
+ root.querySelector('#lcDraftCancel').onclick=()=>{chosen=-1;squadPicks=[];scrollPosition=0;a.cancelDraft();};
+ root.querySelector('#lcDeploy').onclick=()=>{
+  if(!ready)return;
+  if(matchMode==='1v1')a.deploy(squadPicks[0]);
+  else a.squadStart?.(matchMode,squadPicks);
+ };
 }
 window.LudusCardScenes={beginDraft:beginDraft,renderRoster:roster,renderDraft:draft,refresh:function(){var root=$('.lc-screen');if(!root||$('#careerHub').hidden)return;drawArt(root);if(root.classList.contains('lc-draft-screen')&&typeof paintOpponent==='function')paintOpponent();}};
 })();
