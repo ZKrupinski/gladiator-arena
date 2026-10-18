@@ -108,6 +108,7 @@ const build=()=>{
    assert.equal(S.phase,'fight');}
  }
  assert.equal(S.phase,'finisher');assert.equal(S.gauntlet.won,true);
+ assert.ok(S.enemy.x>1280,'collected defeated enemy must not reappear during final victory animation');
  api.finishLineupCareerMatch();api.finishLineupCareerMatch();
  assert.equal(career.fights,1);
  assert.equal(career.roster.length,6,'boss recruitment only on victory');
@@ -133,6 +134,7 @@ const build=()=>{
  S.player.hp=0;api.finishFight(S.enemy,S.player);
  assert.equal(S.phase,'cleanup');X.advance(S.cleanup,X.TIME.total);api.finishLineupCleanup();
  assert.equal(S.phase,'finisher');assert.equal(S.gauntlet.won,false);
+ assert.ok(S.player.x<0,'collected defeated ally must not reappear during final defeat animation');
  api.finishLineupCareerMatch();
  assert.equal(career.fights,1);
  assert.equal(career.roster.length,5,'defeat cannot recruit a champion');
