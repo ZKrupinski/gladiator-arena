@@ -66,6 +66,6 @@ assert.match(draft,/data-battle-mode/);
 assert.match(draft,/a\.squadStart\?\.\(matchMode,squadPicks\)/);
 const index=fs.readFileSync(new URL('index.html',pub),'utf8');
 assert.match(index,/squadStart:\(mode,indices\)=>/);
-assert.match(index,/squad-arena\.js\?v=2/);
+assert.match(index,/squad-arena\.js\?v=3/);
 assert.match(index,/arena-balance\.js\?v=1/);
 console.log('PASS: arena modes, two depth lanes, training progression, boss threat and integration.');
