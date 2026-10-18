@@ -1573,7 +1573,7 @@ function drawFighter(f){if(!f)return;const pose=choosePose(f),frame=FRAMES[pose]
  // Position shifts remain gameplay movement; boots and weapons remain intact.
  if(f.cls==='murmillo'){tilt=0;scaleX=1;scaleY=1;}
  // No procedural cast shadow. Keep the original atlas silhouette and arena floor.
- if(f.invuln>0&&Math.floor(clock*28)%2===0)ctx.globalAlpha=.5;
+ if(f.cls!=='murmillo'&&f.invuln>0&&Math.floor(clock*28)%2===0)ctx.globalAlpha=.5;
  // Dashed vector net ring removed; net-trap uses character art and class VFX.
  ctx.save();if(tilt||scaleY!==1||scaleX!==1){ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.scale(scaleX,scaleY);ctx.translate(-f.x,-feet);}
  // All ten poses have independent, pre-cleaned bitmaps; do not truncate any
