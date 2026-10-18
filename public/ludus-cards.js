@@ -117,7 +117,8 @@ function draft(enemy,painter){
  }).join('')+'</div>';
  const info=matchMode==='1v1'?'정규 1:1 결투':
   '아군 '+config.allies+'명 / 적 '+config.enemies+'명 · 출전 '+squadPicks.length+'/'+config.allies+'명';
- const strength=window.ArenaBalance?.heroPower?.(pick)||0;
+ const strength=squadPicks.reduce((total,i)=>total+(window.ArenaBalance?.heroPower?.(s.roster[i])||0),0);
+ const rivalRole=window.ArenaBalance?.TRAITS?.[enemy.cls]?.role||'투기장 도전자';
  const host='<section class="lc-screen lc-draft-screen" aria-label="아레나 출전 선수 선택"><div class="lc-top">'+header('아레나 출전',s)+'</div>'+
  '<div class="lc-match-top"><span>도전 '+Number(enemy.round||1)+'회차</span><strong>⚔ '+info+'</strong><span>'+(enemy.boss?'CHAMPION BATTLE':'ARENA CHALLENGE')+'</span></div>'+controls+
  '<div class="lc-screen-body lc-draft-body"><div class="lc-gallery"><div class="lc-section-head"><h2>♜ 나의 검투사</h2><small>출전 선수 '+config.allies+'명 선택</small></div>'+
@@ -126,7 +127,7 @@ function draft(enemy,painter){
  '<div class="lc-enemy-frame"><span class="lc-rank lc-enemy-rank">'+(enemy.boss?'LEGENDARY':'GRADE '+enemy.stage)+'</span>'+
  '<canvas id="ludusOpponentArt" width="355" height="350" aria-label="상대 검투사 대기 자세"></canvas>'+
  '<div class="lc-enemy-name">'+safe(enemy.name)+'<small>'+className(enemy)+' · '+(enemy.boss?'챔피언':'성장 '+Number(enemy.stage||1)+'단계')+' · Lv.'+Number(enemy.level||1)+'</small></div></div>'+
- '<div class="lc-matchup"><div><small>아군 전력</small><strong>'+safe(pick?pick.name:'선택 필요')+' · '+strength+'</strong></div><span>VS</span><div><small>상대</small><strong>'+safe(enemy.name)+'</strong></div></div>'+
+ '<div class="lc-matchup"><div><small>아군 전력</small><strong>'+safe(pick?pick.name:'선택 필요')+' · '+strength+'</strong></div><span>VS</span><div><small>상대 전술 · '+safe(rivalRole)+'</small><strong>'+safe(enemy.name)+'</strong></div></div>'+
  '<div class="lc-buttons lc-draft-actions"><button id="lcDraftCancel">선택 취소</button><button class="lc-emphasis" id="lcDeploy" '+(!ready?'disabled':'')+'>⚔ '+(ready?(matchMode==='1v1'?safe(pick.name)+' 출전':'팀 아레나 '+matchMode+' 시작'):'검투사 '+config.allies+'명 필요')+'</button></div>'+
  '</div></div><div class="lc-hint">근경과 원경의 2개 전투 라인 · 부상 80 이상 출전 불가 · 참가 검투사별 경험치·부상 반영</div></section>';
  const old=$('.lc-gallery .lc-card-grid');if(old)scrollPosition=old.scrollTop;
