@@ -1,9 +1,58 @@
 {
-  "testedAt": "2026-10-18T03:42:00.083Z",
+  "testedAt": "2026-10-18T03:43:48.179Z",
   "source": "local GitHub Pages public/",
-  "samples": {},
+  "samples": {
+    "idle": {
+      "changedChannels": 23448,
+      "totalDifference": 1484659
+    },
+    "walk": {
+      "changedChannels": 93241,
+      "totalDifference": 7906243
+    },
+    "sweep": {
+      "changedChannels": 89416,
+      "totalDifference": 7730524
+    },
+    "defeat": {
+      "changedChannels": 67085,
+      "totalDifference": 5913928
+    },
+    "slash": {
+      "changedChannels": 84869,
+      "totalDifference": 7339489
+    },
+    "thrust": {
+      "changedChannels": 90889,
+      "totalDifference": 7550342
+    },
+    "victory": {
+      "changedChannels": 62637,
+      "totalDifference": 5362374
+    }
+  },
   "version": "4.0.0",
-  "status": "FAIL",
-  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'4.0.0' !== '3.0.0'\n",
-  "consoleErrors": []
+  "roster": {
+    "originalKept": true,
+    "addedOnce": true,
+    "activePreserved": true,
+    "levelPreserved": true,
+    "inventoryPreserved": true,
+    "flutterRemoved": true,
+    "scale": 0.64,
+    "rosterAfterMigration": 3
+  },
+  "deployment": {
+    "mainCTA": true,
+    "ludusCTA": true,
+    "selectOld": true,
+    "selectAnimated": true,
+    "selectOther": true,
+    "names": [
+      "기존 무르밀로",
+      "무르밀로 · 애니메이션",
+      "기존 레티아리우스"
+    ]
+  },
+  "status": "PASS"
 }
