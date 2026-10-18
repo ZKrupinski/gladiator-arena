@@ -11,30 +11,26 @@
 }
 .lineup-hud[hidden]{display:none!important}
 .arena-march{
+ /* Floating heraldry only: no ornamental vector backplate behind the tokens. */
  min-width:0;display:flex;flex-direction:column;gap:3px;position:relative;
- padding:5px 12px 8px;
- border:2px ridge #b48c57;
- clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
- background:linear-gradient(100deg,#42261ded,#22140fe5 55%,#130a07e8);
- box-shadow:inset 0 0 19px #dfa6641b,0 7px 20px #130600aa;
+ padding:5px 7px 8px;
+ border:0;clip-path:none;background:none;box-shadow:none;
 }
-.arena-march--enemy{
- background:linear-gradient(260deg,#4a1a1ce8,#291011f4 55%,#140808ed);
- border-color:#b1795d;
-}
+.arena-march--enemy{background:none;border:0;box-shadow:none}
 .arena-march-head{
- display:flex;align-items:center;gap:7px;width:100%;min-width:0;
- font:800 clamp(10px,1.1vw,15px)/1.15 Georgia,serif;
- letter-spacing:.17em;color:#e6c18a;border-bottom:1px solid #cb9f614a;
+ display:flex;align-items:center;gap:9px;width:100%;min-width:0;
+ font:900 clamp(11px,1.25vw,17px)/1.15 'Trajan Pro','Cinzel','Palatino Linotype',Georgia,serif;
+ letter-spacing:.21em;color:#ffe3a9;border-bottom:0;
  padding-bottom:4px;white-space:nowrap;
+ filter:drop-shadow(0 3px 4px #000) drop-shadow(0 0 5px #5123089c);
 }
-.arena-march--enemy .arena-march-head{justify-content:flex-end;color:#eda895}
-.arena-march-flourish{font-size:16px;color:#c49c63;line-height:1;opacity:.8}
+.arena-march--enemy .arena-march-head{justify-content:flex-end;color:#f8c8a3}
+.arena-march-flourish{font-size:21px;color:#f0bd70;line-height:1;opacity:1;text-shadow:0 0 9px #d7a05178}
 .arena-march-head strong{overflow:hidden;text-overflow:ellipsis}
 .arena-march-counter{
- font:800 clamp(10px,1.05vw,14px) Georgia,serif;letter-spacing:.06em;
- color:#ffe6b5;border:1px solid #a27a46a6;border-radius:3px;
- padding:0 7px;background:#160905a3;
+ font:900 clamp(11px,1.08vw,15px) Georgia,serif;letter-spacing:.04em;
+ color:#ffe1a3;border:0;border-radius:0;
+ padding:0 5px;background:transparent;text-shadow:0 3px 5px #050101,0 0 7px #c5944b8f;
 }
 .arena-march--ally .arena-march-counter{margin-left:auto}
 .arena-march-tokens{display:flex;flex-direction:row;align-items:center;gap:clamp(6px,1.15vw,15px);min-height:55px;min-width:0}
@@ -46,8 +42,8 @@
  padding:4px;border-radius:13px 13px 17px 17px;
  border:2px solid var(--edge);
  background:linear-gradient(155deg,#916b38 0%,#38261b 18%,#0f0c0b 62%,#54402a 100%);
- box-shadow:0 4px 7px #070403b9,inset 0 0 0 2px #eacb8954,
-  inset 0 3px 6px #f9d3a72c;
+ box-shadow:0 5px 8px #070403e8,0 7px 16px #0008,0 0 12px #b58a4b65,
+ inset 0 0 0 2px #eacb8954,inset 0 3px 6px #f9d3a72c;
  color:var(--ink);
  transition:filter .2s,opacity .2s;
 }
@@ -105,7 +101,8 @@
 .arena-march-centre{
  display:flex;flex-direction:column;align-items:center;justify-content:center;
  align-self:center;gap:0;min-width:0;margin-top:5px;
- color:#f9d9a3;text-align:center;text-shadow:0 2px #180704,0 0 15px #daad6a8c;
+ color:#f9d9a3;text-align:center;text-shadow:0 3px 5px #0a0201,0 0 20px #daad6a9e;
+ filter:drop-shadow(0 4px 5px #080403);
 }
 .arena-march-roman{
  display:block;font:900 clamp(9px,1vw,14px) Georgia,serif;letter-spacing:.17em;
@@ -126,8 +123,7 @@
  .lineup-hud:not([hidden]){top:1%;left:1%;right:1%;gap:3px;
   grid-template-columns:minmax(0,1fr) minmax(50px,11%) minmax(0,1fr);
   padding:0;font-size:10px;}
- .arena-march{padding:4px 5px 6px;min-height:61px;border-width:1px;
-  clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+ .arena-march{padding:4px 3px 6px;min-height:61px;border:0;clip-path:none;background:none}
  .arena-march-head{gap:3px;padding-bottom:3px;font-size:clamp(8px,1.6vw,11px);letter-spacing:.06em}
  .arena-march-counter{font-size:8px;padding:0 3px}
  .arena-march-flourish{display:none}
