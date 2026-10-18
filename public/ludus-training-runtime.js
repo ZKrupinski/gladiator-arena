@@ -141,9 +141,9 @@ function mount(stage,a,s,cbs){
  '<div class="lt-info-head">훈련 효과</div><div class="lt-effect">'+
  '<strong>'+E(cbs.tiles[selected].name)+'</strong>'+
  '<p>'+E(cbs.tiles[selected].help)+'</p>'+
- '<div class="lt-cost"><span>훈련 비용</span><b>◉ 12 D</b></div>'+
+ '<div class="lt-cost"><span>훈련 비용</span><b>◉ '+Number(a.trainingCost?.(s.active,cbs.tiles[selected].stat)||12).toLocaleString('ko-KR')+' D</b></div>'+
  '<div class="lt-cost"><span>보유 금화</span><b>◉ '+Number(s.gold||0).toLocaleString('ko-KR')+' D</b></div></div>'+
- '<div class="lt-guidance">'+(!h?'검투사를 먼저 영입하세요.':Number(s.gold)<12?'금화가 부족합니다.':'아래 훈련 항목을 선택한 뒤 훈련 시작을 누르세요.')+'</div>';
+ '<div class="lt-guidance">'+(!h?'검투사를 먼저 영입하세요.':Number(s.gold)<Number(a.trainingCost?.(s.active,cbs.tiles[selected].stat)||12)?'금화가 부족합니다.':'아래 훈련 항목을 선택한 뒤 훈련 시작을 누르세요.')+'</div>';
  stage.appendChild(panel);
  if(h)paint(panel.querySelector('#ltInfoPortrait'),a.portrait(s.active));
  const fighter=document.createElement('div');fighter.className='lt-fighter-zone';
