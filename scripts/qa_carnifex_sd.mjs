@@ -12,7 +12,8 @@ assert.equal(manifest.imageWidth,2720);
 assert.equal(manifest.imageHeight,740);
 assert.equal(manifest.frameWidth,340);
 assert.equal(manifest.frameHeight,370);
-assert.match(html,/arena-carnifex\.js\?v=3/);
+assert.equal(manifest.baselineY,335,'new atlas must lift boots clear of ground and corpse');
+assert.match(html,/arena-carnifex\.js\?v=4/);
 const source=fs.readFileSync(new URL('../public/arena-carnifex.js',import.meta.url),'utf8');
 let requested=[];
 class Sprite {
@@ -22,7 +23,8 @@ class Sprite {
 const root={};
 vm.runInNewContext(source,{globalThis:root,Image:Sprite});
 const C=root.ArenaCarnifex;
-assert.equal(C.version,'3.0.0');
+assert.equal(C.version,'4.0.0');
+assert.equal(C.sprite.baselineY,335);
 const enemy={enemy:true,cls:'thraex',x:940,hp:0,cfg:{name:'Fallen gladiator'}};
 const s=C.begin(enemy,true,{finished:false});
 assert.ok(requested.some(x=>x.includes('carnifex-sd-atlas.webp')),'preload the new WebP');
@@ -37,14 +39,15 @@ assert.ok(contact.frame>=4&&contact.frame<=7,'retreat must hold floor-level drag
 const ending=C.positions({...s,t:C.TIME.total-.001});
 assert.equal(ending.frame,7);
 assert.equal(ending.bodyVisible,false);
-const draws=[];
-const ctx={save(){},restore(){},translate(){},scale(){},rotate(){},
+const draws=[],verticalPlanes=[];
+const ctx={save(){},restore(){},translate(x,y){if(x===0&&y<0)verticalPlanes.push(y);},scale(){},rotate(){},
  set filter(x){},drawImage(...a){draws.push(a)}};
 let actualBodies=0;
 C.draw(ctx,{...s,t:C.TIME.arrive+C.TIME.grip+C.TIME.haul*.5},f=>{
  actualBodies++;assert.equal(f.cfg,enemy.cfg);assert.equal(f.action,'defeat');
 });
 assert.equal(actualBodies,1,'must draw the original fallen gladiator behind the next bout');
+assert.deepEqual(verticalPlanes,[-24,-14],'executioner stands higher upstage than the corpse');
 assert.equal(draws.length,1,'draw just the executioner from the clean SD sprite sheet');
 assert.equal(draws[0].length,9);
 assert.equal(draws[0][2],370,'dragging animation must read row 2');
