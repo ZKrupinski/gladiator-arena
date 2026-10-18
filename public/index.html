@@ -2128,7 +2128,7 @@ function drawCinematicFocus(){
   ctx.globalAlpha=textAlpha;ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.shadowColor='#090507';ctx.shadowBlur=22;
   ctx.font='900 34px Georgia,serif';ctx.lineWidth=5;ctx.strokeStyle='#1e1010';
-  const labelY=H*.22;
+  const labelY=H*.145;
   ctx.strokeText(legend,W*.5,labelY);
   ctx.fillStyle=f.kind==='parry'?'#ecf3ff':'#ffe8b1';
   ctx.fillText(legend,W*.5,labelY);
@@ -2178,7 +2178,12 @@ function loop(t){
   const focus=window.ArenaFocus?.advance?.(S.cinematic,dt,reduced);
   if(focus){S.cinematic=focus.state;S.focusFrame=focus.active?focus:null;gameDt=focus.gameDt;}
  }else{S.cinematic=null;S.focusFrame=null;}
- update(gameDt,dt);updateCamera(dt);render();requestAnimationFrame(loop);
+ update(gameDt,dt);updateCamera(dt);
+ // Hide ordinary combat copy only while the cinematic Latin title is active.
+ // Both text systems remain intact; the routine notice returns immediately.
+ const notice=document.getElementById('combatNotice');
+ if(notice)notice.style.opacity=(S.focusFrame?.active&&!S.focusFrame.reduced&&S.fx)?'0':'';
+ render();requestAnimationFrame(loop);
 }
 // Opt-in QA hook: actual game internals only on the explicit smoke-test URL.
 if(new URLSearchParams(window.location.search).has('__arena_qa')){
