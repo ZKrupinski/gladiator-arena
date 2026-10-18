@@ -1,27 +1,15 @@
 {
-  "testedAt": "2026-10-18T19:21:32.707Z",
+  "testedAt": "2026-10-18T19:29:39.199Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 65187,
-      "totalDifference": 4857198
-    },
-    "walk": {
-      "changedChannels": 122227,
-      "totalDifference": 10384003
-    },
-    "sweep": {
-      "changedChannels": 116155,
-      "totalDifference": 10141077
-    },
-    "defeat": {
       "changedChannels": 0,
-      "totalDifference": 0
+      "totalDifference": 67133
     }
   },
   "spritePack": "B ready · 24 transparent frames",
   "version": "4.0.0",
   "status": "FAIL",
-  "error": "AssertionError [ERR_ASSERTION]: defeat rendered image is not moving: {\"changedChannels\":0,\"totalDifference\":0}",
+  "error": "AssertionError [ERR_ASSERTION]: idle rendered image is not moving: {\"changedChannels\":0,\"totalDifference\":67133}",
   "consoleErrors": []
 }
