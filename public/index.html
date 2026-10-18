@@ -340,6 +340,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="murmillo-motion-v2.js?v=6"></script>
 <script src="champion-murmillo.js?v=2"></script>
 <script src="arena-balance.js?v=1"></script>
+<script src="arena-lineup.js?v=1"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -722,7 +723,7 @@ function normalizeEquipment(h){
  }
  delete h.equipped;
 }
-CAREER.roster.forEach(h=>{normalizeEquipment(h);h.level=careerLevel(h);h.xp=Math.max(0,Number(h.xp)||0);});
+CAREER.roster.forEach(h=>{normalizeEquipment(h);h.level=careerLevel(h);h.xp=Math.max(0,Number(h.xp)||0);h.fatigue=Math.max(0,Math.min(100,Number(h.fatigue)||0));});
 function equipmentBonus(h){
  normalizeEquipment(h);
  return Object.values(h.equipment).reduce((o,id)=>{
@@ -732,6 +733,7 @@ function equipmentBonus(h){
 }
 Object.defineProperty(CAREER,'hero',{get(){return this.roster[this.active]||null;}});
 function careerHealth(h){const max=ArenaBalance.heroStats(h,DATA[h.cls],equipmentBonus(h)).hp;return {max,current:Math.max(1,max-h.injury)};}
+function careerEligible(h){return ArenaLineup.condition(h).eligible;}
 function saveCareer(){try{localStorage.setItem(CAREER_KEY,JSON.stringify({gold:CAREER.gold,glory:CAREER.glory,fights:CAREER.fights,wins:CAREER.wins,roster:CAREER.roster,active:CAREER.active,message:CAREER.message,pendingOpponent:CAREER.pendingOpponent||null,marketSeed:CAREER.marketSeed||0,marketInventory:CAREER.marketInventory||null}));}catch(err){}}
 // Add one dedicated fighter to existing saves without changing old fighters.
 function installAnimatedMurmilloStarter(){
@@ -807,6 +809,7 @@ function returnToCareer(){
 function finishCareerMatch(){
  if(S.careerRewardApplied)return;
  S.careerRewardApplied=true;
+ if(S.gauntlet)return finishLineupCareerMatch();
  const h=CAREER.roster[S.careerParticipant],win=S.resultWin;
  const payout=ArenaBalance.rewards(win,S.careerOpponent?.round||1,'1v1');
  const reward=payout.gold;
@@ -877,7 +880,7 @@ function paintDraftOpponent(){
 }
 function openCareerDraft(){
  if(!CAREER.roster.length){CAREER.message='출전할 검투사가 없습니다. 시장에서 영입하세요.';saveCareer();window.LudusScene?.refresh();return;}
- if(!CAREER.roster.some(h=>(Number(h.injury)||0)<80)){CAREER.message='전원 부상으로 출전할 수 없습니다. 치료부터 진행하세요.';saveCareer();window.LudusScene?.refresh();return;}
+ if(!CAREER.roster.some(careerEligible)){CAREER.message='출전 가능한 검투사가 없습니다. 치료 또는 휴식이 필요합니다.';saveCareer();window.LudusScene?.refresh();return;}
  $('#careerHub').hidden=false;window.LudusScene?.close();
  CAREER_SELECTING=true;
  window.LudusCardScenes?.beginDraft(CAREER.active);
@@ -1037,15 +1040,16 @@ function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 function start(mode='new',requestedRosterIndex=null){
  const careerMatch=mode==='career';
+ S.gauntlet=null;updateLineupHud();
  if(careerMatch&&requestedRosterIndex!==null){
   const i=Number(requestedRosterIndex),candidate=CAREER.roster[i];
-  if(!Number.isInteger(i)||!candidate||Number(candidate.injury||0)>=80){
+  if(!Number.isInteger(i)||!candidate||!careerEligible(candidate)){
    CAREER.message='선택한 검투사는 출전할 수 없습니다.';
    enterCareer();return;
   }
   CAREER.active=i;saveCareer();
  }
- if(careerMatch&&(!CAREER.hero||CAREER.hero.injury>=80)){enterCareer();return;}
+ if(careerMatch&&(!CAREER.hero||!careerEligible(CAREER.hero))){enterCareer();return;}
  if(careerMatch){window.LudusScene?.close();$('#careerHub').hidden=true;$('#careerMini').hidden=true;MINI=null;}
  if(mode==='new'){S.round=1;S.totalScore=0;}
  if(mode==='continue'){S.totalScore+=S.score;S.round++;}
@@ -1134,7 +1138,7 @@ function autoPilotPlayer(p,e,dt){
  }
 }
 function returnToLudus(){
- S.phase='title';S.paused=false;S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.flash=0;S.resultAnim=0;S.resultApplied=false;
+ S.phase='title';S.paused=false;S.gauntlet=null;updateLineupHud();S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.flash=0;S.resultAnim=0;S.resultApplied=false;
  const c=$('#classChoice').value;S.player=fighter(c,335,false);S.enemy=fighter('retiarius',940,true);CAMERA.initialized=false;
  $('#endScreen').hidden=true;$('#startScreen').hidden=false;$('#pauseBtn').textContent='Ⅱ';updateHud();
 }
