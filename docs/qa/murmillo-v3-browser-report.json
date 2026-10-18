@@ -1,38 +1,9 @@
 {
-  "testedAt": "2026-10-18T03:35:53.423Z",
+  "testedAt": "2026-10-18T03:40:48.281Z",
   "source": "local GitHub Pages public/",
-  "samples": {
-    "idle": {
-      "changedChannels": 70416,
-      "totalDifference": 5687657
-    },
-    "walk": {
-      "changedChannels": 100251,
-      "totalDifference": 8548367
-    },
-    "slash": {
-      "changedChannels": 84198,
-      "totalDifference": 7445305
-    },
-    "thrust": {
-      "changedChannels": 72241,
-      "totalDifference": 6367315
-    },
-    "victory": {
-      "changedChannels": 39155,
-      "totalDifference": 2974179
-    }
-  },
-  "version": "3.0.0",
-  "roster": {
-    "originalKept": true,
-    "addedOnce": true,
-    "activePreserved": true,
-    "levelPreserved": true,
-    "inventoryPreserved": true,
-    "flutterRemoved": true,
-    "scale": 0.64,
-    "rosterAfterMigration": 3
-  },
-  "status": "PASS"
+  "samples": {},
+  "version": "4.0.0",
+  "status": "FAIL",
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'4.0.0' !== '3.0.0'\n",
+  "consoleErrors": []
 }
