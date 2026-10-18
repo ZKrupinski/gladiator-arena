@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="740" viewBox="0 0 540 740">
+<defs>
+<linearGradient id="skin" x1=".2" y1="0" x2=".86" y2=".85"><stop stop-color="#d9a07a"/><stop offset=".28" stop-color="#a96f50"/><stop offset=".58" stop-color="#814931"/><stop offset=".86" stop-color="#4a2c24"/><stop offset="1" stop-color="#392421"/></linearGradient>
+<linearGradient id="skinLight" x1="0" x2=".94" y2=".8"><stop stop-color="#e6b694"/><stop offset=".27" stop-color="#c28a63"/><stop offset=".65" stop-color="#82472d"/><stop offset="1" stop-color="#4d2e22"/></linearGradient>
+<linearGradient id="iron" x1=".1" y1="0" x2=".93" y2=".99"><stop stop-color="#fff0c0"/><stop offset=".09" stop-color="#adaca1"/><stop offset=".26" stop-color="#4d5154"/><stop offset=".50" stop-color="#20252b"/><stop offset=".68" stop-color="#595e60"/><stop offset=".85" stop-color="#28282d"/><stop offset="1" stop-color="#6b5b4d"/></linearGradient>
+<linearGradient id="rust" x1="0" y1="0" x2="1" y2=".9"><stop stop-color="#c8a067"/><stop offset=".12" stop-color="#7c5738"/><stop offset=".38" stop-color="#523326"/><stop offset=".67" stop-color="#262026"/><stop offset=".91" stop-color="#594134"/><stop offset="1" stop-color="#b18b5a"/></linearGradient>
+<linearGradient id="leather" x1=".2" y1="0" x2=".87" y2="1"><stop stop-color="#6c3a29"/><stop offset=".23" stop-color="#3a2420"/><stop offset=".60" stop-color="#211b1b"/><stop offset=".85" stop-color="#412821"/><stop offset="1" stop-color="#654737"/></linearGradient>
+<linearGradient id="cloth" x1="0" y1="0" x2=".9" y2=".98"><stop stop-color="#564337"/><stop offset=".30" stop-color="#272327"/><stop offset=".70" stop-color="#17171b"/><stop offset="1" stop-color="#554031"/></linearGradient>
+<radialGradient id="arm" cx=".35" cy=".2" r=".9"><stop stop-color="#e2ae83"/><stop offset=".25" stop-color="#a56c4d"/><stop offset=".65" stop-color="#72442f"/><stop offset="1" stop-color="#302520"/></radialGradient>
+<filter id="grain" x="-8%" y="-8%" width="116%" height="116%"><feTurbulence type="fractalNoise" baseFrequency=".17" numOctaves="3" seed="11" result="noise"/><feColorMatrix in="noise" type="saturate" values="0" result="mono"/><feComponentTransfer in="mono" result="soft"><feFuncA type="linear" slope=".13"/></feComponentTransfer><feBlend in="SourceGraphic" in2="soft" mode="multiply"/></filter>
+<filter id="shade" x="-18%" y="-18%" width="136%" height="136%"><feGaussianBlur in="SourceAlpha" stdDeviation="8" result="blur"/><feOffset dx="6" dy="10" in="blur" result="shadow"/><feComponentTransfer in="shadow" result="shade"><feFuncA type="linear" slope=".48"/></feComponentTransfer><feMerge><feMergeNode in="shade"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<g filter="url(#shade)">
+<!-- Draped cowl, battered trophy hooks and trailing hide cape -->
+<path fill="url(#cloth)" stroke="#181618" stroke-width="6" d="M150 214Q98 230 73 329L59 405 93 389 71 458 116 432 99 511 163 447 210 404 229 285Z"/>
+<path fill="none" stroke="#97745a" stroke-width="4" d="M109 307Q95 359 92 409M141 290Q126 355 135 425"/>
+<path fill="#463a35" stroke="#0e1113" stroke-width="4" d="M331 143q63 15 94 76l19 115-17 48-26-21 7-61-44-43Z"/>
+<!-- Heavy greaves and boots, asymmetrical tattered lower shroud -->
+<path fill="url(#leather)" stroke="#151516" stroke-width="8" d="M191 476q-30 66-30 105l-26 91q-18 14-17 26l12 16h102l11-13-27-25 24-74 29-86Z"/>
+<path fill="url(#leather)" stroke="#121519" stroke-width="8" d="M302 488q17 57 7 116l23 67q5 22 24 31l-6 14H239l-5-17 32-23-23-93-8-70Z"/>
+<path fill="url(#iron)" stroke="#302925" stroke-width="6" d="M155 574q33-22 66 9l-13 94q-40 11-77-1Z"/>
+<path fill="url(#iron)" stroke="#191a20" stroke-width="6" d="M264 587q40-25 69-3l22 83q-31 24-71 11Z"/>
+<path d="M136 684q47 9 86-3l31 20-4 25-126 0-11-14Z" fill="url(#rust)" stroke="#101113" stroke-width="7"/>
+<path d="M273 681q38 16 71-7l36 30-8 25H238l-10-22Z" fill="url(#rust)" stroke="#151618" stroke-width="7"/>
+<path d="M145 606q31 15 72-1M139 638q29 15 77-1M268 622q38 15 72-2M277 648q35 13 69-1" fill="none" stroke="#e2bb7a" stroke-width="3" opacity=".43"/>
+<g fill="#cfac73"><circle cx="170" cy="615" r="4"/><circle cx="311" cy="626" r="4"/><circle cx="198" cy="655" r="4"/></g>
+<!-- hide battle-skirt with individually torn edges -->
+<path d="M167 381q-45 75-24 182l24-22 19 38 21-27 31 30 18-39 33 25 17-47 31 17 3-114Z" fill="url(#cloth)" stroke="#191617" stroke-width="7"/>
+<path d="M181 429q-28 75-15 113M222 429q-15 75-7 119M269 431q-5 85 15 111M310 425q9 63 7 92" stroke="#af8960" stroke-width="6" opacity=".27" fill="none"/>
+<path d="M161 432q-4 40 7 87m28-84-3 98m63-95 13 99" stroke="#121316" stroke-width="8" opacity=".72" fill="none"/>
+<!-- Hulking muscular torso -->
+<path d="M188 169q-29 10-64 49-28 50-22 117l38 58q-15 35 16 73l137 10 48-50-17-103 14-92-40-54Z" fill="url(#skin)" stroke="#2c2120" stroke-width="8"/>
+<path d="M132 249q21-39 79-31l44 14q24-23 58-10l11 90-43 22-58-15-26 35-48-28Z" fill="#dea47d" opacity=".3"/>
+<path d="M199 235q-19 55-10 83m26-79q9 67 39 77m37-62q-17 40-17 80M167 373q35 16 76 10m24-4q29-15 50 6" fill="none" stroke="#442923" stroke-width="9" opacity=".6"/>
+<path d="M157 400q78 30 164-6l6 39q-83 44-166 4Z" fill="url(#leather)" stroke="#171319" stroke-width="7"/>
+<path d="M150 418q93 43 177 5" fill="none" stroke="#d1a267" stroke-width="5" opacity=".68"/>
+<!-- chest X harness and iron bosses -->
+<path d="M160 206 301 401l-21 18L133 240Zm174 19L190 423l-26-15 155-196Z" fill="url(#leather)" stroke="#1a1315" stroke-width="7"/>
+<path d="m153 228 141 187M328 237 178 420" fill="none" stroke="#ca9d66" stroke-width="3" opacity=".7"/>
+<path d="M221 309q21-19 46 2l-4 37q-25 20-46-5Z" fill="url(#iron)" stroke="#17161a" stroke-width="6"/>
+<circle cx="242" cy="327" r="12" fill="#c8aa7f" stroke="#543929" stroke-width="4"/>
+<g fill="#f0d7a0"><circle cx="153" cy="229" r="4"/><circle cx="312" cy="221" r="4"/><circle cx="187" cy="407" r="4"/><circle cx="292" cy="401" r="4"/></g>
+<!-- Broad far arm with iron plates -->
+<path d="M321 213q48-33 75 2l42 111q11 22-9 49l-27 5-30-23-36-90Z" fill="url(#arm)" stroke="#302520" stroke-width="8"/>
+<path d="M374 312q23-24 58 2l18 65-34 23-42-26Z" fill="url(#iron)" stroke="#24191b" stroke-width="8"/>
+<path d="M379 332q26-7 50 4M385 352l42-4" fill="none" stroke="#f0c799" stroke-width="3" opacity=".65"/>
+<!-- Massive near shoulder with carved war pauldron -->
+<path d="M139 205q-63-22-95 46l-6 86q9 19 40 25l48-18 39-92Z" fill="url(#arm)" stroke="#2c201c" stroke-width="9"/>
+<path d="M84 197q-58 11-58 67l23 51 65 6 39-96q-17-35-69-28Z" fill="url(#iron)" stroke="#17181c" stroke-width="8"/>
+<path d="M65 211q42-12 63 20L91 281l-44-11" stroke="#efcea0" stroke-width="7" fill="none" opacity=".65"/>
+<path d="M31 259q26-10 72 19" stroke="#151c22" stroke-width="13"/>
+<circle cx="55" cy="269" r="8" fill="#a88458" stroke="#222126" stroke-width="3"/>
+<!-- Left arm powerful hand and armored wrist -->
+<path d="M54 312q-23 33-5 105l24 36q28 11 43-23l3-71-15-39Z" fill="url(#skinLight)" stroke="#2d1f1b" stroke-width="8"/>
+<path d="M51 394q35-24 66-4l16 44-61 37-29-30Z" fill="url(#rust)" stroke="#1d171a" stroke-width="7"/>
+<path d="M56 403q32 8 56-3m-40 22q31 10 49-3" fill="none" stroke="#f0ca8f" stroke-width="4" opacity=".55"/>
+<path d="M74 459q14-15 33-8l24 34-6 29-17 11-26-15-18-27Z" fill="url(#skin)" stroke="#201919" stroke-width="7"/>
+<path d="m102 494 11 17M84 474l13 25" fill="none" stroke="#3d241e" stroke-width="5"/>
+<!-- massive hook for corpse dragging -->
+<path d="M115 497q37 32 34 75c-2 22-26 33-43 20q-11-9-7-22" stroke="#111215" stroke-width="15" fill="none" stroke-linecap="round"/>
+<path d="M115 497q37 32 34 75c-2 22-26 33-43 20" stroke="url(#iron)" stroke-width="9" fill="none" stroke-linecap="round"/>
+<!-- Mantle and cowled iron executioner's helm -->
+<path d="M170 159q5-85 71-102 88-17 126 64l1 91-42 32-150-4-35-35Z" fill="url(#cloth)" stroke="#15151a" stroke-width="8"/>
+<path d="M193 140q6-58 65-73 59-1 87 54l-4 65-24 32H195l-20-31Z" fill="url(#iron)" stroke="#211a1c" stroke-width="9"/>
+<path d="M218 83q43-23 93 7m-112 24q47-39 117-12" stroke="#fff0bb" stroke-width="7" opacity=".52" fill="none" stroke-linecap="round"/>
+<path d="M195 153h139l-7 54-35 37h-61l-38-35Z" fill="#171c22" stroke="#8d735c" stroke-width="8"/>
+<path d="m205 162 39 5-4 19-37-5Zm84 5 35-6-3 19-35 7Z" fill="#b66a42" stroke="#291b19" stroke-width="5"/>
+<path d="M214 167h24m56 0h23" stroke="#ebc99a" stroke-width="3"/>
+<path d="M264 154v76M249 190l-8 32m36-32 8 32M246 224h40" stroke="#b3a185" stroke-width="6" fill="none"/>
+<path d="M194 188l-31 39 25 23 22-21m114-36 21 28-26 31-21-17" fill="url(#rust)" stroke="#191a20" stroke-width="7"/>
+<path d="M229 228h62l-22 34h-21Z" fill="#232024" stroke="#baa07a" stroke-width="6"/>
+<path d="M252 78l-6-31 15-33 19 34-1 26" fill="url(#rust)" stroke="#272127" stroke-width="7"/>
+<path d="M259 24v51" stroke="#fff0c7" stroke-width="3" opacity=".6"/>
+<!-- leather surface engraving, small scar and rivet details -->
+<path d="M60 248q14-12 38-10M374 351l40 12M177 439l130 3" fill="none" stroke="#c09365" stroke-width="2" opacity=".65"/>
+<g fill="#e6c693" stroke="#5b3923" stroke-width="2"><circle cx="97" cy="276" r="6"/><circle cx="116" cy="244" r="5"/><circle cx="392" cy="340" r="5"/><circle cx="413" cy="364" r="5"/><circle cx="170" cy="423" r="4"/><circle cx="317" cy="425" r="4"/></g>
+<path d="M137 286q-13 23-13 42M317 302q9 18 2 41" fill="none" stroke="#f9cf9b" stroke-width="3" opacity=".28"/>
+</g>
+</svg>
