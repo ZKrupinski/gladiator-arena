@@ -5,6 +5,7 @@ Each transparent file keeps the original foot-pivot coordinates.
 """
 from pathlib import Path
 import json
+from collections import Counter
 from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -50,6 +51,13 @@ for idx, (name, spec) in enumerate(zip(NAMES, sheet["frames"])):
         alpha[offset:offset+length] = b"\xff"*length
     mask = Image.frombytes("L", (w,h), bytes(alpha))
     cutout.putalpha(ImageChops.multiply(cutout.getchannel("A"), mask))
+    pixel_hist=Counter()
+    pix=cutout.load()
+    for yy in range(h):
+        for xx in range(int(w*.74),w):
+            rr,gg,bb,aa=pix[xx,yy]
+            if aa>=40:pixel_hist[(rr//8*8,gg//8*8,bb//8*8)]+=1
+    hottest=[{"rgb":list(rgb),"count":n} for rgb,n in pixel_hist.most_common(12)]
     cutout,removed,colors=remove_flat_edge_blocks(cutout)
     edge_info=[]
     px=cutout.load()
@@ -65,7 +73,7 @@ for idx, (name, spec) in enumerate(zip(NAMES, sheet["frames"])):
             if col[3]<20 or max(abs(col[j]-base[j]) for j in range(3))>18:break
             length+=1
         edge_info.append({"y":yy,"x":xx,"rgba":list(base),"near_run18":length})
-    quality.append({"pose":name,"flat_colours":colors,"removed_pixels":removed,"source_area":w*h,"edge":edge_info})
+    quality.append({"pose":name,"flat_colours":colors,"removed_pixels":removed,"source_area":w*h,"edge":edge_info,"top_edge_colours":hottest})
     print(f"cleanup {name}: removed {removed} flat-colour pixels from {colors} atlas colours",flush=True)
     assert cutout.getchannel("A").getbbox(), f"Empty pose: {name}"
     padded = Image.new("RGBA", (w+GUTTER*2, h+GUTTER*2), (0,0,0,0))
