@@ -1,34 +1,34 @@
 {
-  "testedAt": "2026-10-18T04:03:28.309Z",
+  "testedAt": "2026-10-18T04:05:22.167Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 26634,
-      "totalDifference": 1673778
+      "changedChannels": 54627,
+      "totalDifference": 4028020
     },
     "walk": {
-      "changedChannels": 77291,
-      "totalDifference": 6724551
+      "changedChannels": 39965,
+      "totalDifference": 2667237
     },
     "sweep": {
-      "changedChannels": 69136,
-      "totalDifference": 6211181
+      "changedChannels": 83394,
+      "totalDifference": 7488749
     },
     "defeat": {
-      "changedChannels": 72673,
-      "totalDifference": 6408676
+      "changedChannels": 77485,
+      "totalDifference": 6605836
     },
     "slash": {
-      "changedChannels": 84113,
-      "totalDifference": 7472239
+      "changedChannels": 86131,
+      "totalDifference": 7628280
     },
     "thrust": {
-      "changedChannels": 72974,
-      "totalDifference": 6506922
+      "changedChannels": 83395,
+      "totalDifference": 7381676
     },
     "victory": {
-      "changedChannels": 62204,
-      "totalDifference": 5283977
+      "changedChannels": 77206,
+      "totalDifference": 6720472
     }
   },
   "spritePack": "B ready · 24 transparent frames",
@@ -40,15 +40,26 @@
     "levelPreserved": true,
     "inventoryPreserved": true,
     "flutterRemoved": true,
-    "scale": 0.64,
+    "originalTier5Scale": 0.64,
+    "newMotionBattleScale": 0.7,
     "rosterAfterMigration": 3
   },
   "deployment": {
     "mainCTA": true,
     "ludusCTA": true,
+    "lobbyArtHitZone": true,
+    "sidebarCTA": true,
     "selectOld": true,
     "selectAnimated": true,
     "selectOther": true,
+    "lobbyHitArea": {
+      "width": 177.3480224609375,
+      "height": 212.1546630859375,
+      "target": "ll-hit-arena",
+      "isTarget": true,
+      "pointer": "auto",
+      "stageHasArt": true
+    },
     "names": [
       "기존 무르밀로",
       "무르밀로 · 애니메이션",
