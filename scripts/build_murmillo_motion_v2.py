@@ -17,43 +17,20 @@ NAMES = ("idle", "walk", "slash", "sweep", "thrust", "heavy",
 GUTTER = 12
 
 def remove_flat_edge_blocks(tile):
-    """Remove leftover solid-colour atlas blocks around the right/bottom edge.
-    Detect only repeated *opaque and identical* colours from long right-edge
-    runs, not gradients on the actor. Preserve the painted alpha otherwise.
+    """Exclude low-alpha rectangular atlas spill while preserving antialiasing
+    near solid source-art silhouettes. This operates only at asset build time.
     """
-    w,h=tile.size
-    p=tile.load()
-    flat={}
-    for y in range(h):
-        x=w-1
-        while x>=int(w*.58) and p[x,y][3]<245:
-            x-=1
-        if x<int(w*.58):
-            continue
-        rgb=p[x,y][:3]
-        j=x
-        while j>=0 and p[j,y][3]>=245 and max(abs(p[j,y][k]-rgb[k]) for k in range(3))<=2:
-            j-=1
-        length=x-j
-        if length>=10:
-            flat[rgb]=flat.get(rgb,0)+length
-    colours=[rgb for rgb,total in flat.items() if total>=30]
-    if not colours:
-        return tile,0,len(colours)
-    palette=set(colours)
-    removal=Image.new('L',(w,h),0);dest=removal.load()
-    count=0
-    for y in range(h):
-        for x in range(w):
-            r,g,b,a=p[x,y]
-            if a<8:continue
-            if (r,g,b) in palette:
-                dest[x,y]=255;count+=1
-    # Keep anti-aliased original art, removing only 1px around flat blocks.
-    if count:
-        removal=removal.filter(ImageFilter.MaxFilter(3))
-        tile.putalpha(ImageChops.subtract(tile.getchannel('A'),removal))
-    return tile,count,len(colours)
+    alpha=tile.getchannel("A")
+    core=alpha.point(lambda v:255 if v>=225 else 0)
+    # Keep original feather, weapon, shield and cloth antialiasing within 8px
+    # of real opaque artwork. Unattached translucent colour bars disappear.
+    keep=core.filter(ImageFilter.MaxFilter(17))
+    clean=ImageChops.multiply(alpha,keep)
+    before=alpha.histogram()
+    after=clean.histogram()
+    removed=sum(before[1:])-sum(after[1:])
+    tile.putalpha(clean)
+    return tile,removed,1
 
 cut = json.loads((SRC / "frame-cuts.json").read_text(encoding="utf-8"))
 sheet = cut["sheets"][KEY]
