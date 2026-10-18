@@ -1,0 +1,1051 @@
+{
+  "version": 1,
+  "character": "murmillo_champion_red",
+  "name": "신규 챔피언 무르밀로",
+  "cellWidth": 430,
+  "cellHeight": 430,
+  "canvas": {
+    "width": 960,
+    "height": 540,
+    "transparent": true
+  },
+  "actions": {
+    "idle": [
+      {
+        "file": "frames/idle_00.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 0,
+        "sourceBBox": [
+          26,
+          45,
+          409,
+          461
+        ]
+      },
+      {
+        "file": "frames/idle_01.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 1,
+        "sourceBBox": [
+          3,
+          40,
+          396,
+          461
+        ]
+      },
+      {
+        "file": "frames/idle_02.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 2,
+        "sourceBBox": [
+          18,
+          46,
+          390,
+          461
+        ]
+      },
+      {
+        "file": "frames/idle_03.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 3,
+        "sourceBBox": [
+          0,
+          44,
+          395,
+          459
+        ]
+      },
+      {
+        "file": "frames/idle_04.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 4,
+        "sourceBBox": [
+          26,
+          20,
+          410,
+          429
+        ]
+      },
+      {
+        "file": "frames/idle_05.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 5,
+        "sourceBBox": [
+          13,
+          5,
+          414,
+          434
+        ]
+      },
+      {
+        "file": "frames/idle_06.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 6,
+        "sourceBBox": [
+          16,
+          24,
+          410,
+          432
+        ]
+      },
+      {
+        "file": "frames/idle_07.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 7,
+        "sourceBBox": [
+          0,
+          21,
+          402,
+          430
+        ]
+      }
+    ],
+    "walk": [
+      {
+        "file": "frames/walk_00.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 0,
+        "sourceBBox": [
+          15,
+          57,
+          390,
+          460
+        ]
+      },
+      {
+        "file": "frames/walk_01.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 1,
+        "sourceBBox": [
+          9,
+          55,
+          398,
+          460
+        ]
+      },
+      {
+        "file": "frames/walk_02.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 2,
+        "sourceBBox": [
+          25,
+          49,
+          418,
+          465
+        ]
+      },
+      {
+        "file": "frames/walk_03.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 3,
+        "sourceBBox": [
+          24,
+          50,
+          413,
+          463
+        ]
+      },
+      {
+        "file": "frames/walk_04.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 4,
+        "sourceBBox": [
+          22,
+          25,
+          418,
+          421
+        ]
+      },
+      {
+        "file": "frames/walk_05.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 5,
+        "sourceBBox": [
+          22,
+          23,
+          412,
+          436
+        ]
+      },
+      {
+        "file": "frames/walk_06.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 6,
+        "sourceBBox": [
+          28,
+          21,
+          418,
+          440
+        ]
+      },
+      {
+        "file": "frames/walk_07.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 7,
+        "sourceBBox": [
+          18,
+          22,
+          409,
+          427
+        ]
+      }
+    ],
+    "slash": [
+      {
+        "file": "frames/slash_00.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 0,
+        "sourceBBox": [
+          32,
+          96,
+          415,
+          467
+        ]
+      },
+      {
+        "file": "frames/slash_01.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 1,
+        "sourceBBox": [
+          26,
+          58,
+          418,
+          466
+        ]
+      },
+      {
+        "file": "frames/slash_02.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 2,
+        "sourceBBox": [
+          21,
+          22,
+          387,
+          470
+        ]
+      },
+      {
+        "file": "frames/slash_03.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 3,
+        "sourceBBox": [
+          0,
+          96,
+          384,
+          470
+        ]
+      },
+      {
+        "file": "frames/slash_04.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 4,
+        "sourceBBox": [
+          49,
+          54,
+          418,
+          418
+        ]
+      },
+      {
+        "file": "frames/slash_05.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 5,
+        "sourceBBox": [
+          0,
+          43,
+          397,
+          441
+        ]
+      },
+      {
+        "file": "frames/slash_06.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 6,
+        "sourceBBox": [
+          21,
+          49,
+          418,
+          413
+        ]
+      },
+      {
+        "file": "frames/slash_07.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 7,
+        "sourceBBox": [
+          0,
+          54,
+          406,
+          418
+        ]
+      }
+    ],
+    "sweep": [
+      {
+        "file": "frames/sweep_00.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 0,
+        "sourceBBox": [
+          18,
+          45,
+          375,
+          436
+        ]
+      },
+      {
+        "file": "frames/sweep_01.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 1,
+        "sourceBBox": [
+          0,
+          41,
+          418,
+          436
+        ]
+      },
+      {
+        "file": "frames/sweep_02.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 2,
+        "sourceBBox": [
+          0,
+          44,
+          418,
+          433
+        ]
+      },
+      {
+        "file": "frames/sweep_03.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 3,
+        "sourceBBox": [
+          0,
+          44,
+          417,
+          436
+        ]
+      },
+      {
+        "file": "frames/sweep_04.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 4,
+        "sourceBBox": [
+          14,
+          22,
+          418,
+          415
+        ]
+      },
+      {
+        "file": "frames/sweep_05.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 5,
+        "sourceBBox": [
+          0,
+          20,
+          418,
+          416
+        ]
+      },
+      {
+        "file": "frames/sweep_06.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 6,
+        "sourceBBox": [
+          0,
+          23,
+          382,
+          418
+        ]
+      },
+      {
+        "file": "frames/sweep_07.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 7,
+        "sourceBBox": [
+          0,
+          20,
+          370,
+          418
+        ]
+      }
+    ],
+    "thrust": [
+      {
+        "file": "frames/thrust_00.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 0,
+        "sourceBBox": [
+          14,
+          86,
+          363,
+          433
+        ]
+      },
+      {
+        "file": "frames/thrust_01.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 1,
+        "sourceBBox": [
+          0,
+          84,
+          418,
+          434
+        ]
+      },
+      {
+        "file": "frames/thrust_02.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 2,
+        "sourceBBox": [
+          0,
+          83,
+          418,
+          434
+        ]
+      },
+      {
+        "file": "frames/thrust_03.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 3,
+        "sourceBBox": [
+          0,
+          83,
+          409,
+          433
+        ]
+      },
+      {
+        "file": "frames/thrust_04.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 4,
+        "sourceBBox": [
+          20,
+          34,
+          417,
+          391
+        ]
+      },
+      {
+        "file": "frames/thrust_05.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 5,
+        "sourceBBox": [
+          11,
+          34,
+          377,
+          391
+        ]
+      },
+      {
+        "file": "frames/thrust_06.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 6,
+        "sourceBBox": [
+          0,
+          35,
+          364,
+          395
+        ]
+      },
+      {
+        "file": "frames/thrust_07.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 7,
+        "sourceBBox": [
+          13,
+          38,
+          372,
+          394
+        ]
+      }
+    ],
+    "heavy": [
+      {
+        "file": "frames/heavy_00.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 0,
+        "sourceBBox": [
+          17,
+          40,
+          416,
+          457
+        ]
+      },
+      {
+        "file": "frames/heavy_01.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 1,
+        "sourceBBox": [
+          18,
+          44,
+          406,
+          456
+        ]
+      },
+      {
+        "file": "frames/heavy_02.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 2,
+        "sourceBBox": [
+          3,
+          51,
+          418,
+          457
+        ]
+      },
+      {
+        "file": "frames/heavy_03.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 3,
+        "sourceBBox": [
+          20,
+          52,
+          415,
+          457
+        ]
+      },
+      {
+        "file": "frames/heavy_04.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 4,
+        "sourceBBox": [
+          17,
+          16,
+          418,
+          422
+        ]
+      },
+      {
+        "file": "frames/heavy_05.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 5,
+        "sourceBBox": [
+          0,
+          17,
+          418,
+          422
+        ]
+      },
+      {
+        "file": "frames/heavy_06.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 6,
+        "sourceBBox": [
+          0,
+          19,
+          404,
+          423
+        ]
+      },
+      {
+        "file": "frames/heavy_07.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 7,
+        "sourceBBox": [
+          30,
+          20,
+          389,
+          422
+        ]
+      }
+    ],
+    "guard": [
+      {
+        "file": "frames/guard_00.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 0,
+        "sourceBBox": [
+          19,
+          39,
+          418,
+          431
+        ]
+      },
+      {
+        "file": "frames/guard_01.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 1,
+        "sourceBBox": [
+          28,
+          40,
+          418,
+          431
+        ]
+      },
+      {
+        "file": "frames/guard_02.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 2,
+        "sourceBBox": [
+          0,
+          40,
+          416,
+          431
+        ]
+      },
+      {
+        "file": "frames/guard_03.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 3,
+        "sourceBBox": [
+          30,
+          42,
+          404,
+          431
+        ]
+      },
+      {
+        "file": "frames/guard_04.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 4,
+        "sourceBBox": [
+          19,
+          29,
+          418,
+          424
+        ]
+      },
+      {
+        "file": "frames/guard_05.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 5,
+        "sourceBBox": [
+          40,
+          26,
+          418,
+          423
+        ]
+      },
+      {
+        "file": "frames/guard_06.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 6,
+        "sourceBBox": [
+          26,
+          27,
+          416,
+          424
+        ]
+      },
+      {
+        "file": "frames/guard_07.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 7,
+        "sourceBBox": [
+          32,
+          27,
+          404,
+          423
+        ]
+      }
+    ],
+    "hit": [
+      {
+        "file": "frames/hit_00.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 0,
+        "sourceBBox": [
+          13,
+          63,
+          398,
+          470
+        ]
+      },
+      {
+        "file": "frames/hit_01.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 1,
+        "sourceBBox": [
+          11,
+          95,
+          418,
+          470
+        ]
+      },
+      {
+        "file": "frames/hit_02.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 2,
+        "sourceBBox": [
+          12,
+          78,
+          418,
+          470
+        ]
+      },
+      {
+        "file": "frames/hit_03.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 3,
+        "sourceBBox": [
+          21,
+          118,
+          410,
+          470
+        ]
+      },
+      {
+        "file": "frames/hit_04.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 4,
+        "sourceBBox": [
+          31,
+          81,
+          418,
+          438
+        ]
+      },
+      {
+        "file": "frames/hit_05.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 5,
+        "sourceBBox": [
+          0,
+          41,
+          403,
+          435
+        ]
+      },
+      {
+        "file": "frames/hit_06.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 6,
+        "sourceBBox": [
+          26,
+          28,
+          402,
+          435
+        ]
+      },
+      {
+        "file": "frames/hit_07.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 7,
+        "sourceBBox": [
+          5,
+          33,
+          402,
+          435
+        ]
+      }
+    ],
+    "death": [
+      {
+        "file": "frames/death_00.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 0,
+        "sourceBBox": [
+          17,
+          71,
+          418,
+          470
+        ]
+      },
+      {
+        "file": "frames/death_01.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 1,
+        "sourceBBox": [
+          24,
+          78,
+          418,
+          470
+        ]
+      },
+      {
+        "file": "frames/death_02.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 2,
+        "sourceBBox": [
+          0,
+          108,
+          418,
+          470
+        ]
+      },
+      {
+        "file": "frames/death_03.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 3,
+        "sourceBBox": [
+          0,
+          160,
+          410,
+          470
+        ]
+      },
+      {
+        "file": "frames/death_04.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 4,
+        "sourceBBox": [
+          20,
+          87,
+          384,
+          396
+        ]
+      },
+      {
+        "file": "frames/death_05.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 5,
+        "sourceBBox": [
+          7,
+          115,
+          418,
+          391
+        ]
+      },
+      {
+        "file": "frames/death_06.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 6,
+        "sourceBBox": [
+          0,
+          157,
+          418,
+          390
+        ]
+      },
+      {
+        "file": "frames/death_07.webp",
+        "pivotX": 480,
+        "footY": 512,
+        "width": 960,
+        "height": 540,
+        "sourceFrame": 7,
+        "sourceBBox": [
+          0,
+          0,
+          401,
+          402
+        ]
+      }
+    ]
+  },
+  "fps": {
+    "idle": 6,
+    "walk": 10,
+    "slash": 14,
+    "sweep": 14,
+    "thrust": 14,
+    "heavy": 12,
+    "guard": 7,
+    "hit": 10,
+    "death": 10
+  }
+}
