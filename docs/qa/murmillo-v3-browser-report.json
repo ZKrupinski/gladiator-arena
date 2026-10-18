@@ -1,28 +1,38 @@
 {
-  "testedAt": "2026-10-18T03:17:57.639Z",
+  "testedAt": "2026-10-18T03:20:34.289Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 287083,
-      "totalDifference": 25883671
+      "changedChannels": 217960,
+      "totalDifference": 17162812
     },
     "walk": {
-      "changedChannels": 329493,
-      "totalDifference": 27097718
+      "changedChannels": 366281,
+      "totalDifference": 28778934
     },
     "slash": {
-      "changedChannels": 283205,
-      "totalDifference": 24636035
+      "changedChannels": 286475,
+      "totalDifference": 25091308
     },
     "thrust": {
-      "changedChannels": 306586,
-      "totalDifference": 26008638
+      "changedChannels": 279205,
+      "totalDifference": 24426992
     },
     "victory": {
-      "changedChannels": 174487,
-      "totalDifference": 14517318
+      "changedChannels": 145555,
+      "totalDifference": 11350953
     }
   },
   "version": "3.0.0",
+  "roster": {
+    "originalKept": true,
+    "addedOnce": true,
+    "activePreserved": true,
+    "levelPreserved": true,
+    "inventoryPreserved": true,
+    "flutterRemoved": true,
+    "scale": 0.64,
+    "rosterAfterMigration": 3
+  },
   "status": "PASS"
 }
