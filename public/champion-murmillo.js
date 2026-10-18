@@ -22,7 +22,7 @@ function loadImage(url){return new Promise((resolve,reject)=>{
  im.src=url;
 });}
 async function loadSourceAction(action){
- const image=await loadImage(BASE+'source/'+action+'.png?v=1');
+ const image=await loadImage(BASE+'source/'+action+'.png?v=2');
  if(image.naturalWidth!==1672||image.naturalHeight!==941)throw Error('source sheet size mismatch');
  const w=image.naturalWidth/4,h=Math.floor(image.naturalHeight/2);
  return Array.from({length:8},(_,i)=>{
@@ -42,7 +42,7 @@ async function loadAction(action){
    const info=manifest.actions[action];
    if(!Array.isArray(info)||info.length!==8)throw Error('missing animation '+action);
    frames=await Promise.all(info.map(async f=>{
-    const img=await loadImage(BASE+f.file+'?v=1');
+    const img=await loadImage(BASE+f.file+'?v=2');
     if(img.naturalWidth!==960||img.naturalHeight!==540)throw Error('incorrect 16:9 keypose size');
     return {canvas:img,pivotX:f.pivotX,footY:f.footY};
    }));
@@ -62,7 +62,7 @@ async function loadAssets(){
  if(typeof document==='undefined'||typeof fetch==='undefined')return Promise.resolve(false);
  startPromise=(async()=>{
   try{
-   const res=await fetch(BASE+'manifest.json?v=1',{cache:'no-store'});
+   const res=await fetch(BASE+'manifest.json?v=2',{cache:'no-store'});
    if(res.ok){
     const file=await res.json();
     if(file.character===VARIANT&&Object.keys(file.actions||{}).length===9){
@@ -112,13 +112,27 @@ function motion(f,scene,clock){
  return {action,index,looping};
 }
 function actionFrames(name){return cache.get(name)||null;}
-function paint(ctx,frame,x,y,w,h,flip,alpha,scaleFactor=1){
+// Upper-body follow-through grows toward the opponent while the planted toe
+// remains an unmoving ground anchor. Applied only to authored attack poses.
+const ATTACK_LEAN={
+ slash:[0,.025,.065,.095,.105,.055,.018,0],
+ sweep:[0,.025,.07,.105,.115,.07,.02,0],
+ thrust:[0,.03,.085,.135,.15,.105,.04,0],
+ heavy:[0,.02,.06,.1,.115,.065,.025,0]
+};
+function paint(ctx,frame,x,y,w,h,flip,alpha,scaleFactor=1,lean=0){
  const scale=Math.min(w/430,h/430)*scaleFactor;
  const image=frame?.canvas;
  if(!image)return false;
  ctx.save();ctx.globalAlpha*=alpha;
  const anchor=x+w/2,feet=y+h;
  if(flip){ctx.translate(anchor,0);ctx.scale(-1,1);ctx.translate(-anchor,0);}
+ if(lean){
+  // Shear about floor contact, NOT the changing artwork/bounding box.
+  ctx.translate(anchor,feet);
+  ctx.transform(1,0,-lean,1,0,0);
+  ctx.translate(-anchor,-feet);
+ }
  // Real artwork is ~400px across inside an intentionally padded 960px canvas.
  ctx.drawImage(image,anchor-frame.pivotX*scale,feet-frame.footY*scale,
                        image.width*scale,image.height*scale);
@@ -131,8 +145,9 @@ function draw(ctx,options){
  if(!frames)loadAction(state.action).catch(err=>{status='error: '+err.message;});
  const fallback=frames||actionFrames('idle');
  if(!fallback)return false;
- return paint(ctx,fallback[frames?state.index:0],o.x,o.y,o.w,o.h,o.flip, o.alpha??1,
-              f.championBoss?1.07:1);
+ return paint(ctx,fallback[frames?state.index:0],o.x,o.y,o.w,o.h,o.flip,o.alpha??1,
+              f.championBoss?1.07:1,
+              frames?(ATTACK_LEAN[state.action]?.[state.index]||0):0);
 }
 function frame(action='idle',tick=0){
  const name=ACTIONS.includes(action)?action:'idle';
@@ -149,7 +164,7 @@ function portrait(){
  canvas.getContext('2d').drawImage(img,260,25,490,515,0,0,500,520);
  return portraitCache=canvas;
 }
-root.ChampionMurmillo={version:'1.1.0',variant:VARIANT,FPS,ACTIONS,loadAssets,onReady,
+root.ChampionMurmillo={version:'2.0.0',variant:VARIANT,FPS,ACTIONS,loadAssets,onReady,
  draw,portrait,frame,motion,status:()=>status,hasFrames:()=>cache.has('idle'),
  hasIndividualFrames:()=>!!manifest};
 if(typeof document!=='undefined')loadAssets();
