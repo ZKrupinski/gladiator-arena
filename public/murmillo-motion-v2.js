@@ -55,8 +55,30 @@ function poseAt(f,scene,clock){
  }
  return {index,action:s.action,progress:s.progress};
 }
+let independentAtlas=null,loadPromise=null;
+function loadAssets(){
+ if(loadPromise)return loadPromise;
+ loadPromise=fetch('assets/combat/murmillo-v2/manifest.json?v=2')
+ .then(response=>{if(!response.ok)throw Error('standalone sprites unavailable');return response.json();})
+ .then(async manifest=>{
+  if(manifest.version!==2||manifest.frames?.length!==12)throw Error('sprite manifest invalid');
+  const frames=await Promise.all(manifest.frames.map(meta=>new Promise((resolve,reject)=>{
+   const img=new Image();
+   img.onload=()=>{
+    if(img.naturalWidth!==meta.width||img.naturalHeight!==meta.height)return reject(Error('size mismatch'));
+    resolve({canvas:img,pivotX:meta.pivotX,footY:meta.footY});
+   };
+   img.onerror=()=>reject(Error('sprite load failed'));
+   img.src='assets/combat/murmillo-v2/'+meta.file;
+  })));
+  independentAtlas={frames,cellWidth:manifest.cellWidth,cellHeight:manifest.cellHeight};
+  return independentAtlas;
+ })
+ .catch(()=>null); // Existing L5 atlas is a safe fallback.
+ return loadPromise;
+}
 function draw(ctx,o){
- const a=o?.atlas,f=o?.fighter;
+ const a=independentAtlas||o?.atlas,f=o?.fighter;
  if(!a?.frames||a.frames.length<12||!root.GrowthFrames?.draw||!f||!ctx)return false;
  const sample=poseAt(f,o.scene,o.clock);
  // GrowthFrames.draw uses pixel-owned alpha mask, per-pose foot pivot,
@@ -64,6 +86,7 @@ function draw(ctx,o){
  return !!root.GrowthFrames.draw(ctx,a,sample.index,
    o.x,o.y,o.w,o.h,!!o.flip,o.alpha??1);
 }
-root.MurmilloMotion={version:'2.0.0',pose,tracks,stateAt,poseAt,draw};
+root.MurmilloMotion={version:'2.1.0',pose,tracks,stateAt,poseAt,draw,loadAssets,hasStandaloneAssets:()=>!!independentAtlas};
+if(typeof document!=='undefined'&&typeof fetch==='function')loadAssets();
 if(typeof module!=='undefined'&&module.exports)module.exports=root.MurmilloMotion;
 })(globalThis);
