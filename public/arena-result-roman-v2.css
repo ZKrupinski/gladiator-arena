@@ -1,72 +1,109 @@
-/* Arena Result V2 — architectural rectangular frame, distinct from the art and winner/loser sprites. */
-#endScreen.overlay-ending{background:linear-gradient(155deg,#100908e8,#180d0bdf 62%,#130b0aea);padding:clamp(8px,1.5vh,18px)}
+/* Approved raster result window v4: ONE background image, no SVG frame, no pennants, no duplicate paint.
+ * The picture is 1448 x 1086 (exactly 4:3). The UI is independent interactive DOM over it.
+ * Geometry is percentage-pinned to the actual photographed frame, NEVER an arbitrarily stretched border.
+ */
+#endScreen.overlay-ending{
+ position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+ box-sizing:border-box;padding:6px;overflow:hidden;
+ background:rgba(12,6,5,.88);
+}
+#endScreen.overlay-ending[hidden]{display:none!important}
 #endScreen .stage-panel-ending{
- position:relative;isolation:isolate;box-sizing:border-box;overflow:hidden;
- width:min(95vw,960px);max-width:960px;min-width:0;
- min-height:0;max-height:calc(100dvh - 22px);
- padding:clamp(33px,5vh,63px) clamp(36px,6vw,82px) clamp(34px,5vh,57px);
- border:0;border-radius:0;color:#ffe6b8;
- background:linear-gradient(0deg,#230f0ba6,#270f0b70 28%,#24120a78 77%,#160a08b2),
- url('assets/new-era/arena.webp') center 58% / cover no-repeat;
- box-shadow:0 24px 65px #060101ec,0 0 65px #edb6591f;
+ position:relative;isolation:isolate;display:block!important;flex:none;
+ box-sizing:border-box;width:min(96vw,1020px,133dvh);height:auto!important;aspect-ratio:4 / 3;
+ max-width:none;max-height:calc(100dvh - 12px);min-width:0;min-height:0;
+ padding:0!important;margin:0 auto!important;border:0!important;border-radius:0!important;
+ overflow:visible!important;box-shadow:none!important;
+ background-image:url('assets/new-era/cinematic/roman-colosseum-result-v1.webp?v=1')!important;
+ background-position:center!important;background-size:100% 100%!important;
+ background-repeat:no-repeat!important;background-color:transparent!important;
 }
-#endScreen .stage-panel-ending > :not(.roman-results-frame){position:relative;z-index:2}
-#endScreen .roman-results-frame{
- position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;
- background:url('assets/new-era/cinematic/roman-result-frame-v2.svg?v=2') center / 100% 100% no-repeat;
+#endScreen .stage-panel-ending > *{box-sizing:border-box}
+#endScreen .stage-panel-ending .roman-results-frame{display:none!important}
+#endScreen .stage-panel-ending .eyebrow{
+ position:absolute!important;top:12.3%;left:18%;width:64%;z-index:3;
+ margin:0!important;white-space:nowrap;
+ font:800 clamp(7px,1.22vw,13px)/1.2 Georgia,serif;
+ letter-spacing:.23em;color:#ffdf91;text-align:center;text-shadow:0 2px 4px #1a0604,0 0 8px #170807;
 }
-#endScreen .roman-results-pennant{
- position:absolute;top:4%;width:clamp(35px,8.4%,86px);height:28%;
- background:linear-gradient(90deg,#400807,#a82319 23%,#9a1711 52%,#53100b);
- clip-path:polygon(0 0,100% 0,100% 100%,50% 85%,0 100%);
- border-inline:2px solid #cb8f3e;
- opacity:.96;filter:drop-shadow(3px 6px 5px #100502a6);
+#endScreen .stage-panel-ending .result-banner{
+ position:absolute!important;top:15%;left:20%;width:60%;height:23%;z-index:3;
+ max-width:none;max-height:none!important;min-height:0;
+ margin:0!important;object-fit:contain;filter:drop-shadow(0 7px 9px #0e0204bd);
 }
-#endScreen .roman-results-pennant.left{left:7.5%}
-#endScreen .roman-results-pennant.right{right:7.5%}
-#endScreen .roman-results-pennant::after{
- content:'';display:block;width:70%;aspect-ratio:1;max-height:58%;margin:16% auto 0;
- background:url('assets/new-era/cinematic/roman-laurel-badge.svg?v=1') center/contain no-repeat;
- filter:drop-shadow(0 2px 2px #431309);
+#endScreen .stage-panel-ending #endHeading:not(.sr-only){
+ position:absolute;top:18%;left:30%;width:40%;text-align:center;
+ font:900 clamp(24px,5vw,52px)/1.1 Georgia,serif;color:#ffd692;text-shadow:0 5px 10px #110503;
 }
-#endScreen .stage-panel-ending .eyebrow{font:700 clamp(9px,1.3vw,13px)/1.2 Georgia,serif;letter-spacing:.24em;color:#ffe5a2;text-shadow:0 2px 7px #100501;margin:0 auto 3px}
-#endScreen .stage-panel-ending .result-banner{display:block;width:min(94%,680px);max-height:clamp(83px,20dvh,170px);height:auto;object-fit:contain;margin:0 auto -1px;filter:drop-shadow(0 5px 8px #000c)}
-#endScreen .stage-panel-ending .result-poses{width:100%;max-width:780px;grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr);gap:clamp(4px,1vw,15px);margin:4px auto 9px}
-#endScreen .stage-panel-ending .result-pose-art{width:clamp(100px,19dvh,190px);max-width:100%;aspect-ratio:5/4;min-height:0;display:flex;align-items:end;justify-content:center;overflow:visible}
-#endScreen .stage-panel-ending .result-pose-art canvas{width:100%;height:100%;object-fit:contain}
-#endScreen .stage-panel-ending .result-pose-card>span{max-width:100%;font:850 clamp(10px,1.45vw,15px)/1.3 system-ui,sans-serif;color:#ffe1a2;text-shadow:0 2px 5px #160804;text-wrap:balance}
-#endScreen .stage-panel-ending .result-pose-card small{font:750 clamp(8px,.95vw,12px)/1.3 Georgia,serif;letter-spacing:.1em;color:#dcc69d}
-#endScreen .stage-panel-ending #endReason,#endScreen .stage-panel-ending #endStats{font-size:clamp(10px,1.25vw,14px);line-height:1.35;color:#f3e1c9;text-shadow:0 1px 4px #080303;margin:4px auto}
-#endScreen .stage-panel-ending .end-actions{width:min(100%,650px);gap:12px;margin:clamp(7px,1.6vh,16px) auto 0}
+#endScreen .stage-panel-ending .result-poses{
+ position:absolute!important;top:44.5%;left:18%;width:64%;height:27%;z-index:3;
+ margin:0!important;max-width:none;min-height:0;
+ display:grid!important;grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr);
+ gap:0;align-items:end;justify-items:stretch;
+}
+#endScreen .stage-panel-ending .result-pose-card{
+ align-self:stretch;display:flex;flex-direction:column;justify-content:end;align-items:center;
+ width:100%;height:100%;margin:0;min-width:0;overflow:visible;
+}
+#endScreen .stage-panel-ending .result-pose-art{
+ position:relative;display:flex;flex:1 1 auto;align-items:end;justify-content:center;
+ width:100%;max-width:100%;height:0;min-height:0;aspect-ratio:auto!important;
+ background-repeat:no-repeat;background-position:center bottom;background-color:transparent;
+ filter:drop-shadow(0 5px 4px #13060694);
+}
+#endScreen .stage-panel-ending .result-pose-art canvas{
+ display:block!important;width:auto!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+ object-fit:contain!important;image-rendering:auto;
+}
+#endScreen .stage-panel-ending .result-pose-card.defeated .result-pose-art{
+ width:120%;max-width:120%;margin-left:-10%;margin-right:-10%;
+}
+#endScreen .stage-panel-ending .result-pose-card>span{
+ position:relative;z-index:3;max-width:140%;font:850 clamp(9px,1.35vw,15px)/1.25 system-ui,sans-serif;
+ color:#ffe3a4;text-shadow:0 2px 5px #100504;text-align:center;
+ white-space:normal;margin:1px 0 0;
+}
+#endScreen .stage-panel-ending .result-pose-card small{
+ position:relative;z-index:3;font:700 clamp(7px,.88vw,11px)/1.15 Georgia,serif;
+ letter-spacing:.065em;color:#fae1b5;text-shadow:0 1px 3px #140503;white-space:nowrap;
+ margin:2px 0 0;
+}
+#endScreen .stage-panel-ending .result-versus{
+ align-self:center;margin-top:-8px;justify-self:center;font:700 clamp(13px,1.8vw,21px)/1 Georgia,serif;
+ color:#ffe1a0;text-shadow:0 3px 4px #160808;
+}
+#endScreen .stage-panel-ending #endReason,
+#endScreen .stage-panel-ending #endStats{
+ position:absolute!important;left:14%;width:72%;z-index:3;max-width:none;margin:0!important;
+ text-align:center;color:#ffe9d1;text-shadow:0 2px 5px #160606;
+ font:600 clamp(9px,1.22vw,14px)/1.34 system-ui,sans-serif;
+}
+#endScreen .stage-panel-ending #endReason{top:74.4%}
+#endScreen .stage-panel-ending #endStats{top:78.1%}
+#endScreen .stage-panel-ending .end-actions{
+ position:absolute!important;left:23%;top:83%;width:54%;height:7.6%;z-index:4;
+ display:flex!important;align-items:stretch;justify-content:center;gap:3.4%;max-width:none;margin:0!important;
+}
 #endScreen .stage-panel-ending .end-actions button{
- flex:1 1 0;max-width:none;min-width:0;border:3px double #f4c977;border-radius:6px;
- background:linear-gradient(#9b382a,#6f1814 60%,#4e1110);color:#fff3db;
- box-shadow:inset 0 0 0 2px #5c2114,0 5px 1px #160905,0 8px 13px #07020199;
- font:850 clamp(12px,1.55vw,17px)/1.2 system-ui,sans-serif;text-shadow:0 2px 5px #220704;
- padding:clamp(8px,1.5vh,15px) 7px;min-height:42px;cursor:pointer;
+ display:flex;align-items:center;justify-content:center;flex:1 1 0;
+ margin:0;padding:2px 4px!important;min-width:0;max-width:none;
+ min-height:0!important;width:auto;height:100%;border-radius:5px;
+ border:2px solid #f6d07c;
+ background:linear-gradient(#a83d2b,#761b15 65%,#551610);
+ box-shadow:inset 0 2px 2px #fff1bd69,inset 0 0 0 2px #581c12,0 3px 8px #150608bd;
+ color:#fff1d4;font:850 clamp(10px,1.65vw,18px)/1.12 system-ui,sans-serif;
+ text-shadow:0 2px 2px #200808;cursor:pointer;touch-action:manipulation;
 }
 #endScreen .stage-panel-ending .end-actions button:hover{filter:brightness(1.15)}
-#endScreen .stage-panel-ending .end-actions button:focus-visible{outline:3px solid #fff2bf;outline-offset:3px}
-@media(max-height:690px){
- #endScreen .stage-panel-ending{padding-top:27px;padding-bottom:28px}
- #endScreen .stage-panel-ending .result-banner{max-height:19dvh}
- #endScreen .stage-panel-ending .result-pose-art{width:min(100%,16dvh,140px)}
- #endScreen .stage-panel-ending .end-actions button{min-height:33px;padding:5px 7px}
+#endScreen .stage-panel-ending .end-actions button:focus-visible{outline:3px solid #fff6cd;outline-offset:3px}
+@media(max-width:600px){
+ #endScreen .stage-panel-ending .eyebrow{font-size:clamp(6px,1.55vw,9px);letter-spacing:.09em}
+ #endScreen .stage-panel-ending .result-pose-card>span{font-size:clamp(8px,1.65vw,10px)}
+ #endScreen .stage-panel-ending .result-pose-card small{font-size:clamp(6px,1.45vw,8px)}
+ #endScreen .stage-panel-ending #endReason,#endScreen .stage-panel-ending #endStats{font-size:clamp(7px,1.8vw,10px);line-height:1.1}
+ #endScreen .stage-panel-ending .end-actions button{font-size:clamp(8px,2vw,11px);border-width:1px}
 }
-@media(max-width:720px){
- #endScreen .stage-panel-ending{width:min(98vw,620px);padding:clamp(30px,4vh,43px) clamp(28px,7vw,45px) clamp(32px,4vh,47px)}
- #endScreen .roman-results-pennant{width:9%;height:24%;top:4%}
- #endScreen .stage-panel-ending .result-banner{max-height:16dvh}
- #endScreen .stage-panel-ending .result-pose-art{width:min(100%,16dvh,138px)}
- #endScreen .stage-panel-ending .end-actions{gap:6px}
+@media(prefers-reduced-motion:reduce){
+ #endScreen .stage-panel-ending .result-pose-art,
+ #endScreen .stage-panel-ending .result-banner{animation:none!important}
 }
-@media(max-height:390px) and (orientation:landscape){
- #endScreen .stage-panel-ending{display:grid;grid-template-columns:42% 58%;grid-template-areas:"eyebrow eyebrow" "banner poses" "reason poses" "stats poses" "actions actions";row-gap:1px}
- #endScreen .stage-panel-ending .result-poses{grid-area:poses}
- #endScreen .stage-panel-ending .result-banner{grid-area:banner;max-height:23dvh}
- #endScreen .stage-panel-ending .eyebrow{grid-area:eyebrow}
- #endScreen .stage-panel-ending #endReason{grid-area:reason}
- #endScreen .stage-panel-ending #endStats{grid-area:stats}
- #endScreen .stage-panel-ending .end-actions{grid-area:actions}
-}
-@media(prefers-reduced-motion:reduce){#endScreen .stage-panel-ending .result-pose-art{animation:none}}
