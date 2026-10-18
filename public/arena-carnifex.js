@@ -108,7 +108,8 @@ function draw(ctx,seq,drawBody,floorY=FLOOR){
  if(pose.bodyVisible){
   const corpse={...seq.body,x:pose.bodyX,dead:true,hp:0,
    action:'defeat',actionT:0,comboDash:null,vx:0,dodge:0,invuln:0};
-  ctx.save();ctx.translate(0,-14);ctx.filter='saturate(.82) brightness(.86)';
+  // Preserve full approved KO sprite colors — no postmortem dimming.
+  ctx.save();ctx.translate(0,-14);
   drawBody(corpse);
   ctx.restore();
  }
