@@ -6,11 +6,15 @@
 (function(root){
 'use strict';
 const VARIANT='murmillo_champion_red';
-const FPS={idle:6,walk:10,slash:14,sweep:14,thrust:14,heavy:12,guard:7,hit:10,death:10};
+const FPS={idle:6,walk:9,slash:14,sweep:14,thrust:14,heavy:12,guard:7,hit:10,death:10};
 const ACTIONS=Object.keys(FPS);
 const BASE='assets/combat/champion-murmillo/';
 const cache=new Map(),pending=new Map();
 let manifest=null,sourceFallback=false,status='loading',startPromise=null,portraitCache=null;
+const motionHistory=new WeakMap();
+const observers=new Set();
+function notifyReady(){for(const fn of observers){try{fn();}catch(error){console.warn('Champion portrait refresh:',error);}}}
+function onReady(fn){if(typeof fn!=='function')return ()=>{};observers.add(fn);if(cache.has('idle'))queueMicrotask(fn);return ()=>observers.delete(fn);}
 function loadImage(url){return new Promise((resolve,reject)=>{
  const im=new Image();
  im.onload=()=>resolve(im);
@@ -44,9 +48,10 @@ async function loadAction(action){
    }));
   }else frames=await loadSourceAction(action);
   cache.set(action,frames);
-  // Mobile memory guard: retain only three animation sets in RAM.
-  while(cache.size>3){const oldest=cache.keys().next().value;cache.delete(oldest);}
-  if(action==='idle')portraitCache=null;
+  // Idle is never evicted: portraits, startup and any action transition must
+  // always use this champion's own artwork, never the old Murmillo atlas.
+  while(cache.size>4){const candidate=[...cache.keys()].find(key=>key!=='idle'&&key!==action);if(!candidate)break;cache.delete(candidate);}
+  if(action==='idle'){portraitCache=null;notifyReady();}
   return frames;
  })().finally(()=>pending.delete(action));
  pending.set(action,request);
@@ -66,8 +71,11 @@ async function loadAssets(){
    }
   }catch(err){}
   if(!manifest){sourceFallback=true;status='source-sheets';}
-  try{await loadAction('idle');return true;}
-  catch(err){status='error: '+err.message;return false;}
+  try{await loadAction('idle');
+   // Load the walk cycle before player motion starts, avoiding idle-frame jitter.
+   loadAction('walk').catch(err=>{status='walk: '+err.message;});
+   return true;
+  }catch(err){status='error: '+err.message;return false;}
  })();
  return startPromise;
 }
@@ -83,11 +91,24 @@ function motion(f,scene,clock){
    st.action==='victory'?'idle':
    ACTIONS.includes(st.action)?st.action:'idle';
  const looping=['idle','walk','guard'].includes(action);
- const duration=1/FPS[action];
  const tick=Number.isFinite(clock)?Math.max(0,clock):0;
  const seed=(f?.footworkSeed||0)*.13;
- const index=looping?Math.floor((tick+seed)/duration)%8:
-   Math.min(7,Math.max(0,Math.floor((st.progress??0)*8)));
+ let index;
+ if(action==='walk'&&f){
+  // Eight genuine walking drawings, stepped in order and paced by movement.
+  // Starting a new stride at frame zero avoids snapping between idle and a
+  // random globally-clocked mid-stride pose.
+  const prev=motionHistory.get(f);
+  const dt=prev?.action==='walk'?Math.max(0,Math.min(.07,tick-prev.tick)):0;
+  const speed=Math.max(.78,Math.min(1.16,Math.abs(f.vx||0)/180||1));
+  const phase=(prev?.action==='walk'?prev.phase:0)+dt*FPS.walk*speed;
+  motionHistory.set(f,{action,tick,phase});
+  index=Math.floor(phase)%8;
+ }else{
+  motionHistory.set(f,{action,tick,phase:0});
+  index=looping?Math.floor((tick+seed)*FPS[action])%8:
+    Math.min(7,Math.max(0,Math.floor((st.progress??0)*8)));
+ }
  return {action,index,looping};
 }
 function actionFrames(name){return cache.get(name)||null;}
@@ -122,12 +143,13 @@ function frame(action='idle',tick=0){
 function portrait(){
  const img=frame('idle',0);if(!img)return null;
  if(portraitCache)return portraitCache;
- // Remove the generous action canvas margins only for roster portraits.
- const canvas=document.createElement('canvas');canvas.width=500;canvas.height=480;
- canvas.getContext('2d').drawImage(img,230,36,500,480,0,0,500,480);
+ // Champion-only roster artwork: crop the central 960×540 sprite's wide
+ // transparent margins. Never borrow a thumbnail from growth-tier Murmillo.
+ const canvas=document.createElement('canvas');canvas.width=500;canvas.height=520;
+ canvas.getContext('2d').drawImage(img,260,25,490,515,0,0,500,520);
  return portraitCache=canvas;
 }
-root.ChampionMurmillo={version:'1.0.0',variant:VARIANT,FPS,ACTIONS,loadAssets,
+root.ChampionMurmillo={version:'1.1.0',variant:VARIANT,FPS,ACTIONS,loadAssets,onReady,
  draw,portrait,frame,motion,status:()=>status,hasFrames:()=>cache.has('idle'),
  hasIndividualFrames:()=>!!manifest};
 if(typeof document!=='undefined')loadAssets();
