@@ -390,7 +390,7 @@
   {
     "pose": "slash",
     "flat_colours": 1,
-    "removed_pixels": 0,
+    "removed_pixels": 5,
     "source_area": 159975,
     "edge": [
       {
@@ -1942,7 +1942,7 @@
   {
     "pose": "victory",
     "flat_colours": 1,
-    "removed_pixels": 0,
+    "removed_pixels": 3,
     "source_area": 118336,
     "edge": [
       {
@@ -2136,7 +2136,7 @@
   {
     "pose": "defeat",
     "flat_colours": 1,
-    "removed_pixels": 0,
+    "removed_pixels": 20,
     "source_area": 101136,
     "edge": [
       {
