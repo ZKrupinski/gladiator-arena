@@ -75,7 +75,7 @@ function roster(){
  '<div class="lc-card-grid">'+s.roster.map(function(item,i){return card(item,i,i===s.active,false);}).join('')+
  '<button type="button" class="lc-hire-card" id="lcHire"><span>＋</span><strong>검투사 영입</strong><small>검투사시장 방문</small></button></div></div>'+
  '<div class="lc-detail"><div class="lc-section-head"><h2>♜ 전투 명부</h2><small>선택된 검투사</small></div>'+
- (has?'<div class="lc-highlight"><div class="lc-hero-badge">'+rank(h)+'</div><canvas id="lcFeaturedHero" width="355" height="352" aria-label="'+safe(h.name)+' 스탠딩"></canvas><div class="lc-plinth"></div></div>'+
+ (has?'<div class="lc-highlight"><div class="lc-hero-badge">'+rank(h)+'</div><canvas id="lcFeaturedHero" width="355" height="352" aria-label="'+safe(h.name)+' 스탠딩"></canvas></div>'+
  '<div class="lc-nameplate"><h2>'+safe(h.name)+'</h2><span>'+className(h)+' · Lv.'+level(h)+'</span></div>'+
  '<div class="lc-xp"><div><strong>LEVEL '+level(h)+'</strong><small>경험치 '+Number(h.xp||0)+'</small></div><i><b style="width:'+percent(h)+'%"></b></i></div>'+
  '<div class="lc-stats">'+stats.map(function(p){return '<span><small>'+p[0]+' · '+p[1]+'</small><strong>'+p[2]+'</strong></span>';}).join('')+'</div>'+
