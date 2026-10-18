@@ -1,13 +1,16 @@
 /* Training v6.2 — data-driven in-scene NPC and gladiator.
  * No fake menu tiles, no painted roster underneath, no character portrait box.
  * 1672x941 stage; the parent scene scales to the device aspect ratio. */
-.la-stage.training .la-live-npc-clear,
-.la-stage.training .la-live-fighter,
-.la-stage.training .la-roster.training,
-.la-stage.training .la-training-stats,
-.la-stage.training .la-training-name,
-.la-stage.training .la-training-effect,
-.la-stage.training .la-doctore-parchment{display:none!important}
+/* Only conceal legacy training widgets AFTER the replacement mounted fully.
+ * A slow or missing training script must never hide both the roster selector
+ * and the active fighter. This is the regression-safe fallback. */
+.la-stage.training.lt-runtime-ready .la-live-npc-clear,
+.la-stage.training.lt-runtime-ready .la-live-fighter,
+.la-stage.training.lt-runtime-ready .la-roster.training,
+.la-stage.training.lt-runtime-ready .la-training-stats,
+.la-stage.training.lt-runtime-ready .la-training-name,
+.la-stage.training.lt-runtime-ready .la-training-effect,
+.la-stage.training.lt-runtime-ready .la-doctore-parchment{display:none!important}
 .la-stage.training .lt-fighter-zone{
  /* Preserve the Doctore's dominance, but make every fighter clearly visible. */
  position:absolute;left:748px;top:184px;width:458px;height:423px;
