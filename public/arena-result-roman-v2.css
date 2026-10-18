@@ -52,7 +52,7 @@
  filter:drop-shadow(0 5px 4px #13060694);
 }
 #endScreen .stage-panel-ending .result-pose-art canvas{
- display:block!important;width:auto!important;height:auto!important;max-width:100%!important;max-height:100%!important;
+ display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
  object-fit:contain!important;image-rendering:auto;
 }
 #endScreen .stage-panel-ending .result-pose-card.defeated .result-pose-art{
