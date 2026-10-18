@@ -73,20 +73,33 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  }
  block('la-gold',1417,27).textContent=Number(s.gold||0).toLocaleString('ko-KR');
  if(training&&window.LudusTrainingV2){
-  // Replace baked NPC, obsolete information window and fake roster with
-  // real artwork-independent actor, live stats and actual owned gladiators.
-  const trainer=document.createElement('img');
-  trainer.className='la-doctore-live';trainer.dataset.pose='0';
-  trainer.src='assets/ludus/doctore_pose_0.webp?v=3';trainer.alt='';
-  trainer.setAttribute('aria-hidden','true');trainer.draggable=false;
-  stage.appendChild(trainer);
-  window.LudusTrainingV2.mount(stage,a,s,{
-   selectedTraining,tiles,onHome:goHome,move:moveHero,
-   onSelect:i=>{a.select(i);refresh();},
-   onTrainingChoice:i=>{selectedTraining=i;refresh();pose(1);},
-   onTrain:actionTraining
-  });
-  fit();return;
+  // The independent roster and actor must BOTH exist before we consider
+  // replacement mounted. Otherwise show the older functional training UI.
+  try{
+   const trainer=document.createElement('img');
+   trainer.className='la-doctore-live';trainer.dataset.pose='0';
+   trainer.src='assets/ludus/doctore_pose_0.webp?v=3';trainer.alt='';
+   trainer.setAttribute('aria-hidden','true');trainer.draggable=false;
+   stage.appendChild(trainer);
+   window.LudusTrainingV2.mount(stage,a,s,{
+    selectedTraining,tiles,onHome:goHome,move:moveHero,
+    onSelect:i=>{a.select(i);refresh();},
+    onTrainingChoice:i=>{selectedTraining=i;refresh();pose(1);},
+    onTrain:actionTraining
+   });
+   if(!stage.querySelector('.lt-roster')||!stage.querySelector('.lt-fighter-canvas')){
+    throw new Error('training roster or fighter failed to mount');
+   }
+   stage.classList.add('lt-runtime-ready');
+   fit();return;
+  }catch(error){
+   console.error('Training room recovery: showing original roster and fighter',error);
+   window.LudusTrainingV2?.stop();
+   for(const node of [...stage.children]){
+    if(!node.matches('.la-key,.la-notice,.la-pose,.la-gold'))node.remove();
+   }
+   stage.classList.remove('lt-runtime-ready');
+  }
  }
  // Legacy fallback for clients that have not yet loaded the new module.
  if(training){
