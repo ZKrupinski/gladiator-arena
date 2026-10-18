@@ -30,3 +30,7 @@ jobs:
           sleep 3
       - name: Verify parry, dash impact and corpse removal in browser
         run: node scripts/qa_arena_focus_browser.mjs
+      - name: Verify stronger zoom, slowdown, impacts and camera recovery
+        env:
+          FOCUS_PREVIEW: '1'
+        run: node scripts/qa_arena_impact_browser.mjs
