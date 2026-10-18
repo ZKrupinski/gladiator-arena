@@ -82,14 +82,23 @@ try {
  }));
  assert.equal(output.wobbleScriptPresent,false,'old flutter engine not loaded');
  assert.equal(output.growthMotionGenerator,false,'old scanline frame generator removed');
- assert.equal(output.originalL5Scale,.64,'original tier 5 scale must remain unchanged');
+ assert.equal(output.originalL5Scale,.75,'original tier 5 Murmillo now larger');
+ const tierSizes=await game.evaluate(()=>({
+  old:[1,2,3,4,5].map(stage=>window.LudusRoster.scale('murmillo_a',stage)),
+  other:[1,2,3,4,5].map(stage=>window.LudusRoster.scale('retiarius_a',stage))
+ }));
+ assert.deepEqual(tierSizes.old,[.90,.82,.76,.70,.75],
+  'Murmillo must preserve grades 1-3 and grow grades 4-5 only');
+ assert.deepEqual(tierSizes.other,[.90,.85,.82,.76,.72],
+  'Retiarius (and unrelated classes) must be unchanged');
+ report.tierSizes=tierSizes;
  const battleScale=await game.evaluate(()=>window.LudusBridge.motionScale());
- assert.equal(battleScale,.70,'new animated Murmillo must scale to 70% without changing the original');
+ assert.equal(battleScale,.75,'new animated Murmillo must scale to 75%');
  report.animatedMurmilloScale=battleScale;
  assert.equal(output.motionScriptVersion,'4.0.0');
  report.roster={originalKept:true,addedOnce:true,activePreserved:true,levelPreserved:true,
-  inventoryPreserved:true,flutterRemoved:true,originalTier5Scale:.64,
-  newMotionBattleScale:.70,rosterAfterMigration:s.roster.length};
+  inventoryPreserved:true,flutterRemoved:true,originalTier5Scale:.75,
+  newMotionBattleScale:.75,rosterAfterMigration:s.roster.length};
  await game.reload({waitUntil:'domcontentloaded'});
  await game.waitForFunction(()=>!!window.LudusBridge?.state);
  s=await read();
