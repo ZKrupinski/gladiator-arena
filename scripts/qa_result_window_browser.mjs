@@ -19,7 +19,9 @@ async function check(size,preview){
    window.__arenaQA.showEnd();
   });
   await page.locator('#endBanner').waitFor({state:'visible',timeout:10000});
-  await page.waitForTimeout(750);
+  await page.waitForFunction(()=>Boolean(document.querySelector('#loserPose canvas')&&
+                         document.querySelector('#winnerPose canvas')),{timeout:16000});
+  await page.waitForTimeout(450);
   const result=await page.evaluate(async path=>{
    const modal=document.querySelector('#endScreen');
    const panel=modal.querySelector('.stage-panel-ending');
@@ -81,6 +83,9 @@ async function check(size,preview){
   assert.equal(result.panelImageOnly,true,'exactly ONE picture; no duplicate SVG or arena background');
   assert.equal(result.oldOrnaments,0,'remove all built-in geometric vector decorations');
   assert.equal(result.winnerVisible,true);assert.equal(result.loserVisible,true);
+  assert.ok(result.alphaBox?.width>70,'the defeat frame contains actual isolated sprite pixels');
+  assert.ok(result.alphaBox?.height>55,'the defeated gladiator must not collapse to a thin strip');
+  assert.ok(result.canvasNaturalRatio>1.4,'defeated pose canvas has correct aspect');
   assert.equal(result.originalLoserStillGone,true,'never restore the body in the real arena');
   assert.ok(Math.abs(result.ratio-4/3)<.015,'the approved artwork cannot be distorted');
   assert.equal(result.withinViewport,true,'no cropped gold frame');
