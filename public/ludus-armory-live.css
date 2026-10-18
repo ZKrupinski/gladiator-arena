@@ -19,8 +19,10 @@
 .ra-portrait canvas{display:block;width:108px;height:100px}
 .ra-portrait strong,.ra-portrait small{display:block;max-width:100%;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:800 13px Georgia,serif}
 .ra-portrait small{font-size:12px;color:#d7bd91}
-.ra-stage{flex:1;min-height:200px;position:relative;display:flex;justify-content:center;align-items:flex-end;overflow:hidden;background:radial-gradient(ellipse at 50% 73%,#9e693e7a 0%,#3a1d17a8 50%,transparent 75%);border-radius:50% 50% 7% 7%}
-.ra-stage:after{content:'';position:absolute;bottom:-4px;left:8%;right:8%;height:22px;border:6px ridge #aa7b43;border-radius:45%;background:linear-gradient(120deg,#75502d,#b88b4e,#53301f);box-shadow:0 7px 12px #140703}
+/* Keep the real fighter portrait and painted arena. No CSS-generated
+ * oval floor shadow, halo, pedestal or vector platform beneath the fighter. */
+.ra-stage{flex:1;min-height:200px;position:relative;display:flex;justify-content:center;align-items:flex-end;overflow:hidden;background:transparent;border-radius:0}
+.ra-stage::after{content:none;display:none}
 .ra-stage canvas{max-height:100%;max-width:100%;object-fit:contain;filter:drop-shadow(0 11px 9px #110706)}
 .ra-hero-info{display:flex;gap:10px;justify-content:center;align-items:baseline;padding:6px;color:#f3d0a4}
 .ra-hero-info strong{font:900 25px Georgia,serif}.ra-hero-info small{font:700 17px 'Noto Serif KR',serif}
