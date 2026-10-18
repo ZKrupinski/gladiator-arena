@@ -33,6 +33,40 @@ def remove_flat_edge_blocks(tile):
     tile.putalpha(clean)
     return tile,removed,1
 
+# Conservative per-pose right-side alpha limits, measured on the native
+# exported artwork (coordinates include the 12px transparent gutter).
+# The original sword/shield always stays inside the retained region.
+RIGHT_LIMITS = {
+ 0:[(0,401),(12,350),(96,343),(135,348),(177,395),(340,395),(372,370),(414,356)],
+ 1:[(0,395),(12,348),(106,342),(139,348),(179,390),(355,390),(392,361),(413,340)],
+ 2:[(0,429),(12,384),(99,380),(136,390),(180,423),(358,423),(392,396),(419,382)],
+ 3:[(0,337),(12,318),(94,314),(124,319),(173,334),(324,334),(365,326),(385,315)],
+ 4:[(0,456),(12,370),(99,370),(133,370),(199,397),(240,453),(291,453),(328,397),(364,392)],
+ 5:[(0,365),(12,313),(101,312),(134,334),(178,353),(331,354),(375,337),(385,337)],
+ 6:[(0,361),(12,312),(105,307),(142,329),(186,355),(328,355),(372,331),(386,331)],
+ 7:[(0,346),(12,328),(111,326),(162,336),(304,340),(346,337),(364,331)],
+ 8:[(0,419),(12,399),(116,399),(166,413),(275,411),(313,378),(322,374)],
+ 9:[(0,369),(12,298),(113,298),(155,348),(201,361),(327,361),(372,345),(384,342)],
+10:[(0,368),(12,276),(113,279),(146,337),(186,360),(325,361),(359,348),(368,343)],
+11:[(0,360),(12,333),(112,332),(155,344),(277,348),(316,343),(325,339)]
+}
+def remove_outside_artwork_right(tile,pose_idx):
+    knots=RIGHT_LIMITS[pose_idx]
+    w,h=tile.size
+    p=tile.load()
+    removed=0
+    for y in range(h):
+        yy=y+GUTTER
+        j=0
+        while j<len(knots)-2 and yy>knots[j+1][0]:j+=1
+        y0,x0=knots[j];y1,x1=knots[j+1]
+        t=max(0,min(1,(yy-y0)/max(1,y1-y0)))
+        edge=max(0,min(w,round(x0+(x1-x0)*t-GUTTER)))
+        for x in range(edge,w):
+            r,g,b,a=p[x,y]
+            if a:removed+=1;p[x,y]=(r,g,b,0)
+    return tile,removed
+
 cut = json.loads((SRC / "frame-cuts.json").read_text(encoding="utf-8"))
 sheet = cut["sheets"][KEY]
 original = Image.open(SRC / f"{KEY}.png").convert("RGBA")
@@ -59,6 +93,8 @@ for idx, (name, spec) in enumerate(zip(NAMES, sheet["frames"])):
             if aa>=40:pixel_hist[(rr//8*8,gg//8*8,bb//8*8)]+=1
     hottest=[{"rgb":list(rgb),"count":n} for rgb,n in pixel_hist.most_common(12)]
     cutout,removed,colors=remove_flat_edge_blocks(cutout)
+    cutout,clipped=remove_outside_artwork_right(cutout,idx)
+    removed+=clipped
     edge_info=[]
     px=cutout.load()
     for fy in (.07,.17,.29,.43,.57,.71,.86,.94):
