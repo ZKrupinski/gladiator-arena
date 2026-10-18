@@ -10,12 +10,20 @@
   const round=(state.wins||0)+1,boss=round%5===0;
   const cls=boss?classes[(Math.floor(round/5)-1)%3]:classes[Math.floor(rng()*3)];
   const level=clamp(Math.max(Math.floor(round*.8),Number(hero?.level)||1)+Math.floor(rng()*5)-2+(boss?2:0),1,20);
-  return state.pendingOpponent={cls,level,stage:stage(level),boss,bossId:boss?cls:null,round,
-   growthType:cls==='thraex'&&rng()<.5?'thraex_b':cls+'_a',name:boss?'챔피언 '+names[cls]:names[cls]+' 도전자'};
+  // First and every fourth championship round introduces the new red-plume
+  // Murmillo boss. Other classic bosses keep their established rotation.
+  const special=boss&&(round%20===5);
+  return state.pendingOpponent={cls,level,stage:stage(level),boss,
+   appearance:special?'murmillo_champion_red':null,
+   bossId:special?'murmillo_champion_red':boss?cls:null,round,
+   growthType:special?'murmillo_a':cls==='thraex'&&rng()<.5?'thraex_b':cls+'_a',
+   name:special?'신규 챔피언 무르밀로':boss?'챔피언 '+names[cls]:names[cls]+' 도전자'};
  }
  function recruitBoss(state,enemy){
   if(!enemy?.boss||state.roster.some(h=>h.bossId===enemy.bossId))return null;
-  const h=create(enemy.cls,state.roster.length+1,{name:enemy.name,bossId:enemy.bossId,appearance:'legacy',level:enemy.level,stats:{str:2,agi:2,end:2,focus:2}});
+  const h=create(enemy.cls,state.roster.length+1,{name:enemy.name,bossId:enemy.bossId,
+   appearance:enemy.appearance==='murmillo_champion_red'?'murmillo_champion_red':'legacy',
+   level:enemy.level,stats:{str:2,agi:2,end:2,focus:2}});
   state.roster.push(h);return h;
  }
  // Face-based adjustment; increasingly large high-tier illustrations need a
