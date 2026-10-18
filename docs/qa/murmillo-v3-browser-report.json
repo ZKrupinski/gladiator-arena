@@ -1,71 +1,39 @@
 {
-  "testedAt": "2026-10-18T04:07:15.264Z",
+  "testedAt": "2026-10-18T04:16:11.657Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 31072,
-      "totalDifference": 1965940
+      "changedChannels": 55298,
+      "totalDifference": 4090706
     },
     "walk": {
-      "changedChannels": 121959,
-      "totalDifference": 10321627
+      "changedChannels": 67754,
+      "totalDifference": 5532738
     },
     "sweep": {
-      "changedChannels": 105111,
-      "totalDifference": 9103246
+      "changedChannels": 94898,
+      "totalDifference": 8219387
     },
     "defeat": {
-      "changedChannels": 81172,
-      "totalDifference": 7165778
+      "changedChannels": 77485,
+      "totalDifference": 6605836
     },
     "slash": {
-      "changedChannels": 101848,
-      "totalDifference": 8846810
+      "changedChannels": 96693,
+      "totalDifference": 8612492
     },
     "thrust": {
-      "changedChannels": 88703,
-      "totalDifference": 8011071
+      "changedChannels": 83400,
+      "totalDifference": 7328953
     },
     "victory": {
-      "changedChannels": 54527,
-      "totalDifference": 4335592
+      "changedChannels": 41523,
+      "totalDifference": 3001431
     }
   },
   "spritePack": "B ready · 24 transparent frames",
   "version": "4.0.0",
-  "animatedMurmilloScale": 0.7,
-  "roster": {
-    "originalKept": true,
-    "addedOnce": true,
-    "activePreserved": true,
-    "levelPreserved": true,
-    "inventoryPreserved": true,
-    "flutterRemoved": true,
-    "originalTier5Scale": 0.64,
-    "newMotionBattleScale": 0.7,
-    "rosterAfterMigration": 3
-  },
-  "deployment": {
-    "mainCTA": true,
-    "ludusCTA": true,
-    "lobbyArtHitZone": true,
-    "sidebarCTA": true,
-    "selectOld": true,
-    "selectAnimated": true,
-    "selectOther": true,
-    "lobbyHitArea": {
-      "width": 177.3480224609375,
-      "height": 212.1546630859375,
-      "target": "ll-hit-arena",
-      "isTarget": true,
-      "pointer": "auto",
-      "stageHasArt": true
-    },
-    "names": [
-      "기존 무르밀로",
-      "무르밀로 · 애니메이션",
-      "기존 레티아리우스"
-    ]
-  },
-  "status": "PASS"
+  "status": "FAIL",
+  "error": "AssertionError [ERR_ASSERTION]: new animated Murmillo must scale to 70% without changing the original\n\n0.75 !== 0.7\n",
+  "consoleErrors": []
 }
