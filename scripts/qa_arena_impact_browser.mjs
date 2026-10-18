@@ -35,7 +35,7 @@ try{
     const f=s.focusFrame;
     return {active:f?.active,kind:f?.kind,timeScale:f?.timeScale,
      zoom:camera.zoom,focusZoom:f?.zoom,bloom:f?.bloom,
-     letterbox:f?.cinemaBars,shake:s.shake,hasDrawnVfx:!!document.querySelector('#battle')};
+     letterbox:f?.cinemaBars,shake:s.shake,noticeOpacity:document.querySelector('#combatNotice')?.style.opacity,hasDrawnVfx:!!document.querySelector('#battle')};
   });
   assert.equal(sample.active,true,kind+' must keep its effect across frames');
   assert.equal(sample.kind,kind);
@@ -43,6 +43,7 @@ try{
   assert.ok(sample.focusZoom>.17,kind+' stronger camera push');
   assert.ok(sample.zoom>=1.14,kind+' real camera magnification');
   assert.ok(sample.letterbox>=14,kind+' vignette bars');
+  assert.equal(sample.noticeOpacity,'0','routine notice must not overlap Latin impact title');
   assert.ok(sample.hasDrawnVfx,'arena canvas active');
   console.log('ARENA_FOCUS_V2_IMPACT '+JSON.stringify({kind,...triggered,...sample}));
   if(process.env.FOCUS_PREVIEW==='1'){
@@ -52,10 +53,11 @@ try{
   await page.waitForTimeout(1350);
   const after=await page.evaluate(()=>{
    const f=window.__arenaQA.state.focusFrame;
-   return {active:!!f,timeScale:f?.timeScale??1};
+   return {active:!!f,timeScale:f?.timeScale??1,noticeOpacity:document.querySelector('#combatNotice')?.style.opacity};
   });
   assert.equal(after.active,false,kind+' must recover from the cutscene');
   assert.equal(after.timeScale,1);
+  assert.equal(after.noticeOpacity,'','routine notice opacity resets after focus');
  }
  // A player who requests reduced motion must keep fight time responsive.
  await page.emulateMedia({reducedMotion:'reduce'});
