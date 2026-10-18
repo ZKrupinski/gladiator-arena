@@ -1546,7 +1546,9 @@ function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
   GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
  // The new animated sprite is based on L5 and must be scaled to match the
  // original L5 head height, not drawn full-size.
- const scale=animated?.64:LudusRoster.scale(f.growthType,f.growthLevel);
+ // B-version fighter: match neighboring gladiators' face size while
+ // anchoring each full-action sprite to the same ground point.
+ const scale=animated?.70:LudusRoster.scale(f.growthType,f.growthLevel);
  const x0=x+w*(1-scale)/2,y0=y+h*(1-scale),w0=w*scale,h0=h*scale;
  if(animated){
   if(window.MurmilloMotion?.draw(ctx,{atlas,fighter:f,scene:S,clock,x:x0,y:y0,w:w0,h:h0,flip,alpha}))return true;
