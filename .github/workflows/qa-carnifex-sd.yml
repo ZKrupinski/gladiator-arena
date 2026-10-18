@@ -1,0 +1,18 @@
+name: Carnifex SD integration
+on:
+  push:
+    paths:
+      - public/arena-carnifex.js
+      - public/assets/npc/carnifex-sd-atlas.webp
+      - public/assets/npc/carnifex-sd-manifest.json
+      - public/index.html
+      - scripts/qa_carnifex_sd.mjs
+      - .github/workflows/qa-carnifex-sd.yml
+  workflow_dispatch:
+jobs:
+  carnifex-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check new sprite atlas and original corpse retrieval
+        run: node scripts/qa_carnifex_sd.mjs
