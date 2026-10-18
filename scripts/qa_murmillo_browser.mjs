@@ -82,10 +82,16 @@ try {
  }));
  assert.equal(output.wobbleScriptPresent,false,'old flutter engine not loaded');
  assert.equal(output.growthMotionGenerator,false,'old scanline frame generator removed');
- assert.equal(output.originalL5Scale,.64,'animated sprite must match original L5 scale');
+ assert.equal(output.originalL5Scale,.64,'original tier 5 scale must remain unchanged');
+ const battleScale=await game.evaluate(()=>{
+  const main=document.querySelector('#startScreen');
+  return [...document.scripts].some(s=>s.src.includes('murmillo-motion-v2.js'));
+ });
+ assert.ok(battleScale,'motion runtime must load alongside preserved old atlas');
  assert.equal(output.motionScriptVersion,'4.0.0');
  report.roster={originalKept:true,addedOnce:true,activePreserved:true,levelPreserved:true,
-  inventoryPreserved:true,flutterRemoved:true,scale:.64,rosterAfterMigration:s.roster.length};
+  inventoryPreserved:true,flutterRemoved:true,originalTier5Scale:.64,
+  newMotionBattleScale:.70,rosterAfterMigration:s.roster.length};
  await game.reload({waitUntil:'domcontentloaded'});
  await game.waitForFunction(()=>!!window.LudusBridge?.state);
  s=await read();
@@ -119,11 +125,32 @@ try {
  await game.waitForFunction(()=>!!window.LudusBridge?.state);
  await game.locator('#careerEnter').click();
  await game.waitForSelector('#ludusScene:not([hidden])',{timeout:15000});
- await game.locator('#ludusScene button[data-action="arena"]').first().click();
+ await game.waitForSelector('#ludusScene.ll-has-art',{state:'visible',timeout:15000});
+ const picturedArena=game.locator('#ludusScene .ll-hit-arena');
+ await picturedArena.waitFor({state:'visible',timeout:8000});
+ const hitInfo=await picturedArena.evaluate(el=>{
+  const rect=el.getBoundingClientRect(),x=rect.left+rect.width/2,y=rect.top+rect.height/2;
+  const upper=document.elementFromPoint(x,y);
+  return {width:rect.width,height:rect.height,
+    target:upper?.className||'',isTarget:upper===el,
+    pointer:getComputedStyle(el).pointerEvents,
+    stageHasArt:!!document.querySelector('#ludusScene.ll-has-art')};
+ });
+ assert.ok(hitInfo.width>25&&hitInfo.height>25,'approved arena drawing has an interactive hit area');
+ assert.equal(hitInfo.pointer,'auto','baked art arena button cannot be pointer-events:none');
+ assert.ok(hitInfo.isTarget,'baked arena drawing must receive the click, not an invisible overlay');
+ await picturedArena.click();
  const other=await startFromDraft(1);
  assert.equal(other,'기존 레티아리우스');
- report.deployment={mainCTA:true,ludusCTA:true,selectOld:true,selectAnimated:true,
-  selectOther:true,names:[initial,animated,other]};
+ await game.reload({waitUntil:'domcontentloaded'});
+ await game.waitForFunction(()=>!!window.LudusBridge?.state);
+ await game.locator('#careerEnter').click();
+ await game.waitForSelector('#ludusScene:not([hidden])',{timeout:15000});
+ await game.locator('#ludusScene .ll-menu button[data-action="arena"]').click();
+ await game.waitForSelector('.lc-draft-screen',{state:'visible',timeout:15000});
+ report.deployment={mainCTA:true,ludusCTA:true,lobbyArtHitZone:true,sidebarCTA:true,
+  selectOld:true,selectAnimated:true,selectOther:true,
+  lobbyHitArea:hitInfo,names:[initial,animated,other]};
  await game.close();
  assert.deepEqual(errors,[],'uncaught JS runtime errors');
  report.status='PASS';
