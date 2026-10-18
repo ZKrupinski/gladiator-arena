@@ -1,39 +1,27 @@
 {
-  "testedAt": "2026-10-18T17:09:47.018Z",
+  "testedAt": "2026-10-18T17:25:31.439Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 34162,
-      "totalDifference": 2155913
+      "changedChannels": 22672,
+      "totalDifference": 1450452
     },
     "walk": {
-      "changedChannels": 109521,
-      "totalDifference": 9519595
+      "changedChannels": 107030,
+      "totalDifference": 9071305
     },
     "sweep": {
-      "changedChannels": 119499,
-      "totalDifference": 10456561
+      "changedChannels": 102730,
+      "totalDifference": 8968132
     },
     "defeat": {
-      "changedChannels": 93990,
-      "totalDifference": 8302582
-    },
-    "slash": {
-      "changedChannels": 113271,
-      "totalDifference": 9876326
-    },
-    "thrust": {
-      "changedChannels": 119947,
-      "totalDifference": 10017282
-    },
-    "victory": {
-      "changedChannels": 56880,
-      "totalDifference": 4388430
+      "changedChannels": 0,
+      "totalDifference": 0
     }
   },
   "spritePack": "B ready · 24 transparent frames",
   "version": "4.0.0",
   "status": "FAIL",
-  "error": "AssertionError [ERR_ASSERTION]: one additional starter must be appended\n\n4 !== 3\n",
+  "error": "AssertionError [ERR_ASSERTION]: defeat rendered image is not moving: {\"changedChannels\":0,\"totalDifference\":0}",
   "consoleErrors": []
 }
