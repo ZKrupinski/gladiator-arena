@@ -9,7 +9,7 @@
   if(state.pendingOpponent)return state.pendingOpponent;
   const round=(state.wins||0)+1,boss=round%5===0;
   const cls=boss?classes[(Math.floor(round/5)-1)%3]:classes[Math.floor(rng()*3)];
-  const level=clamp(Math.max(Math.floor(round*.8),Number(hero?.level)||1)+Math.floor(rng()*5)-2+(boss?2:0),1,20);
+  const level=clamp((root.ArenaBalance?.encounterLevel(round,Number(hero?.level)||1,boss)??Math.max(1,Math.floor(round*.8)))+Math.floor(rng()*3)-1,1,20);
   // First and every fourth championship round introduces the new red-plume
   // Murmillo boss. Other classic bosses keep their established rotation.
   const special=boss&&(round%20===5);
@@ -23,7 +23,7 @@
   if(!enemy?.boss||state.roster.some(h=>h.bossId===enemy.bossId))return null;
   const h=create(enemy.cls,state.roster.length+1,{name:enemy.name,bossId:enemy.bossId,
    appearance:enemy.appearance==='murmillo_champion_red'?'murmillo_champion_red':'legacy',
-   level:enemy.level,stats:{str:2,agi:2,end:2,focus:2}});
+   level:enemy.level,stats:enemy.appearance==='murmillo_champion_red'?{str:4,agi:2,end:4,focus:3}:enemy.cls==='thraex'?{str:4,agi:4,end:2,focus:3}:enemy.cls==='retiarius'?{str:3,agi:3,end:2,focus:5}:{str:3,agi:2,end:5,focus:2}});
   state.roster.push(h);return h;
  }
  // Face-based adjustment; increasingly large high-tier illustrations need a
