@@ -163,8 +163,9 @@ function draft(enemy,painter){
     if(squadPicks.length>1)squadPicks=squadPicks.filter(n=>n!==i);
    }else{
     if(squadPicks.length>=draftConfig().allies)squadPicks.shift();
-    squadPicks.push(i);chosen=squadPicks[0];
+    squadPicks.push(i);
    }
+   chosen=squadPicks[0]??-1;
    draft(enemy,paintOpponent);
   };
  });
