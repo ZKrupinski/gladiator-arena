@@ -391,8 +391,8 @@ const PARRY_SIDE_BONUS=170, PARRY_MIN_DISTANCE=495; // Wide left/right parry zon
 const PARRY_COUNTER_IFRAMES=.72; // After parry, defender cannot take damage during recoil.
 const COMBO_CHAIN_SECONDS=3.8, COMBO_DASH_COST=20, COMBO_DASH_DURATION=.68;
 // Enemy attack/parry cadence and the short recovery after a player hit are tuned for four-hit combos.
-const ENEMY_ATTACK_RATE=.58, ENEMY_PARRY_RATE=.72, ENEMY_ATTACK_RECOVERY=.72;
-const COMBO_PRESSURE_RECOVERY=.92;
+const ENEMY_ATTACK_RATE=.92, ENEMY_PARRY_RATE=.87, ENEMY_ATTACK_RECOVERY=.61;
+const COMBO_PRESSURE_RECOVERY=.64;
 
  // Shadow matte cleanup runs once when a character sprite atlas finishes loading.
  // Keep solid boots, weapons and anti-aliased silhouette pixels near solid art.
@@ -1310,7 +1310,7 @@ function attack(f,victim,special=false,dashImpact=false){
    // The player's parry is an explicit comeback weapon: at full HP ~48-51 damage,
    // and at critical HP ~95-110; enemy AI keeps its previous weaker counter.
    const missingHealth=clamp(1-victim.hp/Math.max(1,victim.maxHp),0,1);
-   const comebackBonus=Math.round(missingHealth*39)+(missingHealth>=.7?16:0);
+   const comebackBonus=Math.round(missingHealth*24)+(missingHealth>=.7?9:0);
    const playerCounter=Math.max(48,Math.round(victim.cfg.atk*2.8))
      +comebackBonus+(special?11:0);
    const enemyCounter=Math.round(victim.cfg.atk*.72+(special?7:5));
@@ -1360,6 +1360,7 @@ function attack(f,victim,special=false,dashImpact=false){
  if(special&&f.cls==='murmillo'){victim.st=clamp(victim.st-21,0,100);say('SCUTUM IMPACT!');}
  if(special&&f.cls==='thraex')say('SICA CROSS CUT!');
  const guarded=wasGuarding;
+ if(!f.enemy&&S.autoPlaying)dmg*=.88; // Manual timing is rewarded over unattended play.
  if(S.careerMatch){
   // Shields and endurance mitigate hits without a permanent invulnerability.
   dmg=Math.max(1,Math.round(dmg*(1-ArenaBalance.damageReduction(victim,false))));
