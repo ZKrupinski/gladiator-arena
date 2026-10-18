@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=1"></script>
-<script src="arena-carnifex.js?v=4"></script>
+<script src="arena-carnifex.js?v=4"></script><script src="arena-focus.js?v=1"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -588,15 +588,18 @@ const IMG={};let loaded=0;for(const key of ['bg','murmillo','thraex','retiarius'
   };im.onerror=()=>{if(key!=='bg'&&!im._fallback){im._fallback=true;im.src=String(ASSET[key]).replace('.png','.webp');return;}loaded++;console.error('asset failed',key,im.src);const st=$('#resourceStatus');if(st)st.textContent='일부 그래픽 파일을 읽지 못했습니다: '+key;};im.src=ASSET[key]||('assets/'+(key==='bg'?'arena.webp':key+'_atlas.png'));IMG[key]=im;
 }
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),rand=(a,b)=>a+Math.random()*(b-a);
-let S={phase:'title',time:90,round:1,player:null,enemy:null,keys:new Set(),events:[],sparks:[],parryBursts:[],notice:'',noticeT:0,shake:0,flash:0,fx:true,paused:false,slow:0,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
+let S={phase:'title',time:90,round:1,player:null,enemy:null,keys:new Set(),events:[],sparks:[],parryBursts:[],notice:'',noticeT:0,shake:0,flash:0,fx:true,paused:false,slow:0,cinematic:null,focusFrame:null,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
 let t0=0,clock=0,ctxAudio=null,sounds=true;
 const CAMERA={x:W*.5,y:H*.5,zoom:1,initialized:false};
 // Follow both fighters with spring-like smoothing; the arena art uses slower parallax.
 function updateCamera(dt){
  const p=S.player,e=S.enemy;
  if(!p||!e)return;
- const distance=Math.abs(e.x-p.x);
- const midX=(p.x+e.x)*.5;
+ // Removed fighters must not pull the finish camera back toward a corpse
+ // that has already been carried out of the arena.
+ const visible=[p,e].filter(f=>!f.removedFromArena);
+ const distance=visible.length===1?900:Math.abs(e.x-p.x);
+ const midX=visible.length===1?visible[0].x:(p.x+e.x)*.5;
  const close=clamp((590-distance)/310,0,1);
  const activeFight=S.phase==='fight'||S.phase==='finisher';
  const pressure=activeFight?close:0;
@@ -605,18 +608,19 @@ function updateCamera(dt){
  const parrying=activeFight&&S.parryBursts.length>0;
  // Stay wide at range; make approach, hits, parries and leap-rush feel cinematic.
  const emphasis=(striking?.036:0)+(rushing?.07:0)+(parrying?.065:0);
- const targetZoom=clamp(1+pressure*.205+emphasis*(.35+.65*close),1,1.28);
- const targetX=clamp(midX,110,1170);
+ const focus=S.focusFrame?.active?S.focusFrame:null;
+ const targetZoom=clamp(1+pressure*.205+emphasis*(.35+.65*close)+(focus?.zoom||0),1,1.48);
+ const targetX=clamp(focus?midX*.35+focus.centerX*.65:midX,110,1170);
  if(!CAMERA.initialized){
   CAMERA.x=targetX;CAMERA.zoom=targetZoom;CAMERA.initialized=true;
  }else if(!S.paused){
   const follow=1-Math.exp(-dt*4.4);
-  const zSpeed=targetZoom>CAMERA.zoom?7.6:3.7;
+  const zSpeed=focus?19:targetZoom>CAMERA.zoom?7.6:3.7;
   const blend=1-Math.exp(-dt*zSpeed);
   CAMERA.x+=(targetX-CAMERA.x)*follow;
   CAMERA.zoom+=(targetZoom-CAMERA.zoom)*blend;
  }
- CAMERA.zoom=clamp(CAMERA.zoom,1,1.28);
+ CAMERA.zoom=clamp(CAMERA.zoom,1,1.48);
  // Keep feet aligned with the floor near screen y=617 during zoom-in.
  CAMERA.y=FLOOR-(FLOOR-H*.5)/CAMERA.zoom;
 }
@@ -1069,7 +1073,7 @@ function start(mode='new',requestedRosterIndex=null){
  const selected=careerMatch?CAREER.hero.cls:$('#classChoice').value;
  const opposition=['murmillo','thraex','retiarius'].filter(cls=>cls!==selected);
  const rival=careerMatch?S.careerOpponent.cls:$('#opponentChoice').value==='random'?opposition[(S.round-1)%2]:$('#opponentChoice').value;
- S.phase='fight';S.paused=false;S.time=90;S.score=0;S.combo=0;S.notice='PUGNA!';S.noticeT=1.5;S.events=[];S.sparks=[];S.parryBursts=[];S.keys.clear();S.shake=0;S.flash=0;S.slow=0;S.resultAnim=0;S.resultApplied=false;
+ S.phase='fight';S.paused=false;S.time=90;S.score=0;S.combo=0;S.notice='PUGNA!';S.noticeT=1.5;S.events=[];S.sparks=[];S.parryBursts=[];S.keys.clear();S.shake=0;S.flash=0;S.slow=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
  S.autoPlaying=false;S.lastManualInput=clock;S.careerRewardApplied=false;
  S.player=fighter(selected,335,false);S.enemy=fighter(rival,940,true);CAMERA.initialized=false;
  if(careerMatch){
@@ -1228,7 +1232,9 @@ function finishLineupCleanup(){
   // Carnifex has physically removed the corpse. Do not briefly redraw the
   // original defeated actor at its old X during the victory finisher.
   const removedFighter=allyWon?S.enemy:S.player;
-  if(removedFighter?.dead)removedFighter.x=recovery.side>0?W+420:-420;
+  // Persistent removal flag: this actor must NEVER return in the finisher
+  // world render or in the end-screen defeated portrait.
+  if(removedFighter)removedFighter.removedFromArena=true;
   S.resultWin=!!step.win;S.resultApplied=true;S.resultAnim=0;
   S.phase='finisher';S.slow=1.65;
   setAction(step.win?S.player:S.enemy,'finisher',1.9);
@@ -1313,12 +1319,20 @@ function autoPilotPlayer(p,e,dt){
  }
 }
 function returnToLudus(){
- S.phase='title';S.paused=false;S.gauntlet=null;S.cleanup=null;updateLineupHud();S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.flash=0;S.resultAnim=0;S.resultApplied=false;
+ S.phase='title';S.paused=false;S.gauntlet=null;S.cleanup=null;updateLineupHud();S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.flash=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
  const c=$('#classChoice').value;S.player=fighter(c,335,false);S.enemy=fighter('retiarius',940,true);CAMERA.initialized=false;
  $('#endScreen').hidden=true;$('#startScreen').hidden=false;$('#pauseBtn').textContent='Ⅱ';updateHud();
 }
 
 function say(t,dur=.82){S.notice=t;S.noticeT=dur;$('#combatNotice').textContent=t;}
+function triggerCinematic(kind,contactX){
+ if(S.phase!=='fight'||S.paused||!window.ArenaFocus)return;
+ const candidate=window.ArenaFocus.start(kind,contactX);
+ if(!candidate)return;
+ S.cinematic=candidate;
+ S.focusFrame=window.ArenaFocus.advance(candidate,0,
+   !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
+}
 function addFx(frame,x,y,opt={}){
  if(!S.fx)return;
  const fx={frame,x,y,owner:opt.owner||null,offsetX:opt.offsetX??0,offsetY:opt.offsetY??0,atlas:opt.atlas||'fx',art:opt.art||null,w:opt.w??220,h:opt.h??220,flip:!!opt.flip,alpha:opt.alpha??1,rotation:opt.rotation??0,t:0,max:opt.duration??.12};
@@ -1507,6 +1521,7 @@ function attack(f,victim,special=false,dashImpact=false){
    f.x=clamp(f.x+away*(special?86:64),125,1165);
    S.shake=Math.max(S.shake,victim.enemy?(special?22:17):(special?28:24));
    S.flash=Math.max(S.flash,victim.enemy?(special?.29:.22):.32);
+   triggerCinematic('parry',(victim.x+f.x)*.5);
    S.parryBursts.push({x:victim.x+victim.face*28,y:FLOOR-170,t:0,max:.65,
      damage:counterDamage,hitX:f.x,hitY:FLOOR-278});
    const atlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
@@ -1569,6 +1584,7 @@ function attack(f,victim,special=false,dashImpact=false){
   victim.knockVX=dir*770;victim.knockT=.57;
   victim.stagger=Math.max(victim.stagger,.68);
   S.shake=Math.max(S.shake,24);S.flash=Math.max(S.flash,.29);
+  if(!guarded)triggerCinematic('dash',(f.x+victim.x)*.5);
   say('4 HIT · RUSH BREAK!',1.05);
  }else{
   victim.x=clamp(victim.x+f.face*(special?69:26),125,1165);
@@ -1628,9 +1644,10 @@ function preEngagementFootwork(f,other,dt,playerIdle=false){
  f.x+=f.vx*dt;
  return true;
 }
-function update(dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
- S.shake=Math.max(0,S.shake-dt*49);S.flash=Math.max(0,S.flash-dt*.9);S.noticeT=Math.max(0,S.noticeT-dt);
- S.sparks=S.sparks.filter(v=>(v.t+=dt)<v.max);S.parryBursts=S.parryBursts.filter(v=>(v.t+=dt)<v.max);if(S.phase==='result')return;
+function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
+ // Presentation keeps its real-time timing during the simulated slow-motion.
+ S.shake=Math.max(0,S.shake-realDt*49);S.flash=Math.max(0,S.flash-realDt*.9);S.noticeT=Math.max(0,S.noticeT-realDt);
+ S.sparks=S.sparks.filter(v=>(v.t+=realDt)<v.max);S.parryBursts=S.parryBursts.filter(v=>(v.t+=realDt)<v.max);if(S.phase==='result')return;
  if(S.phase==='cleanup'){
   if(!S.cleanup||!window.ArenaCarnifex||window.ArenaCarnifex.advance(S.cleanup,dt))finishLineupCleanup();
   return;
@@ -1726,7 +1743,12 @@ function showEnd(){
  const win=S.resultApplied?S.resultWin:(S.player.hp>S.enemy.hp||(S.enemy.dead&&!S.player.dead));
  S.lastResultWin=win;S.autoPlaying=false;S.keys.clear();
  const victor=win?S.player:S.enemy,loser=win?S.enemy:S.player;
-  for(const [id,f] of [['winnerPose',victor],['loserPose',loser]])renderResultPortrait(id,f,id==='winnerPose'?10:11);
+  for(const [id,f] of [['winnerPose',victor],['loserPose',loser]]){
+   if(id==='loserPose'&&S.gauntlet&&f.removedFromArena){
+    const art=$('#loserPose');art.replaceChildren();art.style.backgroundImage='none';
+    art.setAttribute('aria-label','회수되어 퇴장한 검투사');
+   }else renderResultPortrait(id,f,id==='winnerPose'?10:11);
+  }
   $('#winnerName').textContent=victor.cfg.name;
   $('#loserName').textContent=loser.cfg.name;
   // Screen positions are always PLAYER (left) and OPPONENT (right), while
@@ -1887,7 +1909,7 @@ function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
  // Original Murmillo / Thraex / Retiarius never use wobbling inbetweens.
  return GrowthFrames.draw(ctx,atlas,GROWTH_POSE[pose]??0,x0,y0,w0,h0,flip,alpha);
 }
-function drawFighter(f){if(!f)return;const pose=choosePose(f),frame=FRAMES[pose]??0;
+function drawFighter(f){if(!f||f.removedFromArena)return;const pose=choosePose(f),frame=FRAMES[pose]??0;
  // Keep a fixed feet pivot for every class, image pose and character.
  const height=FIGHTER_DRAW_SIZE,width=FIGHTER_DRAW_SIZE,feet=FLOOR-1;
  // Keep idle and walk feet planted. Whole-body sine bob made boots hover
@@ -2015,6 +2037,24 @@ function drawEffects(){
   ctx.restore();
  }
 }
+// Focused Roman-arena lens treatment: transient edge focus only; never dim
+// or change the defeated actor's actual image pixels.
+function drawCinematicFocus(){
+ const f=S.focusFrame;
+ if(!f?.active||!f.shade||!S.fx)return;
+ ctx.save();
+ const c=ctx.createRadialGradient(W*.5,H*.52,H*.18,W*.5,H*.52,W*.82);
+ c.addColorStop(0,'rgba(18,12,9,0)');
+ c.addColorStop(.57,'rgba(18,12,9,0)');
+ c.addColorStop(1,'rgba(18,12,9,'+Math.min(.26,f.shade)+')');
+ ctx.fillStyle=c;ctx.fillRect(-50,-50,W+100,H+100);
+ const strength=Math.min(.85,f.shade*3);
+ ctx.fillStyle='rgba(13,10,9,'+strength+')';
+ const bar=Math.round(2+strength*17);
+ ctx.fillRect(0,0,W,bar);
+ ctx.fillRect(0,H-bar,W,bar);
+ ctx.restore();
+}
 function render(){
  ctx.save();
  const dx=S.shake>0?rand(-S.shake,S.shake):0,dy=S.shake>0?rand(-S.shake*.45,S.shake*.45):0;
@@ -2039,6 +2079,7 @@ function render(){
  ctx.restore();
  // Damage flashes stay screen-fixed; HUD and on-screen buttons are never zoomed.
  if(S.flash>0){ctx.fillStyle=`rgba(255,235,204,${Math.min(.65,S.flash)})`;ctx.fillRect(-45,-45,W+90,H+90);}
+ drawCinematicFocus();
  ctx.restore();
  if(loaded<7){ctx.fillStyle='#f7d3a0';ctx.font='20px system-ui';ctx.fillText('Loading sprite atlases…',25,680);}
 }
@@ -2046,8 +2087,15 @@ function loop(t){
  if(!t0)t0=t;
  const dt=clamp((t-t0)/1000,0,.04);
  t0=t;
- // All career modes now use the original single-duel scene and controls.
- update(dt);updateCamera(dt);render();requestAnimationFrame(loop);
+ // The simulation alone slows; camera, input, canvas and audio timing stay
+ // responsive. The clock runs in real time so focus ends even during hitstop.
+ let gameDt=dt;
+ if(S.phase==='fight'||S.phase==='finisher'){
+  const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+  const focus=window.ArenaFocus?.advance?.(S.cinematic,dt,reduced);
+  if(focus){S.cinematic=focus.state;S.focusFrame=focus.active?focus:null;gameDt=focus.gameDt;}
+ }else{S.cinematic=null;S.focusFrame=null;}
+ update(gameDt,dt);updateCamera(dt);render();requestAnimationFrame(loop);
 }
 const keymap={KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right',KeyJ:'attack',Space:'attack',KeyK:'guard',KeyL:'dodge',KeyI:'special'};
 window.addEventListener('keydown',e=>{if(S.phase!=='fight'||e.defaultPrevented||e.target?.closest?.('input,select,textarea,[contenteditable="true"]')||(['Space','Enter'].includes(e.code)&&e.target?.closest?.('button')))return;const k=keymap[e.code];if(k){if(e.code==='Space'||e.code.startsWith('Arrow'))e.preventDefault();if(S.paused)return;markManualInput();if(['left','right','guard'].includes(k)){
