@@ -278,7 +278,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 .ludus-item-icon{font-size:51px}
 @media(max-width:700px){.ludus-workshop{padding:8px;border-width:7px}.ludus-training-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ludus-equipment-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ludus-fighter-art{min-height:160px}.ludus-portrait{height:150px;width:140px}.ludus-stat-tile strong{font-size:16px}}
 
-</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=2"><link rel="stylesheet" href="ludus-armory-live.css?v=2"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=2"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"></head><body>
+</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=2"><link rel="stylesheet" href="ludus-armory-live.css?v=2"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=2"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="squad-arena.css?v=1"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
@@ -1856,6 +1856,68 @@ $('#classSubtitle').textContent=DATA[$('#classChoice').value].eng;
 
 /* Visual Ludus adapter; the existing career state remains authoritative. */
 window.LudusBridge={
+ trainingCost:(i,stat)=>ArenaBalance.trainingCost(CAREER.roster[i],stat),
+ squadSprite:(hero,action='idle',tick=0)=>{
+  if(!hero)return null;
+  const index={idle:0,walk:1,attack:2,special:3,guard:6,hit:7,death:11,dodge:8}[action]??0;
+  if(isChampionMurmillo(hero))
+   return window.ChampionMurmillo?.frame(({attack:'slash',special:'heavy',death:'death',hit:'hit',guard:'guard',walk:'walk'}[action]||action),tick)||null;
+  if(isAnimatedMurmillo(hero))
+   return window.MurmilloMotion?.trainingFrame(({attack:'slash',special:'heavy',death:'idle',hit:'idle'}[action]||action),tick)||null;
+  if(hero.appearance==='legacy'){
+   const image=IMG[hero.cls],legacy=image&&INDEPENDENT_CHARACTER_FRAMES.get(image);
+   return legacy?.[index]||legacy?.[0]||null;
+  }
+  const key=(hero.growthType||hero.cls+'_a')+'_L'+(hero.stage||careerStage(hero));
+  const atlas=GROWTH_IMAGES.get(key);
+  if(atlas?.frames?.[index]?.canvas)return atlas.frames[index].canvas;
+  const image=IMG[hero.cls],fallback=image&&INDEPENDENT_CHARACTER_FRAMES.get(image);
+  return fallback?.[index]||fallback?.[0]||null;
+ },
+ squadStart:(mode,indices)=>{
+  const settings=ArenaBalance.MODES[mode];
+  if(!settings||mode==='1v1'||!window.SquadArena)return false;
+  const chosen=[...new Set(indices)].map(i=>Number(i));
+  if(chosen.length!==settings.allies||chosen.some(i=>!Number.isInteger(i)||!CAREER.roster[i]||CAREER.roster[i].injury>=80)){
+   CAREER.message='대전에 필요한 출전 가능 검투사 '+settings.allies+'명을 선택하세요.';
+   saveCareer();return false;
+  }
+  const opponent={...LudusRoster.encounter(CAREER,CAREER.roster[chosen[0]])};
+  const fighters=chosen.map(i=>({...CAREER.roster[i],gearBonus:equipmentBonus(CAREER.roster[i])}));
+  CAREER.active=chosen[0];CAREER_SELECTING=false;saveCareer();
+  window.LudusScene?.close();window.LudusApprovedScenes?.close();
+  $('#careerHub').hidden=true;$('#startScreen').hidden=true;$('#endScreen').hidden=true;
+  window.SquadArena.start({
+   mode,party:fighters,opponent,bridge:window.LudusBridge,
+   onFinish:(win,result)=>{
+    const pay=ArenaBalance.rewards(win,opponent.round,mode);
+    CAREER.fights++;if(win){CAREER.wins++;CAREER.glory+=pay.glory;}
+    CAREER.gold+=pay.gold;
+    result.party.forEach((f,i)=>{
+     const h=CAREER.roster[chosen[i]];
+     if(!h)return;
+     const hurt=Math.max(0,Math.round((f.maxHp-f.hp)*.37));
+     h.injury=Math.min(120,(h.injury||0)+Math.max(win?3:9,hurt));
+     h.fights=(h.fights||0)+1;
+     if(win)h.wins=(h.wins||0)+1;
+     grantCareerXp(h,Math.max(6,Math.round(pay.xp*(settings.allies>1?.73:1))));
+    });
+    CAREER.message=(win?'다대다 승리! ':'다대다 패배. ')+settings.label+
+     ' · '+pay.gold+'D · 경험치 +'+pay.xp+' · '+(win?'영광!':'전술 및 훈련이 필요합니다.');
+    if(win){
+     const recruited=LudusRoster.recruitBoss(CAREER,opponent);
+     if(recruited)CAREER.message+=' · '+recruited.name+' 영입!';
+     CAREER.pendingOpponent=null;
+    }
+    saveCareer();
+   },
+   onReturn:()=>{
+    $('#endScreen').hidden=true;
+    enterCareer();
+   }
+  });
+  return true;
+ },
  motionScale:()=>ANIMATED_MURMILLO_SCALE,
  championScale:()=>CHAMPION_MURMILLO_SCALE,
  state:()=>({gold:CAREER.gold,glory:CAREER.glory,roster:CAREER.roster,active:CAREER.active,message:CAREER.message}),
@@ -1932,5 +1994,6 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=19"></script><script src="ludus-training-runtime.js?v=5"></script><script src="ludus-approved-scenes.js?v=10"></script><script src="ludus-armory-live.js?v=2"></script><script src="ludus-cards.js?v=4"></script>
+<script src="ludus-scene.js?v=19"></script><script src="ludus-training-runtime.js?v=6"></script><script src="ludus-approved-scenes.js?v=11"></script><script src="ludus-armory-live.js?v=2"></script><script src="ludus-cards.js?v=5"></script>
+<script src="squad-arena.js?v=1"></script>
 </body></html>
