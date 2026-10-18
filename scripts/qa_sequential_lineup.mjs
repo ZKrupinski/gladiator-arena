@@ -11,7 +11,8 @@ const root={};
 for(const file of ['arena-balance.js','arena-lineup.js']){
  vm.runInNewContext(source(file),{globalThis:root},{filename:file});
 }
-const {ArenaBalance:B,ArenaLineup:L}=root;
+vm.runInNewContext(source('arena-carnifex.js'),{globalThis:root,Image:class {constructor(){this.complete=true;this.naturalWidth=500;this.naturalHeight=700;}set src(v){this._src=v;}}},{filename:'arena-carnifex.js'});
+const {ArenaBalance:B,ArenaLineup:L,ArenaCarnifex:X}=root;
 const classes=['murmillo','thraex','retiarius'];
 const hero=i=>({name:'영입 검투사 '+i,cls:classes[i%3],level:5,stats:{str:3,agi:3,end:3,focus:3},
   injury:0,fatigue:0,inventory:['wood'],equipment:{}});
@@ -58,8 +59,8 @@ const facadeSource='(function(S,CAREER,ArenaLineup,ArenaBalance,document,LudusRo
  'fighter,CHAMPION_MURMILLO_VARIANT,ANIMATED_MURMILLO_VARIANT,isChampionMurmillo,'+
  'isAnimatedMurmillo,growthType,careerStage,careerLevel,equipmentBonus,'+
  'setAction,start,saveCareer,grantCareerXp,updateHud,say,clock,clamp,'+
- 'emitAttackFx,fxSound,careerEligible){let CAREER_SELECTING=true;'+mechanicSource+
- ';return {startLineupMatch,finishFight,resolveLineupBout,finishLineupCareerMatch};})';
+ 'emitAttackFx,fxSound,careerEligible,window){let CAREER_SELECTING=true;'+mechanicSource+
+ ';return {startLineupMatch,finishFight,resolveLineupBout,finishLineupCleanup,finishLineupCareerMatch};})';
 const build=()=>{
  const roster=Array.from({length:5},(_,i)=>({...hero(i),injury:8,fatigue:5}));
  const career={roster,active:0,fights:0,wins:4,gold:300,glory:0,pendingOpponent:champion};
@@ -88,7 +89,7 @@ const build=()=>{
   ()=>saves.push(career.message),
   (h,xp)=>{h.xp=(h.xp||0)+xp;return 0},
   ()=>{},t=>{S.notice=t},12,Math.max,()=>{},()=>{},
-  h=>L.condition(h).eligible);
+  h=>L.condition(h).eligible,{ArenaCarnifex:X});
  return {api,career,S,hud,saves};
 };
 {
@@ -98,6 +99,11 @@ const build=()=>{
  for(const [step,hp] of [[1,150],[2,110],[3,60]]){
   S.player.hp=hp;S.enemy.hp=0;
   api.finishFight(S.player,S.enemy);
+  assert.equal(S.phase,'cleanup','KO must play Carnifex retrieval BEFORE replacing rival');
+  assert.ok(S.cleanup?.body?.dead,'actual original defeated sprite is retained');
+  assert.equal(S.player.hp,hp);
+  X.advance(S.cleanup,X.TIME.total);
+  api.finishLineupCleanup();
   if(step<3){assert.equal(S.gauntlet.enemyIndex,step);assert.equal(S.player.hp,hp);
    assert.equal(S.phase,'fight');}
  }
@@ -114,13 +120,18 @@ const build=()=>{
  assert.equal(api.startLineupMatch('2v2',[0,1]),true);
  const remainingHP=S.enemy.hp-40;S.enemy.hp=remainingHP;
  S.player.hp=0;api.finishFight(S.enemy,S.player);
+ assert.equal(S.phase,'cleanup');
  assert.equal(S.gauntlet.allyIndex,1);
  assert.equal(S.gauntlet.enemyIndex,0);
  assert.equal(S.enemy.hp,remainingHP,'winning enemy must keep their HP');
+ assert.notEqual(S.player.cls,career.roster[1].cls,'new fighter must wait for body retrieval');
+ X.advance(S.cleanup,X.TIME.total);api.finishLineupCleanup();
  assert.equal(S.player.cls,career.roster[1].cls,'replacement fighter should be controlled');
  S.enemy.hp=0;api.finishFight(S.player,S.enemy);
+ assert.equal(S.phase,'cleanup');X.advance(S.cleanup,X.TIME.total);api.finishLineupCleanup();
  assert.equal(S.gauntlet.enemyIndex,1);
  S.player.hp=0;api.finishFight(S.enemy,S.player);
+ assert.equal(S.phase,'cleanup');X.advance(S.cleanup,X.TIME.total);api.finishLineupCleanup();
  assert.equal(S.phase,'finisher');assert.equal(S.gauntlet.won,false);
  api.finishLineupCareerMatch();
  assert.equal(career.fights,1);
@@ -128,10 +139,16 @@ const build=()=>{
  assert.ok(career.roster[0].fatigue>5&&career.roster[1].fatigue>5);
 }
 assert.match(html,/id="lineupHud"/);
+assert.match(html,/arena-carnifex\.js\?v=1/);
+assert.match(html,/arena-lineup-visual\.css\?v=2/);
+assert.match(html,/arena-lineup-visual\.js\?v=2/);
+assert.match(source('arena-lineup-visual.css'),/background:none;border:0;box-shadow:none/);
+assert.match(source('arena-lineup-visual.js'),/CARNIFEX/);
+assert.match(source('assets\/npc\/carnifex-executioner.svg'),/Carnifex/);
 assert.doesNotMatch(html,/<script src="squad-arena\.js\?/,'old depth squad runtime must be disabled');
 const draft=source('ludus-cards.js');
 assert.match(draft,/lc-enemy-lineup/);
 assert.match(draft,/lc-queue-order/);
 assert.match(draft,/lc-unavailable/);
 assert.match(draft,/개발 확인용 임시 메뉴/);
-console.log('PASS: all lineup modes, ordered replacement, original duel controls, fatigue, roster UI and boss payout.');
+console.log('PASS: all lineup modes, staged Carnifex corpse retrieval, fighter replacement, roster UI and boss payout.');
