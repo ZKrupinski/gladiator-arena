@@ -43,11 +43,40 @@ jobs:
                       assert im.getchannel('A').getbbox()
           print('PASS: 72 individual RGBA 960x540 frames')
           PY
+      - name: Verify stable standing-toe pivots and no foreign sprite fragments
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+          base=Path('public/assets/combat/champion-murmillo')
+          m=json.loads((base/'manifest.json').read_text())
+          qa=json.loads((base/'qa-extraction.json').read_text())
+          assert m['version']==2 and m['anchor']['kind']=='front-toe'
+          assert len(qa['actions'])==9
+          all_removed=0
+          for action,frames in m['actions'].items():
+              assert len(frames)==8
+              for frame,check in zip(frames,qa['actions'][action]):
+                  assert frame['footY']==512 and frame['pivotX']==480
+                  assert check['visualBBox'][0]>=12 and check['visualBBox'][2]<=948
+                  assert check['visualBBox'][1]>=12 and check['visualBBox'][3]<=528
+                  assert check['removedForeignPixels']>=0
+                  all_removed+=check['removedForeignPixels']
+                  with Image.open(base/frame['file']) as im:
+                      box=im.getchannel('A').getbbox()
+                      assert tuple(box)==tuple(check['visualBBox']),action
+                      # A strip touching the image boundary would mean the
+                      # sword tip/cape is truncated during export.
+                      assert box[0]>10 and box[1]>10 and box[2]<950 and box[3]<530
+          assert all_removed>100,'The source contains foreign neighbour-pose fragments'
+          print('PASS: 72 frame toe anchors, independent silhouette extraction, and clean padded borders. Removed pixels:',all_removed)
+          PY
       - name: Publish full-resolution art into GitHub main
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/assets/combat/champion-murmillo/frames public/assets/combat/champion-murmillo/manifest.json public/assets/combat/champion-murmillo/qa-contact.webp
+          git add public/assets/combat/champion-murmillo/frames public/assets/combat/champion-murmillo/manifest.json public/assets/combat/champion-murmillo/qa-contact.webp public/assets/combat/champion-murmillo/qa-extraction.json
           if ! git diff --cached --quiet; then
             git commit -m "assets(champion): publish 72 separated 16:9 transparent high detail poses"
             git pull --rebase origin main
