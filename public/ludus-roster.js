@@ -20,7 +20,7 @@
  }
  // Face-based adjustment; increasingly large high-tier illustrations need a
  // stronger reduction, consistently for allies and enemies. Feet stay anchored.
- function scale(type,level){const s=clamp(Number(level)||1,1,5);return ({murmillo_a:[.90,.82,.76,.68,.64],retiarius_a:[.90,.85,.82,.76,.72],thraex_a:[.94,.86,.84,.80,.78],thraex_b:[.86,.84,.78,.73,.70]}[type]||[.86,.82,.78,.74,.70])[s-1];}
+ function scale(type,level){const s=clamp(Number(level)||1,1,5);return ({murmillo_a:[.90,.82,.76,.70,.75],retiarius_a:[.90,.85,.82,.76,.72],thraex_a:[.94,.86,.84,.80,.78],thraex_b:[.86,.84,.78,.73,.70]}[type]||[.86,.82,.78,.74,.70])[s-1];}
  root.LudusRoster={create,encounter,recruitBoss,scale,stage};
  if(typeof module!=='undefined')module.exports=root.LudusRoster;
 })(globalThis);
