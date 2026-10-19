@@ -1,20 +1,14 @@
-/* METAL OF ROME v2 — CC0 RECORDED brass / real guitar / acoustic drums / real sword Foley.
- * Synthesized keyboard brass and pitched combat oscillator FX are removed.
- * Web Audio is only activated after a user interaction (mobile safe).
- * Missing/failed recorded audio never falls back to any pitched oscillator.
+/* GLADIATOR ARENA | METAL OF ROME v4.
+ * No battle melody: real huge war drums and recorded live crowd drive the fight.
+ * Independent MUSIC / CROWD / COMBAT SFX buses; true sidechain-like ducker.
+ * Action sounds always win the mix. The score is not retriggered on impacts.
+ * Actual playable recordings are in assets/audio/rome-v1/.
  */
 (function(root){
 'use strict';
 const BASE='assets/audio/rome-v1/';
-const ASSET_VERSION='?v=3-solemn';
-// Visual QA uses a different browser suite that deliberately exercises slow
-// motion frame timing. Keep audio decoding out of THAT suite; real audio has
-// a separate end-to-end browser test with decoded WAV and MP3 verification.
-const visualQA=typeof location!=='undefined'&&
- new URLSearchParams(location.search).has('__arena_qa');
-const STATES={title:[0,0,0,0,0],fight:[.32,.28,.14,.10,.20],
- finisher:[.17,.13,.08,.35,.23],cleanup:[.21,.11,.03,.08,.26],
- result:[.02,.01,.01,.01,.14]};
+const ASSET_VERSION='?v=4-war-drums-real-crowd';
+const visualQA=typeof location!=='undefined'&&new URLSearchParams(location.search).has('__arena_qa');
 const STEMS=['rome_bed.mp3','rome_drums.mp3','rome_guitars.mp3','rome_epic.mp3','rome_crowd.mp3'];
 const SFX={
  swing:['swing_1.wav','swing_2.wav','swing_3.wav'],
@@ -25,127 +19,190 @@ const SFX={
  dash:['dash_1.wav','dash_2.wav'],dash_hit:['dash_hit_1.wav','dash_hit_2.wav'],
  dodge:['dodge_1.wav','dodge_2.wav'],guard:['guard_1.wav','guard_2.wav'],
  finisher:['finisher_1.wav'],victory:['victory_1.wav'],
- defeat:['defeat_1.wav'],start:['start_1.wav']
+ defeat:['defeat_1.wav'],start:['start_1.wav'],
+ crowd_roar:['crowd_roar_1.wav','crowd_roar_2.wav']
 };
-const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
-let ctx=null,master=null,bgmBus=null,sfxBus=null,compressor=null;
-let ready=false,loading=null,enabled=true,started=false;
+// [deep rhythmic bed, responsive war drums, barely-there low guitar,
+//  dramatic extra real drum fills, actual human crowd ambience].
+const STATES=Object.freeze({
+ title:[0,0,0,0,0],
+ fight:[.38,.32,0,.07,.21],
+ cleanup:[.21,.11,0,.035,.23],
+ finisher:[.20,.25,0,.26,.39],
+ result:[0,0,0,0,.19]
+});
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,Number.isFinite(v)?v:a));
+let ctx=null,master=null,musicBus=null,crowdBus=null,sfxBus=null,compressor=null;
+let ready=false,loading=null,started=false,enabled=true,played=0;
+let crowdBoostUntil=0,lastCrowdReaction=-100,crowdReactionCount=0;
 const buffers=new Map(),voices=[],stemGains=[],stemTargets=[0,0,0,0,0];
-let startTime=0,played=0;
+let lastDuck={type:'none',music:.56,crowd:.62,hold:0};
 function context(){
  if(ctx)return ctx;
  const AC=root.AudioContext||root.webkitAudioContext;
  if(!AC)return null;
  ctx=new AC();
- master=ctx.createGain();master.gain.value=.78;
+ master=ctx.createGain();master.gain.value=.82;
  compressor=ctx.createDynamicsCompressor();
- compressor.threshold.value=-13;compressor.knee.value=13;compressor.ratio.value=3.4;
- compressor.attack.value=.007;compressor.release.value=.22;
- bgmBus=ctx.createGain();bgmBus.gain.value=.76;
- sfxBus=ctx.createGain();sfxBus.gain.value=.82;
- bgmBus.connect(compressor);sfxBus.connect(compressor);
- compressor.connect(master);master.connect(ctx.destination);
+ compressor.threshold.value=-11;compressor.knee.value=10;
+ compressor.ratio.value=3.1;compressor.attack.value=.006;compressor.release.value=.18;
+ musicBus=ctx.createGain();musicBus.gain.value=.56;
+ crowdBus=ctx.createGain();crowdBus.gain.value=.62;
+ sfxBus=ctx.createGain();sfxBus.gain.value=1.08;
+ // Stadium people never share the weapon SFX channel:
+ // a shield clang cannot be buried by an audience roar.
+ musicBus.connect(compressor);crowdBus.connect(compressor);
+ sfxBus.connect(compressor);compressor.connect(master);master.connect(ctx.destination);
  return ctx;
 }
 async function preload(){
  if(visualQA)return false;
  if(loading)return loading;
  loading=(async()=>{
-  const all=STEMS.concat(Object.values(SFX).flat());
-  const items=await Promise.all(all.map(async name=>{
+  const names=STEMS.concat(Object.values(SFX).flat());
+  const raw=await Promise.all(names.map(async name=>{
    try{
-    const res=await fetch(BASE+name+ASSET_VERSION,{cache:'force-cache'});
-    if(!res.ok)throw Error(res.status+' '+name);
-    return [name,await res.arrayBuffer()];
-   }catch(e){console.warn('[ROME audio asset]',name,String(e));return [name,null]}
+    const r=await fetch(BASE+name+ASSET_VERSION,{cache:'force-cache'});
+    if(!r.ok)throw Error(r.status+' '+name);
+    return [name,await r.arrayBuffer()];
+   }catch(err){console.warn('[Rome sound]',name,String(err));return [name,null]}
   }));
-  const c=context();
-  if(!c)return false;
-  const decoded=await Promise.all(items.map(async ([name,data])=>{
-   if(!data)return [name,null];
-   try{return [name,await c.decodeAudioData(data)]}catch(e){console.warn('[ROME decode]',name,String(e));return [name,null]}
+  const c=context();if(!c)return false;
+  await Promise.all(raw.map(async([name,bytes])=>{
+   if(!bytes)return;
+   try{buffers.set(name,await c.decodeAudioData(bytes))}
+   catch(err){console.warn('[Rome decode]',name,String(err))}
   }));
-  decoded.forEach(([name,buf])=>{if(buf)buffers.set(name,buf)});
   ready=STEMS.every(name=>buffers.has(name));
   return ready;
- })().catch(err=>{console.warn('[ROME startup]',err);return false});
+ })().catch(err=>{console.warn('[Rome preload]',err);return false});
  return loading;
 }
 function beginMusic(){
  if(!ctx||started||!ready||!enabled)return;
- const now=ctx.currentTime+.07;
+ const now=ctx.currentTime+.055;
  STEMS.forEach((name,i)=>{
   const source=ctx.createBufferSource(),gain=ctx.createGain();
-  source.buffer=buffers.get(name);source.loop=true;
-  gain.gain.value=0;source.connect(gain).connect(bgmBus);
+  source.buffer=buffers.get(name);
+  source.loop=true;gain.gain.value=0;
+  source.connect(gain).connect(i===4?crowdBus:musicBus);
   source.start(now);voices.push(source);stemGains.push(gain);
  });
- started=true;startTime=now;
+ started=true;
 }
 function unlock(){
  if(visualQA)return false;
- const c=context();
- if(!c)return false;
+ const c=context();if(!c)return false;
  if(c.state==='suspended')c.resume().catch(()=>{});
  preload().then(ok=>{if(ok)beginMusic()});
  return true;
 }
+// Threshold-specific ducking: combat hits retain their initial crack,
+// then crowd/music bloom back with a controlled decaying cinematic tail.
+const DUCK=Object.freeze({
+ swing:[.68,.48,.065,.16],heavy_swing:[.48,.33,.12,.24],
+ dodge:[.72,.52,.05,.12],guard:[.55,.37,.09,.17],
+ hit:[.38,.21,.13,.23],block:[.40,.20,.13,.25],
+ heavy_hit:[.26,.15,.21,.36],dash:[.46,.30,.14,.24],
+ dash_hit:[.23,.13,.20,.38],parry:[.20,.10,.26,.43],
+ finisher:[.16,.08,.40,.55]
+});
+function duck(kind){
+ if(!ctx||!musicBus||!crowdBus)return;
+ const [music,crowd,hold,release]=DUCK[kind]||[.52,.38,.12,.25];
+ const t=ctx.currentTime;
+ lastDuck={type:kind,music,crowd,hold};
+ for(const [bus,target,base] of [[musicBus,music,.56],[crowdBus,crowd,.62]]){
+  bus.gain.cancelScheduledValues(t);
+  bus.gain.setValueAtTime(bus.gain.value,t);
+  bus.gain.linearRampToValueAtTime(target,t+.018);
+  bus.gain.setTargetAtTime(base,t+hold,release);
+ }
+}
+function crowdReact(reason='combo'){
+ if(visualQA||!ctx||!enabled)return false;
+ if(ctx.currentTime-lastCrowdReaction<1.8)return false;
+ lastCrowdReaction=ctx.currentTime;
+ crowdBoostUntil=Math.max(crowdBoostUntil,ctx.currentTime+1.95);
+ const ok=play('crowd_roar',{
+  gain:reason==='victory'?.30:reason==='parry'?.20:.16,
+  delay:reason==='parry'?.27:reason==='victory'?.20:.30
+ });
+ if(ok)crowdReactionCount++;
+ return ok;
+}
 function play(kind,opt={}){
  if(visualQA)return false;
  if(!enabled)return true;
- if(!ctx||ctx.state!=='running'){unlock();return false}
- const variants=SFX[kind];if(!variants)return false;
- const playable=variants.filter(n=>buffers.has(n));
- if(!playable.length)return false;
- const name=playable[(played++)%playable.length],source=ctx.createBufferSource();
- source.buffer=buffers.get(name);
+ if(!ctx||ctx.state!=='running'){unlock();return false;}
+ const options=SFX[kind];if(!options)return false;
+ const available=options.filter(name=>buffers.has(name));
+ if(!available.length)return false;
+ const file=available[(played++)%available.length],source=ctx.createBufferSource();
+ source.buffer=buffers.get(file);
  const gain=ctx.createGain();
- gain.gain.value=clamp(opt.gain??(kind==='parry'?1:kind==='hit'?.84:.74),.02,1.5);
- source.playbackRate.value=.96+Math.random()*.08;
- const pan=ctx.createStereoPanner?ctx.createStereoPanner():null;
+ const audience=kind==='crowd_roar';
+ gain.gain.value=clamp(opt.gain??(
+  audience?.20:kind==='parry'?1.04:kind==='heavy_hit'?1.03:
+  kind==='hit'?.92:.80),.02,1.25);
+ if(!audience&&!['start','victory','defeat'].includes(kind))
+  source.playbackRate.value=.975+Math.random()*.05;
  source.connect(gain);
- if(pan){pan.pan.value=clamp(opt.pan||0,-.8,.8);gain.connect(pan).connect(sfxBus);}
- else gain.connect(sfxBus);
- const t=ctx.currentTime+.005;source.start(t);
- if(['parry','finisher','heavy_hit','dash_hit'].includes(kind))duck(kind==='parry'?.52:.40);
+ const pan=ctx.createStereoPanner?ctx.createStereoPanner():null;
+ if(pan){
+  pan.pan.value=clamp(opt.pan||0,-.8,.8);
+  gain.connect(pan).connect(audience?crowdBus:sfxBus);
+ }else gain.connect(audience?crowdBus:sfxBus);
+ source.start(ctx.currentTime+.007+clamp(opt.delay||0,0,1));
+ if(DUCK[kind])duck(kind);
+ if(kind==='parry')crowdReact('parry');
+ if(kind==='finisher'||kind==='victory')crowdReact('victory');
  return true;
-}
-function duck(level=.45){
- if(!bgmBus||!ctx)return;
- const t=ctx.currentTime;
- bgmBus.gain.cancelScheduledValues(t);
- bgmBus.gain.setValueAtTime(bgmBus.gain.value,t);
- bgmBus.gain.linearRampToValueAtTime(level,t+.023);
- bgmBus.gain.setTargetAtTime(.76,t+.14,.27);
 }
 function setMuted(muted){
  enabled=!muted;
- if(master&&ctx)master.gain.setTargetAtTime(enabled?.78:0,ctx.currentTime,.055);
+ if(master&&ctx)master.gain.setTargetAtTime(enabled?.82:0,ctx.currentTime,.055);
  if(enabled)unlock();
 }
 function update(state={}){
  if(!ctx||!started)return;
  const phase=state.phase||'title';
- const goals=(STATES[phase]||STATES.title).slice();
- if(phase==='fight'&&!state.paused){
-  const danger=clamp(1-(state.health??1),0,1);
+ const targets=(STATES[phase]||STATES.title).slice();
+ if(state.paused){targets.fill(0);}
+ else if(phase==='fight'){
   const fury=clamp((state.combo||0)/5,0,1);
-  goals[1]+=.085;goals[2]+=.17+fury*.09;
-  goals[3]+=(state.boss?.18:0)+danger*.13+fury*.085;
- }else if(state.paused){goals.fill(0)}
+  const danger=clamp(1-(state.health??1),0,1);
+  const close=clamp((520-(state.distance??550))/300,0,1);
+  const climax=state.boss?.5:0;
+  // More WEIGHT, not more MELODY: drums and audience respond to combat.
+  targets[0]+=.055*fury+.055*close;
+  targets[1]+=.11*fury+.10*close+.07*climax;
+  targets[2]+=.025*climax; // guitar effectively absent in normal duels
+  targets[3]+=.12*danger+.11*fury+.07*climax; // drum fills
+  targets[4]+=.12*close+.10*fury+.065*danger+.055*climax;
+ }
+ if(phase==='fight'||phase==='finisher'){
+  const burst=clamp((crowdBoostUntil-ctx.currentTime)/1.6,0,1);
+  targets[4]+=burst*.13;
+ }
  for(let i=0;i<stemGains.length;i++){
-  if(Math.abs(stemTargets[i]-goals[i])>.012){
-   const t=ctx.currentTime;
-   stemTargets[i]=goals[i];stemGains[i].gain.setTargetAtTime(goals[i],t,.35);
+  targets[i]=clamp(targets[i],0,.74);
+  if(Math.abs(stemTargets[i]-targets[i])>.012){
+   stemTargets[i]=targets[i];
+   stemGains[i].gain.setTargetAtTime(targets[i],ctx.currentTime,i===4?.48:.32);
   }
  }
 }
-function status(){return {ready,started,enabled,playing:!!ctx&&ctx.state==='running',stems:stemGains.length,
-  loaded:buffers.size,variants:Object.keys(SFX).length,bpm:172,
-  mix:stemTargets.slice(),master:master?.gain.value??0}}
-root.ArenaAudio={version:'3.0.0',unlock,preload,play,update,setMuted,status,SFX,STEMS};
+function status(){
+ return {ready,started,enabled,playing:!!ctx&&ctx.state==='running',
+  stems:stemGains.length,loaded:buffers.size,variants:Object.keys(SFX).length,bpm:172,
+  mix:stemTargets.slice(),master:master?.gain.value??0,
+  musicBus:musicBus?.gain.value??0,crowdBus:crowdBus?.gain.value??0,
+  sfxBus:sfxBus?.gain.value??0,priority:lastDuck,
+  crowdReactions:crowdReactionCount};
+}
+root.ArenaAudio={version:'4.0.0',unlock,preload,play,update,setMuted,status,crowdReact,SFX,STEMS};
 if(typeof document!=='undefined'){
  document.addEventListener('pointerdown',()=>{if(!ctx)unlock()},{once:true,passive:true});
- // Download assets before user presses start; decoding occurs after unlock.
 }
 })(globalThis);
