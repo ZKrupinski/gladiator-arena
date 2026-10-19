@@ -19,6 +19,23 @@ try{
  assert.ok(manifest.ceremony.no_pitched_bell_hits,'dry recorded collision effects retained');
  assert.ok(manifest.production.includes('no instrument oscillator'),'no keys or synthesized brass allowed');
  assert.equal(manifest.license,'CC0');
+ // Verify the REAL new 2-3s ceremony recordings (not cached 0.95s
+ // four-note fanfares), while attack/parry audio stays on its v2 sound files.
+ const ceremonies=await page.evaluate(async()=>{
+  const audio=new AudioContext();
+  const cues={};
+  for(const key of ['start','victory','defeat']){
+   const response=await fetch('assets/audio/rome-v1/'+key+'_1.wav?v=3-solemn');
+   if(!response.ok)throw Error('missing solemn '+key);
+   const pcm=await audio.decodeAudioData(await response.arrayBuffer());
+   cues[key]=pcm.duration;
+  }
+  await audio.close();
+  return cues;
+ });
+ assert.ok(ceremonies.start>=2.15,'no chirpy sub-second start trumpet');
+ assert.ok(ceremonies.victory>=2.60,'grand resonant horn triumph is sustained');
+ assert.ok(ceremonies.defeat>=2.15,'somber horn/tuba defeat is sustained');
  assert.equal(await page.evaluate(()=>window.ArenaAudio.version),'3.0.0');
  await page.waitForFunction(()=>!!window.ArenaAudio,{timeout:18000});
  await page.locator('#startBtn').click();
