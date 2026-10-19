@@ -104,7 +104,7 @@ tuba=decode(source(VSCO,'Brass/Tuba/stac/Tuba3_stac_D2_v2_rr1_Sum.wav','tuba_D2.
 # Sustained LIVE horn / low tuba performances for ceremonial start/end cues.
 # Absolutely no trumpet or staccato melody in the cues.
 ceremony_horn=decode(source(VSCO,'Brass/F Horn/sus/MOHorn_sus_C3_v3_1.wav','live_sustained_horn_C3.wav'))
-ceremony_tuba=decode(source(VSCO,'Brass/Tuba/sus/Tuba3_sus_D2_v2_rr1_Sum.wav','live_sustained_tuba_D2.wav'))
+ceremony_tuba=decode(source(VSCO,'Brass/Tuba/sus/Tuba3_sus_D2_v2_rr1_Mid.wav','live_sustained_tuba_D2.wav'))
 bd=decode(source(VSCO,'Percussion/BDrumNewhit_v7_rr1_Sum.wav','acoustic_bassdrum.wav'))
 sn=decode(source(VSCO,'Percussion/Snare2-HitNS_v5_rr1_Sum.wav','acoustic_snare.wav'))
 hat=decode(source(VSCO,'Percussion/cymbal-crashshort_v1.wav','acoustic_cymbal.wav'))

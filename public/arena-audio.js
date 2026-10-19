@@ -6,7 +6,7 @@
 (function(root){
 'use strict';
 const BASE='assets/audio/rome-v1/';
-const ASSET_VERSION='?v=2-real';
+const ASSET_VERSION='?v=3-solemn';
 // Visual QA uses a different browser suite that deliberately exercises slow
 // motion frame timing. Keep audio decoding out of THAT suite; real audio has
 // a separate end-to-end browser test with decoded WAV and MP3 verification.
@@ -143,7 +143,7 @@ function update(state={}){
 function status(){return {ready,started,enabled,playing:!!ctx&&ctx.state==='running',stems:stemGains.length,
   loaded:buffers.size,variants:Object.keys(SFX).length,bpm:172,
   mix:stemTargets.slice(),master:master?.gain.value??0}}
-root.ArenaAudio={version:'2.0.0',unlock,preload,play,update,setMuted,status,SFX,STEMS};
+root.ArenaAudio={version:'3.0.0',unlock,preload,play,update,setMuted,status,SFX,STEMS};
 if(typeof document!=='undefined'){
  document.addEventListener('pointerdown',()=>{if(!ctx)unlock()},{once:true,passive:true});
  // Download assets before user presses start; decoding occurs after unlock.
