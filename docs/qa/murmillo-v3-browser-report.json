@@ -1,15 +1,92 @@
 {
-  "testedAt": "2026-10-19T09:30:07.751Z",
+  "testedAt": "2026-10-19T09:32:41.084Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 31,
-      "totalDifference": 211637
+      "changedChannels": 85436,
+      "totalDifference": 6777010
+    },
+    "walk": {
+      "changedChannels": 121899,
+      "totalDifference": 10542891
+    },
+    "sweep": {
+      "changedChannels": 122203,
+      "totalDifference": 10697655
+    },
+    "defeat": {
+      "changedChannels": 93990,
+      "totalDifference": 8302582
+    },
+    "slash": {
+      "changedChannels": 115252,
+      "totalDifference": 10015257
+    },
+    "thrust": {
+      "changedChannels": 118494,
+      "totalDifference": 9933934
+    },
+    "victory": {
+      "changedChannels": 64384,
+      "totalDifference": 5187560
+    },
+    "guard": {
+      "changedChannels": 8351,
+      "totalDifference": 702209
     }
   },
   "spritePack": "B ready · 24 transparent frames",
   "version": "4.0.0",
-  "status": "FAIL",
-  "error": "AssertionError [ERR_ASSERTION]: idle rendered image is not moving: {\"changedChannels\":31,\"totalDifference\":211637}",
-  "consoleErrors": []
+  "tierSizes": {
+    "old": [
+      0.9,
+      0.82,
+      0.76,
+      0.7,
+      0.75
+    ],
+    "other": [
+      0.9,
+      0.85,
+      0.82,
+      0.76,
+      0.72
+    ]
+  },
+  "animatedMurmilloScale": 0.75,
+  "roster": {
+    "originalKept": true,
+    "addedOnce": true,
+    "activePreserved": true,
+    "levelPreserved": true,
+    "inventoryPreserved": true,
+    "championSeparate": true,
+    "flutterRemoved": true,
+    "originalTier5Scale": 0.75,
+    "newMotionBattleScale": 0.75,
+    "rosterAfterMigration": 4
+  },
+  "deployment": {
+    "mainCTA": true,
+    "ludusCTA": true,
+    "lobbyArtHitZone": true,
+    "sidebarCTA": true,
+    "selectOld": true,
+    "selectAnimated": true,
+    "selectOther": true,
+    "lobbyHitArea": {
+      "width": 177.3480224609375,
+      "height": 212.1546630859375,
+      "target": "ll-hit-arena",
+      "isTarget": true,
+      "pointer": "auto",
+      "stageHasArt": true
+    },
+    "names": [
+      "기존 무르밀로",
+      "무르밀로 · 애니메이션",
+      "기존 레티아리우스"
+    ]
+  },
+  "status": "PASS"
 }
