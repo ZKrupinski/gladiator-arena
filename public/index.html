@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=1"></script>
-<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=2"></script>
+<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -367,6 +367,11 @@ const CINEMATIC_ASSETS={
  slash_trail:'assets/new-era/cinematic/slash-sword-trail-12f.webp?v=1',
  sweep_trail:'assets/new-era/cinematic/sweep-sword-trail-12f.webp?v=1',
  thrust_trail:'assets/new-era/cinematic/thrust-sword-trail-12f.webp?v=1',
+ guard_painted:'assets/new-era/cinematic/guard-painted-12f.webp?v=1',
+ parry_painted:'assets/new-era/cinematic/parry-painted-12f.webp?v=1',
+ finisher_painted:'assets/new-era/cinematic/finisher-painted-12f.webp?v=1',
+ dash_painted:'assets/new-era/cinematic/dash-painted-12f.webp?v=1',
+ special_painted:'assets/new-era/cinematic/special-painted-12f.webp?v=1',
  parry_burst:'assets/new-era/cinematic/parry_burst.webp?v=3.6',
  dash_trail:'assets/new-era/cinematic/dash_trail.webp?v=3.6',
  special_aura:'assets/new-era/cinematic/special_aura.webp?v=3.6',
@@ -1391,15 +1396,15 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
  }
  let art='special_aura',w=715,h=715,duration=.43,alpha=.85;
  let offsetX=dir*42,offsetY=-12,rotation=0,frame=3;
- if(guarded){art='parry_burst';w=480;h=480;offsetX=dir*52;offsetY=-6;alpha=.83;duration=.32;frame=7;}
- if(special){art='special_aura';w=715;h=715;offsetX=dir*42;offsetY=-12;duration=.59;alpha=.85;frame=3;}
- if(dash){art='dash_trail';w=1220;h=405;offsetX=dir*142;offsetY=-18;duration=.54;alpha=.95;frame=4;}
+ if(guarded){art='parry_burst';w=510;h=510;offsetX=dir*65;offsetY=-6;alpha=.91;duration=.32;frame=7;}
+ if(special){art='special_aura';w=735;h=735;offsetX=dir*15;offsetY=-12;duration=.59;alpha=.92;frame=3;}
+ if(dash){art='dash_trail';w=1240;h=610;offsetX=dir*145;offsetY=-18;duration=.54;alpha=.97;frame=4;}
  if(ko){
   // The finishing impact belongs to the DEFEATED fighter, never the victor.
   const hitOffsetX=-victim.face*18,hitOffsetY=-12;
   const targetAtlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
   addFx(8,victim.x+hitOffsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+hitOffsetY,{
-   art:'parry_burst',sequence:'finisher',w:650,h:650,alpha:.9,duration:.58,
+   art:'parry_burst',sequence:'finisher',w:850,h:850,alpha:.95,duration:.58,
    owner:victim,offsetX:hitOffsetX,offsetY:hitOffsetY,
    atlas:targetAtlas,flip:victim.face<0
   });
@@ -1410,16 +1415,8 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
   sequence:dash?'dash':guarded?'guard':special?'special':null,
   owner:attacker,offsetX,offsetY,rotation,atlas
  });
- if(dash){
-  // Rush trail belongs to the striker; the impact burst belongs to the target.
-  const hitOffsetX=-victim.face*18,hitOffsetY=-12;
-  const targetAtlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
-  addFx(7,victim.x+hitOffsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+hitOffsetY,{
-   art:'parry_burst',sequence:'parry',w:560,h:560,alpha:.78,duration:.46,
-   owner:victim,offsetX:hitOffsetX,offsetY:hitOffsetY,atlas:targetAtlas,
-   flip:victim.face<0
-  });
- }
+ // The horizontal dash artwork contains its own terminal flare.
+ // Do not overlay a circular parry or guard burst onto the rushed target.
 }
 function finishFight(winner,loser){
  if(loser.hp>0||S.phase!=='fight')return false;
@@ -1454,7 +1451,7 @@ function startComboDash(f,victim){
  fxSound('swing');
  const atlas=f.cls==='thraex'?'fx_thraex':f.cls==='retiarius'?'fx_retiarius':'fx';
  addFx(5,f.x+f.face*26,FLOOR-FIGHTER_DRAW_SIZE*.52,
-   {art:'special_aura',w:535,h:535,atlas,flip:f.face<0,owner:f,offsetX:f.face*26,offsetY:0,duration:.3,alpha:.66});
+   {art:'dash_trail',sequence:'dash',w:700,h:400,atlas,flip:f.face<0,owner:f,offsetX:f.face*26,offsetY:0,duration:.3,alpha:.63});
  return true;
 }
 function advanceComboDash(f,dt){
@@ -1565,7 +1562,7 @@ function attack(f,victim,special=false,dashImpact=false){
   victim.guard=false;victim.stagger=.44;say('GUARD BREAK!');
   const guardAtlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
   addFx(7,victim.x+victim.face*30,FLOOR-FIGHTER_DRAW_SIZE*.53,{
-   art:'parry_burst',sequence:'guard',atlas:guardAtlas,w:470,h:470,alpha:.82,duration:.34,
+   art:'parry_burst',sequence:'guard',atlas:guardAtlas,w:470,h:470,alpha:.9,duration:.34,
    flip:victim.face<0,owner:victim,offsetX:victim.face*30
   });
  }else if(!f.enemy)say('GUARDED',.42);}
