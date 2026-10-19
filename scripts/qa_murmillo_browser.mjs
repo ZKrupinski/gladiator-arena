@@ -36,10 +36,11 @@ try {
  await check('idle','[data-motion="idle"]',920,700);
  await check('walk','[data-motion="walk"]',260,1200);
  await check('sweep','[data-motion="sweep"]',240,2500);
- await check('defeat','[data-motion="defeat"]',320,1000);
+ await check('defeat','[data-motion="defeat"]',720,1000);
  await check('slash','[data-motion="slash"]',200,2500);
  await check('thrust','[data-motion="thrust"]',220,2500);
  await check('victory','[data-motion="victory"]',550,700);
+ await check('guard','[data-motion="guard"]',510,650);
  // The new fighter is a separate roster entry, not a blanket replacement of
  // the original class. Verify fresh saves, repeat launches, and old save migration.
  const game=await browser.newPage({viewport:{width:1200,height:900}});

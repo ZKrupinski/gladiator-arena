@@ -68,11 +68,13 @@ function motionAt(f,scene,clock=0){
  let x=0,y=0,lean=0,sx=1,sy=1;
  switch(sample.action){
   case 'idle':
-    y=-.65*(.5+.5*wave);break;
+    // Continuous, feet-anchored breathing: scale the torso without pixel slicing or strobe.
+    y=-.65*(.5+.5*wave);sx=1-.009*wave;sy=1+.022*wave;lean=.004*wave;break;
   case 'walk':
     x=2*Math.sin(p*Math.PI*4);y=-1.6*lift;break;
   case 'guard':
-    y=-2*Math.max(0,wave);lean=.008*wave;break;
+    // Shield bracing visibly loads and releases; the ground pivot stays planted.
+    y=-2*Math.max(0,wave);sx=1+.012*wave;sy=1-.017*wave;lean=.011*wave;break;
   case 'slash':
     x=19*Math.sin(Math.PI*p);y=-7*Math.sin(Math.PI*p);
     lean=.065*Math.sin(Math.PI*p);break;
