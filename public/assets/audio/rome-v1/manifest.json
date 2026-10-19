@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "title": "METAL OF ROME - original procedural prototype",
+  "version": 2,
+  "title": "METAL OF ROME v2 - 100% recorded instruments, dry real combat Foley",
   "bpm": 172,
   "bars": 24,
   "durationSeconds": 33.4884,
@@ -67,5 +67,9 @@
       "start_1.wav"
     ]
   },
-  "note": "Self-generated DSP proof-of-concept, not recorded AAA final masters."
+  "production": "CC0 real recorded brass, real distorted guitar, acoustic drums, recorded metal + swords; no instrument oscillator, no pitched bell attacks.",
+  "brass_source": "https://github.com/sgossner/VSCO-2-CE",
+  "guitar_source": "https://github.com/freepats/electric-guitar-FSBS-dist1",
+  "sword_source": "https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes",
+  "license": "CC0"
 }
