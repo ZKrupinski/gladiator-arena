@@ -1,6 +1,6 @@
 {
-  "version": 3,
-  "title": "METAL OF ROME v3 - solemn deep live horns, no fanfare or pipe lead",
+  "version": 4,
+  "title": "METAL OF ROME v4 - war drums and live crowd dominate, no combat melody",
   "bpm": 172,
   "bars": 24,
   "durationSeconds": 33.4884,
@@ -65,12 +65,23 @@
     ],
     "start": [
       "start_1.wav"
+    ],
+    "crowd_roar": [
+      "crowd_roar_1.wav",
+      "crowd_roar_2.wav"
     ]
   },
   "production": "CC0 real recorded brass, real distorted guitar, acoustic drums, recorded metal + swords; no instrument oscillator, no pitched bell attacks.",
   "brass_source": "https://github.com/sgossner/VSCO-2-CE",
   "guitar_source": "https://github.com/freepats/electric-guitar-FSBS-dist1",
   "sword_source": "https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes",
+  "crowd_source": "https://opengameart.org/content/crowd-shoutingspeaking-ambience",
+  "battle_mix": {
+    "no_bright_horn_melody": true,
+    "dominant": "recorded war drums and real human crowd",
+    "sfx_priority": true,
+    "crowd_reaction_variants": 2
+  },
   "ceremony": {
     "start": "single low recorded horn/tuba swell, no fast notes",
     "victory": "one broad low recorded horn chord with deep war drum",
