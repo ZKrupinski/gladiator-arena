@@ -161,7 +161,7 @@ try{
   }));
   const rejection=s.sparks.filter(x=>x.sequence==='dash').map(x=>({
    onAttacker:x.owner===e,delay:x.delay,duration:x.max-x.delay,track:x.track,
-   offset:x.offsetX
+   offset:x.offsetX,attackerFace:e.face
   }));
   const parryRoles={
    defenderTriumph:f.parryTriumphT,
@@ -196,7 +196,8 @@ try{
    events.triumph[0].delay>=.05,'winning shield effect follows defender, after the clang');
  assert.equal(events.rejection.length,1,'one defeated-attacker recoil streak');
  assert.ok(events.rejection[0].onAttacker&&events.rejection[0].track==='body'&&
-   events.rejection[0].delay>=.10&&events.rejection[0].offset<0,
+   events.rejection[0].delay>=.10&&
+   events.rejection[0].offset*events.rejection[0].attackerFace<0,
    'failed attack receives an explicitly backward recoil trail');
  assert.ok(events.parryRoles.attackTrailCancelled,'incoming blade trail is visibly cancelled');
  assert.ok(events.parryRoles.defenderTriumph>.5&&events.parryRoles.attackerFailure>.7,
