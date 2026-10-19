@@ -12,9 +12,9 @@
 const clamp=(a,b=0,c=1)=>Math.max(b,Math.min(c,a));
 const ease=x=>{x=clamp(x);return x*x*(3-2*x);};
 const FAMILIES=Object.freeze({
- slash:Object.freeze({frames:12,width:384,height:384,source:'hit_slash',duration:.23,profile:'cut'}),
- sweep:Object.freeze({frames:12,width:384,height:384,source:'hit_slash',duration:.25,profile:'sweep'}),
- thrust:Object.freeze({frames:12,width:480,height:320,source:'dash_trail',duration:.24,profile:'thrust'}),
+ slash:Object.freeze({frames:12,width:362,height:362,source:'slash_trail',duration:.23,profile:'cut'}),
+ sweep:Object.freeze({frames:12,width:362,height:362,source:'sweep_trail',duration:.25,profile:'sweep'}),
+ thrust:Object.freeze({frames:12,width:362,height:362,source:'thrust_trail',duration:.24,profile:'thrust'}),
  guard:Object.freeze({frames:12,width:384,height:384,source:'parry_burst',duration:.32,profile:'guard'}),
  parry:Object.freeze({frames:16,width:448,height:448,source:'parry_burst',duration:.58,profile:'parry'}),
  dash:Object.freeze({frames:16,width:512,height:288,source:'dash_trail',duration:.54,profile:'dash'}),
@@ -77,6 +77,16 @@ function rasterize(kind,i){
  const g=canvas.getContext('2d',{alpha:true});
  if(!g)return null;
  g.clearRect(0,0,s.width,s.height);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+ // The three standard attacks have authored 12-frame atlases. Extract ONLY
+ // the requested cell, never mix sparks/shrapnel from the old one-shot assets.
+ if(kind==='slash'||kind==='sweep'||kind==='thrust'){
+  const bitmap=images[s.source];
+  if(bitmap.naturalWidth!==1448||bitmap.naturalHeight!==1086)return null;
+  const tileW=bitmap.naturalWidth/4,tileH=bitmap.naturalHeight/3;
+  g.drawImage(bitmap,(i%4)*tileW,Math.floor(i/4)*tileH,tileW,tileH,
+    0,0,s.width,s.height);
+  return canvas;
+ }
  const w=s.width,h=s.height,u=(i+.48)/s.frames,em=Math.sin(Math.PI*u);
  const appear=ease(u/.21),tail=1-ease((u-.62)/.38);
  const power=clamp(em*1.22)*appear*tail;
@@ -214,7 +224,7 @@ function inspect(kind,progress){
  return c?{kind,index:i,frames:FAMILIES[kind].frames,width:c.width,height:c.height,
   alpha:true,canvas:c}:null;
 }
-root.ArenaAnimatedFX={version:'1.0.0',FAMILIES,specs,bind,frameIndex,draw,inspect,
+root.ArenaAnimatedFX={version:'2.0.0',FAMILIES,specs,bind,frameIndex,draw,inspect,
   available:sourcesLoaded,cacheSize:()=>frameCache.size};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaAnimatedFX;
 })(globalThis);
