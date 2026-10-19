@@ -2452,7 +2452,11 @@ if(new URLSearchParams(window.location.search).has('__arena_qa')){
      if(pixels[i]+pixels[i+1]+pixels[i+2]>70)count++;
     }
     ctx.restore();render();
-    return {count,cls:f.cls,pose:choosePose(f),drawPose:safeFighterPose(f,choosePose(f)),x:f.x,growthType:f.growthType,
+    return {count,cls:f.cls,pose:choosePose(f),drawPose:safeFighterPose(f,choosePose(f)),
+     x:f.x,face:f.face,growthType:f.growthType,
+     renderTransform:f._fxRender,secondary:window.ArenaMotion?.pose?.(f,clock,false),
+     spring:f.bodySpring,parryTriumphT:f.parryTriumphT,parryFailT:f.parryFailT,
+     action:f.action,actionT:f.actionT,stagger:f.stagger,
      removed:f.removedFromArena,srcReady:!!(IMG[f.cls]?.complete&&IMG[f.cls]?.naturalWidth),
      spriteIsolated:!!INDEPENDENT_CHARACTER_FRAMES.get(IMG[f.cls])};
    },

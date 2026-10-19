@@ -32,11 +32,25 @@ try{
   attack(s.enemy,s.player,false,false);
   const after=[window.__arenaQA.debugFighter(s.player),window.__arenaQA.debugFighter(s.enemy)];
   console.log('PARRY_CONTACT_FIGHTERS '+JSON.stringify(after));
-  return {focus:s.cinematic?.kind,playerHp:s.player.hp,enemyHp:s.enemy.hp,before,after};
+  const probes=[s.player,s.enemy].map(f=>{
+   const p={spring:f.bodySpring,win:f.parryTriumphT,lose:f.parryFailT,
+    interrupted:f.parryInterrupted,action:f.action,actionT:f.actionT,stagger:f.stagger,guard:f.guard};
+   f.bodySpring=null;
+   const springOff=window.__arenaQA.debugFighter(f);
+   f.parryTriumphT=0;f.parryFailT=0;f.parryInterrupted=false;
+   const parryOff=window.__arenaQA.debugFighter(f);
+   f.action='idle';f.actionT=0;f.stagger=0;f.guard=false;
+   const neutral=window.__arenaQA.debugFighter(f);
+   Object.assign(f,{bodySpring:p.spring,parryTriumphT:p.win,parryFailT:p.lose,
+    parryInterrupted:p.interrupted,action:p.action,actionT:p.actionT,
+    stagger:p.stagger,guard:p.guard});
+   return {springOff,parryOff,neutral};
+  });
+  return {focus:s.cinematic?.kind,playerHp:s.player.hp,enemyHp:s.enemy.hp,before,after,probes};
  });
  assert.equal(initial.focus,'parry','must trigger actual perfect parry');
  assert.ok(initial.before.every(v=>v.count>100),'character images must draw before parry '+JSON.stringify(initial.before));
- assert.ok(initial.after.every(v=>v.count>100),'character images must still draw at parry contact '+JSON.stringify(initial.after));
+ assert.ok(initial.after.every(v=>v.count>100),'character images must still draw at parry contact '+JSON.stringify(initial));
  assert.ok(initial.after.every(v=>v.drawPose==='idle'),
   'missing approved keyframes fall back to a stable existing stance');
  const samples=[];
