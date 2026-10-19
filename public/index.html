@@ -639,7 +639,40 @@ function updateCamera(dt){
  // Keep feet aligned with the floor near screen y=617 during zoom-in.
  CAMERA.y=FLOOR-(FLOOR-H*.5)/CAMERA.zoom;
 }
-function fxSound(type){if(!sounds)return;try{ctxAudio??=new (window.AudioContext||window.webkitAudioContext)();if(ctxAudio.state==='suspended')ctxAudio.resume();const t=ctxAudio.currentTime;const osc=ctxAudio.createOscillator(),gain=ctxAudio.createGain();osc.type=type==='hit'?'sawtooth':'triangle';osc.frequency.setValueAtTime(type==='hit'?170:390,t);osc.frequency.exponentialRampToValueAtTime(type==='hit'?65:180,t+.14);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(type==='hit'?.19:.09,t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain).connect(ctxAudio.destination);osc.start(t);osc.stop(t+.19);}catch(e){sounds=false;}}
+function fxSound(type){
+ if(!sounds)return;
+ try{
+  ctxAudio??=new (window.AudioContext||window.webkitAudioContext)();
+  if(ctxAudio.state==='suspended')ctxAudio.resume();
+  const t=ctxAudio.currentTime;
+  if(type==='parry'){
+   // A dry metal-on-metal crack above a low, decisive shield impact.
+   // No glassy shimmer or sustained electronic fanfare.
+   for(const [hz,toHz,level,len,wave] of [
+    [218,128,.18,.19,'triangle'],
+    [745,520,.085,.13,'sawtooth'],
+    [1290,980,.037,.075,'triangle']]){
+    const osc=ctxAudio.createOscillator(),gain=ctxAudio.createGain();
+    osc.type=wave;osc.frequency.setValueAtTime(hz,t);
+    osc.frequency.exponentialRampToValueAtTime(toHz,t+len);
+    gain.gain.setValueAtTime(.0001,t);
+    gain.gain.exponentialRampToValueAtTime(level,t+.005);
+    gain.gain.exponentialRampToValueAtTime(.0001,t+len);
+    osc.connect(gain).connect(ctxAudio.destination);
+    osc.start(t);osc.stop(t+len+.015);
+   }
+   return;
+  }
+  const osc=ctxAudio.createOscillator(),gain=ctxAudio.createGain();
+  osc.type=type==='hit'?'sawtooth':'triangle';
+  osc.frequency.setValueAtTime(type==='hit'?170:390,t);
+  osc.frequency.exponentialRampToValueAtTime(type==='hit'?65:180,t+.14);
+  gain.gain.setValueAtTime(.0001,t);
+  gain.gain.exponentialRampToValueAtTime(type==='hit'?.19:.09,t+.008);
+  gain.gain.exponentialRampToValueAtTime(.0001,t+.18);
+  osc.connect(gain).connect(ctxAudio.destination);osc.start(t);osc.stop(t+.19);
+ }catch(e){sounds=false;}
+}
 
 const GEAR=[
  {id:'wood',slot:'weapon',name:'훈련용 목검',cost:0,atk:0,hp:0,desc:'기본 장비'},
@@ -1067,7 +1100,7 @@ $('#careerExit').onclick=()=>{if(MINI)return;window.LudusScene?.close();$('#care
 $('#careerHit').onclick=completeTraining;
 $('#careerCancel').onclick=closeTraining;
 window.addEventListener('keydown',e=>{if(MINI&&!MINI.finished&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
-function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,footworkSeed:enemy?1.45:0.38};}
+function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,footworkSeed:enemy?1.45:0.38};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 function start(mode='new',requestedRosterIndex=null){
  const careerMatch=mode==='career';
@@ -1539,6 +1572,11 @@ function attack(f,victim,special=false,dashImpact=false){
    victim.parry=0;breakAttackChain(victim);victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
    victim.st=clamp(victim.st-(special?12:7),0,100);
    const contact=parryContactPoint(victim,f); // before the opponent is knocked back
+   // The incoming blade trail is CUT, not allowed to finish across the shield.
+   S.sparks=S.sparks.filter(v=>v.owner!==f||
+    !['slash','sweep','thrust','special','dash'].includes(v.sequence));
+   victim.parryTriumphT=.56;
+   f.parryFailT=.74;
    f.hp=Math.max(0,f.hp-counterDamage);
    breakAttackChain(f);f.comboDash=null;
    const away=Math.sign(f.x-victim.x)||-f.face;
@@ -1552,13 +1590,26 @@ function attack(f,victim,special=false,dashImpact=false){
    window.ArenaMotion?.pulse?.(f,'parry','target',victim.face);
    window.ArenaMotion?.shake?.(S,'parry',victim.face);
    triggerCinematic('parry',contact.x,victim.face);
-   S.parryBursts.push({x:victim.x+victim.face*28,y:FLOOR-170,t:0,max:.65,
-     damage:counterDamage,hitX:f.x,hitY:FLOOR-278});
-   // Single compact hand-painted metallic deflection at the collision point.
-   // Do not attach to the knocked-back fighter or overlay a second bloom sprite.
+   S.parryBursts.push({x:contact.x,y:contact.y,t:0,max:.79,
+     defender:victim,attacker:f,damage:counterDamage,hitX:f.x,hitY:FLOOR-278});
+   // Beat 1: sharp silver interruption. The collision remains fixed in space.
    addFx(7,contact.x,contact.y,{
-    art:null,sequence:'parry',w:330,h:330,flip:victim.face<0,
-    duration:.34,alpha:.90
+    art:null,sequence:'parry',w:338,h:338,flip:victim.face<0,
+    duration:.29,alpha:.97
+   });
+   // Beat 2: the shield drives its own golden/silver painted counter-crescent.
+   // Attach to the winner, not to the attacker's trailing blow.
+   addFx(7,victim.x+victim.face*70,FLOOR-157,{
+    art:null,sequence:'guard',w:430,h:385,flip:victim.face<0,
+    owner:victim,offsetX:victim.face*70,offsetY:28,track:'body',
+    delay:.055,duration:.285,alpha:.94
+   });
+   // Beat 3: red painted speed-smear is deliberately BEHIND the loser.
+   // It says 'the strike was thrown away' rather than 'another hit landed'.
+   addFx(4,f.x-f.face*85,FLOOR-193,{
+    art:null,sequence:'dash',w:500,h:235,flip:f.face<0,
+    owner:f,offsetX:-f.face*85,offsetY:-12,track:'body',
+    delay:.11,duration:.255,alpha:.51
    });
    if(!victim.enemy){S.score+=counterDamage*2;S.combo++;}
    else{S.combo=0;}
@@ -1566,7 +1617,7 @@ function attack(f,victim,special=false,dashImpact=false){
    const comeback=(!victim.enemy&&missingHealth>=.5);
    say(victim.enemy?'ENEMY PARRY! YOU -'+counterDamage:
      (comeback?'REVERSAL PARRY! ENEMY -':'PERFECT PARRY! ENEMY -')+counterDamage,1.2);
-   fxSound('hit');
+   fxSound('parry');
    if(f.hp<=0)finishFight(victim,f);
    else updateHud();
    return;
@@ -1657,6 +1708,10 @@ function choosePose(f){
    return won?'finisher':'defeat';}
  }
  if(f.dead)return 'defeat';
+ if(f.parryFailT>.18&&f.stagger>0)return 'hit';
+ // A winning deflection holds the distinctive guard silhouette for one beat,
+ // until the player voluntarily attacks or the shield drives forward.
+ if(f.parryTriumphT>.19&&!['attack','special','comboDash'].includes(f.action))return 'guard';
  if(f.actionT>0){
   const t=clamp(1-f.actionT/Math.max(.01,f.actionDuration),0,1);
   if(f.action==='attack'){
@@ -1696,7 +1751,13 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
  S.shake=Math.max(0,S.shake-realDt*(S.focusFrame?.active?94:49));
  window.ArenaMotion?.advanceShake?.(S,realDt);
  S.flash=Math.max(0,S.flash-realDt*.9);S.noticeT=Math.max(0,S.noticeT-realDt);
- S.sparks=S.sparks.filter(v=>(v.t+=realDt)<v.max);S.parryBursts=S.parryBursts.filter(v=>(v.t+=realDt)<v.max);if(S.phase==='result')return;
+ S.sparks=S.sparks.filter(v=>(v.t+=realDt)<v.max);S.parryBursts=S.parryBursts.filter(v=>(v.t+=realDt)<v.max);
+ // These are cosmetic real-time beats, so hitstop does not freeze the reaction.
+ for(const f of [S.player,S.enemy])if(f){
+  f.parryTriumphT=Math.max(0,(f.parryTriumphT||0)-realDt);
+  f.parryFailT=Math.max(0,(f.parryFailT||0)-realDt);
+ }
+ if(S.phase==='result')return;
  if(S.phase==='cleanup'){
   if(!S.cleanup||!window.ArenaCarnifex||window.ArenaCarnifex.advance(S.cleanup,dt))finishLineupCleanup();
   return;
@@ -2037,6 +2098,20 @@ function drawFighter(f){if(!f||f.removedFromArena)return;const pose=choosePose(f
   scaleX*=secondary.sx;scaleY*=secondary.sy;
   drawX+=secondary.x;drawY+=secondary.y;
  }
+ // Directional emotional counterpoint: the victor presses forward and the
+ // cancelled striker buckles backwards. These transforms are cosmetic only.
+ if(S.phase==='fight'){
+  if(f.parryTriumphT>0&&!f.dead&&f.stagger<=0){
+   const beat=Math.sin(Math.PI*(1-clamp(f.parryTriumphT/.56)));
+   drawX+=f.face*12*beat;tilt+=f.face*.045*beat;
+   scaleX*=1+.035*beat;scaleY*=1+.012*beat;
+  }
+  if(f.parryFailT>0){
+   const beat=Math.sin(Math.PI*(1-clamp(f.parryFailT/.74))*.94);
+   drawX-=f.face*25*beat;tilt-=f.face*.16*beat;
+   scaleX*=1+.055*beat;scaleY*=1-.07*beat;
+  }
+ }
  // Export the actual render-space translation, rotation and grounded pivot.
  // FX are painted after both fighters and therefore can follow the SAME pose
  // instead of a stale physics-only x coordinate.
@@ -2104,16 +2179,35 @@ function drawCinematicWorldAccent(){
 }
 function drawParryBursts(){
  for(const b of S.parryBursts){
-   // Parry graphic uses the premium parry_burst image queued in attack().
-   // Keep only the useful floating damage amount, not a procedural circle.
    if(!b.damage)continue;
-   const t=b.t/b.max,fade=Math.max(0,1-t);
+   const t=b.t,life=Math.max(.001,b.max);
+   const fade=Math.max(0,1-t/life);
+   // Floating counterdamage belongs ONLY to the failed attacker.
    ctx.save();ctx.globalAlpha=Math.min(1,fade*2);
    ctx.font='900 32px system-ui,sans-serif';
    ctx.textAlign='center';ctx.textBaseline='middle';
    ctx.lineWidth=6;ctx.strokeStyle='#231309';ctx.fillStyle='#fff0be';
-   const yy=b.hitY-47*t;
+   const yy=b.hitY-47*(t/life);
    ctx.strokeText('-'+b.damage,b.hitX,yy);ctx.fillText('-'+b.damage,b.hitX,yy);
+   ctx.restore();
+   if(!b.defender||!b.attacker)continue;
+   // Roman role callouts replace the generic 'PARRY!' as a victory/failure
+   // visual duet. Draw over the fighter's head, never as a new HUD panel.
+   const enter=clamp((t-.08)/.13),leave=clamp((life-t)/.20);
+   const alpha=Math.min(1,enter,leave);
+   if(alpha<=0)continue;
+   ctx.save();ctx.globalAlpha=alpha;ctx.textAlign='center';
+   ctx.textBaseline='middle';ctx.lineJoin='round';
+   const rise=15*clamp(t/life);
+   const winX=b.defender.x-b.defender.face*23,loseX=b.attacker.x+b.attacker.face*15;
+   ctx.font='900 30px Georgia,serif';ctx.lineWidth=4;
+   ctx.strokeStyle='#24160d';ctx.fillStyle='#ffe7ac';
+   ctx.strokeText('CONTRA!',winX,FLOOR-352-rise);
+   ctx.fillText('CONTRA!',winX,FLOOR-352-rise);
+   ctx.font='bold 24px Georgia,serif';ctx.lineWidth=3;
+   ctx.strokeStyle='#2a1110';ctx.fillStyle='#c18d82';
+   ctx.strokeText('FRVSTRA!',loseX,FLOOR-330-rise);
+   ctx.fillText('FRVSTRA!',loseX,FLOOR-330-rise);
    ctx.restore();
  }
 }
@@ -2219,7 +2313,9 @@ function drawCinematicFocus(){
  const reveal=clamp((f.elapsed-.065)/.12,0,1);
  const dissolve=clamp((f.duration-f.elapsed)/.29,0,1);
  const textAlpha=Math.min(.94,reveal,dissolve);
- if(textAlpha>0){
+ // Parry tells its story near the two actual fighters; only rush keeps a
+ // top-center Roman proclamation. No repeated generic 'PARRY!' graphics.
+ if(textAlpha>0&&f.kind!=='parry'){
   const legend=f.kind==='parry'?'PARRY PERFECTA':'IMPETUS';
   const subtitle=f.kind==='parry'?'COUNTERSTRIKE':'RUSH IMPACT';
   ctx.globalAlpha=textAlpha;ctx.textAlign='center';ctx.textBaseline='middle';

@@ -146,14 +146,32 @@ try{
   const finisher=s.sparks.filter(x=>x.sequence==='finisher').map(x=>({
    defeatedAnchor:x.owner===e,source:x.art
   }));
-  ready();f.guard=true;f.parry=.3;attack(e,f,false,false);
+  ready();f.guard=true;f.parry=.3;
+  // A pre-existing orange enemy blade trail must vanish immediately.
+  s.sparks.push({owner:e,sequence:'slash',t:0,max:.35});
+  attack(e,f,false,false);
   const parry=s.sparks.map(x=>x.sequence).filter(Boolean);
   const parryBursts=s.sparks.filter(x=>x.sequence==='parry').map(x=>({
    ownerless:x.owner===null,width:x.w,height:x.h,duration:x.max,
    x:x.x,y:x.y,defenderShieldX:f.x+f.face*52,
    recoilingAttackerX:e.x,focusCenter:s.cinematic?.centerX
   }));
-  return {ordinary,ordinaryDebris,special,dash,guard,finisher,parry,parryBursts,focus:s.cinematic?.kind};
+  const triumph=s.sparks.filter(x=>x.sequence==='guard').map(x=>({
+   onDefender:x.owner===f,delay:x.delay,duration:x.max-x.delay,track:x.track
+  }));
+  const rejection=s.sparks.filter(x=>x.sequence==='dash').map(x=>({
+   onAttacker:x.owner===e,delay:x.delay,duration:x.max-x.delay,track:x.track,
+   offset:x.offsetX
+  }));
+  const parryRoles={
+   defenderTriumph:f.parryTriumphT,
+   attackerFailure:e.parryFailT,
+   attackerPose:e.action,
+   attackTrailCancelled:!s.sparks.some(x=>x.owner===e&&x.sequence==='slash'),
+   caption:s.parryBursts.at(-1)?.defender===f&&s.parryBursts.at(-1)?.attacker===e
+  };
+  return {ordinary,ordinaryDebris,special,dash,guard,finisher,
+   parry,parryBursts,triumph,rejection,parryRoles,focus:s.cinematic?.kind};
  });
  assert.ok(events.ordinary.some(x=>['slash','sweep','thrust'].includes(x)),'ordinary strikes use animated slices');
  assert.ok(events.ordinaryDebris.length>0);
@@ -166,13 +184,25 @@ try{
  assert.ok(events.finisher.length>0&&events.finisher.every(x=>x.defeatedAnchor&&x.source==null),
    'KO impact uses exclusive radial finisher art on the defeated fighter');
  assert.ok(events.parry.includes('parry'),'parry counter uses precision flash atlas');
- assert.equal(events.parryBursts.length,1,'one contact burst must replace stacked flares');
+ assert.equal(events.parryBursts.length,1,'exactly one localized parry contact spark');
  const clang=events.parryBursts[0];
  assert.ok(clang.ownerless&&clang.width<=360&&clang.height<=360,'compact fixed metal contact');
- assert.ok(clang.duration>=.28&&clang.duration<=.38,'a brief 12-frame deflection');
+ assert.ok(clang.duration>=.25&&clang.duration<=.32,'the metal-contact 12-frame deflection');
  assert.ok(Math.abs(clang.x-clang.defenderShieldX)<=48,'flash stays beside shield rim');
  assert.ok(Math.abs(clang.x-clang.recoilingAttackerX)>80,'flash does not follow attacker knockback');
  assert.ok(Math.abs(clang.focusCenter-clang.x)<1,'focus agrees with shield contact');
+ assert.equal(events.triumph.length,1,'one victorious defender shield follow-through');
+ assert.ok(events.triumph[0].onDefender&&events.triumph[0].track==='body'&&
+   events.triumph[0].delay>=.05,'winning shield effect follows defender, after the clang');
+ assert.equal(events.rejection.length,1,'one defeated-attacker recoil streak');
+ assert.ok(events.rejection[0].onAttacker&&events.rejection[0].track==='body'&&
+   events.rejection[0].delay>=.10&&events.rejection[0].offset<0,
+   'failed attack receives an explicitly backward recoil trail');
+ assert.ok(events.parryRoles.attackTrailCancelled,'incoming blade trail is visibly cancelled');
+ assert.ok(events.parryRoles.defenderTriumph>.5&&events.parryRoles.attackerFailure>.7,
+   'both victory and failure play directional physical reactions');
+ assert.equal(events.parryRoles.attackerPose,'hit','attacker's strike becomes hit stagger');
+ assert.ok(events.parryRoles.caption,'the floating success and failure heralds identify each role');
  assert.equal(events.focus,'parry');
  await p.waitForTimeout(170);
  const active=await p.evaluate(()=>{
@@ -183,7 +213,8 @@ try{
  });
  assert.ok(active.camera,'real perfect-parry freeze remains active');
  assert.ok(active.fxTime.some(x=>x.t>.05),'frames advance with real time through gameplay slow motion');
- assert.ok(active.fxTime.some(x=>x.max>=.28&&x.max<=.38),'parry deflection stays within its contact animation window');
+ assert.ok(active.fxTime.some(x=>x.kind==='parry'&&x.max>=.25&&x.max<=.32),
+   'parry impact frame sequence finishes before its stagger and recovery');
  const sync=await p.evaluate(()=>{
   const {state:s,attack,fxPoint,fxTiming}=window.__arenaQA;
   const f=s.player,e=s.enemy;
