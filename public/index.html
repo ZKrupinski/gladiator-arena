@@ -1602,20 +1602,20 @@ function attack(f,victim,special=false,dashImpact=false){
      defender:victim,attacker:f,damage:counterDamage,hitX:f.x,hitY:FLOOR-278});
    // Beat 1: sharp silver interruption. The collision remains fixed in space.
    addFx(7,contact.x,contact.y,{
-    art:null,sequence:'parry',w:338,h:338,flip:victim.face<0,
+    art:null,sequence:'parry',w:390,h:390,flip:victim.face<0,
     duration:.29,alpha:.97
    });
    // Beat 2: the shield drives its own golden/silver painted counter-crescent.
    // Attach to the winner, not to the attacker's trailing blow.
    addFx(7,victim.x+victim.face*70,FLOOR-157,{
-    art:null,sequence:'guard',w:430,h:385,flip:victim.face<0,
+    art:null,sequence:'guard',w:495,h:445,flip:victim.face<0,
     owner:victim,offsetX:victim.face*70,offsetY:28,track:'body',
     delay:.055,duration:.285,alpha:.94
    });
    // Beat 3: red painted speed-smear is deliberately BEHIND the loser.
    // It says 'the strike was thrown away' rather than 'another hit landed'.
    addFx(4,f.x-f.face*85,FLOOR-193,{
-    art:null,sequence:'dash',w:500,h:235,flip:f.face<0,
+    art:null,sequence:'dash',w:575,h:270,flip:f.face<0,
     owner:f,offsetX:-f.face*85,offsetY:-12,track:'body',layer:'back',
     delay:.11,duration:.255,alpha:.51
    });

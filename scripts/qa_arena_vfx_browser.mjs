@@ -157,10 +157,12 @@ try{
    recoilingAttackerX:e.x,focusCenter:s.cinematic?.centerX
   }));
   const triumph=s.sparks.filter(x=>x.sequence==='guard').map(x=>({
-   onDefender:x.owner===f,delay:x.delay,duration:x.max-x.delay,track:x.track
+   onDefender:x.owner===f,delay:x.delay,duration:x.max-x.delay,track:x.track,
+   width:x.w,height:x.h
   }));
   const rejection=s.sparks.filter(x=>x.sequence==='dash').map(x=>({
    onAttacker:x.owner===e,delay:x.delay,duration:x.max-x.delay,track:x.track,
+   width:x.w,height:x.h,
    offset:x.offsetX,attackerFace:e.face,layer:x.layer
   }));
   const parryRoles={
@@ -186,15 +188,20 @@ try{
  assert.ok(events.parry.includes('parry'),'parry counter uses precision flash atlas');
  assert.equal(events.parryBursts.length,1,'exactly one localized parry contact spark');
  const clang=events.parryBursts[0];
- assert.ok(clang.ownerless&&clang.width<=360&&clang.height<=360,'compact fixed metal contact');
+ assert.ok(clang.ownerless&&clang.width===390&&clang.height===390,
+   'perfect parry clash is 15 percent larger while anchored at the shield contact');
  assert.ok(clang.duration>=.25&&clang.duration<=.32,'the metal-contact 12-frame deflection');
  assert.ok(Math.abs(clang.x-clang.defenderShieldX)<=48,'flash stays beside shield rim');
  assert.ok(Math.abs(clang.x-clang.recoilingAttackerX)>80,'flash does not follow attacker knockback');
  assert.ok(Math.abs(clang.focusCenter-clang.x)<1,'focus agrees with shield contact');
  assert.equal(events.triumph.length,1,'one victorious defender shield follow-through');
+ assert.equal(events.triumph[0].width,495,'success-side crescent should have upgraded size');
+ assert.equal(events.triumph[0].height,445,'success-side crescent keeps its aspect ratio');
  assert.ok(events.triumph[0].onDefender&&events.triumph[0].track==='body'&&
    events.triumph[0].delay>=.05,'winning shield effect follows defender, after the clang');
  assert.equal(events.rejection.length,1,'one defeated-attacker recoil streak');
+ assert.equal(events.rejection[0].width,575,'the recoil trail grows without covering the actor');
+ assert.equal(events.rejection[0].height,270,'the recoil trail keeps its original aspect ratio');
  assert.ok(events.rejection[0].onAttacker&&events.rejection[0].track==='body'&&
    events.rejection[0].delay>=.10&&
    events.rejection[0].offset*events.rejection[0].attackerFace<0&&
