@@ -129,62 +129,86 @@ roots=['D2','D2','Bb2','C3','D2','D2','F2','G2',
 melody=['D4','F4','G4','A4','F4','G4','F4','D4',
         'D4','F4','A4','G4','F4','G4','D4','D4',
         'D4','A4','G4','F4','D4','G4','F4','D4']
-# Exact beat-locked multitracks. Dynamic stems use pre-recorded *acoustic*
-# sources exclusively. Bass synth, keys, synthesized choir and oscillators removed.
-for b in range(BARS):
- t=b*BEAT*4;root=roots[b];note=melody[b]
- add(bed,t,cut(bd,.38,.07,900),.31,pan=-.12)
- for beat in [0,2]:
-  add(bed,t+beat*BEAT,cut(wood,.32,.08,1200),.23,pan=.20)
- for beat in [0,2]:
-  instrument,freq=pick(horns,note)
-  add(bed,t+beat*BEAT,fmt(instrument,.6,freq,PITCH[note]),.22,pan=-.12)
-  instrument,freq=pick(trumpets,note)
-  add(bed,t+beat*BEAT+.018,fmt(instrument,.45,freq,PITCH[note]),.16,pan=.20)
- # Low real tuba swells instead of synthetic bass keyboard.
- add(bed,t,fmt(tuba,.64,PITCH['D2'],PITCH[root]),.21,pan=0)
- if b>=2:
-  kick=cut(bd,.19,.04,600)
-  snare=cut(sn,.18,.04,5000)
-  bright=cut(hat,.15,.08,6500)
-  for idx in range(16):
-   at=t+idx*BEAT/4
-   if idx in [0,2,4,6,8,10,12,14]:
-    add(drums,at,kick,.23 if idx%4 else .35,pan=0)
-   if idx in [4,12]:
-    add(drums,at,snare,.37,pan=.08)
-   if idx%2==0:
-    add(drums,at,bright,.09,pan=-.24 if idx%4 else .25)
-   # Chugging *real recorded overdrive guitar*, not sawtooth.
-   if idx in [0,2,4,6,8,10,12,14]:
-    for mul,pan,vol in [(1,-.44,.32),(2**(7/12),.42,.16)]:
-     target=PITCH[root]*mul
-     closest=min(guitar,key=lambda k:abs(math.log2(PITCH[k]/target)))
-     orig=guitar[closest]
-     # A recorded distorted guitar has a real pick, attack and string grit.
-     sig=fmt(orig,.23 if idx%4 else .34,PITCH[closest],target,.05)
-     add(guitars,at,sig,vol,pan=pan)
-  if b%4==3:
-   for k in range(4):
-    add(drums,t+(3+k*.25)*BEAT,cut(wood,.26,.05,1200),.24+.04*k,pan=-.3+.20*k)
- if b>=8:
-  # Epic layer: only actual section-like doubled horn/trumpet recordings,
-  # never a piano, synthetic choir or keys.
-  for beat in [0,1,2,3]:
-   if beat%2==0 or b>=16:
-    inst,freq=pick(horns,note)
-    add(epic,t+beat*BEAT,fmt(inst,.58,freq,PITCH[note]),.19,pan=-.23)
-    inst,freq=pick(trumpets,note)
-    add(epic,t+beat*BEAT+.012,fmt(inst,.48,freq,PITCH[note]),.17,pan=.29)
-  if b%4==3:
-   add(epic,t+3*BEAT,cut(hat,.7,.17,7600),.20)
+# V4: BATTLE HAS NO MELODY. Physical recorded large drums lead all 24 bars.
+# Heavy footstep pattern: DOOM-DOOM DODOM, changing accent every four bars.
+# Horns are reserved only for solemn title/result *stingers*, never battle.
+# Sidechained in game engine so strikes remain louder than any ensemble.
+beat_patterns=[
+ [(0.0,.48),(1.0,.40),(2.50,.50),(3.0,.56)],
+ [(0.0,.52),(1.0,.42),(2.0,.35),(2.75,.46),(3.25,.50)],
+ [(0.0,.55),(1.0,.39),(2.5,.52),(3.0,.55)],
+ [(0.0,.48),(1.0,.42),(2.25,.46),(2.75,.51),(3.25,.58)]
+]
+low_kick=cut(bd,.56,.21,1150)
+earth_drum=cut(wood,.50,.19,1400)
+dry_kick=cut(bd,.31,.12,890)
+dry_tom=cut(wood,.29,.10,1400)
+dry_snare=cut(sn,.17,.08,2200)
+for bar in range(BARS):
+ t=bar*4*BEAT
+ beats=beat_patterns[bar%4]
+ # Spacious, doom-laden giant war drums; absolutely no upper-register tune.
+ for k,(beat,vol) in enumerate(beats):
+  at=t+beat*BEAT
+  add(bed,at,low_kick,vol*.67,pan=.06 if k%2 else -.06)
+  add(bed,at+.014,earth_drum,vol*.34,pan=.22 if k%2 else -.21)
+  if bar>=4:
+   add(drums,at,dry_kick,.21+.10*(k%2==0))
+   if k%2==1:add(drums,at,dry_tom,.14,pan=-.19)
+ # Performance crescendos are extra rhythmic rolls, never brass or keys.
+ if bar%4==3:
+  for step in range(4):
+   at=t+(3.0+step*.22)*BEAT
+   add(drums,at,dry_tom,.12+step*.04,pan=-.26+step*.17)
+ if bar>=8:
+  for beat in [0,2.0]:
+   add(epic,t+beat*BEAT,earth_drum,.22,pan=.15)
+  if bar%4==3:
+   for k in range(6):
+    at=t+(2.4+k*.25)*BEAT
+    add(epic,at,dry_tom,.08+.016*k,pan=(-.30 if k%2 else .30))
+ # Electric metal source is kept as a mostly-silent optional intensity layer,
+ # not a repeating lead motif. Only two sparse low-string hits per four bars.
+ if bar>=16 and bar%4==0:
+  guitar_note=guitar['D3']
+  for beat in [0,2]:
+   add(guitars,t+beat*BEAT,fmt(guitar_note,.45,PITCH['D3'],PITCH['D3'],.15),.09,
+       pan=-.33 if beat==0 else .33)
 for name,arr in [('rome_bed.mp3',bed),('rome_drums.mp3',drums),
                  ('rome_guitars.mp3',guitars),('rome_epic.mp3',epic)]:
  edge=round(.016*FS)
  arr[:,:edge]*=np.linspace(0,1,edge)
  arr[:,-edge:]*=np.linspace(1,0,edge)
  mp3(name,arr)
- print("REAL_INSTRUMENT_STEM",name,round(DURATION,3),flush=True)
+ print("WAR_DRUM_STEM_NO_MELODY",name,round(DURATION,3),flush=True)
+# A dedicated REAL human crowd, not the prior synthetic horn-room drone.
+CROWD_URL="https://opengameart.org/sites/default/files/crowd_shouting_0.ogg"
+crowd_raw=decode(get(CROWD_URL,"starninjas_crowd_shouting_CC0.ogg"))
+assert len(crowd_raw)>FS*.7,"CC0 crowd asset unexpectedly short"
+crowd_raw=lpf(hpf(crowd_raw.astype(np.float32),135),4400)
+maxpeak=max(.01,float(np.percentile(np.abs(crowd_raw),99)))
+crowd_raw=np.clip(crowd_raw/maxpeak,-1,1)*.63
+crowd=stereo()
+chunk_size=len(crowd_raw)
+# Crossfade genuine human voices through overlapping passages for loop continuity.
+step=max(int(chunk_size*.68),int(.45*FS))
+edge=max(1,min(round(.16*FS),chunk_size//6))
+for channel in (0,1):
+ offset=round(.27*FS)*channel
+ for offset_samples in range(-round(.2*FS),N,step):
+  cutpiece=crowd_raw.copy()
+  cutpiece[:edge]*=np.linspace(0,1,edge)
+  cutpiece[-edge:]*=np.linspace(1,0,edge)
+  start=offset_samples+offset
+  lo=max(0,start);hi=min(N,start+len(cutpiece))
+  if hi>lo:
+   crowd[channel,lo:hi]+=cutpiece[lo-start:hi-start]*(.24 if channel==0 else .22)
+# The crowd stem is deliberately subdued; live crowd swells follow combos.
+fade=round(.15*FS)
+crowd[:,:fade]*=np.linspace(0,1,fade)
+crowd[:,-fade:]*=np.linspace(1,0,fade)
+mp3('rome_crowd.mp3',crowd)
+print("REAL_CROWD_VOICES",round(len(crowd_raw)/FS,2),"sec source, 33.488sec loop",flush=True)
 # 2) Sword-hit field recordings from direct knife-on-knife recording, CC0.
 CLASH="https://opengameart.org/sites/default/files/sword_clash_-_starninjas_0.zip"
 SWING="https://opengameart.org/sites/default/files/sword_-_starninjas_1.zip"
@@ -234,12 +258,26 @@ SFX={
  'dodge':(2,.21,'swish'),'guard':(2,.20,'shield'),
  'finisher':(1,.45,'heavy'),
  'victory':(1,2.65,'ceremony_victory'),'defeat':(1,2.20,'ceremony_defeat'),
- 'start':(1,2.20,'ceremony_start')
+ 'start':(1,2.20,'ceremony_start'),
+ 'crowd_roar':(2,1.85,'recorded_crowd_reaction')
 }
 for key,(var,dur,kind) in SFX.items():
  for v in range(var):
   n=round(dur*FS);result=np.zeros(n,dtype=np.float32)
-  if kind=='swish':
+  if kind=='recorded_crowd_reaction':
+   # Real human shouts over a short 1.85-second crescendo with a natural tail.
+   # Slight offset avoids repeating an identical excerpt each parry.
+   start=int(round(v*.63*FS))%max(1,len(crowd_raw))
+   src=np.concatenate((crowd_raw[start:],crowd_raw[:start]))
+   repeats=int(np.ceil(n/max(1,len(src))))
+   raw=np.tile(src,repeats)[:n]
+   attack=min(round(.11*FS),n//6)
+   release=min(round(.48*FS),n//3)
+   contour=np.ones(n,dtype=np.float32)
+   contour[:attack]=np.linspace(.08,1,attack)
+   contour[-release:]=np.linspace(1,0,release)
+   result[:]=raw*contour*.40
+  elif kind=='swish':
    raw=onset(swishes[(v+1)%len(swishes)])
    sig=cut(raw,min(dur,.26),.04,4600)
    result[:len(sig)]+=sig*.88
@@ -305,20 +343,8 @@ for key,(var,dur,kind) in SFX.items():
   peak=max(.01,np.max(np.abs(result)))
   result=np.tanh((result/peak)*1.1).astype(np.float32)
   wav(f'{key}_{v+1}.wav',result)
-# Do not retain noise-only 'crowd': use subdued live room/noise background
-# from the genuine orchestra recording tails rather than a synthetic drone.
-crowd=stereo()
-for channel in range(2):
- raw=horns['C3']
- # Low natural room residue from a long acoustic sample recording.
- room=lpf(raw,680)
- room=room[int(.09*FS):int(.40*FS)]
- room=room*0.02
- for k in range(0,N,len(room)):
-  m=min(len(room),N-k);crowd[channel,k:k+m]+=room[:m]
-mp3('rome_crowd.mp3',crowd)
 manifest={
- 'version':3,'title':'METAL OF ROME v3 - solemn deep live horns, no fanfare or pipe lead',
+ 'version':4,'title':'METAL OF ROME v4 - war drums and live crowd dominate, no combat melody',
  'bpm':BPM,'bars':BARS,'durationSeconds':round(DURATION,4),
  'stems':['rome_bed.mp3','rome_drums.mp3','rome_guitars.mp3','rome_epic.mp3'],
  'crowd':'rome_crowd.mp3',
@@ -327,6 +353,9 @@ manifest={
  'brass_source':'https://github.com/sgossner/VSCO-2-CE',
  'guitar_source':'https://github.com/freepats/electric-guitar-FSBS-dist1',
  'sword_source':'https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes',
+ 'crowd_source':'https://opengameart.org/content/crowd-shoutingspeaking-ambience',
+ 'battle_mix':{'no_bright_horn_melody':True,'dominant':'recorded war drums and real human crowd',
+               'sfx_priority':True,'crowd_reaction_variants':2},
  'ceremony':{'start':'single low recorded horn/tuba swell, no fast notes',
              'victory':'one broad low recorded horn chord with deep war drum',
              'defeat':'slow low horn and tuba funeral cadence',

@@ -30,7 +30,9 @@ jobs:
           import os,json,glob,wave,subprocess
           root="public/assets/audio/rome-v1"
           m=json.load(open(root+"/manifest.json"))
-          assert m["version"]==3 and m["license"]=="CC0"
+          assert m["version"]==4 and m["license"]=="CC0"
+          assert m["battle_mix"]["no_bright_horn_melody"] and m["battle_mix"]["sfx_priority"]
+          assert len(m["sfx"]["crowd_roar"])==2
           assert m["ceremony"]["no_trumpet_or_flute"]
           assert m["ceremony"]["no_upbeat_fanfare"]
           for name,duration in [("start_1.wav",2.2),("victory_1.wav",2.65),("defeat_1.wav",2.2)]:
@@ -45,7 +47,7 @@ jobs:
           for name in sum(m["sfx"].values(),[]):
            with wave.open(root+"/"+name) as wav:
             assert wav.getnframes()>=1000 and wav.getframerate()==32000
-          print("LIVE_BRASS_DRY_SWORD_AUDIO_PACK_PASS",m["bpm"],m["durationSeconds"],len(glob.glob(root+"/*.wav")))
+          print("WAR_DRUMS_REAL_CROWD_PACK_PASS",m["bpm"],m["durationSeconds"],len(glob.glob(root+"/*.wav")))
           PY
       - name: Publish actual MP3 and WAV content to game main
         run: |
@@ -53,7 +55,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/assets/audio/rome-v1/
           if ! git diff --cached --quiet; then
-            git commit -m "audio(rome v3): replace chirpy start/end fanfares with solemn recorded horn and tuba stingers"
+            git commit -m "audio(rome v4): prioritize organic war drums and real CC0 crowd over battle melodies"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
