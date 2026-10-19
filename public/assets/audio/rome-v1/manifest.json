@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "title": "METAL OF ROME v2 - 100% recorded instruments, dry real combat Foley",
+  "version": 3,
+  "title": "METAL OF ROME v3 - solemn deep live horns, no fanfare or pipe lead",
   "bpm": 172,
   "bars": 24,
   "durationSeconds": 33.4884,
@@ -71,5 +71,13 @@
   "brass_source": "https://github.com/sgossner/VSCO-2-CE",
   "guitar_source": "https://github.com/freepats/electric-guitar-FSBS-dist1",
   "sword_source": "https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes",
+  "ceremony": {
+    "start": "single low recorded horn/tuba swell, no fast notes",
+    "victory": "one broad low recorded horn chord with deep war drum",
+    "defeat": "slow low horn and tuba funeral cadence",
+    "no_trumpet_or_flute": true,
+    "no_upbeat_fanfare": true,
+    "no_pitched_bell_hits": true
+  },
   "license": "CC0"
 }
