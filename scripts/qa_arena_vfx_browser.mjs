@@ -150,6 +150,28 @@ try{
   const parry=s.sparks.map(x=>x.sequence).filter(Boolean);
   return {ordinary,ordinaryDebris,special,dash,guard,finisher,parry,focus:s.cinematic?.kind};
  });
+ assert.ok(events.ordinary.some(x=>['slash','sweep','thrust'].includes(x)),'ordinary strikes use animated slices');
+ assert.ok(events.ordinaryDebris.length>0);
+ assert.ok(events.ordinaryDebris.every(x=>x.art==null),'ordinary sword swing must not trigger old explosive spark art');
+ assert.ok(events.special.includes('special'),'special attack wired to own spiral atlas');
+ assert.ok(events.dash.includes('dash'),'dash linked to own horizontal dash atlas');
+ assert.ok(!events.dash.includes('parry'),'dash cannot overlay the parry explosion');
+ assert.ok(events.guard.length>0&&events.guard.every(x=>x.defenderAnchor&&x.source==null),
+   'guarded blows show crescent on defending shield, not the attacking weapon');
+ assert.ok(events.finisher.length>0&&events.finisher.every(x=>x.defeatedAnchor&&x.source==null),
+   'KO impact uses exclusive radial finisher art on the defeated fighter');
+ assert.ok(events.parry.includes('parry'),'parry counter uses precision flash atlas');
+ assert.equal(events.focus,'parry');
+ await p.waitForTimeout(170);
+ const active=await p.evaluate(()=>{
+  const s=window.__arenaQA.state;
+  return {timeScale:s.focusFrame?.timeScale,
+   fxTime:s.sparks.filter(x=>x.sequence).map(x=>({kind:x.sequence,t:x.t,max:x.max})),
+   camera:s.focusFrame?.active};
+ });
+ assert.ok(active.camera,'real perfect-parry freeze remains active');
+ assert.ok(active.fxTime.some(x=>x.t>.05),'frames advance with real time through gameplay slow motion');
+ assert.ok(active.fxTime.some(x=>x.max>=.5),'animated parry needs full frame window');
  const sync=await p.evaluate(()=>{
   const {state:s,attack,fxPoint,fxTiming}=window.__arenaQA;
   const f=s.player,e=s.enemy;
@@ -179,28 +201,6 @@ try{
  assert.ok(Math.abs(sync.anchor.x-sync.rawX)>5&&Math.abs(sync.anchor.y-sync.rawY)>5,
    'effect position must react to render-space lunge, foot anchor and shoulder turn');
  console.log('VFX_SYNC_POSE_PASS '+JSON.stringify(sync));
- assert.ok(events.ordinary.some(x=>['slash','sweep','thrust'].includes(x)),'ordinary strikes use animated slices');
- assert.ok(events.ordinaryDebris.length>0);
- assert.ok(events.ordinaryDebris.every(x=>x.art==null),'ordinary sword swing must not trigger old explosive spark art');
- assert.ok(events.special.includes('special'),'special attack wired to own spiral atlas');
- assert.ok(events.dash.includes('dash'),'dash linked to own horizontal dash atlas');
- assert.ok(!events.dash.includes('parry'),'dash cannot overlay the parry explosion');
- assert.ok(events.guard.length>0&&events.guard.every(x=>x.defenderAnchor&&x.source==null),
-   'guarded blows show crescent on defending shield, not the attacking weapon');
- assert.ok(events.finisher.length>0&&events.finisher.every(x=>x.defeatedAnchor&&x.source==null),
-   'KO impact uses exclusive radial finisher art on the defeated fighter');
- assert.ok(events.parry.includes('parry'),'parry counter uses precision flash atlas');
- assert.equal(events.focus,'parry');
- await p.waitForTimeout(170);
- const active=await p.evaluate(()=>{
-  const s=window.__arenaQA.state;
-  return {timeScale:s.focusFrame?.timeScale,
-   fxTime:s.sparks.filter(x=>x.sequence).map(x=>({kind:x.sequence,t:x.t,max:x.max})),
-   camera:s.focusFrame?.active};
- });
- assert.ok(active.camera,'real perfect-parry freeze remains active');
- assert.ok(active.fxTime.some(x=>x.t>.05),'frames advance with real time through gameplay slow motion');
- assert.ok(active.fxTime.some(x=>x.max>=.5),'animated parry needs full frame window');
  assert.equal(errors.length,0,'no script runtime errors');
  console.log('PAINTED_VFX_GAMEPASS '+JSON.stringify({events,active}));
 }finally{await browser.close()}

@@ -2120,7 +2120,9 @@ function drawDashStreaks(){
  for(const f of [S.player,S.enemy]){
    if(!f||!f.comboDash||f.comboDash.hit||f.comboDash.t<.17||f.comboDash.t>.44)continue;
    const t=clamp((f.comboDash.t-.17)/.27,0,1),dir=f.face||1;
-   window.ArenaAnimatedFX?.draw?.(ctx,'dash',f.x-dir*70,FLOOR-170,
+   // Attach the aerial rush trail to the same leap pivot as the gladiator.
+   const anchor=fxPoint({owner:f,track:'body',offsetX:-dir*70,offsetY:14});
+   window.ArenaAnimatedFX?.draw?.(ctx,'dash',anchor.x,anchor.y,
      840,385,reduce?.5:t,(1-t)*.76,dir<0);
  }
 }
