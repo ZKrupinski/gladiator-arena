@@ -150,6 +150,35 @@ try{
   const parry=s.sparks.map(x=>x.sequence).filter(Boolean);
   return {ordinary,ordinaryDebris,special,dash,guard,finisher,parry,focus:s.cinematic?.kind};
  });
+ const sync=await p.evaluate(()=>{
+  const {state:s,attack,fxPoint,fxTiming}=window.__arenaQA;
+  const f=s.player,e=s.enemy;
+  s.phase='fight';s.paused=false;s.autoplayEnabled=false;s.autoPlaying=false;
+  f.x=450;e.x=650;f.hp=f.maxHp;e.hp=e.maxHp;
+  f.dead=e.dead=false;f.stagger=e.stagger=0;f.dodge=e.dodge=0;
+  f.st=100;f.attackCD=0;f.chainHits=0;f.comboDash=null;
+  f.attackVariant=2;f.guard=e.guard=false;f.invuln=e.invuln=0;
+  e.parry=0;e.guardHold=0;s.sparks=[];
+  attack(f,e,false,false);
+  const slash=s.sparks.find(x=>x.sequence==='slash'||x.sequence==='sweep'||x.sequence==='thrust');
+  if(!slash)return null;
+  // Rotate / scale the same actor pivot as drawFighter; the FX cannot drift
+  // when a character lunges, recoils, turns or shifts the torso.
+  f._fxRender={dx:31,dy:-13,tilt:.12,sx:1.11,sy:.94,pivotX:f.x,pivotY:616};
+  const anchor=fxPoint(slash),rawX=f.x+slash.offsetX,rawY=617-348*.53+slash.offsetY;
+  const p=fxTiming(slash);
+  slash.t=slash.delay+slash.max*.46;
+  const live=fxTiming(slash);
+  return {delay:slash.delay,track:slash.track,initialHidden:!p.visible,
+    live:live.visible,progress:live.progress,anchor,rawX,rawY,
+    ownerIsStriker:slash.owner===f,
+    source:slash.sequence,initialT:0};
+ });
+ assert.ok(sync&&sync.track==='body'&&sync.ownerIsStriker,'regular VFX must follow attacker pose');
+ assert.ok(sync.delay>=.06&&sync.initialHidden&&sync.live,'FX blade flash begins at sword-contact phase');
+ assert.ok(Math.abs(sync.anchor.x-sync.rawX)>5&&Math.abs(sync.anchor.y-sync.rawY)>5,
+   'effect position must react to render-space lunge, foot anchor and shoulder turn');
+ console.log('VFX_SYNC_POSE_PASS '+JSON.stringify(sync));
  assert.ok(events.ordinary.some(x=>['slash','sweep','thrust'].includes(x)),'ordinary strikes use animated slices');
  assert.ok(events.ordinaryDebris.length>0);
  assert.ok(events.ordinaryDebris.every(x=>x.art==null),'ordinary sword swing must not trigger old explosive spark art');

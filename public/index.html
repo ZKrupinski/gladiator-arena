@@ -1352,7 +1352,8 @@ function triggerCinematic(kind,contactX,dir=1){
 }
 function addFx(frame,x,y,opt={}){
  if(!S.fx)return;
- const fx={frame,x,y,owner:opt.owner||null,offsetX:opt.offsetX??0,offsetY:opt.offsetY??0,atlas:opt.atlas||'fx',art:opt.art||null,w:opt.w??220,h:opt.h??220,flip:!!opt.flip,alpha:opt.alpha??1,rotation:opt.rotation??0,t:0,max:opt.duration??.12,sequence:opt.sequence||null};
+ const delay=Math.max(0,opt.delay??0);
+ const fx={frame,x,y,owner:opt.owner||null,offsetX:opt.offsetX??0,offsetY:opt.offsetY??0,atlas:opt.atlas||'fx',art:opt.art||null,w:opt.w??220,h:opt.h??220,flip:!!opt.flip,alpha:opt.alpha??1,rotation:opt.rotation??0,t:0,delay,max:(opt.duration??.12)+delay,sequence:opt.sequence||null,track:opt.track||null};
  S.sparks.push(fx);
 }
 function weaponPoint(f,kind='attack'){
@@ -1381,16 +1382,19 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
   let w=attacker.cls==='retiarius'?680:attacker.cls==='thraex'?660:620;
   let h=attacker.cls==='thraex'?650:620;
   let duration=.18;
-  let offsetX=dir*(style===2?67:style===1?38:22);
-  let offsetY=style===1?-44:style===2?14:0;
+  // The swing must reach toward the facing opponent, not bloom over the back shoulder.
+  let offsetX=dir*(style===2?108:style===1?84:72);
+  let offsetY=style===1?-30:style===2?8:-10;
   const rotation=0; // Authored vertical, horizontal and piercing shapes must not be tilted.
   // Third strike is a heavier, wider atlas swing; first two remain unchanged.
-  if(style===2){w*=1.28;h*=1.28;duration=.22;offsetX=dir*88;offsetY=10;}
+  if(style===2){w*=1.14;h*=1.14;duration=.22;offsetX=dir*108;offsetY=8;}
   addFx(2,attacker.x+offsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+offsetY,{
    atlas,w,h,flip,alpha:1,duration:style===2?.26:.24,owner:attacker,
    // All regular attacks now get an independently animated painted frame set.
    art:null,sequence:style===0?'slash':style===1?'sweep':'thrust',
-   offsetX,offsetY,rotation
+   offsetX,offsetY,rotation,track:'body',
+   // The source pose reaches its blade-contact key around 30-60% of the swing.
+   delay:style===2?.075:style===1?.07:.065
   });
   return;
  }
@@ -1405,7 +1409,7 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
   const targetAtlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
   addFx(8,victim.x+hitOffsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+hitOffsetY,{
    art:null,sequence:'finisher',w:850,h:850,alpha:.95,duration:.60,
-   owner:victim,offsetX:hitOffsetX,offsetY:hitOffsetY,
+   owner:victim,offsetX:hitOffsetX,offsetY:hitOffsetY,track:'body',
    atlas:targetAtlas,flip:victim.face<0
   });
   return;
@@ -1414,7 +1418,8 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
  addFx(frame,fxOwner.x+offsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+offsetY,{
   art,w,h,flip:guarded?victim.face<0:flip,alpha,duration,
   sequence:dash?'dash':guarded?'guard':special?'special':null,
-  owner:fxOwner,offsetX,offsetY,rotation,atlas
+  owner:fxOwner,offsetX,offsetY,rotation,atlas,track:'body',
+  delay:guarded||dash?0:special?.09:0
  });
  // The horizontal dash artwork contains its own terminal flare.
  // Do not overlay a circular parry or guard burst onto the rushed target.
@@ -1450,9 +1455,8 @@ function startComboDash(f,victim){
  f.invuln=Math.max(f.invuln,.26);
  say(f.enemy?'ENEMY RUSH!':'4 HIT · LEAP RUSH!',.85);
  fxSound('swing');
- const atlas=f.cls==='thraex'?'fx_thraex':f.cls==='retiarius'?'fx_retiarius':'fx';
- addFx(5,f.x+f.face*26,FLOOR-FIGHTER_DRAW_SIZE*.52,
-   {art:null,sequence:'dash',w:700,h:400,atlas,flip:f.face<0,owner:f,offsetX:f.face*26,offsetY:0,duration:.3,alpha:.63});
+ // The rush trail is already rendered from the live leap position by drawDashStreaks.
+ // Don't queue another overlapping dash texture before the collision frame.
  return true;
 }
 function advanceComboDash(f,dt){
@@ -1468,7 +1472,9 @@ function advanceComboDash(f,dt){
    f.vx=direction*1040;
  }
  if(!a.hit&&a.t>=.39){
-   a.hit=true;f.comboDash=null;
+   a.hit=true;
+   // Retain the striking pose through the collision and recoil frames.
+   // Gameplay still forbids another attack via the existing cooldown.
    attack(f,target,false,true);
  }
  if(a.t>=COMBO_DASH_DURATION)f.comboDash=null;
@@ -1544,9 +1550,9 @@ function attack(f,victim,special=false,dashImpact=false){
    const atlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
    // Counter-hit explosion follows the ATTACKER receiving parry damage.
    // Anchor slightly toward the defender to land on the opponent's torso.
-   const hitOffsetX=-f.face*20;
+   const hitOffsetX=f.face*20;
    addFx(7,f.x+hitOffsetX,FLOOR-FIGHTER_DRAW_SIZE*.53-8,
-       {art:null,sequence:'parry',w:635,h:635,atlas,flip:f.face<0,owner:f,offsetX:hitOffsetX,offsetY:-8,duration:.60,alpha:.94});
+       {art:null,sequence:'parry',w:635,h:635,atlas,flip:f.face<0,owner:f,offsetX:hitOffsetX,offsetY:-8,duration:.60,alpha:.94,track:'body'});
    if(!victim.enemy){S.score+=counterDamage*2;S.combo++;}
    else{S.combo=0;}
    // Make the recipient of counter damage explicit in the feedback.
@@ -1564,7 +1570,7 @@ function attack(f,victim,special=false,dashImpact=false){
   const guardAtlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
   addFx(7,victim.x+victim.face*30,FLOOR-FIGHTER_DRAW_SIZE*.53,{
    art:null,sequence:'guard',atlas:guardAtlas,w:470,h:470,alpha:.9,duration:.34,
-   flip:victim.face<0,owner:victim,offsetX:victim.face*30
+   flip:victim.face<0,owner:victim,offsetX:victim.face*30,track:'body'
   });
  }else if(!f.enemy)say('GUARDED',.42);}
  else{victim.stagger=dashImpact?.78:special?.48:.24;setAction(victim,'hit',dashImpact?.67:.31);}
@@ -2024,6 +2030,14 @@ function drawFighter(f){if(!f||f.removedFromArena)return;const pose=choosePose(f
   scaleX*=secondary.sx;scaleY*=secondary.sy;
   drawX+=secondary.x;drawY+=secondary.y;
  }
+ // Export the actual render-space translation, rotation and grounded pivot.
+ // FX are painted after both fighters and therefore can follow the SAME pose
+ // instead of a stale physics-only x coordinate.
+ const motionExtra=f.motionVariant===ANIMATED_MURMILLO_VARIANT?
+  window.MurmilloMotion?.motionAt?.(f,S,clock):null;
+ f._fxRender={dx:drawX-(f.x-width/2)+(motionExtra?.x||0),
+  dy:drawY-(feet-height)+(motionExtra?.y||0),tilt,sx:scaleX,sy:scaleY,
+  pivotX:f.x,pivotY:feet};
  // No transparency strobing or new vector weapon layer.
  ctx.save();if(tilt||scaleY!==1||scaleX!==1){
   ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.scale(scaleX,scaleY);ctx.translate(-f.x,-feet);
@@ -2104,21 +2118,42 @@ function drawDashStreaks(){
  if(!S.fx||S.phase!=='fight')return;
  const reduce=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
  for(const f of [S.player,S.enemy]){
-   if(!f||!f.comboDash||f.comboDash.t<.17||f.comboDash.t>.44)continue;
+   if(!f||!f.comboDash||f.comboDash.hit||f.comboDash.t<.17||f.comboDash.t>.44)continue;
    const t=clamp((f.comboDash.t-.17)/.27,0,1),dir=f.face||1;
    window.ArenaAnimatedFX?.draw?.(ctx,'dash',f.x-dir*70,FLOOR-170,
      840,385,reduce?.5:t,(1-t)*.76,dir<0);
  }
 }
+// The authored VFX frames follow the exact rotated/scaled world pose. Effects
+// with no fighter owner (environmental particles) keep their world coordinates.
+function fxPoint(v){
+ const owner=v.owner;
+ if(!owner)return {x:v.x,y:v.y};
+ const bx=owner.x+(v.offsetX||0);
+ const by=FLOOR-FIGHTER_DRAW_SIZE*.53+(v.offsetY||0);
+ const p=v.track==='body'?owner._fxRender:null;
+ if(!p)return {x:bx,y:by};
+ const px=p.pivotX??owner.x,py=p.pivotY??FLOOR-1;
+ const lx=bx+(p.dx||0)-px,ly=by+(p.dy||0)-py;
+ const a=p.tilt||0,c=Math.cos(a),sn=Math.sin(a);
+ const sx=p.sx??1,sy=p.sy??1;
+ return {x:px+lx*sx*c-ly*sy*sn,y:py+lx*sx*sn+ly*sy*c};
+}
+function fxTiming(v){
+ const delay=Math.max(0,v.delay||0),duration=Math.max(.001,v.max-delay);
+ const time=v.t-delay;
+ return {visible:time>=0&&time<duration,progress:clamp(time/duration,0,1)};
+}
 function drawEffects(){
  drawResultFx();
  drawDashStreaks();
- drawCinematicWorldAccent();
+ // Camera focus already has a screen-space glow; avoid painting a SECOND
+ // parry or dash atlas over the one attached to the struck fighter.
  drawParryBursts();
  for(const v of S.sparks){
-  const cx=v.owner?v.owner.x+v.offsetX:v.x;
-  const cy=v.owner?FLOOR-FIGHTER_DRAW_SIZE*.53+v.offsetY:v.y;
-  const progress=clamp(v.t/Math.max(.001,v.max),0,1);
+  const time=fxTiming(v);if(!time.visible)continue;
+  const {x:cx,y:cy}=fxPoint(v);
+  const progress=time.progress;
   const fade=clamp(Math.min(progress*8+.18,(1-progress)*3),0,1);
   const scale=.9+.13*progress;
   const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
@@ -2256,7 +2291,7 @@ function loop(t){
 // Opt-in QA hook: actual game internals only on the explicit smoke-test URL.
 if(new URLSearchParams(window.location.search).has('__arena_qa')){
  Object.defineProperty(window,'__arenaQA',{configurable:true,
-  value:{state:S,camera:CAMERA,attack,finishLineupCleanup,showEnd}});
+  value:{state:S,camera:CAMERA,attack,fxPoint,fxTiming,finishLineupCleanup,showEnd}});
 }
 const keymap={KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right',KeyJ:'attack',Space:'attack',KeyK:'guard',KeyL:'dodge',KeyI:'special'};
 window.addEventListener('keydown',e=>{if(S.phase!=='fight'||e.defaultPrevented||e.target?.closest?.('input,select,textarea,[contenteditable="true"]')||(['Space','Enter'].includes(e.code)&&e.target?.closest?.('button')))return;const k=keymap[e.code];if(k){if(e.code==='Space'||e.code.startsWith('Arrow'))e.preventDefault();if(S.paused)return;markManualInput();if(['left','right','guard'].includes(k)){
