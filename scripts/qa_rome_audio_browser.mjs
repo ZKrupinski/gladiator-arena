@@ -5,7 +5,18 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox','--autop
 const page=await browser.newPage({viewport:{width:1280,height:850}});
 const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 try{
+ // Any attempt to create a pitched oscillator (old "ding" fallback) must fail.
+ await page.addInitScript(()=>{
+  for(const AC of [window.AudioContext,window.webkitAudioContext].filter(Boolean)){
+   AC.prototype.createOscillator=function(){throw Error('SYNTH_DING_FORBIDDEN')}
+  }
+ });
  await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
+ const manifest=await page.evaluate(()=>fetch('assets/audio/rome-v1/manifest.json?v=2-real').then(r=>r.json()));
+ assert.equal(manifest.version,2,'must load remastered real-instrument sound pack');
+ assert.ok(manifest.production.includes('no instrument oscillator'),'no keys or synthesized brass allowed');
+ assert.equal(manifest.license,'CC0');
+ assert.equal(await page.evaluate(()=>window.ArenaAudio.version),'2.0.0');
  await page.waitForFunction(()=>!!window.ArenaAudio,{timeout:18000});
  await page.locator('#startBtn').click();
  await page.waitForFunction(()=>window.ArenaAudio?.status()?.ready===true,{timeout:90000});
@@ -26,6 +37,7 @@ try{
  assert.ok(state.parryPlayed,'actual parry WAV must play');
  assert.ok(state.triggered.every(Boolean),'other sounds sample-backed, not oscillators');
  assert.ok(state.before.playing,'audio context running under user gesture');
+ assert.equal(state.before.loaded,31,'all 5 new real-instrument stems plus 26 dry Foley files decode');
  await page.locator('#soundToggle').click();
  const muted=await page.evaluate(()=>window.ArenaAudio.status());
  assert.equal(muted.enabled,false,'sound switch mutes all buses');
