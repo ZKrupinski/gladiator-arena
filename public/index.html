@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=1"></script>
-<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=1"></script>
+<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=2"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -364,6 +364,9 @@ const CINEMATIC_ASSETS={
  victory_banner:'assets/new-era/cinematic/victory_banner.webp?v=3.6',
  defeat_banner:'assets/new-era/cinematic/defeat_banner.webp?v=3.6',
  hit_slash:'assets/new-era/cinematic/hit_slash.webp?v=3.6',
+ slash_trail:'assets/new-era/cinematic/slash-sword-trail-12f.webp?v=1',
+ sweep_trail:'assets/new-era/cinematic/sweep-sword-trail-12f.webp?v=1',
+ thrust_trail:'assets/new-era/cinematic/thrust-sword-trail-12f.webp?v=1',
  parry_burst:'assets/new-era/cinematic/parry_burst.webp?v=3.6',
  dash_trail:'assets/new-era/cinematic/dash_trail.webp?v=3.6',
  special_aura:'assets/new-era/cinematic/special_aura.webp?v=3.6',
@@ -1375,13 +1378,13 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
   let duration=.18;
   let offsetX=dir*(style===2?67:style===1?38:22);
   let offsetY=style===1?-44:style===2?14:0;
-  const rotation=[0,-.48,.32][style]*dir;
+  const rotation=0; // Authored vertical, horizontal and piercing shapes must not be tilted.
   // Third strike is a heavier, wider atlas swing; first two remain unchanged.
   if(style===2){w*=1.28;h*=1.28;duration=.22;offsetX=dir*88;offsetY=10;}
   addFx(2,attacker.x+offsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+offsetY,{
    atlas,w,h,flip,alpha:1,duration:style===2?.26:.24,owner:attacker,
    // All regular attacks now get an independently animated painted frame set.
-   art:'hit_slash',sequence:style===0?'slash':style===1?'sweep':'thrust',
+   art:null,sequence:style===0?'slash':style===1?'sweep':'thrust',
    offsetX,offsetY,rotation
   });
   return;
@@ -2133,6 +2136,9 @@ function drawEffects(){
   if(S.fx&&mapped&&window.ArenaAnimatedFX?.draw?.(ctx,mapped,cx,cy,
     v.w*scale*vfxScale,v.h*scale*vfxScale,reduced?.52:progress,
     v.alpha*fade,v.flip,v.rotation))continue;
+  // An unloaded standard-trail atlas is silent rather than falling back to
+  // the previous explosive shared sprite, which would violate art direction.
+  if(mapped==='slash'||mapped==='sweep'||mapped==='thrust')continue;
   if(v.art&&drawIllustratedEffect(v.art,cx,cy,v.w*scale,v.h*scale,
     v.alpha*fade,v.flip,v.rotation))continue;
   // Existing high-quality atlas art is an emergency fallback for missing WebP.
