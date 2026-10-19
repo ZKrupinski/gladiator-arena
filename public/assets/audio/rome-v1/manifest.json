@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "title": "METAL OF ROME - original procedural prototype",
+  "bpm": 172,
+  "bars": 24,
+  "durationSeconds": 33.4884,
+  "stems": [
+    "rome_bed.mp3",
+    "rome_drums.mp3",
+    "rome_guitars.mp3",
+    "rome_epic.mp3"
+  ],
+  "crowd": "rome_crowd.mp3",
+  "sfx": {
+    "swing": [
+      "swing_1.wav",
+      "swing_2.wav",
+      "swing_3.wav"
+    ],
+    "hit": [
+      "hit_1.wav",
+      "hit_2.wav",
+      "hit_3.wav"
+    ],
+    "block": [
+      "block_1.wav",
+      "block_2.wav"
+    ],
+    "parry": [
+      "parry_1.wav",
+      "parry_2.wav"
+    ],
+    "heavy_swing": [
+      "heavy_swing_1.wav",
+      "heavy_swing_2.wav"
+    ],
+    "heavy_hit": [
+      "heavy_hit_1.wav",
+      "heavy_hit_2.wav"
+    ],
+    "dash": [
+      "dash_1.wav",
+      "dash_2.wav"
+    ],
+    "dash_hit": [
+      "dash_hit_1.wav",
+      "dash_hit_2.wav"
+    ],
+    "dodge": [
+      "dodge_1.wav",
+      "dodge_2.wav"
+    ],
+    "guard": [
+      "guard_1.wav",
+      "guard_2.wav"
+    ],
+    "finisher": [
+      "finisher_1.wav"
+    ],
+    "victory": [
+      "victory_1.wav"
+    ],
+    "defeat": [
+      "defeat_1.wav"
+    ],
+    "start": [
+      "start_1.wav"
+    ]
+  },
+  "note": "Self-generated DSP proof-of-concept, not recorded AAA final masters."
+}
