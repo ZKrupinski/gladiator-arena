@@ -22,12 +22,34 @@ try{
  assert.ok(manifest.battle_mix.no_bright_horn_melody,'combat has zero lead-brass melody');
  assert.ok(manifest.battle_mix.sfx_priority,'sword/parry SFX outrank ambience');
  assert.equal(manifest.sfx.crowd_roar.length,2,'at least two crowd celebration variants');
- assert.ok(manifest.crowd_source.includes('crowd-shoutingspeaking-ambience'),'source must be actual CC0 people, not a synthesized drone');
+ assert.ok(Array.isArray(manifest.crowd_source)&&manifest.crowd_source.length===2,
+  'source must be real stadium-recorded spectators from two football matches');
+ assert.ok(manifest.crowd_source.every(url=>url.includes('commons.wikimedia.org/wiki/File:')),
+  'the old close-up speaker pack cannot be used');
+ assert.equal(manifest.melee_design.actual_recorded_body_hits,37,
+  'must include genuine physical body contact variants');
+ assert.equal(manifest.melee_design.blade_collision_recordings,10,
+  'must retain real steel edge Foley');
  assert.ok(manifest.ceremony.no_trumpet_or_flute,'remove bright pipe/trumpet from start and end');
  assert.ok(manifest.ceremony.no_upbeat_fanfare,'no short trumpet runs at victory/start');
  assert.ok(manifest.ceremony.no_pitched_bell_hits,'dry recorded collision effects retained');
  assert.ok(manifest.production.includes('no instrument oscillator'),'no keys or synthesized brass allowed');
  assert.equal(manifest.license,'CC0');
+ // The stadium bed must be rendered as a real stereo room-scale recording.
+ const crowd=await page.evaluate(async()=>{
+  const r=await fetch('assets/audio/rome-v1/rome_crowd.mp3?v=5-stadium-heavy-impacts');
+  if(!r.ok)throw Error('Missing recorded stadium ambience');
+  const ctx=new AudioContext();
+  const clip=await ctx.decodeAudioData(await r.arrayBuffer());
+  const out={channels:clip.numberOfChannels,duration:clip.duration,
+    samplePeak:Math.max(...Array.from(clip.getChannelData(0).filter((_,i)=>i%256===0)).slice(0,4096).map(Math.abs))};
+  await ctx.close();
+  return out;
+ });
+ assert.equal(crowd.channels,2,'football crowd must have wide left-right audience');
+ assert.ok(crowd.duration>=33,'loop large enough for the synchronized arena music');
+ assert.ok(crowd.samplePeak>.005,'there must be recorded distant spectators, not silence');
+
  const impacts=await page.evaluate(async()=>{
   const sounds=['hit_1.wav','block_1.wav','parry_1.wav','heavy_hit_1.wav','dash_hit_1.wav','finisher_1.wav'];
   const ctx=new AudioContext(),durations={};
