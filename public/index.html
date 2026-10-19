@@ -1396,24 +1396,25 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
  }
  let art='special_aura',w=715,h=715,duration=.43,alpha=.85;
  let offsetX=dir*42,offsetY=-12,rotation=0,frame=3;
- if(guarded){art='parry_burst';w=510;h=510;offsetX=dir*65;offsetY=-6;alpha=.91;duration=.32;frame=7;}
- if(special){art='special_aura';w=735;h=735;offsetX=dir*15;offsetY=-12;duration=.59;alpha=.92;frame=3;}
- if(dash){art='dash_trail';w=1240;h=610;offsetX=dir*145;offsetY=-18;duration=.54;alpha=.97;frame=4;}
+ if(guarded){art=null;w=510;h=510;offsetX=victim.face*55;offsetY=-6;alpha=.91;duration=.32;frame=7;}
+ if(special){art=null;w=735;h=735;offsetX=dir*15;offsetY=-12;duration=.59;alpha=.92;frame=3;}
+ if(dash){art=null;w=1240;h=610;offsetX=dir*145;offsetY=-18;duration=.54;alpha=.97;frame=4;}
  if(ko){
   // The finishing impact belongs to the DEFEATED fighter, never the victor.
   const hitOffsetX=-victim.face*18,hitOffsetY=-12;
   const targetAtlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
   addFx(8,victim.x+hitOffsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+hitOffsetY,{
-   art:'parry_burst',sequence:'finisher',w:850,h:850,alpha:.95,duration:.58,
+   art:null,sequence:'finisher',w:850,h:850,alpha:.95,duration:.60,
    owner:victim,offsetX:hitOffsetX,offsetY:hitOffsetY,
    atlas:targetAtlas,flip:victim.face<0
   });
   return;
  }
- addFx(frame,attacker.x+offsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+offsetY,{
-  art,w,h,flip,alpha,duration,
+ const fxOwner=guarded?victim:attacker;
+ addFx(frame,fxOwner.x+offsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+offsetY,{
+  art,w,h,flip:guarded?victim.face<0:flip,alpha,duration,
   sequence:dash?'dash':guarded?'guard':special?'special':null,
-  owner:attacker,offsetX,offsetY,rotation,atlas
+  owner:fxOwner,offsetX,offsetY,rotation,atlas
  });
  // The horizontal dash artwork contains its own terminal flare.
  // Do not overlay a circular parry or guard burst onto the rushed target.
@@ -1451,7 +1452,7 @@ function startComboDash(f,victim){
  fxSound('swing');
  const atlas=f.cls==='thraex'?'fx_thraex':f.cls==='retiarius'?'fx_retiarius':'fx';
  addFx(5,f.x+f.face*26,FLOOR-FIGHTER_DRAW_SIZE*.52,
-   {art:'dash_trail',sequence:'dash',w:700,h:400,atlas,flip:f.face<0,owner:f,offsetX:f.face*26,offsetY:0,duration:.3,alpha:.63});
+   {art:null,sequence:'dash',w:700,h:400,atlas,flip:f.face<0,owner:f,offsetX:f.face*26,offsetY:0,duration:.3,alpha:.63});
  return true;
 }
 function advanceComboDash(f,dt){
@@ -1545,7 +1546,7 @@ function attack(f,victim,special=false,dashImpact=false){
    // Anchor slightly toward the defender to land on the opponent's torso.
    const hitOffsetX=-f.face*20;
    addFx(7,f.x+hitOffsetX,FLOOR-FIGHTER_DRAW_SIZE*.53-8,
-       {art:'parry_burst',sequence:'parry',w:635,h:635,atlas,flip:f.face<0,owner:f,offsetX:hitOffsetX,offsetY:-8,duration:.60,alpha:.94});
+       {art:null,sequence:'parry',w:635,h:635,atlas,flip:f.face<0,owner:f,offsetX:hitOffsetX,offsetY:-8,duration:.60,alpha:.94});
    if(!victim.enemy){S.score+=counterDamage*2;S.combo++;}
    else{S.combo=0;}
    // Make the recipient of counter damage explicit in the feedback.
@@ -1562,7 +1563,7 @@ function attack(f,victim,special=false,dashImpact=false){
   victim.guard=false;victim.stagger=.44;say('GUARD BREAK!');
   const guardAtlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
   addFx(7,victim.x+victim.face*30,FLOOR-FIGHTER_DRAW_SIZE*.53,{
-   art:'parry_burst',sequence:'guard',atlas:guardAtlas,w:470,h:470,alpha:.9,duration:.34,
+   art:null,sequence:'guard',atlas:guardAtlas,w:470,h:470,alpha:.9,duration:.34,
    flip:victim.face<0,owner:victim,offsetX:victim.face*30
   });
  }else if(!f.enemy)say('GUARDED',.42);}
@@ -2068,21 +2069,19 @@ function drawResultFx(){
 // Proven painted WebP combat art marks the actual success collision; no
 // procedural/vector swords or flashing geometry are introduced.
 function drawCinematicWorldAccent(){
- const f=S.focusFrame;
- if(!S.fx||!f?.active||f.reduced)return;
- const t=f.elapsed,x=f.centerX,y=FLOOR-173;
- const ratio=clamp(t/Math.max(.01,f.duration),0,.999);
- const size=1+Math.min(.22,t*1.6);
- const punch=Math.max(0,f.pulse);
+ const focus=S.focusFrame;
+ if(!S.fx||!focus?.active||focus.reduced)return;
+ const progress=clamp(focus.elapsed/Math.max(.01,focus.duration),0,.999);
+ const x=focus.centerX,y=FLOOR-173,punch=Math.max(0,focus.pulse);
  ctx.save();ctx.globalCompositeOperation='screen';
- if(f.kind==='parry'){
-  if(!window.ArenaAnimatedFX?.draw?.(ctx,'parry',x,y,
-     775*size,785*size,ratio,Math.min(.93,punch*.94),false))
-   drawIllustratedEffect('parry_burst',x,y,1040*size,970*size,Math.min(.88,punch*.77));
+ if(focus.kind==='parry'){
+  // Distinct cross-shaped precision flash (no reused finisher explosion).
+  window.ArenaAnimatedFX?.draw?.(ctx,'parry',x,y,
+    740,740,progress,Math.min(.86,punch*.91),false);
  }else{
-  if(!window.ArenaAnimatedFX?.draw?.(ctx,'dash',x-f.dir*120,y+32,
-     1330,495,ratio,Math.min(1,punch*.96),f.dir<0))
-   drawIllustratedEffect('dash_trail',x-f.dir*120,y+32,1610,540,Math.min(.95,punch*.9),f.dir<0);
+  // Long horizontal red-orange rushing sword, not a circular explosion.
+  window.ArenaAnimatedFX?.draw?.(ctx,'dash',x-focus.dir*120,y+32,
+    1200,520,progress,Math.min(.94,punch*.94),focus.dir<0);
  }
  ctx.restore();
 }
@@ -2107,10 +2106,8 @@ function drawDashStreaks(){
  for(const f of [S.player,S.enemy]){
    if(!f||!f.comboDash||f.comboDash.t<.17||f.comboDash.t>.44)continue;
    const t=clamp((f.comboDash.t-.17)/.27,0,1),dir=f.face||1;
-   if(!window.ArenaAnimatedFX?.draw?.(ctx,'dash',f.x-dir*70,FLOOR-170,
-        945*.63,313*.75,reduce?.5:t,(1-t)*.86,dir<0))
-    drawIllustratedEffect('dash_trail',f.x-dir*70,FLOOR-170,
-      945,313,(1-t)*.73,dir<0);
+   window.ArenaAnimatedFX?.draw?.(ctx,'dash',f.x-dir*70,FLOOR-170,
+     840,385,reduce?.5:t,(1-t)*.76,dir<0);
  }
 }
 function drawEffects(){
@@ -2127,15 +2124,15 @@ function drawEffects(){
   const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   const mapped=v.sequence||({hit_slash:'slash',parry_burst:'guard',
     dash_trail:'dash',special_aura:'special'}[v.art]);
-  const vfxScale=1.31*(CINEMATIC_FX_SCALE[v.art]??.65);
+  const vfxScale=1.31*(CINEMATIC_FX_SCALE[v.art]??.65)*(mapped==='finisher'?1.12:1);
   // Play real 12–16-frame independent alpha canvases, no vector proxies.
   // Event time advances with realDt, so focus slow-motion cannot stall VFX.
   if(S.fx&&mapped&&window.ArenaAnimatedFX?.draw?.(ctx,mapped,cx,cy,
     v.w*scale*vfxScale,v.h*scale*vfxScale,reduced?.52:progress,
     v.alpha*fade,v.flip,v.rotation))continue;
-  // An unloaded standard-trail atlas is silent rather than falling back to
-  // the previous explosive shared sprite, which would violate art direction.
-  if(mapped==='slash'||mapped==='sweep'||mapped==='thrust')continue;
+  // Distinct sprites are mandatory for all 8 FX families; never fall back
+  // to the earlier generic bursts if an authored atlas is still loading.
+  if(mapped&&window.ArenaAnimatedFX?.FAMILIES?.[mapped])continue;
   if(v.art&&drawIllustratedEffect(v.art,cx,cy,v.w*scale,v.h*scale,
     v.alpha*fade,v.flip,v.rotation))continue;
   // Existing high-quality atlas art is an emergency fallback for missing WebP.
