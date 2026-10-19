@@ -88,7 +88,7 @@ function rasterize(kind,i){
    .24+intensity*.35,intensity*.66,0,false,'screen');
  }
  else if(kind==='guard'){
-  const strength=Math.max(0,1-Math.abs(u-.36)/.48);
+  const strength=Math.max(.16*(1-u),1-Math.abs(u-.38)/.64);
   paint(aura,.5,.5,.24+strength*.49,.24+strength*.48,
     strength*.19,-.10);
   paint(burst,.51,.49,.16+strength*.68,.18+strength*.67,
