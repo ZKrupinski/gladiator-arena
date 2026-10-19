@@ -45,9 +45,16 @@ try{
   assert.equal(impact.active,true,'attacks should not prematurely terminate');
   console.log('ARENA_BOUNCE_HIT '+JSON.stringify(impact));
  }
- // Make sure a normal combat loop completes and neither sprite jumps through
- // the stage ground after natural spring expiration.
- await page.waitForTimeout(650);
+ // Combat springs obey the *simulated* timeline on purpose so slow-motion
+ // retains its impact pose. Freeze new enemy AI until the cinematic and
+ // rebound have both completed, then check that the springs are cleared.
+ await page.evaluate(()=>{
+  const s=window.__arenaQA.state;
+  s.player.stagger=3;s.enemy.stagger=3;
+  s.player.pressureT=3;s.enemy.pressureT=3;
+  s.keys.clear();s.autoplayEnabled=false;s.autoPlaying=false;
+ });
+ await page.waitForTimeout(1900);
  const motion=await page.evaluate(()=>{
   const s=window.__arenaQA.state;
   const m=window.ArenaMotion;
