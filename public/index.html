@@ -1386,7 +1386,7 @@ function triggerCinematic(kind,contactX,dir=1){
 function addFx(frame,x,y,opt={}){
  if(!S.fx)return;
  const delay=Math.max(0,opt.delay??0);
- const fx={frame,x,y,owner:opt.owner||null,offsetX:opt.offsetX??0,offsetY:opt.offsetY??0,atlas:opt.atlas||'fx',art:opt.art||null,w:opt.w??220,h:opt.h??220,flip:!!opt.flip,alpha:opt.alpha??1,rotation:opt.rotation??0,t:0,delay,max:(opt.duration??.12)+delay,sequence:opt.sequence||null,track:opt.track||null};
+ const fx={frame,x,y,owner:opt.owner||null,offsetX:opt.offsetX??0,offsetY:opt.offsetY??0,atlas:opt.atlas||'fx',art:opt.art||null,w:opt.w??220,h:opt.h??220,flip:!!opt.flip,alpha:opt.alpha??1,rotation:opt.rotation??0,t:0,delay,max:(opt.duration??.12)+delay,sequence:opt.sequence||null,track:opt.track||null,layer:opt.layer||'front'};
  S.sparks.push(fx);
 }
 function weaponPoint(f,kind='attack'){
@@ -1608,7 +1608,7 @@ function attack(f,victim,special=false,dashImpact=false){
    // It says 'the strike was thrown away' rather than 'another hit landed'.
    addFx(4,f.x-f.face*85,FLOOR-193,{
     art:null,sequence:'dash',w:500,h:235,flip:f.face<0,
-    owner:f,offsetX:-f.face*85,offsetY:-12,track:'body',
+    owner:f,offsetX:-f.face*85,offsetY:-12,track:'body',layer:'back',
     delay:.11,duration:.255,alpha:.51
    });
    if(!victim.enemy){S.score+=counterDamage*2;S.combo++;}
@@ -2243,13 +2243,14 @@ function fxTiming(v){
  const time=v.t-delay;
  return {visible:time>=0&&time<duration,progress:clamp(time/duration,0,1)};
 }
-function drawEffects(){
- drawResultFx();
- drawDashStreaks();
- // Camera focus already has a screen-space glow; avoid painting a SECOND
- // parry or dash atlas over the one attached to the struck fighter.
- drawParryBursts();
+function drawEffects(backOnly=false){
+ if(!backOnly){
+  drawResultFx();drawDashStreaks();drawParryBursts();
+ }
  for(const v of S.sparks){
+  // Failed attack's red withdrawal trail is under the loser silhouette.
+  // Success and contact paint remain clearly visible in the foreground.
+  if((v.layer==='back')!==backOnly)continue;
   const time=fxTiming(v);if(!time.visible)continue;
   const {x:cx,y:cy}=fxPoint(v);
   const progress=time.progress;
@@ -2354,6 +2355,7 @@ function render(){
  ctx.translate(-CAMERA.x,-CAMERA.y);
  // Arena floor is painted in the backdrop; do not draw a hovering horizon line.
  drawVictoryBacklight();
+ drawEffects(true); // muted defeat momentum reads from BEHIND the staggered fighter
  if(S.phase==='cleanup'&&S.cleanup){
   // Arena workers and the original knocked-down sprite are on the rear layer.
   window.ArenaCarnifex?.draw?.(ctx,S.cleanup,drawFighter,FLOOR);
