@@ -25,11 +25,18 @@ try{
    f.guardHold=0;f.invuln=0;f.attackCD=0;f.knockT=0;f.knockVX=0;
    f.comboDash=null;f.chainHits=0;f.parryTriumphT=0;f.parryFailT=0;
   }
+  // Baseline: test each gladiator on the same loaded bitmap before parry.
+  const before=[window.__arenaQA.debugFighter(s.player),window.__arenaQA.debugFighter(s.enemy)];
+  console.log('PARRY_BASELINE_FIGHTERS '+JSON.stringify(before));
   s.player.guard=true;s.player.parry=.31;s.sparks=[];s.parryBursts=[];
   attack(s.enemy,s.player,false,false);
-  return {focus:s.cinematic?.kind,playerHp:s.player.hp,enemyHp:s.enemy.hp};
+  const after=[window.__arenaQA.debugFighter(s.player),window.__arenaQA.debugFighter(s.enemy)];
+  console.log('PARRY_CONTACT_FIGHTERS '+JSON.stringify(after));
+  return {focus:s.cinematic?.kind,playerHp:s.player.hp,enemyHp:s.enemy.hp,before,after};
  });
  assert.equal(initial.focus,'parry','must trigger actual perfect parry');
+ assert.ok(initial.before.every(v=>v.count>100),'character images must draw before parry '+JSON.stringify(initial.before));
+ assert.ok(initial.after.every(v=>v.count>100),'character images must still draw at parry contact '+JSON.stringify(initial.after));
  const samples=[];
  // Check directly during freeze, winning deflection, loser recoil and recovery.
  for(const delay of [50,120,180,170,250]){

@@ -2405,6 +2405,18 @@ if(new URLSearchParams(window.location.search).has('__arena_qa')){
   value:{state:S,camera:CAMERA,attack,fxPoint,fxTiming,render,
    assetsReady:()=>['murmillo','thraex','retiarius'].every(k=>
     !!(IMG[k]?.complete&&IMG[k]?.naturalWidth&&INDEPENDENT_CHARACTER_FRAMES.get(IMG[k])?.length===10)),
+   debugFighter:(f)=>{
+    ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+    drawFighter(f);
+    const pixels=ctx.getImageData(0,0,W,H).data;
+    let count=0;for(let i=0;i<pixels.length;i+=32){
+     if(pixels[i]+pixels[i+1]+pixels[i+2]>70)count++;
+    }
+    ctx.restore();render();
+    return {count,cls:f.cls,pose:choosePose(f),x:f.x,growthType:f.growthType,
+     removed:f.removedFromArena,srcReady:!!(IMG[f.cls]?.complete&&IMG[f.cls]?.naturalWidth),
+     spriteIsolated:!!INDEPENDENT_CHARACTER_FRAMES.get(IMG[f.cls])};
+   },
    finishLineupCleanup,showEnd}});
 }
 const keymap={KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right',KeyJ:'attack',Space:'attack',KeyK:'guard',KeyL:'dodge',KeyI:'special'};
