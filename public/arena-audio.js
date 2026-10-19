@@ -1,11 +1,12 @@
-/* METAL OF ROME v1 — sample-backed combat audio, loop-synced at 172 BPM.
- * All samples authored for this game in scripts/build_rome_audio.py.
+/* METAL OF ROME v2 — CC0 RECORDED brass / real guitar / acoustic drums / real sword Foley.
+ * Synthesized keyboard brass and pitched combat oscillator FX are removed.
  * Web Audio is only activated after a user interaction (mobile safe).
- * Missing/failed asset fetch falls back to the existing game sound logic.
+ * Missing/failed recorded audio never falls back to any pitched oscillator.
  */
 (function(root){
 'use strict';
 const BASE='assets/audio/rome-v1/';
+const ASSET_VERSION='?v=2-real';
 // Visual QA uses a different browser suite that deliberately exercises slow
 // motion frame timing. Keep audio decoding out of THAT suite; real audio has
 // a separate end-to-end browser test with decoded WAV and MP3 verification.
@@ -53,7 +54,7 @@ async function preload(){
   const all=STEMS.concat(Object.values(SFX).flat());
   const items=await Promise.all(all.map(async name=>{
    try{
-    const res=await fetch(BASE+name,{cache:'force-cache'});
+    const res=await fetch(BASE+name+ASSET_VERSION,{cache:'force-cache'});
     if(!res.ok)throw Error(res.status+' '+name);
     return [name,await res.arrayBuffer()];
    }catch(e){console.warn('[ROME audio asset]',name,String(e));return [name,null]}
@@ -142,7 +143,7 @@ function update(state={}){
 function status(){return {ready,started,enabled,playing:!!ctx&&ctx.state==='running',stems:stemGains.length,
   loaded:buffers.size,variants:Object.keys(SFX).length,bpm:172,
   mix:stemTargets.slice(),master:master?.gain.value??0}}
-root.ArenaAudio={version:'1.0.0',unlock,preload,play,update,setMuted,status,SFX,STEMS};
+root.ArenaAudio={version:'2.0.0',unlock,preload,play,update,setMuted,status,SFX,STEMS};
 if(typeof document!=='undefined'){
  document.addEventListener('pointerdown',()=>{if(!ctx)unlock()},{once:true,passive:true});
  // Download assets before user presses start; decoding occurs after unlock.

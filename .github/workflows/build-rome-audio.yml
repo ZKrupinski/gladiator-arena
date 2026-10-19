@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - scripts/build_rome_audio.py
+      - scripts/remaster_rome_audio_real.py
       - .github/workflows/build-rome-audio.yml
   workflow_dispatch:
 permissions:
@@ -21,14 +22,15 @@ jobs:
         run: |
           python -m pip install --quiet numpy scipy
           if ! command -v ffmpeg >/dev/null; then sudo apt-get update && sudo apt-get install -y ffmpeg; fi
-      - name: Render original 172 BPM synced stems and cinematic WAV SFX
-        run: python scripts/build_rome_audio.py
+      - name: Replace all synthesized instruments with CC0 brass, real electric guitar and recorded sword hits
+        run: python scripts/remaster_rome_audio_real.py
       - name: Validate real encoded sound assets
         run: |
           python - <<'PY'
           import os,json,glob,wave,subprocess
           root="public/assets/audio/rome-v1"
           m=json.load(open(root+"/manifest.json"))
+          assert m["version"]==2 and m["license"]=="CC0"
           assert m["bpm"]==172 and 33<m["durationSeconds"]<34
           for name in m["stems"]+[m["crowd"]]:
            f=root+"/"+name
@@ -38,7 +40,7 @@ jobs:
           for name in sum(m["sfx"].values(),[]):
            with wave.open(root+"/"+name) as wav:
             assert wav.getnframes()>=1000 and wav.getframerate()==32000
-          print("AUDIO_PACK_PASS",m["bpm"],m["durationSeconds"],len(glob.glob(root+"/*.wav")))
+          print("LIVE_BRASS_DRY_SWORD_AUDIO_PACK_PASS",m["bpm"],m["durationSeconds"],len(glob.glob(root+"/*.wav")))
           PY
       - name: Publish actual MP3 and WAV content to game main
         run: |
@@ -46,7 +48,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/assets/audio/rome-v1/
           if ! git diff --cached --quiet; then
-            git commit -m "audio(rome): publish 172 BPM cinematic metal stems and original combat SFX"
+            git commit -m "audio(rome v2): publish REAL brass/guitar/drums and short dry recorded weapon impacts"
             git pull --rebase origin main
             git push origin HEAD:main
           fi

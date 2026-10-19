@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=1"></script>
-<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-audio.js?v=1"></script>
+<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-audio.js?v=2"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -648,42 +648,12 @@ function updateCamera(dt){
  CAMERA.y=FLOOR-(FLOOR-H*.5)/CAMERA.zoom;
 }
 function fxSound(type){
+ // Musical tones and oscillator-generated hits are intentionally forbidden.
+ // If the recorded Foley is still loading, skip this event rather than
+ // playing the previous synthetic "ding~" that resembled glass/keys.
  if(!sounds)return;
- // Prefer the authored MP3/WAV sound samples over the early oscillator mockup.
- if(window.ArenaAudio?.play?.(type))return;
- try{
-  ctxAudio??=new (window.AudioContext||window.webkitAudioContext)();
-  if(ctxAudio.state==='suspended')ctxAudio.resume();
-  const t=ctxAudio.currentTime;
-  if(type==='parry'){
-   // A dry metal-on-metal crack above a low, decisive shield impact.
-   // No glassy shimmer or sustained electronic fanfare.
-   for(const [hz,toHz,level,len,wave] of [
-    [218,128,.18,.19,'triangle'],
-    [745,520,.085,.13,'sawtooth'],
-    [1290,980,.037,.075,'triangle']]){
-    const osc=ctxAudio.createOscillator(),gain=ctxAudio.createGain();
-    osc.type=wave;osc.frequency.setValueAtTime(hz,t);
-    osc.frequency.exponentialRampToValueAtTime(toHz,t+len);
-    gain.gain.setValueAtTime(.0001,t);
-    gain.gain.exponentialRampToValueAtTime(level,t+.005);
-    gain.gain.exponentialRampToValueAtTime(.0001,t+len);
-    osc.connect(gain).connect(ctxAudio.destination);
-    osc.start(t);osc.stop(t+len+.015);
-   }
-   return;
-  }
-  const osc=ctxAudio.createOscillator(),gain=ctxAudio.createGain();
-  osc.type=type==='hit'?'sawtooth':'triangle';
-  osc.frequency.setValueAtTime(type==='hit'?170:390,t);
-  osc.frequency.exponentialRampToValueAtTime(type==='hit'?65:180,t+.14);
-  gain.gain.setValueAtTime(.0001,t);
-  gain.gain.exponentialRampToValueAtTime(type==='hit'?.19:.09,t+.008);
-  gain.gain.exponentialRampToValueAtTime(.0001,t+.18);
-  osc.connect(gain).connect(ctxAudio.destination);osc.start(t);osc.stop(t+.19);
- }catch(e){sounds=false;}
+ window.ArenaAudio?.play?.(type);
 }
-
 const GEAR=[
  {id:'wood',slot:'weapon',name:'훈련용 목검',cost:0,atk:0,hp:0,desc:'기본 장비'},
  {id:'iron',slot:'weapon',name:'단조 글라디우스',cost:90,atk:5,hp:0,desc:'공격력 +5'},

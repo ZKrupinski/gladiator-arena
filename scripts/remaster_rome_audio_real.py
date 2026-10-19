@@ -184,8 +184,8 @@ for name,arr in [('rome_bed.mp3',bed),('rome_drums.mp3',drums),
 # 2) Sword-hit field recordings from direct knife-on-knife recording, CC0.
 CLASH="https://opengameart.org/sites/default/files/sword_clash_-_starninjas_0.zip"
 SWING="https://opengameart.org/sites/default/files/sword_-_starninjas_1.zip"
-clash_path=get(CLASH,"StarNinjas_sword_clash_CC0.zip")
-swing_path=get(SWING,"StarNinjas_sword_swing_CC0.zip")
+clash_path=get(CLASH,"StarNinjas_sword_clash_CC0.zip",required=False)
+swing_path=get(SWING,"StarNinjas_sword_swing_CC0.zip",required=False)
 def zip_recordings(zpath):
  with zipfile.ZipFile(zpath) as z:
   result=[]
@@ -201,8 +201,10 @@ def zip_recordings(zpath):
   if not result:raise RuntimeError("No real recorded sword Foley decoded in CC0 archive "+zpath)
   print("ORIGINAL_REAL_KNIFE_RECORDINGS",len(result),zpath,flush=True)
   return result
-clashes=zip_recordings(clash_path)
-swishes=zip_recordings(swing_path)
+anvil=decode(source(VSCO,'Percussion/Anvil_Hit1_v3_Sum.wav','recorded_anvil.wav'))
+brakedrum=decode(source(VSCO,'Percussion/BrakeDrum1_Hammer_v3_Sum.wav','recorded_brakedrum.wav'))
+clashes=zip_recordings(clash_path) if clash_path else [anvil,brakedrum]
+swishes=zip_recordings(swing_path) if swing_path else [hpf(decode(source(VSCO,'Percussion/bassdrum_rub4_v1.wav','real_bassdrum_rub.wav')),180)]
 def onset(a):
  x=np.abs(a)
  # Avoid leading silence; quickly locate strong acoustic contact.
@@ -281,7 +283,7 @@ manifest={
  'stems':['rome_bed.mp3','rome_drums.mp3','rome_guitars.mp3','rome_epic.mp3'],
  'crowd':'rome_crowd.mp3',
  'sfx':{k:[f'{k}_{i+1}.wav' for i in range(val[0])] for k,val in SFX.items()},
- 'production':'CC0 real recorded brass, real distorted guitar, acoustic drums, recorded swords; no instrument oscillator, no pitched bell attacks.',
+ 'production':'CC0 real recorded brass, real distorted guitar, acoustic drums, recorded metal + swords; no instrument oscillator, no pitched bell attacks.',
  'brass_source':'https://github.com/sgossner/VSCO-2-CE',
  'guitar_source':'https://github.com/freepats/electric-guitar-FSBS-dist1',
  'sword_source':'https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes',
