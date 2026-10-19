@@ -39,12 +39,13 @@ try{
   return {result,cache:fx.cacheSize()};
  });
  assert.equal(Object.keys(frames.result).length,8);
+ assert.equal(await p.locator('.card').count(),8,'all effect types appear in preview');
  let total=0;
  for(const [name,info] of Object.entries(frames.result)){
   assert.ok(info.frames>=12,name+' must contain at least 12 frames');
   total+=info.frames;
   assert.equal(info.samples.length,4);
-  if(['slash','sweep','thrust'].includes(name)){
+  if(['slash','sweep','thrust','guard','parry','dash','special','finisher'].includes(name)){
    assert.equal(info.width,362,'authored sword-light atlas has stable source cell width');
    assert.equal(info.height,362,'authored sword-light atlas has stable source cell height');
    assert.ok(info.samples[1].opaque>200,'sword trail requires bright painted pixels');
@@ -57,7 +58,7 @@ try{
   }
   assert.ok(info.unique>=3,name+' frame art must actually change');
  }
- assert.ok(total>=100,'more than 100 hand-assembled animation frames');
+ assert.equal(total,96,'8 separately illustrated families each have 12 full animation frames');
  const refs=await p.evaluate(()=>{
   const fx=window.ArenaAnimatedFX;
   return {v:fx.version,
@@ -66,13 +67,32 @@ try{
        drawn:[.05,.2,.38,.55,.74,.91].map(t=>fx.inspect(key,t)?.index)
     }))};
  });
- assert.equal(refs.v,'2.0.0','new authored-asset v2 must load');
+ assert.equal(refs.v,'3.0.0','fully distinctive sprite-based VFX v3 must load');
  assert.deepEqual(refs.basic.map(x=>x.source),['slash_trail','sweep_trail','thrust_trail']);
  for(const ref of refs.basic){
   assert.equal(ref.frames,12);
   assert.equal(new Set(ref.drawn).size,6,'frame cursor advances through new source atlas');
  }
  console.log('AUTHORED_SWORD_TRAILS_PASS '+JSON.stringify(refs));
+ const diverse=await p.evaluate(()=>{
+  const engine=window.ArenaAnimatedFX;
+  return ['guard','parry','finisher','dash','special'].map(kind=>{
+   const meta=engine.FAMILIES[kind],frame=engine.inspect(kind,.38);
+   const ctx=frame.canvas.getContext('2d',{willReadFrequently:true});
+   const pixel=ctx.getImageData(0,0,frame.width,frame.height).data;
+   let signature=0,coverage=0;
+   for(let i=0;i<pixel.length;i+=12){
+    if(pixel[i+3]>30){coverage++;signature=(Math.imul(signature,33)+pixel[i]+(pixel[i+1]<<1)+pixel[i+3])>>>0}
+   }
+   return {kind,source:meta.source,n:meta.frames,signature,coverage};
+  });
+ });
+ const expected=['guard_painted','parry_painted','finisher_painted','dash_painted','special_painted'];
+ assert.deepEqual(diverse.map(x=>x.source),expected,'each move has an exclusive painted source');
+ assert.equal(new Set(diverse.map(x=>x.signature)).size,5,'five sprites have different visual signatures');
+ assert.ok(diverse.every(x=>x.n===12&&x.coverage>40));
+ console.log('DIVERSE_FIVE_VFX_PASS '+JSON.stringify(diverse));
+
  console.log('PAINTED_VFX_FRAMES_PASS '+JSON.stringify({families:8,totalFrames:total,
   types:Object.fromEntries(Object.entries(frames.result).map(([k,v])=>[k,{frames:v.frames,unique:v.unique,paint:v.samples[1].opaque}])),
   cache:frames.cache}));
@@ -124,9 +144,10 @@ try{
  assert.ok(events.ordinary.some(x=>['slash','sweep','thrust'].includes(x)),'ordinary strikes use animated slices');
  assert.ok(events.ordinaryDebris.length>0);
  assert.ok(events.ordinaryDebris.every(x=>x.art==null),'ordinary sword swing must not trigger old explosive spark art');
- assert.ok(events.special.includes('special'),'special attack wired to 16 frames');
- assert.ok(events.dash.includes('dash'),'dash linked to 16-frame sequence');
- assert.ok(events.parry.includes('parry'),'parry counter uses 16-frame animation');
+ assert.ok(events.special.includes('special'),'special attack wired to own spiral atlas');
+ assert.ok(events.dash.includes('dash'),'dash linked to own horizontal dash atlas');
+ assert.ok(!events.dash.includes('parry'),'dash cannot overlay the parry explosion');
+ assert.ok(events.parry.includes('parry'),'parry counter uses precision flash atlas');
  assert.equal(events.focus,'parry');
  await p.waitForTimeout(170);
  const active=await p.evaluate(()=>{
