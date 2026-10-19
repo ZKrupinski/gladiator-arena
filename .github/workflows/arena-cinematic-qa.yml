@@ -6,6 +6,9 @@ on:
       - public/index.html
       - public/arena-carnifex.js
       - public/arena-focus.js
+      - public/arena-motion.js
+      - scripts/qa_arena_motion.mjs
+      - scripts/qa_arena_motion_browser.mjs
       - scripts/qa_arena_focus_and_cleanup.mjs
       - scripts/qa_arena_focus_browser.mjs
       - scripts/qa_arena_impact_browser.mjs
@@ -21,6 +24,8 @@ jobs:
         with: {node-version: '22'}
       - name: Verify focus envelopes and corpse retirement
         run: node scripts/qa_arena_focus_and_cleanup.mjs
+      - name: Verify foot-planted elastic motion and varied screen shake
+        run: node scripts/qa_arena_motion.mjs
       - name: Install Chromium
         run: |
           npm install --no-save playwright@1.56.1
@@ -35,3 +40,5 @@ jobs:
         env:
           FOCUS_PREVIEW: '1'
         run: node scripts/qa_arena_impact_browser.mjs
+      - name: Verify contact recoil, blocked hits and cinematic shakes in real arena
+        run: node scripts/qa_arena_motion_browser.mjs
