@@ -66,7 +66,8 @@ try {
  await game.reload({waitUntil:'domcontentloaded'});
  await game.waitForFunction(()=>!!window.LudusBridge?.state);
  s=await read();
- assert.equal(s.roster.length,3,'one additional starter must be appended');
+ assert.equal(s.roster.length,4,'animated fighter and champion starter append without replacing legacy roster');
+ assert.equal(s.roster.filter(h=>h.appearance==='murmillo_champion_red').length,1,'champion starter must not duplicate');
  assert.equal(s.active,1,'existing active fighter must be preserved');
  assert.equal(s.gold,729,'saved money must be preserved');
  assert.equal(s.roster[0].level,12,'original Murmillo growth level restored');
@@ -74,6 +75,7 @@ try {
  assert.equal(s.roster[0].injury,7,'original fighter injury remains');
  assert.equal(s.roster[1].wins,1,'existing fighter battle history remains');
  assert.equal(s.roster[2].appearance,'murmillo_motion_v3','new fighter separately flagged');
+ assert.equal(s.roster[3].appearance,'murmillo_champion_red','champion starter remains a separate fighter');
  const output=await game.evaluate(()=>({
   wobbleScriptPresent:[...document.scripts].some(x=>x.src.includes('sprite-inbetweens')),
   growthMotionGenerator:'drawMotion' in window.GrowthFrames,
@@ -97,17 +99,17 @@ try {
  report.animatedMurmilloScale=battleScale;
  assert.equal(output.motionScriptVersion,'4.0.0');
  report.roster={originalKept:true,addedOnce:true,activePreserved:true,levelPreserved:true,
-  inventoryPreserved:true,flutterRemoved:true,originalTier5Scale:.75,
+  inventoryPreserved:true,championSeparate:true,flutterRemoved:true,originalTier5Scale:.75,
   newMotionBattleScale:.75,rosterAfterMigration:s.roster.length};
  await game.reload({waitUntil:'domcontentloaded'});
  await game.waitForFunction(()=>!!window.LudusBridge?.state);
  s=await read();
- assert.equal(s.roster.length,3,'second reload must never duplicate animation fighter');
+ assert.equal(s.roster.length,4,'second reload must never duplicate either added fighter');
  // End-to-end user paths: main title -> draft -> explicit roster fighter.
  async function startFromDraft(index){
    await game.waitForSelector('.lc-draft-screen',{state:'visible',timeout:15000});
    const cards=game.locator('.lc-draft-screen [data-candidate]');
-   assert.equal(await cards.count(),3,'the restored roster must offer all 3 fighters');
+   assert.equal(await cards.count(),4,'deployment draft must include both legacy and new fighters');
    await cards.nth(index).click();
    const expectedName=(await read()).roster[index].name;
    const confirm=game.locator('.lc-draft-screen #lcDeploy');
