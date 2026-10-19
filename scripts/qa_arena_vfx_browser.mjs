@@ -148,7 +148,12 @@ try{
   }));
   ready();f.guard=true;f.parry=.3;attack(e,f,false,false);
   const parry=s.sparks.map(x=>x.sequence).filter(Boolean);
-  return {ordinary,ordinaryDebris,special,dash,guard,finisher,parry,focus:s.cinematic?.kind};
+  const parryBursts=s.sparks.filter(x=>x.sequence==='parry').map(x=>({
+   ownerless:x.owner===null,width:x.w,height:x.h,duration:x.max,
+   x:x.x,y:x.y,defenderShieldX:f.x+f.face*52,
+   recoilingAttackerX:e.x,focusCenter:s.cinematic?.centerX
+  }));
+  return {ordinary,ordinaryDebris,special,dash,guard,finisher,parry,parryBursts,focus:s.cinematic?.kind};
  });
  assert.ok(events.ordinary.some(x=>['slash','sweep','thrust'].includes(x)),'ordinary strikes use animated slices');
  assert.ok(events.ordinaryDebris.length>0);
@@ -161,6 +166,13 @@ try{
  assert.ok(events.finisher.length>0&&events.finisher.every(x=>x.defeatedAnchor&&x.source==null),
    'KO impact uses exclusive radial finisher art on the defeated fighter');
  assert.ok(events.parry.includes('parry'),'parry counter uses precision flash atlas');
+ assert.equal(events.parryBursts.length,1,'one contact burst must replace stacked flares');
+ const clang=events.parryBursts[0];
+ assert.ok(clang.ownerless&&clang.width<=360&&clang.height<=360,'compact fixed metal contact');
+ assert.ok(clang.duration>=.28&&clang.duration<=.38,'a brief 12-frame deflection');
+ assert.ok(Math.abs(clang.x-clang.defenderShieldX)<=48,'flash stays beside shield rim');
+ assert.ok(Math.abs(clang.x-clang.recoilingAttackerX)>80,'flash does not follow attacker knockback');
+ assert.ok(Math.abs(clang.focusCenter-clang.x)<1,'focus agrees with shield contact');
  assert.equal(events.focus,'parry');
  await p.waitForTimeout(170);
  const active=await p.evaluate(()=>{
@@ -171,7 +183,7 @@ try{
  });
  assert.ok(active.camera,'real perfect-parry freeze remains active');
  assert.ok(active.fxTime.some(x=>x.t>.05),'frames advance with real time through gameplay slow motion');
- assert.ok(active.fxTime.some(x=>x.max>=.5),'animated parry needs full frame window');
+ assert.ok(active.fxTime.some(x=>x.max>=.28&&x.max<=.38),'parry deflection stays within its contact animation window');
  const sync=await p.evaluate(()=>{
   const {state:s,attack,fxPoint,fxTiming}=window.__arenaQA;
   const f=s.player,e=s.enemy;

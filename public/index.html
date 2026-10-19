@@ -1366,6 +1366,12 @@ function weaponPoint(f,kind='attack'){
  const [ox,oy]=(map[f.cls]&&map[f.cls][kind])||[84,-176];
  return {x:f.x+dir*ox,y:FLOOR+oy};
 }
+// Parry visual contact is the shield rim, lightly pulled toward the enemy weapon.
+function parryContactPoint(defender,attacker){
+ const shield=weaponPoint(defender,'guard'),blade=weaponPoint(attacker,'attack');
+ return {x:shield.x+clamp((blade.x-shield.x)*.4,-32,32),
+  y:shield.y+clamp((blade.y-shield.y)*.35,-18,18)};
+}
 function impactPoint(attacker,victim,special=false){
  const dir=attacker.face||1;
  const baseX=(attacker.x+victim.x)*.5 + dir*(special?10:0);
@@ -1532,6 +1538,7 @@ function attack(f,victim,special=false,dashImpact=false){
    const counterDamage=victim.enemy?Math.round(enemyCounter*(S.careerMatch?(victim.championBoss?1.45:1.18):1)):(careerCounter??playerCounter);
    victim.parry=0;breakAttackChain(victim);victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
    victim.st=clamp(victim.st-(special?12:7),0,100);
+   const contact=parryContactPoint(victim,f); // before the opponent is knocked back
    f.hp=Math.max(0,f.hp-counterDamage);
    breakAttackChain(f);f.comboDash=null;
    const away=Math.sign(f.x-victim.x)||-f.face;
@@ -1540,19 +1547,19 @@ function attack(f,victim,special=false,dashImpact=false){
    f.knockVX=away*(special?670:520);f.knockT=special?.48:.42;
    f.x=clamp(f.x+away*(special?86:64),125,1165);
    S.shake=Math.max(S.shake,victim.enemy?(special?22:17):(special?28:24));
-   S.flash=Math.max(S.flash,victim.enemy?(special?.29:.22):.32);
+   S.flash=Math.max(S.flash,victim.enemy?(special?.19:.13):.19);
    window.ArenaMotion?.pulse?.(victim,'parry','source',victim.face);
    window.ArenaMotion?.pulse?.(f,'parry','target',victim.face);
    window.ArenaMotion?.shake?.(S,'parry',victim.face);
-   triggerCinematic('parry',(victim.x+f.x)*.5,victim.face);
+   triggerCinematic('parry',contact.x,victim.face);
    S.parryBursts.push({x:victim.x+victim.face*28,y:FLOOR-170,t:0,max:.65,
      damage:counterDamage,hitX:f.x,hitY:FLOOR-278});
-   const atlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
-   // Counter-hit explosion follows the ATTACKER receiving parry damage.
-   // Anchor slightly toward the defender to land on the opponent's torso.
-   const hitOffsetX=f.face*20;
-   addFx(7,f.x+hitOffsetX,FLOOR-FIGHTER_DRAW_SIZE*.53-8,
-       {art:null,sequence:'parry',w:635,h:635,atlas,flip:f.face<0,owner:f,offsetX:hitOffsetX,offsetY:-8,duration:.60,alpha:.94,track:'body'});
+   // Single compact hand-painted metallic deflection at the collision point.
+   // Do not attach to the knocked-back fighter or overlay a second bloom sprite.
+   addFx(7,contact.x,contact.y,{
+    art:null,sequence:'parry',w:330,h:330,flip:victim.face<0,
+    duration:.34,alpha:.90
+   });
    if(!victim.enemy){S.score+=counterDamage*2;S.combo++;}
    else{S.combo=0;}
    // Make the recipient of counter damage explicit in the feedback.
@@ -2087,16 +2094,12 @@ function drawCinematicWorldAccent(){
  if(!S.fx||!focus?.active||focus.reduced)return;
  const progress=clamp(focus.elapsed/Math.max(.01,focus.duration),0,.999);
  const x=focus.centerX,y=FLOOR-173,punch=Math.max(0,focus.pulse);
+ // Parry's one authored contact burst is already queued in attack().
+ // Retain the hitstop/zoom and soft bloom, without a second 740px flare.
+ if(focus.kind==='parry')return;
  ctx.save();ctx.globalCompositeOperation='screen';
- if(focus.kind==='parry'){
-  // Distinct cross-shaped precision flash (no reused finisher explosion).
-  window.ArenaAnimatedFX?.draw?.(ctx,'parry',x,y,
-    740,740,progress,Math.min(.86,punch*.91),false);
- }else{
-  // Long horizontal red-orange rushing sword, not a circular explosion.
-  window.ArenaAnimatedFX?.draw?.(ctx,'dash',x-focus.dir*120,y+32,
-    1200,520,progress,Math.min(.94,punch*.94),focus.dir<0);
- }
+ window.ArenaAnimatedFX?.draw?.(ctx,'dash',x-focus.dir*120,y+32,
+   1200,520,progress,Math.min(.94,punch*.94),focus.dir<0);
  ctx.restore();
 }
 function drawParryBursts(){
@@ -2193,8 +2196,8 @@ function drawCinematicFocus(){
   ctx.globalCompositeOperation='screen';
   const shine=ctx.createRadialGradient(sx,sy,4,sx,sy,390);
   const tint=f.kind==='parry'?'216,233,255':'255,213,145';
-  shine.addColorStop(0,'rgba('+tint+','+Math.min(.7,f.bloom*1.3)+')');
-  shine.addColorStop(.28,'rgba('+tint+','+Math.min(.32,f.bloom*.46)+')');
+  shine.addColorStop(0,'rgba('+tint+','+Math.min(f.kind==='parry'?.30:.7,f.bloom*(f.kind==='parry'?.65:1.3))+')');
+  shine.addColorStop(.28,'rgba('+tint+','+Math.min(f.kind==='parry'?.15:.32,f.bloom*(f.kind==='parry'?.24:.46))+')');
   shine.addColorStop(1,'rgba('+tint+',0)');
   ctx.fillStyle=shine;ctx.fillRect(0,0,W,H);
   ctx.globalCompositeOperation='source-over';
