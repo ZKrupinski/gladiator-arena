@@ -1,4 +1,4 @@
-/* GLADIATOR ARENA | METAL OF ROME v4.
+/* GLADIATOR ARENA | METAL OF ROME v5.
  * No battle melody: real huge war drums and recorded live crowd drive the fight.
  * Independent MUSIC / CROWD / COMBAT SFX buses; true sidechain-like ducker.
  * Action sounds always win the mix. The score is not retriggered on impacts.
@@ -7,7 +7,7 @@
 (function(root){
 'use strict';
 const BASE='assets/audio/rome-v1/';
-const ASSET_VERSION='?v=4-war-drums-real-crowd';
+const ASSET_VERSION='?v=5-stadium-heavy-impacts';
 const visualQA=typeof location!=='undefined'&&new URLSearchParams(location.search).has('__arena_qa');
 const STEMS=['rome_bed.mp3','rome_drums.mp3','rome_guitars.mp3','rome_epic.mp3','rome_crowd.mp3'];
 const SFX={
@@ -36,19 +36,19 @@ let ctx=null,master=null,musicBus=null,crowdBus=null,sfxBus=null,compressor=null
 let ready=false,loading=null,started=false,enabled=true,played=0;
 let crowdBoostUntil=0,lastCrowdReaction=-100,crowdReactionCount=0;
 const buffers=new Map(),voices=[],stemGains=[],stemTargets=[0,0,0,0,0];
-let lastDuck={type:'none',music:.56,crowd:.62,hold:0};
+let lastDuck={type:'none',music:.43,crowd:.48,hold:0};
 function context(){
  if(ctx)return ctx;
  const AC=root.AudioContext||root.webkitAudioContext;
  if(!AC)return null;
  ctx=new AC();
- master=ctx.createGain();master.gain.value=.82;
+ master=ctx.createGain();master.gain.value=.81;
  compressor=ctx.createDynamicsCompressor();
- compressor.threshold.value=-11;compressor.knee.value=10;
- compressor.ratio.value=3.1;compressor.attack.value=.006;compressor.release.value=.18;
- musicBus=ctx.createGain();musicBus.gain.value=.56;
- crowdBus=ctx.createGain();crowdBus.gain.value=.62;
- sfxBus=ctx.createGain();sfxBus.gain.value=1.08;
+ compressor.threshold.value=-9;compressor.knee.value=10;
+ compressor.ratio.value=2.8;compressor.attack.value=.006;compressor.release.value=.23;
+ musicBus=ctx.createGain();musicBus.gain.value=.43;
+ crowdBus=ctx.createGain();crowdBus.gain.value=.48;
+ sfxBus=ctx.createGain();sfxBus.gain.value=1.18;
  // Stadium people never share the weapon SFX channel:
  // a shield clang cannot be buried by an audience roar.
  musicBus.connect(compressor);crowdBus.connect(compressor);
@@ -100,19 +100,19 @@ function unlock(){
 // Threshold-specific ducking: combat hits retain their initial crack,
 // then crowd/music bloom back with a controlled decaying cinematic tail.
 const DUCK=Object.freeze({
- swing:[.68,.48,.065,.16],heavy_swing:[.48,.33,.12,.24],
- dodge:[.72,.52,.05,.12],guard:[.55,.37,.09,.17],
- hit:[.38,.21,.13,.23],block:[.40,.20,.13,.25],
- heavy_hit:[.26,.15,.21,.36],dash:[.46,.30,.14,.24],
- dash_hit:[.23,.13,.20,.38],parry:[.20,.10,.26,.43],
- finisher:[.16,.08,.40,.55]
+ swing:[.34,.27,.072,.23],heavy_swing:[.27,.19,.11,.29],
+ dodge:[.35,.26,.055,.16],guard:[.27,.18,.11,.23],
+ hit:[.20,.09,.17,.31],block:[.21,.085,.17,.32],
+ heavy_hit:[.15,.066,.26,.43],dash:[.23,.14,.17,.32],
+ dash_hit:[.14,.052,.24,.48],parry:[.12,.045,.30,.46],
+ finisher:[.095,.035,.45,.67]
 });
 function duck(kind){
  if(!ctx||!musicBus||!crowdBus)return;
- const [music,crowd,hold,release]=DUCK[kind]||[.52,.38,.12,.25];
+ const [music,crowd,hold,release]=DUCK[kind]||[.29,.18,.14,.31];
  const t=ctx.currentTime;
  lastDuck={type:kind,music,crowd,hold};
- for(const [bus,target,base] of [[musicBus,music,.56],[crowdBus,crowd,.62]]){
+ for(const [bus,target,base] of [[musicBus,music,.43],[crowdBus,crowd,.48]]){
   bus.gain.cancelScheduledValues(t);
   bus.gain.setValueAtTime(bus.gain.value,t);
   bus.gain.linearRampToValueAtTime(target,t+.018);
@@ -125,7 +125,7 @@ function crowdReact(reason='combo'){
  lastCrowdReaction=ctx.currentTime;
  crowdBoostUntil=Math.max(crowdBoostUntil,ctx.currentTime+1.95);
  const ok=play('crowd_roar',{
-  gain:reason==='victory'?.30:reason==='parry'?.20:.16,
+  gain:reason==='victory'?.37:reason==='parry'?.26:.22,
   delay:reason==='parry'?.27:reason==='victory'?.20:.30
  });
  if(ok)crowdReactionCount++;
@@ -161,7 +161,7 @@ function play(kind,opt={}){
 }
 function setMuted(muted){
  enabled=!muted;
- if(master&&ctx)master.gain.setTargetAtTime(enabled?.82:0,ctx.currentTime,.055);
+ if(master&&ctx)master.gain.setTargetAtTime(enabled?.81:0,ctx.currentTime,.055);
  if(enabled)unlock();
 }
 function update(state={}){
@@ -201,7 +201,7 @@ function status(){
   sfxBus:sfxBus?.gain.value??0,priority:lastDuck,
   crowdReactions:crowdReactionCount};
 }
-root.ArenaAudio={version:'4.0.0',unlock,preload,play,update,setMuted,status,crowdReact,SFX,STEMS};
+root.ArenaAudio={version:'5.0.0',unlock,preload,play,update,setMuted,status,crowdReact,SFX,STEMS};
 if(typeof document!=='undefined'){
  document.addEventListener('pointerdown',()=>{if(!ctx)unlock()},{once:true,passive:true});
 }

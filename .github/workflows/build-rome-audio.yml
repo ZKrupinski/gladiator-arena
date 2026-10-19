@@ -5,6 +5,7 @@ on:
     paths:
       - scripts/build_rome_audio.py
       - scripts/remaster_rome_audio_real.py
+      - scripts/remaster_rome_audio_v5.py
       - .github/workflows/build-rome-audio.yml
   workflow_dispatch:
 permissions:
@@ -20,17 +21,30 @@ jobs:
         with: {python-version: '3.11'}
       - name: Prepare audio DSP / MP3
         run: |
-          python -m pip install --quiet numpy scipy
+          python -m pip install --quiet numpy scipy py7zr
           if ! command -v ffmpeg >/dev/null; then sudo apt-get update && sudo apt-get install -y ffmpeg; fi
       - name: Replace all synthesized instruments with CC0 brass, real electric guitar and recorded sword hits
-        run: python scripts/remaster_rome_audio_real.py
+        run: |
+          python scripts/remaster_rome_audio_real.py
+          python scripts/remaster_rome_audio_v5.py
       - name: Validate real encoded sound assets
         run: |
           python - <<'PY'
           import os,json,glob,wave,subprocess
           root="public/assets/audio/rome-v1"
           m=json.load(open(root+"/manifest.json"))
-          assert m["version"]==4 and m["license"]=="CC0"
+          assert m["version"]==5 and m["license"]=="CC0"
+          assert m["crowd_design"]["only_real_football_spectators"]
+          assert m["crowd_design"]["diffuse_stereo_stadium"]
+          assert m["crowd_design"]["field_recordings"]>=1
+          assert m["melee_design"]["actual_recorded_shield_impacts"]>=6
+          assert m["melee_design"]["no_synthetic_tonal_clangs"]
+          for name,length in [("hit_1.wav",.40),("block_1.wav",.45),
+                              ("parry_1.wav",.48),("heavy_hit_1.wav",.55),
+                              ("dash_hit_1.wav",.56),("finisher_1.wav",.79),
+                              ("crowd_roar_1.wav",2.25)]:
+           with wave.open(root+"/"+name) as wav:
+            assert abs(wav.getnframes()/wav.getframerate()-length)<.015,(name,length)
           assert m["battle_mix"]["no_bright_horn_melody"] and m["battle_mix"]["sfx_priority"]
           assert len(m["sfx"]["crowd_roar"])==2
           assert m["ceremony"]["no_trumpet_or_flute"]
@@ -47,7 +61,7 @@ jobs:
           for name in sum(m["sfx"].values(),[]):
            with wave.open(root+"/"+name) as wav:
             assert wav.getnframes()>=1000 and wav.getframerate()==32000
-          print("WAR_DRUMS_REAL_CROWD_PACK_PASS",m["bpm"],m["durationSeconds"],len(glob.glob(root+"/*.wav")))
+          print("STADIUM_CROWD_HEAVY_COMBAT_AUDIO_PASS",m["bpm"],m["durationSeconds"],len(glob.glob(root+"/*.wav")))
           PY
       - name: Publish actual MP3 and WAV content to game main
         run: |
@@ -55,7 +69,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/assets/audio/rome-v1/
           if ! git diff --cached --quiet; then
-            git commit -m "audio(rome v4): prioritize organic war drums and real CC0 crowd over battle melodies"
+            git commit -m "audio(v5): publish authentic distant football spectators and weighty physical sword/armor/body Foley"
             git pull --rebase origin main
             git push origin HEAD:main
           fi

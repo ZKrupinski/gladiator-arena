@@ -12,8 +12,13 @@ try{
   }
  });
  await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
- const manifest=await page.evaluate(()=>fetch('assets/audio/rome-v1/manifest.json?v=4-war-drums-real-crowd').then(r=>r.json()));
- assert.equal(manifest.version,4,'must load recorded-war-drum and human crowd score');
+ const manifest=await page.evaluate(()=>fetch('assets/audio/rome-v1/manifest.json?v=5-stadium-heavy-impacts').then(r=>r.json()));
+ assert.equal(manifest.version,5,'must load physical football-stadium sound pack');
+ assert.ok(manifest.crowd_design.only_real_football_spectators,'replace artificial isolated voices with actual match audience');
+ assert.ok(manifest.crowd_design.diffuse_stereo_stadium,'large crowd must be wide and diffuse');
+ assert.ok(manifest.crowd_design.field_recordings>=1,'requires real stadium field audio');
+ assert.ok(manifest.melee_design.actual_recorded_shield_impacts>=6,'heavy Foley from real impacts');
+ assert.ok(manifest.melee_design.no_synthetic_tonal_clangs,'no metal bell synthesis');
  assert.ok(manifest.battle_mix.no_bright_horn_melody,'combat has zero lead-brass melody');
  assert.ok(manifest.battle_mix.sfx_priority,'sword/parry SFX outrank ambience');
  assert.equal(manifest.sfx.crowd_roar.length,2,'at least two crowd celebration variants');
@@ -23,13 +28,29 @@ try{
  assert.ok(manifest.ceremony.no_pitched_bell_hits,'dry recorded collision effects retained');
  assert.ok(manifest.production.includes('no instrument oscillator'),'no keys or synthesized brass allowed');
  assert.equal(manifest.license,'CC0');
+ const impacts=await page.evaluate(async()=>{
+  const sounds=['hit_1.wav','block_1.wav','parry_1.wav','heavy_hit_1.wav','dash_hit_1.wav','finisher_1.wav'];
+  const ctx=new AudioContext(),durations={};
+  for(const f of sounds){
+   const r=await fetch('assets/audio/rome-v1/'+f+'?v=5-stadium-heavy-impacts');
+   if(!r.ok)throw Error('Missing remastered impact '+f);
+   const audio=await ctx.decodeAudioData(await r.arrayBuffer());
+   durations[f]=audio.duration;
+  }
+  await ctx.close();
+  return durations;
+ });
+ assert.ok(impacts['hit_1.wav']>=.39,'close-miked body hits must have physical body');
+ assert.ok(impacts['heavy_hit_1.wav']>=.54,'power attack must have heavy bass-drum body');
+ assert.ok(impacts['parry_1.wav']>=.47,'shield clang must have short forceful mass');
+
  // Verify the REAL new 2-3s ceremony recordings (not cached 0.95s
  // four-note fanfares), while attack/parry audio stays on its v2 sound files.
  const ceremonies=await page.evaluate(async()=>{
   const audio=new AudioContext();
   const cues={};
   for(const key of ['start','victory','defeat']){
-   const response=await fetch('assets/audio/rome-v1/'+key+'_1.wav?v=4-war-drums-real-crowd');
+   const response=await fetch('assets/audio/rome-v1/'+key+'_1.wav?v=5-stadium-heavy-impacts');
    if(!response.ok)throw Error('missing solemn '+key);
    const pcm=await audio.decodeAudioData(await response.arrayBuffer());
    cues[key]=pcm.duration;
@@ -40,7 +61,7 @@ try{
  assert.ok(ceremonies.start>=2.15,'no chirpy sub-second start trumpet');
  assert.ok(ceremonies.victory>=2.60,'grand resonant horn triumph is sustained');
  assert.ok(ceremonies.defeat>=2.15,'somber horn/tuba defeat is sustained');
- assert.equal(await page.evaluate(()=>window.ArenaAudio.version),'4.0.0');
+ assert.equal(await page.evaluate(()=>window.ArenaAudio.version),'5.0.0');
  await page.waitForFunction(()=>!!window.ArenaAudio,{timeout:18000});
  await page.locator('#startBtn').click();
  await page.waitForFunction(()=>window.ArenaAudio?.status()?.ready===true,{timeout:90000});
@@ -59,7 +80,7 @@ try{
  assert.ok(state.after.mix[3]>=.20,'extra war-drum fills (not horns) enter at climax');
  assert.ok(state.after.mix[4]>=.40,'crowd grows with close fighting and danger');
  assert.equal(state.after.priority.type,'block','last guarded strike triggers duck');
- assert.ok(state.after.priority.music<=.40&&state.after.priority.crowd<=.20,
+ assert.ok(state.after.priority.music<=.21&&state.after.priority.crowd<=.09,
   'combat SFX force music and audience under shield and weapon action');
  assert.ok(state.after.crowdReactions>=1,'parry raises true crowd reaction');
  assert.equal(state.before.stems,5,'four sample-locked music stems and crowd ambience');
