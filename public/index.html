@@ -2402,7 +2402,10 @@ function loop(t){
 // Opt-in QA hook: actual game internals only on the explicit smoke-test URL.
 if(new URLSearchParams(window.location.search).has('__arena_qa')){
  Object.defineProperty(window,'__arenaQA',{configurable:true,
-  value:{state:S,camera:CAMERA,attack,fxPoint,fxTiming,render,finishLineupCleanup,showEnd}});
+  value:{state:S,camera:CAMERA,attack,fxPoint,fxTiming,render,
+   assetsReady:()=>['murmillo','thraex','retiarius'].every(k=>
+    !!(IMG[k]?.complete&&IMG[k]?.naturalWidth&&INDEPENDENT_CHARACTER_FRAMES.get(IMG[k])?.length===10)),
+   finishLineupCleanup,showEnd}});
 }
 const keymap={KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right',KeyJ:'attack',Space:'attack',KeyK:'guard',KeyL:'dodge',KeyI:'special'};
 window.addEventListener('keydown',e=>{if(S.phase!=='fight'||e.defaultPrevented||e.target?.closest?.('input,select,textarea,[contenteditable="true"]')||(['Space','Enter'].includes(e.code)&&e.target?.closest?.('button')))return;const k=keymap[e.code];if(k){if(e.code==='Space'||e.code.startsWith('Arrow'))e.preventDefault();if(S.paused)return;markManualInput();if(['left','right','guard'].includes(k)){

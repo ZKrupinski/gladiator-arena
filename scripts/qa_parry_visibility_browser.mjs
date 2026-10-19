@@ -12,7 +12,8 @@ try{
  await page.waitForFunction(()=>!!window.__arenaQA?.render&&!!window.ArenaFocus,{timeout:20000});
  await page.locator('#startBtn').click();
  await page.waitForFunction(()=>window.__arenaQA.state.phase==='fight',{timeout:16000});
- await page.waitForTimeout(800); // Ensure original or growth atlases have decoded
+ await page.waitForFunction(()=>window.__arenaQA.assetsReady(),{timeout:60000});
+ await page.waitForTimeout(250); // Decode and render complete before testing parry visibility
  const initial=await page.evaluate(()=>{
   const {state:s,attack,camera}=window.__arenaQA;
   s.phase='fight';s.paused=false;s.autoplayEnabled=false;s.autoPlaying=false;
