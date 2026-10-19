@@ -61,6 +61,23 @@ footer{color:#af9983;margin:0 4px 4px;font-size:12px}
  }
  const fx=window.ArenaAnimatedFX;fx.bind(art);
  const gallery=document.querySelector('#gallery');
+ function exportSheet(kind){
+  const spec=fx.FAMILIES[kind],columns=4,rows=Math.ceil(spec.frames/columns);
+  const sheet=document.createElement('canvas');
+  sheet.width=columns*spec.width;sheet.height=rows*spec.height;
+  const brush=sheet.getContext('2d',{alpha:true});
+  for(let i=0;i<spec.frames;i++){
+   const frame=fx.inspect(kind,(i+.5)/spec.frames);
+   if(!frame)return;
+   brush.drawImage(frame.canvas,(i%columns)*spec.width,Math.floor(i/columns)*spec.height);
+  }
+  sheet.toBlob(blob=>{
+   if(!blob)return;
+   const url=URL.createObjectURL(blob),link=document.createElement('a');
+   link.href=url;link.download='gladiator-vfx-'+kind+'-'+spec.frames+'f.png';
+   link.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+  },'image/png');
+ }
  const cards=config.map(([key,title,description])=>{
   const section=document.createElement('section');section.className='card';
   const stage=document.createElement('div');stage.className='stage';
@@ -68,7 +85,11 @@ footer{color:#af9983;margin:0 4px 4px;font-size:12px}
   stage.append(canvas);section.append(stage);
   const h=document.createElement('h2');h.textContent=title;section.append(h);
   const p=document.createElement('footer');p.textContent=description+' · '+fx.FAMILIES[key].frames+'프레임';
-  section.append(p);gallery.append(section);
+  section.append(p);
+  const exportButton=document.createElement('button');
+  exportButton.textContent='투명 PNG 시트 내보내기';exportButton.type='button';
+  exportButton.addEventListener('click',()=>exportSheet(key));
+  section.append(exportButton);gallery.append(section);
   return {key,stage,canvas,ctx:canvas.getContext('2d')};
  });
  let paused=false,speed=1,last=0,playTime=0;
@@ -87,16 +108,20 @@ footer{color:#af9983;margin:0 4px 4px;font-size:12px}
    const {ctx,canvas,key}=item;
    ctx.clearRect(0,0,canvas.width,canvas.height);
    const data=fx.FAMILIES[key];
-   const cycle=data.duration+.075;
+   // Slower shared preview timeline; actual combat uses true per-family duration.
+   const cycle=.88,active=.82;
    const pos=playTime%cycle;
-   if(pos<data.duration){
-    const p=pos/data.duration;
+   if(pos<active){
+    const p=pos/active;
     const dw=key==='dash'?585:key==='thrust'?510:405;
     const dh=key==='dash'?215:key==='thrust'?260:405;
     fx.draw(ctx,key,canvas.width/2,canvas.height/2,dw,dh,p,1,false);
    }
   }
   requestAnimationFrame(animate);
+ }
+ if(new URLSearchParams(location.search).has('__arena_qa')){
+  window.__arenaVfxGalleryQA={seek(t){playTime=t;},pause(v=true){paused=v;}};
  }
  requestAnimationFrame(animate);
 })();
