@@ -119,8 +119,9 @@ try{
  const events=await p.evaluate(()=>{
   const {state:s,attack}=window.__arenaQA;
   const f=s.player,e=s.enemy,fx=window.ArenaAnimatedFX;
-  s.phase='fight';s.paused=false;s.autoPlaying=false;s.autoplayEnabled=false;
+  s.phase='fight';s.paused=false;s.autoPlaying=false;s.autoplayEnabled=false;s.gauntlet=null;s.careerMatch=false;
   function ready(){
+   s.phase='fight';s.resultApplied=false;
    f.x=480;e.x=650;
    for(const a of [f,e]){
     a.dead=false;a.hp=a.maxHp;a.st=100;a.stagger=0;a.dodge=0;
@@ -137,9 +138,17 @@ try{
   const special=s.sparks.map(x=>x.sequence).filter(Boolean);
   ready();attack(f,e,false,true);
   const dash=s.sparks.map(x=>x.sequence).filter(Boolean);
+  ready();e.guard=true;e.parry=0;attack(f,e,false,false);
+  const guard=s.sparks.filter(x=>x.sequence==='guard').map(x=>({
+   defenderAnchor:x.owner===e,source:x.art,offset:x.offsetX
+  }));
+  ready();e.hp=1;attack(f,e,false,false);
+  const finisher=s.sparks.filter(x=>x.sequence==='finisher').map(x=>({
+   defeatedAnchor:x.owner===e,source:x.art
+  }));
   ready();f.guard=true;f.parry=.3;attack(e,f,false,false);
   const parry=s.sparks.map(x=>x.sequence).filter(Boolean);
-  return {ordinary,ordinaryDebris,special,dash,parry,focus:s.cinematic?.kind};
+  return {ordinary,ordinaryDebris,special,dash,guard,finisher,parry,focus:s.cinematic?.kind};
  });
  assert.ok(events.ordinary.some(x=>['slash','sweep','thrust'].includes(x)),'ordinary strikes use animated slices');
  assert.ok(events.ordinaryDebris.length>0);
@@ -147,6 +156,10 @@ try{
  assert.ok(events.special.includes('special'),'special attack wired to own spiral atlas');
  assert.ok(events.dash.includes('dash'),'dash linked to own horizontal dash atlas');
  assert.ok(!events.dash.includes('parry'),'dash cannot overlay the parry explosion');
+ assert.ok(events.guard.length>0&&events.guard.every(x=>x.defenderAnchor&&x.source==null),
+   'guarded blows show crescent on defending shield, not the attacking weapon');
+ assert.ok(events.finisher.length>0&&events.finisher.every(x=>x.defeatedAnchor&&x.source==null),
+   'KO impact uses exclusive radial finisher art on the defeated fighter');
  assert.ok(events.parry.includes('parry'),'parry counter uses precision flash atlas');
  assert.equal(events.focus,'parry');
  await p.waitForTimeout(170);
