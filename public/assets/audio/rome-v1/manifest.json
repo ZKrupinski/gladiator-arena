@@ -1,6 +1,6 @@
 {
-  "version": 4,
-  "title": "METAL OF ROME v4 - war drums and live crowd dominate, no combat melody",
+  "version": 5,
+  "title": "METAL OF ROME v5 - real football-stadium crowd and heavyweight recorded cinematic melee",
   "bpm": 172,
   "bars": 24,
   "durationSeconds": 33.4884,
@@ -75,7 +75,10 @@
   "brass_source": "https://github.com/sgossner/VSCO-2-CE",
   "guitar_source": "https://github.com/freepats/electric-guitar-FSBS-dist1",
   "sword_source": "https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes",
-  "crowd_source": "https://opengameart.org/content/crowd-shoutingspeaking-ambience",
+  "crowd_source": [
+    "https://commons.wikimedia.org/wiki/File:Spectators_during_a_football_match.webm",
+    "https://commons.wikimedia.org/wiki/File:2025_Bika_football_finals.webm"
+  ],
   "battle_mix": {
     "no_bright_horn_melody": true,
     "dominant": "recorded war drums and real human crowd",
@@ -90,5 +93,28 @@
     "no_upbeat_fanfare": true,
     "no_pitched_bell_hits": true
   },
-  "license": "CC0"
+  "license": "CC0",
+  "body_impact_source": "https://opengameart.org/node/2558",
+  "shield_impact_source": "https://opengameart.org/content/10-impactshield-blocks",
+  "crowd_design": {
+    "field_recordings": 2,
+    "only_real_football_spectators": true,
+    "no_speech_or_solo_shouts": true,
+    "diffuse_stereo_stadium": true,
+    "reaction_seconds": 2.25,
+    "avoid_intelligible_close_voices": true
+  },
+  "melee_design": {
+    "actual_recorded_body_hits": 37,
+    "actual_recorded_shield_impacts": 10,
+    "blade_collision_recordings": 10,
+    "layers": [
+      "dry steel edge",
+      "cardboard shield/body contact",
+      "real bass drum low punch",
+      "very short heavy metal plate"
+    ],
+    "no_synthetic_tonal_clangs": true
+  },
+  "mix_priority": "weapon hit > shield/parry > footsteps > stadium crowd > war drum"
 }
