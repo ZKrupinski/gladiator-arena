@@ -2183,8 +2183,12 @@ function render(){
  // Sampled from real elapsed time, no frame-to-frame random jitter.
  const shake=window.ArenaMotion?.sampleShake?.(S,
   !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
- const dx=shake?shake.x:S.shake>0?rand(-S.shake,S.shake):0;
- const dy=shake?shake.y:S.shake>0?rand(-S.shake*.45,S.shake*.45):0;
+ // Legacy KO and arena transition impacts still have a shake budget:
+ // use a small deterministic fallback only when no typed impulse is active.
+ const reducedShake=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ const legacy=(!S.cameraKick&&S.fx&&!reducedShake)?Math.min(13,S.shake):0;
+ const dx=(shake?.x||0)+legacy*Math.sin(clock*63)*.76;
+ const dy=(shake?.y||0)+legacy*Math.cos(clock*43)*.27;
  ctx.translate(dx,dy);
  if(shake?.angle){ctx.translate(W/2,H/2);ctx.rotate(shake.angle);ctx.translate(-W/2,-H/2);}
  // Background is a separately clamped screen-sized parallax layer.
