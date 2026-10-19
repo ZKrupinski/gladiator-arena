@@ -11,9 +11,11 @@ const PRESETS=Object.freeze({
    zoom:.32,vignette:.34,bloom:.47,letterbox:28
  }),
  parry:Object.freeze({
-   // Short interruption -> assertive deflection -> fallen-striker recovery.
-   duration:.98,hitstop:.145,slowEnd:.58,minRate:.115,
-   zoom:.33,vignette:.34,bloom:.37,letterbox:26
+   // Counterstrike must NEVER cut both actors out of view. Keep a short
+   // contact freeze, but no forced zoom, recentering, vignette or cinema bars.
+   // Fighter bracing, attack cancellation and sound carry the parry triumph.
+   duration:.62,hitstop:.075,slowEnd:.32,minRate:.36,
+   zoom:0,vignette:0,bloom:0,letterbox:0
  })
 });
 const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));

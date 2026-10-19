@@ -624,13 +624,21 @@ function updateCamera(dt){
  // Stay wide at range; make approach, hits, parries and leap-rush feel cinematic.
  const emphasis=(striking?.036:0)+(rushing?.07:0)+(parrying?.065:0);
  const focus=S.focusFrame?.active?S.focusFrame:null;
- const targetZoom=clamp(1+pressure*.205+emphasis*(.35+.65*close)+(focus?.zoom||0),1,1.7);
- const targetX=clamp(focus?midX*.35+focus.centerX*.65:midX,110,1170);
+ // Parry is a COMBAT event, not a camera cut. Both fighters must stay on
+ // screen while the blow is cancelled; mobile 16:9 view is authoritative.
+ const safeParry=focus?.kind==='parry';
+ const desiredZoom=clamp(1+pressure*.205+emphasis*(.35+.65*close)+
+  (safeParry?0:(focus?.zoom||0)),1,1.7);
+ const pairWidth=distance+FIGHTER_DRAW_SIZE*.92;
+ const fitZoom=(W-2*88)/Math.max(FIGHTER_DRAW_SIZE,pairWidth);
+ const targetZoom=safeParry?Math.min(desiredZoom,1.22,fitZoom):
+  Math.min(desiredZoom,fitZoom);
+ const targetX=clamp(safeParry?midX:(focus?midX*.35+focus.centerX*.65:midX),110,1170);
  if(!CAMERA.initialized){
   CAMERA.x=targetX;CAMERA.zoom=targetZoom;CAMERA.initialized=true;
  }else if(!S.paused){
-  const follow=1-Math.exp(-dt*(focus?14:4.4));
-  const zSpeed=focus?24:targetZoom>CAMERA.zoom?7.6:3.7;
+  const follow=1-Math.exp(-dt*(safeParry?4.4:focus?14:4.4));
+  const zSpeed=safeParry?9:focus?24:targetZoom>CAMERA.zoom?7.6:3.7;
   const blend=1-Math.exp(-dt*zSpeed);
   CAMERA.x+=(targetX-CAMERA.x)*follow;
   CAMERA.zoom+=(targetZoom-CAMERA.zoom)*blend;
@@ -2394,7 +2402,7 @@ function loop(t){
 // Opt-in QA hook: actual game internals only on the explicit smoke-test URL.
 if(new URLSearchParams(window.location.search).has('__arena_qa')){
  Object.defineProperty(window,'__arenaQA',{configurable:true,
-  value:{state:S,camera:CAMERA,attack,fxPoint,fxTiming,finishLineupCleanup,showEnd}});
+  value:{state:S,camera:CAMERA,attack,fxPoint,fxTiming,render,finishLineupCleanup,showEnd}});
 }
 const keymap={KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right',KeyJ:'attack',Space:'attack',KeyK:'guard',KeyL:'dodge',KeyI:'special'};
 window.addEventListener('keydown',e=>{if(S.phase!=='fight'||e.defaultPrevented||e.target?.closest?.('input,select,textarea,[contenteditable="true"]')||(['Space','Enter'].includes(e.code)&&e.target?.closest?.('button')))return;const k=keymap[e.code];if(k){if(e.code==='Space'||e.code.startsWith('Arrow'))e.preventDefault();if(S.paused)return;markManualInput();if(['left','right','guard'].includes(k)){

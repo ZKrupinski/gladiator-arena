@@ -39,10 +39,17 @@ try{
   });
   assert.equal(sample.active,true,kind+' must keep its effect across frames');
   assert.equal(sample.kind,kind);
-  assert.ok(sample.timeScale<=.27,kind+' must be visibly slow');
-  assert.ok(sample.focusZoom>.17,kind+' stronger camera push');
-  assert.ok(sample.zoom>=1.14,kind+' real camera magnification');
-  assert.ok(sample.letterbox>=14,kind+' vignette bars');
+  if(kind==='dash'){
+   assert.ok(sample.timeScale<=.27,'dash slow-motion is visible');
+   assert.ok(sample.focusZoom>.17,'dash camera punch');
+   assert.ok(sample.zoom>=1.14,'dash magnification');
+   assert.ok(sample.letterbox>=14,'dash letterbox');
+  }else{
+   assert.ok(sample.timeScale<.60,'parry still briefly checks the attack');
+   assert.equal(sample.focusZoom,0,'parry never forces a camera cut');
+   assert.ok(sample.zoom<=1.26,'parry keeps both fighters on screen');
+   assert.equal(sample.letterbox,0,'parry never conceals fighters with cinema bars');
+  }
   assert.equal(sample.noticeOpacity,'0','routine notice must not overlap Latin impact title');
   assert.ok(sample.hasDrawnVfx,'arena canvas active');
   console.log('ARENA_FOCUS_V2_IMPACT '+JSON.stringify({kind,...triggered,...sample}));

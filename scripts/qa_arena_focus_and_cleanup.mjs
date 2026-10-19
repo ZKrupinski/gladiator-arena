@@ -21,20 +21,37 @@ for(const name of ['dash','parry']){
   min=Math.min(min,out.timeScale);elapsed+=out.gameDt;
  }
  assert.ok(min<=F.PRESETS[name].minRate,name+' slows');
- assert.ok(boost>.1,name+' punches camera');
- assert.ok(nonzero,name+' applies focused vignette');
+ if(name==='dash'){
+  assert.ok(boost>.1,'dash punches camera');
+  assert.ok(nonzero,'dash applies focused vignette');
+ }else{
+  assert.equal(boost,0,'perfect parry cannot zoom fighters off screen');
+  assert.equal(nonzero,false,'perfect parry cannot eclipse fighters');
+ }
  assert.ok(elapsed>.1,'time must eventually advance');
  assert.equal(F.advance(s,.02).active,false,'cinematic must end');
  assert.equal(F.advance(s,.02).timeScale,1,'world resumes 100% speed');
- assert.ok(F.PRESETS[name].duration>=.95,'strong focus lasts near a second');
- assert.ok(F.PRESETS[name].hitstop>=.12,'impact pose pauses visibly');
- assert.ok(F.PRESETS[name].zoom>=.30,'camera zoom is cinematic');
- assert.ok(F.PRESETS[name].vignette>=.33,'edges are focused');
+ if(name==='dash'){
+  assert.ok(F.PRESETS[name].duration>=.95,'rush impact stays cinematic');
+  assert.ok(F.PRESETS[name].hitstop>=.12,'rush impact briefly freezes');
+  assert.ok(F.PRESETS[name].zoom>=.30,'rush camera is cinematic');
+  assert.ok(F.PRESETS[name].vignette>=.33,'rush focuses the edges');
+ }else{
+  assert.ok(F.PRESETS[name].duration<.7,'parry cannot vanish into a one-second cut');
+  assert.ok(F.PRESETS[name].hitstop<=.08,'parry contact pause is brief');
+  assert.equal(F.PRESETS[name].zoom,0,'parry never forces close-up');
+  assert.equal(F.PRESETS[name].vignette,0,'parry never dims combatants');
+ }
  const peak=F.advance(F.start(name,575),.12);
- assert.ok(peak.cinemaBars>12,'letterbox bars must appear');
- assert.ok(peak.bloom>.08,'premium impact bloom must appear');
+ if(name==='dash'){
+  assert.ok(peak.cinemaBars>12,'rush letterbox visible');
+  assert.ok(peak.bloom>.08,'rush impact bloom visible');
+ }else{
+  assert.equal(peak.cinemaBars,0,'parry cannot letterbox fighter silhouettes');
+  assert.equal(peak.bloom,0,'parry cannot obscure fighters with screen bloom');
+ }
  assert.equal(peak.duration,F.PRESETS[name].duration,'title fade must receive a finite duration');
- assert.ok(peak.duration-peak.elapsed>.5,'cinematic text should remain visible during freeze');
+ assert.ok(peak.duration-peak.elapsed>(name==='dash'?.5:.3),'active presentation still has recovery time');
  const reduced=F.advance(F.start(name,575),.04,true);
  assert.equal(reduced.timeScale,1,'reduced motion is respected');
 }
