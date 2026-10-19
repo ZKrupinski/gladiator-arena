@@ -44,6 +44,11 @@ try{
   assert.ok(info.frames>=12,name+' must contain at least 12 frames');
   total+=info.frames;
   assert.equal(info.samples.length,4);
+  if(['slash','sweep','thrust'].includes(name)){
+   assert.equal(info.width,362,'authored sword-light atlas has stable source cell width');
+   assert.equal(info.height,362,'authored sword-light atlas has stable source cell height');
+   assert.ok(info.samples[1].opaque>200,'sword trail requires bright painted pixels');
+  }
   for(const frame of info.samples){
    assert.ok(frame?.opaque>15,name+' raster paint is not empty');
    assert.equal(frame.width,info.width,name+' frame dimensions are stable');
@@ -53,6 +58,21 @@ try{
   assert.ok(info.unique>=3,name+' frame art must actually change');
  }
  assert.ok(total>=100,'more than 100 hand-assembled animation frames');
+ const refs=await p.evaluate(()=>{
+  const fx=window.ArenaAnimatedFX;
+  return {v:fx.version,
+    basic:['slash','sweep','thrust'].map(key=>({
+       key,source:fx.FAMILIES[key].source,frames:fx.FAMILIES[key].frames,
+       drawn:[.05,.2,.38,.55,.74,.91].map(t=>fx.inspect(key,t)?.index)
+    }))};
+ });
+ assert.equal(refs.v,'2.0.0','new authored-asset v2 must load');
+ assert.deepEqual(refs.basic.map(x=>x.source),['slash_trail','sweep_trail','thrust_trail']);
+ for(const ref of refs.basic){
+  assert.equal(ref.frames,12);
+  assert.equal(new Set(ref.drawn).size,6,'frame cursor advances through new source atlas');
+ }
+ console.log('AUTHORED_SWORD_TRAILS_PASS '+JSON.stringify(refs));
  console.log('PAINTED_VFX_FRAMES_PASS '+JSON.stringify({families:8,totalFrames:total,
   types:Object.fromEntries(Object.entries(frames.result).map(([k,v])=>[k,{frames:v.frames,unique:v.unique,paint:v.samples[1].opaque}])),
   cache:frames.cache}));
@@ -91,15 +111,19 @@ try{
   }
   ready();f.attackVariant=0;attack(f,e,false,false);
   const ordinary=s.sparks.map(x=>x.sequence).filter(Boolean);
+  const ordinaryDebris=s.sparks.filter(x=>['slash','sweep','thrust'].includes(x.sequence))
+    .map(x=>({sequence:x.sequence,art:x.art}));
   ready();attack(f,e,true,false);
   const special=s.sparks.map(x=>x.sequence).filter(Boolean);
   ready();attack(f,e,false,true);
   const dash=s.sparks.map(x=>x.sequence).filter(Boolean);
   ready();f.guard=true;f.parry=.3;attack(e,f,false,false);
   const parry=s.sparks.map(x=>x.sequence).filter(Boolean);
-  return {ordinary,special,dash,parry,focus:s.cinematic?.kind};
+  return {ordinary,ordinaryDebris,special,dash,parry,focus:s.cinematic?.kind};
  });
  assert.ok(events.ordinary.some(x=>['slash','sweep','thrust'].includes(x)),'ordinary strikes use animated slices');
+ assert.ok(events.ordinaryDebris.length>0);
+ assert.ok(events.ordinaryDebris.every(x=>x.art==null),'ordinary sword swing must not trigger old explosive spark art');
  assert.ok(events.special.includes('special'),'special attack wired to 16 frames');
  assert.ok(events.dash.includes('dash'),'dash linked to 16-frame sequence');
  assert.ok(events.parry.includes('parry'),'parry counter uses 16-frame animation');
