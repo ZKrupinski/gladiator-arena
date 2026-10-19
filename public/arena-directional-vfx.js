@@ -73,8 +73,8 @@ function groundDust(c,stage,seed=0,center=64,y=168,size=1){
  c.restore();
 }
 function strike(c,kind,step){
- const t=step/7,e=ease(Math.min(1,t*1.43)),fade=clamp((1-t)*1.4,0,1);
- const peak=Math.sin(Math.PI*clamp(t+.08,0,1));
+ const t=step/7,e=ease(Math.min(1,t*1.43)),fade=.18+.82*clamp((1-t)*1.4,0,1);
+ const peak=Math.max(.14,Math.sin(Math.PI*clamp(t+.08,0,1)));
  const coreX=-152+287*e,coreY=33-30*Math.sin(e*Math.PI);
  const curve=kind==='slash'?1:kind==='sweep'?-1:kind==='thrust'?0:kind==='dash'?.35:kind==='special'?.7:.2;
  const force=kind==='finisher'?1.44:kind==='special'?1.10:kind==='dash'?1.18:1;
@@ -165,7 +165,7 @@ function petal(c,x,y,a,size,colorStr,opacity=1){
  c.beginPath();c.moveTo(0,-size*.8);c.lineTo(0,size*.8);c.stroke();c.restore();
 }
 function victory(c,frame){
- const t=frame/7,enter=clamp(t*2.2+.12),out=clamp((1-t)*2,0,1);
+ const t=frame/7,enter=clamp(t*2.2+.12),out=.22+.78*clamp((1-t)*2,0,1);
  const height=ease(clamp(t*1.7))*210;
  // The hero belongs at (0,0); the backlit source grows BEHIND to the right
  // rather than forming a symmetrical circle around the body.
