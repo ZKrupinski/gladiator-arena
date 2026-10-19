@@ -1,0 +1,29 @@
+name: Verify playable Roman-metal audio in actual game
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/assets/audio/rome-v1/**'
+      - public/index.html
+      - public/arena-audio.js
+      - scripts/qa_rome_audio_browser.mjs
+      - .github/workflows/qa-rome-audio.yml
+  workflow_dispatch:
+jobs:
+  audio-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve exact website with audio
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public > /tmp/rome-audio-server.log 2>&1 &
+          sleep 3
+      - name: Verify audio decoding and battle music mixer
+        run: node scripts/qa_rome_audio_browser.mjs

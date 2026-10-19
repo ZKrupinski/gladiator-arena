@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=1"></script>
-<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script>
+<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-audio.js?v=1"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -649,6 +649,8 @@ function updateCamera(dt){
 }
 function fxSound(type){
  if(!sounds)return;
+ // Prefer the authored MP3/WAV sound samples over the early oscillator mockup.
+ if(window.ArenaAudio?.play?.(type))return;
  try{
   ctxAudio??=new (window.AudioContext||window.webkitAudioContext)();
   if(ctxAudio.state==='suspended')ctxAudio.resume();
@@ -1174,7 +1176,9 @@ function start(mode='new',requestedRosterIndex=null){
   S.enemy.cfg={...S.enemy.cfg,atk:Math.round(S.enemy.cfg.atk*(1+level*.035)),move:S.enemy.cfg.move*(1+level*.015)};
  }
  S.careerMatch=careerMatch;
- $('#startScreen').hidden=true;$('#endScreen').hidden=true;$('#pauseBtn').textContent='Ⅱ';updateHud();fxSound('start');
+ $('#startScreen').hidden=true;$('#endScreen').hidden=true;$('#pauseBtn').textContent='Ⅱ';updateHud();
+ window.ArenaAudio?.unlock?.();
+ fxSound('start');
 }
 /* Ordered arena events: one REAL original duel at a time. The original
  * fighter renderer, camera, mobile buttons, hotkeys, effects and collision
@@ -1348,7 +1352,9 @@ function markManualInput(){
 function beginGuard(f,hold=PARRY_GUARD_HOLD){
  if(!f||f.dead||f.st<=8||f.stagger>0||f.dodge>0)return false;
  if(!f.guard){f.parry=PARRY_WINDOW;setAction(f,'guard',.24);}
- f.guard=true;f.guardHold=Math.max(f.guardHold,hold);return true;
+ f.guard=true;f.guardHold=Math.max(f.guardHold,hold);
+ if(f===S.player&&f.parry>0)window.ArenaAudio?.play?.('guard',{gain:.29,pan:(f.x-640)/720});
+ return true;
 }
 function autoPilotPlayer(p,e,dt){
  if(!p||!e||p.dead||e.dead)return;
@@ -1483,6 +1489,7 @@ function finishFight(winner,loser){
  // their celebration; retain only impact graphics attached to the loser.
  S.sparks=S.sparks.filter(v=>v.owner!==winner);
  S.shake=Math.max(S.shake,22);emitAttackFx(winner,loser,true,false,true);
+ window.ArenaAudio?.play?.('finisher',{gain:1.08,pan:(loser.x-640)/720});
  return true;
 }
 
@@ -1501,7 +1508,7 @@ function startComboDash(f,victim){
  setAction(f,'comboDash',COMBO_DASH_DURATION);
  f.invuln=Math.max(f.invuln,.26);
  say(f.enemy?'ENEMY RUSH!':'4 HIT · LEAP RUSH!',.85);
- fxSound('swing');
+ fxSound('dash');
  // The rush trail is already rendered from the live leap position by drawDashStreaks.
  // Don't queue another overlapping dash texture before the collision frame.
  return true;
@@ -1550,7 +1557,8 @@ function attack(f,victim,special=false,dashImpact=false){
        f.x=clamp(f.x+f.face*step,110,1170);
      }
    }
-   setAction(f,special?'special':'attack',special?.48:.35);fxSound('swing');
+   setAction(f,special?'special':'attack',special?.48:.35);
+   fxSound(special?'heavy_swing':'swing');
  }
  const dist=Math.abs(f.x-victim.x),reach=f.cfg.reach+(special?40:0)+(dashImpact?102:0);
  // Perfect parry has a separate, much wider horizontal reach. Normal hits do not.
@@ -1703,11 +1711,12 @@ function attack(f,victim,special=false,dashImpact=false){
     if(f.chainHits===3&&!f.enemy)say('3 HIT · 4TH RUSH READY!',1);
   }else breakAttackChain(f);
  }else if(dashImpact)breakAttackChain(f);
- fxSound('hit');if(victim.hp<=0)finishFight(f,victim);else updateHud();
+ fxSound(guarded?'block':dashImpact?'dash_hit':special?'heavy_hit':'hit');
+ if(victim.hp<=0)finishFight(f,victim);else updateHud();
 }
 function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.dodge=.34;f.invuln=.3;setAction(f,'dodge',.34);
  // Visible takeoff and landing energy without changing dodge i-frames.
- window.ArenaMotion?.pulse?.(f,'contact','source',f.face);f.x=clamp(f.x+(f.enemy?-1:-1)*f.face*84,120,1160);const p=weaponPoint(f,'dodge');addFx(1,p.x,p.y,{art:'dash_trail',w:360,h:120,flip:f.face<0,alpha:.48,owner:f,offsetX:-f.face*32,offsetY:110,duration:.2});}
+ window.ArenaMotion?.pulse?.(f,'contact','source',f.face);f.x=clamp(f.x+(f.enemy?-1:-1)*f.face*84,120,1160);const p=weaponPoint(f,'dodge');window.ArenaAudio?.play?.('dodge',{gain:.56,pan:(f.x-640)/720});addFx(1,p.x,p.y,{art:'dash_trail',w:360,h:120,flip:f.face<0,alpha:.48,owner:f,offsetX:-f.face*32,offsetY:110,duration:.2});}
 function inputAct(action){if(S.phase!=='fight'||S.paused)return;if(action==='attack')attack(S.player,S.enemy);else if(action==='special')attack(S.player,S.enemy,true);else if(action==='dodge')dodge(S.player);else if(action==='guard'){S.keys.add('guard');}}
 function choosePose(f){
  if(S.phase==='finisher'||S.phase==='result'){
@@ -1884,6 +1893,7 @@ function showEnd(){
    win?victorCard:defeatedCard,separator,win?defeatedCard:victorCard
   );
   $('#endScreen').hidden=false;
+ window.ArenaAudio?.play?.(win?'victory':'defeat',{gain:.95});
  const endBanner=$('#endBanner'),endTitle=$('#endHeading');
  endTitle.textContent=win?'VICTORIA':'DEFEAT';
  endBanner.alt=win?'VICTORY · 투기장 승리':'DEFEAT · 투기장 패배';
@@ -2427,6 +2437,9 @@ function loop(t){
   if(focus){S.cinematic=focus.state;S.focusFrame=focus.active?focus:null;gameDt=focus.gameDt;}
  }else{S.cinematic=null;S.focusFrame=null;}
  update(gameDt,dt);updateCamera(dt);
+ window.ArenaAudio?.update?.({phase:S.phase,paused:S.paused,combo:S.combo,
+  health:S.player?S.player.hp/Math.max(1,S.player.maxHp):1,
+  boss:!!S.enemy?.championBoss});
  // Hide ordinary combat copy only while the cinematic Latin title is active.
  // Both text systems remain intact; the routine notice returns immediately.
  const notice=document.getElementById('combatNotice');
@@ -2471,7 +2484,7 @@ for(const b of document.querySelectorAll('[data-key]')){const k=b.dataset.key,ho
   }else inputAct(k);});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{S.keys.delete(k);if(S.phase==='fight')markManualInput();});}
 function togglePause(){if(S.phase!=='fight')return;S.paused=!S.paused;S.keys.clear();if(!S.paused){S.lastManualInput=clock;S.autoPlaying=false;}$('#pauseBtn').textContent=S.paused?'▶':'Ⅱ';say(S.paused?'PAUSED':'RESUME',.8);updateHud();}
 $('#startBtn').onclick=()=>start('new');
-$('#titleCareerFight').onclick=()=>{enterCareer();openCareerDraft();};$('#againBtn').onclick=()=>{if(S.careerMatch){returnToCareer();openCareerDraft();}else start('retry');};$('#continueBtn').onclick=()=>S.careerMatch?returnToCareer():S.lastResultWin?start('continue'):returnToLudus();$('#pauseBtn').onclick=togglePause;$('#autoToggle').onclick=()=>{S.autoplayEnabled=!S.autoplayEnabled;markManualInput();S.autoPlaying=false;$('#autoToggle').textContent=S.autoplayEnabled?'AUTO ON':'AUTO OFF';updateHud();};$('#fxToggle').onclick=()=>{S.fx=!S.fx;$('#fxToggle').textContent=S.fx?'이펙트 ON':'이펙트 OFF';};$('#soundToggle').onclick=()=>{sounds=!sounds;$('#soundToggle').textContent=sounds?'사운드 ON':'사운드 OFF';};
+$('#titleCareerFight').onclick=()=>{enterCareer();openCareerDraft();};$('#againBtn').onclick=()=>{if(S.careerMatch){returnToCareer();openCareerDraft();}else start('retry');};$('#continueBtn').onclick=()=>S.careerMatch?returnToCareer():S.lastResultWin?start('continue'):returnToLudus();$('#pauseBtn').onclick=togglePause;$('#autoToggle').onclick=()=>{S.autoplayEnabled=!S.autoplayEnabled;markManualInput();S.autoPlaying=false;$('#autoToggle').textContent=S.autoplayEnabled?'AUTO ON':'AUTO OFF';updateHud();};$('#fxToggle').onclick=()=>{S.fx=!S.fx;$('#fxToggle').textContent=S.fx?'이펙트 ON':'이펙트 OFF';};$('#soundToggle').onclick=()=>{sounds=!sounds;window.ArenaAudio?.setMuted?.(!sounds);$('#soundToggle').textContent=sounds?'사운드 ON':'사운드 OFF';};
 function refreshFighterPreviews(){
   const selected=$('#classChoice').value;
   $('#classSubtitle').textContent=DATA[selected].eng;
