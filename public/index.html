@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=1"></script>
-<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-directional-vfx.js?v=1"></script><script src="arena-audio.js?v=5"></script>
+<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-audio.js?v=5"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -1433,7 +1433,7 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
   addFx(8,victim.x+hitOffsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+hitOffsetY,{
    art:null,sequence:'finisher',w:850,h:850,alpha:.95,duration:.60,
    owner:victim,offsetX:hitOffsetX,offsetY:hitOffsetY,track:'body',
-   atlas:targetAtlas,flip:dir<0
+   atlas:targetAtlas,flip:victim.face<0
   });
   return;
  }
@@ -2170,27 +2170,15 @@ function drawIllustratedEffect(key,x,y,w,h,alpha=1,flip=false,rotation=0){
 }
 // Victory lighting is intentionally BEHIND the sprite. No fire, shards,
 // rigid halos, magic circles or effects obscuring its pose.
-function victoryFXState(){
- if(!S.resultApplied||S.phase!=='finisher'||!S.fx)return null;
- const f=S.resultWin?S.player:S.enemy,t=S.resultAnim;
- if(!f||t<.09||t>2.0)return null;
- const progress=clamp((t-.09)/1.77,0,.9999);
- const fade=clamp(Math.min((t-.09)*4,(2.0-t)*3.3),0,1);
- return {f,progress,fade,dir:f.face||1};
-}
 function drawVictoryBacklight(){
- const v=victoryFXState();if(!v)return;
- // Golden directional halo rises behind the winner. It does not color,
- // distort, or squash the fighter or obliterate armor detailing.
- window.ArenaDirectionalFX?.draw?.(ctx,'victory',
-  v.f.x-v.dir*32,FLOOR-216,635,570,v.progress,v.fade*.84,v.dir,0,'back');
+ if(!S.resultApplied||!S.resultWin||S.phase!=='finisher')return;
+ const f=S.player,t=S.resultAnim;
+ if(!f||t<.08||t>1.95||!S.fx)return;
+ const fade=clamp(Math.min((t-.08)*3.9,(1.95-t)*2.6),0,1);
+ drawIllustratedEffect('victory_glow',f.x,FLOOR-205,420,530,fade,false,0);
 }
 function drawResultFx(){
- const v=victoryFXState();if(!v)return;
- // Sparse gold laurel, petals and pollen cross IN FRONT of the victor.
- // All particles drift in the direction the victory pose actually faces.
- window.ArenaDirectionalFX?.draw?.(ctx,'victory',
-  v.f.x+v.dir*27,FLOOR-212,635,565,v.progress,v.fade*.43,v.dir,0,'front');
+ // Return to the original high-detail illustrated result lighting.
 }
 // Proven painted WebP combat art marks the actual success collision; no
 // procedural/vector swords or flashing geometry are introduced.
@@ -2203,8 +2191,8 @@ function drawCinematicWorldAccent(){
  // Retain the hitstop/zoom and soft bloom, without a second 740px flare.
  if(focus.kind==='parry')return;
  ctx.save();ctx.globalCompositeOperation='screen';
- window.ArenaDirectionalFX?.draw?.(ctx,'dash',x-focus.dir*110,y+18,
-   1160,515,progress,Math.min(.87,punch*.86),focus.dir);
+ window.ArenaAnimatedFX?.draw?.(ctx,'dash',x-focus.dir*120,y+32,
+   1200,520,progress,Math.min(.94,punch*.94),focus.dir<0);
  ctx.restore();
 }
 function drawParryBursts(){
@@ -2249,8 +2237,8 @@ function drawDashStreaks(){
    const t=clamp((f.comboDash.t-.17)/.27,0,1),dir=f.face||1;
    // Attach the aerial rush trail to the same leap pivot as the gladiator.
    const anchor=fxPoint({owner:f,track:'body',offsetX:-dir*70,offsetY:14});
-   window.ArenaDirectionalFX?.draw?.(ctx,'dash',anchor.x,anchor.y,
-     880,390,reduce?.5:t,(1-t)*.77,dir);
+   window.ArenaAnimatedFX?.draw?.(ctx,'dash',anchor.x,anchor.y,
+     840,385,reduce?.5:t,(1-t)*.76,dir<0);
  }
 }
 // The authored VFX frames follow the exact rotated/scaled world pose. Effects
@@ -2290,15 +2278,11 @@ function drawEffects(backOnly=false){
   const mapped=v.sequence||({hit_slash:'slash',parry_burst:'guard',
     dash_trail:'dash',special_aura:'special'}[v.art]);
   const vfxScale=1.31*(CINEMATIC_FX_SCALE[v.art]??.65)*(mapped==='finisher'?1.12:1);
-  // All nine premium effect types now use eight distinctly evolving painted
-  // directional frames. The artist's motion vector (facing) is authoritative.
-  // Real-time frame progression remains independent of hitstop/slow-motion.
-  if(S.fx&&mapped&&window.ArenaDirectionalFX?.draw?.(ctx,mapped,cx,cy,
+  // Original illustrated 12-frame alpha art; never procedural vector stand-in.
+  if(S.fx&&mapped&&window.ArenaAnimatedFX?.draw?.(ctx,mapped,cx,cy,
     v.w*scale*vfxScale,v.h*scale*vfxScale,reduced?.52:progress,
-    v.alpha*fade,v.flip?-1:1,v.rotation))continue;
-  // Never flash legacy mirrored/round VFX while the replacement renderer
-  // handles this combat family.
-  if(mapped&&window.ArenaDirectionalFX?.FAMILIES?.[mapped])continue;
+    v.alpha*fade,v.flip,v.rotation))continue;
+  if(mapped&&window.ArenaAnimatedFX?.FAMILIES?.[mapped])continue;
   if(v.art&&drawIllustratedEffect(v.art,cx,cy,v.w*scale,v.h*scale,
     v.alpha*fade,v.flip,v.rotation))continue;
   // Existing high-quality atlas art is an emergency fallback for missing WebP.
