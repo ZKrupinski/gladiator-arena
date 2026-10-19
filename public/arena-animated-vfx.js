@@ -26,6 +26,39 @@ const MAX_CACHED_PIXELS=9_000_000; // ~36 MiB raw alpha, mobile friendly.
 let cachePixels=0;
 const ready=im=>!!(im&&im.complete&&im.naturalWidth>0&&im.naturalHeight>0);
 const images=root.__ArenaVFXAssets||{};
+const alphaBounds=new WeakMap();
+function paintBounds(sprite){
+ if(alphaBounds.has(sprite))return alphaBounds.get(sprite);
+ const full={x:0,y:0,w:sprite.naturalWidth,h:sprite.naturalHeight};
+ if(typeof document==='undefined')return full;
+ let bound=full;
+ try{
+  const source=document.createElement('canvas');
+  source.width=sprite.naturalWidth;source.height=sprite.naturalHeight;
+  const g=source.getContext('2d',{willReadFrequently:true});
+  g.drawImage(sprite,0,0);
+  const rgba=g.getImageData(0,0,source.width,source.height).data;
+  let xMin=source.width,yMin=source.height,xMax=0,yMax=0;
+  const step=3,alphaThreshold=22;
+  for(let y=0;y<source.height;y+=step)for(let x=0;x<source.width;x+=step){
+   if(rgba[(y*source.width+x)*4+3]<alphaThreshold)continue;
+   xMin=Math.min(xMin,x);xMax=Math.max(xMax,x);
+   yMin=Math.min(yMin,y);yMax=Math.max(yMax,y);
+  }
+  if(xMin<xMax&&yMin<yMax){
+   // Protect faint edge sparks by retaining 5% padding on each side.
+   const padX=source.width*.055,padY=source.height*.055;
+   const left=Math.max(0,Math.floor(xMin-padX));
+   const top=Math.max(0,Math.floor(yMin-padY));
+   bound={x:left,y:top,
+    w:Math.min(source.width,Math.ceil(xMax+padX+step))-left,
+    h:Math.min(source.height,Math.ceil(yMax+padY+step))-top};
+  }
+  source.width=1;source.height=1;
+ }catch(error){bound=full}
+ alphaBounds.set(sprite,bound);
+ return bound;
+}
 function bind(art){if(art&&typeof art==='object')Object.assign(images,art);}
 function specs(){return Object.fromEntries(Object.entries(FAMILIES).map(([k,s])=>[k,{frames:s.frames,width:s.width,height:s.height,duration:s.duration,source:s.source}]));}
 function frameIndex(kind,progress){
@@ -57,9 +90,12 @@ function rasterize(kind,i){
   g.globalCompositeOperation=blend;
   // The effect picture is painted raster art, never an artificial vector arc.
   // Keep source aspect in the design envelope without cropping its outer flames.
-  const fitted=Math.min(w*rw/sprite.naturalWidth,h*rh/sprite.naturalHeight);
-  const fw=sprite.naturalWidth*fitted,fh=sprite.naturalHeight*fitted;
-  g.drawImage(sprite,-fw/2,-fh/2,fw,fh);
+  const crop=paintBounds(sprite);
+  const fitted=Math.min(w*rw/crop.w,h*rh/crop.h);
+  const fw=crop.w*fitted,fh=crop.h*fitted;
+  // Dedicated source crop prevents broad transparent padding from reducing
+  // the visible impact on 5-head-tall fighter bodies; never trims real tips.
+  g.drawImage(sprite,crop.x,crop.y,crop.w,crop.h,-fw/2,-fh/2,fw,fh);
   g.restore();
  };
  const flare=img('hit_slash'),burst=img('parry_burst');
