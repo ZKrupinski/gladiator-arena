@@ -1108,7 +1108,7 @@ $('#careerExit').onclick=()=>{if(MINI)return;window.LudusScene?.close();$('#care
 $('#careerHit').onclick=completeTraining;
 $('#careerCancel').onclick=closeTraining;
 window.addEventListener('keydown',e=>{if(MINI&&!MINI.finished&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
-function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,parryInterrupted:false,footworkSeed:enemy?1.45:0.38};}
+function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,footworkSeed:enemy?1.45:0.38};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 function start(mode='new',requestedRosterIndex=null){
  const careerMatch=mode==='career';
@@ -1584,7 +1584,7 @@ function attack(f,victim,special=false,dashImpact=false){
    S.sparks=S.sparks.filter(v=>v.owner!==f||
     !['slash','sweep','thrust','special','dash'].includes(v.sequence));
    victim.parryTriumphT=.56;
-   f.parryFailT=.74;f.parryInterrupted=true;
+   f.parryFailT=.74;
    f.hp=Math.max(0,f.hp-counterDamage);
    breakAttackChain(f);f.comboDash=null;
    const away=Math.sign(f.x-victim.x)||-f.face;
@@ -1716,12 +1716,10 @@ function choosePose(f){
    return won?'finisher':'defeat';}
  }
  if(f.dead)return 'defeat';
- // Approved legacy 5x2 parry guard/hit cells can read as a totally
- // transparent/black sprite despite having alpha. Use the known-visible
- // standing silhouette and the render-only shield-brace/recoil transforms
- // to carry the action. Do not gamble on missing art during a hitstop.
- if(f.parryInterrupted&&f.action==='hit')return 'idle';
- if(f.parryTriumphT>0&&!['attack','special','comboDash'].includes(f.action))return 'idle';
+ // Distinct triumphant shield stance and thwarted strike; the scale/tilt
+ // calculations are guaranteed finite by the explicit [0,1] clamps below.
+ if(f.parryFailT>.18&&f.stagger>0)return 'hit';
+ if(f.parryTriumphT>.19&&!['attack','special','comboDash'].includes(f.action))return 'guard';
  if(f.actionT>0){
   const t=clamp(1-f.actionT/Math.max(.01,f.actionDuration),0,1);
   if(f.action==='attack'){
@@ -1766,7 +1764,6 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
  for(const f of [S.player,S.enemy])if(f){
   f.parryTriumphT=Math.max(0,(f.parryTriumphT||0)-realDt);
   f.parryFailT=Math.max(0,(f.parryFailT||0)-realDt);
-  if(f.parryInterrupted&&f.stagger<=0&&f.actionT<=0)f.parryInterrupted=false;
  }
  if(S.phase==='result')return;
  if(S.phase==='cleanup'){
@@ -2149,12 +2146,12 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  // cancelled striker buckles backwards. These transforms are cosmetic only.
  if(S.phase==='fight'){
   if(f.parryTriumphT>0&&!f.dead&&f.stagger<=0){
-   const beat=Math.sin(Math.PI*(1-clamp(f.parryTriumphT/.56)));
+   const beat=Math.sin(Math.PI*(1-clamp(f.parryTriumphT/.56,0,1)));
    drawX+=f.face*12*beat;tilt+=f.face*.045*beat;
    scaleX*=1+.035*beat;scaleY*=1+.012*beat;
   }
   if(f.parryFailT>0){
-   const beat=Math.sin(Math.PI*(1-clamp(f.parryFailT/.74))*.94);
+   const beat=Math.sin(Math.PI*(1-clamp(f.parryFailT/.74,0,1))*.94);
    drawX-=f.face*25*beat;tilt-=f.face*.16*beat;
    scaleX*=1+.055*beat;scaleY*=1-.07*beat;
   }
@@ -2240,12 +2237,12 @@ function drawParryBursts(){
    if(!b.defender||!b.attacker)continue;
    // Roman role callouts replace the generic 'PARRY!' as a victory/failure
    // visual duet. Draw over the fighter's head, never as a new HUD panel.
-   const enter=clamp((t-.08)/.13),leave=clamp((life-t)/.20);
+   const enter=clamp((t-.08)/.13,0,1),leave=clamp((life-t)/.20,0,1);
    const alpha=Math.min(1,enter,leave);
    if(alpha<=0)continue;
    ctx.save();ctx.globalAlpha=alpha;ctx.textAlign='center';
    ctx.textBaseline='middle';ctx.lineJoin='round';
-   const rise=15*clamp(t/life);
+   const rise=15*clamp(t/life,0,1);
    const winX=b.defender.x-b.defender.face*23,loseX=b.attacker.x+b.attacker.face*15;
    ctx.font='900 30px Georgia,serif';ctx.lineWidth=4;
    ctx.strokeStyle='#24160d';ctx.fillStyle='#ffe7ac';

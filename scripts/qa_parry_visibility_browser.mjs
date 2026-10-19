@@ -51,8 +51,10 @@ try{
  assert.equal(initial.focus,'parry','must trigger actual perfect parry');
  assert.ok(initial.before.every(v=>v.count>100),'character images must draw before parry '+JSON.stringify(initial.before));
  assert.ok(initial.after.every(v=>v.count>100),'character images must still draw at parry contact '+JSON.stringify(initial));
- assert.ok(initial.after.every(v=>v.drawPose==='idle'),
-  'missing approved keyframes fall back to a stable existing stance');
+ assert.ok(initial.after.every(v=>v.count>100&&v.renderTransform&&
+   Number.isFinite(v.renderTransform.dx)&&Number.isFinite(v.renderTransform.tilt)&&
+   Number.isFinite(v.renderTransform.sx)&&Number.isFinite(v.renderTransform.sy)),
+   'parry success and failure must preserve finite transforms and visible artwork');
  const samples=[];
  // Check directly during freeze, winning deflection, loser recoil and recovery.
  for(const delay of [50,120,180,170,250]){
