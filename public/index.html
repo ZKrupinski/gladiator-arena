@@ -2099,7 +2099,8 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  if(f.dodge>0)bob-=8;
  let drawX=f.x-width/2,drawY=feet-height+bob;
  // Result poses stay grounded: the champion holds the pose on the floor instead of floating upward.
- let tilt=0,scaleX=1,scaleY=1;
+ // Character art must never squash, widen or shrink during combat.
+ let tilt=0;
  if(f.actionT>0&&f.action==='attack'&&S.phase==='fight'){
   const phase=clamp(1-f.actionT/Math.max(.01,f.actionDuration),0,1);
   const swing=Math.sin(Math.PI*phase),dir=f.face||1;
@@ -2108,11 +2109,10 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   }else if(f.attackVariant===1){
     // Rising slash: guard -> raised strike, with an upward lift.
     drawY-=23*swing;tilt=dir*(-.23+.32*phase)*swing;
-    scaleY=1+.06*swing;
   }else if(f.attackVariant===2){
     // Long thrust: compact crouch, full-body forward lunge.
     drawX+=dir*40*swing;drawY+=10*swing;
-    tilt=dir*.17*swing;scaleX=1+.16*swing;scaleY=1-.08*swing;
+    tilt=dir*.17*swing;
   }
  }
  if(f.action==='comboDash'&&S.phase==='fight'){
@@ -2120,8 +2120,8 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   const dir=f.face||1;
   const lift=t<.17?Math.sin(t/.17*Math.PI*.5)*57:t<.42?57*(1-(t-.17)/.25):0;
   drawY-=lift;
-  if(t<.17){tilt=-dir*.11;scaleY=1-.07*(t/.17);}
-  else if(t<.42){tilt=dir*.18;scaleX=1.16;scaleY=.94;drawX+=dir*16;}
+  if(t<.17){tilt=-dir*.11;}
+  else if(t<.42){tilt=dir*.18;drawX+=dir*16;}
  }
  if((S.phase==='finisher'||S.phase==='result')&&S.resultApplied){
   const won=(f===S.player)===S.resultWin,progress=clamp(S.resultAnim/1.15,0,1);
@@ -2131,7 +2131,7 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  }
  // The animated fighter supplies its own foot-anchored motion, so do not
  // compound a second whole-body combat transform.
- if(f.motionVariant===ANIMATED_MURMILLO_VARIANT||f.championVariant===CHAMPION_MURMILLO_VARIANT){tilt=0;scaleX=1;scaleY=1;}
+ if(f.motionVariant===ANIMATED_MURMILLO_VARIANT||f.championVariant===CHAMPION_MURMILLO_VARIANT){tilt=0;}
  // Add a subtle independent secondary-action response to every fighter
  // class, including champion and custom-animation variants. Pivot remains at
  // the planted toe/floor location; even idle breathing cannot float boots.
@@ -2139,7 +2139,6 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
  if(secondary){
   tilt+=secondary.tilt;
-  scaleX*=secondary.sx;scaleY*=secondary.sy;
   drawX+=secondary.x;drawY+=secondary.y;
  }
  // Directional emotional counterpoint: the victor presses forward and the
@@ -2148,12 +2147,10 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   if(f.parryTriumphT>0&&!f.dead&&f.stagger<=0){
    const beat=Math.sin(Math.PI*(1-clamp(f.parryTriumphT/.56,0,1)));
    drawX+=f.face*12*beat;tilt+=f.face*.045*beat;
-   scaleX*=1+.035*beat;scaleY*=1+.012*beat;
   }
   if(f.parryFailT>0){
    const beat=Math.sin(Math.PI*(1-clamp(f.parryFailT/.74,0,1))*.94);
    drawX-=f.face*25*beat;tilt-=f.face*.16*beat;
-   scaleX*=1+.055*beat;scaleY*=1-.07*beat;
   }
  }
  // Export the actual render-space translation, rotation and grounded pivot.
@@ -2162,11 +2159,12 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  const motionExtra=f.motionVariant===ANIMATED_MURMILLO_VARIANT?
   window.MurmilloMotion?.motionAt?.(f,S,clock):null;
  f._fxRender={dx:drawX-(f.x-width/2)+(motionExtra?.x||0),
-  dy:drawY-(feet-height)+(motionExtra?.y||0),tilt,sx:scaleX,sy:scaleY,
+  dy:drawY-(feet-height)+(motionExtra?.y||0),tilt,sx:1,sy:1,
   pivotX:f.x,pivotY:feet};
  // No transparency strobing or new vector weapon layer.
- ctx.save();if(tilt||scaleY!==1||scaleX!==1){
-  ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.scale(scaleX,scaleY);ctx.translate(-f.x,-feet);
+ ctx.save();if(tilt){
+  // Rotate whole sprites about planted feet; NEVER apply nonuniform scale.
+  ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.translate(-f.x,-feet);
  }
  // All ten poses have independent, pre-cleaned bitmaps; do not truncate any
  // Retiarius attack/defeat weapon just to hide a stray neighboring frame.

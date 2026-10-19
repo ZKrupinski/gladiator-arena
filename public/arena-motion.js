@@ -47,64 +47,56 @@ function pose(f,clock=0,reduced=false){
  if(!f||f.dead||reduced)return neutral;
  const seed=f.enemy?1.33:.24,dir=f.face||1;
  const motion={...neutral};
- // Idle breathing is torso-centered via tiny feet-anchored scale, not a
- // sprite-wide jumping sine. Standing feet never climb above the floor.
+ // Preserve the full original character artwork during every action.
+ // Small positional and rotational impulses replace old squash/stretch.
+ // Standing feet never climb above the floor.
  const idle=sin(clock*3.9+seed);
  const walking=clamp(Math.abs(f.vx||0)/235,0,1);
  const stride=(f.walkT||0)*15.5+seed;
  const activeFight=f.stagger>0?'hit':f.guard?'guard':f.dodge>0?'dodge':f.action;
  const moving=(activeFight==='idle'||activeFight==='walk')?walking:walking*.25;
- motion.sx+=idle*.010*(1-moving);
- motion.sy-=idle*.013*(1-moving);
  motion.tilt+=dir*idle*.004;
  motion.y-=Math.pow(Math.max(0,sin(stride)),1.2)*moving*5.5;
  motion.x+=sin(stride)*moving*1.9;
  motion.tilt+=sin(stride)*moving*.013;
- motion.sx+=moving*.010*Math.abs(sin(stride));
- motion.sy-=moving*.007*Math.abs(sin(stride));
  // Functional actions animate even for static traditional single-key poses.
  const actionLength=Math.max(.01,f.actionDuration||.35);
  const phase=clamp(1-(f.actionT||0)/actionLength);
  const swing=Math.sin(PI*phase);
  if(f.actionT>0){
   if(activeFight==='attack'){
-   motion.sx+=swing*.027;
-   motion.sy-=swing*.022;
    motion.x+=dir*swing*6;
    motion.tilt+=dir*.018*swing;
   }else if(activeFight==='special'){
-   motion.sx+=swing*.038;motion.sy-=swing*.035;
    motion.x+=dir*swing*7;motion.tilt+=dir*.024*swing;
   }else if(activeFight==='guard'){
-   motion.sy-=.025*swing;motion.sx+=.018*swing;
    motion.tilt-=dir*.016*swing;
   }else if(activeFight==='dodge'){
    motion.y-=swing*6;
-   motion.sx+=.023*swing;motion.sy-=.016*swing;
   }else if(activeFight==='hit'){
-   motion.sx+=.035*swing;motion.sy-=.040*swing;
+   motion.x-=dir*5*swing;motion.tilt-=dir*.014*swing;
   }else if(activeFight==='comboDash'){
-   motion.sx+=.035*swing;motion.sy-=.030*swing;
+   motion.x+=dir*8*swing;
   }
  }
- if(f.guard){motion.sx+=.016;motion.sy-=.019;motion.tilt-=dir*.01}
+ if(f.guard){motion.tilt-=dir*.01}
  const b=f.bodySpring;
  if(b){
   const t=clamp(b.t/b.duration,0,1);
   const envelope=(1-t)*(1-t);
-  // Squash at contact, stretch immediately afterwards; damped impact pendulum
-  // with a small forward recoil and an opposing rebound, all about the boots.
+  // Contact shock is a brief lean and positional recoil. No sprite deformation.
+  // Preserve rendered height and width throughout the impact envelope.
   const contact=cos(t*PI*3.25)*envelope;
   const rebound=sin(t*PI*3.25)*envelope;
   const press=b.compression;
-  motion.sy-=press*contact;
-  motion.sx+=press*.65*contact;
-  motion.x+=(b.role==='source'?-1:1)*b.dir*b.slide*rebound;
+  const roleSign=b.role==='source'?1:-1;
+  motion.x+=roleSign*b.dir*(Math.min(4,b.slide*.18)*contact+b.slide*rebound);
   motion.y-=Math.max(0,rebound)*press*60;
-  motion.tilt+=b.dir*(b.role==='source'?-1:1)*rebound*.034;
+  motion.tilt+=b.dir*roleSign*(rebound*.034+contact*.016);
  }
- motion.sx=clamp(motion.sx,.88,1.12);
- motion.sy=clamp(motion.sy,.88,1.12);
+ // A gameplay response may translate or rotate; artwork aspect stays exact.
+ motion.sx=1;
+ motion.sy=1;
  motion.y=clamp(motion.y,-11,6);
  motion.x=clamp(motion.x,-28,28);
  motion.tilt=clamp(motion.tilt,-.10,.10);

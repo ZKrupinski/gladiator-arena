@@ -12,6 +12,7 @@ on:
       - scripts/qa_arena_vfx_browser.mjs
       - scripts/qa_arena_motion.mjs
       - scripts/qa_arena_motion_browser.mjs
+      - scripts/qa_fighter_proportions_browser.mjs
       - scripts/qa_arena_focus_and_cleanup.mjs
       - scripts/qa_arena_focus_browser.mjs
       - scripts/qa_arena_impact_browser.mjs
@@ -46,6 +47,8 @@ jobs:
         run: node scripts/qa_arena_impact_browser.mjs
       - name: Verify contact recoil, blocked hits and cinematic shakes in real arena
         run: node scripts/qa_arena_motion_browser.mjs
+      - name: Verify all gladiator sprites preserve original aspect ratio in battle
+        run: node scripts/qa_fighter_proportions_browser.mjs
       - name: Verify 8 animated painterly VFX families and actual attack wiring
         env:
           VFX_GALLERY_PREVIEW: '1'

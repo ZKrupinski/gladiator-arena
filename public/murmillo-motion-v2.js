@@ -68,18 +68,19 @@ function motionAt(f,scene,clock=0){
  let x=0,y=0,lean=0,sx=1,sy=1;
  switch(sample.action){
   case 'idle':
-    // Continuous, feet-anchored breathing: scale the torso without pixel slicing or strobe.
-    y=-.65*(.5+.5*wave);sx=1-.009*wave;sy=1+.022*wave;lean=.004*wave;break;
+    // Continuous grounded breathing through illustrated key poses and tiny lean,
+    // with absolutely no full-body squash/stretch.
+    y=-.65*(.5+.5*wave);lean=.004*wave;break;
   case 'walk':
     x=2*Math.sin(p*Math.PI*4);y=-1.6*lift;break;
   case 'guard':
     // Shield bracing visibly loads and releases; the ground pivot stays planted.
-    y=-2*Math.max(0,wave);sx=1+.012*wave;sy=1-.017*wave;lean=.011*wave;break;
+    y=-2*Math.max(0,wave);lean=.011*wave;break;
   case 'slash':
     x=19*Math.sin(Math.PI*p);y=-7*Math.sin(Math.PI*p);
     lean=.065*Math.sin(Math.PI*p);break;
   case 'sweep':
-    x=25*Math.sin(Math.PI*p);lean=.050*Math.sin(Math.PI*p);sx=1+.03*Math.sin(Math.PI*p);break;
+    x=25*Math.sin(Math.PI*p);lean=.050*Math.sin(Math.PI*p);break;
   case 'thrust':
     x=34*Math.sin(Math.PI*p);y=3*Math.sin(Math.PI*p);lean=.035*Math.sin(Math.PI*p);break;
   case 'heavy':
@@ -128,7 +129,7 @@ function draw(ctx,o){
  ctx.save();
  ctx.translate(center,feet);
  ctx.rotate(m.lean*(o.flip?-1:1));
- ctx.scale(m.sx,m.sy);
+ // Do not scale one axis differently from the other. Feet remain planted.
  ctx.translate(-center,-feet);
  // Reduced source atlas fallback keeps all states renderable if B resources fail.
  const fallback={12:0,13:0,14:1,15:9,16:1,17:0,19:4,20:3,21:7,22:11,23:11};

@@ -18,6 +18,14 @@ const p=fighter('idle');
 const idle=new Set(Array.from({length:30},(_,i)=>motion.poseAt(p,{phase:'fight'},i*.1).index));
 assert.ok(idle.size>=2,'standing player MUST move between different frames');
 const idleMotion=Array.from({length:16},(_,i)=>motion.motionAt(p,{phase:'fight'},i*.12).y);
+for(const action of ['idle','walk','guard','attack','special','comboDash','dodge','hit']){
+ const f=fighter(action,.5,1,action==='walk'?140:0);
+ for(let i=0;i<12;i++){
+  const m=motion.motionAt(f,{phase:'fight'},i*.11);
+  assert.equal(m.sx,1,action+' sprite source width remains unchanged');
+  assert.equal(m.sy,1,action+' sprite source height remains unchanged');
+ }
+}
 assert.ok(Math.max(...idleMotion)-Math.min(...idleMotion)>.2,'subtle grounded breathing should remain visible');
 const walking=fighter('walk',0,0,135);
 const walkingKeys=new Set(Array.from({length:20},(_,i)=>motion.poseAt(walking,{phase:'fight'},i*.07).index));

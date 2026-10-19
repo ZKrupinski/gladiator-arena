@@ -23,17 +23,19 @@ assert.ok(Math.abs(walk.x)<=3,'walk never teleports the pivot');
 p.vx=0;p.action='attack';p.actionDuration=.35;p.actionT=.17;
 const strike=M.pose(p,1.4);
 assert.ok(strike.x>idle.x+2,'sword pose pushes forward');
-assert.ok(strike.sx>idle.sx,'punch pose stretches horizontally');
+assert.equal(strike.sx,1,'strike preserves body width');
+assert.equal(strike.sy,1,'strike preserves body height');
 p.actionT=0;p.action='idle';
 for(const type of Object.keys(M.RESPONSE)){
  const a=actor(),b=actor(true);
  M.pulse(a,type,'source',1);M.pulse(b,type,'target',1);
  const hit=M.pose(b,0);
- assert.ok(hit.sy<1&&hit.sx>1, type+' contact compression');
+ assert.equal(hit.sx,1,type+' contact preserves source width');
+ assert.equal(hit.sy,1,type+' contact preserves source height');
  assert.ok(hit.y>=-11&&hit.x>=-28, 'world-space pivot never leaps off-floor');
  M.advance(b,.09);
  const rebound=M.pose(b,0);
- assert.ok(rebound.x!==hit.x||rebound.sy!==hit.sy,type+' has secondary rebound');
+ assert.ok(rebound.x!==hit.x||rebound.y!==hit.y||rebound.tilt!==hit.tilt,type+' has secondary recoil');
  for(let i=0;i<20;i++)M.advance(b,.04);
  assert.equal(b.bodySpring,null,type+' must terminate so it cannot wobble forever');
 }
