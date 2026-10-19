@@ -2054,7 +2054,43 @@ function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
  // Original Murmillo / Thraex / Retiarius never use wobbling inbetweens.
  return GrowthFrames.draw(ctx,atlas,GROWTH_POSE[pose]??0,x0,y0,w0,h0,flip,alpha);
 }
-function drawFighter(f){if(!f||f.removedFromArena)return;const pose=choosePose(f),frame=FRAMES[pose]??0;
+// A handful of approved legacy guard / hit atlas cells have no usable
+// character pixels. NEVER render an empty key pose: preserve the visible
+// fighter silhouette and express the impact with the existing body spring.
+const SPRITE_INK_CACHE=new WeakMap();
+function spriteHasInk(canvas){
+ if(!canvas||!canvas.width||!canvas.height)return false;
+ if(SPRITE_INK_CACHE.has(canvas))return SPRITE_INK_CACHE.get(canvas);
+ let count=0;
+ try{
+  const c=canvas.getContext('2d',{willReadFrequently:true});
+  const d=c.getImageData(0,0,canvas.width,canvas.height).data;
+  for(let i=3;i<d.length;i+=16)if(d[i]>24&&++count>=32)break;
+ }catch(error){count=32;} // browser security issues must not hide a fighter
+ const visible=count>=32;SPRITE_INK_CACHE.set(canvas,visible);return visible;
+}
+function safeFighterPose(f,requested){
+ if(f.championVariant===CHAMPION_MURMILLO_VARIANT||
+   f.motionVariant===ANIMATED_MURMILLO_VARIANT)return requested;
+ const growth=GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
+ if(growth?.frames){
+  const target=growth.frames[GROWTH_POSE[requested]??0]?.canvas;
+  if(target&&!spriteHasInk(target))return 'idle';
+  return requested;
+ }
+ const frames=INDEPENDENT_CHARACTER_FRAMES.get(IMG[f.cls]);
+ const target=frames?.[FRAMES[requested]??0];
+ if(target&&!spriteHasInk(target)){
+  // Some combat pose cells are genuinely blank. The surviving idle pose is
+  // much better than an invisible actor; recoil/brace render motion remains.
+  for(const fallback of ['idle','attack','walk']){
+   if(spriteHasInk(frames?.[FRAMES[fallback]]))return fallback;
+  }
+ }
+ return requested;
+}
+function drawFighter(f){if(!f||f.removedFromArena)return;
+ const pose=safeFighterPose(f,choosePose(f)),frame=FRAMES[pose]??0;
  // Keep a fixed feet pivot for every class, image pose and character.
  const height=FIGHTER_DRAW_SIZE,width=FIGHTER_DRAW_SIZE,feet=FLOOR-1;
  // Keep idle and walk feet planted. Whole-body sine bob made boots hover
@@ -2413,7 +2449,7 @@ if(new URLSearchParams(window.location.search).has('__arena_qa')){
      if(pixels[i]+pixels[i+1]+pixels[i+2]>70)count++;
     }
     ctx.restore();render();
-    return {count,cls:f.cls,pose:choosePose(f),x:f.x,growthType:f.growthType,
+    return {count,cls:f.cls,pose:choosePose(f),drawPose:safeFighterPose(f,choosePose(f)),x:f.x,growthType:f.growthType,
      removed:f.removedFromArena,srcReady:!!(IMG[f.cls]?.complete&&IMG[f.cls]?.naturalWidth),
      spriteIsolated:!!INDEPENDENT_CHARACTER_FRAMES.get(IMG[f.cls])};
    },
