@@ -7,7 +7,7 @@ const errors=[];
 const p=await browser.newPage({viewport:{width:1280,height:960},deviceScaleFactor:1});
 p.on('pageerror',e=>errors.push(String(e)));
 try{
- await p.goto('http://127.0.0.1:8765/vfx-gallery.html',{waitUntil:'domcontentloaded'});
+ await p.goto('http://127.0.0.1:8765/vfx-gallery.html?__arena_qa=1',{waitUntil:'domcontentloaded'});
  await p.waitForFunction(()=>{
   const f=window.ArenaAnimatedFX;
   return !!f&&Object.keys(f.FAMILIES).length===8&&
@@ -57,10 +57,20 @@ try{
   types:Object.fromEntries(Object.entries(frames.result).map(([k,v])=>[k,{frames:v.frames,unique:v.unique,paint:v.samples[1].opaque}])),
   cache:frames.cache}));
  if(process.env.VFX_GALLERY_PREVIEW==='1'){
-  await p.waitForTimeout(500);
-  const jpeg=await p.screenshot({type:'jpeg',quality:62});
+  await p.evaluate(()=>{
+   window.__arenaVfxGalleryQA.seek(.34);
+   window.__arenaVfxGalleryQA.pause(true);
+  });
+  await p.waitForTimeout(90);
+  const jpeg=await p.screenshot({type:'jpeg',quality:68});
   console.log('PAINTED_VFX_GALLERY_JPEG:'+jpeg.toString('base64'));
  }
+ // A real exported PNG must exist, not just a decorative gallery control.
+ const downloaded=p.waitForEvent('download',{timeout:20000});
+ await p.locator('.card button').first().click();
+ const exportResult=await downloaded;
+ assert.equal(exportResult.suggestedFilename(),'gladiator-vfx-slash-12f.png');
+ console.log('PAINTED_VFX_EXPORT_PASS '+exportResult.suggestedFilename());
  await p.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
  await p.waitForFunction(()=>!!window.__arenaQA&&!!window.ArenaAnimatedFX&&
    window.ArenaAnimatedFX.available('slash'),{timeout:20000});
