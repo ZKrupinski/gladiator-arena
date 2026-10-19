@@ -18,6 +18,9 @@ try{
   return {before,parryPlayed,triggered,after:a.status()};
  });
  assert.equal(state.before.bpm,172);
+ assert.ok(state.after.mix[1]>=.36,'battle drums rise when fight starts');
+ assert.ok(state.after.mix[2]>=.31,'metal guitars rise with combos');
+ assert.ok(state.after.mix[3]>=.33,'war horns and choir rise in danger');
  assert.equal(state.before.stems,5,'four sample-locked music stems and crowd ambience');
  assert.ok(state.before.loaded>=30,'music and multiple Foley WAVs decoded');
  assert.ok(state.parryPlayed,'actual parry WAV must play');

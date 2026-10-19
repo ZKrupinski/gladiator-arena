@@ -6,6 +6,11 @@
 (function(root){
 'use strict';
 const BASE='assets/audio/rome-v1/';
+// Visual QA uses a different browser suite that deliberately exercises slow
+// motion frame timing. Keep audio decoding out of THAT suite; real audio has
+// a separate end-to-end browser test with decoded WAV and MP3 verification.
+const visualQA=typeof location!=='undefined'&&
+ new URLSearchParams(location.search).has('__arena_qa');
 const STATES={title:[0,0,0,0,0],fight:[.32,.28,.14,.10,.20],
  finisher:[.17,.13,.08,.35,.23],cleanup:[.21,.11,.03,.08,.26],
  result:[.02,.01,.01,.01,.14]};
@@ -42,6 +47,7 @@ function context(){
  return ctx;
 }
 async function preload(){
+ if(visualQA)return false;
  if(loading)return loading;
  loading=(async()=>{
   const all=STEMS.concat(Object.values(SFX).flat());
@@ -76,6 +82,7 @@ function beginMusic(){
  started=true;startTime=now;
 }
 function unlock(){
+ if(visualQA)return false;
  const c=context();
  if(!c)return false;
  if(c.state==='suspended')c.resume().catch(()=>{});
@@ -83,6 +90,7 @@ function unlock(){
  return true;
 }
 function play(kind,opt={}){
+ if(visualQA)return false;
  if(!enabled)return true;
  if(!ctx||ctx.state!=='running'){unlock();return false}
  const variants=SFX[kind];if(!variants)return false;
@@ -132,7 +140,8 @@ function update(state={}){
  }
 }
 function status(){return {ready,started,enabled,playing:!!ctx&&ctx.state==='running',stems:stemGains.length,
-  loaded:buffers.size,variants:Object.keys(SFX).length,bpm:172,master:master?.gain.value??0}}
+  loaded:buffers.size,variants:Object.keys(SFX).length,bpm:172,
+  mix:stemTargets.slice(),master:master?.gain.value??0}}
 root.ArenaAudio={version:'1.0.0',unlock,preload,play,update,setMuted,status,SFX,STEMS};
 if(typeof document!=='undefined'){
  document.addEventListener('pointerdown',()=>{if(!ctx)unlock()},{once:true,passive:true});
