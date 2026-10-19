@@ -86,7 +86,8 @@ def loop_overlay(dest,source,offset,gain):
  step=n-overlap
  for st in range(offset-N, N, step):
   if st+n<0:continue
-  place(dest,segment,st,gain)
+  # `st` is already measured in audio frames; `place` expects seconds.
+  place(dest,segment,st/FS,gain)
 # CC0 real spectator recordings taken on location at football matches.
 stadiums=[
  ("https://upload.wikimedia.org/wikipedia/commons/7/70/Spectators_during_a_football_match.webm",
