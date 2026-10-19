@@ -164,13 +164,14 @@ function petal(c,x,y,a,size,colorStr,opacity=1){
  c.strokeStyle='rgba(255,253,226,.46)';c.lineWidth=.6;
  c.beginPath();c.moveTo(0,-size*.8);c.lineTo(0,size*.8);c.stroke();c.restore();
 }
-function victory(c,frame){
+function victory(c,frame,slot='all'){
  const t=frame/7,enter=clamp(t*2.2+.12),out=.22+.78*clamp((1-t)*2,0,1);
  const height=ease(clamp(t*1.7))*210;
  // The hero belongs at (0,0); the backlit source grows BEHIND to the right
  // rather than forming a symmetrical circle around the body.
  c.save();c.translate(0,-14);
  const centerX=-55+125*t,centerY=88-height*.44;
+ if(slot!=='front'){
  const golden=c.createRadialGradient(centerX,centerY,5,centerX,centerY,210);
  golden.addColorStop(0,'rgba(255,248,206,'+(.44*enter*out).toFixed(3)+')');
  golden.addColorStop(.4,'rgba(253,194,104,'+(.24*enter*out).toFixed(3)+')');
@@ -193,7 +194,10 @@ function victory(c,frame){
   paintStroke(c,[[x,y],[x+20*r,y-20],[tx,ty]],
    1.6+2*r,'rgba(255,221,147,.84)',enter*out*(.3+.4*d),8);
  }
+ groundDust(c,frame,61,-95,162,.42);
+ }
  // Gold laurel fragments and petal-shaped pollen drift UP and FORWARD.
+ if(slot!=='back'){
  for(let j=0;j<47;j++){
   const d=rnd(62,j),r=rnd(63,j),s=rnd(64,j);
   const travel=220*t*(.45+d);
@@ -202,19 +206,19 @@ function victory(c,frame){
   const a=3*t+r*4;
   petal(c,x,y,a,2+4*d,j%4===0?color.pink:j%3===0?color.ivory:color.leaf,enter*out*(.4+.55*r));
  }
- groundDust(c,frame,61,-95,162,.42);
+ }
  c.restore();
 }
-function frameFor(kind,idx){
+function frameFor(kind,idx,slot='all'){
  if(!MODELS[kind]||!root.document)return null;
- const key=kind+':'+idx;
+ const key=kind+':'+idx+':'+(kind==='victory'?slot:'all');
  if(FRAME_STORE.has(key)){
   const item=FRAME_STORE.get(key);FRAME_STORE.delete(key);FRAME_STORE.set(key,item);return item;
  }
  const canvas=document.createElement('canvas');canvas.width=SIZE;canvas.height=SIZE;
  const c=canvas.getContext('2d',{alpha:true});if(!c)return null;
  c.translate(SIZE/2,SIZE/2);
- if(kind==='victory')victory(c,idx);
+ if(kind==='victory')victory(c,idx,slot);
  else if(kind==='guard'||kind==='parry')shield(c,kind,idx);
  else strike(c,kind,idx);
  // At most ~39 * 480² RGBA pixel buffers in memory on low RAM phones.
@@ -226,7 +230,7 @@ function draw(ctx,kind,x,y,w,h,progress=0,alpha=1,face=1,rotation=0,slot='all'){
  if(!ctx||!MODELS[kind])return false;
  const reduced=root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
  const frame=Math.min(7,Math.floor(clamp(reduced?.48:progress,0,.9999)*8));
- const atlas=frameFor(kind,frame);
+ const atlas=frameFor(kind,frame,slot);
  if(!atlas)return false;
  ctx.save();ctx.translate(x,y);ctx.rotate(rotation);
  if(face<0)ctx.scale(-1,1);
