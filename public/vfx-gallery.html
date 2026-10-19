@@ -32,10 +32,10 @@ footer{color:#af9983;margin:0 4px 4px;font-size:12px}
 .tag{font-variant-numeric:tabular-nums;color:#f6c57a}
 .note{max-width:1200px;margin:auto;padding:0 20px 35px;font-size:12px;color:#ae9b86}
 </style>
-<script src="arena-animated-vfx.js?v=2"></script></head><body>
+<script src="arena-animated-vfx.js?v=3"></script></head><body>
 <header><p>SPARTACUS / GLADIATOR ARENA · FX ANIMATION REEL</p>
-<h1>공용 전투 이펙트 · 12–16 FRAMES</h1>
-<p>종베기·횡베기·찌르기는 각기 다른 신규 12프레임 검광 시트이며, 방어·패링·대시·필살기는 기존 강화 이펙트입니다.
+<h1>공용 전투 이펙트 · 8종 개별 12 FRAMES</h1>
+<p>종베기·횡베기·찌르기 검광 3종과 방어·퍼펙트 패링·대시·필살기·피니시 5종을 모두 각기 다른 12프레임 전용 그림으로 교체했습니다.
 배경 투명도와 프레임 연결성을 확인할 수 있습니다. SVG/벡터 이펙트는 사용하지 않습니다.</p>
 <div class="toolbar"><label for="speed">재생 속도</label><select id="speed">
 <option value=".5">50%</option><option value="1" selected>100%</option><option value="1.5">150%</option><option value="2">200%</option>
@@ -49,11 +49,11 @@ footer{color:#af9983;margin:0 4px 4px;font-size:12px}
  ['slash','공격 1 · 종베기','황금빛 세로 검 궤적 · 파편 없음 · 신규 12프레임'],
  ['sweep','공격 2 · 횡베기','붉은 수평 검광 · 파편 없음 · 신규 12프레임'],
  ['thrust','공격 3 · 찌르기','청백색 직선 관통 · 파편 없음 · 신규 12프레임'],
- ['guard','방패 방어','쇳소리 충돌 → 금빛 파편 반동'],
- ['parry','퍼펙트 패링','방어 반짝임 → 충격파 → 파편 확산'],
- ['dash','대시 강공격','질주 잔상 → 거대한 횡방향 충격'],
- ['special','필살기','에너지 응축 → 확장 → 폭발'],
- ['finisher','피니시 타격','집중 섬광 → 결정타 → 잔광']
+ ['guard','방패 방어','전방 반달형 방패 충격막 · 황금색'],
+ ['parry','퍼펙트 패링','날카로운 십자 섬광 · 백색/청금'],
+ ['dash','대시 강공격','전방 수평 검광 · 붉은 오렌지'],
+ ['special','필살기','나선형 에너지 충전 → 금빛/청록 방출'],
+ ['finisher','피니시 타격','넓은 원형 충격폭발 · 붉은 금속 파편']
  ];
  const art={};
  const sourceNames=['hit_slash','dash_trail','parry_burst','special_aura'];
@@ -64,6 +64,11 @@ footer{color:#af9983;margin:0 4px 4px;font-size:12px}
   const image=new Image();
   image.src='assets/new-era/cinematic/'+name+'-sword-trail-12f.webp?v=1';
   art[name+'_trail']=image;
+ }
+ for(const name of ['guard','parry','finisher','dash','special']){
+  const image=new Image();
+  image.src='assets/new-era/cinematic/'+name+'-painted-12f.webp?v=1';
+  art[name+'_painted']=image;
  }
  const fx=window.ArenaAnimatedFX;fx.bind(art);
  const gallery=document.querySelector('#gallery');
@@ -120,8 +125,8 @@ footer{color:#af9983;margin:0 4px 4px;font-size:12px}
    if(pos<active){
     const p=pos/active;
     const basic=['slash','sweep','thrust'].includes(key);
-    const dw=basic?355:key==='dash'?585:405;
-    const dh=basic?355:key==='dash'?215:405;
+    const dw=basic?355:key==='dash'?540:405;
+    const dh=basic?355:key==='dash'?350:405;
     fx.draw(ctx,key,canvas.width/2,canvas.height/2,dw,dh,p,1,false);
    }
   }
