@@ -1,6 +1,6 @@
-/* Gladiator Arena | Painted Animation VFX v1
- * 8 distinct effect families, 12–16 separately rasterized transparent frames
- * composed entirely from the approved hand-painted WebP effect artwork.
+/* Gladiator Arena | Painted Animation VFX v3
+ * 8 visually independent 12-frame painted transparent WebP sprite sheets
+ * authored specifically for each move. No explosion reuse for guard/parry/dash.
  *
  * No CSS/SVG/vector slash geometry. No copying neighbouring atlas cells.
  * Each effect frame is rasterized into an independent alpha canvas on demand,
@@ -15,11 +15,11 @@ const FAMILIES=Object.freeze({
  slash:Object.freeze({frames:12,width:362,height:362,source:'slash_trail',duration:.23,profile:'cut'}),
  sweep:Object.freeze({frames:12,width:362,height:362,source:'sweep_trail',duration:.25,profile:'sweep'}),
  thrust:Object.freeze({frames:12,width:362,height:362,source:'thrust_trail',duration:.24,profile:'thrust'}),
- guard:Object.freeze({frames:12,width:384,height:384,source:'parry_burst',duration:.32,profile:'guard'}),
- parry:Object.freeze({frames:16,width:448,height:448,source:'parry_burst',duration:.58,profile:'parry'}),
- dash:Object.freeze({frames:16,width:512,height:288,source:'dash_trail',duration:.54,profile:'dash'}),
- special:Object.freeze({frames:16,width:448,height:448,source:'special_aura',duration:.59,profile:'special'}),
- finisher:Object.freeze({frames:16,width:448,height:448,source:'parry_burst',duration:.58,profile:'finish'})
+ guard:Object.freeze({frames:12,width:362,height:362,source:'guard_painted',duration:.32,profile:'shield-block'}),
+ parry:Object.freeze({frames:12,width:362,height:362,source:'parry_painted',duration:.60,profile:'cross-flash'}),
+ dash:Object.freeze({frames:12,width:362,height:362,source:'dash_painted',duration:.54,profile:'horizontal-rush'}),
+ special:Object.freeze({frames:12,width:362,height:362,source:'special_painted',duration:.59,profile:'spiral-charge'}),
+ finisher:Object.freeze({frames:12,width:362,height:362,source:'finisher_painted',duration:.58,profile:'impact-finale'})
 });
 const frameCache=new Map();
 const MAX_CACHED_PIXELS=9_000_000; // ~36 MiB raw alpha, mobile friendly.
@@ -79,7 +79,7 @@ function rasterize(kind,i){
  g.clearRect(0,0,s.width,s.height);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
  // The three standard attacks have authored 12-frame atlases. Extract ONLY
  // the requested cell, never mix sparks/shrapnel from the old one-shot assets.
- if(kind==='slash'||kind==='sweep'||kind==='thrust'){
+ if(Object.prototype.hasOwnProperty.call(FAMILIES,kind)){
   const bitmap=images[s.source];
   if(bitmap.naturalWidth!==1448||bitmap.naturalHeight!==1086)return null;
   const tileW=bitmap.naturalWidth/4,tileH=bitmap.naturalHeight/3;
@@ -224,7 +224,7 @@ function inspect(kind,progress){
  return c?{kind,index:i,frames:FAMILIES[kind].frames,width:c.width,height:c.height,
   alpha:true,canvas:c}:null;
 }
-root.ArenaAnimatedFX={version:'2.0.0',FAMILIES,specs,bind,frameIndex,draw,inspect,
+root.ArenaAnimatedFX={version:'3.0.0',FAMILIES,specs,bind,frameIndex,draw,inspect,
   available:sourcesLoaded,cacheSize:()=>frameCache.size};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaAnimatedFX;
 })(globalThis);
