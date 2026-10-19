@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GLADIATOR ARENA · 전투 이펙트 애니메이션 갤러리</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(130deg,#130807,#321812 52%,#100808);
+color:#f5e7ce;font-family:system-ui,"Noto Sans KR",sans-serif}
+header{max-width:1200px;padding:30px 20px 12px;margin:auto}
+h1{font:800 clamp(24px,4vw,43px)/1.12 Georgia,serif;letter-spacing:.05em;color:#f4c56e;margin:4px 0 12px}
+p{color:#cebda5;margin:0 0 12px;line-height:1.65}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 0}
+button,select{color:#ffe9ba;font:700 14px system-ui,sans-serif;background:#5b231c;
+border:2px solid #bf8d4b;border-radius:8px;padding:9px 13px;cursor:pointer}
+button:hover,button:focus-visible{background:#873326}
+label{font-weight:700;color:#fae0ab}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));
+gap:17px;margin:auto;max-width:1200px;padding:9px 20px 48px}
+.card{padding:10px;border-radius:9px;border:2px solid #8c562a;
+background:linear-gradient(#3a1b16,#1b1210);box-shadow:0 9px 23px #0008}
+.stage{height:auto;aspect-ratio:16/10;position:relative;border:1px solid #503626;border-radius:5px;
+background:radial-gradient(ellipse at center,#524640 0%,#1c191b 60%,#0e1013 100%);
+overflow:hidden;}
+.stage.checker{background-color:#273039;background-image:
+linear-gradient(45deg,#ffffff12 25%,transparent 25%),
+linear-gradient(-45deg,#ffffff12 25%,transparent 25%),
+linear-gradient(45deg,transparent 75%,#ffffff12 75%),
+linear-gradient(-45deg,transparent 75%,#ffffff12 75%);
+background-size:24px 24px;background-position:0 0,0 12px,12px -12px,-12px 0}
+canvas{width:100%;height:100%;display:block;object-fit:contain}
+h2{font:800 19px Georgia,serif;color:#ffdb94;margin:10px 4px 3px}
+footer{color:#af9983;margin:0 4px 4px;font-size:12px}
+.tag{font-variant-numeric:tabular-nums;color:#f6c57a}
+.note{max-width:1200px;margin:auto;padding:0 20px 35px;font-size:12px;color:#ae9b86}
+</style>
+<script src="arena-animated-vfx.js?v=1"></script></head><body>
+<header><p>SPARTACUS / GLADIATOR ARENA · FX ANIMATION REEL</p>
+<h1>공용 전투 이펙트 · 12–16 FRAMES</h1>
+<p>게임에서 사용하는 고품질 래스터 아트의 8개 애니메이션 시퀀스를 실시간 미리보기로 확인하세요.
+배경 투명도와 프레임 연결성을 확인할 수 있습니다. SVG/벡터 이펙트는 사용하지 않습니다.</p>
+<div class="toolbar"><label for="speed">재생 속도</label><select id="speed">
+<option value=".5">50%</option><option value="1" selected>100%</option><option value="1.5">150%</option><option value="2">200%</option>
+</select><button id="toggle">일시정지</button><button id="checker">투명도 체크 배경</button>
+<a href="./?v=fx12-16"><button>게임으로 돌아가기</button></a></div></header>
+<main id="gallery" class="gallery"></main>
+<p class="note">본 페이지는 실제 게임과 동일한 재생기를 사용합니다. 배경을 제외한 FX는 독립된 투명 캔버스 프레임이며, 원래 캐릭터 아트·히트 판정과는 별도 레이어입니다.</p>
+<script>
+(function(){
+ const config=[
+ ['slash','공격 1 · 종베기','날카로운 검 궤적 → 파편 → 잔광'],
+ ['sweep','공격 2 · 횡베기','수평 검 궤적 → 연속 스파크'],
+ ['thrust','공격 3 · 찌르기','전방 압축 → 직선 관통 충격'],
+ ['guard','방패 방어','쇳소리 충돌 → 금빛 파편 반동'],
+ ['parry','퍼펙트 패링','방어 반짝임 → 충격파 → 파편 확산'],
+ ['dash','대시 강공격','질주 잔상 → 거대한 횡방향 충격'],
+ ['special','필살기','에너지 응축 → 확장 → 폭발'],
+ ['finisher','피니시 타격','집중 섬광 → 결정타 → 잔광']
+ ];
+ const art={};
+ for(const name of ['hit_slash','dash_trail','parry_burst','special_aura']){
+  const image=new Image();image.src='assets/new-era/cinematic/'+name+'.webp?v=3.6';art[name]=image;
+ }
+ const fx=window.ArenaAnimatedFX;fx.bind(art);
+ const gallery=document.querySelector('#gallery');
+ const cards=config.map(([key,title,description])=>{
+  const section=document.createElement('section');section.className='card';
+  const stage=document.createElement('div');stage.className='stage';
+  const canvas=document.createElement('canvas');canvas.width=600;canvas.height=380;
+  stage.append(canvas);section.append(stage);
+  const h=document.createElement('h2');h.textContent=title;section.append(h);
+  const p=document.createElement('footer');p.textContent=description+' · '+fx.FAMILIES[key].frames+'프레임';
+  section.append(p);gallery.append(section);
+  return {key,stage,canvas,ctx:canvas.getContext('2d')};
+ });
+ let paused=false,speed=1,last=0,playTime=0;
+ document.querySelector('#speed').addEventListener('change',e=>speed=Number(e.target.value)||1);
+ document.querySelector('#toggle').addEventListener('click',e=>{
+  paused=!paused;e.target.textContent=paused?'다시 재생':'일시정지';
+ });
+ document.querySelector('#checker').addEventListener('click',()=>{
+  for(const item of cards)item.stage.classList.toggle('checker');
+ });
+ function animate(ms){
+  if(!last)last=ms;
+  const dt=Math.min(.06,(ms-last)/1000);last=ms;
+  if(!paused)playTime+=dt*speed;
+  for(const item of cards){
+   const {ctx,canvas,key}=item;
+   ctx.clearRect(0,0,canvas.width,canvas.height);
+   const data=fx.FAMILIES[key];
+   const cycle=data.duration+.24;
+   const pos=playTime%cycle;
+   if(pos<data.duration){
+    const p=pos/data.duration;
+    const ratio=key==='dash'||key==='thrust'?2.4:1;
+    const dw=key==='dash'?560:key==='thrust'?470:360;
+    const dh=key==='dash'?210:key==='thrust'?260:360;
+    fx.draw(ctx,key,canvas.width/2,canvas.height/2,dw,dh,p,1,false);
+   }
+  }
+  requestAnimationFrame(animate);
+ }
+ requestAnimationFrame(animate);
+})();
+</script></body></html>
