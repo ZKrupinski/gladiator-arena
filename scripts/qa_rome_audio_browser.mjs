@@ -13,7 +13,10 @@ try{
  });
  await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
  const manifest=await page.evaluate(()=>fetch('assets/audio/rome-v1/manifest.json?v=2-real').then(r=>r.json()));
- assert.equal(manifest.version,2,'must load remastered real-instrument sound pack');
+ assert.equal(manifest.version,3,'must load remastered ceremony sound pack');
+ assert.ok(manifest.ceremony.no_trumpet_or_flute,'remove bright pipe/trumpet from start and end');
+ assert.ok(manifest.ceremony.no_upbeat_fanfare,'no short trumpet runs at victory/start');
+ assert.ok(manifest.ceremony.no_pitched_bell_hits,'dry recorded collision effects retained');
  assert.ok(manifest.production.includes('no instrument oscillator'),'no keys or synthesized brass allowed');
  assert.equal(manifest.license,'CC0');
  assert.equal(await page.evaluate(()=>window.ArenaAudio.version),'2.0.0');

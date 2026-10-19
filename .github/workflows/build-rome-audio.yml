@@ -30,7 +30,12 @@ jobs:
           import os,json,glob,wave,subprocess
           root="public/assets/audio/rome-v1"
           m=json.load(open(root+"/manifest.json"))
-          assert m["version"]==2 and m["license"]=="CC0"
+          assert m["version"]==3 and m["license"]=="CC0"
+          assert m["ceremony"]["no_trumpet_or_flute"]
+          assert m["ceremony"]["no_upbeat_fanfare"]
+          for name,duration in [("start_1.wav",2.2),("victory_1.wav",2.65),("defeat_1.wav",2.2)]:
+           with wave.open(root+"/"+name) as f:
+            assert abs(f.getnframes()/f.getframerate()-duration)<0.015
           assert m["bpm"]==172 and 33<m["durationSeconds"]<34
           for name in m["stems"]+[m["crowd"]]:
            f=root+"/"+name
@@ -48,7 +53,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/assets/audio/rome-v1/
           if ! git diff --cached --quiet; then
-            git commit -m "audio(rome v2): publish REAL brass/guitar/drums and short dry recorded weapon impacts"
+            git commit -m "audio(rome v3): replace chirpy start/end fanfares with solemn recorded horn and tuba stingers"
             git pull --rebase origin main
             git push origin HEAD:main
           fi

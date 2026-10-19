@@ -101,6 +101,10 @@ trumpets={
  'A4':decode(source(VSCO,'Brass/Trumpet/stac/Sum_SHTrumpet_stac_A4_v3_rr1.wav','trumpet_A4.wav'))
 }
 tuba=decode(source(VSCO,'Brass/Tuba/stac/Tuba3_stac_D2_v2_rr1_Sum.wav','tuba_D2.wav'))
+# Sustained LIVE horn / low tuba performances for ceremonial start/end cues.
+# Absolutely no trumpet or staccato melody in the cues.
+ceremony_horn=decode(source(VSCO,'Brass/F Horn/sus/MOHorn_sus_C3_v3_1.wav','live_sustained_horn_C3.wav'))
+ceremony_tuba=decode(source(VSCO,'Brass/Tuba/sus/Tuba3_sus_D2_v2_rr1_Sum.wav','live_sustained_tuba_D2.wav'))
 bd=decode(source(VSCO,'Percussion/BDrumNewhit_v7_rr1_Sum.wav','acoustic_bassdrum.wav'))
 sn=decode(source(VSCO,'Percussion/Snare2-HitNS_v5_rr1_Sum.wav','acoustic_snare.wav'))
 hat=decode(source(VSCO,'Percussion/cymbal-crashshort_v1.wav','acoustic_cymbal.wav'))
@@ -229,8 +233,8 @@ SFX={
  'dash':(2,.34,'swish'),'dash_hit':(2,.32,'heavy'),
  'dodge':(2,.21,'swish'),'guard':(2,.20,'shield'),
  'finisher':(1,.45,'heavy'),
- 'victory':(1,1.20,'fanfare'),'defeat':(1,.85,'low'),
- 'start':(1,.95,'fanfare')
+ 'victory':(1,2.65,'ceremony_victory'),'defeat':(1,2.20,'ceremony_defeat'),
+ 'start':(1,2.20,'ceremony_start')
 }
 for key,(var,dur,kind) in SFX.items():
  for v in range(var):
@@ -250,17 +254,53 @@ for key,(var,dur,kind) in SFX.items():
     # Layered low shield shove at +80ms, with no sustained metallic pitch.
     delayed=cut(onset(clashes[(v*3+1)%len(clashes)]),.09,.04,1450)
     pos=round(.085*FS);result[pos:pos+len(delayed)]+=delayed*.29
-  elif kind=='low':
-   result+=body(dur,1.0)
-  elif kind=='fanfare':
-   # Recorded trumpet and horn, NO oscillator melody or synthesized chime.
-   for i,note in enumerate(['D4','F4','A4','D4']):
-    t=.23*i
-    if t+.21>dur:break
-    arr,p=pick(trumpets,note)
-    sample=fmt(arr,.29,p,PITCH[note],.10)
-    pos=round(t*FS);last=min(n-pos,len(sample))
-    result[pos:pos+last]+=sample[:last]*.37
+  elif kind.startswith('ceremony_'):
+   # Grand Roman stone-arena cue: ONE long, breathed-in low brass chord,
+   # one deep ceremonial bass drum, long spacious decay. Never 'pa-ra-ra-bam'.
+   # Exactly zero trumpet/flute/keyboard notes, high lead runs or bell chimes.
+   # The room reflections are filtered delayed RECORDINGS, not synthesized notes.
+   music=np.zeros(n,dtype=np.float32)
+   def place(performance,source_freq,target_freq,at,length,level,attack,release):
+    sample=fmt(performance,length,source_freq,target_freq,release)
+    k=round(at*FS)
+    if k>=n:return
+    size=min(len(sample),n-k)
+    # Slow attack = massed horn breath rather than a tooting fanfare.
+    e=min(size,round(attack*FS))
+    if e>0:sample[:e]*=np.sin(np.linspace(0,np.pi/2,e))**2
+    music[k:k+size]+=sample[:size]*level
+   if kind=='ceremony_start':
+    # Fight commencement: one massive low drum, then the ancient sounding
+    # horn slowly opens into the entrance, WITHOUT an up-tempo flourish.
+    result+=body(dur,.65)
+    place(ceremony_horn,PITCH['C3'],PITCH['D3'],.07,1.73,.60,.34,.44)
+    place(ceremony_tuba,PITCH['D2'],PITCH['D2'],.04,1.76,.33,.30,.46)
+   elif kind=='ceremony_victory':
+    # Triumph: broad heroic D-minor chord from recordings of real players,
+    # not a D-F-A-D trumpet melody. Deep timpani-like heartbeat once.
+    result+=body(dur,.70)
+    place(ceremony_horn,PITCH['C3'],PITCH['D3'],.04,2.25,.60,.33,.62)
+    place(ceremony_horn,PITCH['C3'],PITCH['F3'],.11,2.10,.26,.40,.66)
+    place(ceremony_tuba,PITCH['D2'],PITCH['D2'],.03,2.18,.33,.37,.67)
+   else:
+    # Defeat: restrained funeral horn and low tuba falling into silence,
+    # no chirpy victory fanfare and no struck metal at the end.
+    result+=body(dur,.39)
+    place(ceremony_horn,PITCH['C3'],PITCH['D3'],.10,1.55,.30,.40,.70)
+    place(ceremony_tuba,PITCH['D2'],PITCH['D2'],.02,1.82,.46,.37,.65)
+   # Large enclosed stone arena: dark broadband reflected *instrument*
+   # recordings. No synthetic harmonic partials are introduced.
+   music=lpf(music,2350)
+   room=np.zeros(n,dtype=np.float32)
+   for delay,gain in [(0.085,.11),(0.147,.105),(0.238,.08),(0.329,.06),
+                       (0.451,.045),(0.63,.031)]:
+    ix=round(delay*FS)
+    room[ix:]+=lpf(music[:-ix],1800)*gain
+   result+=music+room
+   # Limit to a single continuous note attack and prevent the reverb ending
+   # as a conspicuous hard cut.
+   tail=min(round(.27*FS),n//4)
+   result[-tail:]*=np.linspace(1,0,tail)**1.35
   # Close with soft non-pitched impulse; no reverb / repeated harmonic ringing.
   peak=max(.01,np.max(np.abs(result)))
   result=np.tanh((result/peak)*1.1).astype(np.float32)
@@ -278,7 +318,7 @@ for channel in range(2):
   m=min(len(room),N-k);crowd[channel,k:k+m]+=room[:m]
 mp3('rome_crowd.mp3',crowd)
 manifest={
- 'version':2,'title':'METAL OF ROME v2 - 100% recorded instruments, dry real combat Foley',
+ 'version':3,'title':'METAL OF ROME v3 - solemn deep live horns, no fanfare or pipe lead',
  'bpm':BPM,'bars':BARS,'durationSeconds':round(DURATION,4),
  'stems':['rome_bed.mp3','rome_drums.mp3','rome_guitars.mp3','rome_epic.mp3'],
  'crowd':'rome_crowd.mp3',
@@ -287,6 +327,11 @@ manifest={
  'brass_source':'https://github.com/sgossner/VSCO-2-CE',
  'guitar_source':'https://github.com/freepats/electric-guitar-FSBS-dist1',
  'sword_source':'https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes',
+ 'ceremony':{'start':'single low recorded horn/tuba swell, no fast notes',
+             'victory':'one broad low recorded horn chord with deep war drum',
+             'defeat':'slow low horn and tuba funeral cadence',
+             'no_trumpet_or_flute':True,'no_upbeat_fanfare':True,
+             'no_pitched_bell_hits':True},
  'license':'CC0'
 }
 with open(os.path.join(OUT,'manifest.json'),'w') as f:json.dump(manifest,f,ensure_ascii=False,indent=2)
