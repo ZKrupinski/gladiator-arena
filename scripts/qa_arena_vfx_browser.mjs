@@ -202,7 +202,7 @@ try{
  assert.ok(events.parryRoles.attackTrailCancelled,'incoming blade trail is visibly cancelled');
  assert.ok(events.parryRoles.defenderTriumph>.5&&events.parryRoles.attackerFailure>.7,
    'both victory and failure play directional physical reactions');
- assert.equal(events.parryRoles.attackerPose,'hit','attacker's strike becomes hit stagger');
+ assert.equal(events.parryRoles.attackerPose,'hit',"attackers strike becomes hit stagger");
  assert.ok(events.parryRoles.caption,'the floating success and failure heralds identify each role');
  assert.equal(events.focus,'parry');
  await p.waitForTimeout(170);
