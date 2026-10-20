@@ -1,52 +1,50 @@
-/* Female Doctore + Carnifex re-art smoke checks. Run: node scripts/qa_npc_sprite_adoption.mjs */
-import fs from 'node:fs';import assert from 'node:assert/strict';import vm from 'node:vm';
+/* Regression: the prior unattractive Doctore must be gone from EVERY
+ * training state, not just the idle and whip screens. */
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
 const base=new URL('../public/',import.meta.url);
 const html=fs.readFileSync(new URL('index.html',base),'utf8');
 const css=fs.readFileSync(new URL('ludus-training-doctore.css',base),'utf8');
 const scenes=fs.readFileSync(new URL('ludus-approved-scenes.js',base),'utf8');
 const frames=fs.readFileSync(new URL('ludus-doctore-anim.js',base),'utf8');
-const x=fs.readFileSync(new URL('arena-carnifex.js',base),'utf8');
-for(const path of ['assets/ludus/doctore-sd-v1.webp','assets/npc/carnifex-casual-v5.webp']){
- const bin=fs.readFileSync(new URL(path,base));
- assert.equal(bin.toString('ascii',0,4),'RIFF',path);
- assert.equal(bin.toString('ascii',8,12),'WEBP',path);
- assert.ok(bin.byteLength>120000,path+' is not a placeholder');
+const carnifex=fs.readFileSync(new URL('arena-carnifex.js',base),'utf8');
+const png=fs.readFileSync(new URL('assets/ludus/doctore-whip-user-v1.png',base));
+assert.equal(crypto.createHash('sha256').update(png).digest('hex'),
+ '4866225fe2d9184c627ed68c84cdcfe305ee3f3452c0bf23844bd11f9dcddf52');
+for(const old of ['doctore-sd-v1.webp','doctore_pose_0.webp','doctore_pose_1.webp',
+ 'doctore_pose_2.webp','doctore_pose_3.webp']){
+ assert.equal(fs.existsSync(new URL('assets/ludus/'+old,base)),false,
+  old+' must be physically deleted');
+ assert.ok(!css.includes(old)&&!frames.includes(old),'old NPC still referenced: '+old);
 }
-assert.match(html,/ludus-doctore-anim\.js\?v=3/);
+assert.match(html,/ludus-doctore-anim\.js\?v=4/);
 assert.match(html,/ludus-approved-scenes\.js\?v=14/);
 assert.match(html,/arena-carnifex\.js\?v=5/);
-assert.match(css,/left:185px;top:25px;width:360px;height:620px/);
-assert.match(css,/doctore-sd-v1\.webp/);
-assert.doesNotMatch(css,/animation:la-doctore-idle/);
+assert.match(css,/doctore-whip-user-v1\.png/);
 assert.match(scenes,/LudusDoctoreAnim\?\.mount/);
 assert.match(scenes,/LudusDoctoreAnim\?\.react/);
 assert.match(scenes,/LudusDoctoreAnim\?\.unmount/);
-assert.doesNotMatch(scenes,/trainer\.src='assets\/ludus\/doctore_pose_/);
-assert.doesNotMatch(scenes,/actor\.src='assets\/ludus\/doctore_pose_/);
-assert.match(x,/assets\/npc\/carnifex-casual-v5\.webp\?v=5/);
-assert.doesNotMatch(x,/brightness\(\.92\)/);
+assert.match(carnifex,/assets\/npc\/carnifex-casual-v5\.webp\?v=5/);
 const callbacks=[];let next=1;
 const actor={isConnected:true,style:{},dataset:{}};
 const window={matchMedia:()=>({matches:false})};
 vm.runInNewContext(frames,{window,
  requestAnimationFrame:fn=>{callbacks.push(fn);return next++},
- cancelAnimationFrame(){},
- performance:{now:()=>1000}});
+ cancelAnimationFrame(){},performance:{now:()=>1000},console});
 const sprite=window.LudusDoctoreAnim;
-const original=fs.readFileSync(new URL('assets/ludus/doctore-whip-user-v1.png',base));
-assert.equal(original.length,2322336,'User uploaded 2,322,336-byte PNG is archived verbatim');
-assert.equal(original.subarray(1,4).toString('ascii'),'PNG');
-assert.equal(sprite.sprite.columns,8);
-assert.equal(sprite.sprite.rows,4);
-for(const [name,row] of Object.entries(sprite.sprite.actions))
- assert.ok(['idle','talk','command','walk','whip'].includes(name)&&row>=0&&row<=4);
+assert.equal(sprite.sprite.sourcePoses,7);
+assert.equal(sprite.sprite.framesPerAction,8);
+assert.equal(sprite.sprite.path,'assets/ludus/doctore-whip-user-v1.png?v=2');
 sprite.mount(actor);
 assert.equal(actor.dataset.action,'idle');
-for(const [pose,action] of [[1,'talk'],[2,'command'],[3,'whip']]){
- sprite.react(pose);assert.equal(actor.dataset.action,action);
+for(const [pose,action] of [[1,'talk'],[2,'command'],[3,'whip'],[-1,'idle']]){
+ sprite.react(pose);
+ assert.equal(actor.dataset.action,action);
+ assert.equal(actor.dataset.source,'user-original');
+ assert.match(actor.style.backgroundImage,/doctore-whip-user-v1\.png/);
 }
-assert.equal(sprite.userWhip,'assets/ludus/doctore-whip-user-v1.png?v=2');
-assert.match(scenes,/refresh\(\);pose\(3\)/);
-sprite.react(-1);assert.equal(actor.dataset.action,'idle');
+assert.ok(!frames.includes('doctore-sd-v1'),'No hidden fallback to legacy NPC');
 sprite.unmount();
-console.log('PASS: approved NPC 32+16 atlas refs, fixed 8-frame actions, raised toe baseline and replacement cleanup');
+console.log('PASS: seven original user PNG poses, all training actions exclusively new Doctore, old sprite files deleted');

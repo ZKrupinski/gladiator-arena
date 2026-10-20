@@ -1,17 +1,13 @@
-/* The approved trainer lives IN the painted training ground, not in the UI layer.
-   Bottom of fully opaque sandals: stage y ~591, above first tile at y603.
-   360x620 sprite cells contain source artwork with head+cape+foot safety pads. */
+/* One original Roman trainer sheet only; no reference to outdated NPC art. */
 .la-stage.training .la-trainer-clean,.la-stage.training .la-pose{display:none!important}
 .la-stage.training .la-doctore-live{
- position:absolute;left:185px;top:25px;width:360px;height:620px;z-index:4;
- background:url('assets/ludus/doctore-sd-v1.webp?v=1') 0 0 / 2880px 2480px no-repeat;
- pointer-events:none;user-select:none;
+ position:absolute;left:185px;top:42px;width:355px;height:538px;z-index:4;
+ background-image:url('assets/ludus/doctore-whip-user-v1.png?v=2');
+ background-position:0 0;background-size:1448px 1086px;background-repeat:no-repeat;
+ pointer-events:none;user-select:none;overflow:visible;
  clip-path:none;mask:none;-webkit-mask-image:none;
  filter:drop-shadow(3px 5px 5px #17070359);
- transform:none;animation:none!important;
- background-repeat:no-repeat;overflow:visible;will-change:background-position;
- /* Never clip the original 800px lash frame. */
- contain:none;clip-path:none;
+ transform:none;animation:none!important;will-change:background-position;
 }
 .la-stage.training .la-doctore-parchment{
  position:absolute;left:498px;top:91px;width:360px;height:163px;z-index:7;
