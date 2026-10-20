@@ -19,18 +19,24 @@ const VERSES={
  combo:[['ICTUS TRIPLEX','THREE STRIKES LANDED']],
  boss:[['FUROR REDIVIVUS','THE CHAMPION RISES AGAIN']],
  stamina:[['VIRES DEFICIUNT','STAMINA RUNNING LOW']],
- range:[['PROCUL','BEYOND STRIKING DISTANCE']]
+ range:[['PROCUL','BEYOND STRIKING DISTANCE']],
+ paused:[['PUGNA SUSPENSA','COMBAT PAUSED']],
+ resume:[['PUGNA REDIIT','COMBAT RESUMED']],
+ notice:[['NUNTIUS ARENAE','THE ARENA ANNOUNCES']]
 };
-const tone={cleanup:'iron',defeat:'iron',guard:'iron',stamina:'iron',newcomer:'ember',rush:'ember',bleed:'ember',boss:'ember',victory:'gold'};
+const tone={cleanup:'iron',defeat:'iron',guard:'iron',guarded:'iron',stamina:'iron',paused:'iron',newcomer:'ember',rush:'ember',bleed:'ember',boss:'ember',victory:'gold'};
+const ACTIVE_PHASES=new Set(['fight','cleanup','finisher']);
 let holder=null,lastKey='',seq=0,previousKind='',version=0;
 function classify(message){
  const m=String(message).toUpperCase();
  if(/CARNIFEX|CORPUS|TEMPUS FINITUM/.test(m))return 'cleanup';
+ if(/PAUSED/.test(m))return 'paused';
+ if(/RESUME/.test(m))return 'resume';
  if(/VICTORIA|승리!/.test(m))return 'victory';
  if(/DEFEAT|패배/.test(m))return 'defeat';
  if(/다음 상대/.test(m))return 'newcomer';
  if(/다음 아군/.test(m))return 'ally';
- if(/1차전|PUGNA|차전/.test(m))return 'opening';
+ if(/1차전|PUGNA|차전|ARENA/.test(m))return 'opening';
  if(/PARRY/.test(m))return 'parry';
  if(/GUARD BREAK/.test(m))return 'guard';
  if(/GUARDED/.test(m))return 'guarded';
@@ -41,9 +47,9 @@ function classify(message){
  if(/SICA/.test(m))return 'bleed';
  if(/3 HIT/.test(m))return 'combo';
  if(/4 HIT|RUSH/.test(m))return 'rush';
- if(/SECOND WIND/.test(m))return 'boss';
+ if(/SECOND WIND|CHAMPION|BOSS/.test(m))return 'boss';
  if(/STAMINA LOW/.test(m))return 'stamina';
- return 'opening';
+ return 'notice';
 }
 function ensure(){
  if(holder&&holder.isConnected)return holder;
@@ -54,6 +60,9 @@ function ensure(){
  holder.id='arenaHerald';
  holder.className='arena-herald';
  holder.hidden=true;
+ holder.setAttribute('role','status');
+ holder.setAttribute('aria-live','polite');
+ holder.setAttribute('aria-atomic','true');
  holder.setAttribute('aria-hidden','true');
  holder.innerHTML='<div class="arena-herald-crown" aria-hidden="true">✦ ❧ ✦</div>'+
  '<div class="arena-herald-rule" aria-hidden="true"></div>'+
@@ -64,35 +73,78 @@ function ensure(){
  return holder;
 }
 function reset(){
- version++; lastKey=''; previousKind='';
- if(holder)holder.hidden=true;
- if(typeof document!=='undefined')document.querySelector('.arena-wrap')?.classList.remove('arena-herald-mode');
+ if(lastKey||holder&&!holder.hidden)version++;
+ lastKey='';previousKind='';
+ if(holder){holder.hidden=true;holder.setAttribute('aria-hidden','true');}
+ if(typeof document!=='undefined'){
+  document.querySelector('.arena-wrap')?.classList.remove('arena-herald-mode');
+  document.getElementById('combatNotice')?.removeAttribute('aria-hidden');
+ }
 }
+function visible(){return !!(holder&&holder.isConnected&&!holder.hidden)}
 function sync(message,context={}){
- const active=!!context.lineup;
+ // One presentation system in both single-duel and ordered-lineup modes.
+ const active=ACTIVE_PHASES.has(context.phase);
  const stage=typeof document!=='undefined'?document.querySelector('.arena-wrap'):null;
- stage?.classList.toggle('arena-herald-mode',active);
  if(!active){reset();return false;}
+ const node=ensure();
+ if(!node)return false; // The original notice remains available as fallback.
+ stage?.classList.add('arena-herald-mode');
+ document.getElementById('combatNotice')?.setAttribute('aria-hidden','true');
  const text=String(message||'').trim();
- if(!text){if(lastKey){lastKey='';if(holder)holder.hidden=true;}return false;}
+ if(!text){
+  lastKey='';
+  node.hidden=true;node.setAttribute('aria-hidden','true');
+  return false;
+ }
  const key=[text,context.round||0,context.phase||''].join('|');
  if(key===lastKey)return true;
- const node=ensure();if(!node)return false;
- const kind=classify(text),variants=VERSES[kind]||VERSES.opening;
+ const kind=classify(text),variants=VERSES[kind]||VERSES.notice;
  seq=(kind===previousKind?seq+1:0);
- const [latin,subtitle]=variants[seq%variants.length];
+ let [latin,subtitle]=variants[seq%variants.length];
+ if(kind==='notice')subtitle=text.toUpperCase().slice(0,90);
  previousKind=kind;lastKey=key;
  node.dataset.kind=kind;node.dataset.tone=tone[kind]||'gold';
+ node.dataset.length=latin.length>24?'xl':latin.length>17?'long':'normal';
  node.querySelector('.arena-herald-title').textContent=latin;
  node.querySelector('.arena-herald-subtitle').textContent=subtitle;
- node.hidden=false;
- // Replace the animation node only when an announcement really changes,
- // never on every frame. This prevents the old flickering defect.
+ node.hidden=false;node.setAttribute('aria-hidden','false');
+ // Restart only for a NEW proclamation, never on each animation frame.
  node.classList.remove('arena-herald-reveal');
  void node.offsetWidth;
  node.classList.add('arena-herald-reveal');
  return true;
 }
-root.ArenaHerald={version:'2.0.0',classify,sync,reset};
+// Fighter-adjacent counterwords and screen-centre rush share the exact
+// Roman font/engraving language, while remaining at their original positions.
+function drawCanvasCallout(ctx,label,x,y,options={}){
+ if(!ctx||!label)return false;
+ const size=options.size||26;
+ const t=options.tone||'gold';
+ const colors=t==='iron'?['#e3cfbf','#a49083']:t==='ember'?['#ffc59a','#dc9363']:['#f9e1b1','#d3a568'];
+ const subtitle=options.subtitle||'';
+ const maxWidth=options.maxWidth||300;
+ const scale=label.length>20?.72:label.length>14?.84:1;
+ ctx.save();
+ ctx.globalAlpha=Math.max(0,Math.min(1,options.alpha??1));
+ ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
+ ctx.shadowColor='#100704';ctx.shadowBlur=10;
+ ctx.font='700 '+Math.max(9,Math.round(size*.37))+'px Georgia,serif';
+ ctx.fillStyle=colors[1];
+ ctx.fillText('✦',x,y-size*.95,maxWidth);
+ ctx.font='900 '+Math.round(size*scale)+'px "Palatino Linotype","Book Antiqua",Georgia,serif';
+ ctx.lineWidth=Math.max(2,Math.round(size*.12));
+ ctx.strokeStyle='#30180f';ctx.fillStyle=colors[0];
+ ctx.strokeText(label,x,y,maxWidth);
+ ctx.fillText(label,x,y,maxWidth);
+ if(subtitle){
+  ctx.font='800 '+Math.max(9,Math.round(size*.40))+'px "Palatino Linotype",Georgia,serif';
+  ctx.fillStyle='#fce0b9';ctx.fillText(subtitle,x,y+size*.67,maxWidth);
+ }
+ ctx.restore();
+ return true;
+}
+
+root.ArenaHerald={version:'3.0.0',classify,sync,reset,visible,drawCanvasCallout};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaHerald;
 })(globalThis);

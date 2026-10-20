@@ -1,48 +1,73 @@
-/* Floating Roman epigraphs: NO boxes, panels or ornamental backgrounds. */
+/* SPARTACUS · one Roman inscription system for every combat announcement.
+ * Stable silhouette in arcade, gauntlet, parry and cinematic rush.
+ * No panels or UI boxes: text and bronze/ivory epigraph ornament alone.
+ */
 .arena-wrap.arena-herald-mode #combatNotice{opacity:0!important}
 .arena-herald[hidden]{display:none!important}
 .arena-herald{
- position:absolute;z-index:14;top:18.1%;left:15%;width:70%;
- display:flex;flex-direction:column;align-items:center;justify-content:center;
- pointer-events:none;text-align:center;white-space:nowrap;
  --signa:#f9e1b1;--tracery:#d3a568;
+ position:absolute;z-index:14;top:17%;left:7%;width:86%;
+ min-height:clamp(90px,11vw,142px);
+ display:flex;flex-direction:column;align-items:center;
+ justify-content:flex-start;gap:0;pointer-events:none;
+ text-align:center;white-space:normal;
  filter:drop-shadow(0 5px 5px #100704dc);
 }
 .arena-herald[data-tone="ember"]{--signa:#ffc59a;--tracery:#dc9363}
 .arena-herald[data-tone="iron"]{--signa:#e3cfbf;--tracery:#a49083}
 .arena-herald-crown{
- font:700 clamp(9px,1.2vw,16px)/1 Georgia,serif;letter-spacing:.7em;
- color:var(--tracery);text-shadow:0 2px 5px #000,0 0 9px #c7944755;
- margin-bottom:2px;
-}
-.arena-herald-title{
- font:900 clamp(19px,3.3vw,47px)/1.03 'Palatino Linotype','Book Antiqua',Georgia,serif;
- font-variant:small-caps;letter-spacing:.15em;color:var(--signa);
- -webkit-text-stroke:.25px #5c3319;
- text-shadow:0 2px 0 #60351e,0 3px 1px #30160f,0 5px 9px #020101,0 0 18px #ffe2a957;
-}
-.arena-herald-subtitle{
- font:800 clamp(7px,.94vw,13px)/1.2 'Palatino Linotype',Georgia,serif;
- letter-spacing:.25em;color:#fce0b9;text-shadow:0 2px 4px #050202,0 0 8px #26110a;
- margin-top:5px;
+ display:block;flex:none;
+ font:700 clamp(9px,1.08vw,14px)/1.1 Georgia,serif;
+ letter-spacing:.58em;color:var(--tracery);
+ text-shadow:0 2px 5px #000,0 0 9px #c7944755;
+ margin:0 0 3px;padding-left:.58em;
 }
 .arena-herald-rule{
- width:clamp(70px,18vw,220px);height:2px;margin:5px 0 8px;
+ flex:none;width:clamp(100px,24vw,270px);height:1px;
+ margin:0 0 5px;
  background:linear-gradient(90deg,transparent,var(--tracery),#fff4d0,var(--tracery),transparent);
  box-shadow:0 2px 5px #0009;
 }
-.arena-herald-rule--foot{width:clamp(110px,23vw,270px);height:1px;margin:9px 0 0;opacity:.78}
+.arena-herald-title{
+ display:block;flex:none;width:100%;max-width:100%;
+ font:900 clamp(19px,3vw,40px)/1.08 'Palatino Linotype','Book Antiqua',Georgia,serif;
+ font-variant:small-caps;letter-spacing:.10em;white-space:nowrap;
+ color:var(--signa);-webkit-text-stroke:.25px #5c3319;
+ text-shadow:0 2px 0 #60351e,0 3px 1px #30160f,0 5px 9px #020101,0 0 18px #ffe2a957;
+}
+.arena-herald[data-length="long"] .arena-herald-title{
+ font-size:clamp(16px,2.42vw,33px);letter-spacing:.07em;
+}
+.arena-herald[data-length="xl"] .arena-herald-title{
+ font-size:clamp(13px,1.95vw,27px);letter-spacing:.035em;
+}
+.arena-herald-subtitle{
+ display:block;flex:none;max-width:98%;
+ font:800 clamp(8px,.98vw,13px)/1.24 'Palatino Linotype','Book Antiqua',Georgia,serif;
+ letter-spacing:.17em;color:#fce0b9;
+ text-shadow:0 2px 4px #050202,0 0 8px #26110a;
+ margin:6px 0 0;overflow-wrap:anywhere;
+}
+.arena-herald-rule--foot{
+ width:clamp(100px,24vw,270px);height:1px;margin:8px 0 0;opacity:.78;
+}
 .arena-herald-reveal{animation:arenaHeraldIn .28s cubic-bezier(.14,.67,.23,1) both}
 @keyframes arenaHeraldIn{
- from{opacity:0;transform:translateY(9px) scale(.965);filter:brightness(1.55)}
+ from{opacity:0;transform:translateY(9px) scale(.965);filter:brightness(1.45)}
  to{opacity:1;transform:translateY(0) scale(1);filter:brightness(1)}
 }
 @media(max-width:720px){
- .arena-herald{top:16%;left:6%;width:88%}
- .arena-herald-title{font-size:clamp(14px,4.0vw,26px);letter-spacing:.075em}
- .arena-herald-subtitle{font-size:clamp(6px,1.85vw,10px);letter-spacing:.085em}
- .arena-herald-crown{font-size:8px;margin:0}
- .arena-herald-rule{margin:3px 0 5px}
- .arena-herald-rule--foot{margin:6px 0 0}
+ .arena-herald{top:17%;left:3%;width:94%;min-height:90px}
+ .arena-herald-crown{font-size:8px;margin-bottom:2px}
+ .arena-herald-rule{width:34%;margin-bottom:4px}
+ .arena-herald-title{font-size:clamp(15px,4vw,25px);letter-spacing:.055em}
+ .arena-herald[data-length="long"] .arena-herald-title{
+  font-size:clamp(13px,3.35vw,22px);letter-spacing:.025em;
+ }
+ .arena-herald[data-length="xl"] .arena-herald-title{
+  font-size:clamp(11px,2.8vw,19px);letter-spacing:0;
+ }
+ .arena-herald-subtitle{font-size:clamp(7px,1.9vw,10px);letter-spacing:.045em;margin-top:4px}
+ .arena-herald-rule--foot{margin-top:5px}
 }
 @media(prefers-reduced-motion:reduce){.arena-herald-reveal{animation:none}}

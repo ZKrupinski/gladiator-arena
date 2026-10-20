@@ -1,0 +1,18 @@
+name: Roman combat callout consistency
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/arena-herald.css
+      - public/arena-herald.js
+      - public/index.html
+      - tests/arena-herald.cjs
+      - .github/workflows/qa-arena-herald.yml
+  workflow_dispatch:
+jobs:
+  callout-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Roman inscription and event regression checks
+        run: node tests/arena-herald.cjs
