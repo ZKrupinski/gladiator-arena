@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "scope": "arena-battle-only",
+  "sheet": {
+    "width": 1586,
+    "height": 992,
+    "columns": 8,
+    "rows": 5,
+    "frames": 40,
+    "format": "RGBA PNG",
+    "insetPixels": 3
+  },
+  "actions": [
+    {
+      "name": "idle",
+      "row": 0,
+      "frames": 8
+    },
+    {
+      "name": "walk",
+      "row": 1,
+      "frames": 8
+    },
+    {
+      "name": "attack",
+      "row": 2,
+      "frames": 8
+    },
+    {
+      "name": "hit",
+      "row": 3,
+      "frames": 8
+    },
+    {
+      "name": "defeat",
+      "row": 4,
+      "frames": 8
+    }
+  ],
+  "entry": "Every fourth round starting at round 4, with an additional 7.5% rare encounter chance after round 6. Boss opponents are never replaced.",
+  "species": [
+    {
+      "name": "wolf",
+      "ko": "늑대",
+      "latin": "LVPVS",
+      "path": "assets/beasts/wolf-40.png",
+      "sha256": "9421be6db4fadb1d9a4233065674ad5eaed0a20de04a2d0a310cc969c7236af4",
+      "firstRound": 4,
+      "profile": "fast bite and chase"
+    },
+    {
+      "name": "leopard",
+      "ko": "표범",
+      "latin": "PANTHERA",
+      "path": "assets/beasts/leopard-40.png",
+      "sha256": "2417c3ecf2fbf1fefa653d6eefcd36df316104550d2362f2084752b9c92364c4",
+      "firstRound": 8,
+      "profile": "agile pounce"
+    },
+    {
+      "name": "tiger",
+      "ko": "호랑이",
+      "latin": "TIGRIS",
+      "path": "assets/beasts/tiger-40.png",
+      "sha256": "2e47f41be5b8cfa7773b540c4fb712c8785a1e37e07ecd506fea2e40d3ed2c9b",
+      "firstRound": 12,
+      "profile": "heavy claw strike"
+    },
+    {
+      "name": "lion",
+      "ko": "사자",
+      "latin": "LEO",
+      "path": "assets/beasts/lion-40.png",
+      "sha256": "2c564a365faab3aa4bb2c202f5c1287c546a527c779aec1ae20117380d6c7299",
+      "firstRound": 16,
+      "profile": "pressuring roar"
+    },
+    {
+      "name": "elephant",
+      "ko": "코끼리",
+      "latin": "ELEPHAS",
+      "path": "assets/beasts/elephant-40.png",
+      "sha256": "9fbba58ecc5dc8870c94c5c8e1223d1680cd22274bb6a4cad31c56d86c5b200a",
+      "firstRound": 20,
+      "profile": "armored charge"
+    }
+  ]
+}
