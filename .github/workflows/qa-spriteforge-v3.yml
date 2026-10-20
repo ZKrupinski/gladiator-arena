@@ -4,7 +4,10 @@ on:
     branches: [main]
     paths:
       - scripts/spriteforge_pipeline_v3.py
+      - AGENTS.md
       - scripts/spriteforge_preflight_v3.py
+      - scripts/spriteforge_assistant_brief_v3.py
+      - scripts/test_spriteforge_assistant_brief_v3.py
       - scripts/mock_spriteforge_adapter_v3.py
       - scripts/spriteforge_auto_repair_v3.py
       - scripts/spriteforge_neighbor_ownership_v3.py
