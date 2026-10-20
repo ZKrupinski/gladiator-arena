@@ -26,7 +26,7 @@
 <h2 style="margin-top:20px">원본 영역 확인</h2><div class="checker"><img id="source" alt="입력 이미지 원본"/></div>
 </section></div>
 <section class="panel"><h2>03 · 캐릭터 동작 관리</h2><div id="actions" class="actions"></div>
-<p class="note">동작 10종 × 8프레임 모두 합격하기 전에는 ‘게임 완성’으로 표시하지 않습니다. 각 동작별 경고 원인을 확인하세요.</p>
+<p class="note">동작 10종 × 8프레임 모두 합격하고 수동 승인하기 전에는 ‘게임 완성’으로 표시하지 않습니다. 각 동작별 경고 원인을 확인하세요.</p>
 <div class="compact"><button id="export" disabled>현재 동작 검수 ZIP 저장</button><button class="secondary" id="report" disabled>검수 리포트 저장</button><button class="danger" id="clear">현재 작업 지우기</button></div><pre class="result" id="log">검수 기록이 여기에 표시됩니다.</pre>
 </section>
 <div class="footer">로컬 브라우저 처리 · 파일은 자동으로 서버에 전송되지 않습니다 · 저장소 자동 배포 기능 없음 · AI 그림 생성 기능 아님(스프라이트 정렬·검수 전용)</div>
@@ -52,6 +52,30 @@ function checkTile(c,edge){
  const margins=count?[x0,w-1-x1,y0,h-1-y1]:[0,0,0,0];
  if(count&&Math.min(...margins)<edge)issues.push('CELL_BORDER_TOUCH_CUT_RISK');
  if(count&&marginCount>count*.015)issues.push('MANY_BORDER_PIXELS');
+
+ // Low-resolution connected-region scan. A second large disconnected actor
+ // indicates duplicated silhouettes, while tiny jewelry/islands are tolerated.
+ if(count){
+  const gw=64,gh=64,occupied=new Uint8Array(gw*gh),visit=new Uint8Array(gw*gh);
+  for(let j=0;j<gh;j++)for(let i=0;i<gw;i++){
+   const sx=Math.min(w-1,Math.floor((i+.5)*w/gw));
+   const sy=Math.min(h-1,Math.floor((j+.5)*h/gh));
+   occupied[j*gw+i]=buf[(sy*w+sx)*4+3]>55?1:0;
+  }
+  const areas=[];for(let k=0;k<occupied.length;k++){
+   if(!occupied[k]||visit[k])continue;
+   const stack=[k];visit[k]=1;let area=0;
+   while(stack.length){const s=stack.pop(),sx=s%gw,sy=Math.floor(s/gw);area++;
+    for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]]){
+     const nx=sx+dx,ny=sy+dy,p=ny*gw+nx;
+     if(nx>=0&&nx<gw&&ny>=0&&ny<gh&&occupied[p]&&!visit[p]){visit[p]=1;stack.push(p)}
+    }
+   }
+   areas.push(area);
+  }
+  areas.sort((a,b)=>b-a);
+  if(areas.length>1&&areas[1]>Math.max(72,areas[0]*.24))issues.push('TWO_LARGE_SILHOUETTES_REVIEW');
+ }
  return {issues,margins,alphaPixels:count,bounds:count?[x0,y0,x1+1,y1+1]:null};
 }
 function frameToOutput(tile,outw,outh,pivotx,pivoty){
@@ -65,7 +89,7 @@ function renderButtons(){
  const div=$('actions');div.replaceChildren();
  for(const a of actions){const v=state.packs[a],e=document.createElement('div');e.className='action';
  const title=document.createElement('strong');title.textContent=a;e.append(title);
- const info=document.createElement('small');info.textContent=!v?'미작업':v.blocked?'검수 차단 · '+v.blocked+'개':'8프레임 분석 통과';e.append(info);div.append(e)}
+ const info=document.createElement('small');info.textContent=!v?'미작업':v.blocked?'검수 차단 · '+v.blocked+'개':v.reviewed?'8프레임 승인됨':'경계 검사 통과 · 육안 검수 필요';e.append(info);if(v&&!v.blocked){const label=document.createElement('label');label.style.display='block';const box=document.createElement('input');box.type='checkbox';box.checked=!!v.reviewed;box.onchange=()=>{v.reviewed=box.checked;renderButtons();log(a+': '+(v.reviewed?'사용자 육안 승인':'육안 승인 취소'))};label.append(box,document.createTextNode(' 프레임 육안 승인'));e.append(label)}div.append(e)}
 }
 function paint(n){
  const st=state.current;if(!st)return;
@@ -106,7 +130,7 @@ async function perform(){
   }
   const qc=tiles.map(t=>checkTile(t,edge));
   const frames=tiles.map(t=>frameToOutput(t,outputW,outputH,num('pivotx',50),num('pivoty',94)));
-  const blocked=qc.filter(q=>q.issues.length).length,pack={action,frames,qc,blocked,outw:outputW,outh:outputH,fps:num('fps',10),character:safe($('character').value)};
+  const blocked=qc.filter(q=>q.issues.length).length,pack={action,frames,qc,blocked,reviewed:false,outw:outputW,outh:outputH,fps:num('fps',10),character:safe($('character').value)};
   state.packs[action]=pack;state.current=pack;paint(0);frameThumbs(pack);renderButtons();
   $('previewBtn').disabled=false;$('export').disabled=false;$('report').disabled=false;
   $('status').textContent='총 8프레임 · 통과 '+(8-blocked)+' / 경고 '+blocked+'. '+(blocked?'게임 적용용 승인 불가 — 잘림/경계 침범 원본을 수정하세요.':'동작 분리 검사 통과. 실제 자세 변화는 눈으로 확인해 주세요.');
@@ -134,7 +158,7 @@ function putZip(files){
  return new Blob(chunks,{type:'application/zip'})
 }
 function download(data,name,type){const u=URL.createObjectURL(data instanceof Blob?data:new Blob([data],{type}));const a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),15000)}
-function report(){return {tool:'GLADIATOR Sprite Forge 1.0',character:safe($('character').value),output:'960x720 default foot-anchored PNG',generation:'none / source cleanup only',actions:Object.fromEntries(Object.entries(state.packs).map(([a,v])=>[a,{fps:v.fps,blockedFrames:v.blocked,qc:v.qc}])),missing:actions.filter(a=>!state.packs[a]),approvedActions:actions.filter(a=>state.packs[a]&&!state.packs[a].blocked),gameReady:actions.every(a=>state.packs[a]&&!state.packs[a].blocked)}}
+function report(){return {tool:'GLADIATOR Sprite Forge 1.0',character:safe($('character').value),output:'960x720 default foot-anchored PNG',generation:'none / source cleanup only',actions:Object.fromEntries(Object.entries(state.packs).map(([a,v])=>[a,{fps:v.fps,blockedFrames:v.blocked,manualApproved:!!v.reviewed,qc:v.qc}])),missing:actions.filter(a=>!state.packs[a]),approvedActions:actions.filter(a=>state.packs[a]&&!state.packs[a].blocked&&state.packs[a].reviewed),gameReady:actions.every(a=>state.packs[a]&&!state.packs[a].blocked&&state.packs[a].reviewed)}}
 async function exportPack(){
  if(!state.current)return;
  const reportObj=report(),items=[{name:'qa-report.json',data:new TextEncoder().encode(JSON.stringify(reportObj,null,2))}];
