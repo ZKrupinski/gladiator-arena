@@ -1,0 +1,40 @@
+name: Import approved user whip artwork
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/import-user-doctore-whip.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import-original-png:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Fetch exact user-edited original PNG
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/assets/ludus
+          curl --fail --location --retry 4 --connect-timeout 20 --max-time 150 \
+            'https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/66b8f68a-f680-437b-877a-63e128e9e67f.png' \
+            -o public/assets/ludus/doctore-whip-user-v1.png
+          echo '4866225fe2d9184c627ed68c84cdcfe305ee3f3452c0bf23844bd11f9dcddf52  public/assets/ludus/doctore-whip-user-v1.png' | sha256sum -c -
+          file public/assets/ludus/doctore-whip-user-v1.png
+      - name: Check in lossless original bytes for Cloudflare deployment
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/assets/ludus/doctore-whip-user-v1.png
+          if git diff --cached --quiet; then
+            echo 'User original already tracked'
+          else
+            git commit -m 'assets(doctore): archive exact user-edited whip PNG [no image regeneration]'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
