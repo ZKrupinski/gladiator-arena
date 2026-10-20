@@ -61,7 +61,9 @@ try{
    CanvasRenderingContext2D.prototype.drawImage=function(image,...args){
     if(image?.src?.includes('/directional-v4/')){
      const matrix=this.getTransform();calls.push({source:image.src.split('/').pop().split('?')[0],
-      args:args.length,sign:Math.sign(matrix.a*matrix.d-matrix.b*matrix.c)});
+      args:args.length,width:args.length===4?args[2]:null,
+      height:args.length===4?args[3]:null,
+      sign:Math.sign(matrix.a*matrix.d-matrix.b*matrix.c)});
     }
     return originalDraw.call(this,image,...args);
    };
@@ -73,7 +75,9 @@ try{
     if(action==='finisher')s.resultAnim=.7;
     render();
    }finally{CanvasRenderingContext2D.prototype.drawImage=originalDraw;ArenaAudio.play=originalPlay;}
-   return {direction,action,calls,sounds,phase:s.phase,sequences:s.sparks.map(x=>x.sequence),
+   return {direction,action,calls,sounds,phase:s.phase,
+    sparks:s.sparks.map(x=>({sequence:x.sequence,width:x.w,height:x.h,art:x.art})),
+    sequences:s.sparks.map(x=>x.sequence),
     focus:s.cinematic?.kind,kick:s.cameraKick?.kind,shake:s.shake,playerHp:f.hp,enemyHp:v.hp};
   },{direction,action});
   assert.ok(event.calls.length>0,JSON.stringify(event));
@@ -81,7 +85,19 @@ try{
   const wanted=action==='ordinary'?['slash','sweep','thrust']:action==='special'?['special','hit']:action==='finisher'?['finisher','victory']:[action];
   assert.ok(wanted.some(k=>event.calls.some(c=>c.source.startsWith(k+'-'))),JSON.stringify(event));
   assert.ok(event.calls.some(c=>c.sign===(action==='guard'||action==='parry'?-direction:direction)),JSON.stringify(event));
-  if(action==='ordinary')assert.ok(!event.sequences.includes('hit'),'ordinary trail has no extra debris burst');
+  if(action==='ordinary'){
+   assert.ok(!event.sequences.includes('hit'),'ordinary trail has no extra debris burst');
+   const spark=event.sparks.find(x=>['slash','sweep','thrust'].includes(x.sequence));
+   assert.ok(spark,'ordinary strike emits a directional PNG trail');
+   const drawn=event.calls.find(x=>x.source.startsWith(spark.sequence+'-'));
+   assert.ok(drawn,'ordinary PNG frame is drawn to canvas');
+   const multiplier=spark.sequence==='thrust'?1.8:1.9;
+   const originalScale=(.9+.13*.4)*1.31*.65*1.20;
+   assert.ok(Math.abs(drawn.width-spark.width*originalScale*multiplier)<.1,
+    'ordinary strike width must use the approved 1.8–1.9x scale');
+   assert.ok(Math.abs(drawn.height-spark.height*originalScale*multiplier)<.1,
+    'ordinary strike height must use the approved 1.8–1.9x scale');
+  }
   if(action==='parry'||action==='dash')assert.equal(event.focus,action);
   if(action!=='finisher')assert.ok(event.kick&&event.shake>0,JSON.stringify(event));
   assert.ok(event.sounds.includes(({ordinary:'hit',guard:'block',parry:'parry',special:'heavy_hit',dash:'dash_hit',finisher:'finisher'})[action]),JSON.stringify(event));
