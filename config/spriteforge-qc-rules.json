@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "source": "Spartacus GLADIATOR ARENA art-direction feedback 2026-10-20",
+  "version": 2,
+  "source": "Spartacus GLADIATOR ARENA art-direction feedback 2026-10-20 and 2026-10-21",
   "scope": "all playable gladiators and beasts",
   "requiredAnimationStandard": {
     "name": "New Champion Murmillo",
@@ -62,9 +62,25 @@
       "id": "connected_rgba_mask",
       "stage": "extraction",
       "severity": "block",
-      "description": "Extract connected alpha regions, not rectangle crop with foreign neighboring pixels",
-      "automatic": "implemented",
-      "action": "Select center actor, preserve connected limbs and local accessories"
+      "description": "Preserve only the current frame's own actor, including valid detached parts. Any head, foot, tail, torso or other body from an adjacent frame is FOREIGN and must be removed, regardless of pixel size or anatomical completeness.",
+      "automatic": "source_neighbor_ownership_proof_plus_fail_closed_semantic_review",
+      "action": "Detect frame provenance by comparing source sheet/neighbor exports. Remove verified neighboring-owned regions even when large. Never auto erase current-owned limbs. Unprovable overlaps block release."
+    },
+    {
+      "id": "frame_ownership_over_pixel_size",
+      "stage": "segmentation",
+      "severity": "block",
+      "description": "Foreign ownership ALWAYS overrides small-speck/large-body thresholds. A large neighbor body fragment must be deleted; a small current-owned limb must stay.",
+      "automatic": "neighbor_export_pixel_correspondence_and_source_grid_provenance",
+      "action": "Compare current-frame regions against both adjacent poses in source coordinates; erase pixel-proven foreign fragments, record mask and proof, require visual QA for glued or ambiguous body pieces."
+    },
+    {
+      "id": "ambiguous_frame_ownership_release_block",
+      "stage": "extraction",
+      "severity": "block",
+      "description": "If a body region touches another pose and its ownership cannot be proved, never release it as clean and never silently amputate it.",
+      "automatic": "edge_component_review_and_full_sheet_seam_gate",
+      "action": "Mark NEEDS_MANUAL_REVIEW or REGENERATE_THIS_MOTION; keep original and block publish until owner is confirmed."
     },
     {
       "id": "wide_safety_gutters",
