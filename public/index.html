@@ -287,7 +287,7 @@ body{min-height:100dvh;overscroll-behavior:none}
  text-align:center;pointer-events:none;white-space:normal}
 .lineup-hud[hidden]{display:none!important}
 @media(max-width:720px){.lineup-hud:not([hidden]){top:10%;font-size:10px;max-width:98%;padding:3px 6px}}
-</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=5"><link rel="stylesheet" href="ludus-armory-live.css?v=3"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=5"></head><body>
+</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=5"><link rel="stylesheet" href="ludus-armory-live.css?v=3"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=5"><link rel="stylesheet" href="beast-hunt.css?v=1"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
@@ -342,7 +342,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <div class="footrow"><span>모바일: 왼쪽 [좌이동·우이동·회피] / 오른쪽 [필살기·방어·공격] · PC: A/D 이동 · J 공격 · K 방어 · L 회피 · I 필살기 · P 일시정지 · 미조작 2초 후 자동 전투</span><div><button id="pauseBtn">Ⅱ</button> <button id="autoToggle">AUTO ON</button> <button id="fxToggle">이펙트 ON</button> <button id="soundToggle">사운드 ON</button></div></div>
 <p class="notes"><b>프로토타입 리소스 상태:</b> 3개 클래스별 10프레임 키포즈 아틀라스를 전투와 결과 화면에 연결했습니다. 공격/방어/회피/피격은 이미지 포즈 전환이며 이동의 보간·흔들림·타격 이펙트는 런타임 연출입니다. 루두스 성장 외형은 4열×3행의 12프레임 이미지 20장을 사용하며, 검투사시장은 별도 전용 화면에서 로마식 이름과 능력치를 확인해 고용할 수 있습니다. 동작 중간 프레임이나 실시간 장비 탈착은 아직 지원하지 않습니다.</p>
 </div>
-<div id="careerHub" hidden><div class="career-shell"><div class="career-head"><div><h1>LUDUS MAGNUS</h1><p>검투사시장에서 시작하는 검투사의 전설</p></div><div class="ludus-nav" role="navigation" aria-label="루두스 메뉴"><button id="careerRosterTab" aria-pressed="true">소속 검투사</button><button id="careerTrainTab" aria-pressed="false">⚔ 훈련소</button><button id="careerGearTab" aria-pressed="false">🛡 장비실</button><button id="careerFightTop">⚔ 시합 출전</button><button id="marketEnter" aria-label="로마 검투사시장 별도 화면 열기">🏛 검투사시장</button><button id="careerExit">아케이드로</button></div></div><div id="growthImport" class="growth-import"><strong>성장 시트 20장</strong><span id="growthState" role="status">성장 이미지 자동 로딩 중…</span><button id="growthRetry" hidden>다시 불러오기</button><small>검투사 종류와 성장 단계에 맞는 외형이 자동 적용됩니다.</small></div><div id="careerBody" class="career-grid"></div></div></div>
+<div id="careerHub" hidden><div class="career-shell"><div class="career-head"><div><h1>LUDUS MAGNUS</h1><p>검투사시장에서 시작하는 검투사의 전설</p></div><div class="ludus-nav" role="navigation" aria-label="루두스 메뉴"><button id="careerRosterTab" aria-pressed="true">소속 검투사</button><button id="careerTrainTab" aria-pressed="false">⚔ 훈련소</button><button id="careerGearTab" aria-pressed="false">🛡 장비실</button><button id="careerFightTop">⚔ 시합 출전</button><button id="careerBeastTab" aria-pressed="false">🐾 3vs동물전</button><button id="marketEnter" aria-label="로마 검투사시장 별도 화면 열기">🏛 검투사시장</button><button id="careerExit">아케이드로</button></div></div><div id="growthImport" class="growth-import"><strong>성장 시트 20장</strong><span id="growthState" role="status">성장 이미지 자동 로딩 중…</span><button id="growthRetry" hidden>다시 불러오기</button><small>검투사 종류와 성장 단계에 맞는 외형이 자동 적용됩니다.</small></div><div id="careerBody" class="career-grid"></div></div></div>
 <div id="careerMini" hidden role="dialog" aria-modal="true" aria-label="훈련"><div class="career-mini-panel"><h2 id="careerMiniTitle"></h2><p id="careerMiniHelp"></p><div class="career-timing"><div class="career-hitzone"></div><div id="careerNeedle"></div></div><div id="careerTrainingResult" class="career-training-result" hidden aria-live="assertive"></div><div class="career-buttons" style="justify-content:center"><button id="careerHit">지금! (SPACE)</button><button id="careerCancel">취소</button></div></div></div>
 <script src="market-scene.js?v=12"></script>
 <script src="growth-frames.js?v=2"></script>
@@ -840,6 +840,7 @@ $('#careerRosterTab').addEventListener('click',()=>{CAREER_TAB='roster';CAREER_S
 $('#careerTrainTab').addEventListener('click',()=>{CAREER_TAB='training';CAREER_SELECTING=false;renderCareer();});
 $('#careerGearTab').addEventListener('click',()=>{CAREER_TAB='gear';CAREER_SELECTING=false;renderCareer();});
 $('#careerFightTop').addEventListener('click',openCareerDraft);
+$('#careerBeastTab').addEventListener('click',()=>{CAREER_SELECTING=false;CAREER_TAB='beasts';renderCareer();});
 function enterCareer(){
  if(S.phase==='fight'||S.phase==='finisher')return;
  window.ArenaAudio?.leave?.();
@@ -856,6 +857,7 @@ function finishCareerMatch(){
  // shared applied flag previously made EVERY 1v2, 1v3, 2v2 and 3v3 award
  // disappear, even though the end screen announced a victory.
  if(S.gauntlet)return finishLineupCareerMatch();
+ if(S.beastHunt)return finishBeastMatch();
  if(S.careerRewardApplied)return;
  const h=CAREER.roster[S.careerParticipant];if(!h)return;
  S.careerRewardApplied=true;
@@ -951,6 +953,8 @@ function renderCareerDraft(){
  };
 }
 function renderCareer(){
+ if(CAREER_TAB==='beasts'){renderBeastHunt();return;}
+ $('#careerBeastTab').setAttribute('aria-pressed','false');
  if(CAREER_SELECTING){renderCareerDraft();return;}
  if(CAREER_TAB==='roster'&&window.LudusCardScenes){
   $('#careerRosterTab').setAttribute('aria-pressed','true');
@@ -1093,6 +1097,68 @@ function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 // Arena-only animal challenges. They are combatants, not purchasable or
 // recruitable Gladiators; boss encounters keep their original champion art.
+/* VENATIO · 독립 동물전. 기존 루두스 시합/순차 대진 데이터는 수정하지 않는다. */
+const BEAST_STAGES=Object.freeze([{"id":"wolf","label":"늑대전","rounds":3,"reward":300,"level":3,"difficulty":1,"caption":"민첩한 늑대의 추격 · 3연전"},{"id":"leopard","label":"표범전","rounds":3,"reward":500,"level":5,"difficulty":2,"caption":"날렵한 표범의 도약 · 3연전"},{"id":"tiger","label":"호랑이전","rounds":3,"reward":800,"level":7,"difficulty":3,"caption":"강력한 호랑이의 일격 · 3연전"},{"id":"lion","label":"사자전","rounds":3,"reward":1200,"level":9,"difficulty":4,"caption":"투기장의 제왕 · 3연전"},{"id":"elephant","label":"코끼리전","rounds":1,"reward":2000,"level":12,"difficulty":5,"caption":"육중한 전투 코끼리 · 보스전"}]);
+let BEAST_RUN=null;
+function renderBeastHunt(){
+ CAREER_SELECTING=false;
+ const choices=CAREER.roster.map((h,i)=>({h,i})).filter(x=>careerEligible(x.h));
+ const info=window.ArenaBeasts?.types||{};
+ const hero=choices.some(x=>x.i===CAREER.active)?CAREER.active:(choices[0]?.i??-1);
+ const select=choices.length?'<label class="beast-fighter-label">출전 검투사 <select id="beastHeroSelect">'+choices.map(({h,i})=>'<option value="'+i+'" '+(i===hero?'selected':'')+'>'+h.name+' · Lv.'+careerLevel(h)+'</option>').join('')+'</select></label>':'<p class="career-status">출전 가능한 검투사가 없습니다. 시장에서 영입하거나 치료해 주세요.</p>';
+ $('#careerBody').innerHTML='<section class="beast-gallery career-card"><header class="beast-gallery-head"><div><small>VENATIO · ARENA BESTIARUM</small><h2>3vs동물전</h2><p>동물 종류를 고르고 검투사 한 명으로 3연전! 코끼리는 단일 보스전입니다.</p></div>'+select+'</header><div class="beast-stage-grid">'+BEAST_STAGES.map((s,i)=>{
+ const spec=info[s.id]||{};
+ return '<article class="beast-stage-card"><div class="beast-stage-thumb" role="img" aria-label="'+s.label+' 스프라이트" style="background-image:url(assets/beasts/'+s.id+'-40.png?v=1)"><span>STAGE '+String(i+1).padStart(2,'0')+'</span></div><div class="beast-stage-detail"><small>'+(spec.latin||'BESTIA')+' · '+('★'.repeat(s.difficulty))+'</small><h3>'+s.label+'</h3><p>'+s.caption+'</p><p class="beast-stage-meta">권장 Lv.'+s.level+' · '+s.rounds+'회 전투 · <b>'+s.reward+' D</b></p><button class="beast-challenge" data-beast-stage="'+s.id+'" '+(!choices.length?'disabled':'')+'>⚔ 도전하기</button></div></article>'
+ }).join('')+'</div><footer class="beast-gallery-footer">일반 아레나에는 동물이 등장하지 않습니다. 연전 최종 승리 시 보상이 한 번 지급됩니다.</footer></section>';
+ $('#careerRosterTab').setAttribute('aria-pressed','false');
+ $('#careerTrainTab').setAttribute('aria-pressed','false');
+ $('#careerGearTab').setAttribute('aria-pressed','false');
+ $('#careerBeastTab').setAttribute('aria-pressed','true');
+ for(const button of document.querySelectorAll('[data-beast-stage]'))button.onclick=()=>{
+  const chosen=Number($('#beastHeroSelect')?.value??hero);
+  beginBeastHunt(button.dataset.beastStage,chosen);
+ };
+ window.LudusApprovedScenes?.close();
+}
+function beginBeastHunt(id,rosterIndex){
+ const stage=BEAST_STAGES.find(s=>s.id===id),h=CAREER.roster[rosterIndex];
+ if(!stage||!h||!careerEligible(h)){CAREER.message='출전할 검투사의 부상 또는 피로를 확인하세요.';saveCareer();renderBeastHunt();return;}
+ CAREER.active=rosterIndex;BEAST_RUN={stage,participant:rosterIndex,roundIndex:0};
+ saveCareer();start('beast',rosterIndex);
+}
+function beastNextOrReturn(){
+ if(BEAST_RUN&&S.lastResultWin&&BEAST_RUN.roundIndex+1<BEAST_RUN.stage.rounds){
+  BEAST_RUN.roundIndex++;start('beast',BEAST_RUN.participant);return;
+ }
+ returnToBeastHunt();
+}
+function returnToBeastHunt(){
+ BEAST_RUN=null;S.beastHunt=false;
+ returnToCareer();window.LudusScene?.close();
+ CAREER_TAB='beasts';renderCareer();
+}
+function finishBeastMatch(){
+ const run=BEAST_RUN;if(!run||S.careerRewardApplied)return;
+ const h=CAREER.roster[S.careerParticipant];if(!h)return;
+ S.careerRewardApplied=true;
+ const win=!!S.resultWin,final=win&&run.roundIndex+1===run.stage.rounds;
+ const damage=Math.max(0,S.careerStartingHp-Math.max(0,S.player.hp));
+ h.injury=Math.min(120,(Number(h.injury)||0)+Math.max(2,Math.round(damage*.40))+(win?0:8));
+ h.fatigue=Math.min(100,(Number(h.fatigue)||0)+Math.max(2,Math.round(ArenaLineup.fatigueGain(S.careerStartingHp,Math.max(0,S.player.hp),1)*.55)));
+ if(final||!win){
+  CAREER.fights++;h.fights=(h.fights||0)+1;
+  if(final){CAREER.wins++;h.wins=(h.wins||0)+1;CAREER.glory+=run.stage.difficulty*3;}
+  const prize=final?run.stage.reward:0;
+  const before=CAREER.gold;
+  CAREER.gold+=prize;
+  CAREER.lastPrize={mode:'beast_hunt',stage:run.stage.id,win:final,round:run.roundIndex+1,gold:prize,before,after:CAREER.gold,at:Date.now()};
+  if(final)grantCareerXp(h,18+run.stage.difficulty*8);
+  CAREER.message=(final?'맹수 토벌 성공!': '맹수 토벌 실패. ')+' '+run.stage.label+' · 보상 '+prize+'D · 잔액 '+CAREER.gold+'D';
+ }else{
+  CAREER.message=run.stage.label+' '+(run.roundIndex+1)+'/'+run.stage.rounds+' 승리 · 마지막 승리 시 보상 지급';
+ }
+ saveCareer();
+}
 function maybeArenaBeast(enemy,round,boss=false){
  if(!enemy||boss)return null;
  const type=window.ArenaBeasts?.pick?.(round,false);
@@ -1103,7 +1169,10 @@ function maybeArenaBeast(enemy,round,boss=false){
  return type;
 }
 function start(mode='new',requestedRosterIndex=null,teamIndices=null){
- const careerMatch=mode==='career';
+ const beastMatch=mode==='beast'&&!!BEAST_RUN;
+ const careerMatch=mode==='career'||!!beastMatch;
+ if(!beastMatch)BEAST_RUN=null;
+ S.beastHunt=!!beastMatch;
  S.gauntlet=null;S.cleanup=null;updateLineupHud();
  if(careerMatch&&requestedRosterIndex!==null){
   const i=Number(requestedRosterIndex),candidate=CAREER.roster[i];
@@ -1117,7 +1186,7 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
  if(careerMatch){window.LudusScene?.close();$('#careerHub').hidden=true;$('#careerMini').hidden=true;MINI=null;}
  if(mode==='new'){S.round=1;S.totalScore=0;}
  if(mode==='continue'){S.totalScore+=S.score;S.round++;}
- if(careerMatch){S.careerParticipant=CAREER.active;S.careerOpponent={...LudusRoster.encounter(CAREER,CAREER.hero,Math.random,
+ if(careerMatch){S.careerParticipant=CAREER.active;S.careerOpponent=beastMatch?{cls:'thraex',name:BEAST_RUN.stage.label,level:BEAST_RUN.stage.level,round:BEAST_RUN.stage.level,stage:1,growthType:'thraex_a',boss:false}: {...LudusRoster.encounter(CAREER,CAREER.hero,Math.random,
   Array.isArray(teamIndices)?teamIndices.map(n=>CAREER.roster[n]):null)};S.round=S.careerOpponent.round;saveCareer();}
  const selected=careerMatch?CAREER.hero.cls:$('#classChoice').value;
  const opposition=['murmillo','thraex','retiarius'].filter(cls=>cls!==selected);
@@ -1169,7 +1238,13 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
  S.careerMatch=careerMatch;
  // A menagerie event changes only the arena enemy. The normal matchmaking
  // profile remains authoritative before beast-specific role modifiers.
- maybeArenaBeast(S.enemy,S.round,!!S.careerOpponent?.boss&&careerMatch);
+ if(beastMatch){
+  const type=BEAST_RUN.stage.id;
+  window.ArenaBeasts?.apply?.(S.enemy,type);
+  S.enemy.rank='VENATIO · '+window.ArenaBeasts.types[type].latin;
+  S.notice='VENATIO · '+BEAST_RUN.stage.label+' '+(BEAST_RUN.roundIndex+1)+'/'+BEAST_RUN.stage.rounds;
+  S.noticeT=3;
+ }
  $('#startScreen').hidden=true;$('#endScreen').hidden=true;$('#pauseBtn').textContent='Ⅱ';updateHud();
  window.ArenaAudio?.enterArena?.();
  fxSound('start');
@@ -1938,6 +2013,13 @@ function showEnd(){
  $('#againBtn').textContent=S.careerMatch?'출전자 선택':'다시 하기';
  $('#continueBtn').textContent=S.careerMatch?'루두스로 돌아가기':win?'계속 하기':'Ludus로 돌아가기';
  $('#continueBtn').classList.toggle('ludus',!win);
+ if(S.beastHunt&&BEAST_RUN){
+  const run=BEAST_RUN,more=win&&run.roundIndex+1<run.stage.rounds;
+  $('#endReason').textContent=win?(more?'연전 승리! 다음 야수가 대기 중입니다.':'맹수 토벌 성공!'): '맹수 토벌 실패. 루두스에서 정비 후 다시 도전하세요.';
+  $('#endStats').textContent=CAREER.message;
+  $('#againBtn').textContent='처음부터 다시';
+  $('#continueBtn').textContent=more?'다음 야수 상대하기':'3vs동물전으로';
+ }
 }
 // Result-only portrait sizing: measure visible art, not transparent sheet padding.
 // The victor is intentionally ~15% larger than the defeated fighter.
@@ -1977,6 +2059,7 @@ function drawSizedResultPortrait(element,source,isWinner){
 }
 function renderResultPortrait(id,f,index){
  const element=$('#'+id),isWinner=id==='winnerPose';
+ if(f.beastType){element.replaceChildren();element.style.backgroundImage='none';const art=window.ArenaBeasts?.portrait?.(f.beastType, f.dead?'defeat':'idle');if(art){drawSizedResultPortrait(element,art,isWinner);return;}}
  const atlas=f.championVariant===CHAMPION_MURMILLO_VARIANT?null:GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
  element.replaceChildren();
  if(f.championVariant===CHAMPION_MURMILLO_VARIANT){
@@ -2520,7 +2603,7 @@ for(const b of document.querySelectorAll('[data-key]')){const k=b.dataset.key,ho
   }else inputAct(k);});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{S.keys.delete(k);if(S.phase==='fight')markManualInput();});}
 function togglePause(){if(S.phase!=='fight')return;S.paused=!S.paused;S.keys.clear();if(!S.paused){S.lastManualInput=clock;S.autoPlaying=false;}$('#pauseBtn').textContent=S.paused?'▶':'Ⅱ';say(S.paused?'PAUSED':'RESUME',.8);updateHud();}
 $('#startBtn').onclick=()=>start('new');
-$('#titleCareerFight').onclick=()=>{enterCareer();openCareerDraft();};$('#againBtn').onclick=()=>{if(S.careerMatch){returnToCareer();openCareerDraft();}else start('retry');};$('#continueBtn').onclick=()=>S.careerMatch?returnToCareer():S.lastResultWin?start('continue'):returnToLudus();$('#pauseBtn').onclick=togglePause;$('#autoToggle').onclick=()=>{S.autoplayEnabled=!S.autoplayEnabled;markManualInput();S.autoPlaying=false;$('#autoToggle').textContent=S.autoplayEnabled?'AUTO ON':'AUTO OFF';updateHud();};$('#fxToggle').onclick=()=>{S.fx=!S.fx;$('#fxToggle').textContent=S.fx?'이펙트 ON':'이펙트 OFF';};$('#soundToggle').onclick=()=>{sounds=!sounds;window.ArenaAudio?.setMuted?.(!sounds);$('#soundToggle').textContent=sounds?'사운드 ON':'사운드 OFF';};
+$('#titleCareerFight').onclick=()=>{enterCareer();openCareerDraft();};$('#againBtn').onclick=()=>{if(S.beastHunt&&BEAST_RUN){BEAST_RUN.roundIndex=0;start('beast',BEAST_RUN.participant);}else if(S.careerMatch){returnToCareer();openCareerDraft();}else start('retry');};$('#continueBtn').onclick=()=>S.beastHunt?beastNextOrReturn():S.careerMatch?returnToCareer():S.lastResultWin?start('continue'):returnToLudus();$('#pauseBtn').onclick=togglePause;$('#autoToggle').onclick=()=>{S.autoplayEnabled=!S.autoplayEnabled;markManualInput();S.autoPlaying=false;$('#autoToggle').textContent=S.autoplayEnabled?'AUTO ON':'AUTO OFF';updateHud();};$('#fxToggle').onclick=()=>{S.fx=!S.fx;$('#fxToggle').textContent=S.fx?'이펙트 ON':'이펙트 OFF';};$('#soundToggle').onclick=()=>{sounds=!sounds;window.ArenaAudio?.setMuted?.(!sounds);$('#soundToggle').textContent=sounds?'사운드 ON':'사운드 OFF';};
 function refreshFighterPreviews(){
   const selected=$('#classChoice').value;
   $('#classSubtitle').textContent=DATA[selected].eng;
@@ -2591,7 +2674,7 @@ window.LudusBridge={
   return growthImage(h)?.frames?.[safePose]?.canvas||null;
  },
  select:(i)=>{if(!CAREER.roster[i])return;CAREER.active=i;saveCareer();renderCareer();},
- section:(tab)=>{CAREER_SELECTING=false;CAREER_TAB=tab==='gear'?'gear':tab==='roster'?'roster':'training';$('#careerHub').hidden=false;renderCareer();if(CAREER_TAB==='roster')window.LudusApprovedScenes?.close();else window.LudusApprovedScenes?.open(CAREER_TAB);},
+ section:(tab)=>{CAREER_SELECTING=false;CAREER_TAB=tab==='beasts'?'beasts':tab==='gear'?'gear':tab==='roster'?'roster':'training';$('#careerHub').hidden=false;renderCareer();if(CAREER_TAB==='roster'||CAREER_TAB==='beasts')window.LudusApprovedScenes?.close();else window.LudusApprovedScenes?.open(CAREER_TAB);},
  returnHome:()=>{CAREER_SELECTING=false;CAREER_TAB='roster';$('#careerHub').hidden=false;renderCareer();window.LudusApprovedScenes?.close();},
  market:openSlaveMarket,
  catalog:()=>GEAR.map(g=>({...g})),

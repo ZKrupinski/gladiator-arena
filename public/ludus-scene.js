@@ -47,6 +47,7 @@ if(id==="dismiss-orientation"){scene.classList.add("ll-allow-portrait");return;}
 if(id==="back"){close();a.exit();return;}
 if(id==="market"){close();a.market();return;}
 if(id==="prev"||id==="next"){var max=Math.max(0,Math.ceil(a.state().roster.length/6)-1);rosterPage=Math.max(0,Math.min(max,rosterPage+(id==="next"?1:-1)));refresh();return;}
+if(id==="beasts"){close();a.section("beasts");return;}
 if(id==="armory"){close();a.section("gear");return;}
 if(id==="roster"||id==="training"||id==="basic"||id==="practice"){close();a.section(id==="roster"?"roster":"training");return;}
 if(id==="arena"){var team=a.state().roster;if(!team.length){notice("검투사시장에서 검투사를 먼저 고용하세요.");return;}if(!team.some(function(h){return Number(h.injury||0)<80&&Number(h.fatigue||0)<80;})){notice("출전 가능한 검투사가 없습니다. 치료 또는 휴식이 필요합니다.");return;}close();a.fight();return;}
@@ -62,7 +63,7 @@ var html=[
 '<img class="ll-domina-expression" src="assets/ludus/domina_face_aligned_0.webp?v=7" alt="" aria-hidden="true" draggable="false">',
 '<button class="ll-title" data-action="back">❮ 루두스</button>',
 '<div class="ll-wallet" aria-label="실시간 루두스 자원"><span>🪙 금화 <strong data-gold>0</strong></span><span>✥ 명예 <strong data-glory>0</strong></span><span>⚔ 소속 <strong data-roster-count>0</strong></span></div>',
-'<div class="ll-menu" role="navigation" aria-label="루두스 주요 시설"><button type="button" data-action="training">⚔ 훈련소</button><button type="button" data-action="roster">♜ 검투사 관리</button><button type="button" data-action="armory">🛡 장비실</button><button type="button" data-action="market">🏛 검투사시장</button><button type="button" data-action="arena">⚔ 아레나 출전</button></div>',
+'<div class="ll-menu" role="navigation" aria-label="루두스 주요 시설"><button type="button" data-action="training">⚔ 훈련소</button><button type="button" data-action="roster">♜ 검투사 관리</button><button type="button" data-action="armory">🛡 장비실</button><button type="button" data-action="market">🏛 검투사시장</button><button type="button" data-action="arena">⚔ 아레나 출전</button><button type="button" data-action="beasts">🐾 3vs동물전</button></div>',
 '<div class="ll-speech"><b>도미나</b>훌륭해…\n우리의 검투사들이 이렇게 성장하는 걸 보는 게 가장 큰 즐거움이란다.</div>',
 '<div class="ll-doctore"><b>독토레</b>좋다, 자세가 잡히고 있어.<br>더 거칠게! 더 강하게!</div>',
 '<div class="ll-hitbuttons" role="group" aria-label="루두스 메인 그림 속 훈련 및 출전 버튼">',
@@ -73,7 +74,7 @@ var html=[
 '<div class="ll-bottom"><div class="ll-roster"><h3>검투사 훈련 현황 <span data-count>0명</span><span class="ll-pager"><button data-action="prev" aria-label="이전 검투사">◀</button><span data-roster-page>1/1</span><button data-action="next" aria-label="다음 검투사">▶</button></span></h3><div class="ll-portraits"></div></div>',
 '<div class="ll-actions"><button data-action="basic"><span class="ll-thumb">⚔</span><strong>기초 훈련</strong><small>검투사의 기본을 다집니다.</small></button>',
 '<button data-action="practice"><span class="ll-thumb">✦</span><strong>실전 훈련</strong><small>경험치와 능력치를 향상시킵니다.</small></button>',
-'<button data-action="arena"><span class="ll-thumb">🏟</span><strong>아레나 출전</strong><small>가장 강한 자를 가립니다.</small></button></div></div>',
+'<button data-action="arena"><span class="ll-thumb">🏟</span><strong>아레나 출전</strong><small>가장 강한 자를 가립니다.</small></button><button data-action="beasts"><span class="ll-thumb">🐾</span><strong>3vs동물전</strong><small>다섯 야수의 토벌 스테이지</small></button></div></div>',
 '<div class="ll-live-counter" data-live-counter>소속 검투사 0명</div>',
 '</div><div class="ll-toast" hidden role="status"></div></div><div class="ll-orientation" role="dialog" aria-label="가로 화면 권장"><div class="ll-rotate-icon" aria-hidden="true">↻</div><strong>가로 화면에서 플레이해 주세요</strong><p>루두스는 가로형 게임 화면으로 제작되었습니다.<br>기기를 가로로 돌리면 버튼과 검투사가 크게 보입니다.</p><button data-action="dismiss-orientation">작은 화면으로 계속 보기</button></div>'
 ];

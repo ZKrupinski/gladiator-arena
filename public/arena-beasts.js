@@ -30,29 +30,31 @@ function ensure(type){
    entry.error='Unexpected source dimensions';failed++;return;
   }
   try{
-   entry.frames=isolate(img);entry.ready=true;loaded++;
+   entry.frames=isolate(img,type);entry.ready=true;loaded++;
   }catch(e){entry.error=String(e);failed++;console.warn('Beast isolation failed',type,e);}
  };
  img.onerror=()=>{entry.error='Asset failed';failed++;};
  img.src=DIR+type+'-40.png?v=1';
  return false;
 }
-function isolate(img){
+function isolate(img,type){
  const frames=[];
  // Float sheet cell edges cannot be sampled from neighboring frames. A
  // three-pixel safety gutter at every edge prevents alpha/texture bleeding.
  for(let row=0;row<ROWS;row++){
   const part=[];
   for(let col=0;col<COLS;col++){
-   const sx=Math.round(col*WIDTH/COLS)+3;
-   const sy=Math.round(row*HEIGHT/ROWS)+3;
-   const ex=Math.round((col+1)*WIDTH/COLS)-3;
-   const ey=Math.round((row+1)*HEIGHT/ROWS)-3;
+   const inset=type==='elephant'?1:3;
+   const sx=Math.round(col*WIDTH/COLS)+inset;
+   const sy=Math.round(row*HEIGHT/ROWS)+inset;
+   const ex=Math.round((col+1)*WIDTH/COLS)-inset;
+   const ey=Math.round((row+1)*HEIGHT/ROWS)-inset;
    const w=Math.max(1,ex-sx),h=Math.max(1,ey-sy);
    const canvas=document.createElement('canvas');
    canvas.width=w;canvas.height=h;
    const ctx=canvas.getContext('2d',{willReadFrequently:true});
    ctx.drawImage(img,sx,sy,w,h,0,0,w,h);
+   if(type==='elephant')cleanElephantFrame(ctx,w,h);
    const data=ctx.getImageData(0,0,w,h).data;
    let left=w,right=0,top=h,bottom=0,ink=0;
    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
@@ -65,6 +67,56 @@ function isolate(img){
   frames.push(part);
  }
  return frames;
+}
+// Remove stray neighbouring animation fragments rather than cropping the
+// elephant silhouette again. Preserve ALL substantial connected body pieces.
+function cleanElephantFrame(ctx,w,h){
+ const pixels=ctx.getImageData(0,0,w,h),data=pixels.data,used=new Uint8Array(w*h);
+ const components=[];const offsets=[-1,1,-w,w];
+ for(let k=0;k<used.length;k++){
+  if(used[k]||data[k*4+3]<40)continue;
+  const queue=[k];used[k]=1;
+  let minX=k%w,maxX=k%w,minY=Math.floor(k/w),maxY=minY;
+  for(let head=0;head<queue.length;head++){
+   const cur=queue[head],x=cur%w,y=Math.floor(cur/w);
+   minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);
+   for(const o of offsets){
+    const n=cur+o;
+    if(n<0||n>=used.length||used[n]||data[n*4+3]<40)continue;
+    if(o===-1&&x===0||o===1&&x===w-1)continue;
+    used[n]=1;queue.push(n);
+   }
+  }
+  components.push({pixels:queue,left:minX,right:maxX,top:minY,bottom:maxY});
+ }
+ if(!components.length)return;
+ components.sort((a,b)=>b.pixels.length-a.pixels.length);
+ const main=components[0];
+ if(main.pixels.length<w*h*.008)return;
+ const keep=new Uint8Array(w*h);
+ const nearby=c=>c.left<=main.right+12&&c.right>=main.left-12&&c.top<=main.bottom+12&&c.bottom>=main.top-12;
+ for(const c of components){
+  if(c!==main&&!(c.pixels.length>=Math.max(25,main.pixels.length*.018)&&nearby(c)))continue;
+  for(const px of c.pixels)keep[px]=1;
+ }
+ // Clear isolated specks; antialiased border pixels near kept shape remain.
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+  const k=y*w+x;if(!data[4*k+3]||keep[k])continue;
+  const close=(x>0&&keep[k-1])||(x+1<w&&keep[k+1])||(y>0&&keep[k-w])||(y+1<h&&keep[k+w]);
+  if(!close)data[4*k+3]=0;
+ }
+ ctx.putImageData(pixels,0,0);
+}
+function portrait(type,pose='idle'){
+ const entry=cache.get(type);
+ if(!entry?.ready)return null;
+ const row=ROWS_BY_POSE[pose]??0,frame=entry.frames[row]?.[0];
+ if(!frame?.bounds)return null;
+ const b=frame.bounds,pad=3,w=b.right-b.left+1,h=b.bottom-b.top+1;
+ const out=document.createElement('canvas');
+ out.width=w+pad*2;out.height=h+pad*2;
+ out.getContext('2d').drawImage(frame.canvas,b.left,b.top,w,h,pad,pad,w,h);
+ return out;
 }
 function pick(round,boss=false,random=Math.random){
  const r=Math.max(1,Math.floor(Number(round)||1));
@@ -132,5 +184,5 @@ function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
  return true;
 }
 root.ArenaBeasts={version:'1.0.0',types:SPEC,rows:ROWS_BY_POSE,
- pick,apply,ensure,frameFor,draw,status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name)})};
+ pick,apply,ensure,frameFor,draw,portrait,status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name)})};
 })(window);

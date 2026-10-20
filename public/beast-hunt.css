@@ -1,0 +1,20 @@
+/* VENATIO — independent five-stage beast hunt, desktop and mobile. */
+.beast-gallery{grid-column:1/-1;padding:clamp(12px,2.5vw,28px)!important}
+.beast-gallery-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.beast-gallery-head small,.beast-stage-detail small{color:#dcae70;font:800 11px Georgia,serif;letter-spacing:.16em}
+.beast-gallery-head h2{font:800 clamp(27px,4vw,42px) Georgia,serif!important;color:#ffe0a1;margin:5px 0}
+.beast-gallery-head p,.beast-stage-detail p{color:#dfc7a5;margin:5px 0}
+.beast-fighter-label{font-size:13px;color:#efd1a5;font-weight:700}
+.beast-fighter-label select{display:block;max-width:100%;min-height:42px;padding:7px 12px;background:#352018;color:#ffe8bf;border:1px solid #d6a86b;border-radius:8px}
+.beast-stage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:14px}
+.beast-stage-card{overflow:hidden;background:linear-gradient(160deg,#3e251a,#1c1310);border:1px solid #b38a56;border-radius:12px;box-shadow:0 12px 30px #08050390,inset 0 1px #ffdba737}
+.beast-stage-thumb{height:185px;position:relative;background-color:#322117;background-repeat:no-repeat;background-size:800% 500%;background-position:left top;filter:drop-shadow(0 4px 10px #0005)}
+.beast-stage-thumb:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#1b100e 0%,transparent 42%)}
+.beast-stage-thumb span{position:absolute;z-index:1;top:12px;left:12px;color:#ffdaa2;font:700 14px Georgia,serif;text-shadow:0 2px 6px #080400}
+.beast-stage-detail{padding:12px 14px 16px}
+.beast-stage-detail h3{color:#ffe2ac;font:700 25px Georgia,serif;margin:4px 0}
+.beast-stage-meta{font-size:12px;color:#efc68c!important}
+.beast-challenge{width:100%;min-height:44px;margin-top:12px;border-radius:8px;border:1px solid #f9cf8b;color:#2b120d;background:linear-gradient(#ffdda2,#c18b48);font-weight:900}
+.beast-challenge:disabled{opacity:.45;cursor:not-allowed}
+.beast-gallery-footer{margin-top:15px;padding:10px;color:#d3aa76;text-align:center;font-size:12px;border-top:1px solid #ad804466}
+@media(max-width:620px){.beast-stage-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.beast-stage-thumb{height:140px}.beast-stage-detail{padding:10px}.beast-stage-detail h3{font-size:20px}.beast-gallery-head{gap:8px}.beast-stage-meta{line-height:1.55}}
