@@ -1,6 +1,5 @@
 """Verify production HTML, loader, manifest, and every deployed frame byte."""
 from pathlib import Path
-from urllib.request import urlopen, Request
 from concurrent.futures import ThreadPoolExecutor
 import hashlib,json,time,sys,subprocess
 root=Path(__file__).resolve().parents[1]
@@ -13,7 +12,12 @@ def check(path):
  # Compare committed blobs, avoiding Windows checkout line-ending conversion.
  expected=subprocess.check_output(['git','show','HEAD:public/'+path],cwd=root)
  url=site+'/'+('' if path=='index.html' else path)+'?verify='+hashlib.sha256(expected).hexdigest()[:16]
- with urlopen(Request(url,headers={'Cache-Control':'no-cache'}),timeout=25) as r: actual=r.read()
+ # Use the same standard curl client as the repository's previous deploy probe.
+ # Cloudflare rejects urllib's default client signature with error 1010.
+ result=subprocess.run(['curl','--fail','--location','--silent','--show-error',
+  '--max-time','25','--header','Cache-Control: no-cache',url],capture_output=True)
+ assert result.returncode==0,path+': '+result.stderr.decode(errors='replace')
+ actual=result.stdout
  assert actual==expected,'Production differs: '+path
  return path
 attempts=int(sys.argv[1]) if len(sys.argv)>1 else 1
