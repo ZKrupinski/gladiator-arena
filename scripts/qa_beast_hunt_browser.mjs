@@ -49,6 +49,8 @@ try{
    assert.ok(visible,'elephant isolated image is visible');
   }
   await lose();
+  // Test-only: reset accumulated injuries after intentionally forcing a loss.
+  await page.evaluate(()=>{for(const h of LudusBridge.state().roster){h.injury=0;h.fatigue=0;}});
   await page.locator('#continueBtn').click();
   await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
  }
