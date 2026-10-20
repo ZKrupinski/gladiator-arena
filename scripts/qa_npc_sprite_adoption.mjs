@@ -38,7 +38,7 @@ const callbacks=[],actor={isConnected:true,style:{},dataset:{}};
 const win={matchMedia:()=>({matches:false})};
 const whipDimensions=[[372,430],[399,548],[423,542],[447,406],[856,419],[417,507],[334,417]];
 class ImageStub{
- constructor(){this.style={};this.naturalWidth=0;this.naturalHeight=0;}
+ constructor(){this.style={};this.dataset={};this.naturalWidth=0;this.naturalHeight=0;}
  set src(path){
   this._src=path;
   const match=path.match(/doctore-whip-clean-v2\/frame-(\d+)\.png/);
