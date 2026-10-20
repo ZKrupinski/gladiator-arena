@@ -50,14 +50,28 @@ try{
  assert.ok(await page.locator('#beastHeroSelect option').count()>0,'starter gladiator present');
  const initial=await page.evaluate(()=>LudusBridge.state().gold);
  await page.locator('[data-beast-stage="wolf"]').click();
+ await page.waitForFunction(()=>__arenaQA.state.phase==='fight',{timeout:12000});
+ await win();
+ assert.equal(await page.locator('#againBtn').innerText(),'야수 선택으로 돌아가기');
+ assert.equal(await page.locator('#continueBtn').innerText(),'다음 라운드 2/3');
+ // Explicit back must NOT start another wolf fight.
+ await page.locator('#againBtn').click();
+ await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
+ assert.equal(await page.locator('.beast-stage-card').count(),5);
+ assert.equal(await page.evaluate(()=>__arenaQA.state.beastHunt),false);
+ assert.equal(await page.evaluate(()=>LudusBridge.state().gold),initial,'no payout for abandoning 1/3');
+ await page.locator('[data-beast-stage="wolf"]').click();
  for(let i=0;i<3;i++){
   await page.waitForFunction(()=>__arenaQA.state.phase==='fight',{timeout:12000});
   assert.equal(await page.evaluate(()=>__arenaQA.state.enemy.beastType),'wolf');
   await win();
-  assert.equal(await page.locator('#continueBtn').innerText(),i<2?'다음 야수 상대하기':'야수전으로');
+  assert.equal(await page.locator('#againBtn').innerText(),'야수 선택으로 돌아가기');
+  assert.equal(await page.locator('#continueBtn').innerText(),i<2?'다음 라운드 '+(i+2)+'/3':'전투 준비로 돌아가기');
   assert.equal(await page.evaluate(()=>LudusBridge.state().gold),initial+(i===2?300:0),'reward on final victory only');
-  await page.locator('#continueBtn').click();
+  if(i<2)await page.locator('#continueBtn').click();
  }
+ // Final choice A: choose a different species. No forced wolf rematch.
+ await page.locator('#againBtn').click();
  await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
  const receipt=await page.evaluate(()=>JSON.parse(localStorage.getItem('gladiator.ludus.v1')).lastPrize);
  assert.equal(receipt.mode,'beast_hunt');assert.equal(receipt.gold,300);
@@ -85,10 +99,19 @@ try{
    assert.ok(visible,'elephant isolated image is visible');
   }
   await lose();
+  assert.equal(await page.locator('#againBtn').innerText(),'야수 선택으로 돌아가기');
+  assert.equal(await page.locator('#continueBtn').innerText(),'같은 야수 재도전');
   // Test-only: reset accumulated injuries after intentionally forcing a loss.
   await page.evaluate(()=>{for(const h of LudusBridge.state().roster){h.injury=0;h.fatigue=0;}});
-  await page.locator('#continueBtn').click();
+  if(type==='leopard'){
+    await page.locator('#continueBtn').click();
+    await page.waitForFunction(()=>__arenaQA.state.phase==='fight',{timeout:10000});
+    assert.equal(await page.evaluate(()=>__arenaQA.state.enemy.beastType),'leopard');
+    await lose();
+  }
+  await page.locator('#againBtn').click();
   await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
+  assert.equal(await page.evaluate(()=>__arenaQA.state.beastHunt),false);
  }
  assert.deepEqual(errors,[],'no page script errors');
  console.log('VENATIO_FIVE_BEAST_STAGE_PAYOUT_E2E_PASS');
