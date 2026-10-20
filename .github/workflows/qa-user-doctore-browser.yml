@@ -1,0 +1,58 @@
+name: Verify real training Doctore replacement
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - public/ludus-doctore-anim.js
+      - public/ludus-training-doctore.css
+      - public/ludus-approved-scenes.js
+      - public/assets/ludus/doctore-whip-user-v1.png
+      - scripts/qa_user_doctore_browser.mjs
+      - .github/workflows/qa-user-doctore-browser.yml
+  workflow_dispatch:
+jobs:
+  actual-training-scene:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install headless browser
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Host current game
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/doctore.log 2>&1 &
+          sleep 2
+      - name: Confirm new original NPC renders and 800px lash remains intact
+        run: node scripts/qa_user_doctore_browser.mjs
+      - name: Verify Cloudflare serves the same original PNG and updated scripts
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, urllib.request, time
+          origin='https://gladiator-arena-git.pages.dev'
+          png=pathlib.Path('public/assets/ludus/doctore-whip-user-v1.png').read_bytes()
+          expected=hashlib.sha256(png).hexdigest()
+          for attempt in range(1,15):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(origin+'/assets/ludus/doctore-whip-user-v1.png?v=2',headers={'User-Agent':'ArenaDoctoreQA'}),timeout=20) as r:
+                      live=r.read()
+                  with urllib.request.urlopen(urllib.request.Request(origin+'/?doctore-qa='+str(attempt),headers={'User-Agent':'ArenaDoctoreQA','Cache-Control':'no-cache'}),timeout=20) as r:
+                      html=r.read().decode('utf-8')
+                  with urllib.request.urlopen(urllib.request.Request(origin+'/ludus-doctore-anim.js?v=3',headers={'User-Agent':'ArenaDoctoreQA'}),timeout=20) as r:
+                      animation=r.read().decode('utf-8')
+                  if (hashlib.sha256(live).hexdigest()==expected and
+                    'ludus-doctore-anim.js?v=3' in html and
+                    'doctore-whip-user-v1.png?v=2' in animation):
+                      print('CLOUDFLARE_USER_DOCTORE_PASS, exact unchanged original image and new JS loaded')
+                      break
+                  print('Waiting for Cloudflare Git deployment, attempt',attempt,flush=True)
+              except Exception as e:
+                  print('Waiting for Cloudflare Git deployment',attempt,str(e),flush=True)
+              if attempt==14: raise AssertionError('Cloudflare did not serve the new original trainer')
+              time.sleep(11)
+          PY
