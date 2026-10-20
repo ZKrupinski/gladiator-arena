@@ -6,6 +6,7 @@ on:
       - scripts/spriteforge_agent_v2.py
       - scripts/test_spriteforge_agent_v2.py
       - scripts/test_spriteforge_v2_existing_art.py
+      - config/spriteforge-qc-rules.json
       - .github/workflows/qa-spriteforge-v2.yml
   workflow_dispatch:
 jobs:
