@@ -124,7 +124,7 @@ function draft(enemy,painter){
   const option=window.ArenaBalance?.MODES?.[mode]||{};
   return '<button type="button" class="'+(mode===matchMode?'selected':'')+'" data-battle-mode="'+mode+
    '" aria-pressed="'+(mode===matchMode)+'">'+mode+' <small>'+safe(option.label||'')+'</small></button>';
- }).join('')+'</div>';
+ }).join('')+'<button type="button" class="lc-beast-mode" data-beast-hunt="open" aria-label="야수전 스테이지 선택">🐾 야수전 <small>VENATIO</small></button></div>';
  const info=matchMode==='1v1'?'정규 1:1 결투':
   '연속 1:1 · 아군 '+config.allies+'명 / 적 '+config.enemies+'명 · 선택 '+squadPicks.length+'/'+config.allies+'명';
  const enemies=a.previewMatch?.(matchMode,enemy)||[enemy];
@@ -157,6 +157,7 @@ function draft(enemy,painter){
  reveal(host,'draft');
  const root=$('.lc-screen'),grid=root.querySelector('.lc-card-grid');if(grid)grid.scrollTop=scrollPosition;
  drawArt(root);if(typeof paintOpponent==='function')paintOpponent();
+ root.querySelector('[data-beast-hunt]')?.addEventListener('click',()=>a.section('beasts'));
  root.querySelectorAll('[data-battle-mode]').forEach(button=>{
   button.onclick=()=>{scrollPosition=grid.scrollTop;matchMode=button.dataset.battleMode;
    squadPicks=squadPicks.slice(0,draftConfig().allies);draft(enemy,paintOpponent);};

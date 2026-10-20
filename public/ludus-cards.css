@@ -225,3 +225,10 @@
  * The actual EXP bar (.lc-xp) and stat widgets remain untouched. */
 .lc-roster-screen .lc-portrait{background:transparent}
 .lc-roster-screen .lc-portrait::after{content:none;display:none}
+
+/* VENATIO sixth mode in the real Ludus fight-preparation row */
+.lc-mode-picker{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding-inline:12px;overflow:visible}
+.lc-mode-picker button{width:100%;max-width:none;min-width:0;min-height:46px;padding:5px 3px;font-size:clamp(12px,1.5vw,20px);white-space:nowrap}
+.lc-mode-picker button small{font-size:clamp(8px,.78vw,11px);overflow:hidden;text-overflow:ellipsis}
+.lc-mode-picker .lc-beast-mode{border:2px ridge #e6b568;color:#ffe6ad;background:linear-gradient(140deg,#864527,#4f281b);box-shadow:inset 0 0 9px #f2c86d45}
+@media(max-width:680px){.lc-mode-picker{gap:3px;padding-inline:4px}.lc-mode-picker button{font-size:11px;min-height:44px;border-width:1px;padding:4px 1px}.lc-mode-picker button small{font-size:7px;letter-spacing:-.05em}}
