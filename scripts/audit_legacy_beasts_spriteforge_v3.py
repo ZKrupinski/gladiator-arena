@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SpriteForge V3 legacy beast QA: fail-closed, pixel-preserving speck cleanup.
+"""SpriteForge V3 legacy beast QA: fail-closed, source-ownership cleanup of large or small neighboring body parts.
 
 The five original 1586x992 atlases are NEVER modified. The 200 legacy 512px
 exports are derivatives of ~198px frames; they cannot earn native V3 approval.
@@ -15,6 +15,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage
+from spriteforge_neighbor_ownership_v3 import remove_proven_foreign
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "public/assets/beasts"
@@ -151,16 +152,26 @@ def run(fix_safe=False, output=None, previews=None):
             paths = individuals["species"][kind]["actions"][action]["paths"]
             if len(paths) != 8:
                 raise RuntimeError(f"NOT_EIGHT_FRAMES {kind}/{action}")
+            original_frames = [Image.open(ROOT/"public"/p).convert("RGBA") for p in paths]
             for col, p in enumerate(paths):
                 src = ROOT/"public"/p
                 if not src.is_file():
                     raise RuntimeError(f"MISSING_FRAME: {p}")
                 before = digest(src)
-                im = Image.open(src)
-                clean, item = scan_image(im, fix_safe)
+                im = original_frames[col]
+                # Provenance takes priority over the SIZE of foreign anatomy.
+                owned, proof = remove_proven_foreign(
+                    im, original_frames[col-1] if col else None,
+                    original_frames[col+1] if col<7 else None)
+                clean, item = scan_image(owned if fix_safe else im, fix_safe)
+                item["neighborOwnership"] = proof
+                if proof["verifiedForeignPixels"]:
+                    item["problems"].append("VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW")
+                if not fix_safe and proof["verifiedForeignPixels"]:
+                    item["problems"].append("PROVEN_FOREIGN_BODY_NOT_YET_REMOVED")
                 if item["problems"] == ["NON_RGBA_OR_WRONG_SIZE"]:
                     raise RuntimeError(f"UNUSABLE_FRAME_FORMAT: {p}")
-                if item["fixedAlphaPixels"] > 0:
+                if item["fixedAlphaPixels"] > 0 or (fix_safe and proof["erasedAlphaPixels"] > 0):
                     clean.save(src,format="PNG",compress_level=6)
                     individuals["species"][kind]["actions"][action]["visiblePixels"][col] = int(
                         np.count_nonzero(np.asarray(clean.getchannel("A"))>30))
@@ -172,6 +183,8 @@ def run(fix_safe=False, output=None, previews=None):
                 stats["frames"] += 1
                 stats["fixedIslands"] += item["fixedIslands"]
                 stats["fixedAlphaPixels"] += item["fixedAlphaPixels"]
+                stats["verifiedForeignPixels"] += proof["verifiedForeignPixels"]
+                stats["erasedNeighborAlphaPixels"] += proof["erasedAlphaPixels"] if fix_safe else 0
                 stats["ambiguousIslands"] += len(item["ambiguousIslands"])
                 stats["edgeRiskFrames"] += int("EDGE_RISK_REVIEW_BODY_OR_TAIL" in item["problems"])
                 stats["modifiedFrames"] += int(item["changed"])
@@ -195,9 +208,9 @@ def run(fix_safe=False, output=None, previews=None):
         "nativeV3GenerationApproved":False,
         "releaseAuthorized":False,
         "visualReviewRequired":True,
-        "status":"LEGACY_AUDITED_SAFELY_CLEANED_PENDING_REVIEW" if fix_safe else "LEGACY_AUDITED_ONLY",
+        "status":"LEGACY_NEIGHBOR_OWNERSHIP_CLEANED_PENDING_VISUAL_REVIEW" if fix_safe else "LEGACY_AUDITED_ONLY",
         "totals":dict(totals),"species":per_kind,"frames":records,
-        "unresolvedWarning":"Large detached artifacts, attached ghost limbs and clipped body parts require source-level visual review or re-generation; never auto-erase.",
+        "unresolvedWarning":"All parts from adjacent frames must be erased, including large heads, feet and tails. Proven overlap is removed. Unproven overlaps and attached silhouettes require source-level manual review or regeneration; NEVER mark a frame production-ready without review.",
     }
     if len(records)!=200:raise RuntimeError("EXPECTED_200_FRAMES")
     if output:
