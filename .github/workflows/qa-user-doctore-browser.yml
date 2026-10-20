@@ -8,6 +8,9 @@ on:
       - public/ludus-training-doctore.css
       - public/ludus-approved-scenes.js
       - public/assets/ludus/doctore-whip-user-v1.png
+      - public/assets/ludus/doctore-idle-approved-v1.png
+      - public/assets/ludus/doctore-explain-approved-v1.png
+      - public/assets/ludus/doctore-authority-approved-v1.png
       - scripts/qa_user_doctore_browser.mjs
       - .github/workflows/qa-user-doctore-browser.yml
   workflow_dispatch:
@@ -35,22 +38,26 @@ jobs:
           python - <<'PY'
           import hashlib, pathlib, urllib.request, time
           origin='https://gladiator-arena-git.pages.dev'
-          png=pathlib.Path('public/assets/ludus/doctore-whip-user-v1.png').read_bytes()
-          expected=hashlib.sha256(png).hexdigest()
+          names=['doctore-idle-approved-v1.png','doctore-explain-approved-v1.png',
+                 'doctore-authority-approved-v1.png','doctore-whip-user-v1.png']
+          expected={n:hashlib.sha256(pathlib.Path('public/assets/ludus',n).read_bytes()).hexdigest()
+                    for n in names}
           for attempt in range(1,15):
               try:
-                  with urllib.request.urlopen(urllib.request.Request(origin+'/assets/ludus/doctore-whip-user-v1.png?v=2',headers={'User-Agent':'ArenaDoctoreQA'}),timeout=20) as r:
-                      live=r.read()
+                  hashes={}
+                  for n in names:
+                      with urllib.request.urlopen(urllib.request.Request(origin+'/assets/ludus/'+n+'?qa=approved',headers={'User-Agent':'ArenaDoctoreQA'}),timeout=20) as r:
+                          hashes[n]=hashlib.sha256(r.read()).hexdigest()
                   with urllib.request.urlopen(urllib.request.Request(origin+'/?doctore-qa='+str(attempt),headers={'User-Agent':'ArenaDoctoreQA','Cache-Control':'no-cache'}),timeout=20) as r:
                       html=r.read().decode('utf-8')
-                  with urllib.request.urlopen(urllib.request.Request(origin+'/ludus-doctore-anim.js?v=4',headers={'User-Agent':'ArenaDoctoreQA'}),timeout=20) as r:
+                  with urllib.request.urlopen(urllib.request.Request(origin+'/ludus-doctore-anim.js?v=5',headers={'User-Agent':'ArenaDoctoreQA'}),timeout=20) as r:
                       animation=r.read().decode('utf-8')
-                  if (hashlib.sha256(live).hexdigest()==expected and
-                    'ludus-doctore-anim.js?v=4' in html and
-                    'doctore-whip-user-v1.png?v=2' in animation and
+                  if (hashes==expected and
+                    'ludus-doctore-anim.js?v=5' in html and
+                    all(n in animation for n in names) and
                     'doctore-sd-v1.webp' not in animation):
 
-                      print('CLOUDFLARE_USER_DOCTORE_PASS, exact unchanged original image and new JS loaded')
+                      print('CLOUDFLARE_TRAINER_4_ORIGINAL_PNG_PASS, all image hashes and current JS')
                       break
                   print('Waiting for Cloudflare Git deployment, attempt',attempt,flush=True)
               except Exception as e:
