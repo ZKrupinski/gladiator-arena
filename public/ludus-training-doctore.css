@@ -1,13 +1,13 @@
-/* One original Roman trainer sheet only; no reference to outdated NPC art. */
+/* Render original approved transparent PNGs only. No image conversion. */
 .la-stage.training .la-trainer-clean,.la-stage.training .la-pose{display:none!important}
 .la-stage.training .la-doctore-live{
- position:absolute;left:185px;top:42px;width:355px;height:538px;z-index:4;
- background-image:url('assets/ludus/doctore-whip-user-v1.png?v=2');
- background-position:0 0;background-size:1448px 1086px;background-repeat:no-repeat;
+ position:absolute;left:185px;top:11px;width:362px;height:520px;z-index:4;
+ background-image:url('assets/ludus/doctore-idle-approved-v1.png?approved=1');
+ background-size:1448px 1086px;background-position:0 0;background-repeat:no-repeat;
  pointer-events:none;user-select:none;overflow:visible;
  clip-path:none;mask:none;-webkit-mask-image:none;
  filter:drop-shadow(3px 5px 5px #17070359);
- transform:none;animation:none!important;will-change:background-position;
+ transform:scale(1.125);transform-origin:left top;animation:none!important;
 }
 .la-stage.training .la-doctore-parchment{
  position:absolute;left:498px;top:91px;width:360px;height:163px;z-index:7;
