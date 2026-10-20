@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - scripts/spriteforge_pipeline_v3.py
+      - scripts/spriteforge_preflight_v3.py
+      - scripts/mock_spriteforge_adapter_v3.py
       - scripts/spriteforge_auto_repair_v3.py
       - scripts/spriteforge_neighbor_ownership_v3.py
       - scripts/audit_legacy_beasts_spriteforge_v3.py
@@ -26,7 +28,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: pip install pillow numpy scipy
-      - name: Test generation contract, provider handshake, native resolution, alpha and seam failure
+      - name: Confirm creation briefing then enforce one-action native 4x2 sheet contract, handshake, alpha and seam QC
         run: python scripts/test_spriteforge_pipeline_v3.py
       - name: Test automatic fix / eight-frame regeneration / animated review
         run: python scripts/test_spriteforge_auto_repair_v3.py
