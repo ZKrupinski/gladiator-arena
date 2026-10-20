@@ -27,6 +27,36 @@ try{
  assert.equal(idle.visible,true,'Approved trainer shown in actual live training screen');
  assert.ok(idle.image.includes('doctore-whip-user-v1.png'),'Trainer is no longer the old sprite sheet');
  assert.equal(idle.width,'355px','Default pose uses full-quality first user PNG cell');
+ // Reproduce the exact bug: clicking the STR/AGI/etc training tile used to
+ // reset the stage and switch back to the unattractive SD Doctore sheet.
+ const options=await page.evaluate(()=>{
+  const items=document.querySelectorAll('.la-stage.training .lt-tile-button');
+  if(items.length!==5)throw Error('Training tiles did not mount');
+  items[2].click(); // actual training item click -> refresh -> pose(1)
+  return items.length;
+ });
+ assert.equal(options,5,'All training stat choice buttons are active');
+ await page.waitForFunction(()=>{
+  const node=document.querySelector('.la-stage.training .la-doctore-live');
+  return node?.dataset.action==='talk'&&node.dataset.source==='user-original'&&
+   getComputedStyle(node).backgroundImage.includes('doctore-whip-user-v1.png');
+ },{timeout:4000});
+ const selection=await page.evaluate(()=>{
+  const el=document.querySelector('.la-stage.training .la-doctore-live');
+  return {mode:el.dataset.action,image:getComputedStyle(el).backgroundImage,
+   sheet:LudusDoctoreAnim.sprite.path};
+ });
+ assert.ok(!selection.image.includes('doctore-sd-v1.webp'),
+  'Selecting any stat never revives the old trainer');
+ assert.equal(selection.mode,'talk');
+ await page.evaluate(()=>LudusDoctoreAnim.react(2));
+ await page.waitForFunction(()=>document.querySelector('.la-stage.training .la-doctore-live')?.dataset.action==='command');
+ const command=await page.evaluate(()=>{
+  const el=document.querySelector('.la-stage.training .la-doctore-live');
+  return {mode:el.dataset.action,image:getComputedStyle(el).backgroundImage};
+ });
+ assert.ok(command.image.includes('doctore-whip-user-v1.png'),
+  'Command / training failure also uses the approved new trainer');
  await page.evaluate(()=>LudusDoctoreAnim.react(3));
  await page.waitForFunction(()=>{
   const actor=document.querySelector('.la-stage.training .la-doctore-live');
@@ -43,5 +73,5 @@ try{
  await page.waitForFunction(()=>document.querySelector('.la-stage.training .la-doctore-live')?.dataset.action==='idle',{timeout:3000});
  assert.deepEqual(errors,[],'No runtime errors in actual training room');
  console.log('PASS: original user PNG verified by SHA256, visible as idle, extra-wide original whip frame displayed, restores to idle');
- console.log(JSON.stringify({idle,impact}));
+ console.log(JSON.stringify({idle,selection,command,impact}));
 }finally{await browser.close()}

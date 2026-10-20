@@ -43,11 +43,13 @@ jobs:
                       live=r.read()
                   with urllib.request.urlopen(urllib.request.Request(origin+'/?doctore-qa='+str(attempt),headers={'User-Agent':'ArenaDoctoreQA','Cache-Control':'no-cache'}),timeout=20) as r:
                       html=r.read().decode('utf-8')
-                  with urllib.request.urlopen(urllib.request.Request(origin+'/ludus-doctore-anim.js?v=3',headers={'User-Agent':'ArenaDoctoreQA'}),timeout=20) as r:
+                  with urllib.request.urlopen(urllib.request.Request(origin+'/ludus-doctore-anim.js?v=4',headers={'User-Agent':'ArenaDoctoreQA'}),timeout=20) as r:
                       animation=r.read().decode('utf-8')
                   if (hashlib.sha256(live).hexdigest()==expected and
-                    'ludus-doctore-anim.js?v=3' in html and
-                    'doctore-whip-user-v1.png?v=2' in animation):
+                    'ludus-doctore-anim.js?v=4' in html and
+                    'doctore-whip-user-v1.png?v=2' in animation and
+                    'doctore-sd-v1.webp' not in animation):
+
                       print('CLOUDFLARE_USER_DOCTORE_PASS, exact unchanged original image and new JS loaded')
                       break
                   print('Waiting for Cloudflare Git deployment, attempt',attempt,flush=True)
