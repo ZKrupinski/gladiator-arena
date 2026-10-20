@@ -69,3 +69,54 @@ Regenerate only the failing character/action (8 poses), preserving the
 approved design. Technical pass yields a preview and art/game review, NOT an
 automatic production deployment. If root causes remain unknown after
 reasonable repeated repair attempts, ask the user with concrete evidence.
+
+## 2026-10-21 amendment — MANDATORY PRE-GENERATION BRIEFING + NATIVE SHEET ONLY
+
+**Absolute rule:** Every character sprite generation request and automatic retry
+is ONE character × ONE motion × EIGHT distinct sequential poses × EXACTLY ONE
+high-resolution transparent 4-column × 2-row sprite sheet. No generator request
+may produce eight independent PNG files or mix motions on a board. Independent
+PNG files are **only the output of SpriteForge's later cutting/QA step**.
+
+Each of the 8 source cells must have native pixel dimensions at least
+`max(768, min(1536, ceil(0.80 * min(approved_reference_width, approved_reference_height))))`
+on **both axes**. Sheet minimum is four times that cell width and twice that
+cell height. Example: an approved 1024×1024 reference requires at least
+820×820 original pixels in every cell, so a sheet >=3280×1640.
+This is a **floor, not a target to downsample toward**. Preserve as much real
+source detail as possible. Disallow fake "high-resolution" created by enlarging
+a tiny original or by blurring and resampling. Native pixels do not guarantee
+visual fidelity; inspect the original subject texture/draw detail too.
+
+### Tool briefs BEFORE any artist or provider begins a pose
+
+For manual art work or an assistant about to use an image generator:
+
+```bash
+python scripts/spriteforge_pipeline_v3.py --mode plan --reference /art/approved_wolf.png --character wolf --action walk --out /art/wolf-walk
+python scripts/spriteforge_pipeline_v3.py --mode brief --job /art/wolf-walk/generator_job.json --out /art/wolf-walk
+```
+
+**READ the entire printed Korean briefing** and mandatory action-specific
+failure history before invoking any generation. The briefing contains the
+reference checksum, exact motion, 4×2 native resolution, silhouette ownership,
+gutter requirements, original design constraints, and previous QA errors.
+
+For a connected trusted adapter, `generate` and each automatic repair retry
+perform a **fresh preflight handshake**:
+1. SpriteForge creates `preflight/briefing.md` and `briefing.json`.
+2. The provider must read them and write job- and policy-hash-bound
+   `preflight/acknowledgement.json` containing all blocking rules and a
+   meaningful execution plan.
+3. SpriteForge validates acknowledgement and only THEN allows drawing.
+4. Provider must return exactly ONE 4×2 native sheet, bound to the
+   corresponding briefing checksum. Any eight-file result is rejected.
+5. SpriteForge checks source-sheet seams before cutting into eight individual
+   PNGs, performs QC, previews, retries failures, and blocks production until
+   art/game validation.
+
+Missing, expired, incomplete or wrong-job acknowledgement -> NO drawing.
+Any policy revision or updated approved reference -> remake the job and rebrief.
+This is a behavioral gate that prevents accidental skips; it does not magically
+grant a generator the ability to understand all anatomy or create high-quality
+original detail. Missing ComfyUI/provider adapter -> NOT GENERATED.
