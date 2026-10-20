@@ -17,6 +17,20 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: pip install pillow numpy scipy
+      - name: Verify pre-generation one-action-at-a-time plan
+        run: |
+          python scripts/spriteforge_agent_v2.py --plan-only --character wolf --out /tmp/wolf-stage-plan
+          python - <<'PY'
+          import json
+          a=json.load(open('/tmp/wolf-stage-plan/action_by_action_plan.json'))
+          assert len(a)==10
+          required=[x for x in a if x['required']]
+          assert len(required)==9
+          assert a[-1]['action']=='roar' and not a[-1]['required']
+          assert all(x['retryOnlyThisAction'] for x in a)
+          assert all('ONE' in x['style'] for x in a)
+          print('SPRITEFORGE_GENERATION_STAGE_PLAN_PASS')
+          PY
       - name: Test nine Murmillo actions, alpha segmentation, overlap blocking and motion curves
         run: python scripts/test_spriteforge_agent_v2.py
 
