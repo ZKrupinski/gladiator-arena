@@ -191,10 +191,10 @@ def execute(manifest,out,only=None):
     spec=json.loads(manifest.read_text(encoding="utf8"))
     root=manifest.parent;out=Path(out);out.mkdir(parents=True,exist_ok=True)
     kind=spec.get("character","wolf")
-    (out/"generation_contract.json").write_text(json.dumps(contract(kind,extra_spec),ensure_ascii=False,indent=2),encoding="utf8")
-    declared={}
     extra_spec=spec.get('extraActions',{})
     if not isinstance(extra_spec,dict):raise ValueError('extraActions must be object')
+    (out/"generation_contract.json").write_text(json.dumps(contract(kind,extra_spec),ensure_ascii=False,indent=2),encoding="utf8")
+    declared={}
     for motion,metadata in extra_spec.items():
         if not isinstance(motion,str) or not motion.isidentifier() or len(motion)>48 or motion in ACTIONS:
             raise ValueError('Invalid registered extra '+str(motion))
