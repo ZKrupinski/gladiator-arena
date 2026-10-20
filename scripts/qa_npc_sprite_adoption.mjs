@@ -27,8 +27,8 @@ for(const old of ['doctore-sd-v1.webp',...['0','1','2','3'].map(i=>'doctore_pose
  assert.equal(fs.existsSync(new URL('assets/ludus/'+old,base)),false,old+' is not deleted');
  assert.ok(!css.includes(old)&&!source.includes(old),'old NPC still referenced');
 }
-assert.match(html,/ludus-doctore-anim\.js\?v=6/);
-assert.match(html,/ludus-training-doctore\.css\?v=9/);
+assert.match(html,/ludus-doctore-anim\.js\?v=7/);
+assert.match(html,/ludus-training-doctore\.css\?v=10/);
 assert.match(css,/doctore-idle-approved-v1\.png/);
 assert.match(scenes,/LudusDoctoreAnim\?\.mount/);
 assert.match(scenes,/LudusDoctoreAnim\?\.react/);
@@ -39,10 +39,10 @@ const win={matchMedia:()=>({matches:false})};
 vm.runInNewContext(source,{window:win,requestAnimationFrame:f=>{callbacks.push(f);return callbacks.length;},
  cancelAnimationFrame(){},performance:{now:()=>1000}});
 const npc=win.LudusDoctoreAnim;
-assert.equal(npc.version,'4.1.0');
+assert.equal(npc.version,'4.2.0');
 assert.equal(npc.sprite.framesPerAction,8);
 assert.equal(npc.sprite.scale,1.125);
-assert.equal(npc.sprite.baseline,594);
+assert.equal(npc.sprite.baseline,600);
 assert.ok(npc.mount(actor));
 assert.equal(npc.sprite.wideWhip,856);
 assert.equal(npc.sprite.whipFrames.length,8);
@@ -64,8 +64,9 @@ for(const [id,mode,sheet] of [
  assert.equal(actor.dataset.action,mode);
  assert.equal(actor.dataset.sheet,sheet);
  if(mode==='whip')assert.match(actor.dataset.renderFile,/doctore-whip-clean-v2\/frame-\d\.png/);
- assert.equal(actor.dataset.footY,'594');
- assert.equal(actor.style.transform,'scale(1.125)');
+ assert.equal(actor.dataset.footY,'600');
+ assert.equal(actor.dataset.fixedRoot,'true');
+ assert.equal(actor.dataset.source,'approved-unmodified-png');
  for(let n=0;n<8;n++){
   // All 8 frame crops remain within the native untouched source bitmap.
   const idx=n;const sy=mode==='whip'?(n<4?0:575):(n<4?0:
