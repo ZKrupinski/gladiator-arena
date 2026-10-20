@@ -1,0 +1,37 @@
+name: Erase baked trainer text from original backdrop
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/build_training_dialogue_clean.py
+      - .github/workflows/build-training-dialogue-clean.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  approved-training-backdrop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install lossless background editing dependencies
+        run: python -m pip install --quiet numpy pillow opencv-python-headless
+      - name: Remove only the fake speech panel
+        run: python scripts/build_training_dialogue_clean.py
+      - name: Archive clean background as a separate game asset
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/assets/ludus/training_no_dialogue_v1.webp
+          if git diff --cached --quiet; then
+            echo 'Clean backdrop already available'
+          else
+            git commit -m 'assets(training): remove painted NPC speech bubble for dynamic dialogue'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
