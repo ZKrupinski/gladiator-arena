@@ -1,0 +1,4511 @@
+{
+  "protocol": "spriteforge-v3",
+  "scope": "five existing 8x5 legacy atlases + 200 extracted PNGs",
+  "checkedSourceAtlases": 5,
+  "checkedFrames": 200,
+  "sourceAtlasesPreserved": true,
+  "nativeFramePixelsApprox": [
+    198,
+    198
+  ],
+  "exportFramePixels": [
+    512,
+    512
+  ],
+  "nativeV3GenerationApproved": false,
+  "releaseAuthorized": false,
+  "visualReviewRequired": true,
+  "status": "LEGACY_AUDITED_SAFELY_CLEANED_PENDING_REVIEW",
+  "totals": {
+    "frames": 200,
+    "fixedIslands": 0,
+    "fixedAlphaPixels": 0,
+    "ambiguousIslands": 1,
+    "edgeRiskFrames": 62,
+    "modifiedFrames": 0,
+    "framesNeedingVisualReview": 62
+  },
+  "species": {
+    "wolf": {
+      "frames": 40,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": 0,
+      "edgeRiskFrames": 4,
+      "modifiedFrames": 0,
+      "framesNeedingVisualReview": 4
+    },
+    "leopard": {
+      "frames": 40,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": 0,
+      "edgeRiskFrames": 20,
+      "modifiedFrames": 0,
+      "framesNeedingVisualReview": 20
+    },
+    "tiger": {
+      "frames": 40,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": 0,
+      "edgeRiskFrames": 6,
+      "modifiedFrames": 0,
+      "framesNeedingVisualReview": 6
+    },
+    "lion": {
+      "frames": 40,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": 0,
+      "edgeRiskFrames": 7,
+      "modifiedFrames": 0,
+      "framesNeedingVisualReview": 7
+    },
+    "elephant": {
+      "frames": 40,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": 1,
+      "edgeRiskFrames": 25,
+      "modifiedFrames": 0,
+      "framesNeedingVisualReview": 25
+    }
+  },
+  "frames": [
+    {
+      "problems": [],
+      "bodyBBox": [
+        103,
+        136,
+        475,
+        429
+      ],
+      "bodyAlphaPixels": 77385,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "idle",
+      "index": 0,
+      "path": "assets/beasts/individual/wolf/idle/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        96,
+        136,
+        469,
+        429
+      ],
+      "bodyAlphaPixels": 76950,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "idle",
+      "index": 1,
+      "path": "assets/beasts/individual/wolf/idle/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        88,
+        136,
+        466,
+        430
+      ],
+      "bodyAlphaPixels": 78120,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "idle",
+      "index": 2,
+      "path": "assets/beasts/individual/wolf/idle/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        82,
+        136,
+        454,
+        429
+      ],
+      "bodyAlphaPixels": 77330,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "idle",
+      "index": 3,
+      "path": "assets/beasts/individual/wolf/idle/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        72,
+        138,
+        451,
+        429
+      ],
+      "bodyAlphaPixels": 77892,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "idle",
+      "index": 4,
+      "path": "assets/beasts/individual/wolf/idle/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        71,
+        137,
+        445,
+        428
+      ],
+      "bodyAlphaPixels": 77483,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "idle",
+      "index": 5,
+      "path": "assets/beasts/individual/wolf/idle/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        60,
+        137,
+        436,
+        429
+      ],
+      "bodyAlphaPixels": 77729,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "idle",
+      "index": 6,
+      "path": "assets/beasts/individual/wolf/idle/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        56,
+        138,
+        430,
+        429
+      ],
+      "bodyAlphaPixels": 77152,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "idle",
+      "index": 7,
+      "path": "assets/beasts/individual/wolf/idle/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        88,
+        113,
+        486,
+        408
+      ],
+      "bodyAlphaPixels": 76435,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "walk",
+      "index": 0,
+      "path": "assets/beasts/individual/wolf/walk/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        92,
+        124,
+        479,
+        411
+      ],
+      "bodyAlphaPixels": 69832,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "walk",
+      "index": 1,
+      "path": "assets/beasts/individual/wolf/walk/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        64,
+        118,
+        462,
+        408
+      ],
+      "bodyAlphaPixels": 73101,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 2.0
+        }
+      ],
+      "species": "wolf",
+      "action": "walk",
+      "index": 2,
+      "path": "assets/beasts/individual/wolf/walk/02.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        40,
+        122,
+        509,
+        391
+      ],
+      "bodyAlphaPixels": 82592,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "walk",
+      "index": 3,
+      "path": "assets/beasts/individual/wolf/walk/03.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        121,
+        424,
+        410
+      ],
+      "bodyAlphaPixels": 74395,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "walk",
+      "index": 4,
+      "path": "assets/beasts/individual/wolf/walk/04.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        19,
+        119,
+        511,
+        400
+      ],
+      "bodyAlphaPixels": 84529,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "walk",
+      "index": 5,
+      "path": "assets/beasts/individual/wolf/walk/05.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        117,
+        418,
+        398
+      ],
+      "bodyAlphaPixels": 73618,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "walk",
+      "index": 6,
+      "path": "assets/beasts/individual/wolf/walk/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        20,
+        113,
+        433,
+        397
+      ],
+      "bodyAlphaPixels": 77571,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "walk",
+      "index": 7,
+      "path": "assets/beasts/individual/wolf/walk/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        104,
+        129,
+        472,
+        416
+      ],
+      "bodyAlphaPixels": 73907,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "attack",
+      "index": 0,
+      "path": "assets/beasts/individual/wolf/attack/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        78,
+        99,
+        430,
+        416
+      ],
+      "bodyAlphaPixels": 81672,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "attack",
+      "index": 1,
+      "path": "assets/beasts/individual/wolf/attack/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        66,
+        59,
+        445,
+        389
+      ],
+      "bodyAlphaPixels": 77342,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "attack",
+      "index": 2,
+      "path": "assets/beasts/individual/wolf/attack/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        32,
+        53,
+        395,
+        362
+      ],
+      "bodyAlphaPixels": 73935,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "attack",
+      "index": 3,
+      "path": "assets/beasts/individual/wolf/attack/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        22,
+        85,
+        456,
+        407
+      ],
+      "bodyAlphaPixels": 86945,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "attack",
+      "index": 4,
+      "path": "assets/beasts/individual/wolf/attack/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        23,
+        170,
+        418,
+        424
+      ],
+      "bodyAlphaPixels": 74897,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "attack",
+      "index": 5,
+      "path": "assets/beasts/individual/wolf/attack/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        33,
+        128,
+        414,
+        416
+      ],
+      "bodyAlphaPixels": 75478,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "attack",
+      "index": 6,
+      "path": "assets/beasts/individual/wolf/attack/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        45,
+        148,
+        430,
+        417
+      ],
+      "bodyAlphaPixels": 75088,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "attack",
+      "index": 7,
+      "path": "assets/beasts/individual/wolf/attack/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        84,
+        93,
+        472,
+        391
+      ],
+      "bodyAlphaPixels": 79148,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "hit",
+      "index": 0,
+      "path": "assets/beasts/individual/wolf/hit/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        98,
+        94,
+        499,
+        393
+      ],
+      "bodyAlphaPixels": 81471,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "hit",
+      "index": 1,
+      "path": "assets/beasts/individual/wolf/hit/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        112,
+        88,
+        491,
+        382
+      ],
+      "bodyAlphaPixels": 71705,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "hit",
+      "index": 2,
+      "path": "assets/beasts/individual/wolf/hit/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        119,
+        91,
+        468,
+        398
+      ],
+      "bodyAlphaPixels": 74877,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "hit",
+      "index": 3,
+      "path": "assets/beasts/individual/wolf/hit/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        100,
+        93,
+        469,
+        402
+      ],
+      "bodyAlphaPixels": 81772,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "hit",
+      "index": 4,
+      "path": "assets/beasts/individual/wolf/hit/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        95,
+        98,
+        481,
+        396
+      ],
+      "bodyAlphaPixels": 80303,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "hit",
+      "index": 5,
+      "path": "assets/beasts/individual/wolf/hit/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        95,
+        98,
+        455,
+        392
+      ],
+      "bodyAlphaPixels": 74937,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "hit",
+      "index": 6,
+      "path": "assets/beasts/individual/wolf/hit/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        73,
+        98,
+        430,
+        392
+      ],
+      "bodyAlphaPixels": 74595,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "hit",
+      "index": 7,
+      "path": "assets/beasts/individual/wolf/hit/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        87,
+        58,
+        466,
+        364
+      ],
+      "bodyAlphaPixels": 79475,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "defeat",
+      "index": 0,
+      "path": "assets/beasts/individual/wolf/defeat/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        80,
+        94,
+        458,
+        359
+      ],
+      "bodyAlphaPixels": 69300,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "defeat",
+      "index": 1,
+      "path": "assets/beasts/individual/wolf/defeat/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        72,
+        101,
+        429,
+        363
+      ],
+      "bodyAlphaPixels": 70176,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "defeat",
+      "index": 2,
+      "path": "assets/beasts/individual/wolf/defeat/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        49,
+        142,
+        430,
+        363
+      ],
+      "bodyAlphaPixels": 62859,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "defeat",
+      "index": 3,
+      "path": "assets/beasts/individual/wolf/defeat/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        46,
+        153,
+        443,
+        363
+      ],
+      "bodyAlphaPixels": 61289,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "defeat",
+      "index": 4,
+      "path": "assets/beasts/individual/wolf/defeat/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        57,
+        159,
+        462,
+        361
+      ],
+      "bodyAlphaPixels": 61061,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "defeat",
+      "index": 5,
+      "path": "assets/beasts/individual/wolf/defeat/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        54,
+        165,
+        463,
+        361
+      ],
+      "bodyAlphaPixels": 57548,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "defeat",
+      "index": 6,
+      "path": "assets/beasts/individual/wolf/defeat/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        61,
+        178,
+        434,
+        358
+      ],
+      "bodyAlphaPixels": 48315,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "wolf",
+      "action": "defeat",
+      "index": 7,
+      "path": "assets/beasts/individual/wolf/defeat/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        93,
+        153,
+        490,
+        425
+      ],
+      "bodyAlphaPixels": 74108,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "idle",
+      "index": 0,
+      "path": "assets/beasts/individual/leopard/idle/00.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        126,
+        145,
+        507,
+        424
+      ],
+      "bodyAlphaPixels": 72472,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "idle",
+      "index": 1,
+      "path": "assets/beasts/individual/leopard/idle/01.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        133,
+        139,
+        511,
+        426
+      ],
+      "bodyAlphaPixels": 73192,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "idle",
+      "index": 2,
+      "path": "assets/beasts/individual/leopard/idle/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        127,
+        137,
+        467,
+        425
+      ],
+      "bodyAlphaPixels": 65821,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "idle",
+      "index": 3,
+      "path": "assets/beasts/individual/leopard/idle/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        86,
+        153,
+        449,
+        421
+      ],
+      "bodyAlphaPixels": 68052,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "idle",
+      "index": 4,
+      "path": "assets/beasts/individual/leopard/idle/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        73,
+        159,
+        437,
+        419
+      ],
+      "bodyAlphaPixels": 67875,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "idle",
+      "index": 5,
+      "path": "assets/beasts/individual/leopard/idle/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        51,
+        143,
+        425,
+        420
+      ],
+      "bodyAlphaPixels": 70267,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "idle",
+      "index": 6,
+      "path": "assets/beasts/individual/leopard/idle/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        46,
+        163,
+        436,
+        419
+      ],
+      "bodyAlphaPixels": 70278,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "idle",
+      "index": 7,
+      "path": "assets/beasts/individual/leopard/idle/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        94,
+        92,
+        496,
+        440
+      ],
+      "bodyAlphaPixels": 75537,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "walk",
+      "index": 0,
+      "path": "assets/beasts/individual/leopard/walk/00.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        108,
+        111,
+        509,
+        411
+      ],
+      "bodyAlphaPixels": 69368,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "walk",
+      "index": 1,
+      "path": "assets/beasts/individual/leopard/walk/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        94,
+        119,
+        494,
+        438
+      ],
+      "bodyAlphaPixels": 64368,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 20,
+          "distanceToBodyPx": 6.4
+        }
+      ],
+      "species": "leopard",
+      "action": "walk",
+      "index": 2,
+      "path": "assets/beasts/individual/leopard/walk/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        78,
+        119,
+        477,
+        441
+      ],
+      "bodyAlphaPixels": 66721,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "walk",
+      "index": 3,
+      "path": "assets/beasts/individual/leopard/walk/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        65,
+        120,
+        491,
+        445
+      ],
+      "bodyAlphaPixels": 69141,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "walk",
+      "index": 4,
+      "path": "assets/beasts/individual/leopard/walk/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        65,
+        128,
+        497,
+        439
+      ],
+      "bodyAlphaPixels": 66830,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "walk",
+      "index": 5,
+      "path": "assets/beasts/individual/leopard/walk/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        50,
+        125,
+        449,
+        439
+      ],
+      "bodyAlphaPixels": 66161,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "walk",
+      "index": 6,
+      "path": "assets/beasts/individual/leopard/walk/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        48,
+        139,
+        433,
+        439
+      ],
+      "bodyAlphaPixels": 64474,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "walk",
+      "index": 7,
+      "path": "assets/beasts/individual/leopard/walk/07.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        101,
+        116,
+        509,
+        419
+      ],
+      "bodyAlphaPixels": 78084,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "attack",
+      "index": 0,
+      "path": "assets/beasts/individual/leopard/attack/00.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        107,
+        66,
+        509,
+        411
+      ],
+      "bodyAlphaPixels": 73987,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "attack",
+      "index": 1,
+      "path": "assets/beasts/individual/leopard/attack/01.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        145,
+        87,
+        511,
+        376
+      ],
+      "bodyAlphaPixels": 67758,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "attack",
+      "index": 2,
+      "path": "assets/beasts/individual/leopard/attack/02.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        181,
+        84,
+        509,
+        400
+      ],
+      "bodyAlphaPixels": 60714,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "attack",
+      "index": 3,
+      "path": "assets/beasts/individual/leopard/attack/03.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        217,
+        140,
+        509,
+        428
+      ],
+      "bodyAlphaPixels": 58632,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 2.0
+        }
+      ],
+      "species": "leopard",
+      "action": "attack",
+      "index": 4,
+      "path": "assets/beasts/individual/leopard/attack/04.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        115,
+        279,
+        423
+      ],
+      "bodyAlphaPixels": 51750,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "attack",
+      "index": 5,
+      "path": "assets/beasts/individual/leopard/attack/05.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        117,
+        337,
+        425
+      ],
+      "bodyAlphaPixels": 63234,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "attack",
+      "index": 6,
+      "path": "assets/beasts/individual/leopard/attack/06.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        133,
+        388,
+        419
+      ],
+      "bodyAlphaPixels": 75715,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "attack",
+      "index": 7,
+      "path": "assets/beasts/individual/leopard/attack/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        90,
+        100,
+        501,
+        406
+      ],
+      "bodyAlphaPixels": 79254,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "hit",
+      "index": 0,
+      "path": "assets/beasts/individual/leopard/hit/00.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        142,
+        85,
+        509,
+        406
+      ],
+      "bodyAlphaPixels": 78200,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 13,
+          "distanceToBodyPx": 2.0
+        }
+      ],
+      "species": "leopard",
+      "action": "hit",
+      "index": 1,
+      "path": "assets/beasts/individual/leopard/hit/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        142,
+        116,
+        484,
+        402
+      ],
+      "bodyAlphaPixels": 70808,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "hit",
+      "index": 2,
+      "path": "assets/beasts/individual/leopard/hit/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        126,
+        105,
+        474,
+        403
+      ],
+      "bodyAlphaPixels": 67959,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "hit",
+      "index": 3,
+      "path": "assets/beasts/individual/leopard/hit/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        81,
+        137,
+        464,
+        408
+      ],
+      "bodyAlphaPixels": 68058,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "hit",
+      "index": 4,
+      "path": "assets/beasts/individual/leopard/hit/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        79,
+        137,
+        469,
+        411
+      ],
+      "bodyAlphaPixels": 68543,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "hit",
+      "index": 5,
+      "path": "assets/beasts/individual/leopard/hit/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        72,
+        151,
+        440,
+        418
+      ],
+      "bodyAlphaPixels": 70178,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "hit",
+      "index": 6,
+      "path": "assets/beasts/individual/leopard/hit/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        57,
+        139,
+        423,
+        406
+      ],
+      "bodyAlphaPixels": 67770,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "hit",
+      "index": 7,
+      "path": "assets/beasts/individual/leopard/hit/07.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        110,
+        101,
+        509,
+        370
+      ],
+      "bodyAlphaPixels": 76158,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "defeat",
+      "index": 0,
+      "path": "assets/beasts/individual/leopard/defeat/00.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        143,
+        117,
+        507,
+        373
+      ],
+      "bodyAlphaPixels": 65453,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "defeat",
+      "index": 1,
+      "path": "assets/beasts/individual/leopard/defeat/01.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        143,
+        145,
+        511,
+        372
+      ],
+      "bodyAlphaPixels": 56157,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "defeat",
+      "index": 2,
+      "path": "assets/beasts/individual/leopard/defeat/02.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        174,
+        156,
+        509,
+        371
+      ],
+      "bodyAlphaPixels": 51579,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "defeat",
+      "index": 3,
+      "path": "assets/beasts/individual/leopard/defeat/03.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        220,
+        177,
+        509,
+        369
+      ],
+      "bodyAlphaPixels": 42995,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "defeat",
+      "index": 4,
+      "path": "assets/beasts/individual/leopard/defeat/04.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        179,
+        279,
+        369
+      ],
+      "bodyAlphaPixels": 35065,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "defeat",
+      "index": 5,
+      "path": "assets/beasts/individual/leopard/defeat/05.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        187,
+        331,
+        371
+      ],
+      "bodyAlphaPixels": 44657,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "defeat",
+      "index": 6,
+      "path": "assets/beasts/individual/leopard/defeat/06.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        187,
+        426,
+        368
+      ],
+      "bodyAlphaPixels": 60374,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "leopard",
+      "action": "defeat",
+      "index": 7,
+      "path": "assets/beasts/individual/leopard/defeat/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        78,
+        143,
+        451,
+        436
+      ],
+      "bodyAlphaPixels": 79307,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "idle",
+      "index": 0,
+      "path": "assets/beasts/individual/tiger/idle/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        80,
+        139,
+        450,
+        436
+      ],
+      "bodyAlphaPixels": 78572,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 16,
+          "distanceToBodyPx": 2.2
+        }
+      ],
+      "species": "tiger",
+      "action": "idle",
+      "index": 1,
+      "path": "assets/beasts/individual/tiger/idle/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        80,
+        137,
+        452,
+        435
+      ],
+      "bodyAlphaPixels": 79006,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "idle",
+      "index": 2,
+      "path": "assets/beasts/individual/tiger/idle/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        79,
+        141,
+        448,
+        436
+      ],
+      "bodyAlphaPixels": 78034,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "idle",
+      "index": 3,
+      "path": "assets/beasts/individual/tiger/idle/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        80,
+        135,
+        454,
+        436
+      ],
+      "bodyAlphaPixels": 79485,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "idle",
+      "index": 4,
+      "path": "assets/beasts/individual/tiger/idle/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        82,
+        138,
+        450,
+        436
+      ],
+      "bodyAlphaPixels": 78355,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "idle",
+      "index": 5,
+      "path": "assets/beasts/individual/tiger/idle/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        80,
+        146,
+        449,
+        436
+      ],
+      "bodyAlphaPixels": 77447,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "idle",
+      "index": 6,
+      "path": "assets/beasts/individual/tiger/idle/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        74,
+        137,
+        442,
+        437
+      ],
+      "bodyAlphaPixels": 78504,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "idle",
+      "index": 7,
+      "path": "assets/beasts/individual/tiger/idle/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        77,
+        112,
+        474,
+        438
+      ],
+      "bodyAlphaPixels": 83846,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "walk",
+      "index": 0,
+      "path": "assets/beasts/individual/tiger/walk/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        73,
+        106,
+        460,
+        414
+      ],
+      "bodyAlphaPixels": 78745,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "walk",
+      "index": 1,
+      "path": "assets/beasts/individual/tiger/walk/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        69,
+        104,
+        472,
+        430
+      ],
+      "bodyAlphaPixels": 80729,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "walk",
+      "index": 2,
+      "path": "assets/beasts/individual/tiger/walk/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        63,
+        107,
+        455,
+        416
+      ],
+      "bodyAlphaPixels": 75994,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "walk",
+      "index": 3,
+      "path": "assets/beasts/individual/tiger/walk/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        57,
+        105,
+        441,
+        425
+      ],
+      "bodyAlphaPixels": 77234,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "walk",
+      "index": 4,
+      "path": "assets/beasts/individual/tiger/walk/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        27,
+        121,
+        444,
+        428
+      ],
+      "bodyAlphaPixels": 81535,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "walk",
+      "index": 5,
+      "path": "assets/beasts/individual/tiger/walk/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        36,
+        127,
+        444,
+        434
+      ],
+      "bodyAlphaPixels": 83425,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "walk",
+      "index": 6,
+      "path": "assets/beasts/individual/tiger/walk/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        41,
+        113,
+        443,
+        434
+      ],
+      "bodyAlphaPixels": 86167,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "walk",
+      "index": 7,
+      "path": "assets/beasts/individual/tiger/walk/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        81,
+        159,
+        478,
+        449
+      ],
+      "bodyAlphaPixels": 85607,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "attack",
+      "index": 0,
+      "path": "assets/beasts/individual/tiger/attack/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        87,
+        75,
+        460,
+        450
+      ],
+      "bodyAlphaPixels": 94415,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "attack",
+      "index": 1,
+      "path": "assets/beasts/individual/tiger/attack/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        79,
+        71,
+        482,
+        447
+      ],
+      "bodyAlphaPixels": 90449,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "attack",
+      "index": 2,
+      "path": "assets/beasts/individual/tiger/attack/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        101,
+        73,
+        436,
+        456
+      ],
+      "bodyAlphaPixels": 79565,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "attack",
+      "index": 3,
+      "path": "assets/beasts/individual/tiger/attack/03.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        53,
+        99,
+        509,
+        437
+      ],
+      "bodyAlphaPixels": 98209,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "attack",
+      "index": 4,
+      "path": "assets/beasts/individual/tiger/attack/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        59,
+        146,
+        464,
+        457
+      ],
+      "bodyAlphaPixels": 83009,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "attack",
+      "index": 5,
+      "path": "assets/beasts/individual/tiger/attack/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        85,
+        149,
+        467,
+        455
+      ],
+      "bodyAlphaPixels": 82548,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "attack",
+      "index": 6,
+      "path": "assets/beasts/individual/tiger/attack/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        77,
+        148,
+        441,
+        449
+      ],
+      "bodyAlphaPixels": 77430,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "attack",
+      "index": 7,
+      "path": "assets/beasts/individual/tiger/attack/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        78,
+        127,
+        458,
+        439
+      ],
+      "bodyAlphaPixels": 85736,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "hit",
+      "index": 0,
+      "path": "assets/beasts/individual/tiger/hit/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        94,
+        116,
+        461,
+        431
+      ],
+      "bodyAlphaPixels": 86983,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "hit",
+      "index": 1,
+      "path": "assets/beasts/individual/tiger/hit/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        87,
+        100,
+        459,
+        439
+      ],
+      "bodyAlphaPixels": 83425,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "hit",
+      "index": 2,
+      "path": "assets/beasts/individual/tiger/hit/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        81,
+        129,
+        467,
+        450
+      ],
+      "bodyAlphaPixels": 80053,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "hit",
+      "index": 3,
+      "path": "assets/beasts/individual/tiger/hit/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        84,
+        140,
+        461,
+        451
+      ],
+      "bodyAlphaPixels": 82583,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "hit",
+      "index": 4,
+      "path": "assets/beasts/individual/tiger/hit/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        73,
+        182,
+        467,
+        450
+      ],
+      "bodyAlphaPixels": 72408,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "hit",
+      "index": 5,
+      "path": "assets/beasts/individual/tiger/hit/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        57,
+        179,
+        453,
+        449
+      ],
+      "bodyAlphaPixels": 74557,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "hit",
+      "index": 6,
+      "path": "assets/beasts/individual/tiger/hit/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        73,
+        160,
+        437,
+        446
+      ],
+      "bodyAlphaPixels": 74057,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "hit",
+      "index": 7,
+      "path": "assets/beasts/individual/tiger/hit/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        87,
+        110,
+        444,
+        396
+      ],
+      "bodyAlphaPixels": 77337,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "defeat",
+      "index": 0,
+      "path": "assets/beasts/individual/tiger/defeat/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        71,
+        100,
+        458,
+        398
+      ],
+      "bodyAlphaPixels": 78692,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "defeat",
+      "index": 1,
+      "path": "assets/beasts/individual/tiger/defeat/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        62,
+        124,
+        485,
+        395
+      ],
+      "bodyAlphaPixels": 76679,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "defeat",
+      "index": 2,
+      "path": "assets/beasts/individual/tiger/defeat/02.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        77,
+        153,
+        509,
+        389
+      ],
+      "bodyAlphaPixels": 67927,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "defeat",
+      "index": 3,
+      "path": "assets/beasts/individual/tiger/defeat/03.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        95,
+        182,
+        509,
+        392
+      ],
+      "bodyAlphaPixels": 59518,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "defeat",
+      "index": 4,
+      "path": "assets/beasts/individual/tiger/defeat/04.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        124,
+        195,
+        511,
+        393
+      ],
+      "bodyAlphaPixels": 57931,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "defeat",
+      "index": 5,
+      "path": "assets/beasts/individual/tiger/defeat/05.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        211,
+        319,
+        392
+      ],
+      "bodyAlphaPixels": 32997,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "defeat",
+      "index": 6,
+      "path": "assets/beasts/individual/tiger/defeat/06.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        200,
+        442,
+        386
+      ],
+      "bodyAlphaPixels": 60710,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "tiger",
+      "action": "defeat",
+      "index": 7,
+      "path": "assets/beasts/individual/tiger/defeat/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        93,
+        130,
+        469,
+        453
+      ],
+      "bodyAlphaPixels": 81480,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "idle",
+      "index": 0,
+      "path": "assets/beasts/individual/lion/idle/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        99,
+        128,
+        470,
+        454
+      ],
+      "bodyAlphaPixels": 82412,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "idle",
+      "index": 1,
+      "path": "assets/beasts/individual/lion/idle/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        100,
+        129,
+        464,
+        454
+      ],
+      "bodyAlphaPixels": 79605,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "idle",
+      "index": 2,
+      "path": "assets/beasts/individual/lion/idle/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        91,
+        127,
+        463,
+        454
+      ],
+      "bodyAlphaPixels": 81880,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "idle",
+      "index": 3,
+      "path": "assets/beasts/individual/lion/idle/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        96,
+        127,
+        466,
+        453
+      ],
+      "bodyAlphaPixels": 82900,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "idle",
+      "index": 4,
+      "path": "assets/beasts/individual/lion/idle/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        97,
+        128,
+        461,
+        454
+      ],
+      "bodyAlphaPixels": 79523,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "idle",
+      "index": 5,
+      "path": "assets/beasts/individual/lion/idle/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        94,
+        128,
+        460,
+        454
+      ],
+      "bodyAlphaPixels": 81362,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "idle",
+      "index": 6,
+      "path": "assets/beasts/individual/lion/idle/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        100,
+        127,
+        449,
+        453
+      ],
+      "bodyAlphaPixels": 78658,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "idle",
+      "index": 7,
+      "path": "assets/beasts/individual/lion/idle/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        94,
+        115,
+        486,
+        450
+      ],
+      "bodyAlphaPixels": 79629,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "walk",
+      "index": 0,
+      "path": "assets/beasts/individual/lion/walk/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        110,
+        115,
+        495,
+        446
+      ],
+      "bodyAlphaPixels": 79439,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "walk",
+      "index": 1,
+      "path": "assets/beasts/individual/lion/walk/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        108,
+        122,
+        496,
+        440
+      ],
+      "bodyAlphaPixels": 77285,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "walk",
+      "index": 2,
+      "path": "assets/beasts/individual/lion/walk/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        114,
+        112,
+        483,
+        440
+      ],
+      "bodyAlphaPixels": 80579,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "walk",
+      "index": 3,
+      "path": "assets/beasts/individual/lion/walk/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        101,
+        125,
+        485,
+        433
+      ],
+      "bodyAlphaPixels": 72290,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "walk",
+      "index": 4,
+      "path": "assets/beasts/individual/lion/walk/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        98,
+        126,
+        468,
+        439
+      ],
+      "bodyAlphaPixels": 72261,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "walk",
+      "index": 5,
+      "path": "assets/beasts/individual/lion/walk/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        91,
+        127,
+        455,
+        438
+      ],
+      "bodyAlphaPixels": 73744,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 2,
+          "distanceToBodyPx": 2.0
+        }
+      ],
+      "species": "lion",
+      "action": "walk",
+      "index": 6,
+      "path": "assets/beasts/individual/lion/walk/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        78,
+        126,
+        441,
+        443
+      ],
+      "bodyAlphaPixels": 77332,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "walk",
+      "index": 7,
+      "path": "assets/beasts/individual/lion/walk/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        87,
+        123,
+        475,
+        439
+      ],
+      "bodyAlphaPixels": 83799,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "attack",
+      "index": 0,
+      "path": "assets/beasts/individual/lion/attack/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        97,
+        95,
+        498,
+        448
+      ],
+      "bodyAlphaPixels": 89127,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "attack",
+      "index": 1,
+      "path": "assets/beasts/individual/lion/attack/01.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        123,
+        101,
+        505,
+        436
+      ],
+      "bodyAlphaPixels": 86994,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "attack",
+      "index": 2,
+      "path": "assets/beasts/individual/lion/attack/02.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        113,
+        88,
+        504,
+        435
+      ],
+      "bodyAlphaPixels": 93119,
+      "detachedIslands": 2,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 2.0
+        },
+        {
+          "pixels": 22,
+          "distanceToBodyPx": 2.8
+        }
+      ],
+      "species": "lion",
+      "action": "attack",
+      "index": 3,
+      "path": "assets/beasts/individual/lion/attack/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        123,
+        98,
+        479,
+        437
+      ],
+      "bodyAlphaPixels": 92245,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "attack",
+      "index": 4,
+      "path": "assets/beasts/individual/lion/attack/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        104,
+        103,
+        473,
+        448
+      ],
+      "bodyAlphaPixels": 88327,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 112,
+          "distanceToBodyPx": 6.4
+        }
+      ],
+      "species": "lion",
+      "action": "attack",
+      "index": 5,
+      "path": "assets/beasts/individual/lion/attack/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        72,
+        149,
+        460,
+        446
+      ],
+      "bodyAlphaPixels": 75937,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "attack",
+      "index": 6,
+      "path": "assets/beasts/individual/lion/attack/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        103,
+        148,
+        447,
+        445
+      ],
+      "bodyAlphaPixels": 73157,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "attack",
+      "index": 7,
+      "path": "assets/beasts/individual/lion/attack/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        85,
+        97,
+        453,
+        420
+      ],
+      "bodyAlphaPixels": 83643,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "hit",
+      "index": 0,
+      "path": "assets/beasts/individual/lion/hit/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        83,
+        109,
+        481,
+        430
+      ],
+      "bodyAlphaPixels": 90513,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "hit",
+      "index": 1,
+      "path": "assets/beasts/individual/lion/hit/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        102,
+        130,
+        468,
+        428
+      ],
+      "bodyAlphaPixels": 78255,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "hit",
+      "index": 2,
+      "path": "assets/beasts/individual/lion/hit/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        92,
+        150,
+        466,
+        427
+      ],
+      "bodyAlphaPixels": 73492,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "hit",
+      "index": 3,
+      "path": "assets/beasts/individual/lion/hit/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        94,
+        129,
+        471,
+        431
+      ],
+      "bodyAlphaPixels": 80647,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "hit",
+      "index": 4,
+      "path": "assets/beasts/individual/lion/hit/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        102,
+        117,
+        474,
+        430
+      ],
+      "bodyAlphaPixels": 77875,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "hit",
+      "index": 5,
+      "path": "assets/beasts/individual/lion/hit/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        116,
+        122,
+        471,
+        430
+      ],
+      "bodyAlphaPixels": 73664,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "hit",
+      "index": 6,
+      "path": "assets/beasts/individual/lion/hit/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        101,
+        115,
+        446,
+        435
+      ],
+      "bodyAlphaPixels": 73639,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "hit",
+      "index": 7,
+      "path": "assets/beasts/individual/lion/hit/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        101,
+        60,
+        476,
+        387
+      ],
+      "bodyAlphaPixels": 83091,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "defeat",
+      "index": 0,
+      "path": "assets/beasts/individual/lion/defeat/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        100,
+        118,
+        472,
+        383
+      ],
+      "bodyAlphaPixels": 69210,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 2.0
+        }
+      ],
+      "species": "lion",
+      "action": "defeat",
+      "index": 1,
+      "path": "assets/beasts/individual/lion/defeat/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        107,
+        145,
+        482,
+        383
+      ],
+      "bodyAlphaPixels": 64500,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "defeat",
+      "index": 2,
+      "path": "assets/beasts/individual/lion/defeat/02.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        104,
+        162,
+        509,
+        383
+      ],
+      "bodyAlphaPixels": 59729,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "defeat",
+      "index": 3,
+      "path": "assets/beasts/individual/lion/defeat/03.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        129,
+        175,
+        509,
+        383
+      ],
+      "bodyAlphaPixels": 55110,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 2.0
+        }
+      ],
+      "species": "lion",
+      "action": "defeat",
+      "index": 4,
+      "path": "assets/beasts/individual/lion/defeat/04.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        184,
+        185,
+        511,
+        382
+      ],
+      "bodyAlphaPixels": 46777,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "defeat",
+      "index": 5,
+      "path": "assets/beasts/individual/lion/defeat/05.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        282,
+        198,
+        509,
+        377
+      ],
+      "bodyAlphaPixels": 30047,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "defeat",
+      "index": 6,
+      "path": "assets/beasts/individual/lion/defeat/06.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        198,
+        424,
+        382
+      ],
+      "bodyAlphaPixels": 48285,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "lion",
+      "action": "defeat",
+      "index": 7,
+      "path": "assets/beasts/individual/lion/defeat/07.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        71,
+        65,
+        498,
+        425
+      ],
+      "bodyAlphaPixels": 92490,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "idle",
+      "index": 0,
+      "path": "assets/beasts/individual/elephant/idle/00.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        80,
+        73,
+        487,
+        425
+      ],
+      "bodyAlphaPixels": 86503,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "idle",
+      "index": 1,
+      "path": "assets/beasts/individual/elephant/idle/01.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        79,
+        90,
+        486,
+        425
+      ],
+      "bodyAlphaPixels": 86326,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "idle",
+      "index": 2,
+      "path": "assets/beasts/individual/elephant/idle/02.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        82,
+        83,
+        481,
+        425
+      ],
+      "bodyAlphaPixels": 84204,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "idle",
+      "index": 3,
+      "path": "assets/beasts/individual/elephant/idle/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        66,
+        89,
+        480,
+        426
+      ],
+      "bodyAlphaPixels": 86457,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "idle",
+      "index": 4,
+      "path": "assets/beasts/individual/elephant/idle/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        67,
+        92,
+        475,
+        425
+      ],
+      "bodyAlphaPixels": 84971,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "idle",
+      "index": 5,
+      "path": "assets/beasts/individual/elephant/idle/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        67,
+        81,
+        472,
+        425
+      ],
+      "bodyAlphaPixels": 84077,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "idle",
+      "index": 6,
+      "path": "assets/beasts/individual/elephant/idle/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        68,
+        89,
+        455,
+        425
+      ],
+      "bodyAlphaPixels": 81754,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "idle",
+      "index": 7,
+      "path": "assets/beasts/individual/elephant/idle/07.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        67,
+        72,
+        509,
+        429
+      ],
+      "bodyAlphaPixels": 96989,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 2.0
+        }
+      ],
+      "species": "elephant",
+      "action": "walk",
+      "index": 0,
+      "path": "assets/beasts/individual/elephant/walk/00.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        81,
+        506,
+        429
+      ],
+      "bodyAlphaPixels": 103001,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 2.0
+        }
+      ],
+      "species": "elephant",
+      "action": "walk",
+      "index": 1,
+      "path": "assets/beasts/individual/elephant/walk/01.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        65,
+        81,
+        511,
+        431
+      ],
+      "bodyAlphaPixels": 93524,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "walk",
+      "index": 2,
+      "path": "assets/beasts/individual/elephant/walk/02.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        85,
+        481,
+        432
+      ],
+      "bodyAlphaPixels": 97564,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "walk",
+      "index": 3,
+      "path": "assets/beasts/individual/elephant/walk/03.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        41,
+        79,
+        480,
+        430
+      ],
+      "bodyAlphaPixels": 86351,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "walk",
+      "index": 4,
+      "path": "assets/beasts/individual/elephant/walk/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        43,
+        79,
+        480,
+        433
+      ],
+      "bodyAlphaPixels": 85345,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 4,
+          "distanceToBodyPx": 5.4
+        }
+      ],
+      "species": "elephant",
+      "action": "walk",
+      "index": 5,
+      "path": "assets/beasts/individual/elephant/walk/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        38,
+        80,
+        479,
+        431
+      ],
+      "bodyAlphaPixels": 84055,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "walk",
+      "index": 6,
+      "path": "assets/beasts/individual/elephant/walk/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        39,
+        83,
+        455,
+        430
+      ],
+      "bodyAlphaPixels": 81796,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "walk",
+      "index": 7,
+      "path": "assets/beasts/individual/elephant/walk/07.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        68,
+        95,
+        509,
+        415
+      ],
+      "bodyAlphaPixels": 94497,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "attack",
+      "index": 0,
+      "path": "assets/beasts/individual/elephant/attack/00.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        80,
+        509,
+        420
+      ],
+      "bodyAlphaPixels": 102694,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "attack",
+      "index": 1,
+      "path": "assets/beasts/individual/elephant/attack/01.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        88,
+        38,
+        511,
+        415
+      ],
+      "bodyAlphaPixels": 98496,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "attack",
+      "index": 2,
+      "path": "assets/beasts/individual/elephant/attack/02.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        43,
+        509,
+        415
+      ],
+      "bodyAlphaPixels": 119269,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "attack",
+      "index": 3,
+      "path": "assets/beasts/individual/elephant/attack/03.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        61,
+        509,
+        415
+      ],
+      "bodyAlphaPixels": 118290,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "attack",
+      "index": 4,
+      "path": "assets/beasts/individual/elephant/attack/04.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        99,
+        511,
+        425
+      ],
+      "bodyAlphaPixels": 114015,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "attack",
+      "index": 5,
+      "path": "assets/beasts/individual/elephant/attack/05.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        99,
+        65,
+        509,
+        419
+      ],
+      "bodyAlphaPixels": 81708,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "attack",
+      "index": 6,
+      "path": "assets/beasts/individual/elephant/attack/06.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        54,
+        453,
+        418
+      ],
+      "bodyAlphaPixels": 96817,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "attack",
+      "index": 7,
+      "path": "assets/beasts/individual/elephant/attack/07.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        69,
+        67,
+        509,
+        418
+      ],
+      "bodyAlphaPixels": 92410,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "hit",
+      "index": 0,
+      "path": "assets/beasts/individual/elephant/hit/00.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        94,
+        85,
+        509,
+        414
+      ],
+      "bodyAlphaPixels": 81602,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "hit",
+      "index": 1,
+      "path": "assets/beasts/individual/elephant/hit/01.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        68,
+        49,
+        511,
+        415
+      ],
+      "bodyAlphaPixels": 101172,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "hit",
+      "index": 2,
+      "path": "assets/beasts/individual/elephant/hit/02.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL",
+        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW"
+      ],
+      "bodyBBox": [
+        95,
+        72,
+        509,
+        423
+      ],
+      "bodyAlphaPixels": 92191,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [
+        {
+          "pixels": 5,
+          "bbox": [
+            97,
+            310,
+            100,
+            312
+          ],
+          "distanceToBodyPx": 46.6
+        }
+      ],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "hit",
+      "index": 3,
+      "path": "assets/beasts/individual/elephant/hit/03.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        107,
+        81,
+        509,
+        435
+      ],
+      "bodyAlphaPixels": 87724,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "hit",
+      "index": 4,
+      "path": "assets/beasts/individual/elephant/hit/04.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        92,
+        102,
+        511,
+        429
+      ],
+      "bodyAlphaPixels": 85975,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 2.0
+        }
+      ],
+      "species": "elephant",
+      "action": "hit",
+      "index": 5,
+      "path": "assets/beasts/individual/elephant/hit/05.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        92,
+        80,
+        486,
+        427
+      ],
+      "bodyAlphaPixels": 81147,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "hit",
+      "index": 6,
+      "path": "assets/beasts/individual/elephant/hit/06.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        61,
+        87,
+        447,
+        427
+      ],
+      "bodyAlphaPixels": 80695,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "hit",
+      "index": 7,
+      "path": "assets/beasts/individual/elephant/hit/07.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        61,
+        60,
+        509,
+        405
+      ],
+      "bodyAlphaPixels": 96198,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "defeat",
+      "index": 0,
+      "path": "assets/beasts/individual/elephant/defeat/00.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        80,
+        509,
+        405
+      ],
+      "bodyAlphaPixels": 100462,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "defeat",
+      "index": 1,
+      "path": "assets/beasts/individual/elephant/defeat/01.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        139,
+        489,
+        402
+      ],
+      "bodyAlphaPixels": 91812,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "defeat",
+      "index": 2,
+      "path": "assets/beasts/individual/elephant/defeat/02.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        98,
+        137,
+        509,
+        405
+      ],
+      "bodyAlphaPixels": 79117,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "defeat",
+      "index": 3,
+      "path": "assets/beasts/individual/elephant/defeat/03.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        154,
+        459,
+        406
+      ],
+      "bodyAlphaPixels": 86050,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 2.0
+        }
+      ],
+      "species": "elephant",
+      "action": "defeat",
+      "index": 4,
+      "path": "assets/beasts/individual/elephant/defeat/04.png",
+      "changed": false
+    },
+    {
+      "problems": [],
+      "bodyBBox": [
+        59,
+        164,
+        469,
+        413
+      ],
+      "bodyAlphaPixels": 72885,
+      "detachedIslands": 2,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 2.0
+        },
+        {
+          "pixels": 15,
+          "distanceToBodyPx": 2.2
+        }
+      ],
+      "species": "elephant",
+      "action": "defeat",
+      "index": 5,
+      "path": "assets/beasts/individual/elephant/defeat/05.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        68,
+        175,
+        509,
+        414
+      ],
+      "bodyAlphaPixels": 73204,
+      "detachedIslands": 2,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 2.0
+        },
+        {
+          "pixels": 2,
+          "distanceToBodyPx": 2.0
+        }
+      ],
+      "species": "elephant",
+      "action": "defeat",
+      "index": 6,
+      "path": "assets/beasts/individual/elephant/defeat/06.png",
+      "changed": false
+    },
+    {
+      "problems": [
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+      ],
+      "bodyBBox": [
+        3,
+        186,
+        438,
+        405
+      ],
+      "bodyAlphaPixels": 72095,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "ambiguousIslands": [],
+      "otherIslands": [],
+      "species": "elephant",
+      "action": "defeat",
+      "index": 7,
+      "path": "assets/beasts/individual/elephant/defeat/07.png",
+      "changed": false
+    }
+  ],
+  "unresolvedWarning": "Large detached artifacts, attached ghost limbs and clipped body parts require source-level visual review or re-generation; never auto-erase."
+}
