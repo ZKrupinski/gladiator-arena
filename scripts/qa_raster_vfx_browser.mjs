@@ -74,6 +74,82 @@ try{
  }
  assert.ok(output.petalStats.pixels>150,'actual painted front petals extracted from victory PNG');
  assert.ok(output.petalStats.differentFromBase,'front petal layer cannot repaint the entire winner sprite');
+ // The sprite-sheet QA above tests pixels; now prove the ACTUAL game
+ // invokes those original PNG atlases at the right events, not merely loading
+ // them into memory while continuing to draw old/VECTOR effects.
+ await p.locator('#startBtn').click();
+ await p.waitForFunction(()=>window.__arenaQA?.state?.phase==='fight',{timeout:20000});
+ await p.evaluate(()=>{
+  window.__actualPaintCalls=[];
+  const prior=CanvasRenderingContext2D.prototype.drawImage;
+  CanvasRenderingContext2D.prototype.drawImage=function(image,...args){
+   const src=typeof image?.src==='string'?image.src:'';
+   if(src.includes('-directional-8f.png')){
+    const matrix=this.getTransform();
+    window.__actualPaintCalls.push({image:src.includes('combat-')?'combat':'victory',
+     determinant:matrix.a*matrix.d-matrix.b*matrix.c,
+     timestamp:performance.now(),args:args.length});
+   }
+   return prior.call(this,image,...args);
+  };
+ });
+ async function testCombatFacing(direction){
+  const combat=await p.evaluate(direction=>{
+   const {state:s,attack}=window.__arenaQA,f=direction>0?s.player:s.enemy,v=direction>0?s.enemy:s.player;
+   s.phase='fight';s.paused=false;s.autoPlaying=false;s.autoplayEnabled=false;
+   s.gauntlet=null;s.careerMatch=false;s.fx=true;s.resultApplied=false;s.focusFrame=null;s.cinematic=null;
+   s.sparks=[];
+   f.x=direction>0?460:715;v.x=direction>0?660:525;
+   f.face=direction;v.face=-direction;
+   for(const person of [f,v]){
+    person.dead=false;person.hp=person.maxHp;person.st=100;person.stagger=0;person.dodge=0;
+    person.guard=false;person.parry=0;person.guardHold=0;person.invuln=0;
+    person.attackCD=0;person.cd=0;person.comboDash=null;person.chainHits=0;
+    person.knockT=0;
+   }
+   f.attackVariant=0;
+   attack(f,v,false,false);
+   const entry=s.sparks.find(e=>['slash','sweep','thrust'].includes(e.sequence));
+   if(entry){entry.t=entry.delay+.09;}
+   return {found:!!entry,sequence:entry?.sequence,face:f.face,owner:entry?.owner===f};
+  },direction);
+  assert.ok(combat.found&&combat.owner,'real attack emits owner-attached painted trail');
+  await p.waitForTimeout(90);
+  const observed=await p.evaluate(()=>{
+   const list=window.__actualPaintCalls.filter(x=>x.image==='combat');
+   const recent=list.slice(-20);
+   window.__actualPaintCalls=[];
+   return recent;
+  });
+  assert.ok(observed.length>0,'actual combat draw must use the approved PNG atlas');
+  const expected=direction>0?1:-1;
+  assert.ok(observed.some(x=>Math.sign(x.determinant)===expected),
+   'actual combat render must use the correct forward-facing PNG direction');
+  return {direction,events:observed.length,sequence:combat.sequence,expected};
+ }
+ const right=await testCombatFacing(1);
+ const left=await testCombatFacing(-1);
+ const victory=await p.evaluate(()=>{
+  const s=window.__arenaQA.state;
+  s.phase='finisher';s.paused=false;s.fx=true;
+  s.resultWin=true;s.resultApplied=true;s.resultAnim=.70;
+  s.player.face=-1;s.player.dead=false;s.enemy.dead=true;
+  s.slow=1;s.sparks=[];
+  return {phase:s.phase,face:s.player.face};
+ });
+ await p.waitForTimeout(130);
+ const victoryCalls=await p.evaluate(()=>{
+  const calls=window.__actualPaintCalls.filter(e=>e.image==='victory');
+  return calls.slice(-36);
+ });
+ assert.ok(victoryCalls.length>=2,
+  'victory must display actual PNG halo behind hero plus painted petals in front');
+ assert.ok(victoryCalls.some(x=>x.determinant<0),
+  'victory PNG must face the same way as the victorious gladiator');
+ console.log('IN_GAME_APPROVED_PNG_EVENT_PASS '+JSON.stringify({
+   right,left,victory,haloPetalDraws:victoryCalls.length
+ }));
+
  assert.deepEqual(errors,[],'no JS errors on game boot');
  console.log('APPROVED_8FRAME_RASTER_PNG_GAMEPASS '+JSON.stringify({
   version:output.status.version,combat:output.detail.combat.bytes,victory:output.detail.victory.bytes,
