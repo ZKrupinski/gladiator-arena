@@ -18,10 +18,12 @@ const WHIP_ORDER=[0,1,2,3,4,4,5,6];
 const RATE={idle:165,talk:115,command:106,walk:118,whip:118};
 let actor=null,clock=0,stamp=0,mode='idle',until=0,idleLoops=0,previousFrame=-1,raf=0;
 root.__ludusWhipReady=false;
-const whipImage=new Image();
-whipImage.onload=()=>{root.__ludusWhipReady=true;};
-whipImage.onerror=()=>{root.__ludusWhipReady=false;};
-whipImage.src=USER_WHIP_IMAGE;
+if(typeof Image!=='undefined'){
+ const whipImage=new Image();
+ whipImage.onload=()=>{root.__ludusWhipReady=true;};
+ whipImage.onerror=()=>{root.__ludusWhipReady=false;};
+ whipImage.src=USER_WHIP_IMAGE;
+}
 function draw(frame){
  if(!actor)return;
  const col=Math.max(0,Math.min(7,frame));
