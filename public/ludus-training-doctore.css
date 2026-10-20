@@ -1,8 +1,8 @@
 /* Render original approved transparent PNGs only. No image conversion. */
 .la-stage.training .la-trainer-clean,.la-stage.training .la-pose{display:none!important}
 .la-stage.training .la-doctore-live{
- position:absolute;left:185px;top:11px;width:362px;height:520px;z-index:4;
- background-image:url('assets/ludus/doctore-idle-approved-v1.png?approved=1');
+ position:absolute;left:185px;top:20px;width:362px;height:520px;z-index:4;
+ background-image:url('assets/ludus/doctore-idle-approved-v1.png?approved=2');
  background-size:1448px 1086px;background-position:0 0;background-repeat:no-repeat;
  pointer-events:none;user-select:none;overflow:visible;
  clip-path:none;mask:none;-webkit-mask-image:none;
