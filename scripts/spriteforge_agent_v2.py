@@ -242,11 +242,31 @@ def execute(manifest,out,only=None):
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()
-    p.add_argument("--manifest",required=True)
+    p.add_argument("--manifest",help="input sources JSON, used after generation")
     p.add_argument("--out",required=True)
+    p.add_argument("--plan-only",action="store_true",help="prepare one-pose-at-a-time generation contracts BEFORE making art")
+    p.add_argument("--character",default="wolf",help="wolf or other character variant")
     p.add_argument("--only",help="One action, directly after each image generation")
     p.add_argument("--allow-partial",action="store_true")
     args=p.parse_args()
+    if args.plan_only:
+        out=Path(args.out);out.mkdir(parents=True,exist_ok=True)
+        rules=contract(args.character)
+        instructions=[]
+        for action in (*ACTIONS,"roar"):
+            instructions.append({"action":action,"required":action in ACTIONS,
+                "semantic":WOLF.get(action,action) if args.character=="wolf" else action,
+                "style":"Exactly ONE character action, 8 distinct sequential high-resolution fully drawn poses, "
+                  "4 columns x 2 rows on a transparent background; leave large safety gutters in X and Y; "
+                  "never create a combined multi-action board; never change approved character anatomy or costume.",
+                "afterGenerationCheck":"python scripts/spriteforge_agent_v2.py --manifest SOURCES.json --out QA --only "+action,
+                "retryOnlyThisAction":True})
+        (out/"generation_contract.json").write_text(json.dumps(rules,ensure_ascii=False,indent=2),encoding="utf8")
+        (out/"action_by_action_plan.json").write_text(json.dumps(instructions,ensure_ascii=False,indent=2),encoding="utf8")
+        print(json.dumps({"plan":str(out/"action_by_action_plan.json"),
+                          "steps":len(instructions),"optional":"roar","required":len(ACTIONS)}))
+        raise SystemExit(0)
+    if not args.manifest:p.error("--manifest required unless --plan-only is used")
     data=execute(args.manifest,args.out,[canonical(args.only)] if args.only else None)
     blocked=any(v["status"]=="BLOCKED" for v in data["actions"].values())
     raise SystemExit(0 if args.allow_partial or not(data["missing"] or blocked) else 2)
