@@ -1,13 +1,33 @@
-/* Render original approved transparent PNGs only. No image conversion. */
+/* No repacking or paint conversion: native approved PNG alpha preserved.
+ * Persistent trainer root is above the practice fighter but below the menus.
+ * Both character and whip visuals stay mounted throughout the action.
+ */
 .la-stage.training .la-trainer-clean,.la-stage.training .la-pose{display:none!important}
+.la-stage.training .lt-fighter-zone{z-index:5}
 .la-stage.training .la-doctore-live{
- position:absolute;left:185px;top:20px;width:362px;height:520px;z-index:4;
- background-image:url('assets/ludus/doctore-idle-approved-v1.png?approved=2');
- background-size:1448px 1086px;background-position:0 0;background-repeat:no-repeat;
- pointer-events:none;user-select:none;overflow:visible;
+ position:absolute;left:185px;top:0;width:1200px;height:760px;
+ z-index:8;isolation:isolate;pointer-events:none;user-select:none;
+ overflow:visible;background:none!important;filter:none;
+ transform:none!important;animation:none!important;
  clip-path:none;mask:none;-webkit-mask-image:none;
+}
+.la-stage.training .la-doctore-body{
+ position:absolute;left:0;top:0;width:362px;height:520px;z-index:1;
+ background-image:url('assets/ludus/doctore-idle-approved-v1.png?approved=3');
+ background-size:1448px 1086px;background-position:0 0;background-repeat:no-repeat;
+ transform-origin:left top;transform:scale(1.125);
+ overflow:hidden;pointer-events:none;will-change:background-position;
  filter:drop-shadow(3px 5px 5px #17070359);
- transform:scale(1.125);transform-origin:left top;animation:none!important;
+}
+.la-stage.training .la-doctore-whip{
+ position:absolute;inset:0;z-index:2;overflow:visible;visibility:hidden;
+ pointer-events:none;transform:none!important;isolation:isolate;
+}
+.la-stage.training .la-doctore-whip-frame{
+ position:absolute;display:block;max-width:none!important;max-height:none!important;
+ object-fit:fill;image-rendering:auto;user-select:none;pointer-events:none;
+ filter:drop-shadow(3px 5px 5px #17070359);
+ backface-visibility:hidden;
 }
 .la-stage.training .la-doctore-parchment{
  position:absolute;left:498px;top:91px;width:360px;height:163px;z-index:7;
@@ -17,4 +37,6 @@
 }
 .la-stage.training .la-notice{z-index:30}
 .la-stage.training .la-home-nav{z-index:35}
-@media(prefers-reduced-motion:reduce){.la-stage.training .la-doctore-live{transition:none!important}}
+@media(prefers-reduced-motion:reduce){
+ .la-stage.training .la-doctore-body,.la-stage.training .la-doctore-whip-frame{transition:none!important}
+}
