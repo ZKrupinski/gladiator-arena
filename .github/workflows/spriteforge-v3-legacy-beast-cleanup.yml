@@ -38,9 +38,11 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install Pillow numpy scipy
-      - name: Test safe alpha repair and protect detached limbs
+      - name: Test neighbor-owned full-body cleanup without valid limb deletion
         run: python scripts/test_legacy_beasts_spriteforge_v3.py
-      - name: Inspect 5 source atlases and 200 deployed individual frames; fix only isolated tiny specks
+      - name: Test SpriteForge V3 generation and complete foreign body detection
+        run: python scripts/test_spriteforge_pipeline_v3.py
+      - name: Inspect 5 original atlases and 200 frames; remove neighbor-proven body fragments at any size
         run: |
           python scripts/audit_legacy_beasts_spriteforge_v3.py \
             --fix-safe \
