@@ -15,6 +15,8 @@ POLICY=ROOT/"config/spriteforge-qc-rules.json"
 CHECKS=(
     "original_character_design_locked",
     "exactly_one_action_eight_distinct_poses",
+    "exactly_one_native_high_resolution_4x2_sheet",
+    "reference_detail_not_artificially_upscaled",
     "native_rgba_with_large_transparent_gutters",
     "only_current_frame_body_parts_no_adjacent_body",
     "full_limbs_head_tail_weapon_never_clipped",
@@ -52,14 +54,18 @@ def make_brief(job_path, out):
         "createdAtUTC":datetime.now(timezone.utc).isoformat(),
         "validForSeconds":MAX_BRIEF_AGE_SECONDS,
         "requiredFrames":8,"motionsPerJob":1,
-        "frameNativeMin":[512,512],"sheetNativeMin":[2048,1024],
+        "frameNativeMin":job["nativeFrameMinimum"],"sheetNativeMin":job["nativeSheetMinimum"],
+        "requiredGenerationArtifact":"ONE_TRANSPARENT_4x2_SPRITE_SHEET_ONLY",
+        "frameExportsAllowed":"ONLY_AFTER_QA_EXTRACTION",
+        "noArtificialUpscaling":True,
         "blockingRules":blocking,
         "mustAcknowledgeChecks":list(CHECKS),
         "previousAttemptErrors":retry,
         "briefingKorean":[
             f"작업 대상: {job['character']} / {job['action']}. 다른 동작을 섞지 말고 8개의 서로 다른 연속 포즈만 제작.",
             "승인된 기준 캐릭터의 얼굴·장비·비율·시선·디테일을 고정. 새 디자인으로 변형하지 말 것.",
-            "각 프레임은 원생성 기준 최소 512×512 RGBA 투명 PNG, 4×2 시트면 최소 2048×1024.",
+            f"무조건 캐릭터 하나·동작 하나·순차 포즈 8개·원생성 고해상도 4×2 RGBA 시트 한 장만 제작. 셀당 {job['nativeFrameMinimum'][0]}×{job['nativeFrameMinimum'][1]}픽셀 이상, 시트 {job['nativeSheetMinimum'][0]}×{job['nativeSheetMinimum'][1]}픽셀 이상.",
+            "원본 원화의 해상도와 고주파 디테일을 최대한 유지. 작게 뽑은 이미지를 단순 확대하거나 리샘플링해 고해상도라 주장하지 말 것. 8개 개별 PNG는 생성 입력 불허, 검수·커팅 후 출력만 허용.",
             "각 프레임의 머리·손·발·꼬리·무기까지 완전히 포함, 좌우상하 20px 이상의 투명 여백.",
             "가장 중요: 옆 프레임 소속의 머리·발·몸통·꼬리는 크기와 무관하게 모두 제거. 현재 프레임 소속 신체는 절대 잘라내지 말 것.",
             "인접 신체가 붙거나 소속을 확신할 수 없다면 그 동작 8장을 다시 생성. 억지로 컷팅하지 말 것.",
@@ -81,7 +87,7 @@ def make_brief(job_path, out):
         "# SpriteForge V3 | 제작 직전 의무 브리핑",
         f"**캐릭터** {brief['character']} / **동작** {brief['action']}",
         f"**기준 원본** SHA256 {brief['referenceSha256']}",
-        f"**작업** 8개 고해상도 RGBA 프레임",
+        f"**작업** 고해상도 투명 4×2 시트 1장(8프레임), 최소 {brief['sheetNativeMin'][0]}×{brief['sheetNativeMin'][1]}px. 생성 입력으로 8개 개별 PNG 불허",
         "## 시작 직전에 숙지할 규칙",numbered,
         "## 지난 검사에서 발견된 문제 (재시도 시 반드시 해결)",failures,
         "## 필수 통과 규정",*[
@@ -103,6 +109,10 @@ def validate_acknowledgement(job_path, briefing_path, ack_path):
     job=json.loads(job_path.read_text(encoding="utf8"))
     briefing=json.loads(briefing_path.read_text(encoding="utf8"))
     ack=json.loads(ack_path.read_text(encoding="utf8"))
+    if (briefing.get("requiredGenerationArtifact")!="ONE_TRANSPARENT_4x2_SPRITE_SHEET_ONLY" or
+        briefing.get("frameNativeMin")!=job.get("nativeFrameMinimum") or
+        briefing.get("sheetNativeMin")!=job.get("nativeSheetMinimum")):
+        raise ValueError("PREFLIGHT_ONE_SHEET_NATIVE_SPEC_MISMATCH")
     if (briefing.get("jobSha256")!=sha(job_path) or
         briefing.get("policySha256")!=sha(POLICY) or
         job.get("rulesSha256")!=sha(POLICY)):
