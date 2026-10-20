@@ -40,8 +40,12 @@ ALPHA=30; PAD=12; OUTPUT=(960,720)
 
 def canonical(value):return ALIASES.get(value,value)
 
-def contract(character):
-    return {"version":2,"character":character,"canonicalActions":list(ACTIONS),
+def contract(character, extras=()):
+    policy_path=Path(__file__).resolve().parents[1]/'config/spriteforge-qc-rules.json'
+    policy=json.loads(policy_path.read_text(encoding='utf8')) if policy_path.exists() else {'version':0,'rules':[]}
+    additional=sorted(set(extras) | ({'roar'} if character in ('wolf','leopard','tiger','lion','elephant') else set()))
+    return {'qcPolicyVersion':policy.get('version',0),'qcRuleIds':[r['id'] for r in policy.get('rules',[])],
+            'optionalRegistered':additional,"version":2,"character":character,"canonicalActions":list(ACTIONS),
             "optionalActions":["roar"],"framesPerAction":8,"sourceGrid":[4,2],
             "oneActionPerSheet":True,"approvedModelOnly":True,
             "transparentBackground":True,"noOverlappingCells":True,
@@ -187,13 +191,29 @@ def execute(manifest,out,only=None):
     spec=json.loads(manifest.read_text(encoding="utf8"))
     root=manifest.parent;out=Path(out);out.mkdir(parents=True,exist_ok=True)
     kind=spec.get("character","wolf")
-    (out/"generation_contract.json").write_text(json.dumps(contract(kind),ensure_ascii=False,indent=2),encoding="utf8")
+    (out/"generation_contract.json").write_text(json.dumps(contract(kind,extra_spec),ensure_ascii=False,indent=2),encoding="utf8")
     declared={}
+    extra_spec=spec.get('extraActions',{})
+    if not isinstance(extra_spec,dict):raise ValueError('extraActions must be object')
+    for motion,metadata in extra_spec.items():
+        if not isinstance(motion,str) or not motion.isidentifier() or len(motion)>48 or motion in ACTIONS:
+            raise ValueError('Invalid registered extra '+str(motion))
+        if not isinstance(metadata,dict):raise ValueError('Extra requires metadata dictionary')
+        rate=metadata.get('fps',8)
+        if not isinstance(rate,(int,float)) or rate<2 or rate>24:
+            raise ValueError('Extra FPS must be 2..24')
+        FPS[motion]=rate
+        curve=metadata.get('rootMotion')
+        if curve is not None:
+            if not isinstance(curve,list) or len(curve)!=8 or any(not isinstance(x,list) or len(x)!=2 or
+              any(not isinstance(v,(int,float)) or abs(v)>150 for v in x) for x in curve):
+                raise ValueError('Extra rootMotion must be 8 signed [dx,dy] pairs <=150 pixels')
+            MOTION[motion]=[tuple(x) for x in curve]
     for name,value in spec.get("actions",{}).items():
         n=canonical(name)
-        if n not in (*ACTIONS,"roar") or n in declared:raise ValueError("INVALID_OR_REPEATED_ACTION:"+name)
+        if n not in (*ACTIONS,'roar',*extra_spec) or n in declared:raise ValueError("INVALID_OR_REPEATED_ACTION:"+name)
         declared[n]=value
-    needs=list(only) if only else list(ACTIONS)+(["roar"] if "roar" in declared else [])
+    needs=list(only) if only else list(ACTIONS)+[a for a in declared if a not in ACTIONS]
     issues=[];actions={}
     for action in needs:
         if action not in declared:continue
@@ -246,16 +266,19 @@ if __name__=="__main__":
     p.add_argument("--out",required=True)
     p.add_argument("--plan-only",action="store_true",help="prepare one-pose-at-a-time generation contracts BEFORE making art")
     p.add_argument("--character",default="wolf",help="wolf or other character variant")
+    p.add_argument('--extra-motion',action='append',default=[],help='additional animation ID for generation plan; repeatable')
     p.add_argument("--only",help="One action, directly after each image generation")
     p.add_argument("--allow-partial",action="store_true")
     args=p.parse_args()
     if args.plan_only:
         out=Path(args.out);out.mkdir(parents=True,exist_ok=True)
-        rules=contract(args.character)
+        rules=contract(args.character,args.extra_motion)
         instructions=[]
-        for action in (*ACTIONS,"roar"):
+        for action in (*ACTIONS,'roar',*(n for n in args.extra_motion if n!='roar' and n not in ACTIONS)):
+            if not isinstance(action,str) or not action.isidentifier():p.error('Invalid optional action identifier')
             instructions.append({"action":action,"required":action in ACTIONS,
                 "semantic":WOLF.get(action,action) if args.character=="wolf" else action,
+                "commonQcRules":rules['qcRuleIds'],
                 "style":"Exactly ONE character action, 8 distinct sequential high-resolution fully drawn poses, "
                   "4 columns x 2 rows on a transparent background; leave large safety gutters in X and Y; "
                   "never create a combined multi-action board; never change approved character anatomy or costume.",
