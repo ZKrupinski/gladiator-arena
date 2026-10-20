@@ -17,14 +17,31 @@ const SPEC=Object.freeze({
 });
 const BY_ROUND=['wolf','leopard','tiger','lion','elephant'];
 const cache=new Map();
+const ACTION_KEYS=Object.freeze(['idle','walk','attack','hit','defeat']);
+const INDEPENDENT_DIR='assets/beasts/individual/';
+// Independent 512px source frames are loaded only for the selected opponent.
+function loadIndividual(type,entry){
+ if(entry.individualLoading)return;
+ entry.individualLoading=true;entry.individual=new Map();entry.individualReady=0;
+ for(const action of ACTION_KEYS){
+  for(let i=0;i<8;i++){
+   const src=INDEPENDENT_DIR+type+'/'+action+'/'+String(i).padStart(2,'0')+'.png?v=1';
+   const img=new Image();const key=action+':'+i;
+   img.onload=()=>{if(img.naturalWidth===512&&img.naturalHeight===512){entry.individual.set(key,img);entry.individualReady++;}};
+   img.onerror=()=>{};img.src=src;
+  }
+ }
+}
+
 let loaded=0,failed=0;
 function ensure(type){
  if(!SPEC[type])return false;
- if(cache.has(type))return !!cache.get(type).ready;
+ if(cache.has(type)){const saved=cache.get(type);loadIndividual(type,saved);return !!saved.ready;}
  if(typeof Image==='undefined')return false;
  const img=new Image();
  const entry={img,frames:null,error:null,ready:false};
  cache.set(type,entry);
+ loadIndividual(type,entry);
  img.onload=()=>{
   if(img.naturalWidth!==WIDTH||img.naturalHeight!==HEIGHT){
    entry.error='Unexpected source dimensions';failed++;return;
@@ -109,6 +126,9 @@ function cleanElephantFrame(ctx,w,h){
 }
 function portrait(type,pose='idle'){
  const entry=cache.get(type);
+ const kind=pose==='defeat'?'defeat':'idle';
+ const indy=entry?.individual?.get(kind+':'+(kind==='defeat'?7:0));
+ if(indy?.naturalWidth)return indy;
  if(!entry?.ready)return null;
  const row=ROWS_BY_POSE[pose]??0,frame=entry.frames[row]?.[0];
  if(!frame?.bounds)return null;
@@ -151,7 +171,12 @@ function apply(fighter,type){
 function frameFor(f,pose,clock){
  const row=ROWS_BY_POSE[pose]??0;
  const duration=Math.max(.12,Number(f.actionDuration)||.5);
- const progress=f.actionT>0?Math.max(0,Math.min(.999,1-f.actionT/duration)):0;
+ let progress=f.actionT>0?Math.max(0,Math.min(.999,1-f.actionT/duration)):0;
+ // Death is an eight-frame, time-driven animation, never a frozen first cell.
+ if(pose==='defeat'){
+  if(!Number.isFinite(f._beastDeathSince))f._beastDeathSince=Number(clock)||0;
+  progress=Math.max(0,Math.min(.999,((Number(clock)||0)-f._beastDeathSince)/1.18));
+ }
  const walking=Math.abs(Number(f.vx)||0)>12;
  const index=(row===0||row===1)?
   Math.floor((Number(clock)||0)*(row===0?5:11))%8:
@@ -165,7 +190,20 @@ function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
  // A pending image must not result in invisible foes. Let the existing
  // gladiator fallback paint until all 40 frames have been isolated.
  if(!entry?.ready)return false;
- const n=frameFor(fighter,pose,clock),frame=entry.frames[n.row][n.index];
+ const n=frameFor(fighter,pose,clock);
+ const key=ACTION_KEYS[n.row]||'idle';
+ const indy=entry.individual?.get(key+':'+n.index);
+ if(indy?.naturalWidth){
+  // Every independent PNG is exactly 512×512. Feet and body share one
+  // constant canvas origin across all 8 frames (no flicker or stretch).
+  const factor=info.scale*1.28,ww=w*factor,hh=h*factor;
+  const centre=x+w*.5,floor=y+h;
+  ctx.save();ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
+  if(flip){ctx.translate(centre*2,0);ctx.scale(-1,1);}
+  ctx.drawImage(indy,centre-ww*.5,floor-hh*.88,ww,hh);
+  ctx.restore();return true;
+ }
+ const frame=entry.frames?.[n.row]?.[n.index];
  if(!frame?.ink)return false;
  const scale=info.scale;
  const ww=w*scale,hh=h*scale;
@@ -183,6 +221,6 @@ function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
  ctx.restore();
  return true;
 }
-root.ArenaBeasts={version:'1.0.0',types:SPEC,rows:ROWS_BY_POSE,
- pick,apply,ensure,frameFor,draw,portrait,status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name)})};
+root.ArenaBeasts={version:'2.0.0',types:SPEC,rows:ROWS_BY_POSE,
+ pick,apply,ensure,frameFor,draw,portrait,status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name),individual:[...cache].map(([name,e])=>({name,frames:e.individualReady||0}))})};
 })(window);
