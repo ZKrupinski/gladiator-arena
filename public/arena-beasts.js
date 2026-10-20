@@ -18,8 +18,10 @@ const SPEC=Object.freeze({
 const BY_ROUND=['wolf','leopard','tiger','lion','elephant'];
 const cache=new Map();
 let loaded=0,failed=0;
-for(const [type,info] of Object.entries(SPEC)){
- if(typeof Image==='undefined')continue;
+function ensure(type){
+ if(!SPEC[type])return false;
+ if(cache.has(type))return !!cache.get(type).ready;
+ if(typeof Image==='undefined')return false;
  const img=new Image();
  const entry={img,frames:null,error:null,ready:false};
  cache.set(type,entry);
@@ -33,6 +35,7 @@ for(const [type,info] of Object.entries(SPEC)){
  };
  img.onerror=()=>{entry.error='Asset failed';failed++;};
  img.src=DIR+type+'-40.png?v=1';
+ return false;
 }
 function isolate(img){
  const frames=[];
@@ -77,6 +80,7 @@ function pick(round,boss=false,random=Math.random){
 }
 function apply(fighter,type){
  const info=SPEC[type];if(!fighter||!info)return false;
+ ensure(type); // Load only the encountered beast; avoid 13 MB at startup.
  fighter.beastType=type;
  fighter.growthType=null;fighter.growthLevel=null;
  fighter.championVariant=null;fighter.motionVariant=null;
@@ -128,5 +132,5 @@ function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
  return true;
 }
 root.ArenaBeasts={version:'1.0.0',types:SPEC,rows:ROWS_BY_POSE,
- pick,apply,frameFor,draw,status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name)})};
+ pick,apply,ensure,frameFor,draw,status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name)})};
 })(window);
