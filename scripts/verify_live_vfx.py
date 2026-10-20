@@ -8,6 +8,15 @@ paths=['index.html','arena-raster-vfx.js','vfx-gallery.html','assets/new-era/dir
 m=json.loads((root/'public'/paths[-1]).read_text())
 paths += ['assets/new-era/directional-v4/'+f['file'] for kind in m['families'].values() for f in kind['frames']]
 paths += ['assets/new-era/directional-v4/'+kind+'-sheet.png' for kind in m['families']]
+# The crowd must be the actual wide-stadium recording, not a stale close-voice mix.
+# Compare the production crowd loop and both recorded reaction layers byte-for-byte.
+audio_manifest_path='assets/audio/rome-v1/manifest.json'
+audio=json.loads((root/'public'/audio_manifest_path).read_text())
+assert audio['version']>=5 and audio['crowd']=='rome_crowd.mp3'
+reactions=audio['sfx']['crowd_roar']
+assert len(reactions)>=2
+paths += ['arena-audio.js',audio_manifest_path]
+paths += ['assets/audio/rome-v1/'+name for name in [audio['crowd'],*reactions]]
 def check(path):
  # Compare committed blobs, avoiding Windows checkout line-ending conversion.
  expected=subprocess.check_output(['git','show','HEAD:public/'+path],cwd=root)
@@ -24,7 +33,7 @@ attempts=int(sys.argv[1]) if len(sys.argv)>1 else 1
 for attempt in range(attempts):
  try:
   with ThreadPoolExecutor(max_workers=6) as pool: list(pool.map(check,paths))
-  print('LIVE_DEPLOY_PASS: exact bytes match for HTML, loader, gallery, manifest and all 80 frames. '+site,flush=True)
+  print('LIVE_DEPLOY_PASS: exact bytes match for game HTML, directional VFX loader, 80 PNG frames, 10 preview sheets, and v5 stadium crowd loop + reaction WAVs + audio loader. '+site,flush=True)
   break
  except Exception as e:
   print(f'Attempt {attempt+1}/{attempts}: {e}',flush=True)

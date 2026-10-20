@@ -1,4 +1,4 @@
-name: Verify Cloudflare directional PNG deployment
+name: Verify Cloudflare directional VFX and stadium audio deployment
 on:
   push:
     branches: [main]
@@ -7,6 +7,8 @@ on:
       - public/index.html
       - public/vfx-gallery.html
       - public/assets/new-era/directional-v4/**
+      - public/arena-audio.js
+      - public/assets/audio/rome-v1/**
       - scripts/verify_live_vfx.py
       - .github/workflows/qa-cloudflare-live-vfx.yml
   workflow_dispatch:
@@ -16,5 +18,5 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Verify production files match the pushed commit
+      - name: Verify live VFX frames and stadium audio match pushed commit
         run: python scripts/verify_live_vfx.py 17
