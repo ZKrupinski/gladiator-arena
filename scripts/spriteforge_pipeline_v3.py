@@ -194,22 +194,30 @@ if __name__=="__main__":
     a=p.parse_args();out=Path(a.out).resolve()
     if a.mode=="plan":
         print(plan(a.reference,a.character,a.action,out,a.extra))
-    elif a.mode=="repair":
+    elif a.mode in ("generate","repair") or (a.mode=="inspect" and a.adapter):
+        # Connected generator is ALWAYS auto-correcting: no silent one-shot
+        # failure or manual retry chores for diagnosed animation defects.
         if not a.job:p.error("--job required")
+        if a.mode=="inspect" and not (a.result or a.initial_result):
+            p.error("--result required for inspect")
         from spriteforge_auto_repair_v3 import auto_repair
         response=auto_repair(a.job,out,adapter=a.adapter,
-                             initial_result=a.initial_result,max_retries=a.max_retries)
+                             initial_result=(a.result if a.mode=="inspect" else a.initial_result),
+                             max_retries=a.max_retries)
         print(json.dumps({"state":response["state"],"attempts":len(response["attempts"]),
                           "releaseAuthorized":False},ensure_ascii=False))
         if not response["technicalPass"]:raise SystemExit(2)
     else:
         if not a.job:p.error("--job required")
-        if a.mode=="generate":
-            out.mkdir(parents=True,exist_ok=True);response=out/"result.json"
-            generate(a.job,a.adapter,response)
-        else:
-            if not a.result:p.error("--result required")
-            response=Path(a.result)
+        if not a.result:p.error("--result required")
+        # With no generator connected inspect provides QA + retry manifest,
+        # NEVER claims actual sprite regeneration or a released game version.
+        response=Path(a.result)
         report=inspect(a.job,response,out)
+        if report["status"]!="TECHNICAL_PASS_PENDING_ART_AND_GAME_REVIEW":
+            (out/"repair_not_connected.json").write_text(json.dumps({
+                "state":"GENERATOR_NOT_CONNECTED","needRegeneration":True,
+                "action":json.loads(Path(a.job).read_text()).get("action"),
+                "failures":report["failures"]},ensure_ascii=False,indent=2))
         print(json.dumps({"status":report["status"],"failures":len(report["failures"])}))
         if report["status"]!="TECHNICAL_PASS_PENDING_ART_AND_GAME_REVIEW":raise SystemExit(2)
