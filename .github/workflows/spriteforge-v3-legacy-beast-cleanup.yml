@@ -4,12 +4,18 @@ on:
     branches: [spriteforge-v3-beast-cleanup-20261021]
     paths:
       - scripts/audit_legacy_beasts_spriteforge_v3.py
+      - scripts/spriteforge_neighbor_ownership_v3.py
+      - config/spriteforge-qc-rules.json
+      - scripts/spriteforge_pipeline_v3.py
       - scripts/test_legacy_beasts_spriteforge_v3.py
       - .github/workflows/spriteforge-v3-legacy-beast-cleanup.yml
   pull_request:
     branches: [main]
     paths:
       - scripts/audit_legacy_beasts_spriteforge_v3.py
+      - scripts/spriteforge_neighbor_ownership_v3.py
+      - config/spriteforge-qc-rules.json
+      - scripts/spriteforge_pipeline_v3.py
       - scripts/test_legacy_beasts_spriteforge_v3.py
       - public/assets/beasts/individual/**
       - docs/qa/beast-legacy-v3-audit.json
