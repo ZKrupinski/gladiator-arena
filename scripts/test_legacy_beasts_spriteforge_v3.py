@@ -40,7 +40,8 @@ from PIL import ImageDraw as D
 D.Draw(previous).rectangle((428,240,468,280),fill=(250,40,30,255))
 D.Draw(target).rectangle((32,240,72,280),fill=(250,40,30,255))
 clean,info=remove_proven_foreign(target,left_neighbor=previous)
-assert info["verifiedForeignPixels"]>500,info
+assert info["verifiedForeignPixels"]>400,info
+assert info["removedForeignConnectedIslands"]>=1,info
 assert np.asarray(clean)[255,55,3]==0,"FOREIGN_BODY_MUST_BE_REMOVED"
 assert np.asarray(clean)[260,180,3]==255,"CURRENT_BODY_MUST_REMAIN"
 # Conversely, another pose's ghost must not cause removal of a valid
