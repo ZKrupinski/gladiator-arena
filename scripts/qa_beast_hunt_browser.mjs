@@ -29,13 +29,24 @@ try{
  const types=['wolf','leopard','tiger','lion','elephant'];
  for(const type of types){
   const card=page.locator('.beast-stage-card').filter({has:page.locator('[data-beast-stage="'+type+'"]')});
-  const img=card.locator('.beast-stage-thumb img');
-  await img.evaluate(el=>el.decode());
-  assert.equal(await img.evaluate(el=>el.naturalWidth),600);
-  assert.equal(await img.evaluate(el=>el.naturalHeight),400);
-  const ratio=await img.evaluate(el=>el.getBoundingClientRect().width/el.getBoundingClientRect().height);
-  assert.ok(Math.abs(ratio-1.5)<.06,'thumb image aspect ratio '+type);
+  // Every card displays real animated idle frames, no separately painted still.
+  const canvas=card.locator('canvas[data-beast-preview="'+type+'"]');
+  await canvas.waitFor();
+  assert.equal(await canvas.getAttribute('width'),'600');
+  assert.equal(await canvas.getAttribute('height'),'400');
+  assert.equal(await card.locator('img').count(),0,'no still thumbnail for '+type);
+  await page.waitForFunction(kind=>BeastStagePreviews.status().loaded.includes(kind),type,{timeout:30000});
+  await page.waitForFunction(kind=>{
+    const c=document.querySelector('[data-beast-preview="'+kind+'"]');
+    if(!c)return false;const rgba=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+    for(let i=3;i<rgba.length;i+=64)if(rgba[i]>60)return true;
+    return false;
+  },type,{timeout:15000});
  }
+ await page.locator('.beast-stage-card[data-beast-type="wolf"]').hover();
+ assert.equal(await page.locator('.beast-stage-card[data-beast-type="wolf"]').getAttribute('aria-selected'),'true');
+ assert.equal(await page.evaluate(()=>SpriteMotionRegistry.describe('wolf').extras.some(x=>x.name==='roar')),true);
+ assert.equal(await page.evaluate(()=>SpriteMotionRegistry.canRoar('wolf')),false,'no fake roar animation when art not published');
  assert.ok(await page.locator('#beastHeroSelect option').count()>0,'starter gladiator present');
  const initial=await page.evaluate(()=>LudusBridge.state().gold);
  await page.locator('[data-beast-stage="wolf"]').click();
