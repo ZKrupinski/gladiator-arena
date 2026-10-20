@@ -1,0 +1,59 @@
+name: Validate live training dialogue and clean backdrop
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - public/ludus-approved-scenes.js
+      - public/ludus-training-doctore.css
+      - public/assets/ludus/training_no_dialogue_v1.webp
+      - scripts/qa_ludus_training_dialogue_browser.mjs
+      - .github/workflows/qa-ludus-training-dialogue.yml
+  workflow_dispatch:
+jobs:
+  responsive-doctore-dialogue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve the actual deployed build source
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/ludus-dialogue.log 2>&1 &
+          sleep 3
+      - name: Click all five training tiles and assert contextual dialogue
+        run: node scripts/qa_ludus_training_dialogue_browser.mjs
+      - name: Verify Cloudflare serves identical clean backdrop and scripts
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pathlib,hashlib,urllib.request,time
+          origin='https://gladiator-arena-git.pages.dev'
+          bg=pathlib.Path('public/assets/ludus/training_no_dialogue_v1.webp')
+          expect=hashlib.sha256(bg.read_bytes()).hexdigest()
+          for i in range(18):
+              try:
+                  headers={'User-Agent':'ArenaTrainerDialogueQA','Cache-Control':'no-cache'}
+                  def fetch(path):
+                      with urllib.request.urlopen(urllib.request.Request(origin+path,headers=headers),timeout=20) as r:
+                          return r.read()
+                  livebg=fetch('/assets/ludus/training_no_dialogue_v1.webp?dialogue-v1')
+                  html=fetch('/?trainer-dialogue='+str(i)).decode('utf-8')
+                  code=fetch('/ludus-approved-scenes.js?v=15').decode('utf-8')
+                  style=fetch('/ludus-training-doctore.css?v=11').decode('utf-8')
+                  if (hashlib.sha256(livebg).hexdigest()==expect and
+                    'ludus-approved-scenes.js?v=15' in html and
+                    'training_no_dialogue_v1.webp' in code and
+                    'DOCTORE_SCRIPT' in code and
+                    '.la-training-speech' in style):
+                      print('LIVE_TRAINING_DIALOGUE_DEPLOYMENT_PASS');break
+              except Exception as exc:
+                  print('Waiting for Cloudflare',i,str(exc),flush=True)
+              if i==17:raise AssertionError('Live training dialogue not yet deployed')
+              time.sleep(10)
+          PY
