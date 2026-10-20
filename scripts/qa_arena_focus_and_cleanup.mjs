@@ -59,7 +59,8 @@ const html=fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8
 const carnifex=fs.readFileSync(new URL('../public/arena-carnifex.js',import.meta.url),'utf8');
 assert.match(html,/arena-focus\.js\?v=2/,'focus v2 loaded before main game');
 assert.match(html,/drawCinematicWorldAccent\(\)/,'illustrated dash and parry burst layered in real world');
-assert.match(html,/PARRY PERFECTA/,'dramatic parry title visible');
+assert.match(html,/ArenaHerald\?\.drawCanvasCallout\?\.\(ctx,'CONTRA!'/,'defender Roman parry callout visible');
+assert.match(html,/ArenaHerald\?\.drawCanvasCallout\?\.\(ctx,'FRVSTRA!'/,'attacker Roman parry callout visible');
 assert.match(html,/IMPETUS/,'dramatic dash title visible');
 assert.match(html,/triggerCinematic\('parry'/,'perfect parry triggers focus');
 assert.match(html,/triggerCinematic\('dash'/,'successful dash triggers focus');

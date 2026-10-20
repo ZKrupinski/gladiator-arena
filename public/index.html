@@ -2227,8 +2227,8 @@ function drawParryBursts(){
    ctx.textBaseline='middle';ctx.lineJoin='round';
    const rise=15*clamp(t/life,0,1);
    const winX=b.defender.x-b.defender.face*23,loseX=b.attacker.x+b.attacker.face*15;
-   window.ArenaHerald?.drawCanvasCallout?.(ctx,'CONTRA!',winX,FLOOR-352-rise,{size:27,tone:'gold',maxWidth:240});
-   window.ArenaHerald?.drawCanvasCallout?.(ctx,'FRVSTRA!',loseX,FLOOR-330-rise,{size:27,tone:'iron',maxWidth:240});
+   window.ArenaHerald?.drawCanvasCallout?.(ctx,'CONTRA!',winX,FLOOR-352-rise,{size:27,tone:'gold',alpha,maxWidth:240});
+   window.ArenaHerald?.drawCanvasCallout?.(ctx,'FRVSTRA!',loseX,FLOOR-330-rise,{size:27,tone:'iron',alpha,maxWidth:240});
    ctx.restore();
  }
 }
