@@ -1,0 +1,56 @@
+name: Import five approved arena beasts
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/import-arena-beasts.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  preserve-original-png-sheets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: true}
+      - name: Store five approved 8x5 sprite sheets without repacking
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/assets/beasts
+          curl --fail --location --retry 4 --connect-timeout 20 --max-time 150 'https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/63ccd93b-1fd5-4e88-8b6f-9c1b7499f838.png' -o public/assets/beasts/wolf-40.png
+          echo '9421be6db4fadb1d9a4233065674ad5eaed0a20de04a2d0a310cc969c7236af4  public/assets/beasts/wolf-40.png' | sha256sum -c -
+          curl --fail --location --retry 4 --connect-timeout 20 --max-time 150 'https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/4f461cd1-ec7b-4350-8af5-893a4d6879ae.png' -o public/assets/beasts/tiger-40.png
+          echo '2e47f41be5b8cfa7773b540c4fb712c8785a1e37e07ecd506fea2e40d3ed2c9b  public/assets/beasts/tiger-40.png' | sha256sum -c -
+          curl --fail --location --retry 4 --connect-timeout 20 --max-time 150 'https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/4fd2842b-aef0-45c4-bd44-224cf503c1d2.png' -o public/assets/beasts/lion-40.png
+          echo '2c564a365faab3aa4bb2c202f5c1287c546a527c779aec1ae20117380d6c7299  public/assets/beasts/lion-40.png' | sha256sum -c -
+          curl --fail --location --retry 4 --connect-timeout 20 --max-time 150 'https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/ecb0ee53-f7d5-4b70-979a-968207b45768.png' -o public/assets/beasts/leopard-40.png
+          echo '2417c3ecf2fbf1fefa653d6eefcd36df316104550d2362f2084752b9c92364c4  public/assets/beasts/leopard-40.png' | sha256sum -c -
+          curl --fail --location --retry 4 --connect-timeout 20 --max-time 150 'https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/2a9aac3d-3fb0-46cf-9e0e-9cd86a1809fd.png' -o public/assets/beasts/elephant-40.png
+          echo '9fbba58ecc5dc8870c94c5c8e1223d1680cd22274bb6a4cad31c56d86c5b200a  public/assets/beasts/elephant-40.png' | sha256sum -c -
+      - name: Validate source grid sizes and alpha
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import struct
+          for p in Path('public/assets/beasts').glob('*.png'):
+              b=p.read_bytes()
+              assert b[:8]==bytes.fromhex('89504e470d0a1a0a'),p
+              w,h=struct.unpack('>II',b[16:24])
+              assert (w,h)==(1586,992),(p,w,h)
+              assert b[25]==6,'Expected transparent RGBA PNG: '+str(p)
+              print(p.name,'1586x992 RGBA; 8 columns x 5 rows')
+          PY
+      - name: Commit original sheets; trigger game publishing
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/assets/beasts/
+          if git diff --cached --quiet; then echo 'All originals already archived'; else
+            git commit -m 'assets(arena): archive five approved transparent animal 40-frame sheets'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
