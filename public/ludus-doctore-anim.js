@@ -1,92 +1,87 @@
-/* Female Roman trainer: EXCLUSIVELY the user's unmodified 1448x1086 PNG.
- * No legacy Doctore SD atlas, no other NPC artwork, no on-the-fly redraw.
- * Seven source poses, including one deliberately 800px-wide whip impact.
- * The 8-frame timeline reuses the contact pose; dimensions are not rescaled.
- */
+/* ORIGINAL USER ASSETS ONLY. No canvas rasterization or sprite repacking.
+   Every frame uses native RGBA PNG pixels with a uniform display scale.
+   Different transparent margins are corrected through a fixed foot baseline. */
 (function(root){
 'use strict';
-const USER_PNG='assets/ludus/doctore-whip-user-v1.png?v=2';
-const IMAGE_W=1448,IMAGE_H=1086,FRAME_H=538;
-const CUTS=[
- {x:0,y:0,w:355}, {x:355,y:0,w:355}, {x:710,y:0,w:350},
- {x:1055,y:0,w:393}, {x:0,y:548,w:800}, {x:800,y:548,w:338},
- {x:1114,y:548,w:334}
-];
-// Talking is restrained breathing/gesture. A pointed warning precedes the
-// wide theatrical lash. All modes come from one approved, unchanged image.
-const ACTIONS={
- idle:[0,0,0,0,0,0,0,0],
- talk:[0,0,0,0,0,0,0,0],
- command:[0,0,1,1,1,1,0,0],
- whip:[0,1,2,3,4,4,5,6]
+const SCALE=1.125,GROUND=586,DIR='assets/ludus/';
+const INFO={
+ idle:{file:'doctore-idle-approved-v1.png',split:520,feet:[511,511,511,511,506,506,506,506],duration:155},
+ talk:{file:'doctore-explain-approved-v1.png',split:548,feet:[532,532,531,532,478,478,481,481],duration:115},
+ command:{file:'doctore-authority-approved-v1.png',split:524,feet:[518,519,518,519,521,522,521,521],duration:130},
+ whip:{file:'doctore-whip-user-v1.png',feet:[551,551,551,550,460,460,461,461],duration:118}
 };
-const RATE={idle:165,talk:115,command:106,whip:118};
-let actor=null,mode='idle',clock=0,stamp=0,until=0,prev=-1,raf=0;
-let ready=false,asset=null;
-root.__ludusWhipReady=false;
-function draw(index){
- if(!actor)return;
- const n=Math.max(0,Math.min(7,index)),part=CUTS[ACTIONS[mode][n]];
- actor.style.backgroundImage='url("'+USER_PNG+'")';
- actor.style.backgroundSize=IMAGE_W+'px '+IMAGE_H+'px';
- actor.style.backgroundRepeat='no-repeat';
- actor.style.backgroundPosition=(-part.x)+'px '+(-part.y)+'px';
- actor.style.width=part.w+'px';
- actor.style.height=FRAME_H+'px';
- // Keep all poses grounded at the same actual stage baseline.
- actor.style.left='185px';actor.style.top='42px';
- actor.style.overflow='visible';
- actor.dataset.frame=String(n);
- actor.dataset.action=mode;
- actor.dataset.source='user-original';
-}
-if(typeof Image!=='undefined'){
+const WHIP=[
+ [0,0,355,553],[355,0,355,553],[710,0,345,553],[1055,0,393,553],
+ [0,575,800,511],[0,575,800,511],[800,575,314,511],[1114,575,334,511]
+];
+let actor=null,frame=-1,mode='idle',stamp=0,elapsed=0,until=0,raf=0;
+const ready={};
+for(const [name,setting] of Object.entries(INFO)){
+ ready[name]=false;
+ if(typeof Image==='undefined')continue;
  const im=new Image();
  im.onload=()=>{
-  if(im.naturalWidth!==IMAGE_W||im.naturalHeight!==IMAGE_H){
-   console.warn('[Ludus Doctore] unexpected original image dimensions');return;
-  }
-  asset=im;ready=true;root.__ludusWhipReady=true;
-  if(actor)draw(prev>=0?prev:0);
+  ready[name]=im.naturalWidth===1448&&im.naturalHeight===1086;
+  // Refresh the active frame when its PNG finishes loading.
+  if(ready[name]&&name===mode&&actor)draw(frame<0?0:frame);
  };
- im.onerror=()=>{ready=false;root.__ludusWhipReady=false;};
- im.src=USER_PNG;
+ im.onerror=()=>{ready[name]=false;};
+ im.src=DIR+setting.file+'?approved=1';
+}
+function frameRect(name,n){
+ if(name==='whip'){
+  const [x,y,w,h]=WHIP[n];return {x,y,w,h};
+ }
+ const split=INFO[name].split,lower=n>=4;
+ return {x:(n%4)*362,y:lower?split:0,w:362,h:lower?1086-split:split};
+}
+function draw(n){
+ if(!actor)return;
+ const idx=Math.min(7,Math.max(0,n)),sheet=INFO[mode];
+ const r=frameRect(mode,idx);
+ actor.style.backgroundImage='url("'+DIR+sheet.file+'?approved=1")';
+ actor.style.backgroundSize='1448px 1086px';
+ actor.style.backgroundRepeat='no-repeat';
+ actor.style.backgroundPosition=(-r.x)+'px '+(-r.y)+'px';
+ actor.style.width=r.w+'px';actor.style.height=r.h+'px';
+ actor.style.left='185px';
+ actor.style.top=Math.round(GROUND-sheet.feet[idx]*SCALE)+'px';
+ actor.style.transformOrigin='left top';
+ actor.style.transform='scale('+SCALE+')';
+ actor.style.overflow='visible';
+ actor.dataset.frame=String(idx);actor.dataset.action=mode;
+ actor.dataset.sheet=sheet.file;actor.dataset.source='approved-unmodified-png';
+ actor.dataset.scale=String(SCALE);actor.dataset.footY=String(GROUND);
+ actor.dataset.crop=JSON.stringify(r);frame=idx;
 }
 function stop(){
  if(raf)cancelAnimationFrame(raf);
- raf=0;actor=null;clock=0;stamp=0;until=0;mode='idle';prev=-1;
+ raf=0;actor=null;stamp=0;elapsed=0;until=0;mode='idle';frame=-1;
 }
 function animate(now){
  if(!actor||!actor.isConnected){stop();return;}
- const dt=stamp?Math.min(80,Math.max(0,now-stamp)):0;
- stamp=now;clock+=dt;
+ elapsed+=stamp?Math.max(0,Math.min(80,now-stamp)):0;
+ stamp=now;
  const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
- if(mode!=='idle'&&now>=until){mode='idle';clock=0;prev=-1;}
- const frame=reduced?0:Math.floor(clock/RATE[mode])%8;
- if(frame!==prev){prev=frame;draw(frame);}
- // Tiny movement gives the lecture some life without introducing a foreign
- // character design. The actual PNG pixels always remain untouched.
- const sway=mode==='talk'&&!reduced?Math.sin(clock/360)*2:0;
- actor.style.transform=sway?'translateX('+sway.toFixed(2)+'px)':'';
+ if(mode!=='idle'&&now>=until){mode='idle';elapsed=0;frame=-1;}
+ const index=reduced?0:Math.floor(elapsed/INFO[mode].duration)%8;
+ if(index!==frame)draw(index);
+ // Actor position stays fixed to the same ground for every frame.
  raf=requestAnimationFrame(animate);
 }
 function mount(node){
  stop();if(!node)return false;
- actor=node;mode='idle';clock=0;stamp=0;prev=-1;draw(0);
- raf=requestAnimationFrame(animate);return true;
+ actor=node;draw(0);raf=requestAnimationFrame(animate);return true;
 }
 function react(id){
  if(!actor)return false;
- const next=id===1?'talk':id===2?'command':id===3?'whip':'idle';
- mode=next;clock=0;prev=-1;
- until=next==='idle'?0:(stamp||performance.now())+
-  8*RATE[next]*(next==='whip'?1:1.6);
- draw(0);
- return true;
+ mode=id===1?'talk':id===2?'command':id===3?'whip':'idle';
+ elapsed=0;frame=-1;
+ until=mode==='idle'?0:(stamp||performance.now())+INFO[mode].duration*8*(mode==='whip'?1:1.6);
+ draw(0);return true;
 }
-root.LudusDoctoreAnim={version:'3.0.0',mount,react,unmount:stop,
- userWhip:USER_PNG,
- sprite:{path:USER_PNG,layout:'7 unequal-size poses (one 800px wide)',
-  framesPerAction:8,sourcePoses:CUTS.length,actions:ACTIONS},
- status:()=>({ready,mode,frame:prev,source:USER_PNG})};
+root.LudusDoctoreAnim={version:'4.0.0',mount,react,unmount:stop,
+ sprite:{sheets:Object.fromEntries(Object.entries(INFO).map(([name,x])=>[name,DIR+x.file])),
+  framesPerAction:8,scale:SCALE,baseline:GROUND,actions:{idle:0,talk:1,command:2,whip:3}},
+ status:()=>({mode,frame,ready:{...ready},baseline:GROUND,scale:SCALE})};
 })(window);
