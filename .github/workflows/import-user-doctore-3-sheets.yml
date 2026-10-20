@@ -1,0 +1,42 @@
+name: Archive exact approved trainer animation PNGs
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/import-user-doctore-3-sheets.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  store-byte-identical-sheets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Retrieve approved RGBA sources without touching any pixels
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/assets/ludus
+          curl --fail --location --retry 4 --connect-timeout 20 --max-time 150 'https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/163be89a-ae68-4632-9d5e-0a90fa545da1.png' -o public/assets/ludus/doctore-idle-approved-v1.png
+          echo '06f90e9c7abd25a15ca3b8be2e5f532400bdf5cb1f0ddf511248ae59180ef282  public/assets/ludus/doctore-idle-approved-v1.png' | sha256sum -c -
+          file public/assets/ludus/doctore-idle-approved-v1.png
+          curl --fail --location --retry 4 --connect-timeout 20 --max-time 150 'https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/fd1b9c48-969c-4bbc-8149-1cf0d33b2e35.png' -o public/assets/ludus/doctore-explain-approved-v1.png
+          echo '2f2b26077b5680fc7f26063048513ecd75312982ef8de703a433e4883ac06965  public/assets/ludus/doctore-explain-approved-v1.png' | sha256sum -c -
+          file public/assets/ludus/doctore-explain-approved-v1.png
+          curl --fail --location --retry 4 --connect-timeout 20 --max-time 150 'https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/742a79dd-0366-4c88-a3cf-466a0c2cf717.png' -o public/assets/ludus/doctore-authority-approved-v1.png
+          echo '4ed7ef333da18db4fce76846568bdd4abd333d2f3d43fe191cb0e618b733f511  public/assets/ludus/doctore-authority-approved-v1.png' | sha256sum -c -
+          file public/assets/ludus/doctore-authority-approved-v1.png
+      - name: Commit user originals without converting to WebP or generating frames
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/assets/ludus/doctore-idle-approved-v1.png public/assets/ludus/doctore-explain-approved-v1.png public/assets/ludus/doctore-authority-approved-v1.png
+          if git diff --cached --quiet; then echo 'Already stored'; else
+            git commit -m 'assets(training): add three byte-identical approved animation PNG sheets'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
