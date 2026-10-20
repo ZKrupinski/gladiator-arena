@@ -350,7 +350,9 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="champion-murmillo.js?v=3"></script>
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
-<script src="arena-beasts.js?v=2"></script>
+<script src="sprite-motion-registry.js?v=1"></script>
+<script src="arena-beasts.js?v=3"></script>
+<script src="beast-stage-previews.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
 <script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
 <script src="ludus-roster.js?v=3"></script>
@@ -1107,7 +1109,7 @@ function renderBeastHunt(){
  const select=choices.length?'<label class="beast-fighter-label">출전 검투사 <select id="beastHeroSelect">'+choices.map(({h,i})=>'<option value="'+i+'" '+(i===hero?'selected':'')+'>'+h.name+' · Lv.'+careerLevel(h)+'</option>').join('')+'</select></label>':'<p class="career-status">출전 가능한 검투사가 없습니다. 시장에서 영입하거나 치료해 주세요.</p>';
  $('#careerBody').innerHTML='<section class="beast-gallery career-card"><header class="beast-gallery-head"><div><small>VENATIO · ARENA BESTIARUM</small><h2>야수전</h2><p>야수 종류를 선택해 검투사 한 명으로 3연전! 코끼리는 단일 보스전입니다.</p><button type="button" id="beastBackDraft" class="beast-back">◀ 전투 준비로</button></div>'+select+'</header><div class="beast-stage-grid">'+BEAST_STAGES.map((s,i)=>{
  const spec=info[s.id]||{};
- return '<article class="beast-stage-card"><div class="beast-stage-thumb" role="img" aria-label="'+s.label+' 스프라이트"><img src="assets/beasts/individual/'+s.id+'/thumb.png?v=1" alt="" decoding="async" loading="lazy"><span>STAGE '+String(i+1).padStart(2,'0')+'</span></div><div class="beast-stage-detail"><small>'+(spec.latin||'BESTIA')+' · '+('★'.repeat(s.difficulty))+'</small><h3>'+s.label+'</h3><p>'+s.caption+'</p><p class="beast-stage-meta">권장 Lv.'+s.level+' · '+s.rounds+'회 전투 · <b>'+s.reward+' D</b></p><button class="beast-challenge" data-beast-stage="'+s.id+'" '+(!choices.length?'disabled':'')+'>⚔ 도전하기</button></div></article>'
+ return '<article class="beast-stage-card" data-beast-type="'+s.id+'" tabindex="0" aria-label="'+s.label+' 선택하여 야수 동작 미리보기"><div class="beast-stage-thumb" role="img" aria-label="'+s.label+' 대기 애니메이션"><canvas data-beast-preview="'+s.id+'" width="600" height="400" aria-hidden="true"></canvas><span>STAGE '+String(i+1).padStart(2,'0')+'</span></div><div class="beast-stage-detail"><small>'+(spec.latin||'BESTIA')+' · '+('★'.repeat(s.difficulty))+'</small><h3>'+s.label+'</h3><p>'+s.caption+'</p><p class="beast-stage-meta">권장 Lv.'+s.level+' · '+s.rounds+'회 전투 · <b>'+s.reward+' D</b></p><button class="beast-challenge" data-beast-stage="'+s.id+'" '+(!choices.length?'disabled':'')+'>⚔ 도전하기</button></div></article>'
  }).join('')+'</div><footer class="beast-gallery-footer">일반 아레나에는 동물이 등장하지 않습니다. 연전 최종 승리 시 보상이 한 번 지급됩니다.</footer></section>';
  $('#careerRosterTab').setAttribute('aria-pressed','false');
  $('#careerTrainTab').setAttribute('aria-pressed','false');
@@ -1118,6 +1120,7 @@ function renderBeastHunt(){
  };
  $('#beastBackDraft').onclick=openCareerDraft;
  window.LudusApprovedScenes?.close();
+ window.BeastStagePreviews?.mount?.();
 }
 function beginBeastHunt(id,rosterIndex){
  const stage=BEAST_STAGES.find(s=>s.id===id),h=CAREER.roster[rosterIndex];
@@ -1848,6 +1851,7 @@ function choosePose(f){
   return f.action;
  }
  if(f.guard)return 'guard';
+ if(f.beastType&&window.SpriteMotionRegistry?.overridePose?.(f,'idle',clock)==='special')return 'special';
  if(Math.abs(f.vx)>7)return 'walk';
  return 'idle';
 }
@@ -1931,7 +1935,9 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
   say('BOSS · SECOND WIND!',1);
  }
  e.guard=e.pressureT<=0&&e.guardHold>0&&e.st>8&&e.stagger<=0;
- if(e.stagger<=0&&!e.comboDash){
+ window.SpriteMotionRegistry?.triggerStandoffRoar?.(e,p,clock,dt);
+ if(e._beastRoarUntil>clock){e.vx=0;e.guard=false;}
+ else if(e.stagger<=0&&!e.comboDash){
   const dist=Math.abs(e.x-p.x),dir=Math.sign(p.x-e.x)||-1;e.face=dir;
   const preferred=Math.max(MIN_FIGHTER_DISTANCE+AI_SPACING_BUFFER,e.cfg.reach-55);
   if(!e.guard){

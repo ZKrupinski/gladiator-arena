@@ -321,6 +321,20 @@ function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
  if(!entry?.ready)return false;
  const n=frameFor(fighter,pose,clock);
  const key=ACTION_KEYS[n.row]||'idle';
+ const extra=pose==='special'?root.SpriteMotionRegistry?.getExtraFrames?.(fighter.beastType,'roar'):null;
+ if(extra?.length===8){
+  const since=Number.isFinite(fighter._beastRoarSince)?fighter._beastRoarSince:clock;
+  const idx=Math.min(7,Math.max(0,Math.floor((clock-since)*8)));
+  const im=extra[idx];
+  if(im?.naturalWidth){
+   const scale=Math.min(w*1.2/im.naturalWidth,h*1.15/im.naturalHeight);
+   const dw=im.naturalWidth*scale,dh=im.naturalHeight*scale;
+   const centre=x+w*.5;
+   ctx.save();ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
+   if(flip){ctx.translate(centre*2,0);ctx.scale(-1,1);}
+   ctx.drawImage(im,centre-dw*.5,y+h-dh,dw,dh);ctx.restore();return true;
+  }
+ }
  const indy=entry.individual?.get(key+':'+n.index);
  if(indy?.naturalWidth){
   // Every independent PNG is exactly 512×512. Feet and body share one

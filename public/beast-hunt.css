@@ -26,3 +26,9 @@
 .beast-stage-thumb:after{content:none!important}
 .beast-stage-thumb span{top:8px;left:9px;padding:4px 8px;border:1px solid #f5d39799;border-radius:5px;background:#311a12b0}
 @media(max-width:620px){.beast-stage-thumb{height:auto;aspect-ratio:3/2}.beast-gallery-head{flex-direction:column;align-items:stretch}}
+
+/* v4: Full motion previews, never separate still thumbnails. */
+.beast-stage-thumb canvas[data-beast-preview]{display:block;width:100%;height:100%;aspect-ratio:3/2;object-fit:contain;pointer-events:none;filter:brightness(1.12) contrast(1.04)}
+.beast-stage-card{transition:border-color .15s ease,box-shadow .15s ease;outline-offset:2px}
+.beast-stage-card.is-selected,.beast-stage-card:focus-visible{border-color:#ffe6a6;box-shadow:0 0 0 2px #c99c68,0 0 18px #dba76190}
+.beast-stage-thumb{background:radial-gradient(ellipse at 50% 50%,#99724d 0%,#553925 55%,#241713 100%)}
