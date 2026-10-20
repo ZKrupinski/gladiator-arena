@@ -228,7 +228,7 @@ def generate(job,adapter,result):
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()
-    p.add_argument("--mode",choices=["plan","generate","inspect","repair"],required=True)
+    p.add_argument("--mode",choices=["plan","brief","generate","inspect","repair"],required=True)
     p.add_argument("--reference");p.add_argument("--character");p.add_argument("--action")
     p.add_argument("--job");p.add_argument("--result");p.add_argument("--adapter")
     p.add_argument("--extra",action="append",default=[]);p.add_argument("--out",required=True)
@@ -236,6 +236,11 @@ if __name__=="__main__":
     a=p.parse_args();out=Path(a.out).resolve()
     if a.mode=="plan":
         print(plan(a.reference,a.character,a.action,out,a.extra))
+    elif a.mode=="brief":
+        if not a.job:p.error("--job required")
+        from spriteforge_preflight_v3 import make_brief
+        pth=make_brief(a.job,out/"preflight")
+        print(pth.with_name("briefing.md").read_text(encoding="utf8"))
     elif a.mode in ("generate","repair") or (a.mode=="inspect" and a.adapter):
         # Connected generator is ALWAYS auto-correcting: no silent one-shot
         # failure or manual retry chores for diagnosed animation defects.
