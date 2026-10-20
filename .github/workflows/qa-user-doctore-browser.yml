@@ -11,6 +11,8 @@ on:
       - public/assets/ludus/doctore-idle-approved-v1.png
       - public/assets/ludus/doctore-explain-approved-v1.png
       - public/assets/ludus/doctore-authority-approved-v1.png
+      - public/assets/ludus/doctore-whip-clean-v2/**
+      - scripts/build_doctore_whip_clean.py
       - scripts/qa_user_doctore_browser.mjs
       - .github/workflows/qa-user-doctore-browser.yml
   workflow_dispatch:
@@ -50,10 +52,17 @@ jobs:
                           hashes[n]=hashlib.sha256(r.read()).hexdigest()
                   with urllib.request.urlopen(urllib.request.Request(origin+'/?doctore-qa='+str(attempt),headers={'User-Agent':'ArenaDoctoreQA','Cache-Control':'no-cache'}),timeout=20) as r:
                       html=r.read().decode('utf-8')
-                  with urllib.request.urlopen(urllib.request.Request(origin+'/ludus-doctore-anim.js?v=5',headers={'User-Agent':'ArenaDoctoreQA'}),timeout=20) as r:
+                  with urllib.request.urlopen(urllib.request.Request(origin+'/ludus-doctore-anim.js?v=6',headers={'User-Agent':'ArenaDoctoreQA'}),timeout=20) as r:
                       animation=r.read().decode('utf-8')
-                  if (hashes==expected and
-                    'ludus-doctore-anim.js?v=5' in html and
+                  isolated={}
+                  for frame in range(7):
+                      name='doctore-whip-clean-v2/frame-'+str(frame)+'.png'
+                      with urllib.request.urlopen(urllib.request.Request(origin+'/assets/ludus/'+name+'?qa=clean2',headers={'User-Agent':'ArenaDoctoreQA'}),timeout=20) as r:
+                          isolated[frame]=hashlib.sha256(r.read()).hexdigest()
+                  local={i:hashlib.sha256(pathlib.Path('public/assets/ludus/doctore-whip-clean-v2/frame-'+str(i)+'.png').read_bytes()).hexdigest() for i in range(7)}
+                  if (hashes==expected and isolated==local and
+                    'ludus-doctore-anim.js?v=6' in html and
+                    'doctore-whip-clean-v2/frame-' in animation and
                     all(n in animation for n in names) and
                     'doctore-sd-v1.webp' not in animation):
 
