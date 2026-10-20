@@ -10,6 +10,8 @@
  filter:drop-shadow(3px 5px 5px #17070359);
  transform:none;animation:none!important;
  background-repeat:no-repeat;overflow:visible;will-change:background-position;
+ /* Never clip the original 800px lash frame. */
+ contain:none;clip-path:none;
 }
 .la-stage.training .la-doctore-parchment{
  position:absolute;left:498px;top:91px;width:360px;height:163px;z-index:7;

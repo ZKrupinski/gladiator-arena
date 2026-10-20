@@ -12,8 +12,8 @@ for(const path of ['assets/ludus/doctore-sd-v1.webp','assets/npc/carnifex-casual
  assert.equal(bin.toString('ascii',8,12),'WEBP',path);
  assert.ok(bin.byteLength>120000,path+' is not a placeholder');
 }
-assert.match(html,/ludus-doctore-anim\.js\?v=1/);
-assert.match(html,/ludus-approved-scenes\.js\?v=12/);
+assert.match(html,/ludus-doctore-anim\.js\?v=3/);
+assert.match(html,/ludus-approved-scenes\.js\?v=14/);
 assert.match(html,/arena-carnifex\.js\?v=5/);
 assert.match(css,/left:185px;top:25px;width:360px;height:620px/);
 assert.match(css,/doctore-sd-v1\.webp/);
@@ -33,6 +33,9 @@ vm.runInNewContext(frames,{window,
  cancelAnimationFrame(){},
  performance:{now:()=>1000}});
 const sprite=window.LudusDoctoreAnim;
+const original=fs.readFileSync(new URL('assets/ludus/doctore-whip-user-v1.png',base));
+assert.equal(original.length,2322336,'User uploaded 2,322,336-byte PNG is archived verbatim');
+assert.equal(original.subarray(1,4).toString('ascii'),'PNG');
 assert.equal(sprite.sprite.columns,8);
 assert.equal(sprite.sprite.rows,4);
 for(const [name,row] of Object.entries(sprite.sprite.actions))
@@ -42,7 +45,7 @@ assert.equal(actor.dataset.action,'idle');
 for(const [pose,action] of [[1,'talk'],[2,'command'],[3,'whip']]){
  sprite.react(pose);assert.equal(actor.dataset.action,action);
 }
-assert.match(sprite.userWhip,/66b8f68a-f680-437b-877a-63e128e9e67f\.png/);
+assert.equal(sprite.userWhip,'assets/ludus/doctore-whip-user-v1.png?v=2');
 assert.match(scenes,/refresh\(\);pose\(3\)/);
 sprite.react(-1);assert.equal(actor.dataset.action,'idle');
 sprite.unmount();
