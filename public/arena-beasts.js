@@ -17,6 +17,86 @@ const SPEC=Object.freeze({
 });
 const BY_ROUND=['wolf','leopard','tiger','lion','elephant'];
 const cache=new Map();
+// Wolf V3 is opt-in and source-complete-only. The original 40-frame art remains
+// visible until the full approved atlas manifest and the requested action load.
+// Missing unfinished packs never result in invisible opponents.
+const WOLF_V3_DIR='assets/beasts/wolf-v3/';
+const WOLF_ACTIONS=Object.freeze([
+ 'idle','walk','attack1','attack2','attack3','attack4','hit','death','roar'
+]);
+const wolfV3={state:'unrequested',actions:new Map(),error:null};
+function wolfActionFor(f,pose){
+ if(pose==='defeat')return 'death';
+ if(pose==='hit')return 'hit';
+ if(pose==='comboDash'||pose==='finisher')return 'attack4';
+ if(pose==='special')return 'roar';
+ if(pose==='attack'){
+  return ['attack1','attack2','attack3'][Math.max(0,Math.min(2,Number(f.attackVariant)||0))];
+ }
+ if(pose==='walk'||pose==='dodge')return 'walk';
+ return 'idle';
+}
+function wolfFrameIndex(f,pose,clock){
+ const act=wolfActionFor(f,pose);
+ if(act==='idle'||act==='walk'||act==='roar')
+  return Math.floor((Number(clock)||0)*(act==='idle'?6:act==='walk'?11:8))%8;
+ const duration=Math.max(.12,Number(f.actionDuration)||.5);
+ if(act==='death'){
+  if(!Number.isFinite(f._beastDeathSince))f._beastDeathSince=Number(clock)||0;
+  return Math.min(7,Math.max(0,Math.floor(((Number(clock)||0)-f._beastDeathSince)/1.18*8)));
+ }
+ const progress=f.actionT>0?Math.max(0,Math.min(.999,1-f.actionT/duration)):0;
+ return Math.min(7,Math.floor(progress*8));
+}
+function loadWolfV3(){
+ if(wolfV3.state!=='unrequested'||typeof fetch!=='function')return;
+ wolfV3.state='loading';
+ fetch(WOLF_V3_DIR+'manifest.json?v=1',{cache:'force-cache'}).then(async response=>{
+  if(!response.ok)throw Error('Wolf V3 art pack not published');
+  const manifest=await response.json();
+  if(manifest.version!==3||!manifest.actions)throw Error('Invalid V3 manifest');
+  for(const action of WOLF_ACTIONS){
+   const item=manifest.actions[action];
+   if(typeof item!=='string'||!/^[-\w]+\.webp$/.test(item))
+    throw Error('Wolf V3 missing required action '+action);
+  }
+  const loaded=await Promise.all(WOLF_ACTIONS.map(action=>new Promise((resolve,reject)=>{
+   const image=new Image();
+   image.onload=()=>{
+    if(image.naturalWidth<1024||image.naturalHeight<512)return reject(Error('Low-resolution wolf atlas '+action));
+    resolve([action,image]);
+   };
+   image.onerror=()=>reject(Error('Atlas did not load '+action));
+   image.src=WOLF_V3_DIR+manifest.actions[action]+'?v=1';
+  })));
+  for(const [name,img] of loaded)wolfV3.actions.set(name,img);
+  wolfV3.state='ready';
+ }).catch(e=>{
+  wolfV3.error=String(e);
+  wolfV3.state='unavailable';
+ });
+}
+function drawWolfV3(ctx,args){
+ const {fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}=args;
+ if(fighter?.beastType!=='wolf'||wolfV3.state!=='ready')return false;
+ const action=wolfActionFor(fighter,pose),img=wolfV3.actions.get(action);
+ if(!img)return false;
+ const index=wolfFrameIndex(fighter,pose,clock);
+ const cellW=img.naturalWidth/4,cellH=img.naturalHeight/2;
+ // Fixed viewport and ground pivot: preserve character proportions,
+ // no per-frame cropping, no cloning, no nonuniform stretching.
+ const targetHeight=h*1.21,targetWidth=targetHeight*cellW/cellH;
+ const center=x+w*.5,ground=y+h;
+ ctx.save();
+ ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
+ if(flip){ctx.translate(center*2,0);ctx.scale(-1,1);}
+ ctx.drawImage(img,(index%4)*cellW,Math.floor(index/4)*cellH,
+               cellW,cellH,center-targetWidth*.5,ground-targetHeight*.90,
+               targetWidth,targetHeight);
+ ctx.restore();
+ return true;
+}
+
 const ACTION_KEYS=Object.freeze(['idle','walk','attack','hit','defeat']);
 const INDEPENDENT_DIR='assets/beasts/individual/';
 // Independent 512px source frames are loaded only for the selected opponent.
@@ -35,6 +115,7 @@ function loadIndividual(type,entry){
 
 let loaded=0,failed=0;
 function ensure(type){
+ if(type==='wolf')loadWolfV3();
  if(!SPEC[type])return false;
  if(cache.has(type)){const saved=cache.get(type);loadIndividual(type,saved);return !!saved.ready;}
  if(typeof Image==='undefined')return false;
@@ -185,6 +266,7 @@ function frameFor(f,pose,clock){
 }
 function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
  if(!fighter?.beastType)return false;
+ if(drawWolfV3(ctx,{fighter,pose,clock,x,y,w,h,flip,alpha}))return true;
  const info=SPEC[fighter.beastType],entry=cache.get(fighter.beastType);
  if(!info)return false;
  // A pending image must not result in invisible foes. Let the existing
@@ -221,6 +303,7 @@ function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
  ctx.restore();
  return true;
 }
-root.ArenaBeasts={version:'2.0.0',types:SPEC,rows:ROWS_BY_POSE,
- pick,apply,ensure,frameFor,draw,portrait,status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name),individual:[...cache].map(([name,e])=>({name,frames:e.individualReady||0}))})};
+root.ArenaBeasts={version:'2.1.0',types:SPEC,rows:ROWS_BY_POSE,
+ pick,apply,ensure,frameFor,draw,portrait,wolfActionFor,wolfFrameIndex,
+ status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name),individual:[...cache].map(([name,e])=>({name,frames:e.individualReady||0})),wolfV3:{status:wolfV3.state,actions:[...wolfV3.actions.keys()],error:wolfV3.error}})};
 })(window);
