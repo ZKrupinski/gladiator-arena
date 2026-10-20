@@ -8,6 +8,10 @@ on:
       - config/spriteforge-qc-rules.json
       - scripts/spriteforge_pipeline_v3.py
       - scripts/test_legacy_beasts_spriteforge_v3.py
+      - scripts/spriteforge_auto_repair_v3.py
+      - scripts/test_spriteforge_auto_repair_v3.py
+      - scripts/build_beast_regeneration_queue_v3.py
+      - scripts/test_beast_regeneration_queue_v3.py
       - .github/workflows/spriteforge-v3-legacy-beast-cleanup.yml
   pull_request:
     branches: [main]
@@ -42,12 +46,21 @@ jobs:
         run: python scripts/test_legacy_beasts_spriteforge_v3.py
       - name: Test SpriteForge V3 generation and complete foreign body detection
         run: python scripts/test_spriteforge_pipeline_v3.py
+      - name: Test automatic regeneration on known QC failures and animated preview generation
+        run: python scripts/test_spriteforge_auto_repair_v3.py
+      - name: Test routing every unresolved QC issue to an 8-frame regeneration job
+        run: python scripts/test_beast_regeneration_queue_v3.py
       - name: Inspect 5 original atlases and 200 frames; remove neighbor-proven body fragments at any size
         run: |
           python scripts/audit_legacy_beasts_spriteforge_v3.py \
             --fix-safe \
             --report docs/qa/beast-legacy-v3-audit.json \
             --previews docs/qa/beast-v3-previews
+      - name: Convert EVERY unresolved QA defect to automatic action regeneration jobs
+        run: |
+          python scripts/build_beast_regeneration_queue_v3.py \
+            --audit docs/qa/beast-legacy-v3-audit.json \
+            --queue docs/qa/beast-v3-regeneration-queue.json
       - name: Validate no duplicated major disconnected actor silhouettes
         run: python scripts/qa_beast_alpha.py
       - uses: actions/upload-artifact@v4
@@ -55,12 +68,13 @@ jobs:
           name: spriteforge-v3-legacy-beast-audit
           path: |
             docs/qa/beast-legacy-v3-audit.json
+            docs/qa/beast-v3-regeneration-queue.json
             docs/qa/beast-v3-previews/*.png
           retention-days: 14
       - name: Commit fixes and visual evidence to review branch, NEVER production main
         if: github.event_name == 'push' && github.ref == 'refs/heads/spriteforge-v3-beast-cleanup-20261021'
         run: |
-          git add public/assets/beasts/individual docs/qa/beast-legacy-v3-audit.json docs/qa/beast-v3-previews
+          git add public/assets/beasts/individual docs/qa/beast-legacy-v3-audit.json docs/qa/beast-v3-regeneration-queue.json docs/qa/beast-v3-previews
           if ! git diff --cached --quiet; then
             git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore(beasts): SpriteForge V3 conservative alpha cleanup and 200-frame visual QA'
             git pull --rebase origin spriteforge-v3-beast-cleanup-20261021
