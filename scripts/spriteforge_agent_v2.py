@@ -149,6 +149,7 @@ def render(parts,name,location,scale):
         images.append(image)
         dx,dy=MOTION.get(name,[(0,0)]*8)[i]
         metadata.append({"frame":i,"sourceBBox":part["sourceBox"],
+         "nativeBodySize":list(part["body"].size),
          "footSource":part["foot"],"footExport":[OUTPUT[0]//2,OUTPUT[1]-36],
          "scaleFactorIdenticalAcrossAllFrames":scale,
          "rootMotion":{"dx":dx,"dy":dy},"errors":errors,
@@ -164,6 +165,21 @@ def render(parts,name,location,scale):
         preview.paste(base.convert("RGB"),(cx,cy))
         painter.text((cx+8,cy+4),f"{name} {i+1}/8",fill=(255,220,165))
     preview.save(location.parent.parent/f"{name}_contact.jpg",quality=86)
+    # Render the 8 authored root-motion offsets into the ACTUAL GIF preview.
+    # This checks forward/back/airborne timing before the game consumes metadata.
+    animated=[]
+    for i,im in enumerate(images):
+        dx,dy=MOTION.get(name,[(0,0)]*8)[i]
+        motionImg=Image.new("RGBA",OUTPUT,(0,0,0,0))
+        motionImg.alpha_composite(im,(int(dx),int(dy)))
+        small=motionImg.copy()
+        small.thumbnail((480,360),Image.Resampling.LANCZOS)
+        bg=Image.new("RGB",(480,360),(39,32,28))
+        bg.paste(small,((480-small.width)//2,(360-small.height)//2),small)
+        animated.append(bg)
+    animated[0].save(location.parent.parent/f"{name}_motion.gif",
+                     save_all=True,append_images=animated[1:],
+                     duration=round(1000/FPS[name]),loop=0,optimize=True)
     return images,metadata
 
 def execute(manifest,out,only=None):
@@ -186,6 +202,14 @@ def execute(manifest,out,only=None):
             scale=float(spec.get("scale",1.0))
             if not 0<scale<=1:raise ValueError("NO_UNCONTROLLED_UPSCALE")
             images,meta=render(parts,action,out/"frames"/action,scale)
+            # Size consistency. Do not 'fix' a mysteriously rescaled frame by
+            # stretching it; request a new correctly-sized source drawing.
+            if action in ("idle","walk","guard"):
+                heights=[p["body"].height for p in parts]
+                median=float(np.median(heights))
+                for idx,height in enumerate(heights):
+                    if height<median*.56 or height>median*1.65:
+                        meta[idx]["warnings"].append("BODY_SIZE_JUMP__REGENERATE_OR_EXPLAIN")
             # Duplicates are a production error even when all sprites lie
             # neatly inside their boundaries.
             hashes=[hashlib.sha256(p["body"].tobytes()).hexdigest() for p in parts]
