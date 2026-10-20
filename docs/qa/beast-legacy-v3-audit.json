@@ -15,60 +15,72 @@
   "nativeV3GenerationApproved": false,
   "releaseAuthorized": false,
   "visualReviewRequired": true,
-  "status": "LEGACY_AUDITED_SAFELY_CLEANED_PENDING_REVIEW",
+  "status": "LEGACY_NEIGHBOR_OWNERSHIP_CLEANED_PENDING_VISUAL_REVIEW",
   "totals": {
     "frames": 200,
-    "fixedIslands": 0,
-    "fixedAlphaPixels": 0,
-    "ambiguousIslands": 1,
-    "edgeRiskFrames": 62,
-    "modifiedFrames": 0,
+    "fixedIslands": 7,
+    "fixedAlphaPixels": 27,
+    "verifiedForeignPixels": 228965,
+    "erasedNeighborAlphaPixels": 244329,
+    "ambiguousIslands": 8,
+    "edgeRiskFrames": 34,
+    "modifiedFrames": 31,
     "framesNeedingVisualReview": 62
   },
   "species": {
     "wolf": {
       "frames": 40,
-      "fixedIslands": 0,
-      "fixedAlphaPixels": 0,
-      "ambiguousIslands": 0,
-      "edgeRiskFrames": 4,
-      "modifiedFrames": 0,
+      "fixedIslands": 1,
+      "fixedAlphaPixels": 1,
+      "verifiedForeignPixels": 21629,
+      "erasedNeighborAlphaPixels": 23287,
+      "ambiguousIslands": 1,
+      "edgeRiskFrames": 0,
+      "modifiedFrames": 4,
       "framesNeedingVisualReview": 4
     },
     "leopard": {
       "frames": 40,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
+      "verifiedForeignPixels": 32775,
+      "erasedNeighborAlphaPixels": 34791,
       "ambiguousIslands": 0,
-      "edgeRiskFrames": 20,
-      "modifiedFrames": 0,
+      "edgeRiskFrames": 16,
+      "modifiedFrames": 4,
       "framesNeedingVisualReview": 20
     },
     "tiger": {
       "frames": 40,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
-      "ambiguousIslands": 0,
-      "edgeRiskFrames": 6,
-      "modifiedFrames": 0,
+      "verifiedForeignPixels": 11938,
+      "erasedNeighborAlphaPixels": 12661,
+      "ambiguousIslands": 1,
+      "edgeRiskFrames": 4,
+      "modifiedFrames": 2,
       "framesNeedingVisualReview": 6
     },
     "lion": {
       "frames": 40,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
+      "verifiedForeignPixels": 12645,
+      "erasedNeighborAlphaPixels": 13442,
       "ambiguousIslands": 0,
-      "edgeRiskFrames": 7,
-      "modifiedFrames": 0,
+      "edgeRiskFrames": 5,
+      "modifiedFrames": 2,
       "framesNeedingVisualReview": 7
     },
     "elephant": {
       "frames": 40,
-      "fixedIslands": 0,
-      "fixedAlphaPixels": 0,
-      "ambiguousIslands": 1,
-      "edgeRiskFrames": 25,
-      "modifiedFrames": 0,
+      "fixedIslands": 6,
+      "fixedAlphaPixels": 26,
+      "verifiedForeignPixels": 149978,
+      "erasedNeighborAlphaPixels": 160148,
+      "ambiguousIslands": 6,
+      "edgeRiskFrames": 9,
+      "modifiedFrames": 19,
       "framesNeedingVisualReview": 25
     }
   },
@@ -88,6 +100,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "idle",
       "index": 0,
@@ -109,6 +135,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "idle",
       "index": 1,
@@ -130,6 +175,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "idle",
       "index": 2,
@@ -151,6 +215,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "idle",
       "index": 3,
@@ -172,6 +255,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "idle",
       "index": 4,
@@ -193,6 +295,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "idle",
       "index": 5,
@@ -214,6 +335,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "idle",
       "index": 6,
@@ -235,6 +375,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "idle",
       "index": 7,
@@ -256,6 +410,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "walk",
       "index": 0,
@@ -277,6 +445,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "walk",
       "index": 1,
@@ -303,6 +490,25 @@
           "distanceToBodyPx": 2.0
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "walk",
       "index": 2,
@@ -311,95 +517,188 @@
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         40,
         122,
-        509,
+        469,
         391
       ],
-      "bodyAlphaPixels": 82592,
-      "detachedIslands": 0,
-      "candidateSpecks": 0,
-      "fixedIslands": 0,
-      "fixedAlphaPixels": 0,
+      "bodyAlphaPixels": 75048,
+      "detachedIslands": 1,
+      "candidateSpecks": 1,
+      "fixedIslands": 1,
+      "fixedAlphaPixels": 1,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 6992,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 7172,
+        "erasedAlphaPixels": 7637,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "wolf",
       "action": "walk",
       "index": 3,
       "path": "assets/beasts/individual/wolf/walk/03.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        42,
         121,
         424,
         410
       ],
-      "bodyAlphaPixels": 74395,
-      "detachedIslands": 0,
+      "bodyAlphaPixels": 70724,
+      "detachedIslands": 1,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
-      "otherIslands": [],
+      "otherIslands": [
+        {
+          "pixels": 30,
+          "distanceToBodyPx": 2.2
+        }
+      ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 3391,
+            "shift": 396
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 3439,
+        "erasedAlphaPixels": 3819,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "wolf",
       "action": "walk",
       "index": 4,
       "path": "assets/beasts/individual/wolf/walk/04.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW",
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         19,
         119,
-        511,
+        470,
         400
       ],
-      "bodyAlphaPixels": 84529,
-      "detachedIslands": 0,
+      "bodyAlphaPixels": 76412,
+      "detachedIslands": 1,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
-      "ambiguousIslands": [],
+      "ambiguousIslands": [
+        {
+          "pixels": 176,
+          "bbox": [
+            509,
+            147,
+            511,
+            320
+          ],
+          "distanceToBodyPx": 40.0
+        }
+      ],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 7292,
+            "shift": 398
+          }
+        ],
+        "verifiedForeignPixels": 7558,
+        "erasedAlphaPixels": 8042,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "wolf",
       "action": "walk",
       "index": 5,
       "path": "assets/beasts/individual/wolf/walk/05.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        42,
         117,
         418,
         398
       ],
-      "bodyAlphaPixels": 73618,
+      "bodyAlphaPixels": 69992,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 3364,
+            "shift": 398
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 3460,
+        "erasedAlphaPixels": 3789,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "wolf",
       "action": "walk",
       "index": 6,
       "path": "assets/beasts/individual/wolf/walk/06.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [],
@@ -416,6 +715,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "walk",
       "index": 7,
@@ -437,6 +750,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "attack",
       "index": 0,
@@ -458,6 +785,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "attack",
       "index": 1,
@@ -479,6 +825,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "attack",
       "index": 2,
@@ -500,6 +865,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "attack",
       "index": 3,
@@ -521,6 +905,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "attack",
       "index": 4,
@@ -542,6 +945,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "attack",
       "index": 5,
@@ -563,6 +985,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "attack",
       "index": 6,
@@ -584,6 +1025,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "attack",
       "index": 7,
@@ -605,6 +1060,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "hit",
       "index": 0,
@@ -626,6 +1095,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "hit",
       "index": 1,
@@ -647,6 +1135,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "hit",
       "index": 2,
@@ -668,6 +1175,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "hit",
       "index": 3,
@@ -689,6 +1215,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "hit",
       "index": 4,
@@ -710,6 +1255,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "hit",
       "index": 5,
@@ -731,6 +1295,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "hit",
       "index": 6,
@@ -752,6 +1335,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "hit",
       "index": 7,
@@ -773,6 +1370,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "defeat",
       "index": 0,
@@ -794,6 +1405,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "defeat",
       "index": 1,
@@ -815,6 +1445,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "defeat",
       "index": 2,
@@ -836,6 +1485,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "defeat",
       "index": 3,
@@ -857,6 +1525,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "defeat",
       "index": 4,
@@ -878,6 +1565,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "defeat",
       "index": 5,
@@ -899,6 +1605,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "defeat",
       "index": 6,
@@ -920,6 +1645,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "wolf",
       "action": "defeat",
       "index": 7,
@@ -941,6 +1680,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "idle",
       "index": 0,
@@ -964,6 +1717,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "idle",
       "index": 1,
@@ -987,6 +1759,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "idle",
       "index": 2,
@@ -1008,6 +1799,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "idle",
       "index": 3,
@@ -1029,6 +1839,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "idle",
       "index": 4,
@@ -1050,6 +1879,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "idle",
       "index": 5,
@@ -1071,6 +1919,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "idle",
       "index": 6,
@@ -1092,6 +1959,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "idle",
       "index": 7,
@@ -1113,6 +1994,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "walk",
       "index": 0,
@@ -1136,6 +2031,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "walk",
       "index": 1,
@@ -1162,6 +2076,25 @@
           "distanceToBodyPx": 6.4
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "walk",
       "index": 2,
@@ -1183,6 +2116,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "walk",
       "index": 3,
@@ -1204,6 +2156,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "walk",
       "index": 4,
@@ -1225,6 +2196,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "walk",
       "index": 5,
@@ -1246,6 +2236,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "walk",
       "index": 6,
@@ -1267,6 +2276,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "walk",
       "index": 7,
@@ -1290,6 +2313,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "attack",
       "index": 0,
@@ -1313,6 +2350,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "attack",
       "index": 1,
@@ -1336,6 +2392,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "attack",
       "index": 2,
@@ -1359,6 +2434,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "attack",
       "index": 3,
@@ -1367,15 +2461,15 @@
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         217,
         140,
-        509,
+        470,
         428
       ],
-      "bodyAlphaPixels": 58632,
+      "bodyAlphaPixels": 49071,
       "detachedIslands": 1,
       "candidateSpecks": 0,
       "fixedIslands": 0,
@@ -1387,34 +2481,72 @@
           "distanceToBodyPx": 2.0
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 8889,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 9094,
+        "erasedAlphaPixels": 9652,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "leopard",
       "action": "attack",
       "index": 4,
       "path": "assets/beasts/individual/leopard/attack/04.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        44,
         115,
         279,
         423
       ],
-      "bodyAlphaPixels": 51750,
+      "bodyAlphaPixels": 40557,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 10479,
+            "shift": 396
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 10670,
+        "erasedAlphaPixels": 11321,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "leopard",
       "action": "attack",
       "index": 5,
       "path": "assets/beasts/individual/leopard/attack/05.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
@@ -1433,6 +2565,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "attack",
       "index": 6,
@@ -1456,6 +2607,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "attack",
       "index": 7,
@@ -1477,6 +2642,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "hit",
       "index": 0,
@@ -1505,6 +2684,25 @@
           "distanceToBodyPx": 2.0
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "hit",
       "index": 1,
@@ -1526,6 +2724,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "hit",
       "index": 2,
@@ -1547,6 +2764,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "hit",
       "index": 3,
@@ -1568,6 +2804,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "hit",
       "index": 4,
@@ -1589,6 +2844,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "hit",
       "index": 5,
@@ -1610,6 +2884,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "hit",
       "index": 6,
@@ -1631,6 +2924,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "hit",
       "index": 7,
@@ -1654,6 +2961,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "defeat",
       "index": 0,
@@ -1677,6 +2998,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "defeat",
       "index": 1,
@@ -1700,6 +3040,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "defeat",
       "index": 2,
@@ -1723,6 +3082,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "defeat",
       "index": 3,
@@ -1731,49 +3109,87 @@
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         220,
         177,
-        509,
+        469,
         369
       ],
-      "bodyAlphaPixels": 42995,
+      "bodyAlphaPixels": 37022,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 5536,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 5684,
+        "erasedAlphaPixels": 6051,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "leopard",
       "action": "defeat",
       "index": 4,
       "path": "assets/beasts/individual/leopard/defeat/04.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
-        179,
+        44,
+        187,
         279,
         369
       ],
-      "bodyAlphaPixels": 35065,
+      "bodyAlphaPixels": 27379,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 7190,
+            "shift": 396
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 7327,
+        "erasedAlphaPixels": 7767,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "leopard",
       "action": "defeat",
       "index": 5,
       "path": "assets/beasts/individual/leopard/defeat/05.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
@@ -1792,6 +3208,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "defeat",
       "index": 6,
@@ -1815,6 +3250,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "leopard",
       "action": "defeat",
       "index": 7,
@@ -1836,6 +3285,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "idle",
       "index": 0,
@@ -1862,6 +3325,25 @@
           "distanceToBodyPx": 2.2
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "idle",
       "index": 1,
@@ -1883,6 +3365,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "idle",
       "index": 2,
@@ -1904,6 +3405,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "idle",
       "index": 3,
@@ -1925,6 +3445,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "idle",
       "index": 4,
@@ -1946,6 +3485,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "idle",
       "index": 5,
@@ -1967,6 +3525,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "idle",
       "index": 6,
@@ -1988,6 +3565,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "idle",
       "index": 7,
@@ -2009,6 +3600,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "walk",
       "index": 0,
@@ -2030,6 +3635,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "walk",
       "index": 1,
@@ -2051,6 +3675,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "walk",
       "index": 2,
@@ -2072,6 +3715,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "walk",
       "index": 3,
@@ -2093,6 +3755,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "walk",
       "index": 4,
@@ -2114,6 +3795,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "walk",
       "index": 5,
@@ -2135,6 +3835,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "walk",
       "index": 6,
@@ -2156,6 +3875,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "walk",
       "index": 7,
@@ -2177,6 +3910,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "attack",
       "index": 0,
@@ -2198,6 +3945,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "attack",
       "index": 1,
@@ -2219,6 +3985,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "attack",
       "index": 2,
@@ -2240,6 +4025,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "attack",
       "index": 3,
@@ -2263,6 +4067,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "attack",
       "index": 4,
@@ -2284,6 +4107,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "attack",
       "index": 5,
@@ -2305,6 +4147,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "attack",
       "index": 6,
@@ -2326,6 +4187,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "attack",
       "index": 7,
@@ -2347,6 +4222,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "hit",
       "index": 0,
@@ -2368,6 +4257,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "hit",
       "index": 1,
@@ -2389,6 +4297,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "hit",
       "index": 2,
@@ -2410,6 +4337,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "hit",
       "index": 3,
@@ -2431,6 +4377,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "hit",
       "index": 4,
@@ -2452,6 +4417,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "hit",
       "index": 5,
@@ -2473,6 +4457,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "hit",
       "index": 6,
@@ -2494,6 +4497,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "hit",
       "index": 7,
@@ -2515,6 +4532,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "defeat",
       "index": 0,
@@ -2536,6 +4567,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "defeat",
       "index": 1,
@@ -2557,6 +4607,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "defeat",
       "index": 2,
@@ -2580,6 +4649,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "defeat",
       "index": 3,
@@ -2603,6 +4691,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "defeat",
       "index": 4,
@@ -2611,49 +4718,99 @@
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW",
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         124,
         195,
-        511,
+        470,
         393
       ],
-      "bodyAlphaPixels": 57931,
-      "detachedIslands": 0,
+      "bodyAlphaPixels": 52313,
+      "detachedIslands": 1,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
-      "ambiguousIslands": [],
+      "ambiguousIslands": [
+        {
+          "pixels": 125,
+          "bbox": [
+            509,
+            235,
+            511,
+            358
+          ],
+          "distanceToBodyPx": 40.0
+        }
+      ],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 5082,
+            "shift": 398
+          }
+        ],
+        "verifiedForeignPixels": 5230,
+        "erasedAlphaPixels": 5546,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "tiger",
       "action": "defeat",
       "index": 5,
       "path": "assets/beasts/individual/tiger/defeat/05.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
-        211,
+        43,
+        225,
         319,
-        392
+        386
       ],
-      "bodyAlphaPixels": 32997,
+      "bodyAlphaPixels": 25952,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 6503,
+            "shift": 398
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 6708,
+        "erasedAlphaPixels": 7115,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "tiger",
       "action": "defeat",
       "index": 6,
       "path": "assets/beasts/individual/tiger/defeat/06.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
@@ -2672,6 +4829,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "tiger",
       "action": "defeat",
       "index": 7,
@@ -2693,6 +4864,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "idle",
       "index": 0,
@@ -2714,6 +4899,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "idle",
       "index": 1,
@@ -2735,6 +4939,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "idle",
       "index": 2,
@@ -2756,6 +4979,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "idle",
       "index": 3,
@@ -2777,6 +5019,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "idle",
       "index": 4,
@@ -2798,6 +5059,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "idle",
       "index": 5,
@@ -2819,6 +5099,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "idle",
       "index": 6,
@@ -2840,6 +5139,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "idle",
       "index": 7,
@@ -2861,6 +5174,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "walk",
       "index": 0,
@@ -2882,6 +5209,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "walk",
       "index": 1,
@@ -2903,6 +5249,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "walk",
       "index": 2,
@@ -2924,6 +5289,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "walk",
       "index": 3,
@@ -2945,6 +5329,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "walk",
       "index": 4,
@@ -2966,6 +5369,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "walk",
       "index": 5,
@@ -2992,6 +5414,25 @@
           "distanceToBodyPx": 2.0
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "walk",
       "index": 6,
@@ -3013,6 +5454,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "walk",
       "index": 7,
@@ -3034,6 +5489,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "attack",
       "index": 0,
@@ -3055,6 +5524,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "attack",
       "index": 1,
@@ -3078,6 +5566,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "attack",
       "index": 2,
@@ -3110,6 +5617,25 @@
           "distanceToBodyPx": 2.8
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "attack",
       "index": 3,
@@ -3131,6 +5657,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "attack",
       "index": 4,
@@ -3157,6 +5702,25 @@
           "distanceToBodyPx": 6.4
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "attack",
       "index": 5,
@@ -3178,6 +5742,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "attack",
       "index": 6,
@@ -3199,6 +5782,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "attack",
       "index": 7,
@@ -3220,6 +5817,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "hit",
       "index": 0,
@@ -3241,6 +5852,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "hit",
       "index": 1,
@@ -3262,6 +5892,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "hit",
       "index": 2,
@@ -3283,6 +5932,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "hit",
       "index": 3,
@@ -3304,6 +5972,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "hit",
       "index": 4,
@@ -3325,6 +6012,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "hit",
       "index": 5,
@@ -3346,6 +6052,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "hit",
       "index": 6,
@@ -3367,6 +6092,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "hit",
       "index": 7,
@@ -3388,6 +6127,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "defeat",
       "index": 0,
@@ -3414,6 +6167,25 @@
           "distanceToBodyPx": 2.0
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "defeat",
       "index": 1,
@@ -3435,6 +6207,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "defeat",
       "index": 2,
@@ -3458,6 +6249,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "defeat",
       "index": 3,
@@ -3486,6 +6296,25 @@
           "distanceToBodyPx": 2.0
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "defeat",
       "index": 4,
@@ -3509,6 +6338,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "lion",
       "action": "defeat",
       "index": 5,
@@ -3517,49 +6365,82 @@
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         282,
         198,
-        509,
+        469,
         377
       ],
-      "bodyAlphaPixels": 30047,
+      "bodyAlphaPixels": 23537,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 6030,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 6191,
+        "erasedAlphaPixels": 6586,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "lion",
       "action": "defeat",
       "index": 6,
       "path": "assets/beasts/individual/lion/defeat/06.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        44,
         198,
         424,
         382
       ],
-      "bodyAlphaPixels": 48285,
+      "bodyAlphaPixels": 41515,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 6321,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 6454,
+        "erasedAlphaPixels": 6856,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "lion",
       "action": "defeat",
       "index": 7,
       "path": "assets/beasts/individual/lion/defeat/07.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [],
@@ -3576,6 +6457,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "idle",
       "index": 0,
@@ -3597,6 +6492,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "idle",
       "index": 1,
@@ -3618,6 +6532,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "idle",
       "index": 2,
@@ -3639,6 +6572,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "idle",
       "index": 3,
@@ -3660,6 +6612,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "idle",
       "index": 4,
@@ -3681,6 +6652,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "idle",
       "index": 5,
@@ -3702,6 +6692,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "idle",
       "index": 6,
@@ -3723,6 +6732,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "idle",
       "index": 7,
@@ -3731,16 +6754,16 @@
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         67,
         72,
-        509,
+        470,
         429
       ],
-      "bodyAlphaPixels": 96989,
-      "detachedIslands": 1,
+      "bodyAlphaPixels": 90900,
+      "detachedIslands": 2,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
@@ -3748,26 +6771,45 @@
       "otherIslands": [
         {
           "pixels": 1,
-          "distanceToBodyPx": 2.0
+          "distanceToBodyPx": 9.0
+        },
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 7.3
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 5709,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 5781,
+        "erasedAlphaPixels": 6482,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "walk",
       "index": 0,
       "path": "assets/beasts/individual/elephant/walk/00.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL",
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        44,
         81,
         506,
         429
       ],
-      "bodyAlphaPixels": 103001,
+      "bodyAlphaPixels": 93568,
       "detachedIslands": 1,
       "candidateSpecks": 0,
       "fixedIslands": 0,
@@ -3779,57 +6821,147 @@
           "distanceToBodyPx": 2.0
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 8852,
+            "shift": 396
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 9006,
+        "erasedAlphaPixels": 9502,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "walk",
       "index": 1,
       "path": "assets/beasts/individual/elephant/walk/01.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW",
+        "POSSIBLE_NEIGHBOR_FRAME_GHOSTS",
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         65,
         81,
-        511,
+        472,
         431
       ],
-      "bodyAlphaPixels": 93524,
-      "detachedIslands": 0,
+      "bodyAlphaPixels": 85638,
+      "detachedIslands": 3,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
-      "ambiguousIslands": [],
+      "ambiguousIslands": [
+        {
+          "pixels": 124,
+          "bbox": [
+            510,
+            103,
+            511,
+            227
+          ],
+          "distanceToBodyPx": 40.3
+        },
+        {
+          "pixels": 32,
+          "bbox": [
+            468,
+            146,
+            470,
+            178
+          ],
+          "distanceToBodyPx": 30.4
+        },
+        {
+          "pixels": 49,
+          "bbox": [
+            509,
+            232,
+            511,
+            280
+          ],
+          "distanceToBodyPx": 39.0
+        }
+      ],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 7228,
+            "shift": 398
+          }
+        ],
+        "verifiedForeignPixels": 7362,
+        "erasedAlphaPixels": 7945,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "walk",
       "index": 2,
       "path": "assets/beasts/individual/elephant/walk/02.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        43,
         85,
         481,
         432
       ],
-      "bodyAlphaPixels": 97564,
+      "bodyAlphaPixels": 88930,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 8024,
+            "shift": 398
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 8219,
+        "erasedAlphaPixels": 8713,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "walk",
       "index": 3,
       "path": "assets/beasts/individual/elephant/walk/03.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [],
@@ -3846,6 +6978,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "walk",
       "index": 4,
@@ -3872,6 +7023,25 @@
           "distanceToBodyPx": 5.4
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "walk",
       "index": 5,
@@ -3893,6 +7063,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "walk",
       "index": 6,
@@ -3914,6 +7103,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "walk",
       "index": 7,
@@ -3922,187 +7125,360 @@
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         68,
         95,
-        509,
+        470,
         415
       ],
-      "bodyAlphaPixels": 94497,
+      "bodyAlphaPixels": 89081,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 5081,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 5211,
+        "erasedAlphaPixels": 5564,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "attack",
       "index": 0,
       "path": "assets/beasts/individual/elephant/attack/00.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL",
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        44,
         80,
         509,
         420
       ],
-      "bodyAlphaPixels": 102694,
-      "detachedIslands": 0,
-      "candidateSpecks": 0,
-      "fixedIslands": 0,
-      "fixedAlphaPixels": 0,
+      "bodyAlphaPixels": 95304,
+      "detachedIslands": 2,
+      "candidateSpecks": 2,
+      "fixedIslands": 2,
+      "fixedAlphaPixels": 9,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 6844,
+            "shift": 396
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 7003,
+        "erasedAlphaPixels": 7504,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "attack",
       "index": 1,
       "path": "assets/beasts/individual/elephant/attack/01.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW",
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         88,
         38,
-        511,
+        471,
         415
       ],
-      "bodyAlphaPixels": 98496,
-      "detachedIslands": 0,
-      "candidateSpecks": 0,
-      "fixedIslands": 0,
-      "fixedAlphaPixels": 0,
-      "ambiguousIslands": [],
+      "bodyAlphaPixels": 88984,
+      "detachedIslands": 4,
+      "candidateSpecks": 3,
+      "fixedIslands": 3,
+      "fixedAlphaPixels": 14,
+      "ambiguousIslands": [
+        {
+          "pixels": 198,
+          "bbox": [
+            509,
+            115,
+            511,
+            312
+          ],
+          "distanceToBodyPx": 40.0
+        }
+      ],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 8667,
+            "shift": 398
+          }
+        ],
+        "verifiedForeignPixels": 8867,
+        "erasedAlphaPixels": 9459,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "attack",
       "index": 2,
       "path": "assets/beasts/individual/elephant/attack/02.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
         43,
-        509,
-        415
+        43,
+        470,
+        411
       ],
-      "bodyAlphaPixels": 119269,
+      "bodyAlphaPixels": 101646,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 9822,
+            "shift": 398
+          },
+          {
+            "side": "right",
+            "matchedPixels": 6537,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 16754,
+        "erasedAlphaPixels": 17807,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "attack",
       "index": 3,
       "path": "assets/beasts/individual/elephant/attack/03.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW",
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        44,
         61,
-        509,
+        470,
         415
       ],
-      "bodyAlphaPixels": 118290,
-      "detachedIslands": 0,
+      "bodyAlphaPixels": 101340,
+      "detachedIslands": 2,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
-      "ambiguousIslands": [],
-      "otherIslands": [],
+      "ambiguousIslands": [
+        {
+          "pixels": 211,
+          "bbox": [
+            44,
+            354,
+            52,
+            405
+          ],
+          "distanceToBodyPx": 5.4
+        }
+      ],
+      "otherIslands": [
+        {
+          "pixels": 1,
+          "distanceToBodyPx": 2.8
+        }
+      ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 9999,
+            "shift": 396
+          },
+          {
+            "side": "right",
+            "matchedPixels": 5672,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 15953,
+        "erasedAlphaPixels": 16914,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "attack",
       "index": 4,
       "path": "assets/beasts/individual/elephant/attack/04.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL",
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        44,
         99,
         511,
         425
       ],
-      "bodyAlphaPixels": 114015,
+      "bodyAlphaPixels": 102761,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 10515,
+            "shift": 396
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 10722,
+        "erasedAlphaPixels": 11307,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "attack",
       "index": 5,
       "path": "assets/beasts/individual/elephant/attack/05.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         99,
         65,
-        509,
+        471,
         419
       ],
-      "bodyAlphaPixels": 81708,
+      "bodyAlphaPixels": 78913,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 2587,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 2659,
+        "erasedAlphaPixels": 2949,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "attack",
       "index": 6,
       "path": "assets/beasts/individual/elephant/attack/06.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        44,
         54,
         453,
         418
       ],
-      "bodyAlphaPixels": 96817,
+      "bodyAlphaPixels": 88351,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 7878,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 8047,
+        "erasedAlphaPixels": 8548,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "attack",
       "index": 7,
       "path": "assets/beasts/individual/elephant/attack/07.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
@@ -4121,6 +7497,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "hit",
       "index": 0,
@@ -4144,6 +7534,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "hit",
       "index": 1,
@@ -4167,6 +7576,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "hit",
       "index": 2,
@@ -4202,6 +7630,25 @@
         }
       ],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "hit",
       "index": 3,
@@ -4225,6 +7672,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "hit",
       "index": 4,
@@ -4253,6 +7719,25 @@
           "distanceToBodyPx": 2.0
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "hit",
       "index": 5,
@@ -4274,6 +7759,25 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "hit",
       "index": 6,
@@ -4295,6 +7799,20 @@
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "hit",
       "index": 7,
@@ -4303,107 +7821,178 @@
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         61,
         60,
-        509,
+        471,
         405
       ],
-      "bodyAlphaPixels": 96198,
+      "bodyAlphaPixels": 91000,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "right",
+            "matchedPixels": 4866,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 4936,
+        "erasedAlphaPixels": 5471,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "defeat",
       "index": 0,
       "path": "assets/beasts/individual/elephant/defeat/00.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        44,
         80,
-        509,
+        470,
         405
       ],
-      "bodyAlphaPixels": 100462,
+      "bodyAlphaPixels": 90129,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 8013,
+            "shift": 396
+          },
+          {
+            "side": "right",
+            "matchedPixels": 1664,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 9836,
+        "erasedAlphaPixels": 10498,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "defeat",
       "index": 1,
       "path": "assets/beasts/individual/elephant/defeat/01.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        44,
         139,
         489,
         402
       ],
-      "bodyAlphaPixels": 91812,
+      "bodyAlphaPixels": 83513,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 7796,
+            "shift": 396
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 7907,
+        "erasedAlphaPixels": 8374,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "defeat",
       "index": 2,
       "path": "assets/beasts/individual/elephant/defeat/02.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         98,
         137,
-        509,
-        405
+        469,
+        404
       ],
-      "bodyAlphaPixels": 79117,
+      "bodyAlphaPixels": 74671,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 4190,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 4266,
+        "erasedAlphaPixels": 4553,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "defeat",
       "index": 3,
       "path": "assets/beasts/individual/elephant/defeat/03.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        44,
         154,
         459,
         406
       ],
-      "bodyAlphaPixels": 86050,
+      "bodyAlphaPixels": 78957,
       "detachedIslands": 1,
       "candidateSpecks": 0,
       "fixedIslands": 0,
@@ -4415,11 +8004,30 @@
           "distanceToBodyPx": 2.0
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 6628,
+            "shift": 396
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 6764,
+        "erasedAlphaPixels": 7169,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "defeat",
       "index": 4,
       "path": "assets/beasts/individual/elephant/defeat/04.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [],
@@ -4445,6 +8053,25 @@
           "distanceToBodyPx": 2.2
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 0,
+            "shift": null
+          }
+        ],
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
+      },
       "species": "elephant",
       "action": "defeat",
       "index": 5,
@@ -4453,19 +8080,19 @@
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         68,
         175,
-        509,
+        469,
         414
       ],
-      "bodyAlphaPixels": 73204,
-      "detachedIslands": 2,
-      "candidateSpecks": 0,
-      "fixedIslands": 0,
-      "fixedAlphaPixels": 0,
+      "bodyAlphaPixels": 68772,
+      "detachedIslands": 3,
+      "candidateSpecks": 1,
+      "fixedIslands": 1,
+      "fixedAlphaPixels": 3,
       "ambiguousIslands": [],
       "otherIslands": [
         {
@@ -4477,35 +8104,68 @@
           "distanceToBodyPx": 2.0
         }
       ],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 0,
+            "shift": null
+          },
+          {
+            "side": "right",
+            "matchedPixels": 4137,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 4209,
+        "erasedAlphaPixels": 4529,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "defeat",
       "index": 6,
       "path": "assets/beasts/individual/elephant/defeat/06.png",
-      "changed": false
+      "changed": true
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
-        3,
+        44,
         186,
         438,
         405
       ],
-      "bodyAlphaPixels": 72095,
+      "bodyAlphaPixels": 65295,
       "detachedIslands": 0,
       "candidateSpecks": 0,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
+      "neighborOwnership": {
+        "proofs": [
+          {
+            "side": "left",
+            "matchedPixels": 6363,
+            "shift": 396
+          }
+        ],
+        "verifiedForeignPixels": 6476,
+        "erasedAlphaPixels": 6860,
+        "removedForeignConnectedIslands": 0,
+        "needsVisualReview": true,
+        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+      },
       "species": "elephant",
       "action": "defeat",
       "index": 7,
       "path": "assets/beasts/individual/elephant/defeat/07.png",
-      "changed": false
+      "changed": true
     }
   ],
-  "unresolvedWarning": "Large detached artifacts, attached ghost limbs and clipped body parts require source-level visual review or re-generation; never auto-erase."
+  "unresolvedWarning": "All parts from adjacent frames must be erased, including large heads, feet and tails. Proven overlap is removed. Unproven overlaps and attached silhouettes require source-level manual review or regeneration; NEVER mark a frame production-ready without review."
 }
