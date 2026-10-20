@@ -1,0 +1,850 @@
+{
+  "schema": "gladiator.sprites.v3.production-queue",
+  "version": 1,
+  "game": "GLADIATOR ARENA",
+  "sourceStatus": "User-approved single reference per animal; files are attached in current conversation, not automatically embedded in GitHub",
+  "sourceResolution": [
+    1448,
+    1086
+  ],
+  "sourceMapping": [
+    {
+      "character": "wolf",
+      "originalFilename": "28363.png",
+      "sha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2"
+    },
+    {
+      "character": "leopard",
+      "originalFilename": "28366.png",
+      "sha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6"
+    },
+    {
+      "character": "tiger",
+      "originalFilename": "28364.png",
+      "sha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe"
+    },
+    {
+      "character": "lion",
+      "originalFilename": "28365.png",
+      "sha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13"
+    },
+    {
+      "character": "elephant",
+      "originalFilename": "28367.png",
+      "sha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2"
+    }
+  ],
+  "hardRules": {
+    "oneCharacterOneMotionPerGeneration": true,
+    "framesPerMotion": 8,
+    "highResolutionNativeNotUpscale": true,
+    "connectedAlphaIntegrity": true,
+    "groundAnchorMandatory": true,
+    "doNotCropFusedLimbs": true,
+    "allPendingUntilRealGenerationAndVisualAndGameQA": true,
+    "prohibitLegacy1586x992_40poseSource": true
+  },
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "wolf.idle",
+      "character": "wolf",
+      "action": "idle",
+      "semantic": "idle",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "wolf.walk",
+      "character": "wolf",
+      "action": "walk",
+      "semantic": "walk",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "wolf.slash",
+      "character": "wolf",
+      "action": "slash",
+      "semantic": "bite",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "wolf.sweep",
+      "character": "wolf",
+      "action": "sweep",
+      "semantic": "claw",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "wolf.thrust",
+      "character": "wolf",
+      "action": "thrust",
+      "semantic": "pounce",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "wolf.heavy",
+      "character": "wolf",
+      "action": "heavy",
+      "semantic": "charge",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "wolf.guard",
+      "character": "wolf",
+      "action": "guard",
+      "semantic": "crouch_guard",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "wolf.hit",
+      "character": "wolf",
+      "action": "hit",
+      "semantic": "hit",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "wolf.death",
+      "character": "wolf",
+      "action": "death",
+      "semantic": "death",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "wolf.roar",
+      "character": "wolf",
+      "action": "roar",
+      "semantic": "roar",
+      "frames": 8,
+      "required": false,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "leopard.idle",
+      "character": "leopard",
+      "action": "idle",
+      "semantic": "idle",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "leopard.walk",
+      "character": "leopard",
+      "action": "walk",
+      "semantic": "walk",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "leopard.slash",
+      "character": "leopard",
+      "action": "slash",
+      "semantic": "bite",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "leopard.sweep",
+      "character": "leopard",
+      "action": "sweep",
+      "semantic": "claw",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "leopard.thrust",
+      "character": "leopard",
+      "action": "thrust",
+      "semantic": "leap",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "leopard.heavy",
+      "character": "leopard",
+      "action": "heavy",
+      "semantic": "rush",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "leopard.guard",
+      "character": "leopard",
+      "action": "guard",
+      "semantic": "crouch_guard",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "leopard.hit",
+      "character": "leopard",
+      "action": "hit",
+      "semantic": "hit",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "leopard.death",
+      "character": "leopard",
+      "action": "death",
+      "semantic": "death",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "leopard.roar",
+      "character": "leopard",
+      "action": "roar",
+      "semantic": "roar",
+      "frames": 8,
+      "required": false,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "tiger.idle",
+      "character": "tiger",
+      "action": "idle",
+      "semantic": "idle",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "tiger.walk",
+      "character": "tiger",
+      "action": "walk",
+      "semantic": "walk",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "tiger.slash",
+      "character": "tiger",
+      "action": "slash",
+      "semantic": "bite",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "tiger.sweep",
+      "character": "tiger",
+      "action": "sweep",
+      "semantic": "claw",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "tiger.thrust",
+      "character": "tiger",
+      "action": "thrust",
+      "semantic": "pounce",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "tiger.heavy",
+      "character": "tiger",
+      "action": "heavy",
+      "semantic": "rush",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "tiger.guard",
+      "character": "tiger",
+      "action": "guard",
+      "semantic": "crouch_guard",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "tiger.hit",
+      "character": "tiger",
+      "action": "hit",
+      "semantic": "hit",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "tiger.death",
+      "character": "tiger",
+      "action": "death",
+      "semantic": "death",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "tiger.roar",
+      "character": "tiger",
+      "action": "roar",
+      "semantic": "roar",
+      "frames": 8,
+      "required": false,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "lion.idle",
+      "character": "lion",
+      "action": "idle",
+      "semantic": "idle",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "lion.walk",
+      "character": "lion",
+      "action": "walk",
+      "semantic": "walk",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "lion.slash",
+      "character": "lion",
+      "action": "slash",
+      "semantic": "bite",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "lion.sweep",
+      "character": "lion",
+      "action": "sweep",
+      "semantic": "claw",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "lion.thrust",
+      "character": "lion",
+      "action": "thrust",
+      "semantic": "pounce",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "lion.heavy",
+      "character": "lion",
+      "action": "heavy",
+      "semantic": "heavy_swipe",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "lion.guard",
+      "character": "lion",
+      "action": "guard",
+      "semantic": "brace",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "lion.hit",
+      "character": "lion",
+      "action": "hit",
+      "semantic": "hit",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "lion.death",
+      "character": "lion",
+      "action": "death",
+      "semantic": "death",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "lion.roar",
+      "character": "lion",
+      "action": "roar",
+      "semantic": "roar",
+      "frames": 8,
+      "required": false,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "elephant.idle",
+      "character": "elephant",
+      "action": "idle",
+      "semantic": "idle",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "elephant.walk",
+      "character": "elephant",
+      "action": "walk",
+      "semantic": "walk",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "elephant.slash",
+      "character": "elephant",
+      "action": "slash",
+      "semantic": "tusk_hit",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "elephant.sweep",
+      "character": "elephant",
+      "action": "sweep",
+      "semantic": "trunk_sweep",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "elephant.thrust",
+      "character": "elephant",
+      "action": "thrust",
+      "semantic": "forward_rush",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "elephant.heavy",
+      "character": "elephant",
+      "action": "heavy",
+      "semantic": "stomp",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "elephant.guard",
+      "character": "elephant",
+      "action": "guard",
+      "semantic": "brace",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "elephant.hit",
+      "character": "elephant",
+      "action": "hit",
+      "semantic": "hit",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "elephant.death",
+      "character": "elephant",
+      "action": "death",
+      "semantic": "death",
+      "frames": 8,
+      "required": true,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    },
+    {
+      "id": "elephant.roar",
+      "character": "elephant",
+      "action": "roar",
+      "semantic": "trumpet",
+      "frames": 8,
+      "required": false,
+      "state": "AWAIT_GENERATION",
+      "minimumNativePixelsPerFrame": [
+        512,
+        512
+      ],
+      "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
+      "sourceMode": "8 independent RGBA PNG preferred",
+      "readyToReplaceGame": false
+    }
+  ]
+}
