@@ -11,8 +11,16 @@ async function lose(){await page.evaluate(()=>{const s=__arenaQA.state;s.resultW
 try{
  await page.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.__arenaQA?.state&&window.LudusBridge&&window.LudusScene,{timeout:25000});
+ // Entrance must be visible from the title: do not hide VENATIO in the LUDUS artwork.
+ assert.equal(await page.locator('#titleBeastEnter').isVisible(),true);
+ assert.equal(await page.locator('#beastQuickAccess').isVisible(),true);
+ await page.locator('#titleBeastEnter').click();
+ await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
+ assert.equal((await page.locator('#careerBeastTab').innerText()).includes('야수전'),true);
+ await page.locator('#careerExit').click();
  await page.locator('#careerEnter').click();
- await page.locator('#ludusScene [data-action="beasts"]').first().click();
+ assert.equal(await page.locator('#ludusScene .ll-beast-quick').isVisible(),true);
+ await page.locator('#ludusScene .ll-beast-quick').click();
  await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
  assert.equal(await page.locator('.beast-stage-card').count(),5);
  const types=['wolf','leopard','tiger','lion','elephant'];
@@ -27,7 +35,7 @@ try{
   await page.waitForFunction(()=>__arenaQA.state.phase==='fight',{timeout:12000});
   assert.equal(await page.evaluate(()=>__arenaQA.state.enemy.beastType),'wolf');
   await win();
-  assert.equal(await page.locator('#continueBtn').innerText(),i<2?'다음 야수 상대하기':'3vs동물전으로');
+  assert.equal(await page.locator('#continueBtn').innerText(),i<2?'다음 야수 상대하기':'야수전으로');
   assert.equal(await page.evaluate(()=>LudusBridge.state().gold),initial+(i===2?300:0),'reward on final victory only');
   await page.locator('#continueBtn').click();
  }
