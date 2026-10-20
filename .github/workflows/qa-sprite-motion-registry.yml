@@ -1,0 +1,22 @@
+name: SpriteMotion optional-action and beast animation regression
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/sprite-motion-registry.js
+      - public/beast-stage-previews.js
+      - public/index.html
+      - public/arena-beasts.js
+      - scripts/test_sprite_motion_registry.mjs
+      - .github/workflows/qa-sprite-motion-registry.yml
+  workflow_dispatch:
+jobs:
+  motion-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Validate all nine required poses, extra registration and roar gate
+        run: node scripts/test_sprite_motion_registry.mjs
