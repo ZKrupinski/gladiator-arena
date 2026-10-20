@@ -62,7 +62,7 @@ assert.match(html,/drawCinematicWorldAccent\(\)/,'illustrated dash and parry bur
 assert.match(html,/ArenaHerald\?\.drawCanvasCallout\?\.\(ctx,'CONTRA!'/,'defender Roman parry callout visible');
 assert.match(html,/ArenaHerald\?\.drawCanvasCallout\?\.\(ctx,'FRVSTRA!'/,'attacker Roman parry callout visible');
 assert.match(html,/IMPETUS/,'dramatic dash title visible');
-assert.match(html,/triggerCinematic\('parry'/,'perfect parry triggers focus');
+assert.match(html,/triggerCinematic\(reversal\?\.critical\?'reversal':'parry'/,'normal parry and low-health reversal choose distinct focus');
 assert.match(html,/triggerCinematic\('dash'/,'successful dash triggers focus');
 assert.match(html,/S\.cinematic=focus\.state/,'cinematic state expires');
 assert.match(html,/update\(gameDt,dt\)/,'game clock slow, presentation stays realtime');
