@@ -1,0 +1,596 @@
+{
+  "version": 2,
+  "source": "approved 1586x992 8x5 original art",
+  "pixelSize": [
+    512,
+    512
+  ],
+  "nativePerCellResolution": "~198x198",
+  "upscale": "LANCZOS 2x; not redrawn",
+  "actions": [
+    "idle",
+    "walk",
+    "attack",
+    "hit",
+    "defeat"
+  ],
+  "species": {
+    "wolf": {
+      "thumbnail": "assets/beasts/individual/wolf/thumb.png",
+      "actions": {
+        "idle": {
+          "paths": [
+            "assets/beasts/individual/wolf/idle/00.png",
+            "assets/beasts/individual/wolf/idle/01.png",
+            "assets/beasts/individual/wolf/idle/02.png",
+            "assets/beasts/individual/wolf/idle/03.png",
+            "assets/beasts/individual/wolf/idle/04.png",
+            "assets/beasts/individual/wolf/idle/05.png",
+            "assets/beasts/individual/wolf/idle/06.png",
+            "assets/beasts/individual/wolf/idle/07.png"
+          ],
+          "visiblePixels": [
+            77782,
+            89498,
+            90268,
+            89645,
+            88532,
+            89716,
+            89445,
+            80445
+          ]
+        },
+        "walk": {
+          "paths": [
+            "assets/beasts/individual/wolf/walk/00.png",
+            "assets/beasts/individual/wolf/walk/01.png",
+            "assets/beasts/individual/wolf/walk/02.png",
+            "assets/beasts/individual/wolf/walk/03.png",
+            "assets/beasts/individual/wolf/walk/04.png",
+            "assets/beasts/individual/wolf/walk/05.png",
+            "assets/beasts/individual/wolf/walk/06.png",
+            "assets/beasts/individual/wolf/walk/07.png"
+          ],
+          "visiblePixels": [
+            77204,
+            84713,
+            88086,
+            88076,
+            87316,
+            85280,
+            86146,
+            78394
+          ]
+        },
+        "attack": {
+          "paths": [
+            "assets/beasts/individual/wolf/attack/00.png",
+            "assets/beasts/individual/wolf/attack/01.png",
+            "assets/beasts/individual/wolf/attack/02.png",
+            "assets/beasts/individual/wolf/attack/03.png",
+            "assets/beasts/individual/wolf/attack/04.png",
+            "assets/beasts/individual/wolf/attack/05.png",
+            "assets/beasts/individual/wolf/attack/06.png",
+            "assets/beasts/individual/wolf/attack/07.png"
+          ],
+          "visiblePixels": [
+            77925,
+            91571,
+            89805,
+            79520,
+            101070,
+            93423,
+            76137,
+            74725
+          ]
+        },
+        "hit": {
+          "paths": [
+            "assets/beasts/individual/wolf/hit/00.png",
+            "assets/beasts/individual/wolf/hit/01.png",
+            "assets/beasts/individual/wolf/hit/02.png",
+            "assets/beasts/individual/wolf/hit/03.png",
+            "assets/beasts/individual/wolf/hit/04.png",
+            "assets/beasts/individual/wolf/hit/05.png",
+            "assets/beasts/individual/wolf/hit/06.png",
+            "assets/beasts/individual/wolf/hit/07.png"
+          ],
+          "visiblePixels": [
+            78782,
+            81139,
+            88247,
+            74588,
+            81440,
+            82182,
+            89132,
+            80568
+          ]
+        },
+        "defeat": {
+          "paths": [
+            "assets/beasts/individual/wolf/defeat/00.png",
+            "assets/beasts/individual/wolf/defeat/01.png",
+            "assets/beasts/individual/wolf/defeat/02.png",
+            "assets/beasts/individual/wolf/defeat/03.png",
+            "assets/beasts/individual/wolf/defeat/04.png",
+            "assets/beasts/individual/wolf/defeat/05.png",
+            "assets/beasts/individual/wolf/defeat/06.png",
+            "assets/beasts/individual/wolf/defeat/07.png"
+          ],
+          "visiblePixels": [
+            81790,
+            82289,
+            85802,
+            73746,
+            68965,
+            67629,
+            65228,
+            53542
+          ]
+        }
+      }
+    },
+    "leopard": {
+      "thumbnail": "assets/beasts/individual/leopard/thumb.png",
+      "actions": {
+        "idle": {
+          "paths": [
+            "assets/beasts/individual/leopard/idle/00.png",
+            "assets/beasts/individual/leopard/idle/01.png",
+            "assets/beasts/individual/leopard/idle/02.png",
+            "assets/beasts/individual/leopard/idle/03.png",
+            "assets/beasts/individual/leopard/idle/04.png",
+            "assets/beasts/individual/leopard/idle/05.png",
+            "assets/beasts/individual/leopard/idle/06.png",
+            "assets/beasts/individual/leopard/idle/07.png"
+          ],
+          "visiblePixels": [
+            73664,
+            72136,
+            88284,
+            83844,
+            81878,
+            79541,
+            83241,
+            72680
+          ]
+        },
+        "walk": {
+          "paths": [
+            "assets/beasts/individual/leopard/walk/00.png",
+            "assets/beasts/individual/leopard/walk/01.png",
+            "assets/beasts/individual/leopard/walk/02.png",
+            "assets/beasts/individual/leopard/walk/03.png",
+            "assets/beasts/individual/leopard/walk/04.png",
+            "assets/beasts/individual/leopard/walk/05.png",
+            "assets/beasts/individual/leopard/walk/06.png",
+            "assets/beasts/individual/leopard/walk/07.png"
+          ],
+          "visiblePixels": [
+            75159,
+            82687,
+            81429,
+            79476,
+            78331,
+            80111,
+            81027,
+            67844
+          ]
+        },
+        "attack": {
+          "paths": [
+            "assets/beasts/individual/leopard/attack/00.png",
+            "assets/beasts/individual/leopard/attack/01.png",
+            "assets/beasts/individual/leopard/attack/02.png",
+            "assets/beasts/individual/leopard/attack/03.png",
+            "assets/beasts/individual/leopard/attack/04.png",
+            "assets/beasts/individual/leopard/attack/05.png",
+            "assets/beasts/individual/leopard/attack/06.png",
+            "assets/beasts/individual/leopard/attack/07.png"
+          ],
+          "visiblePixels": [
+            77740,
+            91536,
+            90349,
+            93067,
+            106473,
+            96336,
+            96071,
+            75423
+          ]
+        },
+        "hit": {
+          "paths": [
+            "assets/beasts/individual/leopard/hit/00.png",
+            "assets/beasts/individual/leopard/hit/01.png",
+            "assets/beasts/individual/leopard/hit/02.png",
+            "assets/beasts/individual/leopard/hit/03.png",
+            "assets/beasts/individual/leopard/hit/04.png",
+            "assets/beasts/individual/leopard/hit/05.png",
+            "assets/beasts/individual/leopard/hit/06.png",
+            "assets/beasts/individual/leopard/hit/07.png"
+          ],
+          "visiblePixels": [
+            78864,
+            77735,
+            90258,
+            70162,
+            80285,
+            79433,
+            80926,
+            72825
+          ]
+        },
+        "defeat": {
+          "paths": [
+            "assets/beasts/individual/leopard/defeat/00.png",
+            "assets/beasts/individual/leopard/defeat/01.png",
+            "assets/beasts/individual/leopard/defeat/02.png",
+            "assets/beasts/individual/leopard/defeat/03.png",
+            "assets/beasts/individual/leopard/defeat/04.png",
+            "assets/beasts/individual/leopard/defeat/05.png",
+            "assets/beasts/individual/leopard/defeat/06.png",
+            "assets/beasts/individual/leopard/defeat/07.png"
+          ],
+          "visiblePixels": [
+            75812,
+            81724,
+            57208,
+            69428,
+            67370,
+            66849,
+            65116,
+            60178
+          ]
+        }
+      }
+    },
+    "tiger": {
+      "thumbnail": "assets/beasts/individual/tiger/thumb.png",
+      "actions": {
+        "idle": {
+          "paths": [
+            "assets/beasts/individual/tiger/idle/00.png",
+            "assets/beasts/individual/tiger/idle/01.png",
+            "assets/beasts/individual/tiger/idle/02.png",
+            "assets/beasts/individual/tiger/idle/03.png",
+            "assets/beasts/individual/tiger/idle/04.png",
+            "assets/beasts/individual/tiger/idle/05.png",
+            "assets/beasts/individual/tiger/idle/06.png",
+            "assets/beasts/individual/tiger/idle/07.png"
+          ],
+          "visiblePixels": [
+            78997,
+            78253,
+            78641,
+            77728,
+            79147,
+            78015,
+            79150,
+            87439
+          ]
+        },
+        "walk": {
+          "paths": [
+            "assets/beasts/individual/tiger/walk/00.png",
+            "assets/beasts/individual/tiger/walk/01.png",
+            "assets/beasts/individual/tiger/walk/02.png",
+            "assets/beasts/individual/tiger/walk/03.png",
+            "assets/beasts/individual/tiger/walk/04.png",
+            "assets/beasts/individual/tiger/walk/05.png",
+            "assets/beasts/individual/tiger/walk/06.png",
+            "assets/beasts/individual/tiger/walk/07.png"
+          ],
+          "visiblePixels": [
+            86108,
+            95046,
+            95810,
+            90435,
+            95239,
+            93988,
+            97179,
+            92524
+          ]
+        },
+        "attack": {
+          "paths": [
+            "assets/beasts/individual/tiger/attack/00.png",
+            "assets/beasts/individual/tiger/attack/01.png",
+            "assets/beasts/individual/tiger/attack/02.png",
+            "assets/beasts/individual/tiger/attack/03.png",
+            "assets/beasts/individual/tiger/attack/04.png",
+            "assets/beasts/individual/tiger/attack/05.png",
+            "assets/beasts/individual/tiger/attack/06.png",
+            "assets/beasts/individual/tiger/attack/07.png"
+          ],
+          "visiblePixels": [
+            86646,
+            111577,
+            101942,
+            103726,
+            105148,
+            98728,
+            97311,
+            90322
+          ]
+        },
+        "hit": {
+          "paths": [
+            "assets/beasts/individual/tiger/hit/00.png",
+            "assets/beasts/individual/tiger/hit/01.png",
+            "assets/beasts/individual/tiger/hit/02.png",
+            "assets/beasts/individual/tiger/hit/03.png",
+            "assets/beasts/individual/tiger/hit/04.png",
+            "assets/beasts/individual/tiger/hit/05.png",
+            "assets/beasts/individual/tiger/hit/06.png",
+            "assets/beasts/individual/tiger/hit/07.png"
+          ],
+          "visiblePixels": [
+            85417,
+            86659,
+            83114,
+            80875,
+            96265,
+            89748,
+            86059,
+            82597
+          ]
+        },
+        "defeat": {
+          "paths": [
+            "assets/beasts/individual/tiger/defeat/00.png",
+            "assets/beasts/individual/tiger/defeat/01.png",
+            "assets/beasts/individual/tiger/defeat/02.png",
+            "assets/beasts/individual/tiger/defeat/03.png",
+            "assets/beasts/individual/tiger/defeat/04.png",
+            "assets/beasts/individual/tiger/defeat/05.png",
+            "assets/beasts/individual/tiger/defeat/06.png",
+            "assets/beasts/individual/tiger/defeat/07.png"
+          ],
+          "visiblePixels": [
+            76972,
+            83082,
+            83572,
+            76892,
+            72125,
+            70879,
+            54017,
+            60530
+          ]
+        }
+      }
+    },
+    "lion": {
+      "thumbnail": "assets/beasts/individual/lion/thumb.png",
+      "actions": {
+        "idle": {
+          "paths": [
+            "assets/beasts/individual/lion/idle/00.png",
+            "assets/beasts/individual/lion/idle/01.png",
+            "assets/beasts/individual/lion/idle/02.png",
+            "assets/beasts/individual/lion/idle/03.png",
+            "assets/beasts/individual/lion/idle/04.png",
+            "assets/beasts/individual/lion/idle/05.png",
+            "assets/beasts/individual/lion/idle/06.png",
+            "assets/beasts/individual/lion/idle/07.png"
+          ],
+          "visiblePixels": [
+            81067,
+            82013,
+            79178,
+            81439,
+            82439,
+            79109,
+            80927,
+            78265
+          ]
+        },
+        "walk": {
+          "paths": [
+            "assets/beasts/individual/lion/walk/00.png",
+            "assets/beasts/individual/lion/walk/01.png",
+            "assets/beasts/individual/lion/walk/02.png",
+            "assets/beasts/individual/lion/walk/03.png",
+            "assets/beasts/individual/lion/walk/04.png",
+            "assets/beasts/individual/lion/walk/05.png",
+            "assets/beasts/individual/lion/walk/06.png",
+            "assets/beasts/individual/lion/walk/07.png"
+          ],
+          "visiblePixels": [
+            79250,
+            87785,
+            85908,
+            90178,
+            83097,
+            78415,
+            80958,
+            80967
+          ]
+        },
+        "attack": {
+          "paths": [
+            "assets/beasts/individual/lion/attack/00.png",
+            "assets/beasts/individual/lion/attack/01.png",
+            "assets/beasts/individual/lion/attack/02.png",
+            "assets/beasts/individual/lion/attack/03.png",
+            "assets/beasts/individual/lion/attack/04.png",
+            "assets/beasts/individual/lion/attack/05.png",
+            "assets/beasts/individual/lion/attack/06.png",
+            "assets/beasts/individual/lion/attack/07.png"
+          ],
+          "visiblePixels": [
+            84046,
+            99792,
+            100548,
+            107340,
+            112396,
+            109570,
+            85431,
+            72699
+          ]
+        },
+        "hit": {
+          "paths": [
+            "assets/beasts/individual/lion/hit/00.png",
+            "assets/beasts/individual/lion/hit/01.png",
+            "assets/beasts/individual/lion/hit/02.png",
+            "assets/beasts/individual/lion/hit/03.png",
+            "assets/beasts/individual/lion/hit/04.png",
+            "assets/beasts/individual/lion/hit/05.png",
+            "assets/beasts/individual/lion/hit/06.png",
+            "assets/beasts/individual/lion/hit/07.png"
+          ],
+          "visiblePixels": [
+            83155,
+            90026,
+            89209,
+            73054,
+            80120,
+            77448,
+            73245,
+            73261
+          ]
+        },
+        "defeat": {
+          "paths": [
+            "assets/beasts/individual/lion/defeat/00.png",
+            "assets/beasts/individual/lion/defeat/01.png",
+            "assets/beasts/individual/lion/defeat/02.png",
+            "assets/beasts/individual/lion/defeat/03.png",
+            "assets/beasts/individual/lion/defeat/04.png",
+            "assets/beasts/individual/lion/defeat/05.png",
+            "assets/beasts/individual/lion/defeat/06.png",
+            "assets/beasts/individual/lion/defeat/07.png"
+          ],
+          "visiblePixels": [
+            83124,
+            77594,
+            64143,
+            68380,
+            64313,
+            61113,
+            57011,
+            48028
+          ]
+        }
+      }
+    },
+    "elephant": {
+      "thumbnail": "assets/beasts/individual/elephant/thumb.png",
+      "actions": {
+        "idle": {
+          "paths": [
+            "assets/beasts/individual/elephant/idle/00.png",
+            "assets/beasts/individual/elephant/idle/01.png",
+            "assets/beasts/individual/elephant/idle/02.png",
+            "assets/beasts/individual/elephant/idle/03.png",
+            "assets/beasts/individual/elephant/idle/04.png",
+            "assets/beasts/individual/elephant/idle/05.png",
+            "assets/beasts/individual/elephant/idle/06.png",
+            "assets/beasts/individual/elephant/idle/07.png"
+          ],
+          "visiblePixels": [
+            93524,
+            104124,
+            100368,
+            100771,
+            102123,
+            99820,
+            97704,
+            91489
+          ]
+        },
+        "walk": {
+          "paths": [
+            "assets/beasts/individual/elephant/walk/00.png",
+            "assets/beasts/individual/elephant/walk/01.png",
+            "assets/beasts/individual/elephant/walk/02.png",
+            "assets/beasts/individual/elephant/walk/03.png",
+            "assets/beasts/individual/elephant/walk/04.png",
+            "assets/beasts/individual/elephant/walk/05.png",
+            "assets/beasts/individual/elephant/walk/06.png",
+            "assets/beasts/individual/elephant/walk/07.png"
+          ],
+          "visiblePixels": [
+            96601,
+            107234,
+            108391,
+            107320,
+            104509,
+            104053,
+            102158,
+            89597
+          ]
+        },
+        "attack": {
+          "paths": [
+            "assets/beasts/individual/elephant/attack/00.png",
+            "assets/beasts/individual/elephant/attack/01.png",
+            "assets/beasts/individual/elephant/attack/02.png",
+            "assets/beasts/individual/elephant/attack/03.png",
+            "assets/beasts/individual/elephant/attack/04.png",
+            "assets/beasts/individual/elephant/attack/05.png",
+            "assets/beasts/individual/elephant/attack/06.png",
+            "assets/beasts/individual/elephant/attack/07.png"
+          ],
+          "visiblePixels": [
+            94185,
+            104538,
+            117661,
+            119544,
+            117736,
+            114074,
+            106139,
+            96450
+          ]
+        },
+        "hit": {
+          "paths": [
+            "assets/beasts/individual/elephant/hit/00.png",
+            "assets/beasts/individual/elephant/hit/01.png",
+            "assets/beasts/individual/elephant/hit/02.png",
+            "assets/beasts/individual/elephant/hit/03.png",
+            "assets/beasts/individual/elephant/hit/04.png",
+            "assets/beasts/individual/elephant/hit/05.png",
+            "assets/beasts/individual/elephant/hit/06.png",
+            "assets/beasts/individual/elephant/hit/07.png"
+          ],
+          "visiblePixels": [
+            92777,
+            104657,
+            117115,
+            111200,
+            113590,
+            104772,
+            105199,
+            93222
+          ]
+        },
+        "defeat": {
+          "paths": [
+            "assets/beasts/individual/elephant/defeat/00.png",
+            "assets/beasts/individual/elephant/defeat/01.png",
+            "assets/beasts/individual/elephant/defeat/02.png",
+            "assets/beasts/individual/elephant/defeat/03.png",
+            "assets/beasts/individual/elephant/defeat/04.png",
+            "assets/beasts/individual/elephant/defeat/05.png",
+            "assets/beasts/individual/elephant/defeat/06.png",
+            "assets/beasts/individual/elephant/defeat/07.png"
+          ],
+          "visiblePixels": [
+            95816,
+            101119,
+            91488,
+            90724,
+            89663,
+            82951,
+            82205,
+            71879
+          ]
+        }
+      }
+    }
+  },
+  "count": 200,
+  "warnings": []
+}
