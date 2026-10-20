@@ -1,18 +1,18 @@
-/* Exercise the actual training menu: selected stat, standing, explanation,
- * crossed-arms command and wide lash all use ORIGINAL unchanged RGBA sources. */
+/* Real training room regression: fixed NPC root, two permanent layers,
+ * predecoded seven-frame whip, 856px contact and character depth ordering. */
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import {chromium} from 'playwright';
-const originals=[
- ['doctore-idle-approved-v1.png','06f90e9c7abd25a15ca3b8be2e5f532400bdf5cb1f0ddf511248ae59180ef282'],
- ['doctore-explain-approved-v1.png','2f2b26077b5680fc7f26063048513ecd75312982ef8de703a433e4883ac06965'],
- ['doctore-authority-approved-v1.png','4ed7ef333da18db4fce76846568bdd4abd333d2f3d43fe191cb0e618b733f511'],
- ['doctore-whip-user-v1.png','4866225fe2d9184c627ed68c84cdcfe305ee3f3452c0bf23844bd11f9dcddf52']
-];
-for(const [name,sha] of originals){
+const originals={
+ 'doctore-idle-approved-v1.png':'06f90e9c7abd25a15ca3b8be2e5f532400bdf5cb1f0ddf511248ae59180ef282',
+ 'doctore-explain-approved-v1.png':'2f2b26077b5680fc7f26063048513ecd75312982ef8de703a433e4883ac06965',
+ 'doctore-authority-approved-v1.png':'4ed7ef333da18db4fce76846568bdd4abd333d2f3d43fe191cb0e618b733f511',
+ 'doctore-whip-user-v1.png':'4866225fe2d9184c627ed68c84cdcfe305ee3f3452c0bf23844bd11f9dcddf52'
+};
+for(const [name,sha] of Object.entries(originals)){
  const b=fs.readFileSync(new URL('../public/assets/ludus/'+name,import.meta.url));
- assert.equal(crypto.createHash('sha256').update(b).digest('hex'),sha,name+' changed');
+ assert.equal(crypto.createHash('sha256').update(b).digest('hex'),sha,name+' must remain unchanged');
 }
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 const page=await browser.newPage({viewport:{width:1600,height:900}});
@@ -20,59 +20,74 @@ const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 try{
  await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.LudusApprovedScenes?.open&&window.LudusDoctoreAnim?.react,{timeout:18000});
- await page.evaluate(()=>window.LudusApprovedScenes.open('training'));
- await page.waitForFunction(()=>window.LudusDoctoreAnim?.status()?.ready?.idle,{timeout:18000});
- const stage='.la-stage.training .la-doctore-live';
+ await page.evaluate(()=>LudusApprovedScenes.open('training'));
+ const root='.la-stage.training .la-doctore-live';
+ await page.waitForFunction(()=>window.LudusDoctoreAnim?.status()?.ready?.idle,{timeout:20000});
  const check=async(action,name)=>{
   await page.waitForFunction(({action,name})=>{
    const a=document.querySelector('.la-stage.training .la-doctore-live');
-   return a?.dataset.action===action&&a.dataset.sheet===name&&
-    getComputedStyle(a).backgroundImage.includes(
-     name==='doctore-whip-user-v1.png'?'doctore-whip-clean-v2/frame-':name);
-  },{action,name},{timeout:5000});
-  const x=await page.locator(stage).evaluate(a=>{
-   const s=getComputedStyle(a);
+   return !!a&&a.dataset.action===action&&a.dataset.sheet===name;
+  },{action,name},{timeout:4500});
+  const x=await page.locator(root).evaluate(a=>{
+   const b=a.querySelector('.la-doctore-body'),
+    w=a.querySelector('.la-doctore-whip'),
+    f=document.querySelector('.la-stage.training .lt-fighter-zone');
+   const st=getComputedStyle(a),bStyle=b&&getComputedStyle(b);
    return {action:a.dataset.action,sheet:a.dataset.sheet,frame:Number(a.dataset.frame),
     footY:Number(a.dataset.footY),scale:Number(a.dataset.scale),
-    background:s.backgroundImage,width:a.style.width,height:a.style.height,
-    left:a.style.left,top:a.style.top,transform:a.style.transform,
-    crop:JSON.parse(a.dataset.crop),display:s.display,visibility:s.visibility};
+    rootWidth:a.offsetWidth,rootHeight:a.offsetHeight,rootZ:Number(st.zIndex),
+    fighterZ:Number(f?getComputedStyle(f).zIndex:0),visible:st.visibility,
+    bodyBackground:bStyle?.backgroundImage||'',
+    bodyTransform:bStyle?.transform||'',bodyVisibility:bStyle?.visibility||'',
+    whipCount:w?.children.length||0,whipZ:w?Number(getComputedStyle(w).zIndex):null,
+    activeWhips:w?[...w.children].filter(el=>getComputedStyle(el).visibility==='visible')
+     .map(el=>({id:Number(el.dataset.id),src:el.currentSrc,w:el.style.width,
+      h:el.style.height,naturalW:el.naturalWidth,naturalH:el.naturalHeight})):[],
+    crop:JSON.parse(a.dataset.crop),ready:window.LudusDoctoreAnim?.status()?.ready||{}};
   });
-  assert.equal(x.footY,594,'trainer grounded 8px lower than previous build');
-  assert.equal(x.scale,1.125,'character uniformly scaled, never flattened');
-  assert.equal(x.transform,'scale(1.125)');
-  assert.equal(x.display==='none'||x.visibility==='hidden',false);
-  assert.ok(!x.background.includes('doctore-sd-v1.webp'));
-  assert.ok(x.crop.x>=0&&x.crop.y>=0&&x.crop.w>0&&x.crop.h>0);
-  assert.ok(x.crop.x+x.crop.w<=1448&&x.crop.y+x.crop.h<=1086);
+  assert.equal(x.footY,600,'trainer feet meet the fighter ground at y=600');
+  assert.equal(x.rootWidth,1200,'fixed parent container never shrinks between actions');
+  assert.equal(x.rootHeight,760,'fixed parent height never changes');
+  assert.ok(x.rootZ>x.fighterZ,'trainer & lash render above practice fighter');
+  assert.equal(x.whipCount,7,'seven original transparent PNGs remain mounted');
+  assert.ok(x.whipZ>1,'whip is higher than the trainer body layer');
+  assert.ok(x.crop.w>0&&x.crop.h>0);
   return x;
  };
  const idle=await check('idle','doctore-idle-approved-v1.png');
- // The actual training selection used to mistakenly replace the NPC sprite.
- const count=await page.evaluate(()=>{
-  const all=document.querySelectorAll('.la-stage.training .lt-tile-button');
-  if(all.length>2)all[2].click();
-  return all.length;
+ assert.ok(idle.bodyBackground.includes('doctore-idle-approved-v1.png'));
+ assert.equal(idle.activeWhips.length,0);
+ const choices=await page.evaluate(()=>{
+  const list=[...document.querySelectorAll('.la-stage.training .lt-tile-button')];
+  if(list[2])list[2].click();
+  return list.length;
  });
- assert.equal(count,5,'real stat selection buttons mounted');
- await page.waitForFunction(()=>LudusDoctoreAnim?.status()?.ready?.talk,{timeout:10000});
+ assert.equal(choices,5);
  const talk=await check('talk','doctore-explain-approved-v1.png');
+ assert.ok(talk.bodyBackground.includes('doctore-explain-approved-v1.png'));
  await page.evaluate(()=>LudusDoctoreAnim.react(2));
  const command=await check('command','doctore-authority-approved-v1.png');
+ assert.ok(command.bodyBackground.includes('doctore-authority-approved-v1.png'));
+ await page.waitForFunction(()=>LudusDoctoreAnim.status().ready.whip,{timeout:20000});
  await page.evaluate(()=>LudusDoctoreAnim.react(3));
- await page.waitForFunction(()=>window.LudusDoctoreAnim?.status()?.ready?.whip,{timeout:10000});
  await page.waitForFunction(()=>{
   const a=document.querySelector('.la-stage.training .la-doctore-live');
-  return a?.dataset.action==='whip'&&a.style.width==='856px'&&Number(a.dataset.frame)>=4;
- },{timeout:3500});
- const whip=await check('whip','doctore-whip-user-v1.png');
- assert.equal(whip.width,'856px','approved extra-wide lash remains one complete frame');
- await page.waitForFunction(()=>document.querySelector('.la-stage.training .la-doctore-live')?.dataset.action==='idle',{timeout:3500});
+  return a?.dataset.action==='whip'&&Number(a.dataset.frame)>=4&&a.dataset.wide==='true';
+ },{timeout:4000});
+ const lash=await check('whip','doctore-whip-user-v1.png');
+ assert.equal(lash.crop.w,856,'extended whip is one uninterrupted frame');
+ assert.equal(lash.activeWhips.length,1,'only one preloaded whip sprite is shown');
+ assert.equal(lash.activeWhips[0].id,4,'one long forward lash retains its own frame');
+ assert.equal(lash.activeWhips[0].naturalW,856,'native wide frame is never recropped');
+ assert.equal(lash.activeWhips[0].w,Math.round(856*1.335)+'px',
+  'whip has independent constant display scale');
+ assert.equal(lash.rootWidth,idle.rootWidth,'animation never changes actor root dimensions');
+ await page.waitForFunction(()=>{
+  const a=document.querySelector('.la-stage.training .la-doctore-live');
+  return a?.dataset.action==='idle';
+ },{timeout:4000});
  const recovered=await check('idle','doctore-idle-approved-v1.png');
- assert.deepEqual(errors,[],'no JavaScript exceptions in the training room');
- assert.equal(whip.crop.width,undefined,'crop is original source coordinates, not a resampled frame');
- assert.equal(whip.crop.w,856);
- assert.ok(whip.background.includes('frame-4.png'),'exactly one clean isolated long pose is displayed');
- assert.equal(whip.crop.y,640);
- console.log('TRAINER_ORIGINALS_BROWSER_PASS '+JSON.stringify({idle,talk,command,whip,recovered}));
+ assert.equal(recovered.activeWhips.length,0,'whip disappears after recovery');
+ assert.deepEqual(errors,[],'no runtime exceptions in the real training room');
+ console.log('DOCTORE_FIXED_LAYER_BROWSER_PASS '+JSON.stringify({idle,talk,command,lash,recovered}));
 }finally{await browser.close();}
