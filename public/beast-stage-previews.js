@@ -14,7 +14,7 @@ function loadIdle(type){
    const image=new Image();
    image.onload=()=>{value.frames[i]=image;ok(image);};
    image.onerror=()=>no(Error('Missing idle pose '+type+'/'+i));
-   image.src='assets/beasts/individual/'+type+'/idle/'+String(i).padStart(2,'0')+'.png?v=1';
+   image.src='assets/beasts/individual/'+type+'/idle/'+String(i).padStart(2,'0')+'.png?v=3';
  }))).then(()=>value.ready=true).catch(()=>value.ready=false).finally(()=>value.loading=false);
  return value;
 }
