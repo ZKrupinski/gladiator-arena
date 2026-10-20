@@ -777,7 +777,7 @@ function equipmentBonus(h){
 Object.defineProperty(CAREER,'hero',{get(){return this.roster[this.active]||null;}});
 function careerHealth(h){const max=ArenaBalance.heroStats(h,DATA[h.cls],equipmentBonus(h)).hp;return {max,current:Math.max(1,max-h.injury)};}
 function careerEligible(h){return ArenaLineup.condition(h).eligible;}
-function saveCareer(){try{localStorage.setItem(CAREER_KEY,JSON.stringify({gold:CAREER.gold,glory:CAREER.glory,fights:CAREER.fights,wins:CAREER.wins,roster:CAREER.roster,active:CAREER.active,message:CAREER.message,pendingOpponent:CAREER.pendingOpponent||null,marketSeed:CAREER.marketSeed||0,marketInventory:CAREER.marketInventory||null}));}catch(err){}}
+function saveCareer(){try{localStorage.setItem(CAREER_KEY,JSON.stringify({gold:CAREER.gold,glory:CAREER.glory,fights:CAREER.fights,wins:CAREER.wins,roster:CAREER.roster,active:CAREER.active,message:CAREER.message,lastPrize:CAREER.lastPrize||null,pendingOpponent:CAREER.pendingOpponent||null,marketSeed:CAREER.marketSeed||0,marketInventory:CAREER.marketInventory||null}));}catch(err){}}
 // Add one dedicated fighter to existing saves without changing old fighters.
 function installAnimatedMurmilloStarter(){
  if(CAREER.roster.some(isAnimatedMurmillo))return false;
@@ -851,19 +851,26 @@ function returnToCareer(){
  returnToLudus();enterCareer();
 }
 function finishCareerMatch(){
- if(S.careerRewardApplied)return;
- S.careerRewardApplied=true;
+ // The gauntlet payout has its own guard. Delegating AFTER setting the
+ // shared applied flag previously made EVERY 1v2, 1v3, 2v2 and 3v3 award
+ // disappear, even though the end screen announced a victory.
  if(S.gauntlet)return finishLineupCareerMatch();
- const h=CAREER.roster[S.careerParticipant],win=S.resultWin;
+ if(S.careerRewardApplied)return;
+ const h=CAREER.roster[S.careerParticipant];if(!h)return;
+ S.careerRewardApplied=true;
+ const win=!!S.resultWin;
  const payout=ArenaBalance.rewards(win,S.careerOpponent?.round||1,'1v1');
  const reward=payout.gold;
  CAREER.fights++;if(win){CAREER.wins++;CAREER.glory+=payout.glory;}
- CAREER.gold+=reward;
+ const beforeGold=CAREER.gold;CAREER.gold+=reward;
+ CAREER.lastPrize={mode:'1v1',win,round:S.careerOpponent?.round||1,
+  gold:reward,before:beforeGold,after:CAREER.gold,at:Date.now()};
  h.injury=Math.min(120,h.injury+Math.max(8,Math.round(Math.max(0,S.careerStartingHp-S.player.hp)*.62)));
  h.fatigue=Math.min(100,(Number(h.fatigue)||0)+ArenaLineup.fatigueGain(S.careerStartingHp,S.player.hp,1));
  h.fights++;if(win)h.wins++;
  const earned=payout.xp,stageBefore=careerStage(h),gained=grantCareerXp(h,earned);
- CAREER.message=(win?'승리! ':'패배. ')+reward+'D · 경험치 +'+earned+(gained?' · LEVEL UP!':'')+(careerStage(h)>stageBefore?' · 성장 '+careerStage(h)+'단계!':'')+' · 루두스로 돌아가세요.';
+ CAREER.message=(win?'승리! ':'패배. ')+reward+'D · 경험치 +'+earned+(gained?' · LEVEL UP!':'')+(careerStage(h)>stageBefore?' · 성장 '+careerStage(h)+'단계!':'')+
+  ' · 잔액 '+CAREER.gold+'D · 루두스로 돌아가세요.';
  if(win){
   const joined=LudusRoster.recruitBoss(CAREER,S.careerOpponent);
   if(joined)CAREER.message+=' · '+joined.name+'이 루두스에 합류했습니다!';
@@ -1273,6 +1280,9 @@ function finishLineupCleanup(){
   S.phase='finisher';S.slow=1.65;
   setAction(step.win?S.player:S.enemy,'finisher',1.9);
   say(step.win?'VICTORIA · 모든 상대 격파!':'DEFEAT · 출전 전원 탈락',1.8);
+  // Award money at the ACTUAL completed final bout, before the result
+  // animation or the user navigating away. showEnd is a fallback only.
+  if(S.careerMatch)finishLineupCareerMatch();
   updateLineupHud();updateHud();return true;
  }
  if(allyWon){
@@ -1293,13 +1303,15 @@ function finishLineupCleanup(){
  return true;
 }
 function finishLineupCareerMatch(){
- if(S.careerRewardApplied)return;
+ const q=S.gauntlet;
+ if(!q||!q.finished||S.careerRewardApplied)return;
  S.careerRewardApplied=true;
- const q=S.gauntlet;if(!q)return;
  const win=!!q.won,leader=q.encounterLeader;
  const payout=ArenaBalance.rewards(win,leader.round||1,q.mode);
  CAREER.fights++;if(win){CAREER.wins++;CAREER.glory+=payout.glory;}
- CAREER.gold+=payout.gold;
+ const beforeGold=CAREER.gold;CAREER.gold+=payout.gold;
+ CAREER.lastPrize={mode:q.mode,win,round:leader.round||1,gold:payout.gold,
+  before:beforeGold,after:CAREER.gold,at:Date.now()};
  const participants=Object.keys(q.records);
  for(const key of participants){
   const idx=Number(key),h=CAREER.roster[idx],entry=q.records[key];if(!h)continue;
@@ -1310,7 +1322,7 @@ function finishLineupCareerMatch(){
   grantCareerXp(h,Math.max(5,Math.round(payout.xp*(q.allies.length>1?.78:1))));
  }
  CAREER.message=(win?'순차 대진 승리! ':'순차 대진 패배. ')+q.mode+
-  ' · '+payout.gold+'D · 출전자 '+participants.length+'명 경험치/부상/피로 반영';
+  ' · '+payout.gold+'D · 잔액 '+CAREER.gold+'D · 출전자 '+participants.length+'명 경험치/부상/피로 반영';
  if(win){
   const recruit=LudusRoster.recruitBoss(CAREER,leader);
   if(recruit)CAREER.message+=' · '+recruit.name+' 영입!';
@@ -1459,6 +1471,9 @@ function finishFight(winner,loser){
  S.resultWin=!winner.enemy;S.resultApplied=true;S.resultAnim=0;
  setAction(loser,'defeat',2.2);setAction(winner,'finisher',2.2);
  S.phase='finisher';S.slow=2.05;
+ // The official KO settles this fight immediately. Previously the reward
+ // existed only after the full cinematic and results dialog had opened.
+ if(S.careerMatch)finishCareerMatch();
  say(winner.enemy?'DEFEAT':'VICTORIA!',1.7);
  // Any lingering pre-KO attack/charge aura on the winner must not obscure
  // their celebration; retain only impact graphics attached to the loser.
