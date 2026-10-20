@@ -12,6 +12,9 @@ on:
   workflow_dispatch:
 jobs:
   venatio:
+    permissions:
+      contents: read
+      checks: read
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
@@ -26,23 +29,32 @@ jobs:
           sleep 2
       - name: Test stage cards, combat, earned gold, animal art
         run: node scripts/qa_beast_hunt_browser.mjs
-      - name: Verify production Cloudflare publish
+      # Cloudflare WAF blocks GitHub-hosted runners from requesting the site
+      # directly (HTTP 403), even after Pages successfully deploys it. The
+      # Cloudflare Pages check is published by Cloudflare against THIS SHA.
+      - name: Verify Cloudflare Pages deployment check
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           python - <<'PY'
-          import urllib.request,time
-          host='https://gladiator-arena-git.pages.dev/'
-          for attempt in range(24):
-              try:
-                  def get(p):
-                      with urllib.request.urlopen(urllib.request.Request(host+p,headers={'Cache-Control':'no-cache'}),timeout=22) as r:return r.read().decode('utf-8')
-                  page=get('?venatio='+str(attempt))
-                  sheet=get('beast-hunt.css?v=1')
-                  lobby=get('ludus-scene.js?v=20')
-                  if 'beast-hunt.css?v=1' not in page or 'beast-stage-card' not in sheet or 'data-action="beasts"' not in lobby:raise RuntimeError('waiting for VENATIO deploy')
-                  print('VENATIO_CLOUDFLARE_LIVE_OK')
+          import json,os,time,urllib.request
+          repo=os.environ['GITHUB_REPOSITORY']
+          sha=os.environ['GITHUB_SHA']
+          target=f'https://api.github.com/repos/{repo}/commits/{sha}/check-runs?per_page=100'
+          for attempt in range(30):
+              req=urllib.request.Request(target,headers={
+                  'Accept':'application/vnd.github+json',
+                  'Authorization':'Bearer '+os.environ['GH_TOKEN'],
+                  'X-GitHub-Api-Version':'2022-11-28'})
+              with urllib.request.urlopen(req,timeout=18) as response:
+                  runs=json.load(response).get('check_runs',[])
+              pages=[x for x in runs if x.get('name')=='Cloudflare Pages']
+              if pages and pages[0].get('status')=='completed':
+                  if pages[0].get('conclusion')!='success':
+                      raise RuntimeError('Cloudflare Pages check failed: '+str(pages[0].get('conclusion')))
+                  print('VENATIO_PAGES_DEPLOYED',sha,pages[0].get('details_url'))
                   break
-              except Exception as exc:
-                  print('Deployment wait',attempt+1,exc,flush=True)
-                  if attempt==23:raise
-                  time.sleep(9)
+              print('Waiting for Cloudflare Pages check',attempt+1,flush=True)
+              if attempt==29:raise RuntimeError('Timed out waiting for Cloudflare Pages deployment')
+              time.sleep(8)
           PY
