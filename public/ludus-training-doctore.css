@@ -29,11 +29,43 @@
  filter:drop-shadow(3px 5px 5px #17070359);
  backface-visibility:hidden;
 }
-.la-stage.training .la-doctore-parchment{
- position:absolute;left:498px;top:91px;width:360px;height:163px;z-index:7;
- background-image:url('assets/ludus/training_no_doctore.webp');
- background-size:1672px 941px;background-position:-498px -91px;
- background-repeat:no-repeat;pointer-events:none;
+/* The old parchment sliced from the source artwork contained fake text.
+   Keep it retired even if a legacy view tries to recreate its node. */
+.la-stage.training .la-doctore-parchment{display:none!important}
+.la-stage.training .la-training-speech{
+ position:absolute;left:496px;top:97px;width:392px;
+ min-height:161px;max-height:212px;z-index:7;
+ isolation:isolate;box-sizing:border-box;overflow:visible;
+ padding:16px 18px 16px 22px;
+ pointer-events:none;user-select:none;
+ border:3px solid #68391e;border-radius:8px 12px 11px 6px;
+ outline:2px solid #d5a762;outline-offset:-8px;
+ background:linear-gradient(153deg,#fff6d9 0%,#f1d9aa 52%,#d6aa70 100%);
+ box-shadow:0 5px 0 #352116a8,0 12px 22px #130801aa,
+   inset 0 0 0 2px #f5dc9e,inset 0 0 22px #a9693152;
+ color:#382216;
+}
+.la-stage.training .la-training-speech::before{
+ content:'';position:absolute;z-index:-1;
+ width:24px;height:24px;left:-13px;bottom:25px;
+ background:#e9c99b;transform:rotate(45deg);
+ border-left:3px solid #68391e;border-bottom:3px solid #68391e;
+ box-shadow:-3px 3px 4px #35211677;
+}
+.la-stage.training .la-speech-badge{
+ display:block;padding:0 2px 5px;margin:0 0 5px;
+ border-bottom:1px solid #9b6b3888;
+ font:900 14px/1.2 Georgia,'Noto Serif KR',serif;
+ color:#744023;letter-spacing:.04em;
+ white-space:nowrap;
+}
+.la-stage.training .la-speech-lines{
+ margin:0;font:800 18px/1.36 'Noto Serif KR','Noto Sans KR',serif;
+ color:#322117;white-space:pre-line;word-break:keep-all;
+ overflow-wrap:anywhere;text-shadow:0 1px 0 #fff2cd88;
+}
+@media(prefers-reduced-motion:reduce){
+ .la-stage.training .la-training-speech{transition:none!important}
 }
 .la-stage.training .la-notice{z-index:30}
 .la-stage.training .la-home-nav{z-index:35}
