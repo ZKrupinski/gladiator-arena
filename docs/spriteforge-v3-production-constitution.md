@@ -120,3 +120,37 @@ Any policy revision or updated approved reference -> remake the job and rebrief.
 This is a behavioral gate that prevents accidental skips; it does not magically
 grant a generator the ability to understand all anatomy or create high-quality
 original detail. Missing ComfyUI/provider adapter -> NOT GENERATED.
+
+## 2026-10-21 amendment — ChatGPT draws only AFTER the SpriteForge briefing
+
+**Natural-language trigger in this game:** the user says
+`게임에 적용할 애니메이션 시트 만들자`, `애니메이션 시트 만들자`,
+`스프라이트 애니메이션 제작하자`, or any equivalent intent to make a new
+game animation sprite sheet. This applies equally when **ChatGPT itself** will
+draw with its own image generator; no external provider is required merely
+to get the briefing.
+
+Before a single art/image generation call:
+1. Resolve the approved reference, character, and ONE action from the current
+   project context; only ask for truly missing information.
+2. Run `python scripts/spriteforge_assistant_brief_v3.py --reference
+   <approved.png> --character <character> --action <one_action> --out
+   <qa_dir>`; for a failed motion retry, pass `--job <retry_job.json>`
+   instead. The tool prints the latest Korean briefing and records
+   `assistant_preflight.json`. **Read it before art generation.**
+3. Give the drawing tool ALL source-specific requirements from the briefing.
+   Exactly one native-detail high-resolution 4×2 transparent PNG sheet per
+   motion, 8 unique full-body poses, no clipped body or neighbor-owned
+   anatomy. No combined multi-motion boards; no separate source pose files.
+4. Run cutting and visual QC; on failure re-brief (including specific earlier
+   faults) and retry this ONE animation automatically; inspect the 8-pose GIF
+   before marking the art ready for production.
+
+For directly invoked ChatGPT image generation, the model reads a printed
+briefing but **does not have a signed provider handshake**: the assistant must
+not claim an automated image-provider acknowledgement. For a connected
+ComfyUI/provider adapter, the cryptographic acknowledgement remains
+mandatory. This policy cannot by itself force ChatGPT UI to execute arbitrary
+repository scripts; agents working in this repo must execute this
+pre-generation step in their normal tool workflow. Never claim a drawing
+or code integration occurred if it has not.
