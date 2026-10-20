@@ -1,0 +1,50 @@
+name: Validate Ludus match prize settlement
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - public/arena-balance.js
+      - public/arena-lineup.js
+      - scripts/qa_ludus_prize_settlement_browser.mjs
+      - .github/workflows/qa-ludus-prizes.yml
+  workflow_dispatch:
+jobs:
+  real-battle-prizes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Host battle game
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/ludus-prize.log 2>&1 &
+          sleep 3
+      - name: Confirm immediate 1v1, team and repeat-result payout
+        run: node scripts/qa_ludus_prize_settlement_browser.mjs
+      - name: Check Cloudflare serves updated prize logic
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pathlib,time,urllib.request
+          target='https://gladiator-arena-git.pages.dev'
+          required=['if(S.gauntlet)return finishLineupCareerMatch();',
+                    'if(S.careerMatch)finishLineupCareerMatch();',
+                    'if(S.careerMatch)finishCareerMatch();',
+                    'lastPrize:CAREER.lastPrize||null']
+          for n in range(18):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(target+'/?prizes-v2='+str(n),
+                      headers={'Cache-Control':'no-cache','User-Agent':'ArenaPrizesQA'}),timeout=20) as response:
+                      data=response.read().decode('utf-8')
+                  if all(text in data for text in required):
+                      print('LIVE_LUDUS_PRIZE_SETTLEMENT_PASS');break
+              except Exception as exc:print('Waiting for deployment',str(exc),flush=True)
+              if n==17:raise AssertionError('Cloudflare prize fixes did not deploy')
+              time.sleep(10)
+          PY
