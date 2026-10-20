@@ -27,7 +27,8 @@ try{
   await page.waitForFunction(({action,name})=>{
    const a=document.querySelector('.la-stage.training .la-doctore-live');
    return a?.dataset.action===action&&a.dataset.sheet===name&&
-    getComputedStyle(a).backgroundImage.includes(name);
+    getComputedStyle(a).backgroundImage.includes(
+     name==='doctore-whip-user-v1.png'?'doctore-whip-clean-v2/frame-':name);
   },{action,name},{timeout:5000});
   const x=await page.locator(stage).evaluate(a=>{
    const s=getComputedStyle(a);
@@ -37,7 +38,7 @@ try{
     left:a.style.left,top:a.style.top,transform:a.style.transform,
     crop:JSON.parse(a.dataset.crop),display:s.display,visibility:s.visibility};
   });
-  assert.equal(x.footY,586,'all actions share ground line');
+  assert.equal(x.footY,594,'trainer grounded 8px lower than previous build');
   assert.equal(x.scale,1.125,'character uniformly scaled, never flattened');
   assert.equal(x.transform,'scale(1.125)');
   assert.equal(x.display==='none'||x.visibility==='hidden',false);
@@ -62,12 +63,16 @@ try{
  await page.waitForFunction(()=>window.LudusDoctoreAnim?.status()?.ready?.whip,{timeout:10000});
  await page.waitForFunction(()=>{
   const a=document.querySelector('.la-stage.training .la-doctore-live');
-  return a?.dataset.action==='whip'&&a.style.width==='800px'&&Number(a.dataset.frame)>=4;
+  return a?.dataset.action==='whip'&&a.style.width==='856px'&&Number(a.dataset.frame)>=4;
  },{timeout:3500});
  const whip=await check('whip','doctore-whip-user-v1.png');
- assert.equal(whip.width,'800px','approved extra-wide lash remains one frame');
+ assert.equal(whip.width,'856px','approved extra-wide lash remains one complete frame');
  await page.waitForFunction(()=>document.querySelector('.la-stage.training .la-doctore-live')?.dataset.action==='idle',{timeout:3500});
  const recovered=await check('idle','doctore-idle-approved-v1.png');
  assert.deepEqual(errors,[],'no JavaScript exceptions in the training room');
+ assert.equal(whip.crop.width,undefined,'crop is original source coordinates, not a resampled frame');
+ assert.equal(whip.crop.w,856);
+ assert.ok(whip.background.includes('frame-4.png'),'exactly one clean isolated long pose is displayed');
+ assert.equal(whip.crop.y,640);
  console.log('TRAINER_ORIGINALS_BROWSER_PASS '+JSON.stringify({idle,talk,command,whip,recovered}));
 }finally{await browser.close();}
