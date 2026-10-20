@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GLADIATOR · SPRITE FORGE</title>
+<style>
+:root{color-scheme:dark;--gold:#e6bc7c;--bg:#15100f;--panel:#30221b;--line:#926d47;--text:#fff1d4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#4b2c20,#15100f 65%);font:14px/1.5 system-ui,'Noto Sans KR',sans-serif;color:var(--text)}main{max-width:1240px;margin:auto;padding:22px 16px 55px}header{border-bottom:2px solid var(--gold);padding:18px 0 16px;margin-bottom:18px}h1{font:800 clamp(23px,4vw,40px) Georgia,serif;letter-spacing:.07em;margin:0;color:var(--gold)}h2{font:700 21px Georgia,serif;color:var(--gold);margin:0 0 12px}p{margin:5px 0 10px}.sub{color:#e0c6a0;letter-spacing:.04em}.note{color:#deb98a}.good{color:#a4ebae}.bad{color:#ffb9a4}.muted{color:#baa38b}.panel{background:linear-gradient(145deg,#38271f,#211916);border:1px solid #96724d;border-radius:12px;padding:17px;margin:14px 0;box-shadow:0 6px 19px #0906055b}.cols{display:grid;grid-template-columns:minmax(280px,350px) 1fr;gap:15px}.field{display:flex;gap:8px;flex-direction:column;margin:10px 0}.field span{color:#efcca2;font-weight:800}input,select,button{font:inherit}input[type=file],input[type=number],select{width:100%;border:1px solid #a0794c;border-radius:7px;padding:9px;background:#211713;color:#ffebd0}input[type=checkbox]{accent-color:var(--gold)}button{min-height:40px;border-radius:7px;border:1px solid #ebc48e;padding:8px 13px;color:#28180d;background:linear-gradient(#f9d8a0,#b98749);cursor:pointer;font-weight:800}button:disabled{opacity:.45;cursor:not-allowed}.secondary{color:#f3d3aa;background:#423026}.danger{border-color:#a84e3e;color:#ffd4c7;background:#582b25}.compact{display:flex;gap:7px;flex-wrap:wrap}.status{padding:10px 12px;border:1px solid #785d43;border-radius:7px;background:#211813;white-space:pre-wrap}.checker{background-color:#554a42;background-image:linear-gradient(45deg,#786e64 25%,transparent 25%),linear-gradient(-45deg,#786e64 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#786e64 75%),linear-gradient(-45deg,transparent 75%,#786e64 75%);background-size:24px 24px;background-position:0 0,0 12px,12px -12px,-12px 0}#stage{border:1px solid var(--line);display:block;width:100%;aspect-ratio:4 / 3;object-fit:contain;border-radius:8px}#source{display:block;max-width:100%;max-height:250px;object-fit:contain;margin:auto;border-radius:5px}#frames{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}.frame{background:#241915;border:1px solid #7b6247;border-radius:6px;overflow:hidden}.frame.failed{border:2px solid #e2755b}.frame.ok{border:2px solid #68b77f}.frame canvas{display:block;width:100%;aspect-ratio:4 / 3}.frame small{display:block;padding:3px 6px;color:#e8d2b4}.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{border:1px solid #8e6c44;border-radius:999px;padding:4px 9px;font-size:12px;color:#e4c79e}.chip.ok{border-color:#64ad75;color:#b4e7bd}.chip.fail{border-color:#d87864;color:#ffc6b8}.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px}.action{background:#271c18;border:1px solid #745333;border-radius:7px;padding:8px}.action strong{display:block;color:#e5c58d}.action small{color:#d1bca3}.result{white-space:pre-wrap;max-height:190px;overflow:auto;background:#160f0d;border:1px solid #493b33;border-radius:7px;padding:9px;font:12px/1.6 ui-monospace,monospace;color:#e9d0ad}.footer{font-size:12px;color:#bfaa90;margin:16px 0}.gridchoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}@media(max-width:790px){.cols{grid-template-columns:1fr}#frames{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:9px}.panel{padding:11px}} 
+</style></head>
+<body><main>
+<header><h1>GLADIATOR · SPRITE FORGE</h1><div class="sub">검투사 게임 전용 · 동작별 8프레임 제작·검수·정렬 도구 v1.0</div><p class="note">원본을 새로 그리거나 임의로 결합하지 않습니다. 동작마다 한 장씩 입력하고 프레임 8장을 별도 검수합니다.</p></header>
+<div class="cols"><section class="panel"><h2>01 · 원화 가져오기</h2>
+<label class="field"><span>캐릭터 ID</span><input id="character" value="wolf" maxlength="36" placeholder="wolf"></label>
+<label class="field"><span>동작 선택 (동작 하나씩)</span><select id="action"><option value="idle">대기 Idle</option><option value="walk">이동 Walk</option><option value="run">달리기 Run</option><option value="attack_bite">물기 Bite</option><option value="attack_claw">할퀴기 Claw</option><option value="attack_leap">도약 Leap</option><option value="hit">피격 Hit</option><option value="stagger">그로기 Stagger</option><option value="death">죽음 Death</option><option value="special_roar">특수 포효 Roar</option></select></label>
+<label class="field"><span>소스 형식</span><select id="inputMode"><option value="sheet">4열 × 2행 원본 시트 PNG</option><option value="files">독립된 프레임 PNG 8장</option></select></label>
+<label class="field"><span>이미지 파일</span><input type="file" id="file" accept="image/png,image/webp,image/jpeg" multiple></label>
+<div class="gridchoices"><label class="field"><span>출력 가로</span><input type="number" min="512" max="2048" step="16" id="outw" value="960"></label><label class="field"><span>출력 세로</span><input type="number" min="512" max="2048" step="16" id="outh" value="720"></label></div>
+<div class="gridchoices"><label class="field"><span>발 기준 X (%)</span><input type="number" min="5" max="95" step="1" id="pivotx" value="50"></label><label class="field"><span>접지 기준 Y (%)</span><input type="number" min="70" max="98" step="1" id="pivoty" value="94"></label></div>
+<div class="gridchoices"><label class="field"><span>재생 FPS</span><input type="number" id="fps" min="2" max="30" value="10"></label><label class="field"><span>경계 안전 여백</span><input type="number" id="safety" min="2" max="80" value="12"></label></div>
+<div class="compact"><button id="process">8프레임 분석하기</button><button class="secondary" id="previewBtn" disabled>재생 / 일시정지</button></div>
+<p class="note">경고가 있는 프레임은 자동으로 합격 처리되지 않습니다. 원화 안에서 이미 잘린 신체는 툴이 복원한 척하지 않습니다.</p>
+<div id="status" class="status">PNG를 선택한 뒤 분석을 눌러 주세요.</div>
+</section><section class="panel">
+<h2>02 · 실제 프레임 검수</h2>
+<canvas id="stage" width="960" height="720" class="checker"></canvas>
+<p class="muted">실제 출력용 프레임이 재생됩니다. 프레임마다 발 기준점과 크기를 일정하게 고정합니다.</p>
+<div id="frames"></div>
+<h2 style="margin-top:20px">원본 영역 확인</h2><div class="checker"><img id="source" alt="입력 이미지 원본"/></div>
+</section></div>
+<section class="panel"><h2>03 · 캐릭터 동작 관리</h2><div id="actions" class="actions"></div>
+<p class="note">동작 10종 × 8프레임 모두 합격하기 전에는 ‘게임 완성’으로 표시하지 않습니다. 각 동작별 경고 원인을 확인하세요.</p>
+<div class="compact"><button id="export" disabled>현재 동작 검수 ZIP 저장</button><button class="secondary" id="report" disabled>검수 리포트 저장</button><button class="danger" id="clear">현재 작업 지우기</button></div><pre class="result" id="log">검수 기록이 여기에 표시됩니다.</pre>
+</section>
+<div class="footer">로컬 브라우저 처리 · 파일은 자동으로 서버에 전송되지 않습니다 · 저장소 자동 배포 기능 없음 · AI 그림 생성 기능 아님(스프라이트 정렬·검수 전용)</div>
+</main>
+<script>
+(function(){
+'use strict';
+const actions=['idle','walk','run','attack_bite','attack_claw','attack_leap','hit','stagger','death','special_roar'];
+const $=id=>document.getElementById(id);
+const state={packs:{},current:null,playing:false,started:0,loopId:0};
+const num=(id,fallback)=>Number($(id).value)||fallback;
+const safe=v=>String(v||'').replace(/[^a-z0-9_-]/ig,'_').slice(0,36);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const log=s=>{$('log').textContent='['+new Date().toLocaleTimeString()+'] '+s+'\n'+$('log').textContent};
+function imgload(file){return new Promise((resolve,reject)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{URL.revokeObjectURL(u);resolve(im)};im.onerror=()=>{URL.revokeObjectURL(u);reject(Error('이미지를 열 수 없습니다'))};im.src=u})}
+function canvas(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c}
+function checkTile(c,edge){
+ const w=c.width,h=c.height,buf=c.getContext('2d',{willReadFrequently:true}).getImageData(0,0,w,h).data;
+ let count=0,x0=w,x1=0,y0=h,y1=0,marginCount=0;
+ for(let y=0;y<h;y+=1)for(let x=0;x<w;x+=1){if(buf[(y*w+x)*4+3]<35)continue;count++;x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);if(x<edge||y<edge||x>=w-edge||y>=h-edge)marginCount++}
+ const issues=[];
+ if(!count||count<Math.round(w*h*.0008))issues.push('EMPTY_OR_TINY_SPRITE');
+ const margins=count?[x0,w-1-x1,y0,h-1-y1]:[0,0,0,0];
+ if(count&&Math.min(...margins)<edge)issues.push('CELL_BORDER_TOUCH_CUT_RISK');
+ if(count&&marginCount>count*.015)issues.push('MANY_BORDER_PIXELS');
+ return {issues,margins,alphaPixels:count,bounds:count?[x0,y0,x1+1,y1+1]:null};
+}
+function frameToOutput(tile,outw,outh,pivotx,pivoty){
+ const target=canvas(outw,outh);const ctx=target.getContext('2d');
+ const k=Math.min(1,(outw*.94)/tile.width,(outh*.88)/tile.height);
+ const w=tile.width*k,h=tile.height*k,px=outw*pivotx/100,py=outh*pivoty/100;
+ ctx.drawImage(tile,Math.round(px-w/2),Math.round(py-h),w,h);
+ return target;
+}
+function renderButtons(){
+ const div=$('actions');div.replaceChildren();
+ for(const a of actions){const v=state.packs[a],e=document.createElement('div');e.className='action';
+ const title=document.createElement('strong');title.textContent=a;e.append(title);
+ const info=document.createElement('small');info.textContent=!v?'미작업':v.blocked?'검수 차단 · '+v.blocked+'개':'8프레임 분석 통과';e.append(info);div.append(e)}
+}
+function paint(n){
+ const st=state.current;if(!st)return;
+ const cn=$('stage');cn.width=st.outw;cn.height=st.outh;
+ const ctx=cn.getContext('2d');ctx.clearRect(0,0,cn.width,cn.height);
+ ctx.drawImage(st.frames[n%8],0,0);
+}
+function animate(t){if(!state.playing||!state.current)return;const n=Math.floor((t-state.started)/1000*state.current.fps)%8;paint(n);state.loopId=requestAnimationFrame(animate)}
+function setPlaying(v){state.playing=!!v;if(v){state.started=performance.now();state.loopId=requestAnimationFrame(animate)}else cancelAnimationFrame(state.loopId)}
+function frameThumbs(pack){
+ const node=$('frames');node.replaceChildren();
+ pack.frames.forEach((frame,i)=>{const card=document.createElement('div');card.className='frame '+(pack.qc[i].issues.length?'failed':'ok');
+ const c=canvas(pack.outw,pack.outh);c.className='checker';c.getContext('2d').drawImage(frame,0,0);
+ const label=document.createElement('small');const q=pack.qc[i];label.textContent=(i+1)+'/8 · '+(q.issues.length?'경고 '+q.issues.join(' / '):'정상');
+ card.append(c,label);node.append(card)});
+}
+async function perform(){
+ setPlaying(false);const files=[...$('file').files];const mode=$('inputMode').value;
+ if(mode==='sheet'&&files.length!==1){$('status').textContent='4×2 시트는 파일 1장을 선택해 주세요.';return}
+ if(mode==='files'&&files.length!==8){$('status').textContent='독립된 8프레임 파일을 정확히 8장 선택해 주세요.';return}
+ if(files.some(f=>f.size>35e6)){$('status').textContent='35MB 초과 파일은 지원하지 않습니다.';return}
+ $('status').textContent='분석 중…';await sleep(10);
+ const action=$('action').value,outputW=num('outw',960),outputH=num('outh',720);
+ if(outputW<512||outputW>2048||outputH<512||outputH>2048){$('status').textContent='출력 크기는 512~2048 사이여야 합니다.';return}
+ const edge=num('safety',12);const tiles=[];
+ try{
+  if(mode==='sheet'){
+   const im=await imgload(files[0]);$('source').src=im.src;
+   for(let i=0;i<8;i++){
+    const col=i%4,row=Math.floor(i/4),l=Math.round(col*im.width/4),r=Math.round((col+1)*im.width/4),t=Math.round(row*im.height/2),b=Math.round((row+1)*im.height/2);
+    const c=canvas(r-l,b-t);c.getContext('2d').drawImage(im,l,t,r-l,b-t,0,0,r-l,b-t);tiles.push(c)
+   }
+  }else{
+   const sorted=files.sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));
+   const imgs=await Promise.all(sorted.map(imgload));
+   $('source').removeAttribute('src');
+   imgs.forEach(im=>{const c=canvas(im.naturalWidth,im.naturalHeight);c.getContext('2d').drawImage(im,0,0);tiles.push(c)})
+  }
+  const qc=tiles.map(t=>checkTile(t,edge));
+  const frames=tiles.map(t=>frameToOutput(t,outputW,outputH,num('pivotx',50),num('pivoty',94)));
+  const blocked=qc.filter(q=>q.issues.length).length,pack={action,frames,qc,blocked,outw:outputW,outh:outputH,fps:num('fps',10),character:safe($('character').value)};
+  state.packs[action]=pack;state.current=pack;paint(0);frameThumbs(pack);renderButtons();
+  $('previewBtn').disabled=false;$('export').disabled=false;$('report').disabled=false;
+  $('status').textContent='총 8프레임 · 통과 '+(8-blocked)+' / 경고 '+blocked+'. '+(blocked?'게임 적용용 승인 불가 — 잘림/경계 침범 원본을 수정하세요.':'동작 분리 검사 통과. 실제 자세 변화는 눈으로 확인해 주세요.');
+  log(action+': PASS='+(8-blocked)+' WARN='+blocked+' / '+(blocked?'원화 재작업 필요':'프레임 경계 정상'));
+ }catch(error){$('status').textContent='처리 오류: '+error.message;log(error.stack||error.message)}
+}
+function blob(c){return new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(Error('PNG conversion failed')),'image/png'))}
+function putZip(files){
+ const enc=new TextEncoder();const chunks=[],cd=[];let offs=0;
+ const table=new Uint32Array(256);for(let i=0;i<256;i++){let c=i;for(let n=0;n<8;n++)c=c&1?0xedb88320^(c>>>1):c>>>1;table[i]=c>>>0}
+ const crc=bytes=>{let v=0xffffffff;for(let b of bytes)v=table[(v^b)&255]^(v>>>8);return (v^0xffffffff)>>>0};
+ function arr(size){return new DataView(new ArrayBuffer(size))}
+ function push(u){chunks.push(u);offs+=u.byteLength}
+ for(const f of files){
+  const name=enc.encode(f.name),data=f.data,hash=crc(data),at=offs,local=arr(30);
+  local.setUint32(0,0x04034b50,true);local.setUint16(4,20,true);local.setUint16(26,name.length,true);
+  local.setUint32(14,hash,true);local.setUint32(18,data.byteLength,true);local.setUint32(22,data.byteLength,true);
+  push(new Uint8Array(local.buffer));push(name);push(data);
+  const c=arr(46);c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);
+  c.setUint32(16,hash,true);c.setUint32(20,data.byteLength,true);c.setUint32(24,data.byteLength,true);
+  c.setUint16(28,name.length,true);c.setUint32(42,at,true);cd.push([new Uint8Array(c.buffer),name])
+ }
+ const start=offs;for(const [v,n] of cd){push(v);push(n)}const end=arr(22);
+ end.setUint32(0,0x06054b50,true);end.setUint16(8,files.length,true);end.setUint16(10,files.length,true);end.setUint32(12,offs-start,true);end.setUint32(16,start,true);push(new Uint8Array(end.buffer));
+ return new Blob(chunks,{type:'application/zip'})
+}
+function download(data,name,type){const u=URL.createObjectURL(data instanceof Blob?data:new Blob([data],{type}));const a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),15000)}
+function report(){return {tool:'GLADIATOR Sprite Forge 1.0',character:safe($('character').value),output:'960x720 default foot-anchored PNG',generation:'none / source cleanup only',actions:Object.fromEntries(Object.entries(state.packs).map(([a,v])=>[a,{fps:v.fps,blockedFrames:v.blocked,qc:v.qc}])),missing:actions.filter(a=>!state.packs[a]),approvedActions:actions.filter(a=>state.packs[a]&&!state.packs[a].blocked),gameReady:actions.every(a=>state.packs[a]&&!state.packs[a].blocked)}}
+async function exportPack(){
+ if(!state.current)return;
+ const reportObj=report(),items=[{name:'qa-report.json',data:new TextEncoder().encode(JSON.stringify(reportObj,null,2))}];
+ for(const [action,pack] of Object.entries(state.packs)){
+  for(let i=0;i<8;i++){const bytes=new Uint8Array(await (await blob(pack.frames[i])).arrayBuffer());
+   items.push({name:'draft/'+action+'/'+action+'_'+String(i).padStart(2,'0')+'.png',data:bytes})}
+ }
+ const status=reportObj.gameReady?'approved':'REVIEW_ONLY';
+ download(putZip(items),safe($('character').value)+'_sprites_'+status+'.zip');
+ log('ZIP 저장: '+status+' (완성되지 않은 동작은 게임에서 적용하지 마세요)');
+}
+$('inputMode').addEventListener('change',()=>{$('file').multiple=$('inputMode').value==='files';$('file').value=''});
+$('process').onclick=perform;
+$('previewBtn').onclick=()=>setPlaying(!state.playing);
+$('export').onclick=exportPack;
+$('report').onclick=()=>download(JSON.stringify(report(),null,2),safe($('character').value)+'_QA.json','application/json');
+$('clear').onclick=()=>{if(confirm('현재 검수 데이터를 전부 비울까요?')){setPlaying(false);state.packs={};state.current=null;$('frames').replaceChildren();$('status').textContent='초기화되었습니다.';renderButtons();$('previewBtn').disabled=true;$('export').disabled=true;$('report').disabled=true;$('stage').getContext('2d').clearRect(0,0,960,720);$('source').removeAttribute('src')}};
+renderButtons();
+})();
+</script></body></html>
