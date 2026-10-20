@@ -1,0 +1,19 @@
+name: Wolf V3 animation mapping regression
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/arena-beasts.js
+      - scripts/qa_wolf_v3_attack_variants.mjs
+      - .github/workflows/qa-wolf-v3.yml
+  workflow_dispatch:
+jobs:
+  wolf-v3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Assert four distinct attack variants and fallback safety
+        run: node scripts/qa_wolf_v3_attack_variants.mjs
