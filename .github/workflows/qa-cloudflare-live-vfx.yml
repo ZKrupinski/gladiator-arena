@@ -1,0 +1,44 @@
+name: Confirm published Cloudflare PNG VFX version
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/assets/new-era/cinematic/combat-directional-8f.png
+      - public/assets/new-era/cinematic/victory-directional-8f.png
+      - public/arena-raster-vfx.js
+      - public/index.html
+      - .github/workflows/qa-cloudflare-live-vfx.yml
+  workflow_dispatch:
+jobs:
+  check-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe deployed original PNG art, not just GitHub repository
+        shell: bash
+        env:
+          SITE: https://gladiator-arena-git.pages.dev
+        run: |
+          set -euo pipefail
+          # Deployment is asynchronous; allow Cloudflare Pages several minutes
+          # after the GitHub push, but never claim published until this passes.
+          for attempt in $(seq 1 17); do
+            echo "Attempt $attempt: verifying production HTML, loader and exact original PNG bytes"
+            if curl -fsSL --max-time 16 -o /tmp/arena-home "$SITE/?deployment_validation=painted8f" \
+            && curl -fsSL --max-time 16 -o /tmp/arena-vfx "$SITE/arena-raster-vfx.js?v=2-png" \
+            && curl -fsSL --max-time 18 -o /tmp/combat-real.png "$SITE/assets/new-era/cinematic/combat-directional-8f.png?v=2-actual-png" \
+            && curl -fsSL --max-time 18 -o /tmp/victory-real.png "$SITE/assets/new-era/cinematic/victory-directional-8f.png?v=2-actual-png" \
+            && grep -q 'arena-raster-vfx.js?v=2-png' /tmp/arena-home \
+            && grep -q "version:'2.0.0-png'" /tmp/arena-vfx \
+            && cmp -s public/assets/new-era/cinematic/combat-directional-8f.png /tmp/combat-real.png \
+            && cmp -s public/assets/new-era/cinematic/victory-directional-8f.png /tmp/victory-real.png ; then
+              echo "CLOUDFLARE_LIVE_APPROVED_PNG_DEPLOY_PASS"
+              sha256sum /tmp/combat-real.png /tmp/victory-real.png
+              echo "Live game: $SITE/"
+              exit 0
+            fi
+            sleep 14
+          done
+          echo "::error::Cloudflare production did not serve this commit's PNG assets before the deadline."
+          exit 1
