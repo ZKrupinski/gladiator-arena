@@ -1,0 +1,53 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const root={};
+for(const file of ['arena-balance.js','ludus-roster.js','arena-focus.js','arena-herald.js']){
+ vm.runInNewContext(fs.readFileSync(new URL('../public/'+file,import.meta.url),'utf8'),{globalThis:root});
+}
+const B=root.ArenaBalance,R=root.LudusRoster,F=root.ArenaFocus,H=root.ArenaHerald;
+const rookie=R.create('murmillo',1,{name:'초심자',level:1});
+const veteran=R.create('murmillo',2,{name:'훈련된 전사',level:12,
+ stats:{str:6,agi:4,end:7,focus:5},
+ equipment:{weapon:'iron',shield:'shield',armor:'elite'}});
+const plain=R.create('murmillo',3,{name:'훈련 없는 전사',level:12});
+assert.ok(B.matchStrength(veteran).effectiveLevel>B.matchStrength(plain).effectiveLevel);
+assert.ok(B.makeMatch(1,[veteran]).level>B.makeMatch(1,[rookie]).level);
+const party=B.makeMatch(8,[rookie,veteran]);
+assert.equal(party.party,2);
+assert.ok(party.effectiveLevel<B.matchStrength(veteran).effectiveLevel);
+assert.ok(party.effectiveLevel>B.matchStrength(rookie).effectiveLevel);
+const state={wins:0,roster:[rookie,veteran]};
+const one=R.encounter(state,rookie,()=>.8);
+assert.strictEqual(R.encounter(state,rookie,()=>.2),one);
+const next=R.encounter(state,veteran,()=>.8);
+assert.notEqual(one.matchKey,next.matchKey);
+assert.ok(next.level>one.level);
+const before=next.level;
+veteran.equipment={weapon:'wood',shield:null,armor:null};
+veteran.stats={str:0,agi:0,end:0,focus:0};
+const less=R.encounter(state,veteran,()=>.8);
+assert.ok(less.level<before);
+assert.equal(less.match.equipment,0);
+const team=R.encounter(state,veteran,()=>.8,[veteran,rookie]);
+assert.equal(team.match.party,2);
+assert.notEqual(team.matchKey,less.matchKey);
+const boss=R.encounter({wins:4,roster:[rookie]},rookie,()=>.3);
+assert.equal(boss.boss,true);
+assert.equal(boss.cls,'murmillo');
+assert.equal(boss.appearance,'murmillo_champion_red');
+const d={hp:29,maxHp:100,enemy:false};
+const foe={hp:200,maxHp:200,championBoss:false};
+const base=38;
+assert.equal(B.comebackParry({...d,hp:31},foe,base).critical,false);
+const comeback=B.comebackParry(d,foe,base);
+assert.equal(comeback.critical,true);
+assert.ok(comeback.damage>base&&comeback.extra>0);
+assert.ok(B.comebackParry({...d,hp:5},foe,base).extra>comeback.extra);
+assert.equal(B.comebackParry(d,foe,base,true).extra,0);
+assert.equal(B.comebackParry({...d,enemy:true},foe,base).critical,false);
+assert.ok(B.comebackParry(d,{maxHp:200,championBoss:true},999).extra<=44);
+assert.equal(H.classify('REVERSAL PARRY! BONUS +28'),'reversal');
+const fx=F.advance(F.start('reversal',620),.08);
+assert.ok(fx.active&&fx.timeScale<1&&fx.zoom<.10);
+console.log('MATCH_REVERSAL_BALANCE_PASS');
