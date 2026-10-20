@@ -93,7 +93,7 @@ async function perform(){
  const edge=num('safety',12);const tiles=[];
  try{
   if(mode==='sheet'){
-   const im=await imgload(files[0]);$('source').src=im.src;
+   const im=await imgload(files[0]);const preview=canvas(Math.min(1200,im.naturalWidth),Math.max(1,Math.round(im.naturalHeight*Math.min(1200,im.naturalWidth)/im.naturalWidth)));preview.getContext('2d').drawImage(im,0,0,preview.width,preview.height);$('source').src=preview.toDataURL('image/png');
    for(let i=0;i<8;i++){
     const col=i%4,row=Math.floor(i/4),l=Math.round(col*im.width/4),r=Math.round((col+1)*im.width/4),t=Math.round(row*im.height/2),b=Math.round((row+1)*im.height/2);
     const c=canvas(r-l,b-t);c.getContext('2d').drawImage(im,l,t,r-l,b-t,0,0,r-l,b-t);tiles.push(c)
