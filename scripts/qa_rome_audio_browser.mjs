@@ -83,7 +83,7 @@ try{
  assert.ok(ceremonies.start>=2.15,'no chirpy sub-second start trumpet');
  assert.ok(ceremonies.victory>=2.60,'grand resonant horn triumph is sustained');
  assert.ok(ceremonies.defeat>=2.15,'somber horn/tuba defeat is sustained');
- assert.equal(await page.evaluate(()=>window.ArenaAudio.version),'5.0.0');
+ assert.equal(await page.evaluate(()=>window.ArenaAudio.version),'5.1.0');
  await page.waitForFunction(()=>!!window.ArenaAudio,{timeout:18000});
  await page.locator('#startBtn').click();
  await page.waitForFunction(()=>window.ArenaAudio?.status()?.ready===true,{timeout:90000});
@@ -117,6 +117,41 @@ try{
  await page.locator('#soundToggle').click();
  const restored=await page.evaluate(()=>window.ArenaAudio.status());
  assert.equal(restored.enabled,true);
+ // Regression: the game used to keep a 19% football crowd loop playing on
+ // the result screen and after returning to the Ludus/title. End it for real.
+ const lifecycle=await page.evaluate(async()=>{
+  const a=window.ArenaAudio;
+  a.endMatch();
+  const result=a.status();
+  a.update({phase:'result'});
+  const noResurrection=a.status();
+  const ceremony=a.play('victory',{gain:.25});
+  const duringCeremony=a.status();
+  a.leave();
+  const leaving=a.status();
+  await new Promise(r=>setTimeout(r,180));
+  const suspended=a.status();
+  a.enterArena();
+  return {result,noResurrection,ceremony,duringCeremony,leaving,suspended};
+ });
+ assert.equal(lifecycle.result.arenaActive,false,'result phase ends arena audio session');
+ assert.equal(lifecycle.result.started,false,'result phase stops all five looping stems');
+ assert.equal(lifecycle.result.stems,0,'result phase destroys old loop sources');
+ assert.equal(lifecycle.result.oneShots,0,'result phase cancels delayed spectator cheers');
+ assert.equal(lifecycle.noResurrection.stems,0,'result update never resurrects the audience');
+ assert.ok(lifecycle.ceremony,'victory chord still plays on the results screen');
+ assert.ok(lifecycle.duringCeremony.oneShots>0,'outro plays without loop ambience');
+ assert.equal(lifecycle.leaving.oneShots,0,'Ludus exit stops the victory tail');
+ assert.equal(lifecycle.suspended.playing,false,'leaving the game suspends audio context');
+ await page.waitForFunction(()=>window.ArenaAudio?.status()?.started===true,{timeout:15000});
+ const restarted=await page.evaluate(()=>window.ArenaAudio.status());
+ assert.equal(restarted.arenaActive,true,'rematch re-arms playback');
+ assert.equal(restarted.stems,5,'rematch starts exactly one loop of each stem');
+ assert.equal(restarted.playing,true,'rematch resumes a suspended context');
+ const html=await page.evaluate(()=>fetch('/').then(r=>r.text()));
+ assert.ok(html.includes('window.ArenaAudio?.endMatch?.();'),'result screen invokes hard ambience stop');
+ assert.ok(html.includes('window.ArenaAudio?.leave?.();'),'Ludus or title exit fully stops sounds');
+ assert.ok(html.includes('window.ArenaAudio?.enterArena?.();'),'next fight resumes only on Start');
  assert.deepEqual(errors,[],'browser no runtime JS exceptions');
  console.log('ROME_AUDIO_BROWSER_PASS '+JSON.stringify({state,muted,restored}));
 }finally{await browser.close()}

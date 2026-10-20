@@ -29,11 +29,13 @@ const STATES=Object.freeze({
  fight:[.38,.32,0,.07,.21],
  cleanup:[.21,.11,0,.035,.23],
  finisher:[.20,.25,0,.26,.39],
- result:[0,0,0,0,.19]
+ result:[0,0,0,0,0]
 });
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,Number.isFinite(v)?v:a));
 let ctx=null,master=null,musicBus=null,crowdBus=null,sfxBus=null,compressor=null;
 let ready=false,loading=null,started=false,enabled=true,played=0;
+let arenaActive=false,lifecycleEpoch=0;
+const oneShots=new Set();
 let crowdBoostUntil=0,lastCrowdReaction=-100,crowdReactionCount=0;
 const buffers=new Map(),voices=[],stemGains=[],stemTargets=[0,0,0,0,0];
 let lastDuck={type:'none',music:.43,crowd:.48,hold:0};
@@ -79,7 +81,7 @@ async function preload(){
  return loading;
 }
 function beginMusic(){
- if(!ctx||started||!ready||!enabled)return;
+ if(!arenaActive||!ctx||started||!ready||!enabled)return;
  const now=ctx.currentTime+.055;
  STEMS.forEach((name,i)=>{
   const source=ctx.createBufferSource(),gain=ctx.createGain();
@@ -96,6 +98,58 @@ function unlock(){
  if(c.state==='suspended')c.resume().catch(()=>{});
  preload().then(ok=>{if(ok)beginMusic()});
  return true;
+}
+// Stop actual repeating AudioBufferSourceNodes; zeroing stem gains alone
+// leaves the browser audio engine running (and old reactions can ring out).
+function stopStems(){
+ const t=ctx?.currentTime??0;
+ for(const gain of stemGains){
+  gain.gain.cancelScheduledValues(t);
+  gain.gain.setValueAtTime(0,t);
+  gain.disconnect();
+ }
+ for(const source of voices){
+  try{source.stop()}catch{}
+  source.disconnect();
+ }
+ voices.length=0;stemGains.length=0;stemTargets.fill(0);started=false;
+ crowdBoostUntil=0;lastCrowdReaction=-100;
+ for(const [bus,defaultGain] of [[musicBus,.43],[crowdBus,.48]]){
+  if(!bus)continue;
+  bus.gain.cancelScheduledValues(t);
+  bus.gain.setValueAtTime(defaultGain,t);
+ }
+}
+function stopOneShots(){
+ for(const entry of oneShots){
+  try{entry.source.stop()}catch{}
+  try{entry.source.disconnect()}catch{}
+ }
+ oneShots.clear();
+}
+// Keep the sampled victory/defeat ceremony available on the result screen,
+// but end the ambient bed, its loop, battle SFX and any delayed crowd roar.
+function endMatch(){
+ arenaActive=false;
+ stopStems();
+ stopOneShots();
+}
+// Leaving the arena also cuts ceremony tails and suspends the AudioContext.
+function leave(){
+ const epoch=++lifecycleEpoch;
+ endMatch();
+ if(ctx&&ctx.state!=='suspended'&&ctx.state!=='closed'){
+  ctx.suspend().then(()=>{
+   // A player can press Start before an earlier suspend finishes.
+   if(arenaActive&&lifecycleEpoch!==epoch)
+    ctx.resume().catch(()=>{});
+  }).catch(()=>{});
+ }
+}
+function enterArena(){
+ ++lifecycleEpoch;
+ arenaActive=true;
+ unlock(); // Reuses decoded buffers, re-creates exactly one set of loops.
 }
 // Threshold-specific ducking: combat hits retain their initial crack,
 // then crowd/music bloom back with a controlled decaying cinematic tail.
@@ -120,7 +174,7 @@ function duck(kind){
  }
 }
 function crowdReact(reason='combo'){
- if(visualQA||!ctx||!enabled)return false;
+ if(visualQA||!arenaActive||!ctx||!enabled)return false;
  if(ctx.currentTime-lastCrowdReaction<1.8)return false;
  lastCrowdReaction=ctx.currentTime;
  crowdBoostUntil=Math.max(crowdBoostUntil,ctx.currentTime+1.95);
@@ -133,6 +187,7 @@ function crowdReact(reason='combo'){
 }
 function play(kind,opt={}){
  if(visualQA)return false;
+ if(!arenaActive&&kind!=='victory'&&kind!=='defeat')return false;
  if(!enabled)return true;
  if(!ctx||ctx.state!=='running'){unlock();return false;}
  const options=SFX[kind];if(!options)return false;
@@ -153,6 +208,9 @@ function play(kind,opt={}){
   pan.pan.value=clamp(opt.pan||0,-.8,.8);
   gain.connect(pan).connect(audience?crowdBus:sfxBus);
  }else gain.connect(audience?crowdBus:sfxBus);
+ const entry={source,kind};
+ oneShots.add(entry);
+ source.onended=()=>oneShots.delete(entry);
  source.start(ctx.currentTime+.007+clamp(opt.delay||0,0,1));
  if(DUCK[kind])duck(kind);
  if(kind==='parry')crowdReact('parry');
@@ -165,7 +223,7 @@ function setMuted(muted){
  if(enabled)unlock();
 }
 function update(state={}){
- if(!ctx||!started)return;
+ if(!arenaActive||!ctx||!started)return;
  const phase=state.phase||'title';
  const targets=(STATES[phase]||STATES.title).slice();
  if(state.paused){targets.fill(0);}
@@ -194,15 +252,16 @@ function update(state={}){
  }
 }
 function status(){
- return {ready,started,enabled,playing:!!ctx&&ctx.state==='running',
+ return {ready,started,enabled,arenaActive,oneShots:oneShots.size,playing:!!ctx&&ctx.state==='running',
   stems:stemGains.length,loaded:buffers.size,variants:Object.keys(SFX).length,bpm:172,
   mix:stemTargets.slice(),master:master?.gain.value??0,
   musicBus:musicBus?.gain.value??0,crowdBus:crowdBus?.gain.value??0,
   sfxBus:sfxBus?.gain.value??0,priority:lastDuck,
   crowdReactions:crowdReactionCount};
 }
-root.ArenaAudio={version:'5.0.0',unlock,preload,play,update,setMuted,status,crowdReact,SFX,STEMS};
+root.ArenaAudio={version:'5.1.0',unlock,preload,play,update,setMuted,status,crowdReact,enterArena,endMatch,leave,SFX,STEMS};
 if(typeof document!=='undefined'){
  document.addEventListener('pointerdown',()=>{if(!ctx)unlock()},{once:true,passive:true});
+ root.addEventListener?.('pagehide',leave);
 }
 })(globalThis);

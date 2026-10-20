@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
-<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=5"></script>
+<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -841,6 +841,7 @@ $('#careerGearTab').addEventListener('click',()=>{CAREER_TAB='gear';CAREER_SELEC
 $('#careerFightTop').addEventListener('click',openCareerDraft);
 function enterCareer(){
  if(S.phase==='fight'||S.phase==='finisher')return;
+ window.ArenaAudio?.leave?.();
  if(MINI){MINI=null;$('#careerMini').hidden=true;}
  $('#endScreen').hidden=true;$('#startScreen').hidden=true;
  $('#careerHub').hidden=false;renderCareer();window.LudusScene?.open();
@@ -1147,7 +1148,7 @@ function start(mode='new',requestedRosterIndex=null){
  }
  S.careerMatch=careerMatch;
  $('#startScreen').hidden=true;$('#endScreen').hidden=true;$('#pauseBtn').textContent='Ⅱ';updateHud();
- window.ArenaAudio?.unlock?.();
+ window.ArenaAudio?.enterArena?.();
  fxSound('start');
 }
 /* Ordered arena events: one REAL original duel at a time. The original
@@ -1351,6 +1352,7 @@ function autoPilotPlayer(p,e,dt){
  }
 }
 function returnToLudus(){
+ window.ArenaAudio?.leave?.();
  S.phase='title';S.paused=false;S.gauntlet=null;S.cleanup=null;updateLineupHud();S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.cameraKick=null;S.flash=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
  const c=$('#classChoice').value;S.player=fighter(c,335,false);S.enemy=fighter('retiarius',940,true);CAMERA.initialized=false;
  $('#endScreen').hidden=true;$('#startScreen').hidden=false;$('#pauseBtn').textContent='Ⅱ';updateHud();
@@ -1869,6 +1871,7 @@ function showEnd(){
    win?victorCard:defeatedCard,separator,win?defeatedCard:victorCard
   );
   $('#endScreen').hidden=false;
+ window.ArenaAudio?.endMatch?.();
  window.ArenaAudio?.play?.(win?'victory':'defeat',{gain:.95});
  const endBanner=$('#endBanner'),endTitle=$('#endHeading');
  endTitle.textContent=win?'VICTORIA':'DEFEAT';
@@ -2266,7 +2269,7 @@ function fxTiming(v){
 }
 // Runtime presentation scale only: preserve original 8-frame transparent PNGs
 // and leave dash, parry, finisher, guard, special and victory untouched.
-const ORDINARY_ATTACK_FX_BOOST=Object.freeze({slash:1.9,sweep:1.9,thrust:1.8});
+const ORDINARY_ATTACK_FX_BOOST=Object.freeze({slash:1.6,sweep:1.6,thrust:2.0});
 function drawEffects(backOnly=false){
  if(!backOnly){
   drawResultFx();drawDashStreaks();drawParryBursts();

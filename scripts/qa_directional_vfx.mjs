@@ -91,12 +91,12 @@ try{
    assert.ok(spark,'ordinary strike emits a directional PNG trail');
    const drawn=event.calls.find(x=>x.source.startsWith(spark.sequence+'-'));
    assert.ok(drawn,'ordinary PNG frame is drawn to canvas');
-   const multiplier=spark.sequence==='thrust'?1.8:1.9;
+   const multiplier=spark.sequence==='thrust'?2.0:1.6;
    const originalScale=(.9+.13*.4)*1.31*.65*1.20;
    assert.ok(Math.abs(drawn.width-spark.width*originalScale*multiplier)<.1,
-    'ordinary strike width must use the approved 1.8–1.9x scale');
+    'ordinary strike width must use the approved 1.6x slash/sweep or 2.0x thrust');
    assert.ok(Math.abs(drawn.height-spark.height*originalScale*multiplier)<.1,
-    'ordinary strike height must use the approved 1.8–1.9x scale');
+    'ordinary strike height must use the approved 1.6x slash/sweep or 2.0x thrust');
   }
   if(action==='parry'||action==='dash')assert.equal(event.focus,action);
   if(action!=='finisher')assert.ok(event.kick&&event.shake>0,JSON.stringify(event));
