@@ -45,7 +45,7 @@ function describe(type){const p=map.get(type);if(!p)return null;return {
  type,core:[...p.core],semantics:{...p.semantics},extras:[...p.extra.values()].map(
  e=>({name:e.name,fps:e.fps,registered:!!e.paths,ready:e.status==='ready',status:e.status}))
 };}
-function hasExtra(type,name){return !!map.get(type)?.extra.get(name)?.status==='ready';}
+function hasExtra(type,name){return map.get(type)?.extra.get(name)?.status==='ready';}
 function getExtraFrames(type,name){return hasExtra(type,name)?map.get(type).extra.get(name).frames:null;}
 function loadExtra(type,name){
  const action=map.get(type)?.extra.get(name);
