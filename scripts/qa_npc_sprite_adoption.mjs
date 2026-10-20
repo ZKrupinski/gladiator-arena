@@ -36,7 +36,19 @@ assert.match(scenes,/LudusDoctoreAnim\?\.unmount/);
 assert.match(carnifex,/assets\/npc\/carnifex-casual-v5\.webp\?v=5/);
 const callbacks=[],actor={isConnected:true,style:{},dataset:{}};
 const win={matchMedia:()=>({matches:false})};
-vm.runInNewContext(source,{window:win,requestAnimationFrame:f=>{callbacks.push(f);return callbacks.length;},
+const whipDimensions=[[372,430],[399,548],[423,542],[447,406],[856,419],[417,507],[334,417]];
+class ImageStub{
+ constructor(){this.style={};this.naturalWidth=0;this.naturalHeight=0;}
+ set src(path){
+  this._src=path;
+  const match=path.match(/doctore-whip-clean-v2\/frame-(\d+)\.png/);
+  const wh=match?whipDimensions[Number(match[1])]:[1448,1086];
+  this.naturalWidth=wh[0];this.naturalHeight=wh[1];this.onload?.();
+ }
+ get src(){return this._src;}
+}
+vm.runInNewContext(source,{window:win,Image:ImageStub,
+ requestAnimationFrame:f=>{callbacks.push(f);return callbacks.length;},
  cancelAnimationFrame(){},performance:{now:()=>1000}});
 const npc=win.LudusDoctoreAnim;
 assert.equal(npc.version,'4.2.0');
