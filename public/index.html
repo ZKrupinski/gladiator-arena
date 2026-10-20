@@ -1214,7 +1214,8 @@ function startLineupMatch(mode,indices){
  if(chosen.length!==spec.allies||chosen.some(i=>!Number.isInteger(i)||!CAREER.roster[i]||!careerEligible(CAREER.roster[i]))){
   CAREER.message='대진 순서와 출전 가능한 검투사를 확인하세요.';saveCareer();return false;
  }
- const leader={...LudusRoster.encounter(CAREER,CAREER.roster[chosen[0]])};
+ const leader={...LudusRoster.encounter(CAREER,CAREER.roster[chosen[0]],Math.random,
+   chosen.map(n=>CAREER.roster[n]))};
  let q;
  try{q=ArenaLineup.create(mode,chosen,CAREER.roster,leader);}
  catch(error){CAREER.message='출전할 수 없습니다: '+error.message;saveCareer();return false;}
@@ -2486,6 +2487,13 @@ window.LudusBridge={
   if(atlas?.frames?.[index]?.canvas)return atlas.frames[index].canvas;
   const image=IMG[hero.cls],fallback=image&&INDEPENDENT_CHARACTER_FRAMES.get(image);
   return fallback?.[index]||fallback?.[0]||null;
+ },
+ matchOpponent:(indices)=>{
+  const squad=(indices||[]).map(i=>CAREER.roster[i]).filter(Boolean);
+  const chosen=squad[0]||CAREER.hero;
+  if(!chosen)return null;
+  const enemy=LudusRoster.encounter(CAREER,chosen,Math.random,squad.length?squad:null);
+  saveCareer();return enemy;
  },
  previewMatch:(mode,opponent)=>ArenaLineup.preview(mode,opponent),
  availability:(i)=>ArenaLineup.condition(CAREER.roster[i]),

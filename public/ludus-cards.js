@@ -116,6 +116,9 @@ function draft(enemy,painter){
  if(!squadPicks.length&&chosen>=0)squadPicks=[chosen];
  if(matchMode==='1v1')squadPicks=chosen>=0?[chosen]:[];
  const ready=squadPicks.length===config.allies,pick=s.roster[squadPicks[0]??chosen];
+ // A new choice or changed equipment must immediately refresh the opponent
+ // shown on the draft screen, not only the enemy generated at match start.
+ enemy=a.matchOpponent?.(squadPicks)||enemy;
  const choices=['1v1','1v2','1v3','2v2','3v3'];
  const controls='<div class="lc-mode-picker" role="group" aria-label="아레나 대전 형식">'+choices.map(mode=>{
   const option=window.ArenaBalance?.MODES?.[mode]||{};
@@ -131,6 +134,9 @@ function draft(enemy,painter){
   '<div><strong>'+safe(unit.name)+'</strong><small>'+safe(className(unit))+' · Lv.'+Number(unit.level||1)+
   (unit.boss?' · ★ 보스급':' · '+safe(window.ArenaBalance?.TRAITS?.[unit.cls]?.role||'일반 도전자'))+'</small></div></div>').join('');
  const strength=squadPicks.reduce((total,i)=>total+(window.ArenaBalance?.heroPower?.(s.roster[i])||0),0);
+ const matched=enemy.match;
+ const matchSummary=matched?'아군 평균 예상 전력 '+matched.power+' · 예상 접전 · 매칭 Lv.'+enemy.level+
+  ' · 장비 '+matched.equipment+'부위 / 훈련 '+matched.training:'기본 대진';
  const rivalRole=window.ArenaBalance?.TRAITS?.[enemy.cls]?.role||'투기장 도전자';
  const host='<section class="lc-screen lc-draft-screen" aria-label="아레나 출전 선수 선택"><div class="lc-top">'+header('아레나 출전',s)+'</div>'+
  '<div class="lc-match-top"><span>도전 '+Number(enemy.round||1)+'회차</span><strong>⚔ '+info+'</strong><span>'+(enemy.boss?'CHAMPION BATTLE':'ARENA CHALLENGE')+'</span></div>'+
@@ -144,6 +150,7 @@ function draft(enemy,painter){
  '<div class="lc-enemy-name">'+safe(enemy.name)+'<small>'+className(enemy)+' · '+(enemy.boss?'챔피언':'성장 '+Number(enemy.stage||1)+'단계')+' · Lv.'+Number(enemy.level||1)+'</small></div></div>'+
  '<div class="lc-enemy-lineup"><strong>상대 출전 명단 · 1:1 순차 등장</strong><div>'+theirSequence+'</div></div>'+
  '<div class="lc-matchup"><div><small>아군 전력</small><strong>'+safe(pick?pick.name:'선택 필요')+' · '+strength+'</strong></div><span>VS</span><div><small>상대 전술 · '+safe(rivalRole)+'</small><strong>'+safe(enemy.name)+'</strong></div></div>'+
+ '<div class="lc-mode-note">'+safe(matchSummary)+'</div>'+
  '<div class="lc-buttons lc-draft-actions"><button id="lcDraftCancel">선택 취소</button><button class="lc-emphasis" id="lcDeploy" '+(!ready?'disabled':'')+'>⚔ '+(ready?(matchMode==='1v1'?safe(pick.name)+' 출전':'연속 1:1 대진 '+matchMode+' 시작'):'검투사 '+config.allies+'명 필요')+'</button></div>'+
  '</div></div><div class="lc-hint">현재 출전한 검투사는 기존 전투 조작 그대로 사용 · 승자는 남은 체력으로 다음 상대와 싸움 · 부상 80 / 피로 80 이상 출전 불가</div></section>';
  const old=$('.lc-gallery .lc-card-grid');if(old)scrollPosition=old.scrollTop;

@@ -5,15 +5,25 @@
  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
  const stage=level=>level>=20?5:level>=15?4:level>=10?3:level>=5?2:1;
  function create(cls,number,extra={}){return {cls,name:names[cls]+' '+number,stats:{str:0,agi:0,end:0,focus:0},injury:0,equipment:{weapon:'wood',shield:null,armor:null},inventory:['wood'],fights:0,wins:0,level:1,xp:0,growthType:cls+'_a',...extra};}
- function encounter(state,hero,rng=Math.random){
-  if(state.pendingOpponent)return state.pendingOpponent;
+ function encounter(state,hero,rng=Math.random,team=null){
   const round=(state.wins||0)+1,boss=round%5===0;
-  const cls=boss?classes[(Math.floor(round/5)-1)%3]:classes[Math.floor(rng()*3)];
-  const level=clamp((root.ArenaBalance?.encounterLevel(round,Number(hero?.level)||1,boss)??Math.max(1,Math.floor(round*.8)))+Math.floor(rng()*3)-1,1,20);
+  const roster=Array.isArray(team)&&team.length?team.filter(Boolean):[hero].filter(Boolean);
+  const match=root.ArenaBalance?.makeMatch(round,roster,boss)||null;
+  // Recalculate when the selected fighter, their equipment, current injuries,
+  // or the team composition changes. The same selection remains stable.
+  const matchKey=JSON.stringify([round,roster.map(h=>[
+   h.name,h.cls,h.level,h.stats,h.equipment,h.injury,h.fatigue
+  ])]);
+  if(state.pendingOpponent?.matchKey===matchKey)return state.pendingOpponent;
+  const preferred=hero?.cls==='murmillo'?'retiarius':
+    hero?.cls==='retiarius'?'thraex':'murmillo';
+  const special=boss&&(round%20===5);
+  const cls=boss?(special?'murmillo':classes[(Math.floor(round/5)-1)%3]):
+   (rng()<.60?preferred:classes[Math.floor(rng()*3)]);
+  const level=clamp(match?.level??1,1,20);
   // First and every fourth championship round introduces the new red-plume
   // Murmillo boss. Other classic bosses keep their established rotation.
-  const special=boss&&(round%20===5);
-  return state.pendingOpponent={cls,level,stage:stage(level),boss,
+  return state.pendingOpponent={cls,level,stage:stage(level),boss,match,matchKey,
    appearance:special?'murmillo_champion_red':null,
    bossId:special?'murmillo_champion_red':boss?cls:null,round,
    growthType:special?'murmillo_a':cls==='thraex'&&rng()<.5?'thraex_b':cls+'_a',

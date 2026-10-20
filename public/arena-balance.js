@@ -31,6 +31,50 @@
     (equip.weapon&&equip.weapon!=='wood'?13:0)+
     (equip.shield?9:0)+(equip.armor?15:0));
  }
+ // Match the selected fighter's usable battle performance, not only win count.
+ const BASE={murmillo:{hp:138,atk:17},thraex:{hp:113,atk:18},
+  retiarius:{hp:116,atk:16}};
+ const EQUIP={wood:{atk:0,hp:0},iron:{atk:5,hp:0},
+  shield:{atk:0,hp:24},elite:{atk:9,hp:15}};
+ function matchStrength(h){
+  const s=h?.stats||{},equip=h?.equipment||{},base=BASE[h?.cls]||BASE.murmillo;
+  const level=clamp(h?.level||1,1,20);
+  const training=['str','agi','end','focus'].reduce((n,k)=>n+clamp(s[k]||0,0,10),0);
+  const worn=['weapon','shield','armor'].map(k=>EQUIP[equip[k]]||null).filter(Boolean);
+  const equipment=worn.filter(g=>g.atk||g.hp).length;
+  const gear=worn.reduce((sum,g)=>({atk:sum.atk+g.atk,hp:sum.hp+g.hp}),{atk:0,hp:0});
+  const injury=clamp(h?.injury||0,0,120),fatigue=clamp(h?.fatigue||0,0,100);
+  const hp=Math.max(1,Math.round(base.hp+clamp(s.end||0,0,10)*15+gear.hp-injury));
+  const atk=Math.round(base.atk+clamp(s.str||0,0,10)*2.65+gear.atk);
+  const effectiveLevel=clamp(1+(level-1)*.58+training*.255+equipment*1.15
+    -injury*.024-fatigue*.016,1,20);
+  return {level,hp,atk,training,equipment,injury,fatigue,
+   power:heroPower(h),effectiveLevel};
+ }
+ function makeMatch(round,heroes=[],boss=false){
+  const stats=(Array.isArray(heroes)?heroes:[heroes]).filter(Boolean).map(matchStrength);
+  if(!stats.length)return null;
+  const avg=k=>stats.reduce((sum,s)=>sum+s[k],0)/stats.length;
+  // Gauntlets are consecutive one-on-one fights: average per fighter, never
+  // sum team power (which otherwise makes 3v3 enemies absurdly strong).
+  const experience=avg('effectiveLevel');
+  const level=Math.round(clamp(experience+.75-(boss?3:0),1,20));
+  return {level,effectiveLevel:+experience.toFixed(2),
+   hp:Math.round(avg('hp')),atk:Math.round(avg('atk')),
+   training:Math.round(avg('training')),equipment:Math.round(avg('equipment')),
+   power:Math.round(avg('power')),party:stats.length,
+   label:boss?'챔피언 도전':'박빙의 상대'};
+ }
+ function comebackParry(defender,attacker,baseDamage,used=false){
+  const ratio=clamp((defender?.hp||0)/Math.max(1,defender?.maxHp||1),0,1);
+  const critical=!!defender&&!defender.enemy&&ratio>0&&ratio<=.30&&!used;
+  const intensity=critical?clamp((.30-ratio)/.25,0,1):0;
+  const bonus=critical?Math.round(baseDamage*(.55+.65*intensity)):0;
+  const cap=Math.round(Math.max(1,attacker?.maxHp||1)*
+   (attacker?.championBoss?.22:.40));
+  const extra=critical?Math.max(1,Math.min(cap,bonus)):0;
+  return {critical,extra,damage:baseDamage+extra,healthRatio:ratio};
+ }
  function encounterLevel(round,heroLevel,boss=false){
   const r=clamp(round||1,1,90);
   const level=clamp(heroLevel||1,1,20);
@@ -45,9 +89,15 @@
   const rounds=clamp(round||1,1,40);
   const hpScale=1+level*.043+rounds*.014+(boss?.60:0)+(special?.30:0);
   const atkScale=1+level*.026+rounds*.013+(boss?.34:0)+(special?.19:0);
+  const match=opponent?.match;
+  const originalHp=base.hp*hpScale,originalAtk=base.atk*atkScale;
+  // Constrain to an achievable duel even in late rounds; armor, AI and boss
+  // mechanics stay active, but a weakly-equipped veteran is not stonewalled.
+  const hp=match?clamp(match.hp*(boss?1.49:1.14),originalHp*.58,originalHp*1.5):originalHp;
+  const atk=match?clamp(match.atk*(boss?1.05:.98),originalAtk*.72,originalAtk*1.25):originalAtk;
   return {
-   hp:Math.round(base.hp*hpScale),
-   atk:Math.round(base.atk*atkScale),
+   hp:Math.round(hp),
+   atk:Math.round(atk),
    sp:Math.round(base.sp*(1+level*.015+(boss?.23:0))),
    move:Math.round(base.move*(1+level*.007+(boss?.07:0))),
    armor:clamp((TRAITS[opponent?.cls]?.armor||0)+(boss?.14:0)+(special?.08:0),0,.44),
@@ -102,7 +152,8 @@
    glory:win?Math.round((9+r*2)*mult):0
   };
  }
- root.ArenaBalance={version:'1.0.0',TRAITS,MODES,trainingCost,heroPower,
+ root.ArenaBalance={version:'1.1.0',TRAITS,MODES,trainingCost,heroPower,
+  matchStrength,makeMatch,comebackParry,
   encounterLevel,duelEnemy,heroStats,enemyAi,damageReduction,
   playerParryDamage,rewards};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaBalance;
