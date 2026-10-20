@@ -36,12 +36,14 @@ const sprite=window.LudusDoctoreAnim;
 assert.equal(sprite.sprite.columns,8);
 assert.equal(sprite.sprite.rows,4);
 for(const [name,row] of Object.entries(sprite.sprite.actions))
- assert.ok(['idle','talk','command','walk'].includes(name)&&row>=0&&row<=3);
+ assert.ok(['idle','talk','command','walk','whip'].includes(name)&&row>=0&&row<=4);
 sprite.mount(actor);
 assert.equal(actor.dataset.action,'idle');
-for(const [pose,action] of [[1,'talk'],[2,'command'],[3,'command']]){
+for(const [pose,action] of [[1,'talk'],[2,'command'],[3,'whip']]){
  sprite.react(pose);assert.equal(actor.dataset.action,action);
 }
+assert.match(sprite.userWhip,/66b8f68a-f680-437b-877a-63e128e9e67f\.png/);
+assert.match(scenes,/refresh\(\);pose\(3\)/);
 sprite.react(-1);assert.equal(actor.dataset.action,'idle');
 sprite.unmount();
 console.log('PASS: approved NPC 32+16 atlas refs, fixed 8-frame actions, raised toe baseline and replacement cleanup');
