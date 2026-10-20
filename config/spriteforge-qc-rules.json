@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "source": "Spartacus GLADIATOR ARENA art-direction feedback 2026-10-20 and 2026-10-21",
   "scope": "all playable gladiators and beasts",
   "requiredAnimationStandard": {
@@ -80,7 +80,15 @@
       "severity": "block",
       "description": "If a body region touches another pose and its ownership cannot be proved, never release it as clean and never silently amputate it.",
       "automatic": "edge_component_review_and_full_sheet_seam_gate",
-      "action": "Mark NEEDS_MANUAL_REVIEW or REGENERATE_THIS_MOTION; keep original and block publish until owner is confirmed."
+      "action": "Automatically retry/regenerate the failed action (all eight poses) with specific pixel-ownership error feedback, then re-extract, QC, and preview; repeat for up to three configured retries. If no provider is connected, leave executable job QUEUED rather than claiming completion. Ask the user only when cause remains unresolved after retrial."
+    },
+    {
+      "id": "automatic_repair_recheck_preview",
+      "stage": "quality_loop",
+      "severity": "block",
+      "description": "Any generation or cutting QC failure automatically invokes regeneration for the SAME action: 8 clean native frames, known error diagnosis, isolated cuts, re-QA and before/after 8-frame PNG/GIF review.",
+      "automatic": "spriteforge_pipeline_v3.py --mode repair --adapter <trusted_provider> --max-retries 3",
+      "action": "Each retry's job must carry exact failing frame numbers and error codes. Never mark ready without technical pass; avoid user questions for known errors and only escalate persistent unknown root causes. Keep old approved art until full animation/game QA pass."
     },
     {
       "id": "wide_safety_gutters",
@@ -146,5 +154,15 @@
       "automatic": "ci_and_visual_review",
       "action": "Preserve old manifest until safe deployment"
     }
-  ]
+  ],
+  "automaticRecovery": {
+    "mode": "fail_then_regenerate_reinspect_preview",
+    "retryScope": "one creature, one motion, eight complete frames",
+    "retryCountDefault": 3,
+    "retryCountMaximum": 5,
+    "regenerationNeedsConnectedProvider": true,
+    "providerMissing": "GENERATE_JOB_QUEUE_AND_EXPLICITLY_MARK_NOT_EXECUTED",
+    "userInterruptionPolicy": "Solve reproducible diagnosed issues automatically; escalate only after repeated unresolved or unknown-root-cause failures.",
+    "releaseGate": "8/8 QA + visual review + in-game browser playback before replacing production"
+  }
 }
