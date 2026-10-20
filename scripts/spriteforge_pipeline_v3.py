@@ -3,7 +3,7 @@
 No built-in image generator; requires an explicit adapter. Never auto-deploy.
 """
 from __future__ import annotations
-import argparse, hashlib, json, os, subprocess, sys
+import argparse, hashlib, json, os, subprocess, sys, math
 from pathlib import Path
 import numpy as np
 from PIL import Image
@@ -27,25 +27,38 @@ def plan(reference,kind,action,out,extra=()):
     if action not in allowed: raise ValueError("ACTION_NOT_REGISTERED")
     policy=Path(__file__).resolve().parents[1]/"config/spriteforge-qc-rules.json"
     rules=json.loads(policy.read_text())["rules"]
+    native=max(768,min(1536,math.ceil(min(Image.open(ref).size)*.80)))
     out.mkdir(parents=True,exist_ok=True)
     job={
       "protocol":"spriteforge-v3","character":kind,"action":action,
       "reference":str(ref),"referenceSha256":digest(ref),
-      "requiredFrames":8,"motionsPerJob":1,"nativeFrameMinimum":[MIN_NATIVE,MIN_NATIVE],
-      "nativeSheetMinimum":[2048,1024],"sheetGrid":[4,2],
-      "preferred":"eight_separate_transparent_PNGs",
+      "requiredFrames":8,"motionsPerJob":1,"nativeFrameMinimum":[native,native],
+      "nativeSheetMinimum":[native*4,native*2],"sheetGrid":[4,2],
+      "onlyAllowedGeneratedOutput":"ONE_4x2_HIGH_RES_TRANSPARENT_PNG_SHEET",
+      "separatePngFiles":"EXPORTED_ONLY_AFTER_VALIDATED_SHEET_CUT",
+      "noArtificialUpscaling":True,"minimumReferenceDetailRatio":0.8,
+      "rulesSha256":digest(policy),
+      "mandatoryPreGenerationBriefing":True,
+      "mandatoryProviderPreflightAcknowledgement":True,
       "rules":[r["id"] for r in rules],
       "instruction":f"Use only the approved {kind} reference. Generate ONE action, {action}, "
         "with exactly EIGHT distinct sequential full-body poses. Preserve face, equipment, scale, "
         "design, facing and high-frequency details. Each pose: native at least 512x512 real transparent "
-        "RGBA, wide X/Y gutters, unclipped feet/tail/equipment. NO mixed-action board, extra animal, "
-        "text, opaque background, cut body, duplicate frame or neighboring fragments. "
-        "Prefer eight separate PNG files; 4x2 sheet only if at least 2048x1024.",
+        "RGBA in EXACTLY ONE NATIVE 4x2 SHEET, each source cell no smaller than "
+        f"{native}x{native} (full sheet {native*4}x{native*2}). NEVER generate eight separate "
+        "PNG input files or create apparent high resolution by upscaling a small source. "
+        "Retain the approved reference's original microdetails. Keep wide X/Y gutters, "
+        "unclipped feet/tail/equipment. NO mixed actions, extra animals, opaque background, "
+        "cut body, duplicate frame, merged poses or neighboring fragments.",
       "frameOwnershipPolicy":"Any anatomy from a neighboring pose is FOREIGN, even a full head, tail or leg, regardless of size. Preserve only this frame's actor. Compare original sheet and adjacent poses; erase pixel-proven foreign body parts; block uncertain glued regions. Never decide ownership by speck size.",
       "requiredStatus":"TECHNICAL_PASS_THEN_VISUAL_REVIEW",
       "releaseAuthorized":False}
     target=out/"generator_job.json"
     target.write_text(json.dumps(job,ensure_ascii=False,indent=2))
+    # Prepare human-readable briefing during planning and FRESH before each
+    # actual generation/re-generation attempt.
+    from spriteforge_preflight_v3 import make_brief
+    make_brief(target,out/"preflight")
     return target
 
 def rgba(p):
@@ -54,17 +67,20 @@ def rgba(p):
         raise ValueError("NOT_A_TRANSPARENT_IMAGE")
     return src.convert("RGBA")
 
-def eight_images(response,root):
-    if ("frames" in response)==("sheet" in response):
-        raise ValueError("PROVIDE_EIGHT_FILES_OR_ONE_4X2_SHEET")
-    if "frames" in response:
-        paths=response["frames"]
-        if not isinstance(paths,list) or len(paths)!=8 or len(set(paths))!=8:
-            raise ValueError("REQUIRE_EIGHT_UNIQUE_FILE_PATHS")
-        return [rgba((root/name).resolve()) for name in paths]
+def eight_images(response,root,job=None):
+    """Production generation MUST be one native 4x2 transparent sheet."""
+    if "frames" in response or "sheet" not in response:
+        raise ValueError("SINGLE_4x2_HIGH_RES_SHEET_REQUIRED_EIGHT_FILES_REJECTED")
+    if response.get("upscaledFrom") or response.get("resampledLowResolution"):
+        raise ValueError("ARTIFICIALLY_UPSCALED_SOURCE_FORBIDDEN")
     sheet=rgba((root/response["sheet"]).resolve())
     w,h=sheet.size
-    if w<2048 or h<1024: raise ValueError("LOW_NATIVE_RESOLUTION_SHEET")
+    native=(job or {}).get("nativeFrameMinimum",[768,768])
+    min_sheet=(job or {}).get("nativeSheetMinimum",[3072,1536])
+    if w<min_sheet[0] or h<min_sheet[1]:
+        raise ValueError("LOW_NATIVE_RESOLUTION_SHEET_MUST_PRESERVE_REFERENCE_DETAIL")
+    if w%4 or h%2 or w//4<native[0] or h//2<native[1]:
+        raise ValueError("INVALID_4x2_NATIVE_SHEET_GRID")
     mask=np.asarray(sheet.getchannel("A"))>ALPHA
     labels,n=ndimage.label(mask,structure=np.ones((3,3),dtype=np.uint8))
     if n:
@@ -74,12 +90,8 @@ def eight_images(response,root):
             if len(cx)<max(160,round(w*h*.0003)): continue
             if len(np.unique(cx*4//w))>1 or len(np.unique(cy*2//h))>1:
                 raise ValueError("MERGED_SILHOUETTE_ACROSS_GRID_SEAM_REGENERATE")
-    result=[]
-    for i in range(8):
-        x,y=i%4,i//4
-        result.append(sheet.crop((round(x*w/4),round(y*h/2),
-                                  round((x+1)*w/4),round((y+1)*h/2))))
-    return result
+    return [sheet.crop((i%4*w//4,i//4*h//2,(i%4+1)*w//4,(i//4+1)*h//2))
+            for i in range(8)]
 
 def measure(frame):
     w,h=frame.size;fail=[]
@@ -130,7 +142,14 @@ def inspect(job_path,result_path,destination):
     try:
         if response.get("jobSha256")!=digest(job_path):
             raise ValueError("GENERATOR_DID_NOT_ACKNOWLEDGE_APPROVED_JOB")
-        images=eight_images(response,Path(result_path).resolve().parent)
+        from spriteforge_preflight_v3 import validate_acknowledgement
+        preflight=Path(result_path).resolve().parent/"preflight"
+        receipt=validate_acknowledgement(job_path,preflight/"briefing.json",
+                                         preflight/"acknowledgement.json")
+        if response.get("preflightSha256")!=receipt["briefingSha256"]:
+            raise ValueError("GENERATOR_DID_NOT_BIND_RESULT_TO_PREFLIGHT")
+        report["preflight"]=receipt
+        images=eight_images(response,Path(result_path).resolve().parent,job)
         for i,frame in enumerate(images):
             entry=measure(frame);entry["index"]=i+1
             report["frames"].append(entry)
@@ -180,13 +199,36 @@ def generate(job,adapter,result):
     if not adapter:raise ValueError("GENERATOR_NOT_CONNECTED")
     adapter=Path(adapter)
     if not adapter.is_file():raise ValueError("GENERATOR_ADAPTER_MISSING")
-    result=subprocess.run([sys.executable,str(adapter),str(job),str(result)],
-                          capture_output=True,text=True,timeout=max(300,min(14400,int(os.getenv('SPRITEFORGE_GENERATOR_TIMEOUT','3600')))))
-    if result.returncode:raise ValueError("GENERATOR_EXECUTION_FAILED: "+result.stderr[-450:])
+    from spriteforge_preflight_v3 import make_brief, validate_acknowledgement
+    job=Path(job).resolve()
+    result_path=Path(result).resolve()
+    result_path.parent.mkdir(parents=True,exist_ok=True)
+    preflight=result_path.parent/"preflight"
+    brief=make_brief(job,preflight)
+    ack=preflight/"acknowledgement.json"
+    # First mandatory adapter handshake; drawing forbidden until every
+    # blocking rule is acknowledged for this job and current policy.
+    handshake=subprocess.run([sys.executable,str(adapter),"--preflight",str(brief),str(ack)],
+                             capture_output=True,text=True,timeout=180)
+    if handshake.returncode:
+        raise ValueError("PREFLIGHT_PROVIDER_BRIEFING_REJECTED: "+handshake.stderr[-450:])
+    receipt=validate_acknowledgement(job,brief,ack)
+    print("SPRITEFORGE_V3_PREGEN_BRIEFING_ACCEPTED",
+          receipt["character"],receipt["action"],receipt["acknowledgedRuleCount"],flush=True)
+    finished=subprocess.run([sys.executable,str(adapter),str(job),str(result_path)],
+                            capture_output=True,text=True,
+                            timeout=max(300,min(14400,int(os.getenv('SPRITEFORGE_GENERATOR_TIMEOUT','3600')))))
+    if finished.returncode:
+        raise ValueError("GENERATOR_EXECUTION_FAILED: "+finished.stderr[-450:])
+    data=json.loads(result_path.read_text(encoding="utf8"))
+    if data.get("jobSha256")!=digest(job) or data.get("preflightSha256")!=receipt["briefingSha256"]:
+        raise ValueError("GENERATOR_RESULT_NOT_BOUND_TO_BRIEFED_JOB")
+    if "sheet" not in data or "frames" in data:
+        raise ValueError("GENERATOR_MUST_RETURN_EXACTLY_ONE_SHEET")
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()
-    p.add_argument("--mode",choices=["plan","generate","inspect","repair"],required=True)
+    p.add_argument("--mode",choices=["plan","brief","generate","inspect","repair"],required=True)
     p.add_argument("--reference");p.add_argument("--character");p.add_argument("--action")
     p.add_argument("--job");p.add_argument("--result");p.add_argument("--adapter")
     p.add_argument("--extra",action="append",default=[]);p.add_argument("--out",required=True)
@@ -194,6 +236,11 @@ if __name__=="__main__":
     a=p.parse_args();out=Path(a.out).resolve()
     if a.mode=="plan":
         print(plan(a.reference,a.character,a.action,out,a.extra))
+    elif a.mode=="brief":
+        if not a.job:p.error("--job required")
+        from spriteforge_preflight_v3 import make_brief
+        pth=make_brief(a.job,out/"preflight")
+        print(pth.with_name("briefing.md").read_text(encoding="utf8"))
     elif a.mode in ("generate","repair") or (a.mode=="inspect" and a.adapter):
         # Connected generator is ALWAYS auto-correcting: no silent one-shot
         # failure or manual retry chores for diagnosed animation defects.

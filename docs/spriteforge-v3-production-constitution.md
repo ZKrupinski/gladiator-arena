@@ -69,3 +69,88 @@ Regenerate only the failing character/action (8 poses), preserving the
 approved design. Technical pass yields a preview and art/game review, NOT an
 automatic production deployment. If root causes remain unknown after
 reasonable repeated repair attempts, ask the user with concrete evidence.
+
+## 2026-10-21 amendment — MANDATORY PRE-GENERATION BRIEFING + NATIVE SHEET ONLY
+
+**Absolute rule:** Every character sprite generation request and automatic retry
+is ONE character × ONE motion × EIGHT distinct sequential poses × EXACTLY ONE
+high-resolution transparent 4-column × 2-row sprite sheet. No generator request
+may produce eight independent PNG files or mix motions on a board. Independent
+PNG files are **only the output of SpriteForge's later cutting/QA step**.
+
+Each of the 8 source cells must have native pixel dimensions at least
+`max(768, min(1536, ceil(0.80 * min(approved_reference_width, approved_reference_height))))`
+on **both axes**. Sheet minimum is four times that cell width and twice that
+cell height. Example: an approved 1024×1024 reference requires at least
+820×820 original pixels in every cell, so a sheet >=3280×1640.
+This is a **floor, not a target to downsample toward**. Preserve as much real
+source detail as possible. Disallow fake "high-resolution" created by enlarging
+a tiny original or by blurring and resampling. Native pixels do not guarantee
+visual fidelity; inspect the original subject texture/draw detail too.
+
+### Tool briefs BEFORE any artist or provider begins a pose
+
+For manual art work or an assistant about to use an image generator:
+
+```bash
+python scripts/spriteforge_pipeline_v3.py --mode plan --reference /art/approved_wolf.png --character wolf --action walk --out /art/wolf-walk
+python scripts/spriteforge_pipeline_v3.py --mode brief --job /art/wolf-walk/generator_job.json --out /art/wolf-walk
+```
+
+**READ the entire printed Korean briefing** and mandatory action-specific
+failure history before invoking any generation. The briefing contains the
+reference checksum, exact motion, 4×2 native resolution, silhouette ownership,
+gutter requirements, original design constraints, and previous QA errors.
+
+For a connected trusted adapter, `generate` and each automatic repair retry
+perform a **fresh preflight handshake**:
+1. SpriteForge creates `preflight/briefing.md` and `briefing.json`.
+2. The provider must read them and write job- and policy-hash-bound
+   `preflight/acknowledgement.json` containing all blocking rules and a
+   meaningful execution plan.
+3. SpriteForge validates acknowledgement and only THEN allows drawing.
+4. Provider must return exactly ONE 4×2 native sheet, bound to the
+   corresponding briefing checksum. Any eight-file result is rejected.
+5. SpriteForge checks source-sheet seams before cutting into eight individual
+   PNGs, performs QC, previews, retries failures, and blocks production until
+   art/game validation.
+
+Missing, expired, incomplete or wrong-job acknowledgement -> NO drawing.
+Any policy revision or updated approved reference -> remake the job and rebrief.
+This is a behavioral gate that prevents accidental skips; it does not magically
+grant a generator the ability to understand all anatomy or create high-quality
+original detail. Missing ComfyUI/provider adapter -> NOT GENERATED.
+
+## 2026-10-21 amendment — ChatGPT draws only AFTER the SpriteForge briefing
+
+**Natural-language trigger in this game:** the user says
+`게임에 적용할 애니메이션 시트 만들자`, `애니메이션 시트 만들자`,
+`스프라이트 애니메이션 제작하자`, or any equivalent intent to make a new
+game animation sprite sheet. This applies equally when **ChatGPT itself** will
+draw with its own image generator; no external provider is required merely
+to get the briefing.
+
+Before a single art/image generation call:
+1. Resolve the approved reference, character, and ONE action from the current
+   project context; only ask for truly missing information.
+2. Run `python scripts/spriteforge_assistant_brief_v3.py --reference
+   <approved.png> --character <character> --action <one_action> --out
+   <qa_dir>`; for a failed motion retry, pass `--job <retry_job.json>`
+   instead. The tool prints the latest Korean briefing and records
+   `assistant_preflight.json`. **Read it before art generation.**
+3. Give the drawing tool ALL source-specific requirements from the briefing.
+   Exactly one native-detail high-resolution 4×2 transparent PNG sheet per
+   motion, 8 unique full-body poses, no clipped body or neighbor-owned
+   anatomy. No combined multi-motion boards; no separate source pose files.
+4. Run cutting and visual QC; on failure re-brief (including specific earlier
+   faults) and retry this ONE animation automatically; inspect the 8-pose GIF
+   before marking the art ready for production.
+
+For directly invoked ChatGPT image generation, the model reads a printed
+briefing but **does not have a signed provider handshake**: the assistant must
+not claim an automated image-provider acknowledgement. For a connected
+ComfyUI/provider adapter, the cryptographic acknowledgement remains
+mandatory. This policy cannot by itself force ChatGPT UI to execute arbitrary
+repository scripts; agents working in this repo must execute this
+pre-generation step in their normal tool workflow. Never claim a drawing
+or code integration occurred if it has not.

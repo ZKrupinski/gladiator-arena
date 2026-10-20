@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "source": "Spartacus GLADIATOR ARENA art-direction feedback 2026-10-20 and 2026-10-21",
   "scope": "all playable gladiators and beasts",
   "requiredAnimationStandard": {
@@ -19,7 +19,17 @@
     "grid": [
       4,
       2
-    ]
+    ],
+    "generationOutput": "EXACTLY_ONE_4x2_RGBA_PNG_SHEET_PER_CHARACTER_ACTION",
+    "independentPngRole": "ONLY_AFTER_QA_SHEET_EXTRACTION; NEVER_GENERATOR_INPUT",
+    "minimumNativePixelsPerCell": 768,
+    "referenceFidelityScale": "At least 80% of the shorter approved reference dimension per cell, capped at 1536; minimum 768. Do not upscale previously small drawings and claim native detail.",
+    "minimumSheetPixels": [
+      3072,
+      1536
+    ],
+    "rejectUpscalePretendingNative": true,
+    "cellPaddingPixels": 20
   },
   "optionalMotionRules": {
     "allowed": true,
@@ -49,6 +59,22 @@
       "description": "One character, exactly one motion, eight sequential key poses; no mixed-action boards",
       "automatic": "contract",
       "action": "Generate the affected action only"
+    },
+    {
+      "id": "one_action_one_sheet_eight_frames_native_highres",
+      "stage": "pre_generation",
+      "severity": "block",
+      "description": "Generate exactly ONE 4-column x 2-row RGBA sprite sheet per approved character and ONE motion, containing eight distinct full-body sequential native-resolution poses. Separate 8 PNGs can ONLY be exported by QA, never generated as the production input. Each native cell >= max(768px, 80% of approved reference shorter side, capped at 1536px), full sheet >=4x2 those dimensions; preserve real reference pixel detail, not pixel enlargement.",
+      "automatic": "job_bound_sheet_specification_provider_ack_native_resolution_and_pre_cut_seam_scan",
+      "action": "Obtain the SpriteForge mandatory briefing before generation, acknowledge the exact sheet and source-detail rules, render a single native high-resolution 4x2 sheet, check seams before extraction; re-render action if deficient."
+    },
+    {
+      "id": "mandatory_before_every_generation_briefing",
+      "stage": "pre_generation",
+      "severity": "block",
+      "description": "Immediately before each generation and EACH regeneration attempt, SpriteForge MUST brief the operator/provider on the locked approved reference, character, ONE action, eight poses in ONE 4x2 sheet, native detail floor, foot anchor, safe gutters, prior faults and all mandatory ownership policies. No rendering may begin without a job-bound acknowledgement.",
+      "automatic": "policy_sha_and_job_sha_checked_briefing_handshake",
+      "action": "Generate detailed human-readable briefing.md and machine-readable briefing.json, make provider explicitly acknowledge every block rule and execution plan; refuse if missing, expired, incomplete, wrong job or policy drift."
     },
     {
       "id": "no_clone_or_double_body",
@@ -157,12 +183,16 @@
   ],
   "automaticRecovery": {
     "mode": "fail_then_regenerate_reinspect_preview",
-    "retryScope": "one creature, one motion, eight complete frames",
+    "retryScope": "one creature, one motion, ONE 4x2 high-resolution sheet of eight complete poses",
     "retryCountDefault": 3,
     "retryCountMaximum": 5,
     "regenerationNeedsConnectedProvider": true,
     "providerMissing": "GENERATE_JOB_QUEUE_AND_EXPLICITLY_MARK_NOT_EXECUTED",
     "userInterruptionPolicy": "Solve reproducible diagnosed issues automatically; escalate only after repeated unresolved or unknown-root-cause failures.",
-    "releaseGate": "8/8 QA + visual review + in-game browser playback before replacing production"
+    "releaseGate": "8/8 QA + visual review + in-game browser playback before replacing production",
+    "preGenerationBriefingMandatory": true,
+    "preGenerationBriefingEveryRetry": true,
+    "sheetOnlyGeneration": true,
+    "referenceDetailRule": "native cell >= max(768, min(1536, ceil(reference shorter side*0.8)))"
   }
 }
