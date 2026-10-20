@@ -955,8 +955,10 @@ function renderCareerDraft(){
  };
 }
 function renderCareer(){
- if(CAREER_TAB==='beasts'){renderBeastHunt();return;}
+ // Explicit battle preparation has priority over a previously visited beast tab.
+ // Otherwise "back to draft" silently opens the beast gallery again.
  if(CAREER_SELECTING){renderCareerDraft();return;}
+ if(CAREER_TAB==='beasts'){renderBeastHunt();return;}
  if(CAREER_TAB==='roster'&&window.LudusCardScenes){
   $('#careerRosterTab').setAttribute('aria-pressed','true');
   $('#careerTrainTab').setAttribute('aria-pressed','false');
