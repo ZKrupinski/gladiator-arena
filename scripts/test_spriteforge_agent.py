@@ -8,7 +8,7 @@ def demo(s,blocked=False):
     d=ImageDraw.Draw(im)
     for i in range(8):
         x=(i%4)*600+130;y=(i//4)*600+135
-        d.ellipse((x,y,x+340,y+310),fill=(194,127,88,255))
+        d.ellipse((x,y,x+338+(i%4)*4,y+305+(i//4)*7),fill=(194,127,88,255))
     if blocked:
         d.rectangle((0,25,85,90),fill=(220,100,80,255))
     im.save(s)
