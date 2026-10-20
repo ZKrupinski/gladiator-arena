@@ -350,6 +350,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="champion-murmillo.js?v=3"></script>
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
+<script src="arena-beasts.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
 <script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
 <script src="ludus-roster.js?v=3"></script>
@@ -1090,6 +1091,17 @@ $('#careerCancel').onclick=closeTraining;
 window.addEventListener('keydown',e=>{if(MINI&&!MINI.finished&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
 function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
+// Arena-only animal challenges. They are combatants, not purchasable or
+// recruitable Gladiators; boss encounters keep their original champion art.
+function maybeArenaBeast(enemy,round,boss=false){
+ if(!enemy||boss)return null;
+ const type=window.ArenaBeasts?.pick?.(round,false);
+ if(!type||!window.ArenaBeasts?.apply?.(enemy,type))return null;
+ enemy.rank='BESTIA · '+window.ArenaBeasts.types[type].latin;
+ S.notice='VENATIO · '+window.ArenaBeasts.types[type].label+' 출현!';
+ S.noticeT=2.8;
+ return type;
+}
 function start(mode='new',requestedRosterIndex=null,teamIndices=null){
  const careerMatch=mode==='career';
  S.gauntlet=null;S.cleanup=null;updateLineupHud();
@@ -1155,6 +1167,9 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
   S.enemy.cfg={...S.enemy.cfg,atk:Math.round(S.enemy.cfg.atk*(1+level*.035)),move:S.enemy.cfg.move*(1+level*.015)};
  }
  S.careerMatch=careerMatch;
+ // A menagerie event changes only the arena enemy. The normal matchmaking
+ // profile remains authoritative before beast-specific role modifiers.
+ maybeArenaBeast(S.enemy,S.round,!!S.careerOpponent?.boss&&careerMatch);
  $('#startScreen').hidden=true;$('#endScreen').hidden=true;$('#pauseBtn').textContent='Ⅱ';updateHud();
  window.ArenaAudio?.enterArena?.();
  fxSound('start');
@@ -1235,6 +1250,7 @@ function startLineupMatch(mode,indices){
  S.gauntlet.records[chosen[0]]={initialHp:S.player.hp,lastHp:S.player.hp,bouts:0};
  S.careerParticipant=chosen[0];S.careerOpponent={...q.enemies[0]};
  S.enemy=lineupEnemy(q.enemies[0]);
+ maybeArenaBeast(S.enemy,S.round,!!q.enemies[0]?.boss);
  S.time=90;S.lastManualInput=clock;S.autoPlaying=false;S.cleanup=null;
  window.ArenaCarnifex?.preload?.();
  S.notice='1차전 · '+q.enemies[0].name;S.noticeT=2;
@@ -1289,6 +1305,7 @@ function finishLineupCleanup(){
   cleanDuelSurvivor(S.player,335,1);
   S.careerOpponent={...step.nextEnemy};
   S.enemy=lineupEnemy(step.nextEnemy);
+ maybeArenaBeast(S.enemy,S.round+S.gauntlet.round-1,!!step.nextEnemy?.boss);
  }else{
   S.careerParticipant=step.nextAllyIndex;
   CAREER.active=step.nextAllyIndex;
@@ -1656,9 +1673,9 @@ function attack(f,victim,special=false,dashImpact=false){
   });
  }else if(!f.enemy)say('GUARDED',.42);}
  else{victim.stagger=dashImpact?.78:special?.48:.24;setAction(victim,'hit',dashImpact?.67:.31);}
- if(special&&f.cls==='retiarius'){victim.net=.95;victim.stagger=Math.max(victim.stagger,.85);say('NET TRAP!');}
- if(special&&f.cls==='murmillo'){victim.st=clamp(victim.st-21,0,100);say('SCUTUM IMPACT!');}
- if(special&&f.cls==='thraex'){
+ if(special&&!f.beastType&&f.cls==='retiarius'){victim.net=.95;victim.stagger=Math.max(victim.stagger,.85);say('NET TRAP!');}
+ if(special&&!f.beastType&&f.cls==='murmillo'){victim.st=clamp(victim.st-21,0,100);say('SCUTUM IMPACT!');}
+ if(special&&!f.beastType&&f.cls==='thraex'){
   victim.bleedT=Math.max(victim.bleedT||0,2.6);
   victim.bleedDPS=Math.max(2,Math.round(f.cfg.atk*.18));
   say('SICA · BLEED!');
@@ -2198,7 +2215,13 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   if(!drawGrowthPose(f,pose,drawX-f.face*38,drawY+6,width,height,f.face<0,.19))atlasFrame(IMG[f.cls],frame,drawX-f.face*38,drawY+6,width,height,f.face<0,.19);
   if(!drawGrowthPose(f,pose,drawX-f.face*73,drawY+12,width,height,f.face<0,.09))atlasFrame(IMG[f.cls],frame,drawX-f.face*73,drawY+12,width,height,f.face<0,.09);
  }
- if(!drawGrowthPose(f,pose,drawX,drawY,width,height,f.face<0,1))atlasFrame(IMG[f.cls],frame,drawX,drawY,width,height,f.face<0,1);ctx.restore();
+ const drewAnimal=!!f.beastType&&!!window.ArenaBeasts?.draw?.(ctx,{
+  fighter:f,pose,clock,x:drawX,y:drawY,w:width,h:height,flip:f.face>0,alpha:1
+ });
+ if(!drewAnimal&&
+  !drawGrowthPose(f,pose,drawX,drawY,width,height,f.face<0,1))
+   atlasFrame(IMG[f.cls],frame,drawX,drawY,width,height,f.face<0,1);
+ ctx.restore();
  ctx.globalAlpha=1;
 
 }
@@ -2479,7 +2502,9 @@ if(new URLSearchParams(window.location.search).has('__arena_qa')){
      removed:f.removedFromArena,srcReady:!!(IMG[f.cls]?.complete&&IMG[f.cls]?.naturalWidth),
      spriteIsolated:!!INDEPENDENT_CHARACTER_FRAMES.get(IMG[f.cls])};
    },
-   finishLineupCleanup,showEnd}});
+   finishLineupCleanup,showEnd,maybeArenaBeast,
+   advanceBeast:(type)=>{const e=S.enemy;if(!e)return false;
+     return window.ArenaBeasts?.apply?.(e,type)||false;}}});
 }
 const keymap={KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right',KeyJ:'attack',Space:'attack',KeyK:'guard',KeyL:'dodge',KeyI:'special'};
 window.addEventListener('keydown',e=>{if(S.phase!=='fight'||e.defaultPrevented||e.target?.closest?.('input,select,textarea,[contenteditable="true"]')||(['Space','Enter'].includes(e.code)&&e.target?.closest?.('button')))return;const k=keymap[e.code];if(k){if(e.code==='Space'||e.code.startsWith('Arrow'))e.preventDefault();if(S.paused)return;markManualInput();if(['left','right','guard'].includes(k)){
