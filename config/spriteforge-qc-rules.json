@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "source": "Spartacus GLADIATOR ARENA art-direction feedback 2026-10-20",
+  "scope": "all playable gladiators and beasts",
+  "requiredAnimationStandard": {
+    "name": "New Champion Murmillo",
+    "actions": [
+      "idle",
+      "walk",
+      "slash",
+      "sweep",
+      "thrust",
+      "heavy",
+      "guard",
+      "hit",
+      "death"
+    ],
+    "framesPerAction": 8,
+    "grid": [
+      4,
+      2
+    ]
+  },
+  "optionalMotionRules": {
+    "allowed": true,
+    "oneMotionPerSheet": true,
+    "extraExamples": [
+      "roar",
+      "taunt",
+      "finisher_alt",
+      "intro",
+      "net_cast"
+    ],
+    "roarMeaning": "special intimidation or vocalization, NEVER substitute for guard"
+  },
+  "rules": [
+    {
+      "id": "approved_reference_fidelity",
+      "stage": "generation",
+      "severity": "block",
+      "description": "Keep approved face, costume, proportions and weapon/armor appearance across every frame",
+      "automatic": "partial",
+      "action": "Compare contact sheets with approved source visually before release"
+    },
+    {
+      "id": "single_action_sheet",
+      "stage": "generation",
+      "severity": "block",
+      "description": "One character, exactly one motion, eight sequential key poses; no mixed-action boards",
+      "automatic": "contract",
+      "action": "Generate the affected action only"
+    },
+    {
+      "id": "no_clone_or_double_body",
+      "stage": "segmentation",
+      "severity": "block",
+      "description": "No duplicated silhouettes, ghost limbs, multiple monsters in one frame",
+      "automatic": "connected_components_heuristic",
+      "action": "Fail ambiguous merged components and request re-generation"
+    },
+    {
+      "id": "connected_rgba_mask",
+      "stage": "extraction",
+      "severity": "block",
+      "description": "Extract connected alpha regions, not rectangle crop with foreign neighboring pixels",
+      "automatic": "implemented",
+      "action": "Select center actor, preserve connected limbs and local accessories"
+    },
+    {
+      "id": "wide_safety_gutters",
+      "stage": "generation",
+      "severity": "block",
+      "description": "Keep full tails, claws, helmets, shields and weapons inside enlarged X and Y gutters",
+      "automatic": "boundary_scan",
+      "action": "Widen source frame canvas instead of shrinking artwork"
+    },
+    {
+      "id": "uniform_scale_and_ground_anchor",
+      "stage": "alignment",
+      "severity": "block",
+      "description": "Same scale across all eight frames; anchor stable feet",
+      "automatic": "implemented",
+      "action": "Use stable planted feet, never per-frame recenter or zoom"
+    },
+    {
+      "id": "intentional_root_motion",
+      "stage": "preview",
+      "severity": "warning",
+      "description": "Attack anticipation and advance, recoil backward, leap arc; no accidental frame bobbing",
+      "automatic": "trajectory_metadata",
+      "action": "Render animation GIF with frame DX/DY and inspect displacement"
+    },
+    {
+      "id": "guard_and_roar_separate",
+      "stage": "schema",
+      "severity": "block",
+      "description": "Guard required; roar extra, not replacement",
+      "automatic": "implemented",
+      "action": "Enforce canonical 9+extra actions"
+    },
+    {
+      "id": "idle_live_card",
+      "stage": "gameplay",
+      "severity": "block",
+      "description": "Card preview uses idle animation, never separate still thumbnail",
+      "automatic": "browser_e2e",
+      "action": "Use 8-frame idle canvas with no still art"
+    },
+    {
+      "id": "selected_extra_and_standoff",
+      "stage": "gameplay",
+      "severity": "warning",
+      "description": "Selected card may play roar once; standoff may play roar with cooldown if actual art exists",
+      "automatic": "runtime_gate",
+      "action": "Never fake roar by reusing an attack pose"
+    },
+    {
+      "id": "death_completion",
+      "stage": "runtime",
+      "severity": "block",
+      "description": "Death plays all 8 frames and holds last frame",
+      "automatic": "frame_timing",
+      "action": "Verify no restart/flicker"
+    },
+    {
+      "id": "shipping_gate",
+      "stage": "delivery",
+      "severity": "block",
+      "description": "Do not replace approved production sprites without full coverage and browser validation",
+      "automatic": "ci_and_visual_review",
+      "action": "Preserve old manifest until safe deployment"
+    }
+  ]
+}
