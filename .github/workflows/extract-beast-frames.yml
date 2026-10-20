@@ -1,14 +1,8 @@
-name: Generate independent VENATIO action sprites
+name: VENATIO legacy extraction (diagnostic only - never publish)
 on:
-  push:
-    branches: [main]
-    paths:
-      - scripts/extract_beast_frames.py
-      - scripts/qa_beast_alpha.py
-      - .github/workflows/extract-beast-frames.yml
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: venatio-art-extraction
   cancel-in-progress: false
@@ -44,12 +38,5 @@ jobs:
           PY
       - name: Reject stray adjacent silhouettes in all 200 animal PNGs
         run: python scripts/qa_beast_alpha.py
-      - name: Publish isolated sprites to GitHub main
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/assets/beasts/individual/
-          if git diff --cached --quiet; then echo "No generated changes"; exit 0; fi
-          git commit -m "assets(venatio): 200 individual 512px animal sprite PNGs plus five thumbnails"
-          git pull --rebase origin main
-          git push origin HEAD:main
+      - name: Diagnostic only - publishing requires SpriteForge V3 approval
+        run: echo "Legacy 198px-per-cell assets must never overwrite approved game sprites."
