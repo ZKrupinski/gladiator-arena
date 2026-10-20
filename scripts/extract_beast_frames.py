@@ -66,17 +66,40 @@ def separate(sheet,row,col):
     dy=round((256-CY)/2+y0-top)
     base.alpha_composite(Image.fromarray(crop),(dx,dy))
     result=base.resize((512,512),Image.Resampling.LANCZOS)
-    # In the final published canvas the actor should not contain a second
-    # independent substantial blob. Export explicit metrics for QC.
-    mask=np.asarray(result.getchannel('A'))>=35
-    cleanLabels,n=ndimage.label(mask,structure=np.ones((3,3),dtype=np.uint8))
-    counts=np.bincount(cleanLabels.ravel(),minlength=n+1)
-    if len(counts):counts[0]=0
-    large=sorted((int(x) for x in counts[1:] if x>max(48,int(mask.sum()*.02))),reverse=True)
-    if len(large)>1:
-        raise ValueError(f'Unowned substantial silhouette components in {row=} {col=} sizes={large[:4]}')
-    return result,{"removedForeignPixels":removed,"retainedTinyPixels":keptSmall,
-                   "largestComponentPixels":int(sizes[main]),"secondaryAfter":len(large)-1}
+    # Second pass on the actual 512px export. Even if a frame's main source
+    # contour touches an adjacent pose through a narrow bridge, the compiled
+    # export must never keep a second substantial disconnected body/paw.
+    finalarr=np.asarray(result).copy()
+    mask=finalarr[:,:,3]>=35
+    components,n=ndimage.label(mask,structure=np.ones((3,3),dtype=np.uint8))
+    counts=np.bincount(components.ravel(),minlength=n+1);counts[0]=0
+    if n==0:raise ValueError(f'No exported silhouette at {row=} {col=}')
+    principal=int(np.argmax(counts))
+    own=components==principal
+    cy,cx=np.where(own)
+    rect=(int(cx.min()),int(cx.max()),int(cy.min()),int(cy.max()))
+    rejectedLarge=0
+    for k in range(1,n+1):
+        if k==principal or not counts[k]:continue
+        sy,sx=np.where(components==k)
+        inBody=(sx.min()>=rect[0]+2 and sx.max()<=rect[1]-2 and
+                sy.min()>=rect[2]+2 and sy.max()<=rect[3]-2)
+        if counts[k]<max(25,int(counts[principal]*.002)) and inBody:
+            own|=(components==k)
+        elif counts[k]>max(48,int(counts[principal]*.02)):
+            rejectedLarge+=1
+    own=ndimage.binary_dilation(own,iterations=2)
+    foreign=mask&~own
+    # Remove only alpha channels: original RGB shading and remaining
+    # antialias pixels stay unchanged, so valid parts aren't redrawn.
+    finalarr[~own,3]=0
+    result=Image.fromarray(finalarr,'RGBA')
+    if int(np.count_nonzero(finalarr[:,:,3]>=35))<150:
+        raise ValueError(f'Unusable body after cleanup at {row=} {col=}')
+    return result,{"removedForeignPixels":removed+int(foreign.sum()),
+                   "retainedTinyPixels":keptSmall,
+                   "largestComponentPixels":int(counts[principal]),
+                   "removedAdditionalLargeComponents":rejectedLarge}
 
 def thumb(frame):
     arr=np.asarray(frame.getchannel('A'))
