@@ -32,3 +32,7 @@
 .beast-stage-card{transition:border-color .15s ease,box-shadow .15s ease;outline-offset:2px}
 .beast-stage-card.is-selected,.beast-stage-card:focus-visible{border-color:#ffe6a6;box-shadow:0 0 0 2px #c99c68,0 0 18px #dba76190}
 .beast-stage-thumb{background:radial-gradient(ellipse at 50% 50%,#99724d 0%,#553925 55%,#241713 100%)}
+
+/* Clear beast-result navigation: back is dark and next bout is gold. */
+#endScreen .end-actions .beast-back-selection{background:linear-gradient(135deg,#5d4b3a,#30251e);color:#ffe9c9;border:1px solid #bd9a6f;box-shadow:inset 0 1px #e7c28d55}
+#endScreen .end-actions #continueBtn.beast-next{background:linear-gradient(130deg,#f2c77c,#a56434);color:#241308;border:1px solid #fce3a9;box-shadow:0 0 12px #f1b96555;font-weight:900}
