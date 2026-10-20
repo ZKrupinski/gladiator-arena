@@ -41,6 +41,7 @@ def plan(reference,kind,action,out,extra=()):
         "RGBA, wide X/Y gutters, unclipped feet/tail/equipment. NO mixed-action board, extra animal, "
         "text, opaque background, cut body, duplicate frame or neighboring fragments. "
         "Prefer eight separate PNG files; 4x2 sheet only if at least 2048x1024.",
+      "frameOwnershipPolicy":"Any anatomy from a neighboring pose is FOREIGN, even a full head, tail or leg, regardless of size. Preserve only this frame's actor. Compare original sheet and adjacent poses; erase pixel-proven foreign body parts; block uncertain glued regions. Never decide ownership by speck size.",
       "requiredStatus":"TECHNICAL_PASS_THEN_VISUAL_REVIEW",
       "releaseAuthorized":False}
     target=out/"generator_job.json"
@@ -98,6 +99,17 @@ def measure(frame):
         fail.append("MULTIPLE_SILHOUETTES_OR_SEPARATE_LIMBS_REQUIRE_REVIEW")
     if sum(max(20,biggest*.008)<c<=max(100,biggest*.04) for c in counts[1:]):
         fail.append("AMBIGUOUS_DETACHED_ART_NOT_AUTO_ERASED")
+    # Frame ownership outranks pixel count: even large neighbor heads/paws/tails
+    # are foreign. At the boundary, isolated bodies require provenance proof.
+    # Fused/attached bodies cannot be classified from alpha geometry alone.
+    objects=ndimage.find_objects(labels)
+    for comp_id,roi in enumerate(objects,1):
+        if roi is None or counts[comp_id]==biggest:continue
+        yslice,xslice=roi
+        edge=min(xslice.start,yslice.start,w-xslice.stop,h-yslice.stop)
+        if edge < MARGIN*3 and counts[comp_id]>=max(24,biggest*.0004):
+            fail.append("POSSIBLE_FOREIGN_NEIGHBOR_BODY_PART_VERIFY_OWNERSHIP")
+            break
     if bbox[2]-bbox[0]<230 or bbox[3]-bbox[1]<220:
         fail.append("LOW_NATIVE_SUBJECT_PIXEL_DETAIL")
     bottom=yy>=np.percentile(yy,97)
@@ -174,21 +186,38 @@ def generate(job,adapter,result):
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()
-    p.add_argument("--mode",choices=["plan","generate","inspect"],required=True)
+    p.add_argument("--mode",choices=["plan","generate","inspect","repair"],required=True)
     p.add_argument("--reference");p.add_argument("--character");p.add_argument("--action")
     p.add_argument("--job");p.add_argument("--result");p.add_argument("--adapter")
     p.add_argument("--extra",action="append",default=[]);p.add_argument("--out",required=True)
+    p.add_argument("--initial-result");p.add_argument("--max-retries",type=int,default=3)
     a=p.parse_args();out=Path(a.out).resolve()
     if a.mode=="plan":
         print(plan(a.reference,a.character,a.action,out,a.extra))
+    elif a.mode in ("generate","repair") or (a.mode=="inspect" and a.adapter):
+        # Connected generator is ALWAYS auto-correcting: no silent one-shot
+        # failure or manual retry chores for diagnosed animation defects.
+        if not a.job:p.error("--job required")
+        if a.mode=="inspect" and not (a.result or a.initial_result):
+            p.error("--result required for inspect")
+        from spriteforge_auto_repair_v3 import auto_repair
+        response=auto_repair(a.job,out,adapter=a.adapter,
+                             initial_result=(a.result if a.mode=="inspect" else a.initial_result),
+                             max_retries=a.max_retries)
+        print(json.dumps({"state":response["state"],"attempts":len(response["attempts"]),
+                          "releaseAuthorized":False},ensure_ascii=False))
+        if not response["technicalPass"]:raise SystemExit(2)
     else:
         if not a.job:p.error("--job required")
-        if a.mode=="generate":
-            out.mkdir(parents=True,exist_ok=True);response=out/"result.json"
-            generate(a.job,a.adapter,response)
-        else:
-            if not a.result:p.error("--result required")
-            response=Path(a.result)
+        if not a.result:p.error("--result required")
+        # With no generator connected inspect provides QA + retry manifest,
+        # NEVER claims actual sprite regeneration or a released game version.
+        response=Path(a.result)
         report=inspect(a.job,response,out)
+        if report["status"]!="TECHNICAL_PASS_PENDING_ART_AND_GAME_REVIEW":
+            (out/"repair_not_connected.json").write_text(json.dumps({
+                "state":"GENERATOR_NOT_CONNECTED","needRegeneration":True,
+                "action":json.loads(Path(a.job).read_text()).get("action"),
+                "failures":report["failures"]},ensure_ascii=False,indent=2))
         print(json.dumps({"status":report["status"],"failures":len(report["failures"])}))
         if report["status"]!="TECHNICAL_PASS_PENDING_ART_AND_GAME_REVIEW":raise SystemExit(2)
