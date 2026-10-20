@@ -72,8 +72,55 @@ function loadWolfV3(){
   for(const [name,img] of loaded)wolfV3.actions.set(name,img);
   wolfV3.state='ready';
  }).catch(e=>{
-  wolfV3.error=String(e);
-  wolfV3.state='unavailable';
+  // A parent-frame art test may have installed real frames while the
+  // optional production manifest was still pending; never undo those frames.
+  if(wolfV3.state!=='ready'){
+   wolfV3.error=String(e);
+   wolfV3.state='unavailable';
+  }
+ });
+}
+
+// Test-only transport for previewing locally approved image art inside the real
+// game renderer. No data is persisted, and normal players cannot enable it
+// without opening the explicit '?wolfPreview=1' diagnostic URL themselves.
+const WOLF_PREVIEW_ENABLED=typeof location!=='undefined'&&
+ new URLSearchParams(location.search).get('wolfPreview')==='1';
+async function installWolfPreviewAtlasPack(raw){
+ if(!WOLF_PREVIEW_ENABLED||!raw||typeof raw!=='object')return false;
+ // Don't permit arbitrary remote URLs or SVG/script content.
+ const expected='data:image/webp;base64,';
+ for(const key of WOLF_ACTIONS){
+  const entry=raw[key];
+  if(typeof entry!=='string'||!entry.startsWith(expected)||
+     entry.length<600||entry.length>2800000)return false;
+ }
+ const decoded=await Promise.all(WOLF_ACTIONS.map(name=>new Promise((ok,no)=>{
+  const image=new Image();
+  image.onload=()=>{
+   if(image.naturalWidth<1024||image.naturalHeight<512)no(Error('Preview atlas too small: '+name));
+   else ok([name,image]);
+  };
+  image.onerror=()=>no(Error('Preview atlas error: '+name));
+  image.src=raw[name];
+ })));
+ wolfV3.actions.clear();
+ for(const [name,image] of decoded)wolfV3.actions.set(name,image);
+ wolfV3.state='ready';wolfV3.error=null;
+ return true;
+}
+if(WOLF_PREVIEW_ENABLED&&typeof window!=='undefined'){
+ window.addEventListener('message',async event=>{
+  if(event.source!==window.parent||window.parent===window||
+     event.data?.type!=='gladiator:wolf-preview-pack')return;
+  let success=false;
+  try{success=await installWolfPreviewAtlasPack(event.data.actions);}
+  catch(err){wolfV3.error=String(err);}
+  event.source.postMessage({
+    type:'gladiator:wolf-preview-status',ready:success,
+    error:success?null:wolfV3.error,
+    actions:[...wolfV3.actions.keys()]
+  },event.origin||'*');
  });
 }
 function drawWolfV3(ctx,args){
@@ -304,6 +351,6 @@ function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
  return true;
 }
 root.ArenaBeasts={version:'2.1.0',types:SPEC,rows:ROWS_BY_POSE,
- pick,apply,ensure,frameFor,draw,portrait,wolfActionFor,wolfFrameIndex,
+ pick,apply,ensure,frameFor,draw,portrait,wolfActionFor,wolfFrameIndex,installWolfPreviewAtlasPack,
  status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name),individual:[...cache].map(([name,e])=>({name,frames:e.individualReady||0})),wolfV3:{status:wolfV3.state,actions:[...wolfV3.actions.keys()],error:wolfV3.error}})};
 })(window);
