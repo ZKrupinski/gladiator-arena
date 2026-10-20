@@ -27,8 +27,8 @@ for(const old of ['doctore-sd-v1.webp',...['0','1','2','3'].map(i=>'doctore_pose
  assert.equal(fs.existsSync(new URL('assets/ludus/'+old,base)),false,old+' is not deleted');
  assert.ok(!css.includes(old)&&!source.includes(old),'old NPC still referenced');
 }
-assert.match(html,/ludus-doctore-anim\.js\?v=5/);
-assert.match(html,/ludus-training-doctore\.css\?v=8/);
+assert.match(html,/ludus-doctore-anim\.js\?v=6/);
+assert.match(html,/ludus-training-doctore\.css\?v=9/);
 assert.match(css,/doctore-idle-approved-v1\.png/);
 assert.match(scenes,/LudusDoctoreAnim\?\.mount/);
 assert.match(scenes,/LudusDoctoreAnim\?\.react/);
@@ -39,11 +39,21 @@ const win={matchMedia:()=>({matches:false})};
 vm.runInNewContext(source,{window:win,requestAnimationFrame:f=>{callbacks.push(f);return callbacks.length;},
  cancelAnimationFrame(){},performance:{now:()=>1000}});
 const npc=win.LudusDoctoreAnim;
-assert.equal(npc.version,'4.0.0');
+assert.equal(npc.version,'4.1.0');
 assert.equal(npc.sprite.framesPerAction,8);
 assert.equal(npc.sprite.scale,1.125);
-assert.equal(npc.sprite.baseline,586);
+assert.equal(npc.sprite.baseline,594);
 assert.ok(npc.mount(actor));
+assert.equal(npc.sprite.wideWhip,856);
+assert.equal(npc.sprite.whipFrames.length,8);
+assert.equal(npc.sprite.whipFrames.filter(x=>x===4).length,2);
+for(let i=0;i<7;i++){
+ const manifest=JSON.parse(fs.readFileSync(new URL('assets/ludus/doctore-whip-clean-v2/manifest.json',base),'utf8'));
+ const f=manifest[i];
+ assert.ok(f.width>300&&f.height>380,'frame must contain complete character and whip');
+ assert.ok(fs.readFileSync(new URL('assets/ludus/doctore-whip-clean-v2/frame-'+i+'.png',base)).subarray(1,4).toString('ascii')==='PNG');
+}
+
 for(const [id,mode,sheet] of [
  [-1,'idle','doctore-idle-approved-v1.png'],
  [1,'talk','doctore-explain-approved-v1.png'],
@@ -53,7 +63,8 @@ for(const [id,mode,sheet] of [
  assert.ok(npc.react(id));
  assert.equal(actor.dataset.action,mode);
  assert.equal(actor.dataset.sheet,sheet);
- assert.equal(actor.dataset.footY,'586');
+ if(mode==='whip')assert.match(actor.dataset.renderFile,/doctore-whip-clean-v2\/frame-\d\.png/);
+ assert.equal(actor.dataset.footY,'594');
  assert.equal(actor.style.transform,'scale(1.125)');
  for(let n=0;n<8;n++){
   // All 8 frame crops remain within the native untouched source bitmap.
