@@ -5,6 +5,7 @@ on:
     paths:
       - scripts/spriteforge_agent_v2.py
       - scripts/test_spriteforge_agent_v2.py
+      - scripts/test_spriteforge_v2_existing_art.py
       - .github/workflows/qa-spriteforge-v2.yml
   workflow_dispatch:
 jobs:
@@ -18,3 +19,6 @@ jobs:
       - run: pip install pillow numpy scipy
       - name: Test nine Murmillo actions, alpha segmentation, overlap blocking and motion curves
         run: python scripts/test_spriteforge_agent_v2.py
+
+      - name: Scan real Champion Murmillo idle and guard without release changes
+        run: python scripts/test_spriteforge_v2_existing_art.py
