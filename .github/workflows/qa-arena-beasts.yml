@@ -1,0 +1,59 @@
+name: Verify five 40-frame arena beasts and Cloudflare
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - public/arena-beasts.js
+      - public/assets/beasts/**
+      - scripts/qa_arena_beasts_browser.mjs
+      - .github/workflows/qa-arena-beasts.yml
+  workflow_dispatch:
+jobs:
+  beast-battle-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install Chromium for real arena scene
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Host current game
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/beasts.log 2>&1 &
+          sleep 3
+      - name: Verify five alpha sheets, five 8-frame actions and live fighting
+        run: node scripts/qa_arena_beasts_browser.mjs
+      - name: Check production Cloudflare game and all five source PNG SHA256
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pathlib,json,hashlib,urllib.request,time
+          root='https://gladiator-arena-git.pages.dev'
+          manifest=json.loads(pathlib.Path('public/assets/beasts/manifest.json').read_text())
+          for attempt in range(20):
+              try:
+                  def read(path):
+                      request=urllib.request.Request(root+path,headers={'User-Agent':'ArenaBeastsCI','Cache-Control':'no-cache'})
+                      with urllib.request.urlopen(request,timeout=24) as response:return response.read()
+                  html=read('/?animals=1&try='+str(attempt)).decode('utf-8')
+                  js=read('/arena-beasts.js?v=1').decode('utf-8')
+                  if ('arena-beasts.js?v=1' not in html or
+                     'VENATIO' not in html or
+                     'wolf' not in js or 'elephant' not in js):
+                      raise RuntimeError('Game code not yet published')
+                  names=[]
+                  for animal in manifest['species']:
+                      binary=read('/'+animal['path']+'?verify=1')
+                      assert hashlib.sha256(binary).hexdigest()==animal['sha256'],animal['name']
+                      names.append(animal['name'])
+                  print('CLOUDFLARE_ARENA_BEASTS_VERIFIED',','.join(names))
+                  break
+              except Exception as exc:
+                  print('Wait for deployment',attempt+1,exc,flush=True)
+                  if attempt==19:raise
+                  time.sleep(9)
+          PY
