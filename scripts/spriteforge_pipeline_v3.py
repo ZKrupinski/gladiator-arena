@@ -41,6 +41,7 @@ def plan(reference,kind,action,out,extra=()):
         "RGBA, wide X/Y gutters, unclipped feet/tail/equipment. NO mixed-action board, extra animal, "
         "text, opaque background, cut body, duplicate frame or neighboring fragments. "
         "Prefer eight separate PNG files; 4x2 sheet only if at least 2048x1024.",
+      "frameOwnershipPolicy":"Any anatomy from a neighboring pose is FOREIGN, even a full head, tail or leg, regardless of size. Preserve only this frame's actor. Compare original sheet and adjacent poses; erase pixel-proven foreign body parts; block uncertain glued regions. Never decide ownership by speck size.",
       "requiredStatus":"TECHNICAL_PASS_THEN_VISUAL_REVIEW",
       "releaseAuthorized":False}
     target=out/"generator_job.json"
@@ -98,6 +99,17 @@ def measure(frame):
         fail.append("MULTIPLE_SILHOUETTES_OR_SEPARATE_LIMBS_REQUIRE_REVIEW")
     if sum(max(20,biggest*.008)<c<=max(100,biggest*.04) for c in counts[1:]):
         fail.append("AMBIGUOUS_DETACHED_ART_NOT_AUTO_ERASED")
+    # Frame ownership outranks pixel count: even large neighbor heads/paws/tails
+    # are foreign. At the boundary, isolated bodies require provenance proof.
+    # Fused/attached bodies cannot be classified from alpha geometry alone.
+    objects=ndimage.find_objects(labels)
+    for comp_id,roi in enumerate(objects,1):
+        if roi is None or counts[comp_id]==biggest:continue
+        yslice,xslice=roi
+        edge=min(xslice.start,yslice.start,w-xslice.stop,h-yslice.stop)
+        if edge < MARGIN*3 and counts[comp_id]>=max(24,biggest*.0004):
+            fail.append("POSSIBLE_FOREIGN_NEIGHBOR_BODY_PART_VERIFY_OWNERSHIP")
+            break
     if bbox[2]-bbox[0]<230 or bbox[3]-bbox[1]<220:
         fail.append("LOW_NATIVE_SUBJECT_PIXEL_DETAIL")
     bottom=yy>=np.percentile(yy,97)
