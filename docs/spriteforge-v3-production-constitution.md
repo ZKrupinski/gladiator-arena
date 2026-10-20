@@ -42,3 +42,30 @@ applies this classification to the 200 legacy PNGs on a review branch.
 and request visual reconstruction or regeneration; never report 100% clean.**
 A technical alpha-connected-component PASS never proves correct body ownership.
 The approved original source atlas remains immutable.
+
+## 2026-10-21 amendment — AUTO REPAIR, RE-QA, AND PREVIEW (mandatory)
+
+Known defects must NOT become open-ended user questions. On any failed cut,
+adjacent-frame contamination, missing body, native-resolution failure, wrong
+action, or duplicate pose, **retry the same animation's complete eight frames**
+with the QA error report attached to the next generation job. Repeat technical
+QA on every retry. After each attempt, save `contact.png` and
+`motion.gif`; expose the attempt history so the corrected motion can be
+visually compared before game replacement.
+
+Run:
+```bash
+python scripts/spriteforge_pipeline_v3.py --mode repair \
+  --job /art/wolf-attack/generator_job.json \
+  --adapter /trusted/comfyui_adapter.py \
+  --initial-result /art/wolf-attack/bad-result.json \
+  --max-retries 3 --out /art/wolf-attack/auto-repair
+```
+`--initial-result` is optional for a new animation. An adapter must be
+explicitly installed and connected; NO claimed art creation without it.
+If the adapter is missing, an executable retry job remains queued, not "done".
+
+Regenerate only the failing character/action (8 poses), preserving the
+approved design. Technical pass yields a preview and art/game review, NOT an
+automatic production deployment. If root causes remain unknown after
+reasonable repeated repair attempts, ask the user with concrete evidence.
