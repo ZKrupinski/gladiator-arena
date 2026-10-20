@@ -1,0 +1,1010 @@
+{
+  "protocol": "spriteforge-v3-action-regeneration-queue",
+  "auditedSourceFrames": 200,
+  "actionsRequiringRegeneration": 13,
+  "framesFlaggedByQA": 39,
+  "connectedProvider": false,
+  "autoRunOnGeneratorConnection": true,
+  "releaseAuthorized": false,
+  "items": [
+    {
+      "character": "elephant",
+      "action": "attack",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/elephant-40.png",
+      "failures": [
+        {
+          "frame": 2,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 3,
+          "errorCodes": [
+            "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW"
+          ],
+          "ambiguousNeighborBodyCount": 1,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 5,
+          "errorCodes": [
+            "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW"
+          ],
+          "ambiguousNeighborBodyCount": 1,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 6,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/elephant-40.png --character elephant --action attack --extra attack --out build/beasts/elephant/attack/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/elephant/attack/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/elephant/attack/auto-repair"
+    },
+    {
+      "character": "elephant",
+      "action": "hit",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/elephant-40.png",
+      "failures": [
+        {
+          "frame": 1,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 2,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 3,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 4,
+          "errorCodes": [
+            "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW",
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 1,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 5,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 6,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/elephant-40.png --character elephant --action hit --extra hit --out build/beasts/elephant/hit/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/elephant/hit/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/elephant/hit/auto-repair"
+    },
+    {
+      "character": "elephant",
+      "action": "walk",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/elephant-40.png",
+      "failures": [
+        {
+          "frame": 2,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 3,
+          "errorCodes": [
+            "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW",
+            "POSSIBLE_NEIGHBOR_FRAME_GHOSTS"
+          ],
+          "ambiguousNeighborBodyCount": 3,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/elephant-40.png --character elephant --action walk --extra walk --out build/beasts/elephant/walk/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/elephant/walk/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/elephant/walk/auto-repair"
+    },
+    {
+      "character": "leopard",
+      "action": "attack",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/leopard-40.png",
+      "failures": [
+        {
+          "frame": 1,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 2,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 3,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 4,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 7,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 8,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/leopard-40.png --character leopard --action attack --extra attack --out build/beasts/leopard/attack/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/leopard/attack/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/leopard/attack/auto-repair"
+    },
+    {
+      "character": "leopard",
+      "action": "defeat",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/leopard-40.png",
+      "failures": [
+        {
+          "frame": 1,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 2,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 3,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 4,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 7,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 8,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/leopard-40.png --character leopard --action defeat --extra defeat --out build/beasts/leopard/defeat/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/leopard/defeat/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/leopard/defeat/auto-repair"
+    },
+    {
+      "character": "leopard",
+      "action": "hit",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/leopard-40.png",
+      "failures": [
+        {
+          "frame": 2,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/leopard-40.png --character leopard --action hit --extra hit --out build/beasts/leopard/hit/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/leopard/hit/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/leopard/hit/auto-repair"
+    },
+    {
+      "character": "leopard",
+      "action": "idle",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/leopard-40.png",
+      "failures": [
+        {
+          "frame": 2,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 3,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/leopard-40.png --character leopard --action idle --extra idle --out build/beasts/leopard/idle/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/leopard/idle/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/leopard/idle/auto-repair"
+    },
+    {
+      "character": "leopard",
+      "action": "walk",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/leopard-40.png",
+      "failures": [
+        {
+          "frame": 2,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/leopard-40.png --character leopard --action walk --extra walk --out build/beasts/leopard/walk/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/leopard/walk/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/leopard/walk/auto-repair"
+    },
+    {
+      "character": "lion",
+      "action": "attack",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/lion-40.png",
+      "failures": [
+        {
+          "frame": 3,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 4,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/lion-40.png --character lion --action attack --extra attack --out build/beasts/lion/attack/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/lion/attack/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/lion/attack/auto-repair"
+    },
+    {
+      "character": "lion",
+      "action": "defeat",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/lion-40.png",
+      "failures": [
+        {
+          "frame": 4,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 5,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 6,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/lion-40.png --character lion --action defeat --extra defeat --out build/beasts/lion/defeat/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/lion/defeat/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/lion/defeat/auto-repair"
+    },
+    {
+      "character": "tiger",
+      "action": "attack",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/tiger-40.png",
+      "failures": [
+        {
+          "frame": 5,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/tiger-40.png --character tiger --action attack --extra attack --out build/beasts/tiger/attack/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/tiger/attack/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/tiger/attack/auto-repair"
+    },
+    {
+      "character": "tiger",
+      "action": "defeat",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/tiger-40.png",
+      "failures": [
+        {
+          "frame": 4,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 5,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 6,
+          "errorCodes": [
+            "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW"
+          ],
+          "ambiguousNeighborBodyCount": 1,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        },
+        {
+          "frame": 8,
+          "errorCodes": [
+            "EDGE_RISK_REVIEW_BODY_OR_TAIL"
+          ],
+          "ambiguousNeighborBodyCount": 0,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/tiger-40.png --character tiger --action defeat --extra defeat --out build/beasts/tiger/defeat/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/tiger/defeat/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/tiger/defeat/auto-repair"
+    },
+    {
+      "character": "wolf",
+      "action": "walk",
+      "framesPerAction": 8,
+      "referencePath": "public/assets/beasts/wolf-40.png",
+      "failures": [
+        {
+          "frame": 6,
+          "errorCodes": [
+            "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW"
+          ],
+          "ambiguousNeighborBodyCount": 1,
+          "sourceNeighborProof": [
+            {
+              "side": "left",
+              "matchedPixels": 0,
+              "shift": null
+            },
+            {
+              "side": "right",
+              "matchedPixels": 0,
+              "shift": null
+            }
+          ],
+          "mandatoryCorrection": "Replace the foreign-owned body or clipped anatomy; preserve only this pose's full actor."
+        }
+      ],
+      "status": "WAITING_FOR_CONNECTED_GENERATOR",
+      "causeKnown": true,
+      "preferred": "eight independent high-resolution RGBA PNGs",
+      "doNotReuseContaminatedFrames": true,
+      "retryPolicy": {
+        "attempts": 3,
+        "autoRegenerate": true,
+        "autoQC": true,
+        "emitAnimatedPreview": true
+      },
+      "localRunCommand": "python scripts/spriteforge_pipeline_v3.py --mode plan --reference public/assets/beasts/wolf-40.png --character wolf --action walk --extra walk --out build/beasts/wolf/walk/job && python scripts/spriteforge_pipeline_v3.py --mode repair --job build/beasts/wolf/walk/job/generator_job.json --adapter /trusted/comfyui_adapter.py --max-retries 3 --out build/beasts/wolf/walk/auto-repair"
+    }
+  ]
+}

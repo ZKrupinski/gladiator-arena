@@ -18,70 +18,70 @@
   "status": "LEGACY_NEIGHBOR_OWNERSHIP_CLEANED_PENDING_VISUAL_REVIEW",
   "totals": {
     "frames": 200,
-    "fixedIslands": 7,
-    "fixedAlphaPixels": 27,
-    "verifiedForeignPixels": 228965,
-    "erasedNeighborAlphaPixels": 244329,
+    "fixedIslands": 0,
+    "fixedAlphaPixels": 0,
+    "verifiedForeignPixels": 0,
+    "erasedNeighborAlphaPixels": 0,
     "ambiguousIslands": 8,
     "edgeRiskFrames": 34,
-    "modifiedFrames": 31,
-    "framesNeedingVisualReview": 62
+    "modifiedFrames": 0,
+    "framesNeedingVisualReview": 39
   },
   "species": {
     "wolf": {
       "frames": 40,
-      "fixedIslands": 1,
-      "fixedAlphaPixels": 1,
-      "verifiedForeignPixels": 21629,
-      "erasedNeighborAlphaPixels": 23287,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "verifiedForeignPixels": 0,
+      "erasedNeighborAlphaPixels": 0,
       "ambiguousIslands": 1,
       "edgeRiskFrames": 0,
-      "modifiedFrames": 4,
-      "framesNeedingVisualReview": 4
+      "modifiedFrames": 0,
+      "framesNeedingVisualReview": 1
     },
     "leopard": {
       "frames": 40,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
-      "verifiedForeignPixels": 32775,
-      "erasedNeighborAlphaPixels": 34791,
+      "verifiedForeignPixels": 0,
+      "erasedNeighborAlphaPixels": 0,
       "ambiguousIslands": 0,
       "edgeRiskFrames": 16,
-      "modifiedFrames": 4,
-      "framesNeedingVisualReview": 20
+      "modifiedFrames": 0,
+      "framesNeedingVisualReview": 16
     },
     "tiger": {
       "frames": 40,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
-      "verifiedForeignPixels": 11938,
-      "erasedNeighborAlphaPixels": 12661,
+      "verifiedForeignPixels": 0,
+      "erasedNeighborAlphaPixels": 0,
       "ambiguousIslands": 1,
       "edgeRiskFrames": 4,
-      "modifiedFrames": 2,
-      "framesNeedingVisualReview": 6
+      "modifiedFrames": 0,
+      "framesNeedingVisualReview": 5
     },
     "lion": {
       "frames": 40,
       "fixedIslands": 0,
       "fixedAlphaPixels": 0,
-      "verifiedForeignPixels": 12645,
-      "erasedNeighborAlphaPixels": 13442,
+      "verifiedForeignPixels": 0,
+      "erasedNeighborAlphaPixels": 0,
       "ambiguousIslands": 0,
       "edgeRiskFrames": 5,
-      "modifiedFrames": 2,
-      "framesNeedingVisualReview": 7
+      "modifiedFrames": 0,
+      "framesNeedingVisualReview": 5
     },
     "elephant": {
       "frames": 40,
-      "fixedIslands": 6,
-      "fixedAlphaPixels": 26,
-      "verifiedForeignPixels": 149978,
-      "erasedNeighborAlphaPixels": 160148,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
+      "verifiedForeignPixels": 0,
+      "erasedNeighborAlphaPixels": 0,
       "ambiguousIslands": 6,
       "edgeRiskFrames": 9,
-      "modifiedFrames": 19,
-      "framesNeedingVisualReview": 25
+      "modifiedFrames": 0,
+      "framesNeedingVisualReview": 12
     }
   },
   "frames": [
@@ -516,9 +516,7 @@
       "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         40,
         122,
@@ -526,10 +524,10 @@
         391
       ],
       "bodyAlphaPixels": 75048,
-      "detachedIslands": 1,
-      "candidateSpecks": 1,
-      "fixedIslands": 1,
-      "fixedAlphaPixels": 1,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
       "neighborOwnership": {
@@ -541,26 +539,24 @@
           },
           {
             "side": "right",
-            "matchedPixels": 6992,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 7172,
-        "erasedAlphaPixels": 7637,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "wolf",
       "action": "walk",
       "index": 3,
       "path": "assets/beasts/individual/wolf/walk/03.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         42,
         121,
@@ -583,8 +579,8 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 3391,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
@@ -592,22 +588,21 @@
             "shift": null
           }
         ],
-        "verifiedForeignPixels": 3439,
-        "erasedAlphaPixels": 3819,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "wolf",
       "action": "walk",
       "index": 4,
       "path": "assets/beasts/individual/wolf/walk/04.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [
-        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW",
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
+        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         19,
@@ -642,26 +637,24 @@
           },
           {
             "side": "right",
-            "matchedPixels": 7292,
-            "shift": 398
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 7558,
-        "erasedAlphaPixels": 8042,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "wolf",
       "action": "walk",
       "index": 5,
       "path": "assets/beasts/individual/wolf/walk/05.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         42,
         117,
@@ -679,8 +672,8 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 3364,
-            "shift": 398
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
@@ -688,17 +681,17 @@
             "shift": null
           }
         ],
-        "verifiedForeignPixels": 3460,
-        "erasedAlphaPixels": 3789,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "wolf",
       "action": "walk",
       "index": 6,
       "path": "assets/beasts/individual/wolf/walk/06.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [],
@@ -2460,9 +2453,7 @@
       "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         217,
         140,
@@ -2490,26 +2481,24 @@
           },
           {
             "side": "right",
-            "matchedPixels": 8889,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 9094,
-        "erasedAlphaPixels": 9652,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "leopard",
       "action": "attack",
       "index": 4,
       "path": "assets/beasts/individual/leopard/attack/04.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         44,
         115,
@@ -2527,8 +2516,8 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 10479,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
@@ -2536,17 +2525,17 @@
             "shift": null
           }
         ],
-        "verifiedForeignPixels": 10670,
-        "erasedAlphaPixels": 11321,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "leopard",
       "action": "attack",
       "index": 5,
       "path": "assets/beasts/individual/leopard/attack/05.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [
@@ -3108,9 +3097,7 @@
       "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         220,
         177,
@@ -3133,26 +3120,24 @@
           },
           {
             "side": "right",
-            "matchedPixels": 5536,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 5684,
-        "erasedAlphaPixels": 6051,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "leopard",
       "action": "defeat",
       "index": 4,
       "path": "assets/beasts/individual/leopard/defeat/04.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         44,
         187,
@@ -3170,8 +3155,8 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 7190,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
@@ -3179,17 +3164,17 @@
             "shift": null
           }
         ],
-        "verifiedForeignPixels": 7327,
-        "erasedAlphaPixels": 7767,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "leopard",
       "action": "defeat",
       "index": 5,
       "path": "assets/beasts/individual/leopard/defeat/05.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [
@@ -4718,8 +4703,7 @@
     },
     {
       "problems": [
-        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW",
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
+        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         124,
@@ -4754,26 +4738,24 @@
           },
           {
             "side": "right",
-            "matchedPixels": 5082,
-            "shift": 398
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 5230,
-        "erasedAlphaPixels": 5546,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "tiger",
       "action": "defeat",
       "index": 5,
       "path": "assets/beasts/individual/tiger/defeat/05.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         43,
         225,
@@ -4791,8 +4773,8 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 6503,
-            "shift": 398
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
@@ -4800,17 +4782,17 @@
             "shift": null
           }
         ],
-        "verifiedForeignPixels": 6708,
-        "erasedAlphaPixels": 7115,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "tiger",
       "action": "defeat",
       "index": 6,
       "path": "assets/beasts/individual/tiger/defeat/06.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [
@@ -6364,9 +6346,7 @@
       "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         282,
         198,
@@ -6389,26 +6369,24 @@
           },
           {
             "side": "right",
-            "matchedPixels": 6030,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 6191,
-        "erasedAlphaPixels": 6586,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "lion",
       "action": "defeat",
       "index": 6,
       "path": "assets/beasts/individual/lion/defeat/06.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         44,
         198,
@@ -6426,21 +6404,21 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 6321,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 6454,
-        "erasedAlphaPixels": 6856,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "lion",
       "action": "defeat",
       "index": 7,
       "path": "assets/beasts/individual/lion/defeat/07.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [],
@@ -6753,9 +6731,7 @@
       "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         67,
         72,
@@ -6782,26 +6758,25 @@
         "proofs": [
           {
             "side": "right",
-            "matchedPixels": 5709,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 5781,
-        "erasedAlphaPixels": 6482,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "walk",
       "index": 0,
       "path": "assets/beasts/individual/elephant/walk/00.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL",
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
       ],
       "bodyBBox": [
         44,
@@ -6825,8 +6800,8 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 8852,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
@@ -6834,23 +6809,22 @@
             "shift": null
           }
         ],
-        "verifiedForeignPixels": 9006,
-        "erasedAlphaPixels": 9502,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "walk",
       "index": 1,
       "path": "assets/beasts/individual/elephant/walk/01.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [
         "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW",
-        "POSSIBLE_NEIGHBOR_FRAME_GHOSTS",
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
+        "POSSIBLE_NEIGHBOR_FRAME_GHOSTS"
       ],
       "bodyBBox": [
         65,
@@ -6905,26 +6879,24 @@
           },
           {
             "side": "right",
-            "matchedPixels": 7228,
-            "shift": 398
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 7362,
-        "erasedAlphaPixels": 7945,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "walk",
       "index": 2,
       "path": "assets/beasts/individual/elephant/walk/02.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         43,
         85,
@@ -6942,8 +6914,8 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 8024,
-            "shift": 398
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
@@ -6951,17 +6923,17 @@
             "shift": null
           }
         ],
-        "verifiedForeignPixels": 8219,
-        "erasedAlphaPixels": 8713,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "walk",
       "index": 3,
       "path": "assets/beasts/individual/elephant/walk/03.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [],
@@ -7124,9 +7096,7 @@
       "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         68,
         95,
@@ -7144,26 +7114,25 @@
         "proofs": [
           {
             "side": "right",
-            "matchedPixels": 5081,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 5211,
-        "erasedAlphaPixels": 5564,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "attack",
       "index": 0,
       "path": "assets/beasts/individual/elephant/attack/00.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL",
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
       ],
       "bodyBBox": [
         44,
@@ -7172,18 +7141,18 @@
         420
       ],
       "bodyAlphaPixels": 95304,
-      "detachedIslands": 2,
-      "candidateSpecks": 2,
-      "fixedIslands": 2,
-      "fixedAlphaPixels": 9,
+      "detachedIslands": 0,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [],
       "neighborOwnership": {
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 6844,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
@@ -7191,22 +7160,21 @@
             "shift": null
           }
         ],
-        "verifiedForeignPixels": 7003,
-        "erasedAlphaPixels": 7504,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "attack",
       "index": 1,
       "path": "assets/beasts/individual/elephant/attack/01.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [
-        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW",
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
+        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         88,
@@ -7215,10 +7183,10 @@
         415
       ],
       "bodyAlphaPixels": 88984,
-      "detachedIslands": 4,
-      "candidateSpecks": 3,
-      "fixedIslands": 3,
-      "fixedAlphaPixels": 14,
+      "detachedIslands": 1,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
       "ambiguousIslands": [
         {
           "pixels": 198,
@@ -7241,26 +7209,24 @@
           },
           {
             "side": "right",
-            "matchedPixels": 8667,
-            "shift": 398
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 8867,
-        "erasedAlphaPixels": 9459,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "attack",
       "index": 2,
       "path": "assets/beasts/individual/elephant/attack/02.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         43,
         43,
@@ -7278,31 +7244,30 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 9822,
-            "shift": 398
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
-            "matchedPixels": 6537,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 16754,
-        "erasedAlphaPixels": 17807,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "attack",
       "index": 3,
       "path": "assets/beasts/individual/elephant/attack/03.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [
-        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW",
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
+        "AMBIGUOUS_DETACHED_ART_REQUIRE_VISUAL_REVIEW"
       ],
       "bodyBBox": [
         44,
@@ -7337,31 +7302,30 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 9999,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
-            "matchedPixels": 5672,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 15953,
-        "erasedAlphaPixels": 16914,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "attack",
       "index": 4,
       "path": "assets/beasts/individual/elephant/attack/04.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [
-        "EDGE_RISK_REVIEW_BODY_OR_TAIL",
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
+        "EDGE_RISK_REVIEW_BODY_OR_TAIL"
       ],
       "bodyBBox": [
         44,
@@ -7380,8 +7344,8 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 10515,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
@@ -7389,22 +7353,20 @@
             "shift": null
           }
         ],
-        "verifiedForeignPixels": 10722,
-        "erasedAlphaPixels": 11307,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "attack",
       "index": 5,
       "path": "assets/beasts/individual/elephant/attack/05.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         99,
         65,
@@ -7427,26 +7389,24 @@
           },
           {
             "side": "right",
-            "matchedPixels": 2587,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 2659,
-        "erasedAlphaPixels": 2949,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "attack",
       "index": 6,
       "path": "assets/beasts/individual/elephant/attack/06.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         44,
         54,
@@ -7464,21 +7424,21 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 7878,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 8047,
-        "erasedAlphaPixels": 8548,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "attack",
       "index": 7,
       "path": "assets/beasts/individual/elephant/attack/07.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [
@@ -7820,9 +7780,7 @@
       "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         61,
         60,
@@ -7840,26 +7798,24 @@
         "proofs": [
           {
             "side": "right",
-            "matchedPixels": 4866,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 4936,
-        "erasedAlphaPixels": 5471,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "defeat",
       "index": 0,
       "path": "assets/beasts/individual/elephant/defeat/00.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         44,
         80,
@@ -7877,31 +7833,29 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 8013,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
-            "matchedPixels": 1664,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 9836,
-        "erasedAlphaPixels": 10498,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "defeat",
       "index": 1,
       "path": "assets/beasts/individual/elephant/defeat/01.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         44,
         139,
@@ -7919,8 +7873,8 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 7796,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
@@ -7928,22 +7882,20 @@
             "shift": null
           }
         ],
-        "verifiedForeignPixels": 7907,
-        "erasedAlphaPixels": 8374,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "defeat",
       "index": 2,
       "path": "assets/beasts/individual/elephant/defeat/02.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         98,
         137,
@@ -7966,26 +7918,24 @@
           },
           {
             "side": "right",
-            "matchedPixels": 4190,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 4266,
-        "erasedAlphaPixels": 4553,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "defeat",
       "index": 3,
       "path": "assets/beasts/individual/elephant/defeat/03.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         44,
         154,
@@ -8008,8 +7958,8 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 6628,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           },
           {
             "side": "right",
@@ -8017,17 +7967,17 @@
             "shift": null
           }
         ],
-        "verifiedForeignPixels": 6764,
-        "erasedAlphaPixels": 7169,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "defeat",
       "index": 4,
       "path": "assets/beasts/individual/elephant/defeat/04.png",
-      "changed": true
+      "changed": false
     },
     {
       "problems": [],
@@ -8079,9 +8029,7 @@
       "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         68,
         175,
@@ -8089,10 +8037,10 @@
         414
       ],
       "bodyAlphaPixels": 68772,
-      "detachedIslands": 3,
-      "candidateSpecks": 1,
-      "fixedIslands": 1,
-      "fixedAlphaPixels": 3,
+      "detachedIslands": 2,
+      "candidateSpecks": 0,
+      "fixedIslands": 0,
+      "fixedAlphaPixels": 0,
       "ambiguousIslands": [],
       "otherIslands": [
         {
@@ -8113,26 +8061,24 @@
           },
           {
             "side": "right",
-            "matchedPixels": 4137,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 4209,
-        "erasedAlphaPixels": 4529,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "defeat",
       "index": 6,
       "path": "assets/beasts/individual/elephant/defeat/06.png",
-      "changed": true
+      "changed": false
     },
     {
-      "problems": [
-        "VERIFIED_NEIGHBOR_BODY_PIXELS_REQUIRE_VISUAL_REVIEW"
-      ],
+      "problems": [],
       "bodyBBox": [
         44,
         186,
@@ -8150,21 +8096,21 @@
         "proofs": [
           {
             "side": "left",
-            "matchedPixels": 6363,
-            "shift": 396
+            "matchedPixels": 0,
+            "shift": null
           }
         ],
-        "verifiedForeignPixels": 6476,
-        "erasedAlphaPixels": 6860,
+        "verifiedForeignPixels": 0,
+        "erasedAlphaPixels": 0,
         "removedForeignConnectedIslands": 0,
         "needsVisualReview": true,
-        "reason": "NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
+        "reason": "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
       },
       "species": "elephant",
       "action": "defeat",
       "index": 7,
       "path": "assets/beasts/individual/elephant/defeat/07.png",
-      "changed": true
+      "changed": false
     }
   ],
   "unresolvedWarning": "All parts from adjacent frames must be erased, including large heads, feet and tails. Proven overlap is removed. Unproven overlaps and attached silhouettes require source-level manual review or regeneration; NEVER mark a frame production-ready without review."
