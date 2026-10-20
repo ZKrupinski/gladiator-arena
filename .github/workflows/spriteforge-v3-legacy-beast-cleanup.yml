@@ -1,0 +1,56 @@
+name: SpriteForge V3 legacy beasts alpha QA and safe repair
+on:
+  push:
+    branches: [spriteforge-v3-beast-cleanup-20261021]
+    paths:
+      - scripts/audit_legacy_beasts_spriteforge_v3.py
+      - scripts/test_legacy_beasts_spriteforge_v3.py
+      - .github/workflows/spriteforge-v3-legacy-beast-cleanup.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/audit_legacy_beasts_spriteforge_v3.py
+      - scripts/test_legacy_beasts_spriteforge_v3.py
+      - public/assets/beasts/individual/**
+      - docs/qa/beast-legacy-v3-audit.json
+      - .github/workflows/spriteforge-v3-legacy-beast-cleanup.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  audit-five-beasts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install Pillow numpy scipy
+      - name: Test safe alpha repair and protect detached limbs
+        run: python scripts/test_legacy_beasts_spriteforge_v3.py
+      - name: Inspect 5 source atlases and 200 deployed individual frames; fix only isolated tiny specks
+        run: |
+          python scripts/audit_legacy_beasts_spriteforge_v3.py \
+            --fix-safe \
+            --report docs/qa/beast-legacy-v3-audit.json \
+            --previews docs/qa/beast-v3-previews
+      - name: Validate no duplicated major disconnected actor silhouettes
+        run: python scripts/qa_beast_alpha.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: spriteforge-v3-legacy-beast-audit
+          path: |
+            docs/qa/beast-legacy-v3-audit.json
+            docs/qa/beast-v3-previews/*.png
+          retention-days: 14
+      - name: Commit fixes and visual evidence to review branch, NEVER production main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/spriteforge-v3-beast-cleanup-20261021'
+        run: |
+          git add public/assets/beasts/individual docs/qa/beast-legacy-v3-audit.json docs/qa/beast-v3-previews
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore(beasts): SpriteForge V3 conservative alpha cleanup and 200-frame visual QA'
+            git push
+          fi
