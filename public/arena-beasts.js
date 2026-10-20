@@ -152,7 +152,7 @@ function loadIndividual(type,entry){
  entry.individualLoading=true;entry.individual=new Map();entry.individualReady=0;
  for(const action of ACTION_KEYS){
   for(let i=0;i<8;i++){
-   const src=INDEPENDENT_DIR+type+'/'+action+'/'+String(i).padStart(2,'0')+'.png?v=1';
+   const src=INDEPENDENT_DIR+type+'/'+action+'/'+String(i).padStart(2,'0')+'.png?v=3';
    const img=new Image();const key=action+':'+i;
    img.onload=()=>{if(img.naturalWidth===512&&img.naturalHeight===512){entry.individual.set(key,img);entry.individualReady++;}};
    img.onerror=()=>{};img.src=src;
