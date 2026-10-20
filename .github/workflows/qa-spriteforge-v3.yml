@@ -1,0 +1,21 @@
+name: SpriteForge V3 generation quality gate
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/spriteforge_pipeline_v3.py
+      - scripts/test_spriteforge_pipeline_v3.py
+      - .github/workflows/qa-spriteforge-v3.yml
+      - config/spriteforge-qc-rules.json
+  workflow_dispatch:
+jobs:
+  spriteforge-v3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install pillow numpy scipy
+      - name: Test generation contract, provider handshake, native resolution, alpha and seam failure
+        run: python scripts/test_spriteforge_pipeline_v3.py
