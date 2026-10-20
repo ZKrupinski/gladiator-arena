@@ -3,7 +3,7 @@
 No built-in image generator; requires an explicit adapter. Never auto-deploy.
 """
 from __future__ import annotations
-import argparse, hashlib, json, subprocess, sys
+import argparse, hashlib, json, os, subprocess, sys
 from pathlib import Path
 import numpy as np
 from PIL import Image
@@ -169,7 +169,7 @@ def generate(job,adapter,result):
     adapter=Path(adapter)
     if not adapter.is_file():raise ValueError("GENERATOR_ADAPTER_MISSING")
     result=subprocess.run([sys.executable,str(adapter),str(job),str(result)],
-                          capture_output=True,text=True,timeout=240)
+                          capture_output=True,text=True,timeout=max(300,min(14400,int(os.getenv('SPRITEFORGE_GENERATOR_TIMEOUT','3600')))))
     if result.returncode:raise ValueError("GENERATOR_EXECUTION_FAILED: "+result.stderr[-450:])
 
 if __name__=="__main__":
