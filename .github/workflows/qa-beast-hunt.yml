@@ -1,0 +1,48 @@
+name: VENATIO dedicated beast hunt validation
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - public/ludus-scene.js
+      - public/arena-beasts.js
+      - public/beast-hunt.css
+      - scripts/qa_beast_hunt_browser.mjs
+      - .github/workflows/qa-beast-hunt.yml
+  workflow_dispatch:
+jobs:
+  venatio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/game.log 2>&1 &
+          sleep 2
+      - name: Test stage cards, combat, earned gold, animal art
+        run: node scripts/qa_beast_hunt_browser.mjs
+      - name: Verify production Cloudflare publish
+        run: |
+          python - <<'PY'
+          import urllib.request,time
+          host='https://gladiator-arena-git.pages.dev/'
+          for attempt in range(24):
+              try:
+                  def get(p):
+                      with urllib.request.urlopen(urllib.request.Request(host+p,headers={'Cache-Control':'no-cache'}),timeout=22) as r:return r.read().decode('utf-8')
+                  page=get('?venatio='+str(attempt))
+                  sheet=get('beast-hunt.css?v=1')
+                  lobby=get('ludus-scene.js?v=20')
+                  if 'beast-hunt.css?v=1' not in page or 'beast-stage-card' not in sheet or 'data-action="beasts"' not in lobby:raise RuntimeError('waiting for VENATIO deploy')
+                  print('VENATIO_CLOUDFLARE_LIVE_OK')
+                  break
+              except Exception as exc:
+                  print('Deployment wait',attempt+1,exc,flush=True)
+                  if attempt==23:raise
+                  time.sleep(9)
+          PY

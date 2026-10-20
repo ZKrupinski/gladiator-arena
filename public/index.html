@@ -1325,7 +1325,7 @@ function startLineupMatch(mode,indices){
  S.gauntlet.records[chosen[0]]={initialHp:S.player.hp,lastHp:S.player.hp,bouts:0};
  S.careerParticipant=chosen[0];S.careerOpponent={...q.enemies[0]};
  S.enemy=lineupEnemy(q.enemies[0]);
- maybeArenaBeast(S.enemy,S.round,!!q.enemies[0]?.boss);
+ // Human-only regular gauntlet; dedicated VENATIO handles beasts.
  S.time=90;S.lastManualInput=clock;S.autoPlaying=false;S.cleanup=null;
  window.ArenaCarnifex?.preload?.();
  S.notice='1차전 · '+q.enemies[0].name;S.noticeT=2;
@@ -1380,7 +1380,7 @@ function finishLineupCleanup(){
   cleanDuelSurvivor(S.player,335,1);
   S.careerOpponent={...step.nextEnemy};
   S.enemy=lineupEnemy(step.nextEnemy);
- maybeArenaBeast(S.enemy,S.round+S.gauntlet.round-1,!!step.nextEnemy?.boss);
+ // Human-only regular gauntlet; dedicated VENATIO handles beasts.
  }else{
   S.careerParticipant=step.nextAllyIndex;
   CAREER.active=step.nextAllyIndex;
