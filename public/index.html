@@ -626,7 +626,7 @@ function updateCamera(dt){
  const focus=S.focusFrame?.active?S.focusFrame:null;
  // Parry is a COMBAT event, not a camera cut. Both fighters must stay on
  // screen while the blow is cancelled; mobile 16:9 view is authoritative.
- const safeParry=focus?.kind==='parry';
+ const safeParry=focus?.kind==='parry'||focus?.kind==='reversal';
  const desiredZoom=clamp(1+pressure*.205+emphasis*(.35+.65*close)+
   (safeParry?0:(focus?.zoom||0)),1,1.7);
  const pairWidth=distance+FIGHTER_DRAW_SIZE*.92;
@@ -1081,9 +1081,9 @@ $('#careerExit').onclick=()=>{if(MINI)return;window.LudusScene?.close();$('#care
 $('#careerHit').onclick=completeTraining;
 $('#careerCancel').onclick=closeTraining;
 window.addEventListener('keydown',e=>{if(MINI&&!MINI.finished&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
-function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,footworkSeed:enemy?1.45:0.38};}
+function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
-function start(mode='new',requestedRosterIndex=null){
+function start(mode='new',requestedRosterIndex=null,teamIndices=null){
  const careerMatch=mode==='career';
  S.gauntlet=null;S.cleanup=null;updateLineupHud();
  if(careerMatch&&requestedRosterIndex!==null){
@@ -1098,7 +1098,8 @@ function start(mode='new',requestedRosterIndex=null){
  if(careerMatch){window.LudusScene?.close();$('#careerHub').hidden=true;$('#careerMini').hidden=true;MINI=null;}
  if(mode==='new'){S.round=1;S.totalScore=0;}
  if(mode==='continue'){S.totalScore+=S.score;S.round++;}
- if(careerMatch){S.careerParticipant=CAREER.active;S.careerOpponent={...LudusRoster.encounter(CAREER,CAREER.hero)};S.round=S.careerOpponent.round;saveCareer();}
+ if(careerMatch){S.careerParticipant=CAREER.active;S.careerOpponent={...LudusRoster.encounter(CAREER,CAREER.hero,Math.random,
+  Array.isArray(teamIndices)?teamIndices.map(n=>CAREER.roster[n]):null)};S.round=S.careerOpponent.round;saveCareer();}
  const selected=careerMatch?CAREER.hero.cls:$('#classChoice').value;
  const opposition=['murmillo','thraex','retiarius'].filter(cls=>cls!==selected);
  const rival=careerMatch?S.careerOpponent.cls:$('#opponentChoice').value==='random'?opposition[(S.round-1)%2]:$('#opponentChoice').value;
@@ -1205,6 +1206,7 @@ function cleanDuelSurvivor(f,x,face){
  f.stagger=0;f.net=0;f.dodge=0;f.knockT=0;f.knockVX=0;
  f.attackCD=0;f.actionT=0;f.action='idle';f.comboDash=null;
  f.chainHits=0;f.chainExpire=0;f.pressureT=0;f.invuln=.65;
+ f.comebackUsed=false;
  f.st=Math.min(100,f.st+18);
 }
 function startLineupMatch(mode,indices){
@@ -1220,7 +1222,7 @@ function startLineupMatch(mode,indices){
  try{q=ArenaLineup.create(mode,chosen,CAREER.roster,leader);}
  catch(error){CAREER.message='출전할 수 없습니다: '+error.message;saveCareer();return false;}
  CAREER.active=chosen[0];CAREER_SELECTING=false;saveCareer();
- start('career',chosen[0]);
+ start('career',chosen[0],chosen);
  if(S.phase!=='fight')return false;
  S.gauntlet=q;S.gauntlet.records={};S.gauntlet.bouts={};
  S.gauntlet.records[chosen[0]]={initialHp:S.player.hp,lastHp:S.player.hp,bouts:0};
@@ -1557,7 +1559,12 @@ function attack(f,victim,special=false,dashImpact=false){
      +comebackBonus+(special?11:0);
    const enemyCounter=Math.round(victim.cfg.atk*.72+(special?7:5));
    const careerCounter=S.careerMatch?ArenaBalance.playerParryDamage(victim,f,true):null;
-   const counterDamage=victim.enemy?Math.round(enemyCounter*(S.careerMatch?(victim.championBoss?1.45:1.18):1)):(careerCounter??playerCounter);
+   const baseCounter=victim.enemy?
+    Math.round(enemyCounter*(S.careerMatch?(victim.championBoss?1.45:1.18):1)):
+    (careerCounter??playerCounter);
+   const reversal=window.ArenaBalance?.comebackParry?.(victim,f,baseCounter,victim.comebackUsed);
+   const counterDamage=reversal?.damage??baseCounter;
+   if(reversal?.critical)victim.comebackUsed=true;
    victim.parry=0;breakAttackChain(victim);victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
    victim.st=clamp(victim.st-(special?12:7),0,100);
    const contact=parryContactPoint(victim,f); // before the opponent is knocked back
@@ -1577,10 +1584,12 @@ function attack(f,victim,special=false,dashImpact=false){
    S.flash=Math.max(S.flash,victim.enemy?(special?.19:.13):.19);
    window.ArenaMotion?.pulse?.(victim,'parry','source',victim.face);
    window.ArenaMotion?.pulse?.(f,'parry','target',victim.face);
-   window.ArenaMotion?.shake?.(S,'parry',victim.face);
-   triggerCinematic('parry',contact.x,victim.face);
-   S.parryBursts.push({x:contact.x,y:contact.y,t:0,max:.79,
-     defender:victim,attacker:f,damage:counterDamage,hitX:f.x,hitY:FLOOR-278});
+   window.ArenaMotion?.shake?.(S,reversal?.critical?'reversal':'parry',victim.face);
+   triggerCinematic(reversal?.critical?'reversal':'parry',contact.x,victim.face);
+   S.parryBursts.push({x:contact.x,y:contact.y,t:0,max:reversal?.critical?1.05:.79,
+     defender:victim,attacker:f,damage:counterDamage,
+     reversal:!!reversal?.critical,bonus:reversal?.extra||0,
+     hitX:f.x,hitY:FLOOR-278});
    // Beat 1: sharp silver interruption. The collision remains fixed in space.
    addFx(7,contact.x,contact.y,{
     art:null,sequence:'parry',w:390,h:390,flip:victim.face<0,
@@ -1600,13 +1609,24 @@ function attack(f,victim,special=false,dashImpact=false){
     owner:f,offsetX:-f.face*85,offsetY:-12,track:'body',layer:'back',
     delay:.11,duration:.255,alpha:.51
    });
+   if(reversal?.critical){
+    // Directional isolated 8-frame PNGs; never invent a shared vector burst.
+    addFx(7,contact.x+victim.face*42,contact.y-18,{
+     sequence:'finisher',w:655,h:535,flip:victim.face<0,alpha:.96,duration:.73
+    });
+    addFx(7,f.x,FLOOR-218,{
+     sequence:'special',w:535,h:485,flip:victim.face<0,
+     alpha:.84,delay:.11,duration:.53
+    });
+    S.shake=Math.max(S.shake,37);S.flash=Math.max(S.flash,.27);
+   }
    if(!victim.enemy){S.score+=counterDamage*2;S.combo++;}
    else{S.combo=0;}
-   // Make the recipient of counter damage explicit in the feedback.
-   const comeback=(!victim.enemy&&missingHealth>=.5);
    say(victim.enemy?'ENEMY PARRY! YOU -'+counterDamage:
-     (comeback?'REVERSAL PARRY! ENEMY -':'PERFECT PARRY! ENEMY -')+counterDamage,1.2);
+     reversal?.critical?'REVERSAL PARRY! BONUS +'+reversal.extra+' ENEMY -'+counterDamage:
+     'PERFECT PARRY! ENEMY -'+counterDamage,reversal?.critical?1.65:1.2);
    fxSound('parry');
+   if(reversal?.critical)window.ArenaAudio?.play?.('finisher',{gain:.76});
    if(f.hp<=0)finishFight(victim,f);
    else updateHud();
    return;
@@ -2233,6 +2253,9 @@ function drawParryBursts(){
    const winX=b.defender.x-b.defender.face*23,loseX=b.attacker.x+b.attacker.face*15;
    window.ArenaHerald?.drawCanvasCallout?.(ctx,'CONTRA!',winX,FLOOR-352-rise,{size:27,tone:'gold',alpha,maxWidth:240});
    window.ArenaHerald?.drawCanvasCallout?.(ctx,'FRVSTRA!',loseX,FLOOR-330-rise,{size:27,tone:'iron',alpha,maxWidth:240});
+   if(b.reversal)window.ArenaHerald?.drawCanvasCallout?.(ctx,'FORTUNA!',winX,FLOOR-407-rise,{
+    size:34,tone:'ember',subtitle:'+'+b.bonus+' BONUS DAMAGE',alpha,maxWidth:290
+   });
    ctx.restore();
  }
 }
@@ -2324,7 +2347,7 @@ function drawCinematicFocus(){
  if(f.bloom>0){
   ctx.globalCompositeOperation='screen';
   const shine=ctx.createRadialGradient(sx,sy,4,sx,sy,390);
-  const tint=f.kind==='parry'?'216,233,255':'255,213,145';
+  const tint=f.kind==='parry'?'216,233,255':f.kind==='reversal'?'255,230,166':'255,213,145';
   shine.addColorStop(0,'rgba('+tint+','+Math.min(f.kind==='parry'?.30:.7,f.bloom*(f.kind==='parry'?.65:1.3))+')');
   shine.addColorStop(.28,'rgba('+tint+','+Math.min(f.kind==='parry'?.15:.32,f.bloom*(f.kind==='parry'?.24:.46))+')');
   shine.addColorStop(1,'rgba('+tint+',0)');

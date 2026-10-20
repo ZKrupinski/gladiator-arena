@@ -10,6 +10,9 @@ const PRESETS=Object.freeze({
    duration:.96,hitstop:.125,slowEnd:.61,minRate:.12,
    zoom:.32,vignette:.34,bloom:.47,letterbox:28
  }),
+ reversal:Object.freeze({
+  duration:1.12,hitstop:.14,slowEnd:.70,minRate:.23,zoom:.055,vignette:.12,bloom:.30,letterbox:12
+ }),
  parry:Object.freeze({
    // Counterstrike must NEVER cut both actors out of view. Keep a short
    // contact freeze, but no forced zoom, recentering, vignette or cinema bars.

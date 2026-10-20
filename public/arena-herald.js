@@ -8,6 +8,7 @@ const VERSES={
  cleanup:[['CORPUS TOLLITUR','THE FALLEN ARE CARRIED AWAY'],['FINIS GLADIATORIS','ONE FIGHTER HAS FALLEN'],['CARNIFEX VENIT','THE EXECUTIONER APPROACHES']],
  victory:[['VICTORIA','THE CROWD SALUTES THE VICTOR'],['LAUS VICTORI','HONOUR TO THE WINNER'],['GLORIA AETERNA','GLORY IN THE ARENA']],
  defeat:[['VICTUS EST','THE CHAMPION FALLS'],['FORTUNA CECIDIT','FORTUNE HAS TURNED'],['HONOR IN PULVERE','HONOUR IN THE DUST']],
+ reversal:[['FORTUNA REVERSA','THE TIDE OF BATTLE TURNS']],
  parry:[['ICTUS REPULSUS','A PERFECT PARRY'],['SCUTUM TENET','THE SHIELD HOLDS']],
  guard:[['SCUTUM FRACTUM','THE GUARD IS BROKEN'],['VIS CONTRA VIS','FORCE MEETS FORCE']],
  guarded:[['FORTITER DEFENDIT','A STOUT DEFENCE']],
@@ -24,7 +25,7 @@ const VERSES={
  resume:[['PUGNA REDIIT','COMBAT RESUMED']],
  notice:[['NUNTIUS ARENAE','THE ARENA ANNOUNCES']]
 };
-const tone={cleanup:'iron',defeat:'iron',guard:'iron',guarded:'iron',stamina:'iron',paused:'iron',newcomer:'ember',rush:'ember',bleed:'ember',boss:'ember',victory:'gold'};
+const tone={cleanup:'iron',defeat:'iron',guard:'iron',guarded:'iron',stamina:'iron',paused:'iron',newcomer:'ember',rush:'ember',bleed:'ember',boss:'ember',reversal:'ember',victory:'gold'};
 const ACTIVE_PHASES=new Set(['fight','cleanup','finisher']);
 let holder=null,lastKey='',seq=0,previousKind='',version=0;
 function classify(message){
@@ -37,6 +38,7 @@ function classify(message){
  if(/다음 상대/.test(m))return 'newcomer';
  if(/다음 아군/.test(m))return 'ally';
  if(/1차전|PUGNA|차전|ARENA/.test(m))return 'opening';
+ if(/REVERSAL|FORTUNA REVERSA/.test(m))return 'reversal';
  if(/PARRY/.test(m))return 'parry';
  if(/GUARD BREAK/.test(m))return 'guard';
  if(/GUARDED/.test(m))return 'guarded';
@@ -103,6 +105,10 @@ function sync(message,context={}){
  seq=(kind===previousKind?seq+1:0);
  let [latin,subtitle]=variants[seq%variants.length];
  if(kind==='notice')subtitle=text.toUpperCase().slice(0,90);
+ if(kind==='reversal'){
+  const bonus=text.match(/BONUS \+(\d+)/);
+  subtitle=bonus?'CRITICAL COUNTER · EXTRA DAMAGE +'+bonus[1]:'CRITICAL COUNTER';
+ }
  previousKind=kind;lastKey=key;
  node.dataset.kind=kind;node.dataset.tone=tone[kind]||'gold';
  node.dataset.length=latin.length>24?'xl':latin.length>17?'long':'normal';

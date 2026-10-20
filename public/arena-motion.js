@@ -15,7 +15,8 @@ const PRESETS=Object.freeze({
  guard:Object.freeze({amp:7.5,time:.25,hz:23,axis:'x',roll:.002}),
  special:Object.freeze({amp:17,time:.39,hz:21,axis:'y',roll:.006}),
  dash:Object.freeze({amp:25,time:.48,hz:24,axis:'diag',roll:.009}),
- parry:Object.freeze({amp:23,time:.49,hz:17,axis:'double',roll:.007})
+ parry:Object.freeze({amp:23,time:.49,hz:17,axis:'double',roll:.007}),
+ reversal:Object.freeze({amp:30,time:.62,hz:17,axis:'double',roll:.009})
 });
 const RESPONSE=Object.freeze({
  strike:{duration:.29,compression:.065,slide:9},
