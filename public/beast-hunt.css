@@ -18,3 +18,12 @@
 .beast-challenge:disabled{opacity:.45;cursor:not-allowed}
 .beast-gallery-footer{margin-top:15px;padding:10px;color:#d3aa76;text-align:center;font-size:12px;border-top:1px solid #ad804466}
 @media(max-width:620px){.beast-stage-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.beast-stage-thumb{height:140px}.beast-stage-detail{padding:10px}.beast-stage-detail h3{font-size:20px}.beast-gallery-head{gap:8px}.beast-stage-meta{line-height:1.55}}
+
+/* VENATIO v2: always-visible entries independent of layered Ludus source art. */
+.beast-link{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#884328,#58251c);border:1px solid #f2c981;color:#fff0ca;border-radius:8px;padding:10px 14px;font-weight:900;letter-spacing:.03em;box-shadow:0 0 12px #d9885244}
+.beast-link:hover,.beast-link:focus-visible{background:linear-gradient(135deg,#ab5735,#783323);outline:2px solid #f5da9d;outline-offset:2px}
+.beast-entry{background:linear-gradient(130deg,#ad6842,#74311e)!important;color:#fff2dc!important;border-color:#f9d48c!important;box-shadow:0 0 12px #c2794380}
+.ll-scene .ll-beast-quick,.ll-scene.ll-has-art .ll-beast-quick{position:absolute;top:90px;right:22px;z-index:31;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:193px;min-height:82px;padding:9px 14px;background:linear-gradient(135deg,#8c402c,#432018);color:#fff2d4;border:3px ridge #e5bb75;border-radius:12px;font:900 27px/1.1 "Noto Sans KR",sans-serif;text-shadow:0 2px 3px #1b0706;box-shadow:0 4px 17px #170804c0,0 0 21px #b6692f66;cursor:pointer;pointer-events:auto;visibility:visible;opacity:1}
+.ll-scene .ll-beast-quick small{font:700 12px Georgia,serif;letter-spacing:.12em;color:#f5c68f}
+.ll-scene .ll-beast-quick:focus-visible,.ll-scene .ll-beast-quick:hover{outline:3px solid #ffe8ab;filter:brightness(1.2)}
+@media(max-width:720px){.beast-link{font-size:11px;padding:7px 10px}.beast-entry{font-size:12px!important}}
