@@ -1,0 +1,25 @@
+name: Wolf V3 live game preview QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/arena-beasts.js
+      - scripts/qa_wolf_v3_preview_browser.mjs
+      - .github/workflows/qa-wolf-v3-preview.yml
+  workflow_dispatch:
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/game.log 2>&1 &
+          sleep 2
+      - name: Verify nine preview atlases, attack routing, real renderer and postMessage
+        run: node scripts/qa_wolf_v3_preview_browser.mjs
