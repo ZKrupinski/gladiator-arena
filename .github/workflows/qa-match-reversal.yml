@@ -1,0 +1,36 @@
+name: Ludus adaptive matchmaking and comeback parry
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - public/arena-balance.js
+      - public/ludus-roster.js
+      - public/ludus-cards.js
+      - public/arena-focus.js
+      - public/arena-motion.js
+      - public/arena-herald.js
+      - scripts/qa_matchmaking_reversal.mjs
+      - scripts/qa_matchmaking_reversal_browser.mjs
+      - .github/workflows/qa-match-reversal.yml
+  workflow_dispatch:
+jobs:
+  match-and-counter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify matching and comeback maths
+        run: node scripts/qa_matchmaking_reversal.mjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve playable arena
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/match-reversal.log 2>&1 &
+          sleep 3
+      - name: Verify real encounter and critical parry
+        run: node scripts/qa_matchmaking_reversal_browser.mjs
