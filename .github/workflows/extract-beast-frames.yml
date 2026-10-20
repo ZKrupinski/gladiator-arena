@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - scripts/extract_beast_frames.py
+      - scripts/qa_beast_alpha.py
       - .github/workflows/extract-beast-frames.yml
   workflow_dispatch:
 permissions:
@@ -41,6 +42,8 @@ jobs:
                       assert im.mode=='RGBA' and im.size==(512,512) and im.getbbox(),p
           print('VENATIO_200_INDEPENDENT_FRAMES_PASS')
           PY
+      - name: Reject stray adjacent silhouettes in all 200 animal PNGs
+        run: python scripts/qa_beast_alpha.py
       - name: Publish isolated sprites to GitHub main
         run: |
           git config user.name "github-actions[bot]"
