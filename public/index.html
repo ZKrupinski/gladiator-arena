@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=1"></script>
-<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=2-png"></script><script src="arena-audio.js?v=5"></script>
+<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=5"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -1428,10 +1428,10 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
  if(dash){art=null;w=1240;h=610;offsetX=dir*145;offsetY=-18;duration=.54;alpha=.97;frame=4;}
  if(ko){
   // The finishing impact belongs to the DEFEATED fighter, never the victor.
-  const hitOffsetX=-victim.face*18,hitOffsetY=-12;
+  const hitOffsetX=-victim.face*18,hitOffsetY=-65;
   const targetAtlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
   addFx(8,victim.x+hitOffsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+hitOffsetY,{
-   art:null,sequence:'finisher',w:850,h:850,alpha:.95,duration:.60,
+   art:null,sequence:'finisher',w:600,h:600,alpha:.95,duration:.60,
    owner:victim,offsetX:hitOffsetX,offsetY:hitOffsetY,track:'body',
    atlas:targetAtlas,flip:dir<0
   });
@@ -1673,6 +1673,12 @@ function attack(f,victim,special=false,dashImpact=false){
   S.shake=Math.max(S.shake,special?14:6);S.flash=Math.max(S.flash,special?.18:.09);
  }
  emitAttackFx(f,victim,special,guarded,false,f.attackVariant,dashImpact);
+ if(!guarded&&(special||dashImpact)){
+  const contact=impactPoint(f,victim,special);
+  addFx(2,contact.x,contact.y,{sequence:'hit',art:null,w:310,h:310,
+   flip:f.face<0,alpha:.88,duration:.22});
+ }
+
  if(!f.enemy){S.score+=Math.round(dmg);S.combo++;}else S.combo=0;
  if(!special&&!dashImpact){
   if(!guarded){
@@ -2180,8 +2186,7 @@ function getVictoryRasterPose(){
 }
 function drawVictoryBacklight(){
  const v=getVictoryRasterPose();if(!v)return;
- // ORIGINAL approved 8-frame PNG behind the victor: radiant golden laurel,
- // upward halo and warm arena bloom. No vectors or body tinting.
+ // Isolated golden halo frames behind the victor; petals follow facing.
  if(window.ArenaRasterFX?.draw?.(ctx,'victory',
     v.winner.x+v.direction*38,FLOOR-211,630,570,v.frame,v.fade*.89,v.direction,0,'back'))return;
  // Temporary illustrated fallback only if PNG download has not finished.
@@ -2189,29 +2194,15 @@ function drawVictoryBacklight(){
 }
 function drawResultFx(){
  const v=getVictoryRasterPose();if(!v)return;
- // Only the original PNG's pink petal pixels appear over the gladiator.
+ // Only the PNG's pink petal pixels appear over the gladiator.
  // The strong central victory light always remains BEHIND the armor.
  window.ArenaRasterFX?.draw?.(ctx,'victory',
    v.winner.x+v.direction*38,FLOOR-211,630,570,
    v.frame,v.fade*.63,v.direction,0,'front');
 }
-// Proven painted WebP combat art marks the actual success collision; no
-// procedural/vector swords or flashing geometry are introduced.
+// Contact paint is emitted by combat events; focus adds only camera response.
 function drawCinematicWorldAccent(){
- const focus=S.focusFrame;
- if(!S.fx||!focus?.active||focus.reduced)return;
- const progress=clamp(focus.elapsed/Math.max(.01,focus.duration),0,.999);
- const x=focus.centerX,y=FLOOR-173,punch=Math.max(0,focus.pulse);
- // Parry's one authored contact burst is already queued in attack().
- // Retain the hitstop/zoom and soft bloom, without a second 740px flare.
- if(focus.kind==='parry')return;
- ctx.save();ctx.globalCompositeOperation='screen';
- if(!window.ArenaRasterFX?.draw?.(ctx,'combat',x-focus.dir*120,y+18,
-   1030,610,progress,Math.min(.90,punch*.9),focus.dir)){
-   window.ArenaAnimatedFX?.draw?.(ctx,'dash',x-focus.dir*120,y+32,
-     1200,520,progress,Math.min(.94,punch*.94),focus.dir<0);
- }
- ctx.restore();
+ // Focus controls camera, hitstop and bloom. Authored contact art is queued once.
 }
 function drawParryBursts(){
  for(const b of S.parryBursts){
@@ -2255,11 +2246,8 @@ function drawDashStreaks(){
    const t=clamp((f.comboDash.t-.17)/.27,0,1),dir=f.face||1;
    // Attach the aerial rush trail to the same leap pivot as the gladiator.
    const anchor=fxPoint({owner:f,track:'body',offsetX:-dir*70,offsetY:14});
-   if(!window.ArenaRasterFX?.draw?.(ctx,'combat',anchor.x,anchor.y,
-       905,490,reduce?.5:t,(1-t)*.75,dir)){
-     window.ArenaAnimatedFX?.draw?.(ctx,'dash',anchor.x,anchor.y,
-       840,385,reduce?.5:t,(1-t)*.76,dir<0);
-   }
+   window.ArenaRasterFX?.draw?.(ctx,'dash',anchor.x,anchor.y,
+       905,490,reduce?.5:t,(1-t)*.75,dir);
  }
 }
 // The authored VFX frames follow the exact rotated/scaled world pose. Effects
@@ -2299,14 +2287,12 @@ function drawEffects(backOnly=false){
   const mapped=v.sequence||({hit_slash:'slash',parry_burst:'guard',
     dash_trail:'dash',special_aura:'special'}[v.art]);
   const vfxScale=1.31*(CINEMATIC_FX_SCALE[v.art]??.65)*(mapped==='finisher'?1.12:1);
-  // Approved newly-authored PNG replaces the directional sword trails,
-  // rush and finisher. Guard, parry and special keep their own separately
-  // painted high-detail WebPs to avoid making unrelated hits look identical.
-  const newPainted=!!mapped&&['slash','sweep','thrust','dash','finisher'].includes(mapped);
-  if(S.fx&&newPainted&&window.ArenaRasterFX?.draw?.(ctx,'combat',cx,cy,
+  // Each action reads its own isolated PNG sequence, never a shared burst.
+  if(S.fx&&mapped&&window.ArenaRasterFX?.draw?.(ctx,mapped,cx,cy,
     v.w*scale*vfxScale*1.20,v.h*scale*vfxScale*1.20,
     reduced?.52:progress,v.alpha*fade,v.flip?-1:1,v.rotation))continue;
-  // Distinct painterly old WebP remains a seamless loading fallback;
+  if(mapped&&window.ArenaRasterFX?.FAMILIES?.[mapped])continue;
+  // Legacy fallback is only for unrelated environmental effects;
   // never render geometric/vector effects over approved PNG art.
   if(S.fx&&mapped&&window.ArenaAnimatedFX?.draw?.(ctx,mapped,cx,cy,
     v.w*scale*vfxScale,v.h*scale*vfxScale,reduced?.52:progress,

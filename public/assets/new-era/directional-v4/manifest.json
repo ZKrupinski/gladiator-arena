@@ -1,0 +1,1767 @@
+{
+  "version": "4.0.0",
+  "frameSize": 512,
+  "frames": 8,
+  "families": {
+    "slash": {
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "frames": [
+        {
+          "file": "slash-00.png",
+          "sourceRect": [
+            83,
+            188,
+            309,
+            323
+          ],
+          "paste": [
+            117,
+            222
+          ],
+          "bounds": [
+            117,
+            222,
+            343,
+            357
+          ],
+          "margin": 117,
+          "sha256": "66fca19fa9ce2b5696f05a01c10722579821310c89ce7e50ac67511714124dee"
+        },
+        {
+          "file": "slash-01.png",
+          "sourceRect": [
+            529,
+            173,
+            887,
+            436
+          ],
+          "paste": [
+            120,
+            207
+          ],
+          "bounds": [
+            120,
+            207,
+            478,
+            470
+          ],
+          "margin": 34,
+          "sha256": "bc24f5e4841e418eacbe112ce3ee73d016def74bd0c7ce998c7a483c5f55ffde"
+        },
+        {
+          "file": "slash-02.png",
+          "sourceRect": [
+            965,
+            150,
+            1236,
+            334
+          ],
+          "paste": [
+            112,
+            184
+          ],
+          "bounds": [
+            112,
+            184,
+            383,
+            368
+          ],
+          "margin": 112,
+          "sha256": "0d52ae3fa5c2a408dced987488ce71033a978790f1b47e50c5f75963a1982307"
+        },
+        {
+          "file": "slash-03.png",
+          "sourceRect": [
+            1400,
+            134,
+            1693,
+            338
+          ],
+          "paste": [
+            104,
+            168
+          ],
+          "bounds": [
+            104,
+            168,
+            397,
+            372
+          ],
+          "margin": 104,
+          "sha256": "ee7ae9083ae2aabed8e2ec47d405e365b4a509af7a2848a2ededd28ecfe4d6a6"
+        },
+        {
+          "file": "slash-04.png",
+          "sourceRect": [
+            75,
+            563,
+            337,
+            750
+          ],
+          "paste": [
+            109,
+            154
+          ],
+          "bounds": [
+            109,
+            154,
+            371,
+            341
+          ],
+          "margin": 109,
+          "sha256": "9a3e0a2c288f22d3cd22c373decb0080b35056a6a19eb1f9f7a528d65124a33e"
+        },
+        {
+          "file": "slash-05.png",
+          "sourceRect": [
+            521,
+            583,
+            776,
+            744
+          ],
+          "paste": [
+            112,
+            174
+          ],
+          "bounds": [
+            112,
+            174,
+            367,
+            335
+          ],
+          "margin": 112,
+          "sha256": "aec49ab45d240831c07912d9752a56bf019f35c3348d1beb54cc4fe416050b12"
+        },
+        {
+          "file": "slash-06.png",
+          "sourceRect": [
+            993,
+            587,
+            1224,
+            740
+          ],
+          "paste": [
+            140,
+            178
+          ],
+          "bounds": [
+            140,
+            178,
+            371,
+            331
+          ],
+          "margin": 140,
+          "sha256": "12f61df575e9ec74debade949613fd03ef65c5c3bd9cdd0ee3ad6a263b673b7a"
+        },
+        {
+          "file": "slash-07.png",
+          "sourceRect": [
+            1482,
+            641,
+            1632,
+            730
+          ],
+          "paste": [
+            186,
+            232
+          ],
+          "bounds": [
+            186,
+            232,
+            336,
+            321
+          ],
+          "margin": 176,
+          "sha256": "74ab571c9d8a79e87e65ca69212da0638ff68c2b58994b576b467d6cae5e032d"
+        }
+      ]
+    },
+    "sweep": {
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "frames": [
+        {
+          "file": "sweep-00.png",
+          "sourceRect": [
+            130,
+            226,
+            244,
+            296
+          ],
+          "paste": [
+            164,
+            260
+          ],
+          "bounds": [
+            164,
+            260,
+            278,
+            330
+          ],
+          "margin": 164,
+          "sha256": "a56af7f27eafcd9847b265d041295c3cf12125df24001520e4ba761a9f244569"
+        },
+        {
+          "file": "sweep-01.png",
+          "sourceRect": [
+            500,
+            207,
+            767,
+            320
+          ],
+          "paste": [
+            91,
+            241
+          ],
+          "bounds": [
+            91,
+            241,
+            358,
+            354
+          ],
+          "margin": 91,
+          "sha256": "022fddd7ac0164ffa1808c70c74d5698aebd0842b40624c74f7d9765dc552222"
+        },
+        {
+          "file": "sweep-02.png",
+          "sourceRect": [
+            926,
+            191,
+            1258,
+            338
+          ],
+          "paste": [
+            73,
+            225
+          ],
+          "bounds": [
+            73,
+            225,
+            405,
+            372
+          ],
+          "margin": 73,
+          "sha256": "6831b1490698278669ea8c9885e58583659cdc7de18d00ce4a86109fce8685f3"
+        },
+        {
+          "file": "sweep-03.png",
+          "sourceRect": [
+            1347,
+            190,
+            1706,
+            338
+          ],
+          "paste": [
+            51,
+            224
+          ],
+          "bounds": [
+            51,
+            224,
+            410,
+            372
+          ],
+          "margin": 51,
+          "sha256": "87858d835b1a18fe4daad3e70a37ec2d26ba967d599d444f3513fe5427e36db2"
+        },
+        {
+          "file": "sweep-04.png",
+          "sourceRect": [
+            57,
+            612,
+            345,
+            743
+          ],
+          "paste": [
+            91,
+            203
+          ],
+          "bounds": [
+            91,
+            203,
+            379,
+            334
+          ],
+          "margin": 91,
+          "sha256": "f31ff53e1f81f2fe8e658fd69fa2771995d97e5ab88f4c5325a6c9af0665ce3b"
+        },
+        {
+          "file": "sweep-05.png",
+          "sourceRect": [
+            499,
+            621,
+            772,
+            740
+          ],
+          "paste": [
+            90,
+            212
+          ],
+          "bounds": [
+            90,
+            212,
+            363,
+            331
+          ],
+          "margin": 90,
+          "sha256": "bbb2ab38883ad5c0d76535bd326d1cf69504c85d6ef29930e2e24db65c95994f"
+        },
+        {
+          "file": "sweep-06.png",
+          "sourceRect": [
+            987,
+            635,
+            1187,
+            731
+          ],
+          "paste": [
+            134,
+            226
+          ],
+          "bounds": [
+            134,
+            226,
+            334,
+            322
+          ],
+          "margin": 134,
+          "sha256": "14676c2669245b3330a06f758ae98ef0198746805a0955277fd005a0e4f7c318"
+        },
+        {
+          "file": "sweep-07.png",
+          "sourceRect": [
+            1471,
+            646,
+            1589,
+            709
+          ],
+          "paste": [
+            175,
+            237
+          ],
+          "bounds": [
+            175,
+            237,
+            293,
+            300
+          ],
+          "margin": 175,
+          "sha256": "33c68ef3c822486f07aab91960c13b2de4122c884f721a51ccaa88d2b1592758"
+        }
+      ]
+    },
+    "thrust": {
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "frames": [
+        {
+          "file": "thrust-00.png",
+          "sourceRect": [
+            158,
+            194,
+            278,
+            253
+          ],
+          "paste": [
+            192,
+            228
+          ],
+          "bounds": [
+            192,
+            228,
+            312,
+            287
+          ],
+          "margin": 192,
+          "sha256": "ba634917edd19d10b0c29a8510e5cf90eebe131eed710b38493d63ec376cbf55"
+        },
+        {
+          "file": "thrust-01.png",
+          "sourceRect": [
+            533,
+            189,
+            754,
+            256
+          ],
+          "paste": [
+            124,
+            223
+          ],
+          "bounds": [
+            124,
+            223,
+            345,
+            290
+          ],
+          "margin": 124,
+          "sha256": "ac91c2d699d37c65db1dc4745503565f15923cccea8e0741f291f5d994c960ad"
+        },
+        {
+          "file": "thrust-02.png",
+          "sourceRect": [
+            916,
+            184,
+            1260,
+            258
+          ],
+          "paste": [
+            63,
+            218
+          ],
+          "bounds": [
+            63,
+            218,
+            407,
+            292
+          ],
+          "margin": 63,
+          "sha256": "b072e7706f9e9be7c07f848ac3d2e323bda7d349ab1d94d3ad59f35a4056fb37"
+        },
+        {
+          "file": "thrust-03.png",
+          "sourceRect": [
+            1340,
+            182,
+            1730,
+            260
+          ],
+          "paste": [
+            44,
+            216
+          ],
+          "bounds": [
+            44,
+            216,
+            434,
+            294
+          ],
+          "margin": 44,
+          "sha256": "45fb3b3d38b1458e9c643d78f1687265d26897fda1c103d94fe974e48bb4b0f7"
+        },
+        {
+          "file": "thrust-04.png",
+          "sourceRect": [
+            45,
+            630,
+            357,
+            697
+          ],
+          "paste": [
+            79,
+            221
+          ],
+          "bounds": [
+            79,
+            221,
+            391,
+            288
+          ],
+          "margin": 79,
+          "sha256": "9f5234ef9aee9859f79bbf04ebf80d733e0e203566ef6d2187b9f1be533bbec9"
+        },
+        {
+          "file": "thrust-05.png",
+          "sourceRect": [
+            549,
+            634,
+            754,
+            693
+          ],
+          "paste": [
+            140,
+            225
+          ],
+          "bounds": [
+            140,
+            225,
+            345,
+            284
+          ],
+          "margin": 140,
+          "sha256": "f1eacfcc26a7d97e8ddc25b961751145634eb5a6ec1fb87b8e3bff11c994dac8"
+        },
+        {
+          "file": "thrust-06.png",
+          "sourceRect": [
+            1016,
+            635,
+            1183,
+            692
+          ],
+          "paste": [
+            163,
+            226
+          ],
+          "bounds": [
+            163,
+            226,
+            330,
+            283
+          ],
+          "margin": 163,
+          "sha256": "fe43bbe46b4aeb10f7d1afe62c034a65620532ae099e7be1b82e6d9ec2c1ba6e"
+        },
+        {
+          "file": "thrust-07.png",
+          "sourceRect": [
+            1491,
+            637,
+            1601,
+            691
+          ],
+          "paste": [
+            195,
+            228
+          ],
+          "bounds": [
+            195,
+            228,
+            305,
+            282
+          ],
+          "margin": 195,
+          "sha256": "f51183dda9b33e1a461258d07d24926d57988d71dcb46f82b5c7dbde795dfbf0"
+        }
+      ]
+    },
+    "hit": {
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "frames": [
+        {
+          "file": "hit-00.png",
+          "sourceRect": [
+            180,
+            156,
+            272,
+            294
+          ],
+          "paste": [
+            214,
+            190
+          ],
+          "bounds": [
+            214,
+            190,
+            306,
+            328
+          ],
+          "margin": 184,
+          "sha256": "66064b198ebae138da93272db071a141179548ec002dfbcc85bc945cc9ddf27d"
+        },
+        {
+          "file": "hit-01.png",
+          "sourceRect": [
+            579,
+            134,
+            768,
+            323
+          ],
+          "paste": [
+            170,
+            168
+          ],
+          "bounds": [
+            170,
+            168,
+            359,
+            357
+          ],
+          "margin": 153,
+          "sha256": "10ad56ae51f98cc5622a0689307c15a07a561b55ac2b47b6c22dcf0848e0ed85"
+        },
+        {
+          "file": "hit-02.png",
+          "sourceRect": [
+            957,
+            86,
+            1256,
+            351
+          ],
+          "paste": [
+            104,
+            120
+          ],
+          "bounds": [
+            104,
+            120,
+            403,
+            385
+          ],
+          "margin": 104,
+          "sha256": "c8fb6ef63c883a914418bc564c2e5c792ba6ab6ef2da2a0c46c865b6b0bcf132"
+        },
+        {
+          "file": "hit-03.png",
+          "sourceRect": [
+            1400,
+            88,
+            1702,
+            339
+          ],
+          "paste": [
+            104,
+            122
+          ],
+          "bounds": [
+            104,
+            122,
+            406,
+            373
+          ],
+          "margin": 104,
+          "sha256": "e32d915792786f597e58c376da18f139ce9e8978417105ff575f6666c2830434"
+        },
+        {
+          "file": "hit-04.png",
+          "sourceRect": [
+            90,
+            543,
+            384,
+            790
+          ],
+          "paste": [
+            124,
+            134
+          ],
+          "bounds": [
+            124,
+            134,
+            418,
+            381
+          ],
+          "margin": 94,
+          "sha256": "38aa0f177f6ee73fa2a8f0bb24c240c6496d3a0a93b2ac55b82d124c518bf5d2"
+        },
+        {
+          "file": "hit-05.png",
+          "sourceRect": [
+            543,
+            541,
+            791,
+            772
+          ],
+          "paste": [
+            134,
+            132
+          ],
+          "bounds": [
+            134,
+            132,
+            382,
+            363
+          ],
+          "margin": 130,
+          "sha256": "8f23bead8a43cde9d58b13a4962176e387cbbf04b197be6796fb4d513d5c5bc5"
+        },
+        {
+          "file": "hit-06.png",
+          "sourceRect": [
+            999,
+            535,
+            1256,
+            757
+          ],
+          "paste": [
+            146,
+            126
+          ],
+          "bounds": [
+            146,
+            126,
+            403,
+            348
+          ],
+          "margin": 109,
+          "sha256": "767c8c77995edf8a26de72a388e3920b710111faa4ddcdfba6da5de68ac8bf3d"
+        },
+        {
+          "file": "hit-07.png",
+          "sourceRect": [
+            1480,
+            571,
+            1659,
+            730
+          ],
+          "paste": [
+            184,
+            162
+          ],
+          "bounds": [
+            184,
+            162,
+            363,
+            321
+          ],
+          "margin": 149,
+          "sha256": "2ea12c8f64a614cf0e2efdfa75f4612446050c69c0210e3fe4f9e63cbdc1ddc0"
+        }
+      ]
+    },
+    "guard": {
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "frames": [
+        {
+          "file": "guard-00.png",
+          "sourceRect": [
+            190,
+            146,
+            290,
+            326
+          ],
+          "paste": [
+            224,
+            180
+          ],
+          "bounds": [
+            224,
+            180,
+            324,
+            360
+          ],
+          "margin": 152,
+          "sha256": "98ebda8c24c8089d3836e259b352c503cb5659ca5d172f891f8f650954491f11"
+        },
+        {
+          "file": "guard-01.png",
+          "sourceRect": [
+            578,
+            126,
+            780,
+            347
+          ],
+          "paste": [
+            169,
+            160
+          ],
+          "bounds": [
+            169,
+            160,
+            371,
+            381
+          ],
+          "margin": 131,
+          "sha256": "82e29f89ff664deb508ba6aa6729f8eb19bae35830877c015e03c5d90bedd39a"
+        },
+        {
+          "file": "guard-02.png",
+          "sourceRect": [
+            995,
+            106,
+            1265,
+            369
+          ],
+          "paste": [
+            142,
+            140
+          ],
+          "bounds": [
+            142,
+            140,
+            412,
+            403
+          ],
+          "margin": 100,
+          "sha256": "86667d998e4c42aad95c4217dd6bd5c64637c4a399a4bc936c15b2382699ae7c"
+        },
+        {
+          "file": "guard-03.png",
+          "sourceRect": [
+            1382,
+            82,
+            1716,
+            397
+          ],
+          "paste": [
+            86,
+            116
+          ],
+          "bounds": [
+            86,
+            116,
+            420,
+            431
+          ],
+          "margin": 81,
+          "sha256": "bef3f971833a465b770fc1415cdaad53016235d73e0d9be270f2a8415a843dd0"
+        },
+        {
+          "file": "guard-04.png",
+          "sourceRect": [
+            98,
+            533,
+            385,
+            813
+          ],
+          "paste": [
+            132,
+            124
+          ],
+          "bounds": [
+            132,
+            124,
+            419,
+            404
+          ],
+          "margin": 93,
+          "sha256": "c0ef64cf74280ac4a69935ecd87082017f82e5ec610ccccd551adb56eedc296e"
+        },
+        {
+          "file": "guard-05.png",
+          "sourceRect": [
+            564,
+            533,
+            785,
+            809
+          ],
+          "paste": [
+            155,
+            124
+          ],
+          "bounds": [
+            155,
+            124,
+            376,
+            400
+          ],
+          "margin": 112,
+          "sha256": "11814da0169d69f9e39c8fcfd76fddb13cb9b8071a606cdbd64ce8712a2de335"
+        },
+        {
+          "file": "guard-06.png",
+          "sourceRect": [
+            1045,
+            553,
+            1242,
+            774
+          ],
+          "paste": [
+            192,
+            144
+          ],
+          "bounds": [
+            192,
+            144,
+            389,
+            365
+          ],
+          "margin": 123,
+          "sha256": "85b561f69bb26d46378d0cfed4b6aeb65a15762637ca411eccd8d818295d8d28"
+        },
+        {
+          "file": "guard-07.png",
+          "sourceRect": [
+            1527,
+            595,
+            1646,
+            737
+          ],
+          "paste": [
+            231,
+            186
+          ],
+          "bounds": [
+            231,
+            186,
+            350,
+            328
+          ],
+          "margin": 162,
+          "sha256": "eb87952a8eee9799ab13cc0f21ef0d721f71ccbdf6566b4c6924484d089c0425"
+        }
+      ]
+    },
+    "parry": {
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "frames": [
+        {
+          "file": "parry-00.png",
+          "sourceRect": [
+            148,
+            148,
+            327,
+            321
+          ],
+          "paste": [
+            182,
+            182
+          ],
+          "bounds": [
+            182,
+            182,
+            361,
+            355
+          ],
+          "margin": 151,
+          "sha256": "c1818b7a6ce24751680b14b5067974cdba7356f08c77813ac4fa663d3f5ab642"
+        },
+        {
+          "file": "parry-01.png",
+          "sourceRect": [
+            561,
+            112,
+            788,
+            331
+          ],
+          "paste": [
+            152,
+            146
+          ],
+          "bounds": [
+            152,
+            146,
+            379,
+            365
+          ],
+          "margin": 133,
+          "sha256": "5214c567f534cfadde1683e2b6f9c3362a11128174edfe16abed64e09c687cc5"
+        },
+        {
+          "file": "parry-02.png",
+          "sourceRect": [
+            969,
+            84,
+            1279,
+            375
+          ],
+          "paste": [
+            116,
+            118
+          ],
+          "bounds": [
+            116,
+            118,
+            426,
+            409
+          ],
+          "margin": 86,
+          "sha256": "992d8367d922019be72546fb595762711844020b06103c3a4bdf0ed2b3a408a9"
+        },
+        {
+          "file": "parry-03.png",
+          "sourceRect": [
+            1392,
+            80,
+            1728,
+            373
+          ],
+          "paste": [
+            96,
+            114
+          ],
+          "bounds": [
+            96,
+            114,
+            432,
+            407
+          ],
+          "margin": 80,
+          "sha256": "2cf836db8e5f8f73db5895e47d30a35b9a4b9ef708a51f36e845169fc266a7a4"
+        },
+        {
+          "file": "parry-04.png",
+          "sourceRect": [
+            90,
+            523,
+            403,
+            790
+          ],
+          "paste": [
+            124,
+            114
+          ],
+          "bounds": [
+            124,
+            114,
+            437,
+            381
+          ],
+          "margin": 75,
+          "sha256": "1fad95aad765bb136a682120377c4145d00d9eb5205d93983e4d6da6dc3b088f"
+        },
+        {
+          "file": "parry-05.png",
+          "sourceRect": [
+            541,
+            535,
+            809,
+            772
+          ],
+          "paste": [
+            132,
+            126
+          ],
+          "bounds": [
+            132,
+            126,
+            400,
+            363
+          ],
+          "margin": 112,
+          "sha256": "a13ce8fb1becc690f77090f09cdd331bc6dedb2a1707867e8ae53be8b9c022b6"
+        },
+        {
+          "file": "parry-06.png",
+          "sourceRect": [
+            1011,
+            553,
+            1246,
+            755
+          ],
+          "paste": [
+            158,
+            144
+          ],
+          "bounds": [
+            158,
+            144,
+            393,
+            346
+          ],
+          "margin": 119,
+          "sha256": "50f531198a32f0520b2a6ebb88cbbeaf78f5a07de313b80c581362a0f5ba8ef2"
+        },
+        {
+          "file": "parry-07.png",
+          "sourceRect": [
+            1491,
+            604,
+            1649,
+            724
+          ],
+          "paste": [
+            195,
+            195
+          ],
+          "bounds": [
+            195,
+            195,
+            353,
+            315
+          ],
+          "margin": 159,
+          "sha256": "7333110c9a734e48e0c5e02bea1b5739c8fea247ec6816e45a2afea7f37e14f2"
+        }
+      ]
+    },
+    "finisher": {
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "frames": [
+        {
+          "file": "finisher-00.png",
+          "sourceRect": [
+            132,
+            167,
+            286,
+            351
+          ],
+          "paste": [
+            166,
+            201
+          ],
+          "bounds": [
+            166,
+            201,
+            320,
+            385
+          ],
+          "margin": 127,
+          "sha256": "909d872625d31f07806f60d0d29bb395813c8aa14560cf8e2927ae235c5a223d"
+        },
+        {
+          "file": "finisher-01.png",
+          "sourceRect": [
+            532,
+            138,
+            768,
+            371
+          ],
+          "paste": [
+            123,
+            172
+          ],
+          "bounds": [
+            123,
+            172,
+            359,
+            405
+          ],
+          "margin": 107,
+          "sha256": "cad525fa7d34a423da12dfd1846bf2c0cee20cca6b23a4236a54d7baf45e82cf"
+        },
+        {
+          "file": "finisher-02.png",
+          "sourceRect": [
+            915,
+            47,
+            1325,
+            403
+          ],
+          "paste": [
+            62,
+            81
+          ],
+          "bounds": [
+            62,
+            81,
+            472,
+            437
+          ],
+          "margin": 40,
+          "sha256": "e445bc0c7a5df2487ee0c8c64233a7e7a1b44a6b08b040d8d6e905b826c7a9b3"
+        },
+        {
+          "file": "finisher-03.png",
+          "sourceRect": [
+            1360,
+            98,
+            1735,
+            400
+          ],
+          "paste": [
+            64,
+            132
+          ],
+          "bounds": [
+            64,
+            132,
+            439,
+            434
+          ],
+          "margin": 64,
+          "sha256": "0521d06afd01a8936a8075193f109a109276b84a93712bbd4508279ad21314b3"
+        },
+        {
+          "file": "finisher-04.png",
+          "sourceRect": [
+            72,
+            526,
+            406,
+            799
+          ],
+          "paste": [
+            106,
+            117
+          ],
+          "bounds": [
+            106,
+            117,
+            440,
+            390
+          ],
+          "margin": 72,
+          "sha256": "e1d7c5dba8f0650edb676e0c661df3218be4118db8fc0b51d215afa918d7f1e0"
+        },
+        {
+          "file": "finisher-05.png",
+          "sourceRect": [
+            507,
+            521,
+            825,
+            794
+          ],
+          "paste": [
+            98,
+            112
+          ],
+          "bounds": [
+            98,
+            112,
+            416,
+            385
+          ],
+          "margin": 96,
+          "sha256": "1bb94ccd94592009b758ca6b43afa91b3068208e11ea8e98f09cb91d4e82b03e"
+        },
+        {
+          "file": "finisher-06.png",
+          "sourceRect": [
+            972,
+            539,
+            1272,
+            788
+          ],
+          "paste": [
+            119,
+            130
+          ],
+          "bounds": [
+            119,
+            130,
+            419,
+            379
+          ],
+          "margin": 93,
+          "sha256": "b9b4bef9ae78ed22f9ce65e51b3fd46e7481fab6adc0747d0732f159300a1760"
+        },
+        {
+          "file": "finisher-07.png",
+          "sourceRect": [
+            1461,
+            580,
+            1659,
+            757
+          ],
+          "paste": [
+            165,
+            171
+          ],
+          "bounds": [
+            165,
+            171,
+            363,
+            348
+          ],
+          "margin": 149,
+          "sha256": "5c2a4aac8686ba26f918da2d794df49564150c56f3c0df9f52726dd533ffa56c"
+        }
+      ]
+    },
+    "dash": {
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "frames": [
+        {
+          "file": "dash-00.png",
+          "sourceRect": [
+            116,
+            178,
+            309,
+            251
+          ],
+          "paste": [
+            150,
+            212
+          ],
+          "bounds": [
+            150,
+            212,
+            343,
+            285
+          ],
+          "margin": 150,
+          "sha256": "3f229eb989368a92900430afe90a011aaf26b6602b84e508c65cdb2fa3a99561"
+        },
+        {
+          "file": "dash-01.png",
+          "sourceRect": [
+            516,
+            160,
+            809,
+            261
+          ],
+          "paste": [
+            107,
+            194
+          ],
+          "bounds": [
+            107,
+            194,
+            400,
+            295
+          ],
+          "margin": 107,
+          "sha256": "33dd0237f606d22fb1c5614fa53180bd730f423bbd70ba2a54d150ab2f7030a2"
+        },
+        {
+          "file": "dash-02.png",
+          "sourceRect": [
+            920,
+            152,
+            1278,
+            288
+          ],
+          "paste": [
+            67,
+            186
+          ],
+          "bounds": [
+            67,
+            186,
+            425,
+            322
+          ],
+          "margin": 67,
+          "sha256": "fd053d69cdbbc8dcdacae2fa0499babe7712e518df54d7c8094945207df2acb7"
+        },
+        {
+          "file": "dash-03.png",
+          "sourceRect": [
+            1328,
+            136,
+            1743,
+            306
+          ],
+          "paste": [
+            32,
+            170
+          ],
+          "bounds": [
+            32,
+            170,
+            447,
+            340
+          ],
+          "margin": 32,
+          "sha256": "fc40afdef44747d7d350537a8cb4f14bdb6b086c18e49980199946582472287b"
+        },
+        {
+          "file": "dash-04.png",
+          "sourceRect": [
+            17,
+            582,
+            425,
+            742
+          ],
+          "paste": [
+            51,
+            173
+          ],
+          "bounds": [
+            51,
+            173,
+            459,
+            333
+          ],
+          "margin": 51,
+          "sha256": "c7a4f33f1cbe1faa0fa7bfb4ce6e6e5bf401c1e997eab87883e4c3e01479a937"
+        },
+        {
+          "file": "dash-05.png",
+          "sourceRect": [
+            463,
+            595,
+            855,
+            722
+          ],
+          "paste": [
+            54,
+            186
+          ],
+          "bounds": [
+            54,
+            186,
+            446,
+            313
+          ],
+          "margin": 54,
+          "sha256": "70067346fd9b5b95b558873f68b491854c0383577c6acb3edf4cc2240a6a01c6"
+        },
+        {
+          "file": "dash-06.png",
+          "sourceRect": [
+            950,
+            620,
+            1267,
+            709
+          ],
+          "paste": [
+            97,
+            211
+          ],
+          "bounds": [
+            97,
+            211,
+            414,
+            300
+          ],
+          "margin": 97,
+          "sha256": "cc0fc425fb0806c3b3a40e369fb683ea2b5995f52fb6a4138ab6e61751240c8e"
+        },
+        {
+          "file": "dash-07.png",
+          "sourceRect": [
+            1432,
+            635,
+            1643,
+            692
+          ],
+          "paste": [
+            136,
+            226
+          ],
+          "bounds": [
+            136,
+            226,
+            347,
+            283
+          ],
+          "margin": 136,
+          "sha256": "2f5998cbfd0506b6fded7ac28ed0de2d16f68a86fbc654b191a3e07b91ab2768"
+        }
+      ]
+    },
+    "victory": {
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "frames": [
+        {
+          "file": "victory-00.png",
+          "sourceRect": [
+            146,
+            229,
+            293,
+            359
+          ],
+          "paste": [
+            180,
+            263
+          ],
+          "bounds": [
+            180,
+            263,
+            327,
+            393
+          ],
+          "margin": 119,
+          "sha256": "d271c8e9f41f2404068c69041975264be5b1a9a62f609bf618aeff9912b61250"
+        },
+        {
+          "file": "victory-01.png",
+          "sourceRect": [
+            551,
+            168,
+            761,
+            382
+          ],
+          "paste": [
+            142,
+            202
+          ],
+          "bounds": [
+            142,
+            202,
+            352,
+            416
+          ],
+          "margin": 96,
+          "sha256": "63b24443563a8cc4efbfb9be2fd9c10fb759d86cbf04fb73dabc71935f879124"
+        },
+        {
+          "file": "victory-02.png",
+          "sourceRect": [
+            952,
+            102,
+            1246,
+            403
+          ],
+          "paste": [
+            99,
+            136
+          ],
+          "bounds": [
+            99,
+            136,
+            393,
+            437
+          ],
+          "margin": 75,
+          "sha256": "6fc223004edb3fcb1220a7484674d4240abe2ca66adf4fe079345af1e9df5b0e"
+        },
+        {
+          "file": "victory-03.png",
+          "sourceRect": [
+            1360,
+            76,
+            1724,
+            417
+          ],
+          "paste": [
+            64,
+            110
+          ],
+          "bounds": [
+            64,
+            110,
+            428,
+            451
+          ],
+          "margin": 61,
+          "sha256": "926ea04ac8f908300d4775bbbe0f24d987ad630c098d69a5fcd43056b38e057c"
+        },
+        {
+          "file": "victory-04.png",
+          "sourceRect": [
+            53,
+            513,
+            431,
+            825
+          ],
+          "paste": [
+            87,
+            104
+          ],
+          "bounds": [
+            87,
+            104,
+            465,
+            416
+          ],
+          "margin": 47,
+          "sha256": "c217c615fc6f7140498c2e3632d30a477d25ad4011976ad1d364c7fd9e8d9141"
+        },
+        {
+          "file": "victory-05.png",
+          "sourceRect": [
+            537,
+            539,
+            837,
+            825
+          ],
+          "paste": [
+            128,
+            130
+          ],
+          "bounds": [
+            128,
+            130,
+            428,
+            416
+          ],
+          "margin": 84,
+          "sha256": "e582e22d4109b757ee60d3958f542f406c7bdae5b2cdd127faf1bb42fae43f55"
+        },
+        {
+          "file": "victory-06.png",
+          "sourceRect": [
+            995,
+            563,
+            1246,
+            820
+          ],
+          "paste": [
+            142,
+            154
+          ],
+          "bounds": [
+            142,
+            154,
+            393,
+            411
+          ],
+          "margin": 101,
+          "sha256": "ca21d4b9ba8a314acec141c15aa511a64edb26154b983e57238399abfedf7a25"
+        },
+        {
+          "file": "victory-07.png",
+          "sourceRect": [
+            1485,
+            616,
+            1644,
+            766
+          ],
+          "paste": [
+            189,
+            207
+          ],
+          "bounds": [
+            189,
+            207,
+            348,
+            357
+          ],
+          "margin": 155,
+          "sha256": "aad02f5b2d76db582677f0462f6656d86552636b2d366b06bf82b7cecbb4c381"
+        }
+      ]
+    },
+    "special": {
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "frames": [
+        {
+          "file": "special-00.png",
+          "sourceRect": [
+            180,
+            214,
+            276,
+            297
+          ],
+          "paste": [
+            214,
+            248
+          ],
+          "bounds": [
+            214,
+            248,
+            310,
+            331
+          ],
+          "margin": 181,
+          "sha256": "a5d9c3a50c0822b893e5d8fb8efa5d82d1d1fcbfe698aaf32e72b29d1919a3ff"
+        },
+        {
+          "file": "special-01.png",
+          "sourceRect": [
+            577,
+            188,
+            756,
+            324
+          ],
+          "paste": [
+            168,
+            222
+          ],
+          "bounds": [
+            168,
+            222,
+            347,
+            358
+          ],
+          "margin": 154,
+          "sha256": "8240e747db9686fb9ecb12698afb299503861bb276c46c39f4c3d19f1e882e13"
+        },
+        {
+          "file": "special-02.png",
+          "sourceRect": [
+            962,
+            179,
+            1212,
+            323
+          ],
+          "paste": [
+            109,
+            213
+          ],
+          "bounds": [
+            109,
+            213,
+            359,
+            357
+          ],
+          "margin": 109,
+          "sha256": "8614acf1f78ae9f7130e7713a90609ecf35b05e875ac9a472c9253bd00e93e1e"
+        },
+        {
+          "file": "special-03.png",
+          "sourceRect": [
+            1319,
+            168,
+            1724,
+            373
+          ],
+          "paste": [
+            23,
+            202
+          ],
+          "bounds": [
+            23,
+            202,
+            428,
+            407
+          ],
+          "margin": 23,
+          "sha256": "8648ac0e7afda0404c622cdb2c23eb2d9ed86b8d91225bbff74b0a55f2667bc8"
+        },
+        {
+          "file": "special-04.png",
+          "sourceRect": [
+            59,
+            606,
+            405,
+            742
+          ],
+          "paste": [
+            93,
+            197
+          ],
+          "bounds": [
+            93,
+            197,
+            439,
+            333
+          ],
+          "margin": 73,
+          "sha256": "5fa89173bf9c9eb267307ec0f47a75ed48627a71b706bba761398d55fc75bbe7"
+        },
+        {
+          "file": "special-05.png",
+          "sourceRect": [
+            527,
+            603,
+            845,
+            727
+          ],
+          "paste": [
+            118,
+            194
+          ],
+          "bounds": [
+            118,
+            194,
+            436,
+            318
+          ],
+          "margin": 76,
+          "sha256": "c638ccc66b0a247f03dc8a828d14f27cdfedd0b5efec598f3becfd23570af097"
+        },
+        {
+          "file": "special-06.png",
+          "sourceRect": [
+            977,
+            612,
+            1252,
+            717
+          ],
+          "paste": [
+            124,
+            203
+          ],
+          "bounds": [
+            124,
+            203,
+            399,
+            308
+          ],
+          "margin": 113,
+          "sha256": "a61ef9d4776f3ee006efe7e64804136cea42ed0f774ee06b3be42ac04901d524"
+        },
+        {
+          "file": "special-07.png",
+          "sourceRect": [
+            1446,
+            628,
+            1639,
+            706
+          ],
+          "paste": [
+            150,
+            219
+          ],
+          "bounds": [
+            150,
+            219,
+            343,
+            297
+          ],
+          "margin": 150,
+          "sha256": "972838ef113c137b91af2675b97c642f5dda298ec6457a50da5096dfb1c73603"
+        }
+      ]
+    }
+  }
+}

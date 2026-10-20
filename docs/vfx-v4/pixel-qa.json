@@ -1,0 +1,52 @@
+{
+  "slash": {
+    "frames": 8,
+    "minimumTransparentMargin": 34,
+    "sourcePixelsPreserved": true
+  },
+  "sweep": {
+    "frames": 8,
+    "minimumTransparentMargin": 51,
+    "sourcePixelsPreserved": true
+  },
+  "thrust": {
+    "frames": 8,
+    "minimumTransparentMargin": 44,
+    "sourcePixelsPreserved": true
+  },
+  "hit": {
+    "frames": 8,
+    "minimumTransparentMargin": 94,
+    "sourcePixelsPreserved": true
+  },
+  "guard": {
+    "frames": 8,
+    "minimumTransparentMargin": 81,
+    "sourcePixelsPreserved": true
+  },
+  "parry": {
+    "frames": 8,
+    "minimumTransparentMargin": 75,
+    "sourcePixelsPreserved": true
+  },
+  "finisher": {
+    "frames": 8,
+    "minimumTransparentMargin": 40,
+    "sourcePixelsPreserved": true
+  },
+  "dash": {
+    "frames": 8,
+    "minimumTransparentMargin": 32,
+    "sourcePixelsPreserved": true
+  },
+  "victory": {
+    "frames": 8,
+    "minimumTransparentMargin": 47,
+    "sourcePixelsPreserved": true
+  },
+  "special": {
+    "frames": 8,
+    "minimumTransparentMargin": 23,
+    "sourcePixelsPreserved": true
+  }
+}

@@ -49,9 +49,9 @@ jobs:
         run: node scripts/qa_arena_motion_browser.mjs
       - name: Verify all gladiator sprites preserve original aspect ratio in battle
         run: node scripts/qa_fighter_proportions_browser.mjs
-      - name: Verify 8 animated painterly VFX families and actual attack wiring
+      - name: Verify 80 isolated PNG frames and actual attack wiring
         env:
           VFX_GALLERY_PREVIEW: '1'
-        run: node scripts/qa_arena_vfx_browser.mjs
+        run: node scripts/qa_directional_vfx.mjs
       - name: Ensure BOTH fighters stay rendered throughout a perfect parry
         run: node scripts/qa_parry_visibility_browser.mjs

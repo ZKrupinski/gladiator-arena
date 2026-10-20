@@ -1,13 +1,13 @@
-name: Approved PNG eight-frame VFX integration
+name: Isolated directional PNG VFX integration
 on:
   push:
     branches: [main]
     paths:
       - public/arena-raster-vfx.js
       - public/index.html
-      - public/assets/new-era/cinematic/combat-directional-8f.png
-      - public/assets/new-era/cinematic/victory-directional-8f.png
-      - scripts/qa_raster_vfx_browser.mjs
+      - public/vfx-gallery.html
+      - public/assets/new-era/directional-v4/**
+      - scripts/qa_directional*
       - .github/workflows/raster-vfx-qa.yml
   workflow_dispatch:
 jobs:
@@ -18,29 +18,24 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
-      - name: Confirm original PNG binary size and geometry
+      - name: Verify every source cut and transparent gutter
         run: |
-          python - <<'PY'
-          import struct,os
-          for f in ['combat','victory']:
-           p=f'public/assets/new-era/cinematic/{f}-directional-8f.png'
-           with open(p,'rb') as io:
-            data=io.read(24)
-           assert data[:8]==b'\x89PNG\r\n\x1a\n'
-           w,h=struct.unpack('>II',data[16:24])
-           assert (w,h)==(1920,960),(p,w,h)
-           assert os.stat(p).st_size>500000
-          print('APPROVED_ACTUAL_PNG_BINARY_PASS')
-          PY
+          pip install pillow numpy
+          python scripts/qa_directional_frames.py
       - name: Check JavaScript syntax
         run: node --check public/arena-raster-vfx.js
       - name: Install Chromium
         run: |
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
-      - name: Host real game resources
+      - name: Host game
         run: |
-          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/gladiator-png-qa.log 2>&1 &
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/vfx.log 2>&1 &
           sleep 3
-      - name: Verify 16 real PNG frames, directions, separate victory petals and game loading
-        run: node scripts/qa_raster_vfx_browser.mjs
+      - name: Verify all frames, left/right pixels and real combat events
+        run: node scripts/qa_directional_vfx.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: directional-vfx-review
+          path: docs/vfx-v4/

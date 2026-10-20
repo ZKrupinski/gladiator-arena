@@ -1,86 +1,55 @@
-/* GLADIATOR ARENA | Approved 8-frame painted RGBA VFX (raster only).
- * Sources: binary PNG sprites personally approved by the game's art director.
- * 4 columns x 2 rows, each frame exactly 480 x 480 RGBA, 1920x960 atlas.
- * No procedural shapes, paths, fake vector flashes, DOM SVG or line art.
+/* Directional VFX v4: ten authored eight-frame RGBA sequences.
+ * Each image contains ONE frame with >=20px transparent safety gutter.
+ * No runtime atlas cuts, fractional source coordinates or neighboring cells.
  */
 (function(root){
  'use strict';
- const GRID={columns:4,rows:2,frameWidth:480,frameHeight:480,frames:8};
- const SOURCE={
-  combat:'assets/new-era/cinematic/combat-directional-8f.png?v=2-actual-png',
-  victory:'assets/new-era/cinematic/victory-directional-8f.png?v=2-actual-png'
- };
- const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,Number.isFinite(x)?x:a));
- const images={},maskedPetals=new Map();
- let failures=0;
- for(const [name,url] of Object.entries(SOURCE)){
-  const img=new Image();
-  img.decoding='async';
-  img.onload=()=>{
-   if(img.naturalWidth!==1920||img.naturalHeight!==960){
-    failures++;
-    console.warn('[8-frame PNG]',name,'incorrect atlas dimensions',img.naturalWidth,img.naturalHeight);
-   }
-  };
-  img.onerror=()=>{failures++;console.warn('[8-frame PNG] missing:',name,url)};
-  img.src=url;images[name]=img;
+ const VERSION='4.0.0',SIZE=512,COUNT=8,BASE='assets/new-era/directional-v4/';
+ const durations={slash:.24,sweep:.24,thrust:.26,hit:.22,guard:.32,
+  parry:.29,finisher:.60,dash:.54,special:.59,victory:1.87};
+ const FAMILIES=Object.freeze(Object.fromEntries(Object.entries(durations).map(([kind,duration])=>
+  [kind,Object.freeze({frames:COUNT,width:SIZE,height:SIZE,duration})])));
+ const images={},petals=new Map();let failures=0;
+ const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,Number.isFinite(v)?v:a));
+ for(const kind of Object.keys(FAMILIES)){
+  images[kind]=Array.from({length:COUNT},(_,i)=>{
+   const img=new Image();img.decoding='async';
+   img.onerror=()=>{failures++;console.warn('[Directional VFX] missing frame',kind,i)};
+   img.onload=()=>{if(img.naturalWidth!==SIZE||img.naturalHeight!==SIZE){
+    failures++;console.warn('[Directional VFX] invalid frame size',kind,i);
+   }};
+   img.src=BASE+kind+'-'+String(i).padStart(2,'0')+'.png?v=4';return img;
+  });
  }
- function ready(kind){
-  const i=images[kind];return !!i&&i.complete&&i.naturalWidth===1920&&i.naturalHeight===960;
- }
- function frameIndex(progress){
-  return Math.min(7,Math.floor(clamp(progress,0,.999999)*8));
- }
- function rect(index){return {sx:(index%4)*480,sy:Math.floor(index/4)*480,sw:480,sh:480}}
+ const ready=kind=>!!images[kind]&&images[kind].every(i=>i.complete&&i.naturalWidth===SIZE&&i.naturalHeight===SIZE);
+ const frameIndex=progress=>Math.min(COUNT-1,Math.floor(clamp(progress,0,.999999)*COUNT));
+ function frame(kind,index){return ready(kind)?images[kind][Math.max(0,Math.min(COUNT-1,index|0))]:null}
  function frontPetals(index){
-  if(maskedPetals.has(index))return maskedPetals.get(index);
-  if(!ready('victory'))return null;
-  // Pixel-mask the PINK petals from the approved painted PNG itself. There are
-  // no geometrical/vector additions. The rest of the original PNG remains
-  // completely behind the fighter as a glow/halo/ground-light texture.
-  const c=document.createElement('canvas');c.width=480;c.height=480;
-  const g=c.getContext('2d',{alpha:true,willReadFrequently:true});
-  const r=rect(index);
-  g.drawImage(images.victory,r.sx,r.sy,480,480,0,0,480,480);
-  const img=g.getImageData(0,0,480,480),data=img.data;
-  for(let k=0;k<data.length;k+=4){
-   const red=data[k],green=data[k+1],blue=data[k+2];
-   // Gold halo has low blue. Pink petals are pink-lavender with higher blue.
-   // Feathers are retained with their existing anti-aliased alpha edges.
-   if(red<150||blue<100||red<green*1.08||blue<green*.80) data[k+3]=0;
+  if(petals.has(index))return petals.get(index);
+  const image=frame('victory',index);if(!image)return null;
+  const c=document.createElement('canvas');c.width=c.height=SIZE;
+  const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(image,0,0);
+  const pixels=g.getImageData(0,0,SIZE,SIZE),d=pixels.data;
+  for(let i=0;i<d.length;i+=4){
+   if(d[i]<150||d[i+2]<100||d[i]<d[i+1]*1.08||d[i+2]<d[i+1]*.80)d[i+3]=0;
   }
-  g.putImageData(img,0,0);
-  maskedPetals.set(index,c);
-  return c;
+  g.putImageData(pixels,0,0);petals.set(index,c);return c;
  }
  function draw(ctx,kind,x,y,w,h,progress=0,alpha=1,face=1,rotation=0,layer='all'){
-  if(!ctx||!ready(kind))return false;
-  const index=frameIndex(progress),r=rect(index);
-  ctx.save();
-  ctx.translate(x,y);
-  ctx.rotate(rotation);
-  // Negative face mirrors an already forward-directed painterly source.
-  // This yields exactly the matching pre-separated left-hand PNG frames.
+  const index=frameIndex(progress),image=layer==='front'&&kind==='victory'?frontPetals(index):frame(kind,index);
+  if(!ctx||!image)return false;
+  ctx.save();ctx.translate(x,y);
+  // Mirror the complete local effect, including its angle, around the fighter.
   if(face<0)ctx.scale(-1,1);
-  ctx.globalAlpha=clamp(alpha);
-  if(layer==='front'&&kind==='victory'){
-   const petals=frontPetals(index);
-   if(petals)ctx.drawImage(petals,-w/2,-h/2,w,h);
-  }else{
-   ctx.drawImage(images[kind],r.sx,r.sy,r.sw,r.sh,-w/2,-h/2,w,h);
-  }
-  ctx.restore();
-  return true;
+  ctx.rotate(rotation);ctx.globalAlpha=clamp(alpha);
+  ctx.drawImage(image,-w/2,-h/2,w,h);ctx.restore();return true;
  }
  function inspect(kind,progress=.5){
-  if(!ready(kind))return {kind,ready:false};
-  const frame=frameIndex(progress),bounds=rect(frame);
-  return {kind,ready:true,frame,frames:8,width:480,height:480,
-   nativeImageSize:[images[kind].naturalWidth,images[kind].naturalHeight],
-   bounds,source:SOURCE[kind],raster:true};
+  const index=frameIndex(progress),image=frame(kind,index);
+  return {kind,ready:!!image,index,frame:index,frames:COUNT,width:SIZE,height:SIZE,
+   source:image?.src||null,isolated:true,raster:true};
  }
- root.ArenaRasterFX=Object.freeze({
-  version:'2.0.0-png',GRID,SOURCE,ready,frameIndex,rect,draw,inspect,
-  status:()=>({version:'2.0.0-png',frames:8,ready:Object.fromEntries(Object.keys(SOURCE).map(k=>[k,ready(k)])),failures,source:'approved binary PNG only'})
- });
+ root.ArenaRasterFX=Object.freeze({version:VERSION,FAMILIES,ready,frameIndex,frame,draw,inspect,
+  status:()=>({version:VERSION,frames:COUNT,families:Object.keys(FAMILIES),
+   ready:Object.fromEntries(Object.keys(FAMILIES).map(k=>[k,ready(k)])),failures,isolated:true})});
 })(globalThis);

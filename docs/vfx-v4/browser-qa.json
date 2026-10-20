@@ -1,0 +1,495 @@
+{
+  "base": "http://127.0.0.1:8765",
+  "pixels": {
+    "slash": {
+      "unique": 8,
+      "mirrors": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "sweep": {
+      "unique": 8,
+      "mirrors": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "thrust": {
+      "unique": 8,
+      "mirrors": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "hit": {
+      "unique": 8,
+      "mirrors": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "guard": {
+      "unique": 8,
+      "mirrors": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "parry": {
+      "unique": 8,
+      "mirrors": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "finisher": {
+      "unique": 8,
+      "mirrors": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "dash": {
+      "unique": 8,
+      "mirrors": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "special": {
+      "unique": 8,
+      "mirrors": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "victory": {
+      "unique": 8,
+      "mirrors": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "events": [
+    {
+      "direction": 1,
+      "action": "ordinary",
+      "calls": [
+        {
+          "source": "slash-03.png",
+          "args": 4,
+          "sign": 1
+        }
+      ],
+      "sounds": [
+        "swing",
+        "hit"
+      ],
+      "phase": "fight",
+      "sequences": [
+        "slash"
+      ],
+      "kick": "strike",
+      "shake": 6,
+      "playerHp": 138,
+      "enemyHp": 96
+    },
+    {
+      "direction": 1,
+      "action": "guard",
+      "calls": [
+        {
+          "source": "guard-03.png",
+          "args": 4,
+          "sign": -1
+        }
+      ],
+      "sounds": [
+        "swing",
+        "block"
+      ],
+      "phase": "fight",
+      "sequences": [
+        "guard"
+      ],
+      "kick": "guard",
+      "shake": 6,
+      "playerHp": 138,
+      "enemyHp": 110.28
+    },
+    {
+      "direction": 1,
+      "action": "parry",
+      "calls": [
+        {
+          "source": "dash-03.png",
+          "args": 4,
+          "sign": 1
+        },
+        {
+          "source": "parry-03.png",
+          "args": 4,
+          "sign": -1
+        },
+        {
+          "source": "guard-03.png",
+          "args": 4,
+          "sign": -1
+        }
+      ],
+      "sounds": [
+        "swing",
+        "parry"
+      ],
+      "phase": "fight",
+      "sequences": [
+        "parry",
+        "guard",
+        "dash"
+      ],
+      "focus": "parry",
+      "kick": "parry",
+      "shake": 32,
+      "playerHp": 120,
+      "enemyHp": 113
+    },
+    {
+      "direction": 1,
+      "action": "special",
+      "calls": [
+        {
+          "source": "special-03.png",
+          "args": 4,
+          "sign": 1
+        },
+        {
+          "source": "hit-03.png",
+          "args": 4,
+          "sign": 1
+        }
+      ],
+      "sounds": [
+        "heavy_swing",
+        "heavy_hit"
+      ],
+      "phase": "fight",
+      "sequences": [
+        "special",
+        "hit"
+      ],
+      "kick": "special",
+      "shake": 14,
+      "playerHp": 138,
+      "enemyHp": 71
+    },
+    {
+      "direction": 1,
+      "action": "dash",
+      "calls": [
+        {
+          "source": "dash-03.png",
+          "args": 4,
+          "sign": 1
+        },
+        {
+          "source": "hit-03.png",
+          "args": 4,
+          "sign": 1
+        }
+      ],
+      "sounds": [
+        "dash_hit"
+      ],
+      "phase": "fight",
+      "sequences": [
+        "dash",
+        "hit"
+      ],
+      "focus": "dash",
+      "kick": "dash",
+      "shake": 36,
+      "playerHp": 138,
+      "enemyHp": 63
+    },
+    {
+      "direction": 1,
+      "action": "finisher",
+      "calls": [
+        {
+          "source": "victory-02.png",
+          "args": 4,
+          "sign": 1
+        },
+        {
+          "source": "victory-02.png",
+          "args": 2,
+          "sign": 1
+        },
+        {
+          "source": "finisher-03.png",
+          "args": 4,
+          "sign": 1
+        }
+      ],
+      "sounds": [
+        "swing",
+        "hit",
+        "finisher"
+      ],
+      "phase": "finisher",
+      "sequences": [
+        "finisher"
+      ],
+      "kick": "strike",
+      "shake": 22,
+      "playerHp": 138,
+      "enemyHp": 0
+    },
+    {
+      "direction": -1,
+      "action": "ordinary",
+      "calls": [
+        {
+          "source": "slash-03.png",
+          "args": 4,
+          "sign": -1
+        }
+      ],
+      "sounds": [
+        "swing",
+        "hit"
+      ],
+      "phase": "fight",
+      "sequences": [
+        "slash"
+      ],
+      "kick": "strike",
+      "shake": 6,
+      "playerHp": 138,
+      "enemyHp": 96
+    },
+    {
+      "direction": -1,
+      "action": "guard",
+      "calls": [
+        {
+          "source": "guard-03.png",
+          "args": 4,
+          "sign": 1
+        }
+      ],
+      "sounds": [
+        "swing",
+        "block"
+      ],
+      "phase": "fight",
+      "sequences": [
+        "guard"
+      ],
+      "kick": "guard",
+      "shake": 6,
+      "playerHp": 138,
+      "enemyHp": 110.28
+    },
+    {
+      "direction": -1,
+      "action": "parry",
+      "calls": [
+        {
+          "source": "dash-03.png",
+          "args": 4,
+          "sign": -1
+        },
+        {
+          "source": "parry-03.png",
+          "args": 4,
+          "sign": 1
+        },
+        {
+          "source": "guard-03.png",
+          "args": 4,
+          "sign": 1
+        }
+      ],
+      "sounds": [
+        "swing",
+        "parry"
+      ],
+      "phase": "fight",
+      "sequences": [
+        "parry",
+        "guard",
+        "dash"
+      ],
+      "focus": "parry",
+      "kick": "parry",
+      "shake": 32,
+      "playerHp": 120,
+      "enemyHp": 113
+    },
+    {
+      "direction": -1,
+      "action": "special",
+      "calls": [
+        {
+          "source": "special-03.png",
+          "args": 4,
+          "sign": -1
+        },
+        {
+          "source": "hit-03.png",
+          "args": 4,
+          "sign": -1
+        }
+      ],
+      "sounds": [
+        "heavy_swing",
+        "heavy_hit"
+      ],
+      "phase": "fight",
+      "sequences": [
+        "special",
+        "hit"
+      ],
+      "kick": "special",
+      "shake": 14,
+      "playerHp": 138,
+      "enemyHp": 71
+    },
+    {
+      "direction": -1,
+      "action": "dash",
+      "calls": [
+        {
+          "source": "dash-03.png",
+          "args": 4,
+          "sign": -1
+        },
+        {
+          "source": "hit-03.png",
+          "args": 4,
+          "sign": -1
+        }
+      ],
+      "sounds": [
+        "dash_hit"
+      ],
+      "phase": "fight",
+      "sequences": [
+        "dash",
+        "hit"
+      ],
+      "focus": "dash",
+      "kick": "dash",
+      "shake": 36,
+      "playerHp": 138,
+      "enemyHp": 63
+    },
+    {
+      "direction": -1,
+      "action": "finisher",
+      "calls": [
+        {
+          "source": "victory-02.png",
+          "args": 4,
+          "sign": -1
+        },
+        {
+          "source": "finisher-03.png",
+          "args": 4,
+          "sign": -1
+        }
+      ],
+      "sounds": [
+        "swing",
+        "hit",
+        "finisher"
+      ],
+      "phase": "finisher",
+      "sequences": [
+        "finisher"
+      ],
+      "kick": "strike",
+      "shake": 22,
+      "playerHp": 138,
+      "enemyHp": 0
+    }
+  ],
+  "timing": [
+    {
+      "kind": "parry",
+      "firstRate": 0.03,
+      "finalRate": 1,
+      "ended": true
+    },
+    {
+      "kind": "dash",
+      "firstRate": 0.03,
+      "finalRate": 1,
+      "ended": true
+    }
+  ],
+  "errors": []
+}
