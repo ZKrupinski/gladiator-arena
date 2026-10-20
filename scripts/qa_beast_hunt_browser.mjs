@@ -113,6 +113,15 @@ try{
   await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
   assert.equal(await page.evaluate(()=>__arenaQA.state.beastHunt),false);
  }
+ // Final single-boss clear offers a distinct path to the six-mode draft.
+ await page.locator('[data-beast-stage="elephant"]').click();
+ await page.waitForFunction(()=>__arenaQA.state.phase==='fight',{timeout:12000});
+ await win();
+ assert.equal(await page.locator('#againBtn').innerText(),'야수 선택으로 돌아가기');
+ assert.equal(await page.locator('#continueBtn').innerText(),'전투 준비로 돌아가기');
+ await page.locator('#continueBtn').click();
+ await page.waitForSelector('#careerHub:not([hidden]) .lc-mode-picker',{timeout:20000});
+ assert.equal(await page.locator('.lc-mode-picker button').count(),6);
  assert.deepEqual(errors,[],'no page script errors');
  console.log('VENATIO_FIVE_BEAST_STAGE_PAYOUT_E2E_PASS');
 }finally{await browser.close();}
