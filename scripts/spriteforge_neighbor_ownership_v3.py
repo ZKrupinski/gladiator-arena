@@ -86,19 +86,38 @@ def remove_proven_foreign(frame, left_neighbor=None, right_neighbor=None):
         mask,info=owner_proof_mask(frame,right_neighbor,"right")
         evidence|=mask;matches.append(info)
     if evidence.any():
-        # 1px halo accounts for interpolation differences; deletion limited to
-        # far-edge x zones where neighbor-centered ownership is proven.
+        # Only the current frame's actual actor is protected. For a detached
+        # foreign head / foot / tail, reliable neighboring pixel provenance
+        # proves ownership of the WHOLE connected island, even if the match
+        # covered just part of it. Size is never an exemption.
+        al=(pixels[:,:,3]>=ALPHA)
+        connected,n=ndimage.label(al,structure=STRUCT)
+        sizes=np.bincount(connected.ravel(),minlength=n+1);sizes[0]=0
+        primary=int(np.argmax(sizes))
         region=ndimage.binary_dilation(evidence,iterations=1)
+        whole_islands=[]
+        for idx in range(1,n+1):
+            if idx==primary:continue
+            island=connected==idx
+            hits=int(np.count_nonzero(island&evidence))
+            if hits>=30 and hits/max(1,int(sizes[idx]))>=.10:
+                region|=island
+                whole_islands.append(idx)
+        # Do not extrapolate a cut THROUGH the dominant current actor: if the
+        # foreign part touches it, clear only independently pixel-proven area,
+        # and BLOCK visual approval for any unverified remainder.
         x=np.arange(512)[None,:]
-        region&=((x<100) if left_neighbor is not None and right_neighbor is None else
-                 (x>412) if right_neighbor is not None and left_neighbor is None else
-                 ((x<100)|(x>412)))
+        region&=((x<125) if left_neighbor is not None and right_neighbor is None else
+                 (x>387) if right_neighbor is not None and left_neighbor is None else
+                 ((x<125)|(x>387)))
         pixels[region,3]=0
     else:
+        whole_islands=[]
         region=evidence
     report={
        "proofs":matches,"verifiedForeignPixels":int(evidence.sum()),
        "erasedAlphaPixels":int(np.count_nonzero(region & (np.asarray(frame.getchannel("A"))>0))),
+       "removedForeignConnectedIslands":len(whole_islands),
        "needsVisualReview":True,
        "reason":"NEIGHBOR_SOURCE_OWNERSHIP_PROVEN_BUT_CONNECTED_BODY_MAY_REQUIRE_SEMANTIC_REVIEW"
                 if evidence.any() else "UNPROVEN_FOREIGN_BODY_NOT_AUTO_ERASED"
