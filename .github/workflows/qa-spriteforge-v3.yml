@@ -4,9 +4,18 @@ on:
     branches: [main]
     paths:
       - scripts/spriteforge_pipeline_v3.py
+      - scripts/spriteforge_auto_repair_v3.py
+      - scripts/spriteforge_neighbor_ownership_v3.py
+      - scripts/audit_legacy_beasts_spriteforge_v3.py
+      - scripts/build_beast_regeneration_queue_v3.py
       - scripts/test_spriteforge_pipeline_v3.py
+      - scripts/test_spriteforge_auto_repair_v3.py
+      - scripts/test_legacy_beasts_spriteforge_v3.py
+      - scripts/test_beast_regeneration_queue_v3.py
       - .github/workflows/qa-spriteforge-v3.yml
       - config/spriteforge-qc-rules.json
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 jobs:
   spriteforge-v3:
@@ -19,3 +28,9 @@ jobs:
       - run: pip install pillow numpy scipy
       - name: Test generation contract, provider handshake, native resolution, alpha and seam failure
         run: python scripts/test_spriteforge_pipeline_v3.py
+      - name: Test automatic fix / eight-frame regeneration / animated review
+        run: python scripts/test_spriteforge_auto_repair_v3.py
+      - name: Test neighboring-frame whole body deletion, preserving correct actor
+        run: python scripts/test_legacy_beasts_spriteforge_v3.py
+      - name: Ensure unresolved assets become regeneration jobs
+        run: python scripts/test_beast_regeneration_queue_v3.py

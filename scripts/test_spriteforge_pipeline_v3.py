@@ -13,6 +13,8 @@ with tempfile.TemporaryDirectory() as tmp:
     job=json.loads(jobpath.read_text())
     assert job["requiredFrames"]==8 and job["motionsPerJob"]==1
     assert job["nativeFrameMinimum"]==[512,512]
+    assert "frame_ownership_over_pixel_size" in job["rules"]
+    assert "full head, tail or leg" in job["frameOwnershipPolicy"]
     adapter=p/"provider.py"
     adapter.write_text("""
 import sys,json,hashlib
@@ -34,6 +36,15 @@ dest.write_text(json.dumps({"jobSha256":hashlib.sha256(j.read_bytes()).hexdigest
     assert not ok["releaseAuthorized"]
     assert len(list((p/"qa/draft_frames/idle").glob("*.png")))==8
     assert ok["frames"][0]["exportFoot"]==ok["frames"][7]["exportFoot"]
+    # A disconnected neighboring-pose body chunk must block even when it
+    # resembles real anatomy rather than tiny alpha dust.
+    first=p/"frame0.png";before=Image.open(first).copy()
+    contamination=before.copy()
+    ImageDraw.Draw(contamination).ellipse((558,170,612,227),fill=(193,130,70,255))
+    contamination.save(first)
+    body=inspect(jobpath,result,p/"foreign-body-QA")
+    assert "POSSIBLE_FOREIGN_NEIGHBOR_BODY_PART_VERIFY_OWNERSHIP" in str(body["failures"]),body["failures"]
+    before.save(first)
     # Identical poses cannot pass.
     Image.open(p/"frame0.png").save(p/"frame1.png")
     bad=inspect(jobpath,result,p/"duplicate")

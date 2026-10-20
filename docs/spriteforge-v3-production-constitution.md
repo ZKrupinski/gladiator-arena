@@ -22,3 +22,50 @@ A sheet is examined on its full alpha mask BEFORE cutting into cells. If linked 
 Every technical pass is pending an art review and game playback review. No original assets are deleted or overwritten and production release is not authorized. Gameplay root motion and airborne foot anchors still need semantic pose review. All generated failures are scoped to the one animation, not the whole character.
 
 Known limitation: geometry checks alone cannot guarantee source art fidelity or distinguish all connected double bodies. Generation prompt does not provide hard compliance with an image model; the actual outputs are checked afterward. A future provider adapter must be connected before this is an automatic one-step generation tool.
+
+## 2026-10-21 amendment — frame ownership outranks fragment size (mandatory)
+
+A head, leg, paw, tail, torso or ANY anatomy from a different animation frame
+is garbage in the current frame, even if it is a large perfectly drawn body part.
+Conversely, a real part belonging to this frame must never be erased only
+because it is tiny, disconnected, or near an edge.
+
+Before judging connected-component size, compare the source sheet frame identity
+and adjacent frame provenance. For the existing beast 8-column exports,
+`scripts/spriteforge_neighbor_ownership_v3.py` compares pixel correspondence
+against each adjacent extracted pose and may delete foreign-owned body pixels
+at either edge regardless of their size. The per-frame JSON report records
+the evidence and deletions. `scripts/audit_legacy_beasts_spriteforge_v3.py`
+applies this classification to the 200 legacy PNGs on a review branch.
+
+**If attribution is uncertain or two bodies are physically fused, block release
+and request visual reconstruction or regeneration; never report 100% clean.**
+A technical alpha-connected-component PASS never proves correct body ownership.
+The approved original source atlas remains immutable.
+
+## 2026-10-21 amendment — AUTO REPAIR, RE-QA, AND PREVIEW (mandatory)
+
+Known defects must NOT become open-ended user questions. On any failed cut,
+adjacent-frame contamination, missing body, native-resolution failure, wrong
+action, or duplicate pose, **retry the same animation's complete eight frames**
+with the QA error report attached to the next generation job. Repeat technical
+QA on every retry. After each attempt, save `contact.png` and
+`motion.gif`; expose the attempt history so the corrected motion can be
+visually compared before game replacement.
+
+Run:
+```bash
+python scripts/spriteforge_pipeline_v3.py --mode repair \
+  --job /art/wolf-attack/generator_job.json \
+  --adapter /trusted/comfyui_adapter.py \
+  --initial-result /art/wolf-attack/bad-result.json \
+  --max-retries 3 --out /art/wolf-attack/auto-repair
+```
+`--initial-result` is optional for a new animation. An adapter must be
+explicitly installed and connected; NO claimed art creation without it.
+If the adapter is missing, an executable retry job remains queued, not "done".
+
+Regenerate only the failing character/action (8 poses), preserving the
+approved design. Technical pass yields a preview and art/game review, NOT an
+automatic production deployment. If root causes remain unknown after
+reasonable repeated repair attempts, ask the user with concrete evidence.
