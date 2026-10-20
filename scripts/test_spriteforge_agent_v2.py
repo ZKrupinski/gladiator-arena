@@ -31,6 +31,16 @@ with tempfile.TemporaryDirectory() as root:
    assert any(x["errors"] for x in item["frames"])
    assert json.loads((base/case/"regeneration_requests.json").read_text())[0]["status"]=="REGENERATE_ONLY_THIS_ACTION"
   assert not data["mayReplaceGameArt"]
+ # Dynamic extra motion, with its own approved 8-frame timeline and QA contract.
+ curve=[[0,0],[0,-2],[0,-6],[4,-10],[9,-8],[3,-3],[0,0],[0,0]]
+ (base/"extra.json").write_text(json.dumps({"character":"wolf","extraActions":{"custom_howl":{"fps":9,"rootMotion":curve}},"actions":{"custom_howl":"clean.png"}}))
+ extra=execute(base/"extra.json",base/"extra_out",only=["custom_howl"])
+ assert extra["actions"]["custom_howl"]["frameCount"]==8
+ assert extra["actions"]["custom_howl"]["fps"]==9
+ assert extra["actions"]["custom_howl"]["frames"][4]["rootMotion"]=={"dx":9,"dy":-8}
+ policy=json.loads((base/"extra_out"/"generation_contract.json").read_text())
+ assert "guard_and_roar_separate" in policy["qcRuleIds"]
+ assert "custom_howl" in policy["optionalRegistered"]
  assert canonical("attack2")=="sweep" and canonical("attack4")=="heavy"
  assert canonical("special_roar")=="roar"
  assert len(ACTIONS)==9 and "guard" in ACTIONS and "roar" not in ACTIONS
