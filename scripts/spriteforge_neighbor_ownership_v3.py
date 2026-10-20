@@ -110,6 +110,10 @@ def remove_proven_foreign(frame, left_neighbor=None, right_neighbor=None):
         region&=((x<125) if left_neighbor is not None and right_neighbor is None else
                  (x>387) if right_neighbor is not None and left_neighbor is None else
                  ((x<125)|(x>387)))
+        if whole_islands:
+            # Pixel-proven FOREIGN disconnected body pieces get removed IN FULL,
+            # not merely the near-edge slice. Valid central body stays untouched.
+            region|=np.isin(connected,whole_islands)
         pixels[region,3]=0
     else:
         whole_islands=[]
