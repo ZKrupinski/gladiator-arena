@@ -11,22 +11,30 @@ async function lose(){await page.evaluate(()=>{const s=__arenaQA.state;s.resultW
 try{
  await page.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.__arenaQA?.state&&window.LudusBridge&&window.LudusScene,{timeout:25000});
- // Entrance must be visible from the title: do not hide VENATIO in the LUDUS artwork.
- assert.equal(await page.locator('#titleBeastEnter').isVisible(),true);
- assert.equal(await page.locator('#beastQuickAccess').isVisible(),true);
- await page.locator('#titleBeastEnter').click();
- await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
- assert.equal((await page.locator('#careerBeastTab').innerText()).includes('야수전'),true);
- await page.locator('#careerExit').click();
+ // Beast menu must exist ONLY inside the Ludus arena preparation screen.
+ assert.equal(await page.locator('#titleBeastEnter').count(),0);
+ assert.equal(await page.locator('#beastQuickAccess').count(),0);
  await page.locator('#careerEnter').click();
- assert.equal(await page.locator('#ludusScene .ll-beast-quick').isVisible(),true);
- await page.locator('#ludusScene .ll-beast-quick').click();
+ assert.equal(await page.locator('#ludusScene .ll-beast-quick').count(),0);
+ await page.locator('#ludusScene .ll-menu [data-action="arena"]').click();
+ await page.waitForSelector('#careerHub:not([hidden]) .lc-mode-picker');
+ assert.equal(await page.locator('.lc-mode-picker button').count(),6);
+ const buttons=await page.locator('.lc-mode-picker button').allTextContents();
+ assert.equal(buttons[5].includes('야수전'),true);
+ const modeRow=await page.locator('.lc-mode-picker button').evaluateAll(items=>items.map(el=>({x:el.getBoundingClientRect().x,w:el.getBoundingClientRect().width})));
+ assert.equal(modeRow.every((v,i)=>v.w>30&&(i===0||v.x>modeRow[i-1].x)),true,'six modes fit the same horizontal row');
+ await page.locator('.lc-mode-picker [data-beast-hunt]').click();
  await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
  assert.equal(await page.locator('.beast-stage-card').count(),5);
  const types=['wolf','leopard','tiger','lion','elephant'];
  for(const type of types){
   const card=page.locator('.beast-stage-card').filter({has:page.locator('[data-beast-stage="'+type+'"]')});
-  assert.match(await card.locator('.beast-stage-thumb').getAttribute('style'),new RegExp(type+'-40.png'));
+  const img=card.locator('.beast-stage-thumb img');
+  await img.evaluate(el=>el.decode());
+  assert.equal(await img.evaluate(el=>el.naturalWidth),600);
+  assert.equal(await img.evaluate(el=>el.naturalHeight),400);
+  const ratio=await img.evaluate(el=>el.getBoundingClientRect().width/el.getBoundingClientRect().height);
+  assert.ok(Math.abs(ratio-1.5)<.06,'thumb image aspect ratio '+type);
  }
  assert.ok(await page.locator('#beastHeroSelect option').count()>0,'starter gladiator present');
  const initial=await page.evaluate(()=>LudusBridge.state().gold);
@@ -46,6 +54,15 @@ try{
   await page.locator('[data-beast-stage="'+type+'"]').click();
   await page.waitForFunction(()=>__arenaQA.state.phase==='fight',{timeout:10000});
   assert.equal(await page.evaluate(()=>__arenaQA.state.enemy.beastType),type);
+  await page.waitForFunction(type=>ArenaBeasts.status().individual.some(s=>s.name===type&&s.frames===40),type,{timeout:45000});
+  const death=await page.evaluate(()=>{
+   const e=__arenaQA.state.enemy;delete e._beastDeathSince;
+   const one=ArenaBeasts.frameFor(e,'defeat',100).index;
+   const two=ArenaBeasts.frameFor(e,'defeat',100.55).index;
+   const end=ArenaBeasts.frameFor(e,'defeat',101.32).index;
+   return [one,two,end];
+  });
+  assert.deepEqual(death,[0,3,7],type+' all 8 death frames must advance');
   if(type==='elephant'){
    await page.waitForFunction(()=>ArenaBeasts.status().ready.includes('elephant'),{timeout:30000});
    const visible=await page.evaluate(()=>{
