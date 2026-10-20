@@ -1,0 +1,52 @@
+name: Generate independent VENATIO action sprites
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/extract_beast_frames.py
+      - .github/workflows/extract-beast-frames.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: venatio-art-extraction
+  cancel-in-progress: false
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: true}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install pillow numpy scipy
+      - name: Generate independent 40-frame sprite sets and bright thumbnails
+        run: python scripts/extract_beast_frames.py
+      - name: Verify all PNG files have correct alpha and frame count
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          from PIL import Image
+          root=pathlib.Path('public')
+          data=json.loads((root/'assets/beasts/individual/manifest.json').read_text())
+          assert data['count']==200 and len(data['species'])==5
+          for kind,s in data['species'].items():
+              assert Image.open(root/s['thumbnail']).size==(600,400)
+              assert len(s['actions'])==5
+              for action,record in s['actions'].items():
+                  assert len(record['paths'])==8
+                  for p in record['paths']:
+                      im=Image.open(root/p)
+                      assert im.mode=='RGBA' and im.size==(512,512) and im.getbbox(),p
+          print('VENATIO_200_INDEPENDENT_FRAMES_PASS')
+          PY
+      - name: Publish isolated sprites to GitHub main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/assets/beasts/individual/
+          if git diff --cached --quiet; then echo "No generated changes"; exit 0; fi
+          git commit -m "assets(venatio): 200 individual 512px animal sprite PNGs plus five thumbnails"
+          git pull --rebase origin main
+          git push origin HEAD:main
