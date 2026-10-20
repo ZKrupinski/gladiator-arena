@@ -2,6 +2,50 @@
 (function(){'use strict';
 const W=1672,H=941;
 const tiles=[{name:'공격 훈련',stat:'str',help:'공격력 향상'},{name:'방어 훈련',stat:'end',help:'방어 · 지구력 향상'},{name:'체력 훈련',stat:'end',help:'최대 HP 향상'},{name:'민첩 훈련',stat:'agi',help:'행동 속도 향상'},{name:'기술 훈련',stat:'focus',help:'기술 · 집중력 향상'}];
+// All dialogue is text, not painted into any image. One script per training
+// tile (including separate scripts for END defense and endurance training).
+const DOCTORE_SCRIPT=[
+ {title:'ARS GLADII · 공격 훈련',
+  lines:'칼은 팔이 아니라 온몸으로 휘두르는 것이다.\n발을 딛고 허리를 비틀어라!\n방패 뒤의 적까지 흔들 일격을 만들어라.',
+  success:'좋아! 그 일격을 기억해라.\n힘이 아니라 정확한 자세가 적을 쓰러뜨린다.'},
+ {title:'SCUTUM · 방어 훈련',
+  lines:'방패를 몸에 단단히 붙여라.\n무릎을 굽혀 충격을 땅으로 흘려보내고,\n막아낸 순간 곧바로 반격해라!',
+  success:'그래, 그거다!\n칼을 막는 건 시작이다. 살아남는 법을 익혀라.'},
+ {title:'FORTITUDO · 체력 훈련',
+  lines:'모래바닥 열 바퀴다!\n숨이 턱까지 차올라도 자세를 무너뜨리지 마라.\n마지막까지 선 전사가 승리를 거머쥔다.',
+  success:'아직 쓰러지지 않았군.\n더 버틸 수 있는 몸이 네 생명을 지켜줄 것이다.'},
+ {title:'CELERITAS · 민첩 훈련',
+  lines:'칼끝만 쳐다보지 마라. 적의 어깨를 읽어라!\n한발 먼저 피하고, 한걸음 더 파고들어라.\n빠른 발이 느린 칼을 이긴다.',
+  success:'이제야 발이 움직이는군!\n다음에는 적이 검을 빼기도 전에 움직여라.'},
+ {title:'DISCIPLINA · 기술 훈련',
+  lines:'호흡을 고르고 칼의 궤적을 읽어라.\n패링은 완력이 아니라 찰나의 판단이다.\n그 한순간에 전세를 뒤집는 법을 배워라!',
+  success:'눈빛이 달라졌군.\n지금처럼 상대의 빈틈을 읽으면 승산이 생긴다.'}
+];
+let speechPhase='welcome';
+function speechData(){
+ const script=DOCTORE_SCRIPT[selectedTraining]||DOCTORE_SCRIPT[0];
+ if(speechPhase==='selected')return {title:script.title,lines:script.lines};
+ if(speechPhase==='success')return {title:'BENE FACTUM · 훌륭하다!',lines:script.success};
+ if(speechPhase==='insufficient')return {title:'NVMMI · 훈련비 부족',lines:'기량을 갈고닦는 데에도 대가가 든다.\n먼저 투기장에서 상금을 벌어 와라.\n그때 다시 혹독하게 훈련시켜 주마!'};
+ if(speechPhase==='maxed')return {title:'MAGISTER · 완숙',lines:'이 능력은 이미 한계까지 단련했다.\n다른 기술을 익혀라.\n강한 검투사는 약점을 남겨두지 않는다.'};
+ return {title:'DOCTORE · 교관',lines:'살아남고 싶다면 나를 똑바로 보아라!\n훈련 항목을 골라라.\n경기장에서는 약자에게 두 번째 기회가 없다.'};
+}
+function drawTrainingSpeech(){
+ if(room!=='training'||!stage)return;
+ const data=speechData();
+ let bubble=stage.querySelector('.la-training-speech');
+ if(!bubble){
+  bubble=document.createElement('aside');bubble.className='la-training-speech';
+  bubble.setAttribute('role','status');bubble.setAttribute('aria-live','polite');
+  bubble.setAttribute('aria-label','훈련소 교관 대화');
+  bubble.innerHTML='<span class="la-speech-badge"></span><p class="la-speech-lines"></p>';
+  stage.appendChild(bubble);
+ }
+ bubble.dataset.training=String(selectedTraining);
+ bubble.dataset.phase=speechPhase;
+ bubble.querySelector('.la-speech-badge').textContent=data.title;
+ bubble.querySelector('.la-speech-lines').textContent=data.lines;
+}
 const equips={wood:{x:-1126,y:-487},iron:{x:-991,y:-486},shield:{x:-1458,y:-486},elite:{x:-1347,y:-486}};
 let screen,stage,room='training',selectedTraining=0,selectedGear='iron',category='all',sortMode=0,toastTimer=0,poseTimer=0;
 const $=s=>screen?.querySelector(s);
@@ -15,8 +59,8 @@ function pose(index){window.LudusDoctoreAnim?.react?.(index);}
 function moveHero(step){let a=bridge(),s=a?.state();if(!s?.roster?.length){toast('검투사시장에서 먼저 영입하세요.');return;}let i=((s.active||0)+step+s.roster.length)%s.roster.length;a.select(i);refresh();}
 function changeRoom(next){room=next;bridge()?.section(next);screen.hidden=false;render();}
 function goHome(){window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();screen.hidden=true;clearTimeout(toastTimer);clearTimeout(poseTimer);pose(-1);bridge()?.returnHome();document.getElementById('careerHub').hidden=true;window.LudusScene?.open();}
-function actionTraining(){const s=bridge()?.state();if(!s?.roster?.length){toast('훈련할 검투사가 없습니다.');return;}const opt=tiles[selectedTraining],h=s.roster[s.active];const cost=bridge()?.trainingCost?.(s.active,opt.stat)||12;if(s.gold<cost){toast('훈련 비용 '+cost+'D가 부족합니다.');pose(2);return;}if(Number(h.stats[opt.stat])>=10){toast('해당 능력치의 훈련이 완료되었습니다.');pose(2);return;}
- bridge().train(opt.stat);refresh();pose(3);toast(h.name+' · '+opt.name+' 완료!');}
+function actionTraining(){const s=bridge()?.state();if(!s?.roster?.length){toast('훈련할 검투사가 없습니다.');return;}const opt=tiles[selectedTraining],h=s.roster[s.active];const cost=bridge()?.trainingCost?.(s.active,opt.stat)||12;if(s.gold<cost){speechPhase='insufficient';drawTrainingSpeech();toast('훈련 비용 '+cost+'D가 부족합니다.');pose(2);return;}if(Number(h.stats[opt.stat])>=10){speechPhase='maxed';drawTrainingSpeech();toast('해당 능력치의 훈련이 완료되었습니다.');pose(2);return;}
+ bridge().train(opt.stat);speechPhase='success';refresh();pose(3);toast(h.name+' · '+opt.name+' 완료!');}
 function changeItem(mode){const a=bridge(),list=a?.catalog()||[],gear=list.find(g=>g.id===selectedGear);if(!gear){toast('장비를 먼저 선택하세요.');return;}const outcome=a.equip(selectedGear,mode);toast(outcome||'장비 상태가 갱신되었습니다.');refresh();}
 function drawRoster(parent,isTraining){parent.replaceChildren();const a=bridge(),s=a?.state();if(!s)return;
  const from=Math.max(0,Math.min(s.active-1,Math.max(0,s.roster.length-(isTraining?6:3))));
@@ -44,11 +88,12 @@ function liveFighter(a,s,isTraining){
 }
 function setup(){if(screen)return;screen=document.createElement('section');screen.className='la-screen';screen.hidden=true;screen.setAttribute('aria-label','승인된 루두스 장비실 및 훈련소');screen.innerHTML='<div class="la-stage"><img class="la-key" draggable="false" alt=""><div class="la-notice" role="status" hidden></div><div class="la-pose"></div></div><div class="la-orient">가로 화면에서 더 크게 볼 수 있습니다.<button type="button">작은 화면으로 계속</button></div>';document.body.appendChild(screen);stage=$('.la-stage');$('.la-orient button').addEventListener('click',()=>screen.classList.add('la-allow-portrait'));addEventListener('resize',fit,{passive:true});document.addEventListener('keydown',e=>{if(screen.hidden)return;if(e.key==='Escape'){e.preventDefault();goHome();}else if(e.key==='ArrowLeft'){e.preventDefault();moveHero(-1);}else if(e.key==='ArrowRight'){e.preventDefault();moveHero(1);}else if(e.key==='Enter'&&room==='training'){e.preventDefault();actionTraining();}});fit();}
 function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state();if(!s)return;const h=s.roster[s.active],training=room==='training';stage.className='la-stage '+room;
- const key=$('.la-key');const src=training?'assets/ludus/training_no_doctore.webp?v=2':'assets/ludus/armory_approved.webp';if(!key.src.endsWith(src))key.src=src;
+ const key=$('.la-key');const src=training?'assets/ludus/training_no_dialogue_v1.webp?v=1':'assets/ludus/armory_approved.webp';if(!key.src.endsWith(src))key.src=src;
  // Halt the old RAF before replacing this scene's character node.
  window.LudusDoctoreAnim?.unmount?.();
  // Keep backdrop and transient NPC pose nodes, replace everything else atomically.
  for(const node of [...stage.children])if(!node.matches('.la-key,.la-notice,.la-pose'))node.remove();
+ if(training)drawTrainingSpeech();
  if(!training&&window.LudusLiveArmory){
   window.LudusLiveArmory.render(stage,a,{
    selectedGear,category,sortMode,goHome,
@@ -73,7 +118,7 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
    window.LudusTrainingV2.mount(stage,a,s,{
     selectedTraining,tiles,onHome:goHome,move:moveHero,
     onSelect:i=>{a.select(i);refresh();},
-    onTrainingChoice:i=>{selectedTraining=i;refresh();pose(1);},
+    onTrainingChoice:i=>{selectedTraining=i;speechPhase='selected';refresh();pose(1);},
     onTrain:actionTraining
    });
    if(!stage.querySelector('.lt-roster')||!stage.querySelector('.lt-fighter-canvas')){
@@ -97,14 +142,11 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
   const instructor=document.createElement('div');instructor.className='la-doctore-live';
   instructor.dataset.pose='0';instructor.setAttribute('aria-hidden','true');
   stage.appendChild(instructor);window.LudusDoctoreAnim?.mount?.(instructor);
-  const parchment=document.createElement('div');
-  parchment.className='la-doctore-parchment';parchment.setAttribute('aria-hidden','true');
-  stage.appendChild(parchment);
   const st=block('la-training-stats',1471,241);st.innerHTML=h?['str','agi','end','focus'].map(k=>'<div>'+Number(h.stats?.[k]||0)+'</div>').join(''):'—';
   let nm=block('la-training-name',1413,151);nm.innerHTML=h?'<strong>'+escapeHtml(h.name)+'</strong><small>'+escapeHtml(h.cls)+' · Lv.'+Number(h.level||1)+'</small>':'검투사 없음';
   const eff=block('la-training-effect',1309,455);eff.textContent=tiles[selectedTraining].help+'\n훈련 비용 12 D\n훈련 성공 시 경험치 획득';
   block('la-training-selected',149+selectedTraining*211,608);
-  [[153,603,195],[365,603,188],[573,603,198],[784,603,192],[994,603,196]].forEach(([x,y,w],i)=>hit('train'+i,tiles[i].name,x,y,w,158,()=>{selectedTraining=i;render();pose(1);}));
+  [[153,603,195],[365,603,188],[573,603,198],[784,603,192],[994,603,196]].forEach(([x,y,w],i)=>hit('train'+i,tiles[i].name,x,y,w,158,()=>{selectedTraining=i;speechPhase='selected';render();pose(1);}));
   hit('start-training','훈련 시작',1243,721,393,154,actionTraining);
   const roster=document.createElement('div');roster.className='la-roster training';stage.appendChild(roster);drawRoster(roster,true);
   hit('prev','이전 검투사',225,781,58,101,()=>moveHero(-1));hit('next','다음 검투사',1156,781,59,101,()=>moveHero(1));
@@ -130,7 +172,7 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  home.title='메인 루두스 로비로 돌아가기';
  home.addEventListener('click',goHome);stage.appendChild(home);
  fit();}
-function open(name){setup();room=name==='gear'?'armory':'training';screen.hidden=false;render();}
+function open(name){setup();room=name==='gear'?'armory':'training';if(room==='training')speechPhase='welcome';screen.hidden=false;render();}
 function close(){window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();if(screen)screen.hidden=true;}
 function refresh(){if(screen&&!screen.hidden)render();}
 window.LudusApprovedScenes={open,close,refresh,goHome};
