@@ -175,3 +175,24 @@ python scripts/spartacus_wolf_trial.py \
 이미지 전달이 가능한 실행 환경에서 로컬 퍼블리셔를 실행하거나,
 검증된 허용 HTTPS 파일 링크를 업로더 inbox JSON에 넣어야 한다.
 토큰이 없는 컨테이너에서 업로드가 완료되었다고 주장하지 않는다.
+
+## 원본 PNG가 HTTPS에 있을 때: 직접 바이너리 브리지 (2026-10-21)
+
+`process-request`는 기존의 `url` + **원본 PNG SHA256** 입력으로
+`"transform":"wolf-trial-source-png"`를 허용한다. GitHub Actions가 원본
+1672×941 RGBA PNG를 내려받아 SHA256을 검증한 뒤, **마지막 행을 잘라내지 않고**
+1672×942 RGBA로 1px 투명 패딩, lossless WebP로 변환한다.
+`wolf-trial` 경로 이외에는 절대 이 변환을 허용하지 않는다.
+
+```json
+{
+  "path": "public/assets/beasts/wolf-trial/idle.webp",
+  "url": "https://d2ol7oe51mr4n9.cloudfront.net/.../28419.png",
+  "sha256": "원본 PNG의 64자리 SHA256",
+  "transform": "wolf-trial-source-png"
+}
+```
+
+9개 WebP 대상과 `previewOnly:true` 매니페스트가 모두 들어 있어야
+원자적 배포가 가능하며, 기본 게임은 변경되지 않는다. 파일이 임시 저장
+주소에서 더 이상 제공되지 않거나 해시가 맞지 않는다면 배포를 중단한다.

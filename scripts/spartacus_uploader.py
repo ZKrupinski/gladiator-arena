@@ -286,6 +286,27 @@ def download_asset(url: str) -> bytes:
         raise UploadError("SOURCE_TOO_LARGE")
     return content
 
+def transcode_trial_source(source: bytes, destination: str) -> bytes:
+    """Exact-byte source -> lossless 4x2 trial atlas; never pretend V3-native."""
+    if (not destination.startswith("public/assets/beasts/wolf-trial/") or
+        PurePosixPath(destination).suffix != ".webp"):
+        raise UploadError("TRIAL_TRANSCODE_DESTINATION_NOT_ALLOWED")
+    from io import BytesIO
+    try:
+        from PIL import Image
+        with Image.open(BytesIO(source)) as original:
+            original.load()
+            if original.mode != "RGBA" or original.size != (1672,941):
+                raise UploadError("WOLF_TRIAL_SOURCE_EXPECTED_1672x941_RGBA")
+            atlas=Image.new("RGBA",(1672,942),(0,0,0,0))
+            atlas.paste(original,(0,0))
+            output=BytesIO()
+            atlas.save(output,format="WEBP",lossless=True,quality=100,method=5)
+            return output.getvalue()
+    except ImportError as e:
+        raise UploadError("PILLOW_REQUIRED_FOR_TRIAL_TRANSCODE") from e
+
+
 def stage_request(spec: dict, *, main_sha: str):
     if spec.get("protocol")!="spartacus-uploader-v1":
         raise UploadError("UNKNOWN_UPLOADER_REQUEST")
@@ -311,6 +332,11 @@ def stage_request(spec: dict, *, main_sha: str):
             data=row["utf8"].encode("utf8")
         if not re.fullmatch("[a-f0-9]{64}",row.get("sha256","")) or digest(data)!=row["sha256"]:
             raise UploadError("SHA256_MISMATCH: "+path)
+        conversion=row.get("transform")
+        if conversion is not None:
+            if conversion!="wolf-trial-source-png" or "url" not in row:
+                raise UploadError("UNTRUSTED_OR_NONURL_TRANSFORM: "+path)
+            data=transcode_trial_source(data,path)
         check_asset(path,data,strict_art=True)
         items[path]=data
     verify_local_code(items)
