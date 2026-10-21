@@ -54,7 +54,7 @@ class TestWolfImport(unittest.TestCase):
             self.assertEqual(info["orphanComponentsDiscarded"],0)
             from io import BytesIO
             rendered=Image.open(BytesIO(package[
-                "public/assets/beasts/wolf-v3/idle.webp"]])).convert("RGBA")
+                "public/assets/beasts/wolf-v3/idle.webp"])).convert("RGBA")
             self.assertGreater(rendered.width,320)
             cw=rendered.width//4
             first=rendered.crop((0,0,cw,rendered.height//2))
