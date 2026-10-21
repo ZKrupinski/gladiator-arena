@@ -75,7 +75,7 @@ with tempfile.TemporaryDirectory() as tmp:
     merged=p/"art/merged.png"
     sheet.save(merged)
     result.write_text(json.dumps(dict(saved,sheet=merged.name)))
-    includes(inspect(job_path,result,p/"merged"),"MERGED_SILHOUETTE_ACROSS_GRID_SEAM_REGENERATE")
+    includes(inspect(job_path,result,p/"merged"),"FUSED_NEIGHBOR_POSES_AMBIGUOUS_OWNERSHIP")
     result.write_text(json.dumps(saved))
 
     # Missing/wrong/stale acknowledgement cannot retrospectively count as
