@@ -114,7 +114,9 @@ def extract_owned_frames(source, *, alpha_threshold=ALPHA_THRESHOLD):
 
     # Keep the *same* origin and canvas for all frames. This is not a per-pose
     # resize or bbox-centered crop, and cannot cause scale popping.
-    gutter = max(2, min(cw, ch) // 25)
+    # A one-pixel alpha halo needs additional breathing room in the common
+    # output canvas. Gutters are proportional, not an input-size floor.
+    gutter = max(6, min(cw, ch) // 12)
     pad_l = max_left + gutter
     pad_r = max_right + gutter
     pad_t = max_top + gutter
