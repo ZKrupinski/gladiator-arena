@@ -134,3 +134,44 @@ python scripts/spartacus_wolf_import.py \\
   확인 및 재시도 절차로 진행.
 - 프로덕션 배포는 Git 커밋 기록으로 롤백 가능하지만, 자동 롤백
   자체는 아직 구현되지 않았다.
+
+
+## 시험용 늑대 이미지 적용 — 정식 품질 게이트를 낮추지 않음 (2026-10-21)
+
+사용자가 1672x941 PNG 10장으로 **게임 안에서 우선 확인**하도록 승인한 상황을
+정식 SpriteForge V3 출시 심사와 구분한다.
+
+- 정식 게임: `public/assets/beasts/wolf-v3/` 유지. 최소 3072x1536 및
+  프레임 외곽 간격 엄격 검수 유지. 기본 URL은 시험용 파일을 로딩하지 않음.
+- 시험용 게임: `public/assets/beasts/wolf-trial/` 9개 WebP와
+  `manifest.json`을 **한 번의 원자적 업로드**로 배포.
+  실제 시험 URL은 `https://gladiator-arena-git.pages.dev/?wolfTrial=1`.
+- 시험 변환: 원본 PNG는 건드리지 않음. 홀수 높이 941px을
+  투명 1px 추가한 942px로 정규화하여 발끝이 절단되는 것을 방지.
+  확대/업스케일/가짜 손발 복원은 없음. 프레임 경계 침범은 JSON에 기록되며
+  시험용 `previewOnly` 표식이 제거되지 않음.
+- 10장 중 9개를 게임 액션에 지정하고 `28415.png`는 대체 공격 이펙트로
+  제외하여 기존 원본을 보존.
+- 시험판도 SHA256, 실제 Cloudflare 바이트 검증을 **통과해야만**
+  배포 성공으로 말한다. 기본 게임 이미지까지 교체했다고 주장하지 않는다.
+
+```bash
+# 채팅으로 받은 원본 28415.png~28424.png를 source 폴더에 보유한
+# GitHub 인증 실행 환경(PC 또는 Work 클라우드 작업 환경)에서 수행
+python scripts/spartacus_wolf_trial.py \
+  --source /path/to/ten-original-images \
+  --out /tmp/wolf-trial-review
+
+# 이미 인증되어 있는 환경에서만; 기본 플레이는 유지
+python scripts/spartacus_wolf_trial.py \
+  --source /path/to/ten-original-images \
+  --out /tmp/wolf-trial-review \
+  --publish --confirm
+```
+
+**중요한 연결 문제:** GitHub 연결 도구는 Git 쓰기 권한이 있지만,
+채팅에 첨부된 로컬 바이너리 파일의 바이트를 자동으로 해당 도구에
+전달하지는 못한다. 이것은 이미지 검수 실패와는 **별개의 전송 문제**다.
+이미지 전달이 가능한 실행 환경에서 로컬 퍼블리셔를 실행하거나,
+검증된 허용 HTTPS 파일 링크를 업로더 inbox JSON에 넣어야 한다.
+토큰이 없는 컨테이너에서 업로드가 완료되었다고 주장하지 않는다.

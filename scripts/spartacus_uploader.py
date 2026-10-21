@@ -123,6 +123,43 @@ def check_asset(path: str, data: bytes, *, strict_art: bool = False) -> dict:
                 info.update({"width":w,"height":h,"frames":8,"nativeValidated":True})
         except ImportError as e:
             raise UploadError("PILLOW_REQUIRED_FOR_WOLF_V3_NATIVE_QA") from e
+    # Opt-in playable art trials use the exact original pixel resolution.
+    # This is intentionally separate from the native V3 production allowlist:
+    # no upscaling, no forged approval, no silent deployment to default players.
+    if (strict_art and path.startswith("public/assets/beasts/wolf-trial/") and
+        suffix in (".png",".webp")):
+        try:
+            import io
+            from PIL import Image
+            with Image.open(io.BytesIO(data)) as trial:
+                trial.load()
+                w,h=trial.size
+                if w < 1600 or h < 900 or w%4 or h%2:
+                    raise UploadError("WOLF_TRIAL_REQUIRES_4x2_ATLAS_MIN_1600x900: "+path)
+                if trial.mode!="RGBA":
+                    raise UploadError("WOLF_TRIAL_REQUIRES_TRANSPARENT_RGBA: "+path)
+                cw,ch=w//4,h//2
+                seen=set()
+                edge=[]
+                for i in range(8):
+                    cell=trial.crop((i%4*cw,i//4*ch,
+                                    (i%4+1)*cw,(i//4+1)*ch))
+                    bbox=cell.getchannel("A").getbbox()
+                    if bbox is None:
+                        raise UploadError("WOLF_TRIAL_EMPTY_FRAME: "+path+":"+str(i))
+                    if (bbox[0]<12 or bbox[1]<12 or
+                        bbox[2]>cw-12 or bbox[3]>ch-12):
+                        edge.append(i+1)
+                    key=digest(cell.tobytes())
+                    if key in seen:
+                        raise UploadError("WOLF_TRIAL_DUPLICATE_FRAME: "+path+":"+str(i))
+                    seen.add(key)
+                info.update({"width":w,"height":h,"frames":8,
+                    "nativeValidated":False,"previewOnly":True,
+                    "edgeRiskFrames":edge,
+                    "warning":"TRIAL_ONLY_UNVERIFIED_NATIVE_ART_DO_NOT_MARK_PRODUCTION_QA_PASS"})
+        except ImportError as e:
+            raise UploadError("PILLOW_REQUIRED_FOR_TRIAL_IMAGE_QA") from e
     return info
 
 def verify_local_code(paths: dict[str, bytes]) -> None:
@@ -350,6 +387,22 @@ def publish_files(items: dict[str,bytes], *, confirm: bool, release_id: str | No
             atlas=DEST_WOLF+action+".webp"
             if m["actions"][action] != action+".webp" or atlas not in items:
                 raise UploadError("WOLF_V3_MISSING_REQUIRED_ATLAS: "+action)
+    trial_manifest="public/assets/beasts/wolf-trial/manifest.json"
+    if trial_manifest in items:
+        expected=("idle","walk","attack1","attack2","attack3",
+                  "attack4","hit","death","roar")
+        m=json.loads(items[trial_manifest].decode("utf8"))
+        if (m.get("version")!=3 or m.get("previewOnly") is not True or
+            not isinstance(m.get("actions"),dict) or
+            set(m["actions"])!=set(expected)):
+            raise UploadError("WOLF_TRIAL_REQUIRE_EXPLICIT_PREVIEW_ONLY_FULL_MANIFEST")
+        for action in expected:
+            atlas="public/assets/beasts/wolf-trial/"+action+".webp"
+            if m["actions"][action]!=action+".webp" or atlas not in items:
+                raise UploadError("WOLF_TRIAL_MISSING_ATLAS: "+action)
+    if (any(name.startswith("public/assets/beasts/wolf-trial/") for name in items) and
+        trial_manifest not in items):
+        raise UploadError("WOLF_TRIAL_NO_PARTIAL_SPRITE_UPLOADS")
     verify_local_code(items)
     git=git or GitHub()
     head=git.main_sha()
