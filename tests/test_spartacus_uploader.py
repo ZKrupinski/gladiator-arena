@@ -33,12 +33,21 @@ class TestSpartacusUploader(unittest.TestCase):
                   "public\\assets\\a.png","public/assets/.env"):
             with self.subTest(path=p):
                 with self.assertRaises(u.UploadError):u.normalized_path(p)
-    def test_binary_hash_and_native_wolf_floor(self):
+    def test_binary_hash_and_grid_security(self):
         safe=u.check_asset("public/assets/spartacus-uploads/idle.png",FAKE_PNG,strict_art=True)
         self.assertEqual(safe["width"],800)
         self.assertEqual(safe["height"],800)
-        with self.assertRaisesRegex(u.UploadError,"NATIVE_SHEET_TOO_SMALL"):
-            u.check_asset("public/assets/beasts/wolf-v3/sheet-idle.png",FAKE_PNG,strict_art=True)
+        from PIL import Image,ImageDraw
+        import io
+        small=Image.new("RGBA",(160,80))
+        brush=ImageDraw.Draw(small)
+        for i in range(8):
+            x=(i%4)*40;y=(i//4)*40
+            brush.rectangle((x+5,y+5,x+30,y+30),fill=(50+i,40,90,255))
+        tmp=io.BytesIO();small.save(tmp,"PNG")
+        info=u.check_asset("public/assets/beasts/wolf-v3/sheet-idle.png",
+                           tmp.getvalue(),strict_art=True)
+        self.assertEqual(info["width"],160)
         self.assertEqual(u.digest(b"hello"),hashlib.sha256(b"hello").hexdigest())
         with self.assertRaisesRegex(u.UploadError,"NOT_PNG"):
             u.check_asset("public/assets/foo.png",b"fake.png")
@@ -63,8 +72,9 @@ class TestSpartacusUploader(unittest.TestCase):
             u.check_asset(path,b"RIFF" + b"x"*60,strict_art=True)
         small=io.BytesIO()
         img.resize((1672,940)).save(small,"WEBP",lossless=True,method=3)
-        with self.assertRaisesRegex(u.UploadError,"NATIVE_SHEET_TOO_SMALL"):
-            u.check_asset(path,small.getvalue(),strict_art=True)
+        info_small=u.check_asset(path,small.getvalue(),strict_art=True)
+        self.assertTrue(info_small["nativeValidated"])
+        self.assertEqual(info_small["width"],1672)
         bad=img.copy()
         ImageDraw.Draw(bad).rectangle((0,90,70,135),fill=(55,66,77,255))
         merged=io.BytesIO()
@@ -206,7 +216,7 @@ class TestSpartacusUploader(unittest.TestCase):
         self.assertFalse(review["nativeValidated"])
         self.assertTrue(review["previewOnly"])
         self.assertEqual(review["edgeRiskFrames"],list(range(1,9)))
-        with self.assertRaisesRegex(u.UploadError,"NATIVE_SHEET_TOO_SMALL"):
+        with self.assertRaisesRegex(u.UploadError,"FRAME_SEAM_OR_CLIPPING"):
             u.check_asset("public/assets/beasts/wolf-v3/idle.webp",data.getvalue(),strict_art=True)
         with self.assertRaisesRegex(u.UploadError,"NO_PARTIAL_SPRITE_UPLOADS"):
             u.publish_files({trial:data.getvalue()},confirm=True,verify=False)
