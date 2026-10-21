@@ -1522,12 +1522,21 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
   const offsetX=dir*(ground?225:bite?205:192);
   const offsetY=ground?106:bite?-22:-24;
   addFx(3,attacker.x+offsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+offsetY,{
-   beastFx:kind,w:ground?940:bite?790:860,
-   h:ground?590:bite?630:665,flip,
+   beastFx:kind,w:ground?1120:bite?790:860,
+   h:ground?700:bite?630:665,flip:ground?!flip:flip,
    owner:attacker,offsetX,offsetY,track:'body',layer:'front',
    duration:window.ArenaBeastFX?.durations?.[kind]||.3,
    alpha:1,delay:0
   });
+  if(ground){
+   // The authored ground-scrape tail faces the opposite way from the
+   // attacker. Keep the dust on the FLOOR and in front of the beast layer.
+   const footX=attacker.x+dir*88;
+   addFx(1,footX,FLOOR-58,{
+    beastFx:'step',w:1120,h:560,flip:!flip,
+    layer:'front',duration:.40,alpha:.95,delay:.08
+   });
+  }
   return;
  }
  const atlas=attacker.cls==='thraex'?'fx_thraex':attacker.cls==='retiarius'?'fx_retiarius':'fx';
@@ -1866,8 +1875,8 @@ function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.d
  window.ArenaMotion?.pulse?.(f,'contact','source',f.face);f.x=clamp(f.x+(f.enemy?-1:-1)*f.face*84,120,1160);const p=weaponPoint(f,'dodge');window.ArenaAudio?.play?.('dodge',{gain:.56,pan:(f.x-640)/720});
  if(f.beastType){
    window.ArenaBeastFX?.ensure?.();
-   addFx(1,f.x,FLOOR-28,{beastFx:'step',w:330,h:190,
-     flip:f.face<0,alpha:.65,duration:.27,layer:'back'});
+   addFx(1,f.x+f.face*65,FLOOR-44,{beastFx:'step',w:790,h:430,
+     flip:f.face>0,alpha:.88,duration:.35,layer:'front'});
  }else addFx(1,p.x,p.y,{art:'dash_trail',w:360,h:120,flip:f.face<0,
      alpha:.48,owner:f,offsetX:-f.face*32,offsetY:110,duration:.2});}
 function inputAct(action){if(S.phase!=='fight'||S.paused)return;if(action==='attack')attack(S.player,S.enemy);else if(action==='special')attack(S.player,S.enemy,true);else if(action==='dodge')dodge(S.player);else if(action==='guard'){S.keys.add('guard');}}
@@ -1940,6 +1949,12 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
  if(S.time<=0){S.resultWin=p.hp>e.hp;S.resultApplied=true;S.resultAnim=0;S.phase='finisher';S.slow=2.05;setAction(S.resultWin?p:e,'finisher',2.2);setAction(S.resultWin?e:p,'defeat',2.2);say(S.resultWin?'VICTORIA!':'DEFEAT',1.8);return;}
  for(const f of [p,e]){
  f.actionT=Math.max(0,f.actionT-dt);f.attackCD=Math.max(0,f.attackCD-dt);f.cd=Math.max(0,f.cd-dt);
+ // Visual action completion must never wait for cosmetic FX or linger
+ // indefinitely on the last attack pose after the timer has elapsed.
+ if(f.beastType&&f.actionT<=0&&f.stagger<=0&&!f.comboDash&&
+    (f.action==='special'||f.action==='attack'||f.action==='hit'||f.action==='dodge')){
+   f.action='idle';
+ }
  f.dodge=Math.max(0,f.dodge-dt);f.stagger=Math.max(0,f.stagger-dt);
  f.invuln=Math.max(0,f.invuln-dt);f.net=Math.max(0,f.net-dt);
  f.parry=Math.max(0,f.parry-dt);f.guardHold=Math.max(0,f.guardHold-dt);
@@ -2018,9 +2033,9 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
    beast._beastStepFxAt=clock;
    window.ArenaBeastFX?.ensure?.();
    const size=beast.beastType==='elephant'?1.5:1;
-   addFx(0,beast.x-beast.face*36,FLOOR-26,{
-     beastFx:'step',w:280*size,h:155*size,duration:.27,
-     flip:beast.face<0,layer:'back',alpha:.64});
+   addFx(0,beast.x+beast.face*62,FLOOR-41,{
+     beastFx:'step',w:680*size,h:330*size,duration:.31,
+     flip:beast.face>0,layer:'front',alpha:.78});
   }
   if(beast._beastRoarUntil>clock&&
      beast._beastRoarFxUntil!==beast._beastRoarUntil){
@@ -2694,7 +2709,19 @@ for(const b of document.querySelectorAll('[data-key]')){const k=b.dataset.key,ho
    S.keys.add(k);
    if(k==='guard'&&S.phase==='fight'&&!S.paused)beginGuard(S.player,.3);
   }else inputAct(k);});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{S.keys.delete(k);if(S.phase==='fight')markManualInput();});}
-function togglePause(){if(S.phase!=='fight')return;S.paused=!S.paused;S.keys.clear();if(!S.paused){S.lastManualInput=clock;S.autoPlaying=false;}$('#pauseBtn').textContent=S.paused?'▶':'Ⅱ';say(S.paused?'PAUSED':'RESUME',.8);updateHud();}
+function togglePause(){
+ if(S.phase!=='fight')return;
+ S.paused=!S.paused;S.keys.clear();
+ if(!S.paused){
+  // A prior hitstop must not pin combat poses after explicit RESUME.
+  // Keep ongoing attacks and their normal cooldowns; discard only a stale
+  // cinematic time envelope which was already interrupted by PAUSE.
+  S.cinematic=null;S.focusFrame=null;
+  S.lastManualInput=clock;S.autoPlaying=false;
+ }
+ $('#pauseBtn').textContent=S.paused?'▶':'Ⅱ';
+ say(S.paused?'PAUSED':'RESUME',.8);updateHud();
+}
 $('#startBtn').onclick=()=>start('new');
 $('#titleCareerFight').onclick=()=>{enterCareer();openCareerDraft();};$('#againBtn').onclick=()=>{if(S.beastHunt&&BEAST_RUN){returnToBeastHunt();}else if(S.careerMatch){returnToCareer();openCareerDraft();}else start('retry');};$('#continueBtn').onclick=()=>{
  if(S.beastHunt&&BEAST_RUN){
