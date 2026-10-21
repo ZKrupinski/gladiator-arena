@@ -68,7 +68,7 @@ assert.equal(valid.images.filter(url=>url.includes('assets/beasts/wolf-v3/')&&ur
 const legacy=await checkNativeLoader(1672,940);
 assert.equal(legacy.state.status,'unavailable','low-res pack must keep legacy fallback');
 assert.equal(legacy.state.actions.length,0,'no partially loaded pack');
-assert.match(legacy.state.error,/Non-native 4x2 wolf atlas/);
+assert.match(legacy.state.error,/Invalid native 4x2 wolf atlas/);
 console.log('WOLF_V3_PRODUCTION_CACHE_VERSION_AND_NATIVE_FALLBACK_PASS');
 
 const trial=await checkNativeLoader(1672,940,true);
