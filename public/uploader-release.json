@@ -1,12 +1,12 @@
 {
   "assetSha256": {
-    "public/arena-carnifex.js": "b0f11dad0b12c7a101ce54cdd2248ed45bc05c7a517fd8b98049dad9d6a2a0a7",
-    "public/index.html": "c07cbbba1fdb2cd27ab31eea2615613f4d38f4db34853db4b5e202497e294634",
-    "scripts/qa_carnifex_sd.mjs": "c89ce1ab6bb7d3b2918f641271b895c7b952ccd9e1f90415a8049d8d6b06c969"
+    "public/arena-entrance.js": "3dc6e5c463fa3fb64b5c1782f1e8a4aef3b879d8fc18f0aa46a926d25d107a26",
+    "public/index.html": "f5915104593321e32cf4ef767168c02a2688f964aa683d7db4224e190531f6a5",
+    "scripts/qa_arena_entrance.mjs": "38d2dbc30350f0ccd80ca9367d46421ca2a44186d4a439aed2e66531d242daee"
   },
-  "baseCommit": "87094f3233593d426a79fc5eabc6fb3ba2085fe2",
+  "baseCommit": "69e047f2ed14c5bd35ff4a86f0168db6d2764c48",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "carnifex-full-offscreen-exit-20261021-v1",
+  "releaseId": "arena-gladiator-entrance-v1-20261021",
   "releaseProtocol": "spartacus-uploader-v1"
 }
