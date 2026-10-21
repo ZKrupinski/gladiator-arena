@@ -93,10 +93,8 @@ function loadWolfV3(){
    const image=new Image();
    image.onload=()=>{
     const w=image.naturalWidth,h=image.naturalHeight;
-    if(w%4!==0||h%2!==0||w<(WOLF_TRIAL_ENABLED?1600:3072)||
-       h<(WOLF_TRIAL_ENABLED?900:1536))
-     return reject(Error('Invalid '+(WOLF_TRIAL_ENABLED?'trial':'native')+
-       ' 4x2 wolf atlas '+action+' '+w+'x'+h));
+    if(!w||!h||w%4!==0||h%2!==0)
+     return reject(Error('Invalid 4x2 wolf atlas '+action+' '+w+'x'+h));
     resolve([action,image]);
    };
    image.onerror=()=>reject(Error('Atlas did not load '+action));
@@ -126,12 +124,14 @@ async function installWolfPreviewAtlasPack(raw){
  for(const key of WOLF_ACTIONS){
   const entry=raw[key];
   if(typeof entry!=='string'||!entry.startsWith(expected)||
-     entry.length<600||entry.length>2800000)return false;
+     entry.length>2800000)return false;
  }
  const decoded=await Promise.all(WOLF_ACTIONS.map(name=>new Promise((ok,no)=>{
   const image=new Image();
   image.onload=()=>{
-   if(image.naturalWidth<1024||image.naturalHeight<512)no(Error('Preview atlas too small: '+name));
+   if(!image.naturalWidth||!image.naturalHeight||
+      image.naturalWidth%4!==0||image.naturalHeight%2!==0)
+     no(Error('Preview atlas must be a valid 4x2 grid: '+name));
    else ok([name,image]);
   };
   image.onerror=()=>no(Error('Preview atlas error: '+name));
