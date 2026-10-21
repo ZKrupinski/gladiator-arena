@@ -6,6 +6,8 @@ on:
       - scripts/spartacus_uploader.py
       - tests/test_spartacus_uploader.py
       - scripts/spartacus_wolf_import.py
+      - scripts/spartacus_wolf_trial.py
+      - tests/test_spartacus_wolf_trial.py
       - tests/test_spartacus_wolf_import.py
       - .github/workflows/spartacus-uploader.yml
       - .github/workflows/qa-spartacus-uploader.yml
@@ -39,5 +41,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_spartacus_uploader.py' -v
       - name: Validate high-res wolf release gate and per-cell seam protection
         run: python -m unittest discover -s tests -p 'test_spartacus_wolf_import.py' -v
+      - name: Verify trial atlas uses original pixels and is explicitly opt-in
+        run: python -m unittest discover -s tests -p 'test_spartacus_wolf_trial.py' -v
       - name: Existing wolf mapping remains compatible
         run: node scripts/qa_wolf_v3_attack_variants.mjs
