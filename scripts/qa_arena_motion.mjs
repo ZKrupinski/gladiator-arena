@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const context={globalThis:{}};
 vm.runInNewContext(fs.readFileSync(new URL('../public/arena-motion.js',import.meta.url),'utf8'),context);
 const M=context.globalThis.ArenaMotion;
-assert.equal(M.version,'1.1.0');
+assert.equal(M.version,'1.2.0');
 const actor=(enemy=false)=>({
  enemy,dead:false,face:enemy?-1:1,
  x:enemy?700:480,vx:0,walkT:0,action:'idle',actionT:0,
@@ -67,7 +67,7 @@ for(const cls of ['murmillo','retiarius','thraex','wolf','lion','tiger','elephan
  const f={...actor(),cls,beastType:['wolf','lion','tiger','elephant'].includes(cls)?cls:null};
  for(const kind of ['strike','guard','special','dash','parry','reversal']){
   M.impact(f,kind);
-  assert.ok(M.visual(f).flash>.15,cls+' '+kind+' visibly flashes');
+  assert.ok(M.visual(f).flash>.07&&M.visual(f).flash<=.29,cls+' '+kind+' short transparent glint');
   assert.equal(M.visual(f).scale,1,'the planted-foot pivot starts at original scale');
   M.advance(f,.025,.085);
   const v=M.visual(f);
@@ -83,6 +83,28 @@ for(const cls of ['murmillo','retiarius','thraex','wolf','lion','tiger','elephan
 assert.ok(M.PRESETS.strike.amp>=14);
 assert.ok(M.PRESETS.special.amp>=23);
 assert.ok(M.PRESETS.reversal.amp>=34);
+// Ultra-short blinking flash ends BEFORE the longer body scale recovery.
+for(const kind of ['strike','guard','special','dash','parry','reversal']){
+ const f=actor();f.hp=99;
+ M.impact(f,kind);
+ const first=M.visual(f).flash;
+ assert.ok(first>.07&&first<=.29,kind+' initial flash partially transparent');
+ M.advance(f,0,.040);
+ assert.equal(M.visual(f).flash,0,kind+' dark gap after first blink');
+ M.advance(f,0,.027);
+ assert.ok(M.visual(f).flash>0,kind+' second, dimmer blink');
+ M.advance(f,0,.036);
+ assert.equal(M.visual(f).flash,0,kind+' off permanently after 103ms');
+ // Death frame must not inherit hit white even before the animation resumes.
+ f.dead=true;
+ assert.deepEqual(JSON.parse(JSON.stringify(M.visual(f))),{scale:1,flash:0});
+ f.dead=false;f.action='death';
+ assert.deepEqual(JSON.parse(JSON.stringify(M.visual(f))),{scale:1,flash:0});
+ f.action='idle';f.hp=0;
+ assert.deepEqual(JSON.parse(JSON.stringify(M.visual(f))),{scale:1,flash:0});
+ M.impact(f,kind);
+ assert.equal(f.hitVisual?.t,.103,'KO never restarts flash');
+}
 const clashA=actor(),clashB=actor(true);
 clashA.x=500;clashB.x=685;clashA.vx=210;clashB.vx=-90;
 assert.equal(M.contactPulse(clashA,clashB,200),true,'approach collision produces body recoil');
