@@ -34,7 +34,8 @@ function wolfActionFor(f,pose){
  if(pose==='defeat')return 'death';
  if(pose==='hit')return 'hit';
  if(pose==='comboDash'||pose==='finisher')return 'attack4';
- if(pose==='special')return 'roar';
+ // An actual special hit is ATTACK4; only the AI standoff gesture is ROAR.
+ if(pose==='special')return f.action==='special'&&f.actionT>0?'attack4':'roar';
  if(pose==='attack'){
   return ['attack1','attack2','attack3'][Math.max(0,Math.min(2,Number(f.attackVariant)||0))];
  }

@@ -1,0 +1,46 @@
+name: Beast shared 8-action VFX runtime QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - public/arena-beast-vfx.js
+      - public/arena-beasts.js
+      - public/index.html
+      - scripts/qa_beast_vfx_runtime.mjs
+      - scripts/qa_beast_vfx_assets.py
+      - public/assets/beasts/effects-v1/**
+      - docs/beast-vfx-v1/qa.json
+      - .github/workflows/qa-beast-vfx.yml
+  push:
+    branches: [main]
+    paths:
+      - public/arena-beast-vfx.js
+      - public/arena-beasts.js
+      - public/index.html
+      - scripts/qa_beast_vfx_runtime.mjs
+      - scripts/qa_beast_vfx_assets.py
+      - public/assets/beasts/effects-v1/**
+      - docs/beast-vfx-v1/qa.json
+      - .github/workflows/qa-beast-vfx.yml
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Install image QA dependency
+        run: pip install Pillow==11.3.0
+      - name: Verify published WebP bytes and per-frame alpha ownership
+        run: python scripts/qa_beast_vfx_assets.py
+      - name: Verify eight-action beast animation FX mapping and safe fallback
+        run: node scripts/qa_beast_vfx_runtime.mjs
+      - name: Verify main game never loses existing VFX and sprite modules
+        run: |
+          node --check public/arena-beast-vfx.js
+          node --check public/arena-beasts.js
+          test -f public/arena-raster-vfx.js
+          test -f public/arena-animated-vfx.js

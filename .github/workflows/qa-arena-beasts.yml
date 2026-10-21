@@ -5,6 +5,8 @@ on:
     paths:
       - public/index.html
       - public/arena-beasts.js
+      - public/arena-beast-vfx.js
+      - scripts/qa_beast_vfx_runtime.mjs
       - public/assets/beasts/**
       - scripts/qa_arena_beasts_browser.mjs
       - .github/workflows/qa-arena-beasts.yml
@@ -40,8 +42,8 @@ jobs:
                       request=urllib.request.Request(root+path,headers={'User-Agent':'ArenaBeastsCI','Cache-Control':'no-cache'})
                       with urllib.request.urlopen(request,timeout=24) as response:return response.read()
                   html=read('/?animals=1&try='+str(attempt)).decode('utf-8')
-                  js=read('/arena-beasts.js?v=2').decode('utf-8')
-                  if ('arena-beasts.js?v=2' not in html or
+                  js=read('/arena-beasts.js?v=5').decode('utf-8')
+                  if ('arena-beasts.js?v=5' not in html or
                      'VENATIO' not in html or
                      'wolf' not in js or 'elephant' not in js):
                       raise RuntimeError('Game code not yet published')
