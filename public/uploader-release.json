@@ -1,11 +1,15 @@
 {
   "assetSha256": {
-    "public/index.html": "2f2346cf66e3d4c4093ed22a1400adb0866f29516e8ceeb5adbae28cd7ad9bb9",
-    "scripts/qa_beast_vfx_runtime.mjs": "600a33dda46586ea14f9ea04bc1672537378f860686d08bff28f8a6c5d012317"
+    "public/arena-carnifex.js": "3c07fcc9da3a8e5841705ae1a554a11f87048f5ed92c6c529bef02fcb3172be4",
+    "public/assets/npc/carnifex-haul-ink-v1.webp": "60f7bac6d4590ee9ca760dab103c4b257c04936a0a011e88d6f66b048846127b",
+    "public/assets/npc/carnifex-ink-v1.json": "15b6c889462a2bd2c209a1ed15da07d70da6452a0785ee0343c01f1b6bfe7295",
+    "public/assets/npc/carnifex-walk-ink-v1.webp": "75c2a95c9a02814c1b9d14bb1bf97a6d5fd6db71b36ce2a1cc687a26e208e476",
+    "public/index.html": "75b4b6d27e7b81d124f10109e94c8096f6664246735da4db6fec7c0216d372f2",
+    "scripts/qa_carnifex_sd.mjs": "f6c14dbf2813218c0cf7d1bfb4950701ba02a9ed31f81a58d908933efa74f679"
   },
-  "baseCommit": "c2191e36130c0151ffe8d6451d548e9c7242c208",
+  "baseCommit": "a585589e4d8fa077c1a574cf90d605994c32cafc",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "wolf-attack-groundline-20261021-v1",
+  "releaseId": "carnifex-ink-retouch-v1b-20261021",
   "releaseProtocol": "spartacus-uploader-v1"
 }
