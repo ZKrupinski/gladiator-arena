@@ -1,13 +1,11 @@
 {
   "assetSha256": {
-    "public/arena-beasts.js": "a28301c43925f966eadfe53e40a65036d0ec210b818c92a7ff244d009926c950",
-    "public/index.html": "88a2d6256eee2b64ccb816e23987c60bc24da2902aae6c7d00ff44e0bf244052",
-    "scripts/qa_beast_vfx_runtime.mjs": "61acb36f6a82e9b79d917bd60473d57a445fa1fd958e9e13cddef30e62599f9b",
-    "scripts/qa_wolf_v3_attack_variants.mjs": "341c9d70d2b7450d2caa940c4b208a1b62d3f3d2f3c26b0e5c20f7674216a08f"
+    "public/index.html": "2f2346cf66e3d4c4093ed22a1400adb0866f29516e8ceeb5adbae28cd7ad9bb9",
+    "scripts/qa_beast_vfx_runtime.mjs": "600a33dda46586ea14f9ea04bc1672537378f860686d08bff28f8a6c5d012317"
   },
-  "baseCommit": "0e57634feb2e7e73beff6bf51948ab87712d577d",
+  "baseCommit": "c2191e36130c0151ffe8d6451d548e9c7242c208",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "wolf-fx-firstspawn-v1-20261021",
+  "releaseId": "wolf-attack-groundline-20261021-v1",
   "releaseProtocol": "spartacus-uploader-v1"
 }

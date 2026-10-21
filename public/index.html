@@ -1526,12 +1526,13 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
   if(ko)return; // Outcome handled by a separate grounded collapse at KO.
   const kind=dash||special?'pounce':guarded?'hit':
    ['claw','sweep','bite'][Math.max(0,Math.min(2,Number(variant)||0))];
-  // Spawn in front of the beast and spray towards the enemy's upper body.
+  // Keep forward reach, facing and upward flight; the wolf's strike FX
+  // now starts close to the gladiator foot line instead of the upper body.
   const ground=kind==='pounce',bite=kind==='bite';
   const foeGap=Math.abs((Number.isFinite(victim?.x)?victim.x:
     attacker.x+dir*265)-attacker.x);
   const frontX=attacker.x+dir*clamp(foeGap-50,167,270);
-  const contactY=FLOOR-(ground?252:bite?288:276);
+  const contactY=attacker.beastType==='wolf' ? FLOOR-82 : FLOOR-(ground?252:bite?288:276);
   const size=attacker.beastType==='elephant'?1.35:1;
   addFx(3,frontX,contactY,{
    beastFx:kind,w:(ground?730:bite?560:650)*size,

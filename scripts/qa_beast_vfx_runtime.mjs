@@ -30,7 +30,7 @@ for(const initiallyPaused of [false,true]){
 }
 // Anatomical world-space anchors must not regress to oversized actor-centered FX.
 assert.ok(html.includes("const frontX=attacker.x+dir*clamp(foeGap-50,167,270)"));
-assert.ok(html.includes("const contactY=FLOOR-(ground?252:bite?288:276)"));
+assert.ok(html.includes("const contactY=attacker.beastType==='wolf' ? FLOOR-82 : FLOOR-(ground?252:bite?288:276)"));
 assert.ok(html.includes("flightX:dir*(ground?92:65),flightY:ground?-78:-96"));
 assert.ok(html.includes("rotation:dir>0?-.20:.20"));
 assert.ok(html.includes("flip:beastFxFlip(attacker),layer:'front'"));
@@ -65,14 +65,34 @@ assert.ok(html.includes("flip:beastFxFlip(beast),layer:'back',alpha:.7"));
   const wolfAttack=emitted.find(v=>v.opt.beastFx==='claw');
   assert.equal(wolfAttack?.opt.flip,dir<0,'wolf attack sprite must be mirrored');
   assert.equal(wolfAttack?.x,400+dir*170);
-  assert.equal(wolfAttack?.y,600-276);
+  assert.equal(wolfAttack?.y,600-82,
+   'wolf attack near gladiator foot line');
+  for(const [variant,kind] of [[0,'claw'],[1,'sweep'],[2,'bite']]){
+   emitted.length=0;runtime.emitAttackFx(wolf,victim,false,false,false,variant);
+   const fx=emitted.find(v=>v.opt.beastFx===kind);
+   assert.equal(fx?.y,600-82,kind+' grounded wolf strike');
+   assert.equal(fx?.x,400+dir*170,kind+' original enemy-facing X');
+   assert.equal(fx?.opt.flip,dir<0,kind+' prior directional mirroring');
+  }
+  emitted.length=0;runtime.emitAttackFx(wolf,victim,true);
+  const pounce=emitted.find(v=>v.opt.beastFx==='pounce');
+  assert.equal(pounce?.y,600-82,'wolf pounce grounded');
+  assert.equal(pounce?.opt.flightY,-78,'pounce upward movement preserved');
+  assert.equal(pounce?.opt.flip,dir<0,'pounce orientation preserved');
+  emitted.length=0;runtime.emitAttackFx(wolf,victim,false,true);
+  assert.equal(emitted.find(v=>v.opt.beastFx==='hit')?.y,600-82,
+   'guarded wolf impact grounded');
   assert.equal(wolfAttack?.opt.flightX,dir*65);
   assert.equal(wolfAttack?.opt.flightY,-96);
   emitted.length=0;runtime.emitAttackFx(lion,victim);
   const lionAttack=emitted.find(v=>v.opt.beastFx==='claw');
   assert.equal(lionAttack?.opt.flip,dir>0,'other beasts keep prior facing');
   assert.equal(lionAttack?.x,wolfAttack.x,'same spawn as before');
-  assert.equal(lionAttack?.y,wolfAttack.y,'same height as before');
+  assert.equal(lionAttack?.y,600-276,'other beasts retain upper body attacks');
+  emitted.length=0;runtime.emitAttackFx(lion,victim,false,false,false,2);
+  assert.equal(emitted.find(v=>v.opt.beastFx==='bite')?.y,600-288,'lion bite unchanged');
+  emitted.length=0;runtime.emitAttackFx(lion,victim,true);
+  assert.equal(emitted.find(v=>v.opt.beastFx==='pounce')?.y,600-252,'lion pounce unchanged');
  }
 }
 
