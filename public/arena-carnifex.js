@@ -4,9 +4,11 @@
  */
 (function(root){
 'use strict';
-const TIME={arrive:.96,grip:.48,haul:1.92,exit:.34};
+const TIME={arrive:.96,grip:.48,haul:2.48,exit:1.10}; // Keep both actors visible through exit
 TIME.total=TIME.arrive+TIME.grip+TIME.haul+TIME.exit;
 const W=1280,FLOOR=617,ATLAS_COLS=8,CELL_W=320,CELL_H=390;
+const BODY_HALF=174,EXEC_HALF=218,GRIP_OFFSET=145,EXIT_MARGIN=74;
+const EXIT_SPEED=235; // visible world pixels per second for delayed clearance
 const INK_COLS=4,INK_W=270,INK_H=342,INK_FOOT=326;
 const INK_WALK='assets/npc/carnifex-walk-ink-v1.webp?v=1';
 const INK_HAUL='assets/npc/carnifex-haul-ink-v1.webp?v=1';
@@ -28,21 +30,29 @@ function preload(){
  if(!fallback)fallback=image(OLD_ART);
  return walkArt||artwork||fallback;
 }
-function begin(loser,allyWon,step){
+function validView(view){
+ return view&&Number.isFinite(view.left)&&Number.isFinite(view.right)&&view.right>view.left;
+}
+function begin(loser,allyWon,step,viewport){
  if(!loser)throw Error('Missing defeated gladiator for Carnifex retrieval');
  preload();
  const side=loser.enemy?1:-1;
  const body={...loser,cfg:loser.cfg,dead:true,hp:0,
   action:'defeat',actionT:0,actionDuration:0,stagger:0,
   comboDash:null,attackCD:0,vx:0,dodge:0,knockT:0,invuln:0};
+ const view=validView(viewport)?viewport:{left:0,right:W};
  return {body,initialX:loser.x,side,allyWon:!!allyWon,step,
+  viewLeft:view.left,viewRight:view.right,
   t:0,total:TIME.total,finished:false,pickedUp:false};
 }
 function positions(seq){
  const side=seq.side,cx=seq.initialX;
- const near=cx+side*145,enter=side>0?1510:-230;
- const beyond=side>0?W+480:-480;
- const t=Math.max(0,Math.min(TIME.total,seq.t));
+ const near=cx+side*GRIP_OFFSET,enter=side>0?1510:-230;
+ const edge=side>0?Math.max(W,seq.viewRight??W):Math.min(0,seq.viewLeft??0);
+ // The carried fighter's trailing edge, not the Carnifex pivot, defines
+ // the final offscreen target. The pair remains drawn throughout 'exit'.
+ const exitX=edge+side*(GRIP_OFFSET+BODY_HALF+EXIT_MARGIN);
+ const t=Math.max(0,seq.t);
  if(t<TIME.arrive){
   const k=EASE(t/TIME.arrive);
   return {executionerX:LERP(enter,near,k),bodyX:cx,
@@ -53,22 +63,33 @@ function positions(seq){
   return {executionerX:near,bodyX:cx,rope:EASE(grip),lift:0,
    exiting:false,bodyVisible:true,phase:'grab',frame:Math.min(3,Math.floor(grip*4))};
  }
- if(t<TIME.arrive+TIME.grip+TIME.haul){
-  const k=(t-TIME.arrive-TIME.grip)/TIME.haul;
-  // The hand and the body stay locked to the same contact point throughout retreat.
-  const bodyX=LERP(cx,beyond-side*145,EASE(k));
-  const last=Math.min(3,Math.floor(k*4));
-  return {executionerX:bodyX+side*145,bodyX,rope:1,lift:0,
-   exiting:true,bodyVisible:true,phase:'drag',frame:4+last};
- }
- return {executionerX:beyond,bodyX:beyond-side*145,rope:1,
-  lift:0,exiting:true,bodyVisible:false,phase:'exit',frame:7};
+ const elapsed=t-TIME.arrive-TIME.grip;
+ const duration=TIME.haul+TIME.exit;
+ const fraction=Math.min(1,elapsed/duration);
+ // Continuous dragging through the former teleport/hide boundary.
+ // If the camera moves, travel farther at a constant rate until clear.
+ const extra=Math.max(0,elapsed-duration)*EXIT_SPEED;
+ const executionerX=LERP(near,exitX,EASE(fraction))+side*extra;
+ const bodyX=executionerX-side*GRIP_OFFSET;
+ const hauling=elapsed<TIME.haul;
+ const frame=hauling?4+Math.min(3,Math.floor(elapsed/TIME.haul*4)):7;
+ return {executionerX,bodyX,rope:1,lift:0,exiting:true,
+  bodyVisible:true,phase:hauling?'drag':'exit',frame};
 }
-function advance(seq,dt){
+function outsideViewport(seq,pose,view){
+ const left=view.left,right=view.right;
+ // Account for both the full 436px NPC and the 348px KO gladiator, plus
+ // vibration safety margin. Neither may pop away before leaving frame.
+ return seq.side>0
+  ?Math.min(pose.executionerX-EXEC_HALF,pose.bodyX-BODY_HALF)>right+EXIT_MARGIN/2
+  :Math.max(pose.executionerX+EXEC_HALF,pose.bodyX+BODY_HALF)<left-EXIT_MARGIN/2;
+}
+function advance(seq,dt,viewport){
  if(!seq||seq.finished)return true;
- seq.t=Math.min(TIME.total,seq.t+Math.max(0,Number(dt)||0));
+ seq.t+=Math.max(0,Number(dt)||0);
  seq.pickedUp=seq.t>=TIME.arrive+TIME.grip;
- seq.finished=seq.t>=TIME.total-.000001;
+ const view=validView(viewport)?viewport:{left:seq.viewLeft??0,right:seq.viewRight??W};
+ seq.finished=seq.t>=TIME.total-.000001&&outsideViewport(seq,positions(seq),view);
  return seq.finished;
 }
 function drawExecutioner(ctx,seq,pose,floorY){

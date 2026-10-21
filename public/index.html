@@ -354,7 +354,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-beasts.js?v=11-wolf-load-guard"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
 <script src="beast-stage-previews.js?v=2"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
-<script src="arena-carnifex.js?v=6-ink-v1"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=3-short-hit-glint"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
+<script src="arena-carnifex.js?v=7-complete-exit"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=3-short-hit-glint"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -1351,7 +1351,10 @@ function resolveLineupBout(allyWon,timedOut=false){
  survivor.vx=0;survivor.action='idle';survivor.actionT=0;
  survivor.guard=false;survivor.comboDash=null;
  S.phase='cleanup';
- S.cleanup=window.ArenaCarnifex?.begin?.(losing,allyWon,step)||
+ S.cleanup=window.ArenaCarnifex?.begin?.(losing,allyWon,step,{
+  left:CAMERA.x-W/(2*CAMERA.zoom),
+  right:CAMERA.x+W/(2*CAMERA.zoom)
+ })||
   {body:{...losing,dead:true},allyWon,step,t:0,finished:true};
  S.notice=timedOut?'TEMPUS FINITUM · CARNIFEX':'CARNIFEX · CORPUS';
  S.noticeT=1.4;
@@ -1969,7 +1972,11 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
  }
  if(S.phase==='result')return;
  if(S.phase==='cleanup'){
-  if(!S.cleanup||!window.ArenaCarnifex||window.ArenaCarnifex.advance(S.cleanup,dt))finishLineupCleanup();
+  if(!S.cleanup||!window.ArenaCarnifex||
+   window.ArenaCarnifex.advance(S.cleanup,dt,{
+    left:CAMERA.x-W/(2*CAMERA.zoom),
+    right:CAMERA.x+W/(2*CAMERA.zoom)
+   }))finishLineupCleanup();
   return;
  }
  if(S.phase==='finisher'){S.resultAnim+=dt;S.slow-=dt;if(S.slow<=0){S.phase='result';showEnd();}return;}

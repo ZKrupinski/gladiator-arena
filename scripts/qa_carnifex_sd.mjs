@@ -33,7 +33,7 @@ assert.equal(manifest.imageHeight,780);
 assert.equal(manifest.frameWidth,320);
 assert.equal(manifest.frameHeight,390);
 assert.equal(manifest.baselineY,352,'new atlas must lift boots clear of ground and corpse');
-assert.match(html,/arena-carnifex\.js\?v=6-ink-v1/);
+assert.match(html,/arena-carnifex\.js\?v=7-complete-exit/);
 const source=fs.readFileSync(new URL('../public/arena-carnifex.js',import.meta.url),'utf8');
 let requested=[];
 class Sprite {
@@ -68,9 +68,46 @@ const contact=C.positions({...s,t:C.TIME.arrive+C.TIME.grip+C.TIME.haul*.73});
 assert.equal(contact.phase,'drag');
 assert.equal(contact.executionerX-contact.bodyX,145,'no sliding away from gripping hand');
 assert.ok(contact.frame>=4&&contact.frame<=7,'retreat must hold floor-level dragging hand');
+// Body and worker stay visible through the full exit, with no position jump
+// when the haul animation gives way to the final offscreen animation.
+const haulEnd=C.TIME.arrive+C.TIME.grip+C.TIME.haul;
+const before=C.positions({...s,t:haulEnd-0.00001});
+const after=C.positions({...s,t:haulEnd+0.00001});
+assert.equal(before.bodyVisible,true);
+assert.equal(after.bodyVisible,true);
+assert.equal(after.phase,'exit');
+assert.ok(Math.abs(after.executionerX-before.executionerX)<.04,'worker must not teleport');
+assert.ok(Math.abs(after.bodyX-before.bodyX)<.04,'dragged gladiator must not teleport');
+assert.equal(after.executionerX-after.bodyX,145,'same hand-to-corpse contact');
 const ending=C.positions({...s,t:C.TIME.total-.001});
 assert.equal(ending.frame,7);
-assert.equal(ending.bodyVisible,false);
+assert.equal(ending.bodyVisible,true);
+assert.ok(ending.executionerX>after.executionerX,'retreat continues offscreen');
+for(const [isEnemy,view] of [
+ [true,{left:0,right:1280}],
+ [false,{left:0,right:1280}],
+ [true,{left:300,right:1580}],
+ [false,{left:-300,right:980}]
+]){
+ const other=C.begin({enemy:isEnemy,x:isEnemy?940:335,
+  cfg:{name:'loser'},hp:0},true,{finished:false},view);
+ const final=C.positions({...other,t:C.TIME.total});
+ assert.equal(final.bodyVisible,true);
+ assert.equal(Math.abs(final.executionerX-final.bodyX),145);
+ assert.equal(C.advance(other,C.TIME.total,view),true,
+  'both full silhouettes must clear the visible viewport before cleanup finishes');
+}
+{
+ const moving=C.begin(enemy,true,{finished:false},{left:0,right:1280});
+ const shifted={left:1000,right:2100};
+ assert.equal(C.advance(moving,C.TIME.total,shifted),false,
+  'camera pan must not erase a still-visible body or worker');
+ const prior=C.positions(moving);
+ assert.equal(prior.bodyVisible,true);
+ assert.equal(C.advance(moving,4.0,shifted),true,
+  'extend the retreat until BOTH bodies clear a shifted camera viewport');
+ assert.ok(C.positions(moving).executionerX>prior.executionerX);
+}
 const draws=[],verticalPlanes=[];
 const ctx={save(){},restore(){},translate(x,y){if(x===0&&y<0)verticalPlanes.push(y);},scale(){},rotate(){},
  set filter(x){},drawImage(...a){draws.push(a)}};
@@ -104,5 +141,5 @@ for(const [phase,t,name] of [
 
 const front=ctx;
 assert.equal(C.advance(s,C.TIME.total),true);
-assert.equal(C.positions(s).bodyVisible,false);
+assert.equal(C.positions(s).bodyVisible,true,'keep dragged sprite during last drawn frame');
 console.log('PASS: approved transparent 4x2 ink atlases (2x8), stable feet, original KO sprite and hand-locked Carnifex drag.');
