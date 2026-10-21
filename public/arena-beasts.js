@@ -447,5 +447,5 @@ function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
 }
 root.ArenaBeasts={version:'2.1.0',types:SPEC,rows:ROWS_BY_POSE,
  pick,apply,ensure,frameFor,draw,portrait,wolfActionFor,wolfFrameIndex,installWolfPreviewAtlasPack,
- status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name),individual:[...cache].map(([name,e])=>({name,frames:e.individualReady||0})),wolfV3:{status:wolfV3.state,trial:WOLF_TRIAL_ENABLED,actions:[...wolfV3.actions.keys()],error:wolfV3.error}})};
+ status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name),individual:[...cache].map(([name,e])=>({name,frames:e.individualReady||0})),wolfV3:{status:wolfV3.state,trial:WOLF_TRIAL_ENABLED,actions:[...wolfV3.actions.keys()],anchoredFrames:[...wolfV3.metrics.values()].reduce((n,frames)=>n+(frames?.filter(Boolean).length||0),0),error:wolfV3.error}})};
 })(window);
