@@ -1526,8 +1526,10 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
   addFx(3,frontX,contactY,{
    beastFx:kind,w:(ground?730:bite?560:650)*size,
    h:(ground?490:bite?430:470)*size,
-   // Original painted VFX face left; mirror right and tilt UP into opponent.
-   flip:dir>0,layer:'front',rotation:dir>0?-.20:.20,
+   // Wolf attack FX artwork is authored in the opposite facing direction.
+   // Mirror ONLY wolf attacks; do not change the world-space effect position,
+   // upward spray, rotation, scale, timing or any other beast's effects.
+   flip:attacker.beastType==='wolf'?dir<0:dir>0,layer:'front',rotation:dir>0?-.20:.20,
    flightX:dir*(ground?92:65),flightY:ground?-78:-96,
    duration:ground?.33:.26,alpha:1,delay:ground?.10:.065
   });
