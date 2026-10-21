@@ -28,20 +28,20 @@ for(const initiallyPaused of [false,true]){
  assert.equal(S.paused,initiallyPaused);
  assert.equal(S.keys.size,0);
 }
-assert.ok(html.includes("beastFx:kind,w:ground?1120:bite?790:860"),
-  'heavy pounce artwork must be large enough to extend beyond the beast silhouette');
-assert.ok(html.includes("h:ground?700:bite?630:665,flip:ground?!flip:flip"),
-  'beast heavy pounce must reverse its authored ground trail');
-assert.ok(html.includes("beastFx:'step',w:1120,h:560,flip:!flip"),
-  'pounce must spawn a large backwards trailing ground dust sheet');
-assert.ok(html.includes("beastFx:'step',w:680*size,h:330*size"),
-  'walking dirt cannot regress to tiny foot specks');
-assert.ok(html.includes("flip:beast.face>0,layer:'front'"),
-  'walking dirt must reverse its original direction and be visible in front');
-assert.ok(html.includes("beastFx:'step',w:790,h:430"),
-  'dodge dirt must be enlarged');
-assert.ok(html.includes("flip:f.face>0,alpha:.88"),
-  'dodge dirt should mirror the opposite movement direction');
+// Anatomical world-space anchors must not regress to oversized actor-centered FX.
+assert.ok(html.includes("const frontX=attacker.x+dir*(ground?120:bite?151:132)"));
+assert.ok(html.includes("const contactY=FLOOR-(ground?135:bite?236:173)"));
+assert.ok(html.includes("beastFx:kind,w:(ground?730:bite?560:650)*size"));
+assert.ok(html.includes("beastFx:'step',w:750*size,h:318*size"));
+assert.ok(html.includes("const gaitFrame=Math.floor(clock*7)%8"));
+assert.ok(html.includes("gaitFrame===1||gaitFrame===5"));
+assert.ok(html.includes("beastFx:'step',w:400*size,h:172*size"));
+assert.ok(html.includes("flip:beast.face>0,layer:'back'"));
+assert.ok(html.includes("beastFx:'step',w:560,h:250"));
+assert.ok(html.includes("flip:f.face>0,alpha:.76"));
+assert.ok(beast.includes("if(wolfV3.normalized){"),'clean sheet must avoid adaptive size hopping');
+assert.ok(beast.includes("ground-470*scale"),'all planted paws share one ground line');
+assert.ok(beast.includes("act==='walk'?7:8"),'walk animation must not plow at 11fps');
 assert.ok(html.includes("requestAnimationFrame(loop);\n if(!t0)t0=t;"),
   'next frame must already be scheduled before optional visual Canvas calls');
 assert.ok(html.includes("console.error('ARENA_RENDER_RECOVERED'"),
