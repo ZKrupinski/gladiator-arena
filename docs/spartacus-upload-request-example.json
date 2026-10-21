@@ -1,0 +1,15 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "sample-only-not-approved",
+  "expectedMainSha": "REPLACE_WITH_MAIN_SHA_BEFORE_ENQUEUE",
+  "mode": "publish",
+  "approvedForProduction": false,
+  "files": [
+    {
+      "path": "public/assets/spartacus-uploads/upload-probe.js",
+      "utf8": "window.__spartacusUploaderProbe = true;\n",
+      "sha256": "c80567d36b316c53f90aa8544ee82eac3ef486fc607574a10a3ad2edb72ae8b2"
+    }
+  ],
+  "instructions": "EXAMPLE ONLY. Before release set an approved unique releaseId, current main SHA, and approvedForProduction true; write ONE request JSON into ops/uploader-requests on main with GitHub connected tool. For binaries use url plus actual sha256, never invent URL or digest."
+}
