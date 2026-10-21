@@ -11,6 +11,7 @@ from pathlib import Path
 from PIL import Image, ImageSequence
 
 from spartacus_uploader import UploadError, publish_files, REPO
+from spriteforge_connected_mask_v6 import extract_owned_frames, OwnershipError
 
 ACTIONS=("idle","walk","attack1","attack2","attack3","attack4","hit","death","roar")
 DEST="public/assets/beasts/wolf-v3/"
@@ -36,36 +37,45 @@ def convert(source: Path, preview: Path):
             w,h=original.size
             if not w or not h or w%4 or h%2:
                 raise UploadError("WOLF_ATLAS_INVALID_4x2_GRID: "+action)
-            cw,ch=w//4,h//2
-            alpha=original.getchannel("A")
+            # The atlas grid is a FRAME-SEED map, never a hard-cutting tool.
+            # Extract all owned connected alpha directly from the entire sheet
+            # before assembling new padded action cells.
+            try:
+                snapshots, ownership=extract_owned_frames(original)
+            except OwnershipError as err:
+                raise UploadError("SPRITEFORGE_CONNECTED_MASK_QA_FAILED: "+action+
+                                  " "+str(err)) from err
+            ow,oh=snapshots[0].size
             cells=[]
-            snapshots=[]
-            for i in range(8):
-                x=(i%4)*cw;y=(i//4)*ch
-                frame=original.crop((x,y,x+cw,y+ch))
-                a=frame.getchannel("A")
-                bbox=a.getbbox()
+            normalized=Image.new("RGBA",(ow*4,oh*2))
+            for i,frame in enumerate(snapshots):
+                bbox=frame.getchannel("A").getbbox()
                 if bbox is None:
                     raise UploadError("EMPTY_WOLF_POSE: "+action+"/"+str(i))
-                edge_margin=min(MIN_MARGIN,max(0,min(cw,ch)//20))
+                edge_margin=min(MIN_MARGIN,max(1,min(ow,oh)//20))
                 if (bbox[0]<edge_margin or bbox[1]<edge_margin or
-                    bbox[2]>cw-edge_margin or bbox[3]>ch-edge_margin):
+                    bbox[2]>ow-edge_margin or bbox[3]>oh-edge_margin):
                     raise UploadError("SPRITEFORGE_FRAME_OWNERSHIP_EDGE_RISK: "+
                                       action+"/"+str(i)+" bbox="+str(bbox))
-                cells.append({"index":i,"bounds":list(bbox),"cellPixels":[cw,ch]})
-                snapshots.append(frame)
-            # Fast manual QA preview; not a substitute for artist approval.
-            gif=(preview/(action+".gif"))
+                cells.append({"index":i,"bounds":list(bbox),
+                              "cellPixels":[ow,oh],
+                              "sourceOwner":ownership["frameOwners"][i]})
+                normalized.alpha_composite(frame,((i%4)*ow,(i//4)*oh))
+            # Animation previews and game atlas must use the EXACT SAME frames.
+            gif=preview/(action+".gif")
             snapshots[0].save(gif,save_all=True,append_images=snapshots[1:],
                               optimize=True,disposal=2,duration=110,loop=0)
             output=preview/(action+".webp")
-            original.save(output,"WEBP",lossless=True,quality=100,method=5)
+            normalized.save(output,"WEBP",lossless=True,quality=100,method=5)
             payload[DEST+action+".webp"]=output.read_bytes()
             qa["actions"][action]={"source":str(src),"nativeSize":[w,h],
-                                   "cells":cells,"preview":str(gif)}
+                                   "cells":cells,"preview":str(gif),
+                                   "connectedAlphaOwnership":ownership,
+                                   "finalSheetPixels":list(normalized.size)}
     manifest={
         "version":3,
-        "source":"approved SpriteForge V3 single-action 4x2 sheets at any resolution",
+        "source":"approved SpriteForge V6 connected-mask cuts from whole 4x2 sheets",
+        "extractionPolicy":"UNIQUE_CONNECTED_ALPHA_OWNERSHIP_NOT_RECTANGLE",
         "actions":{action:action+".webp" for action in ACTIONS},
     }
     manifest_bytes=(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n").encode()
