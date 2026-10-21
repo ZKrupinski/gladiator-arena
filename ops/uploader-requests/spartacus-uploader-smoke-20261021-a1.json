@@ -1,0 +1,14 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "spartacus-uploader-smoke-20261021-a1",
+  "expectedMainSha": "587804c43e4bab4779aa97c3f0fbdb09bad571ee",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/assets/spartacus-uploads/heartbeat.json",
+      "utf8": "{\"project\":\"spartacus\",\"uploader\":\"smoke-test\",\"nonce\":\"20261021-v1\"}\n",
+      "sha256": "2564156a5ee387e9376faa1c03f865f8d6c3a781aa748068b13fe1f92260676e"
+    }
+  ]
+}
