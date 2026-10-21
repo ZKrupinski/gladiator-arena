@@ -103,7 +103,7 @@ for(const kind of ['strike','guard','special','dash','parry','reversal']){
  f.action='idle';f.hp=0;
  assert.deepEqual(JSON.parse(JSON.stringify(M.visual(f))),{scale:1,flash:0});
  M.impact(f,kind);
- assert.equal(f.hitVisual?.t,.103,'KO never restarts flash');
+ assert.ok(Math.abs((f.hitVisual?.t||0)-.103)<.0001,'KO never restarts flash');
 }
 const clashA=actor(),clashB=actor(true);
 clashA.x=500;clashB.x=685;clashA.vx=210;clashB.vx=-90;
