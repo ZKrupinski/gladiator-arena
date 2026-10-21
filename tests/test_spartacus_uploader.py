@@ -159,6 +159,38 @@ class TestSpartacusUploader(unittest.TestCase):
                  "approvedForProduction":True,"releaseId":"wolf-release-v3","files":[row]}
         with self.assertRaisesRegex(u.UploadError,"RESERVED"):
             u.stage_request(request,main_sha=head)
+    def test_trial_remote_source_sha_then_lossless_transcode(self):
+        import io
+        from PIL import Image,ImageDraw
+        art=Image.new("RGBA",(1672,941))
+        brush=ImageDraw.Draw(art)
+        for i in range(8):
+            x=(i%4)*418; y=(i//4)*470
+            brush.rectangle((x+20,y+20,x+395,y+420),
+                             fill=(70+i,80,100,255))
+        brush.rectangle((14,939,24,940),fill=(255,0,25,255))
+        original=io.BytesIO()
+        art.save(original,format="PNG")
+        raw=original.getvalue()
+        target="public/assets/beasts/wolf-trial/walk.webp"
+        row={"path":target,"url":"https://d2ol7oe51mr4n9.cloudfront.net/path.png",
+             "sha256":u.digest(raw),"transform":"wolf-trial-source-png"}
+        req={"protocol":"spartacus-uploader-v1","expectedMainSha":"a"*40,
+             "mode":"publish","approvedForProduction":True,
+             "releaseId":"wolf-remote-smoke","files":[row]}
+        with patch.object(u,"download_asset",return_value=raw):
+            staged=u.stage_request(req,main_sha="a"*40)
+        self.assertEqual(list(staged),[target])
+        with Image.open(io.BytesIO(staged[target])) as transformed:
+            self.assertEqual(transformed.size,(1672,942))
+            self.assertEqual(transformed.getpixel((18,940)),(255,0,25,255))
+        with patch.object(u,"download_asset",return_value=raw):
+            req["files"][0]["sha256"]="0"*64
+            with self.assertRaisesRegex(u.UploadError,"SHA256_MISMATCH"):
+                u.stage_request(req,main_sha="a"*40)
+        with self.assertRaisesRegex(u.UploadError,"TRIAL_TRANSCODE_DESTINATION"):
+            u.transcode_trial_source(raw,"public/assets/beasts/wolf-v3/walk.webp")
+
     def test_wolf_trial_is_isolated_and_reports_edge_risks(self):
         import io
         from PIL import Image, ImageDraw
