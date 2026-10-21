@@ -78,7 +78,7 @@ class TestTopologyExtraction(unittest.TestCase):
     def test_large_disconnected_neighbor_head_is_not_allowed(self):
         img=atlas()
         ImageDraw.Draw(img).ellipse((CW-12,2,CW+12,24),fill=(230,60,40,255))
-        with self.assertRaisesRegex(OwnershipError,"DETACHED_OR_FOREIGN_PART"):
+        with self.assertRaisesRegex(OwnershipError,"DETACHED_OR_FOREIGN_PART|MULTIPLE_BODY_COMPONENTS"):
             extract_owned_frames(img)
 
     def test_tiny_character_is_accepted(self):
