@@ -1348,7 +1348,9 @@ function startLineupMatch(mode,indices){
  S.gauntlet.records[chosen[0]]={initialHp:S.player.hp,lastHp:S.player.hp,bouts:0};
  S.careerParticipant=chosen[0];S.careerOpponent={...q.enemies[0]};
  S.enemy=lineupEnemy(q.enemies[0]);
- // Bind opening walk-on to the real round-one gauntlet enemy.
+ // Initial start() staged the hero outside. Reset both targets before
+ // binding the actual first gauntlet opponent, not the temporary opponent.
+ S.player.x=335;
  beginArenaEntrance([S.player,S.enemy]);
  // Human-only regular gauntlet; dedicated VENATIO handles beasts.
  S.time=90;S.lastManualInput=clock;S.autoPlaying=false;S.cleanup=null;
