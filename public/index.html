@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
-<script src="arena-beasts.js?v=6-ground"></script><script src="arena-beast-vfx.js?v=1"></script>
+<script src="arena-beasts.js?v=7-cleaned"></script><script src="arena-beast-vfx.js?v=1"></script>
 <script src="beast-stage-previews.js?v=2"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
 <script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
@@ -1515,26 +1515,24 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
   if(ko)return; // Outcome handled by a separate grounded collapse at KO.
   const kind=dash||special?'pounce':guarded?'hit':
    ['claw','sweep','bite'][Math.max(0,Math.min(2,Number(variant)||0))];
-  // Source FX art has a generous transparent gutter: the visible artwork
-  // occupies only part of its requested canvas size. Place the IMPACT at the
-  // forward paw/muzzle, beyond the beast silhouette rather than under its back.
+  // Attach VFX to anatomical contacts rather than a giant canvas
+  // centered over the beast. Separate mouth, claws and ground contact.
   const ground=kind==='pounce',bite=kind==='bite';
-  const offsetX=dir*(ground?225:bite?205:192);
-  const offsetY=ground?106:bite?-22:-24;
-  addFx(3,attacker.x+offsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+offsetY,{
-   beastFx:kind,w:ground?1120:bite?790:860,
-   h:ground?700:bite?630:665,flip:ground?!flip:flip,
-   owner:attacker,offsetX,offsetY,track:'body',layer:'front',
-   duration:window.ArenaBeastFX?.durations?.[kind]||.3,
-   alpha:1,delay:0
+  const frontX=attacker.x+dir*(ground?120:bite?151:132);
+  const contactY=FLOOR-(ground?135:bite?236:173);
+  const size=attacker.beastType==='elephant'?1.35:1;
+  addFx(3,frontX,contactY,{
+   beastFx:kind,w:(ground?730:bite?560:650)*size,
+   h:(ground?490:bite?430:470)*size,
+   // Original illustrated attack sheets face toward screen-left.
+   flip:dir>0,layer:'front',
+   duration:ground?.33:.26,alpha:1,delay:ground?.10:.065
   });
   if(ground){
-   // The authored ground-scrape tail faces the opposite way from the
-   // attacker. Keep the dust on the FLOOR and in front of the beast layer.
-   const footX=attacker.x+dir*88;
-   addFx(1,footX,FLOOR-58,{
-    beastFx:'step',w:1120,h:560,flip:!flip,
-    layer:'front',duration:.40,alpha:.95,delay:.08
+   const footX=attacker.x+dir*93;
+   addFx(1,footX,FLOOR-49,{
+    beastFx:'step',w:750*size,h:318*size,
+    flip:dir>0,layer:'front',duration:.39,alpha:.86,delay:.13
    });
   }
   return;
@@ -1875,8 +1873,8 @@ function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.d
  window.ArenaMotion?.pulse?.(f,'contact','source',f.face);f.x=clamp(f.x+(f.enemy?-1:-1)*f.face*84,120,1160);const p=weaponPoint(f,'dodge');window.ArenaAudio?.play?.('dodge',{gain:.56,pan:(f.x-640)/720});
  if(f.beastType){
    window.ArenaBeastFX?.ensure?.();
-   addFx(1,f.x+f.face*65,FLOOR-44,{beastFx:'step',w:790,h:430,
-     flip:f.face>0,alpha:.88,duration:.35,layer:'front'});
+   addFx(1,f.x+f.face*75,FLOOR-46,{beastFx:'step',w:560,h:250,
+     flip:f.face>0,alpha:.76,duration:.31,layer:'front'});
  }else addFx(1,p.x,p.y,{art:'dash_trail',w:360,h:120,flip:f.face<0,
      alpha:.48,owner:f,offsetX:-f.face*32,offsetY:110,duration:.2});}
 function inputAct(action){if(S.phase!=='fight'||S.paused)return;if(action==='attack')attack(S.player,S.enemy);else if(action==='special')attack(S.player,S.enemy,true);else if(action==='dodge')dodge(S.player);else if(action==='guard'){S.keys.add('guard');}}
@@ -2028,22 +2026,26 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
  // current fighter position and emitting NO gladiator weapon VFX.
  for(const beast of [p,e]){
   if(!beast?.beastType||beast.dead)continue;
-  if(Math.abs(beast.vx)>30&&clock-(beast._beastStepFxAt??-1) >
-     (beast.beastType==='elephant'?.43:.27)){
+  // One dust puff per planted gait beat (frames 1/5 of a 7fps walk),
+  // not a continuous plowing cloud beneath a stationary wolf.
+  const gaitFrame=Math.floor(clock*7)%8;
+  if(Math.abs(beast.vx)>30&&(gaitFrame===1||gaitFrame===5)&&
+     clock-(beast._beastStepFxAt??-1) >
+     (beast.beastType==='elephant'?.55:.43)){
    beast._beastStepFxAt=clock;
    window.ArenaBeastFX?.ensure?.();
    const size=beast.beastType==='elephant'?1.5:1;
-   addFx(0,beast.x+beast.face*62,FLOOR-41,{
-     beastFx:'step',w:680*size,h:330*size,duration:.31,
-     flip:beast.face>0,layer:'front',alpha:.78});
+   addFx(0,beast.x+beast.face*84,FLOOR-43,{
+     beastFx:'step',w:400*size,h:172*size,duration:.27,
+     flip:beast.face>0,layer:'back',alpha:.7});
   }
   if(beast._beastRoarUntil>clock&&
      beast._beastRoarFxUntil!==beast._beastRoarUntil){
    beast._beastRoarFxUntil=beast._beastRoarUntil;
    window.ArenaBeastFX?.ensure?.();
-   addFx(0,beast.x+beast.face*225,FLOOR-195,{
-    beastFx:'roar',w:920,h:670,duration:.68,
-    flip:beast.face<0,alpha:.95,layer:'front'});
+   addFx(0,beast.x+beast.face*155,FLOOR-243,{
+    beastFx:'roar',w:640,h:460,duration:.66,
+    flip:beast.face>0,alpha:.93,layer:'front'});
   }
  }
  for(const f of [p,e])if(f.knockT>0){
