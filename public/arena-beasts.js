@@ -215,12 +215,21 @@ function drawWolfV3(ctx,args){
  const center=x+w*.5,ground=y+h;
  const sourceX=box?(box.left+box.right)*.5:cellW*.5;
  const sourceBottom=box?box.bottom:cellH*.90;
+ // Only render the owned, alpha-inspected region from this cell. Residual
+ // foreign art from the previous row may be attached at its upper border,
+ // which would otherwise enlarge the wolf even with a correct paw pivot.
+ const margin=3;
+ const left=box?Math.max(0,box.left-margin):0;
+ const top=box?Math.max(0,box.top-margin):0;
+ const right=box?Math.min(cellW,box.right+margin):cellW;
+ const bottom=box?Math.min(cellH,box.bottom+margin):cellH;
+ const sw=Math.max(1,right-left),sh=Math.max(1,bottom-top);
  ctx.save();
  ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
  if(flip){ctx.translate(center*2,0);ctx.scale(-1,1);}
- ctx.drawImage(img,(index%4)*cellW,Math.floor(index/4)*cellH,
-               cellW,cellH,center-sourceX*scale,ground-sourceBottom*scale,
-               cellW*scale,cellH*scale);
+ ctx.drawImage(img,(index%4)*cellW+left,Math.floor(index/4)*cellH+top,
+               sw,sh,center-(sourceX-left)*scale,
+               ground-(sourceBottom-top)*scale,sw*scale,sh*scale);
  ctx.restore();
  return true;
 }
