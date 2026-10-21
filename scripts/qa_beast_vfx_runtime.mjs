@@ -42,6 +42,12 @@ assert.ok(html.includes("beastFx:'step',w:790,h:430"),
   'dodge dirt must be enlarged');
 assert.ok(html.includes("flip:f.face>0,alpha:.88"),
   'dodge dirt should mirror the opposite movement direction');
+assert.ok(html.includes("requestAnimationFrame(loop);\n if(!t0)t0=t;"),
+  'next frame must already be scheduled before optional visual Canvas calls');
+assert.ok(html.includes("console.error('ARENA_RENDER_RECOVERED'"),
+  'render faults must no longer stop combat updates');
+assert.ok(html.includes("f.centerX,f.shade,f.bloom,f.cinemaBars,f.elapsed,f.duration"),
+  'invalid cinematic gradients must be skipped before reaching Canvas');
 assert.ok(html.includes("S.cinematic=null;S.focusFrame=null;"),
   'manual resume must discard interrupted hitstop');
 assert.ok(html.includes("if(f.beastType&&f.actionT<=0&&f.stagger<=0&&!f.comboDash&&"),
