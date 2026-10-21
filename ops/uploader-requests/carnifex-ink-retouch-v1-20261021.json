@@ -1,0 +1,40 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "carnifex-ink-retouch-v1-20261021",
+  "expectedMainSha": "930812f466e914e34077e7954bd598edd7bae5a4",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/assets/npc/carnifex-walk-ink-v1.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/930812f466e914e34077e7954bd598edd7bae5a4/public/assets/npc/carnifex-walk-ink-v1.webp",
+      "sha256": "75c2a95c9a02814c1b9d14bb1bf97a6d5fd6db71b36ce2a1cc687a26e208e476"
+    },
+    {
+      "path": "public/assets/npc/carnifex-haul-ink-v1.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/930812f466e914e34077e7954bd598edd7bae5a4/public/assets/npc/carnifex-haul-ink-v1.webp",
+      "sha256": "60f7bac6d4590ee9ca760dab103c4b257c04936a0a011e88d6f66b048846127b"
+    },
+    {
+      "path": "public/arena-carnifex.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/930812f466e914e34077e7954bd598edd7bae5a4/public/arena-carnifex.js",
+      "sha256": "3c07fcc9da3a8e5841705ae1a554a11f87048f5ed92c6c529bef02fcb3172be4"
+    },
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/930812f466e914e34077e7954bd598edd7bae5a4/public/index.html",
+      "sha256": "75b4b6d27e7b81d124f10109e94c8096f6664246735da4db6fec7c0216d372f2"
+    },
+    {
+      "path": "scripts/qa_carnifex_sd.mjs",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/930812f466e914e34077e7954bd598edd7bae5a4/scripts/qa_carnifex_sd.mjs",
+      "sha256": "f6c14dbf2813218c0cf7d1bfb4950701ba02a9ed31f81a58d908933efa74f679"
+    },
+    {
+      "path": "public/assets/npc/carnifex-ink-v1.json",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/930812f466e914e34077e7954bd598edd7bae5a4/public/assets/npc/carnifex-ink-v1.json",
+      "sha256": "15b6c889462a2bd2c209a1ed15da07d70da6452a0785ee0343c01f1b6bfe7295"
+    }
+  ],
+  "instructions": "Approved Carnifex large-head pen-ink retouch. Read immutable 930812f assets already integrated into main. Publish exactly these two 4x2 transparent WebPs, NPC runtime, manifest, strict QA and HTML; retain prior original sprites as rollback and verify Cloudflare hashes."
+}
