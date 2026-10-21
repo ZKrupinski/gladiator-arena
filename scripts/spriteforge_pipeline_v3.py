@@ -11,7 +11,6 @@ from scipy import ndimage
 
 CORE=("idle","walk","slash","sweep","thrust","heavy","guard","hit","death")
 BEASTS=("wolf","leopard","tiger","lion","elephant")
-MIN_NATIVE=512
 MARGIN=20
 ALPHA=32
 
@@ -21,32 +20,29 @@ def plan(reference,kind,action,out,extra=()):
     ref=Path(reference).resolve()
     out=Path(out).resolve()
     if not ref.is_file(): raise ValueError("MISSING_APPROVED_REFERENCE")
-    if min(Image.open(ref).size)<768: raise ValueError("REFERENCE_RESOLUTION_TOO_LOW")
     if kind not in (*BEASTS,"murmillo","retiarius","thraex"): raise ValueError("UNKNOWN_CHARACTER")
     allowed=set(CORE)|set(extra)|({"roar"} if kind in BEASTS else set())
     if action not in allowed: raise ValueError("ACTION_NOT_REGISTERED")
     policy=Path(__file__).resolve().parents[1]/"config/spriteforge-qc-rules.json"
     rules=json.loads(policy.read_text())["rules"]
-    native=max(768,min(1536,math.ceil(min(Image.open(ref).size)*.80)))
     out.mkdir(parents=True,exist_ok=True)
     job={
       "protocol":"spriteforge-v3","character":kind,"action":action,
       "reference":str(ref),"referenceSha256":digest(ref),
-      "requiredFrames":8,"motionsPerJob":1,"nativeFrameMinimum":[native,native],
-      "nativeSheetMinimum":[native*4,native*2],"sheetGrid":[4,2],
-      "onlyAllowedGeneratedOutput":"ONE_4x2_HIGH_RES_TRANSPARENT_PNG_SHEET",
+      "requiredFrames":8,"motionsPerJob":1,"sheetGrid":[4,2],
+      "resolutionPolicy":"ANY_POSITIVE_4x2_GRID_NO_PIXEL_FLOOR",
+      "onlyAllowedGeneratedOutput":"ONE_4x2_TRANSPARENT_PNG_SHEET",
       "separatePngFiles":"EXPORTED_ONLY_AFTER_VALIDATED_SHEET_CUT",
-      "noArtificialUpscaling":True,"minimumReferenceDetailRatio":0.8,
+      "noArtificialUpscaling":True,
       "rulesSha256":digest(policy),
       "mandatoryPreGenerationBriefing":True,
       "mandatoryProviderPreflightAcknowledgement":True,
       "rules":[r["id"] for r in rules],
       "instruction":f"Use only the approved {kind} reference. Generate ONE action, {action}, "
         "with exactly EIGHT distinct sequential full-body poses. Preserve face, equipment, scale, "
-        "design, facing and high-frequency details. Each pose: native at least 512x512 real transparent "
-        "RGBA in EXACTLY ONE NATIVE 4x2 SHEET, each source cell no smaller than "
-        f"{native}x{native} (full sheet {native*4}x{native*2}). NEVER generate eight separate "
-        "PNG input files or create apparent high resolution by upscaling a small source. "
+        "design, facing and recognizable details. Any source size is permitted. "
+        "Generate exactly ONE transparent RGBA 4x2 sheet with eight frames and no pixel-size floor. "
+        "NEVER generate eight separate PNG input files or falsely claim more detail via upscaling. "
         "Retain the approved reference's original microdetails. Keep wide X/Y gutters, "
         "unclipped feet/tail/equipment. NO mixed actions, extra animals, opaque background, "
         "cut body, duplicate frame, merged poses or neighboring fragments.",
@@ -75,19 +71,15 @@ def eight_images(response,root,job=None):
         raise ValueError("ARTIFICIALLY_UPSCALED_SOURCE_FORBIDDEN")
     sheet=rgba((root/response["sheet"]).resolve())
     w,h=sheet.size
-    native=(job or {}).get("nativeFrameMinimum",[768,768])
-    min_sheet=(job or {}).get("nativeSheetMinimum",[3072,1536])
-    if w<min_sheet[0] or h<min_sheet[1]:
-        raise ValueError("LOW_NATIVE_RESOLUTION_SHEET_MUST_PRESERVE_REFERENCE_DETAIL")
-    if w%4 or h%2 or w//4<native[0] or h//2<native[1]:
-        raise ValueError("INVALID_4x2_NATIVE_SHEET_GRID")
+    if not w or not h or w%4 or h%2:
+        raise ValueError("INVALID_4x2_SHEET_GRID")
     mask=np.asarray(sheet.getchannel("A"))>ALPHA
     labels,n=ndimage.label(mask,structure=np.ones((3,3),dtype=np.uint8))
     if n:
         yy,xx=np.where(labels>0)
         for k in np.unique(labels[yy,xx]):
             cy,cx=np.where(labels==k)
-            if len(cx)<max(160,round(w*h*.0003)): continue
+            if len(cx)<max(1,round(w*h*.0003)): continue
             if len(np.unique(cx*4//w))>1 or len(np.unique(cy*2//h))>1:
                 raise ValueError("MERGED_SILHOUETTE_ACROSS_GRID_SEAM_REGENERATE")
     return [sheet.crop((i%4*w//4,i//4*h//2,(i%4+1)*w//4,(i//4+1)*h//2))
@@ -95,13 +87,13 @@ def eight_images(response,root,job=None):
 
 def measure(frame):
     w,h=frame.size;fail=[]
-    if min(w,h)<MIN_NATIVE: fail.append("UNDER_RES_NATIVE")
     a=np.asarray(frame.getchannel("A"))
     yy,xx=np.where(a>=ALPHA)
-    if len(xx)<max(300,w*h*.0015):
+    if not len(xx):
         return {"fail":fail+["NO_CHARACTER"],"bbox":None}
     bbox=[int(xx.min()),int(yy.min()),int(xx.max()+1),int(yy.max()+1)]
-    if min(bbox[0],bbox[1],w-bbox[2],h-bbox[3])<MARGIN:
+    safety_margin=min(MARGIN, max(0,min(w,h)//16))
+    if min(bbox[0],bbox[1],w-bbox[2],h-bbox[3])<safety_margin:
         fail.append("CLIPPED_OR_TOO_CLOSE_TO_CANVAS_EDGE")
     if np.mean(a>250)>.92:fail.append("OPAQUE_BACKGROUND")
     labels,n=ndimage.label(a>=ALPHA,structure=np.ones((3,3),dtype=np.uint8))
@@ -122,8 +114,6 @@ def measure(frame):
         if edge < MARGIN*3 and counts[comp_id]>=max(24,biggest*.0004):
             fail.append("POSSIBLE_FOREIGN_NEIGHBOR_BODY_PART_VERIFY_OWNERSHIP")
             break
-    if bbox[2]-bbox[0]<230 or bbox[3]-bbox[1]<220:
-        fail.append("LOW_NATIVE_SUBJECT_PIXEL_DETAIL")
     bottom=yy>=np.percentile(yy,97)
     foot=[float(np.median(xx[bottom])-bbox[0]),
           float(np.percentile(yy,99.5)-bbox[1])]
@@ -172,13 +162,13 @@ def inspect(job_path,result_path,destination):
             anchors=[r["footEstimate"] for r in report["frames"]]
             width=int(128+2*max(max(f[0],box[2]-box[0]-f[0]) for f,box in zip(anchors,boxes)))
             height=int(152+max(max(f[1],box[3]-box[1]-f[1]) for f,box in zip(anchors,boxes)))
-            width=max(width,512);height=max(height,512)
             if max(width,height)>4096:raise ValueError("OUTPUT_CANVAS_OVERSIZE")
             dest=out/"draft_frames"/job["action"];dest.mkdir(parents=True,exist_ok=True)
             for i,(image,box,foot) in enumerate(zip(images,boxes,anchors)):
                 crop=image.crop(box)
                 x=round(width/2-foot[0]);y=round(height-84-foot[1])
-                if min(x,y,width-x-crop.width,height-y-crop.height)<MARGIN:
+                output_margin=min(MARGIN,max(0,min(width,height)//16))
+                if min(x,y,width-x-crop.width,height-y-crop.height)<output_margin:
                     raise ValueError("ALIGNMENT_OVERFLOW")
                 canvas=Image.new("RGBA",(width,height))
                 canvas.alpha_composite(crop,(x,y))

@@ -29,24 +29,21 @@ def validate(queue,root,report_path):
                     (preflight.get("character"),preflight.get("action"))!=
                       (task["character"],task["action"])):
                     reasons.append("MISSING_VERIFIED_V3_PREGEN_BRIEFING")
-                # These dimensions come from the ORIGINAL native 4x2 sheet,
-                # before any legitimate crop/ground-anchor alignment. A large
-                # resized export must never masquerade as native V3 source art.
-                minimum=task["minimumNativePixelsPerFrame"]
+                # Validate recorded geometry when provided, but accept any
+                # positive dimensions. Image size NEVER approves/rejects art.
                 if len(frames)==8:
                     for frame in frames:
                         dims=frame.get("native") if isinstance(frame,dict) else None
                         if (not isinstance(dims,list) or len(dims)!=2 or
-                            any(not isinstance(value,int) for value in dims) or
-                            dims[0]<minimum[0] or dims[1]<minimum[1]):
-                            reasons.append("SOURCE_SHEET_NATIVE_DETAIL_BELOW_FLOOR")
+                            any(type(value) is not int or value<=0 for value in dims)):
+                            reasons.append("INVALID_SOURCE_SHEET_CELL_GEOMETRY")
                             break
                 images=sorted((base/"draft_frames"/task["action"]).glob("*.png"))
                 if len(images)!=8:reasons.append("NOT_EIGHT_PNGS")
                 for im_path in images:
                     with Image.open(im_path) as im:
-                        if im.mode!="RGBA" or min(im.size)<512:
-                            reasons.append("LOW_RES_OR_MISSING_ALPHA")
+                        if im.mode!="RGBA" or not all(d>0 for d in im.size):
+                            reasons.append("INVALID_OR_MISSING_ALPHA")
                             break
             except (ValueError,OSError,KeyError) as e:
                 reasons.append("INVALID_QA_OR_IMAGE_"+type(e).__name__)

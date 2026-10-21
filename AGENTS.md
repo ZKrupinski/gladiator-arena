@@ -38,7 +38,7 @@ sheet intent is enough. Applies equally to follow-up prompts like "다음
    Use the exact source character, **ONE motion, exactly EIGHT distinct frames
    in ONE single transparent native-resolution 4×2 sheet**. Distinct PNG
    frames are an OUTPUT of extraction, never the generation input. Native
-   cell resolution scales with the approved reference, with 768px minimum.
+   image dimensions and character size have NO minimum; maintain valid 4x2 structure.
    Preserve detail, proportions, equipment, foot anchors and safe gutters.
    A neighbor frame's head/limb/tail/torso is foreign regardless of size.
    Never clip a valid part of the current frame.
@@ -84,7 +84,7 @@ When the user says **"게임에 적용해"**, **"적용하고 배포해"**,
   `scripts/spartacus_wolf_import.py`. It saves to
   `public/assets/beasts/wolf-v3/` and existing `arena-beasts.js`
   automatically loads its manifest. **Do not bypass SpriteForge briefing,
-  art review or high-res gate.**
+  art review, frame ownership, cut/ground alignment, or visual integrity gates.**
 * Prefer update current version → test → commit → verify Cloudflare
   `uploader-release.json` and actual file checksums → send exact live link.
   Git success is not proof of production deployment. A failed external

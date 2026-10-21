@@ -79,9 +79,6 @@ def check_asset(path: str, data: bytes, *, strict_art: bool = False) -> dict:
         if not (0 < w <= 16000 and 0 < h <= 16000):
             raise UploadError("INVALID_PNG_DIMENSIONS: " + path)
         info["width"], info["height"] = w, h
-        if strict_art and "wolf-v3/" in path and path.endswith(".png"):
-            if "sheet" in path and (w < 3072 or h < 1536):
-                raise UploadError("SPRITEFORGE_V3_NATIVE_SHEET_TOO_SMALL: " + path)
     elif suffix == ".webp" and not (data.startswith(b"RIFF") and data[8:12] == b"WEBP"):
         raise UploadError("NOT_WEBP: " + path)
     elif suffix == ".json":
@@ -101,8 +98,8 @@ def check_asset(path: str, data: bytes, *, strict_art: bool = False) -> dict:
             with Image.open(io.BytesIO(data)) as wolf:
                 wolf.load()
                 w,h=wolf.size
-                if w%4 or h%2 or w<3072 or h<1536 or w//4<768 or h//2<768:
-                    raise UploadError("SPRITEFORGE_V3_NATIVE_SHEET_TOO_SMALL: " + path)
+                if w%4 or h%2 or not w or not h:
+                    raise UploadError("SPRITEFORGE_V3_INVALID_4x2_GRID: " + path)
                 if wolf.mode!="RGBA":
                     raise UploadError("SPRITEFORGE_V3_RGBA_REQUIRED: " + path)
                 seen=set()
@@ -113,8 +110,9 @@ def check_asset(path: str, data: bytes, *, strict_art: bool = False) -> dict:
                     bounds=cell.getchannel("A").getbbox()
                     if not bounds:
                         raise UploadError("SPRITEFORGE_V3_EMPTY_FRAME: "+path+":"+str(i))
-                    if (bounds[0]<12 or bounds[1]<12 or
-                        bounds[2]>cw-12 or bounds[3]>ch-12):
+                    edge_margin=min(12,max(0,min(cw,ch)//20))
+                    if (bounds[0]<edge_margin or bounds[1]<edge_margin or
+                        bounds[2]>cw-edge_margin or bounds[3]>ch-edge_margin):
                         raise UploadError("SPRITEFORGE_V3_FRAME_SEAM_OR_CLIPPING: "+path+":"+str(i))
                     fingerprint=digest(cell.tobytes())
                     if fingerprint in seen:
@@ -134,8 +132,8 @@ def check_asset(path: str, data: bytes, *, strict_art: bool = False) -> dict:
             with Image.open(io.BytesIO(data)) as trial:
                 trial.load()
                 w,h=trial.size
-                if w < 1600 or h < 900 or w%4 or h%2:
-                    raise UploadError("WOLF_TRIAL_REQUIRES_4x2_ATLAS_MIN_1600x900: "+path)
+                if not w or not h or w%4 or h%2:
+                    raise UploadError("WOLF_TRIAL_INVALID_4x2_GRID: "+path)
                 if trial.mode!="RGBA":
                     raise UploadError("WOLF_TRIAL_REQUIRES_TRANSPARENT_RGBA: "+path)
                 cw,ch=w//4,h//2
@@ -147,8 +145,9 @@ def check_asset(path: str, data: bytes, *, strict_art: bool = False) -> dict:
                     bbox=cell.getchannel("A").getbbox()
                     if bbox is None:
                         raise UploadError("WOLF_TRIAL_EMPTY_FRAME: "+path+":"+str(i))
-                    if (bbox[0]<12 or bbox[1]<12 or
-                        bbox[2]>cw-12 or bbox[3]>ch-12):
+                    edge_margin=min(12,max(0,min(cw,ch)//20))
+                    if (bbox[0]<edge_margin or bbox[1]<edge_margin or
+                        bbox[2]>cw-edge_margin or bbox[3]>ch-edge_margin):
                         edge.append(i+1)
                     key=digest(cell.tobytes())
                     if key in seen:
@@ -296,9 +295,12 @@ def transcode_trial_source(source: bytes, destination: str) -> bytes:
         from PIL import Image
         with Image.open(BytesIO(source)) as original:
             original.load()
-            if original.mode != "RGBA" or original.size != (1672,941):
-                raise UploadError("WOLF_TRIAL_SOURCE_EXPECTED_1672x941_RGBA")
-            atlas=Image.new("RGBA",(1672,942),(0,0,0,0))
+            if original.mode != "RGBA":
+                raise UploadError("WOLF_TRIAL_SOURCE_EXPECTED_RGBA")
+            width,height=original.size
+            padded_width=(width+3)//4*4
+            padded_height=(height+1)//2*2
+            atlas=Image.new("RGBA",(padded_width,padded_height),(0,0,0,0))
             atlas.paste(original,(0,0))
             output=BytesIO()
             atlas.save(output,format="WEBP",lossless=True,quality=100,method=5)

@@ -37,7 +37,7 @@
   "hardRules": {
     "oneCharacterOneMotionPerGeneration": true,
     "framesPerMotion": 8,
-    "highResolutionNativeNotUpscale": true,
+    "highResolutionNativeNotUpscale": false,
     "connectedAlphaIntegrity": true,
     "groundAnchorMandatory": true,
     "doNotCropFusedLimbs": true,
@@ -45,12 +45,9 @@
     "prohibitLegacy1586x992_40poseSource": true,
     "exactlyOneNative4x2SheetPerMotion": true,
     "independentPngOnlyAfterQASheetExtraction": true,
-    "nativeReferenceFidelityFloor": 0.8,
-    "minimumNativePixelsPerCell": 869,
-    "minimumNativePixelsPerSheet": [
-      3476,
-      1738
-    ]
+    "noAbsoluteResolutionFloor": true,
+    "noMinimumCharacterPixels": true,
+    "protectFullBodyAndFrameOwnership": true
   },
   "taskCount": 50,
   "tasks": [
@@ -62,22 +59,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "wolf.walk",
@@ -87,22 +77,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "wolf.slash",
@@ -112,22 +95,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "wolf.sweep",
@@ -137,22 +113,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "wolf.thrust",
@@ -162,22 +131,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "wolf.heavy",
@@ -187,22 +149,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "wolf.guard",
@@ -212,22 +167,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "wolf.hit",
@@ -237,22 +185,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "wolf.death",
@@ -262,22 +203,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "wolf.roar",
@@ -287,22 +221,15 @@
       "frames": 8,
       "required": false,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "leopard.idle",
@@ -312,22 +239,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "leopard.walk",
@@ -337,22 +257,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "leopard.slash",
@@ -362,22 +275,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "leopard.sweep",
@@ -387,22 +293,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "leopard.thrust",
@@ -412,22 +311,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "leopard.heavy",
@@ -437,22 +329,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "leopard.guard",
@@ -462,22 +347,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "leopard.hit",
@@ -487,22 +365,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "leopard.death",
@@ -512,22 +383,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "leopard.roar",
@@ -537,22 +401,15 @@
       "frames": 8,
       "required": false,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "tiger.idle",
@@ -562,22 +419,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "tiger.walk",
@@ -587,22 +437,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "tiger.slash",
@@ -612,22 +455,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "tiger.sweep",
@@ -637,22 +473,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "tiger.thrust",
@@ -662,22 +491,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "tiger.heavy",
@@ -687,22 +509,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "tiger.guard",
@@ -712,22 +527,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "tiger.hit",
@@ -737,22 +545,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "tiger.death",
@@ -762,22 +563,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "tiger.roar",
@@ -787,22 +581,15 @@
       "frames": 8,
       "required": false,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "lion.idle",
@@ -812,22 +599,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "lion.walk",
@@ -837,22 +617,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "lion.slash",
@@ -862,22 +635,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "lion.sweep",
@@ -887,22 +653,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "lion.thrust",
@@ -912,22 +671,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "lion.heavy",
@@ -937,22 +689,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "lion.guard",
@@ -962,22 +707,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "lion.hit",
@@ -987,22 +725,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "lion.death",
@@ -1012,22 +743,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "lion.roar",
@@ -1037,22 +761,15 @@
       "frames": 8,
       "required": false,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "elephant.idle",
@@ -1062,22 +779,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "elephant.walk",
@@ -1087,22 +797,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "elephant.slash",
@@ -1112,22 +815,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "elephant.sweep",
@@ -1137,22 +833,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "elephant.thrust",
@@ -1162,22 +851,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "elephant.heavy",
@@ -1187,22 +869,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "elephant.guard",
@@ -1212,22 +887,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "elephant.hit",
@@ -1237,22 +905,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "elephant.death",
@@ -1262,22 +923,15 @@
       "frames": 8,
       "required": true,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     },
     {
       "id": "elephant.roar",
@@ -1287,22 +941,15 @@
       "frames": 8,
       "required": false,
       "state": "AWAIT_GENERATION",
-      "minimumNativePixelsPerFrame": [
-        869,
-        869
-      ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
       "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
       "readyToReplaceGame": false,
-      "minimumNativePixelsPerSheet": [
-        3476,
-        1738
-      ],
       "sheetGrid": [
         4,
         2
       ],
-      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT",
+      "resolutionPolicy": "ANY_SIZE_ALLOWED"
     }
   ]
 }

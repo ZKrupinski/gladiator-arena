@@ -19,14 +19,15 @@ with tempfile.TemporaryDirectory() as tmp:
     job=json.loads(job_path.read_text(encoding="utf8"))
     assert job["requiredFrames"]==8 and job["motionsPerJob"]==1
     assert job["sheetGrid"]==[4,2]
-    assert job["onlyAllowedGeneratedOutput"]=="ONE_4x2_HIGH_RES_TRANSPARENT_PNG_SHEET"
-    assert job["nativeFrameMinimum"]==[820,820]
-    assert job["nativeSheetMinimum"]==[3280,1640]
-    assert "one_action_one_sheet_eight_frames_native_highres" in job["rules"]
+    assert job["onlyAllowedGeneratedOutput"]=="ONE_4x2_TRANSPARENT_PNG_SHEET"
+    assert "nativeFrameMinimum" not in job
+    assert "nativeSheetMinimum" not in job
+    assert job["resolutionPolicy"]=="ANY_POSITIVE_4x2_GRID_NO_PIXEL_FLOOR"
+    assert "one_action_one_sheet_eight_frames_any_resolution" in job["rules"]
     assert "mandatory_before_every_generation_briefing" in job["rules"]
     assert job["rulesSha256"]==hashlib.sha256(POLICY.read_bytes()).hexdigest()
     b=json.loads((p/"job/preflight/briefing.json").read_text())
-    assert b["sheetNativeMin"]==[3280,1640]
+    assert b["resolutionPolicy"]=="ANY_POSITIVE_4x2_GRID_NO_PIXEL_FLOOR"
     assert len(b["briefingKorean"])>=10
     assert any("한 장" in line for line in b["briefingKorean"])
 
@@ -44,7 +45,7 @@ with tempfile.TemporaryDirectory() as tmp:
     assert not ok["releaseAuthorized"]
     exports=list((p/"qa/draft_frames/idle").glob("*.png"))
     assert len(exports)==8
-    assert all(min(Image.open(file).size)>=512 for file in exports)
+    assert all(min(Image.open(file).size)>0 for file in exports)
     assert ok["frames"][0]["exportFoot"]==ok["frames"][7]["exportFoot"]
 
     saved=json.loads(result.read_text())
@@ -56,13 +57,13 @@ with tempfile.TemporaryDirectory() as tmp:
     includes(inspect(job_path,result,p/"eight-input"),"SINGLE_4x2_HIGH_RES_SHEET_REQUIRED_EIGHT_FILES_REJECTED")
     result.write_text(json.dumps(saved))
 
-    # Native resolution cannot be simulated by PNG resolution metadata or a
-    # 512px legacy source repeated/upscaled.
-    low=p/"art/legacy-1586.png"
-    Image.new("RGBA",(1586,992)).save(low)
+    # A small, complete source is valid. Alignment is still checked.
+    low=p/"art/small-sheet.png"
+    Image.open(p/"art"/saved["sheet"]).resize((640,320)).save(low)
     bad=dict(saved,sheet=low.name)
     result.write_text(json.dumps(bad))
-    includes(inspect(job_path,result,p/"low-res"),"LOW_NATIVE_RESOLUTION_SHEET")
+    small=inspect(job_path,result,p/"small-resolution")
+    assert small["status"]=="TECHNICAL_PASS_PENDING_ART_AND_GAME_REVIEW",small["failures"]
     result.write_text(json.dumps(saved))
 
     # The whole 4x2 sheet must be checked before any crops, not merely
@@ -82,7 +83,7 @@ with tempfile.TemporaryDirectory() as tmp:
     ack=p/"art/preflight/acknowledgement.json"
     old=ack.read_text()
     invalid=json.loads(old)
-    invalid["checks"].pop("exactly_one_native_high_resolution_4x2_sheet")
+    invalid["checks"].pop("exactly_one_transparent_4x2_sheet_any_resolution")
     ack.write_text(json.dumps(invalid))
     includes(inspect(job_path,result,p/"no-ack"),"PREFLIGHT_OWNERSHIP_OR_CONTRACT_CHECK_UNACKNOWLEDGED")
     ack.write_text(old)

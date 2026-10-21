@@ -37,7 +37,7 @@ def queue_from_audit(audit_path, queue_path, adapter=None, output=None, max_retr
           "referencePath":reference,
           "failures":fails,"status":"REGENERATION_REQUIRED",
           "causeKnown":True,
-          "preferred":"one native high-resolution 4x2 RGBA sprite sheet per character/action",
+          "preferred":"one transparent 4x2 RGBA sprite sheet per character/action at any valid resolution",
           "independentPngRole":"EXTRACTED_AFTER_QA_ONLY",
           "doNotReuseContaminatedFrames":True,
           "retryPolicy":{"attempts":max_retries,"autoRegenerate":True,

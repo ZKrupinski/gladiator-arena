@@ -3,7 +3,7 @@
 
 Single command builds assets (no game JS changes required). --publish will use
 Spartacus uploader to version-check, commit and verify the deployed game.
-This cannot turn low-resolution legacy art into native high-resolution art.
+Art dimensions are unrestricted; source detail is never invented by upscaling.
 """
 from __future__ import annotations
 import argparse, json, sys, tempfile
@@ -14,11 +14,10 @@ from spartacus_uploader import UploadError, publish_files, REPO
 
 ACTIONS=("idle","walk","attack1","attack2","attack3","attack4","hit","death","roar")
 DEST="public/assets/beasts/wolf-v3/"
-NATIVE_MIN=768
 MIN_MARGIN=12
 
 def convert(source: Path, preview: Path):
-    """Fail closed if frames would bleed across grid seams or be tiny."""
+    """Fail closed on bad alpha, incomplete frames or seams, never on small size."""
     source=Path(source).resolve()
     if not source.is_dir(): raise UploadError("WOLF_SOURCE_DIRECTORY_MISSING")
     preview=Path(preview).resolve()
@@ -35,10 +34,8 @@ def convert(source: Path, preview: Path):
             if original.mode!="RGBA":
                 raise UploadError("WOLF_SOURCE_MUST_BE_RGBA: "+action)
             w,h=original.size
-            if (w<4*NATIVE_MIN or h<2*NATIVE_MIN or w%4 or h%2 or
-                w//4<NATIVE_MIN or h//2<NATIVE_MIN):
-                raise UploadError("SPRITEFORGE_V3_NATIVE_HIGH_RES_NOT_MET: "+
-                                  action+f" ({w}x{h}, required at least 3072x1536)")
+            if not w or not h or w%4 or h%2:
+                raise UploadError("WOLF_ATLAS_INVALID_4x2_GRID: "+action)
             cw,ch=w//4,h//2
             alpha=original.getchannel("A")
             cells=[]
@@ -50,8 +47,9 @@ def convert(source: Path, preview: Path):
                 bbox=a.getbbox()
                 if bbox is None:
                     raise UploadError("EMPTY_WOLF_POSE: "+action+"/"+str(i))
-                if (bbox[0]<MIN_MARGIN or bbox[1]<MIN_MARGIN or
-                    bbox[2]>cw-MIN_MARGIN or bbox[3]>ch-MIN_MARGIN):
+                edge_margin=min(MIN_MARGIN,max(0,min(cw,ch)//20))
+                if (bbox[0]<edge_margin or bbox[1]<edge_margin or
+                    bbox[2]>cw-edge_margin or bbox[3]>ch-edge_margin):
                     raise UploadError("SPRITEFORGE_FRAME_OWNERSHIP_EDGE_RISK: "+
                                       action+"/"+str(i)+" bbox="+str(bbox))
                 cells.append({"index":i,"bounds":list(bbox),"cellPixels":[cw,ch]})
@@ -67,7 +65,7 @@ def convert(source: Path, preview: Path):
                                    "cells":cells,"preview":str(gif)}
     manifest={
         "version":3,
-        "source":"approved SpriteForge V3 single-action high-resolution 4x2 sheets",
+        "source":"approved SpriteForge V3 single-action 4x2 sheets at any resolution",
         "actions":{action:action+".webp" for action in ACTIONS},
     }
     manifest_bytes=(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n").encode()
