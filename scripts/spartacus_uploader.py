@@ -175,12 +175,18 @@ def stage_from_folder(folder: Path, mapping: dict[str,str] | None = None):
         if not file.is_file() or file.name in IGNORE_NAMES or file.name in IGNORED_COPIED:
             continue
         rel = file.relative_to(folder).as_posix()
+        # With a mapping, only intentional destination paths are uploaded.
+        if mapping and rel not in mapping:
+            continue
         dest = mapping.get(rel, "public/assets/spartacus-uploads/" + rel)
         normalized_path(dest)
         if file.is_symlink():
             raise UploadError("SYMLINK_NOT_ALLOWED: " + rel)
         if dest in items:raise UploadError("DUPLICATE_DESTINATION: " + dest)
         items[dest] = file.read_bytes()
+    unfulfilled=set(mapping)-{p.relative_to(folder).as_posix() for p in folder.rglob("*") if p.is_file()}
+    if unfulfilled:
+        raise UploadError("MAPPED_SOURCE_FILES_MISSING: "+str(sorted(unfulfilled)))
     if not items:raise UploadError("NO_SOURCE_FILES")
     if len(items) > MAX_FILES:raise UploadError("TOO_MANY_ASSETS")
     return items
@@ -322,8 +328,10 @@ def main(argv=None):
     make=s.add_parser("package")
     make.add_argument("--source",required=True)
     make.add_argument("--out",required=True)
+    make.add_argument("--mapping",help="JSON map relative source paths to LIVE game paths")
     pub=s.add_parser("publish")
     pub.add_argument("--input",required=True)
+    pub.add_argument("--mapping",help="JSON map relative source paths to LIVE game paths")
     pub.add_argument("--confirm",action="store_true")
     pub.add_argument("--expected-sha")
     pub.add_argument("--release-id")
@@ -342,14 +350,16 @@ def main(argv=None):
                     "version":"https://github.com/"+REPO+"/commit/"+head,
                     "deploymentVerified":False}
         elif args.command=="package":
-            items=stage_from_folder(Path(args.source))
+            mapping=json.loads(Path(args.mapping).read_text(encoding="utf8")) if args.mapping else None
+            items=stage_from_folder(Path(args.source),mapping)
             checks=[check_asset(n,b) for n,b in items.items()]
             result={"state":"LOCAL_PACKAGE_REVIEW_ONLY","files":checks,
                     "gameRepo":REPO,"next":"publish --input DIR --confirm"}
             dest=Path(args.out);dest.parent.mkdir(parents=True,exist_ok=True)
             dest.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf8")
         elif args.command=="publish":
-            result=publish_files(stage_from_folder(Path(args.input)),
+            mapping=json.loads(Path(args.mapping).read_text(encoding="utf8")) if args.mapping else None
+            result=publish_files(stage_from_folder(Path(args.input),mapping),
                                  confirm=args.confirm,expected_sha=args.expected_sha,
                                  release_id=args.release_id,verify=not args.no_verify)
         elif args.command=="process-request":
