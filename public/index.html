@@ -2561,6 +2561,10 @@ function drawEffects(backOnly=false){
 function drawCinematicFocus(){
  const f=S.focusFrame;
  if(!f?.active||f.reduced||!S.fx)return;
+ // A stale / malformed cinematic envelope must never throw during Canvas
+ // drawing and permanently kill the requestAnimationFrame combat loop.
+ if(![f.centerX,f.shade,f.bloom,f.cinemaBars,f.elapsed,f.duration,
+      CAMERA.x,CAMERA.y,CAMERA.zoom].every(Number.isFinite))return;
  const sx=clamp((f.centerX-CAMERA.x)*CAMERA.zoom+W*.5,W*.19,W*.81);
  const sy=clamp((FLOOR-173-CAMERA.y)*CAMERA.zoom+H*.5,H*.24,H*.76);
  ctx.save();
@@ -2640,6 +2644,9 @@ function render(){
  if(loaded<7){ctx.fillStyle='#f7d3a0';ctx.font='20px system-ui';ctx.fillText('Loading sprite atlases…',25,680);}
 }
 function loop(t){
+ // Schedule the successor FIRST. A bad optional VFX or UI render can no
+ // longer permanently halt combat, input, and simulation updates.
+ requestAnimationFrame(loop);
  if(!t0)t0=t;
  const dt=clamp((t-t0)/1000,0,.04);
  t0=t;
@@ -2660,7 +2667,16 @@ function loop(t){
  // Both text systems remain intact; the routine notice returns immediately.
  const notice=document.getElementById('combatNotice');
  if(notice)notice.style.opacity=(S.focusFrame?.active&&!S.focusFrame.reduced&&S.fx)?'0':'';
- render();requestAnimationFrame(loop);
+ try{render();}
+ catch(error){
+  // Fail open for display-only effects: keep attack state and HP authoritative.
+  if(!S._renderFaultReported){console.error('ARENA_RENDER_RECOVERED',error);S._renderFaultReported=true;}
+  S.focusFrame=null;S.cinematic=null;S.shake=0;
+  // Switch only the decorative effects off after a hard Canvas exception.
+  S.fx=false;
+  const toggle=document.getElementById('fxToggle');
+  if(toggle)toggle.textContent='이펙트 OFF';
+ }
 }
 // Opt-in QA hook: actual game internals only on the explicit smoke-test URL.
 if(new URLSearchParams(window.location.search).has('__arena_qa')){
