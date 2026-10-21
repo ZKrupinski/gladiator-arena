@@ -1,0 +1,10 @@
+{
+  "assetSha256": {
+    "public/assets/spartacus-uploads/heartbeat.json": "2564156a5ee387e9376faa1c03f865f8d6c3a781aa748068b13fe1f92260676e"
+  },
+  "baseCommit": "ee1340e57210323595d3965093e378f718f90f9b",
+  "branch": "main",
+  "project": "GLADIATOR ARENA / SPARTACUS",
+  "releaseId": "spartacus-uploader-smoke-20261021-a1",
+  "releaseProtocol": "spartacus-uploader-v1"
+}
