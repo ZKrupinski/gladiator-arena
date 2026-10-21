@@ -23,3 +23,48 @@ assert.equal(api.wolfFrameIndex(actor,'defeat',42),7);
 assert.equal(api.status().wolfV3.status,'unrequested');
 assert.deepEqual([...api.status().wolfV3.actions],[]);
 console.log('WOLF_V3_9_ACTION_MAPPING_AND_FALLBACK_PASS');
+
+
+// The real game's optional high-res wolf loader must not reuse a stale ?v=1
+// asset after the release uploader publishes nine new sheets.
+async function checkNativeLoader(width,height){
+ const requested=[],images=[];
+ const actions=['idle','walk','attack1','attack2','attack3','attack4','hit','death','roar'];
+ const release='wolf-release-native-v3';
+ const fetchMock=async(url,options={})=>{
+  requested.push({url,cache:options.cache});
+  if(url==='uploader-release.json')return {ok:true,json:async()=>({
+   releaseProtocol:'spartacus-uploader-v1',releaseId:release,
+   assetSha256:{'public/assets/beasts/wolf-v3/manifest.json':'a'.repeat(64)}
+  })};
+  if(url.startsWith('assets/beasts/wolf-v3/manifest.json'))
+   return {ok:true,json:async()=>({version:3,
+    actions:Object.fromEntries(actions.map(k=>[k,k+'.webp']))})};
+  throw Error('Unexpected fetch '+url);
+ };
+ class MockImage{
+  constructor(){this.naturalWidth=width;this.naturalHeight=height;}
+  set src(url){
+   images.push(url);
+   if(url.startsWith('assets/beasts/wolf-v3/')){
+    Promise.resolve().then(()=>this.onload?.());
+   }
+  }
+ }
+ const sandbox={window:{},console,fetch:fetchMock,Image:MockImage};
+ vm.runInNewContext(src,sandbox);
+ sandbox.window.ArenaBeasts.ensure('wolf');
+ for(let i=0;i<4;i++)await new Promise(resolve=>setImmediate(resolve));
+ return {state:sandbox.window.ArenaBeasts.status().wolfV3,requested,images};
+}
+const valid=await checkNativeLoader(3072,1536);
+assert.equal(valid.state.status,'ready');
+assert.equal(valid.state.actions.length,9);
+assert.ok(valid.requested.some(r=>r.url==='uploader-release.json'&&r.cache==='no-store'));
+assert.ok(valid.requested.some(r=>r.url.endsWith('manifest.json?v=wolf-release-native-v3')&&r.cache==='no-store'));
+assert.equal(valid.images.filter(url=>url.includes('assets/beasts/wolf-v3/')&&url.includes('.webp?v=wolf-release-native-v3')).length,9);
+const legacy=await checkNativeLoader(1672,940);
+assert.equal(legacy.state.status,'unavailable','low-res pack must keep legacy fallback');
+assert.equal(legacy.state.actions.length,0,'no partially loaded pack');
+assert.match(legacy.state.error,/Non-native 4x2 wolf atlas/);
+console.log('WOLF_V3_PRODUCTION_CACHE_VERSION_AND_NATIVE_FALLBACK_PASS');
