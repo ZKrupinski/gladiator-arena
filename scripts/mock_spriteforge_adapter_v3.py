@@ -40,7 +40,7 @@ def main(argv):
     brief=json.loads(brief_path.read_text(encoding="utf8"))
     if brief["jobSha256"]!=sha(job_path):
         raise RuntimeError("MOCK_WRONG_JOB_BRIEF")
-    size=max(job["nativeFrameMinimum"][0]+48,896)
+    size=384
     sheet=Image.new("RGBA",(4*size,2*size))
     brush=ImageDraw.Draw(sheet)
     for i in range(8):
