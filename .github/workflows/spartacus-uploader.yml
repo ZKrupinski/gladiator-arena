@@ -27,6 +27,8 @@ jobs:
         with: {python-version: '3.12'}
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
+      - name: Install native sprite image decoder
+        run: pip install pillow
       - name: Verify uploader release safeguards first
         run: python -m unittest discover -s tests -p 'test_spartacus_uploader.py' -v
       - name: Resolve trusted inbox manifest
