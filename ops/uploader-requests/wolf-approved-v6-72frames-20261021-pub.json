@@ -1,0 +1,109 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "wolf-approved-v6-72frames-20261021-pub",
+  "expectedMainSha": "93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/assets/beasts/wolf-trial/idle.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/idle.webp",
+      "sha256": "37cf7fe2d42d03bb5b2e34cd79754516f01cf64767ba611e6c9121a863be2066"
+    },
+    {
+      "path": "public/assets/beasts/wolf-v3/idle.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/idle.webp",
+      "sha256": "37cf7fe2d42d03bb5b2e34cd79754516f01cf64767ba611e6c9121a863be2066"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/walk.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/walk.webp",
+      "sha256": "f4362ae89231361d23c7503c98fa1bca14b81f7707d28a7720c38a0439a40e66"
+    },
+    {
+      "path": "public/assets/beasts/wolf-v3/walk.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/walk.webp",
+      "sha256": "f4362ae89231361d23c7503c98fa1bca14b81f7707d28a7720c38a0439a40e66"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/attack1.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/attack1.webp",
+      "sha256": "39c1934c045d3bdbc55bf9877fe94bfead92b72e6b83f6bf71a34f3b831a9adf"
+    },
+    {
+      "path": "public/assets/beasts/wolf-v3/attack1.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/attack1.webp",
+      "sha256": "39c1934c045d3bdbc55bf9877fe94bfead92b72e6b83f6bf71a34f3b831a9adf"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/attack2.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/attack2.webp",
+      "sha256": "a638eb3fbc087e319e9a1270198b1216b61fb4b5c028441f394ec52b814ad2ff"
+    },
+    {
+      "path": "public/assets/beasts/wolf-v3/attack2.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/attack2.webp",
+      "sha256": "a638eb3fbc087e319e9a1270198b1216b61fb4b5c028441f394ec52b814ad2ff"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/attack3.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/attack3.webp",
+      "sha256": "e40984f3a650141cf7831f659e0e731f6ec18df32dd8ae525dadfc7dfc4b0843"
+    },
+    {
+      "path": "public/assets/beasts/wolf-v3/attack3.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/attack3.webp",
+      "sha256": "e40984f3a650141cf7831f659e0e731f6ec18df32dd8ae525dadfc7dfc4b0843"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/attack4.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/attack4.webp",
+      "sha256": "3b8a3c62d1f5119eed26d7ef26d5febb53c18253161ee9e80dbfff6c2c32e166"
+    },
+    {
+      "path": "public/assets/beasts/wolf-v3/attack4.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/attack4.webp",
+      "sha256": "3b8a3c62d1f5119eed26d7ef26d5febb53c18253161ee9e80dbfff6c2c32e166"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/hit.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/hit.webp",
+      "sha256": "e6506e2fa2750129a67e423b8f5dbe7fc06a8209ba913a260bc3587d8803d3bd"
+    },
+    {
+      "path": "public/assets/beasts/wolf-v3/hit.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/hit.webp",
+      "sha256": "e6506e2fa2750129a67e423b8f5dbe7fc06a8209ba913a260bc3587d8803d3bd"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/death.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/death.webp",
+      "sha256": "f990cd7fc8c99ceea63361d96710aef363b30b15371d5eb294ff550935f321fe"
+    },
+    {
+      "path": "public/assets/beasts/wolf-v3/death.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/death.webp",
+      "sha256": "f990cd7fc8c99ceea63361d96710aef363b30b15371d5eb294ff550935f321fe"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/roar.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/roar.webp",
+      "sha256": "cb99644b45d9929f143b00c9f2f2e8fd78b4f7994e04ab040097d3de0156da56"
+    },
+    {
+      "path": "public/assets/beasts/wolf-v3/roar.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/93e5a2dd407e862c9ab5561f9541bb2e0ae30e8f/ops/uploader-assets/wolf-approved-v6-20261021/roar.webp",
+      "sha256": "cb99644b45d9929f143b00c9f2f2e8fd78b4f7994e04ab040097d3de0156da56"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/manifest.json",
+      "utf8": "{\n  \"version\": 3,\n  \"previewOnly\": true,\n  \"normalizedGeometry\": true,\n  \"anchor\": {\n    \"x\": 272,\n    \"groundY\": 470,\n    \"cell\": [\n      544,\n      510\n    ]\n  },\n  \"source\": \"2026-10-21 user-approved wolf 9 actions; SpriteForge V6 full-sheet connected alpha ownership\",\n  \"actions\": {\n    \"idle\": \"idle.webp\",\n    \"walk\": \"walk.webp\",\n    \"attack1\": \"attack1.webp\",\n    \"attack2\": \"attack2.webp\",\n    \"attack3\": \"attack3.webp\",\n    \"attack4\": \"attack4.webp\",\n    \"hit\": \"hit.webp\",\n    \"death\": \"death.webp\",\n    \"roar\": \"roar.webp\"\n  }\n}\n",
+      "sha256": "9c9bed704e5aa2bd11588b6eb28eb3f60e37c7161bfd02c55abda53c5feac1d3"
+    },
+    {
+      "path": "public/assets/beasts/wolf-v3/manifest.json",
+      "utf8": "{\n  \"version\": 3,\n  \"previewOnly\": false,\n  \"normalizedGeometry\": true,\n  \"anchor\": {\n    \"x\": 272,\n    \"groundY\": 470,\n    \"cell\": [\n      544,\n      510\n    ]\n  },\n  \"source\": \"2026-10-21 user-approved wolf 9 actions; SpriteForge V6 full-sheet connected alpha ownership\",\n  \"actions\": {\n    \"idle\": \"idle.webp\",\n    \"walk\": \"walk.webp\",\n    \"attack1\": \"attack1.webp\",\n    \"attack2\": \"attack2.webp\",\n    \"attack3\": \"attack3.webp\",\n    \"attack4\": \"attack4.webp\",\n    \"hit\": \"hit.webp\",\n    \"death\": \"death.webp\",\n    \"roar\": \"roar.webp\"\n  }\n}\n",
+      "sha256": "f9f9d831e5e80fd1209eb8df4e4645b8e13932403b5201a8ad35b2b59552ded6"
+    }
+  ]
+}
