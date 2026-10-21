@@ -428,6 +428,18 @@ def publish_files(items: dict[str,bytes], *, confirm: bool, release_id: str | No
             atlas="public/assets/beasts/wolf-trial/"+action+".webp"
             if m["actions"][action]!=action+".webp" or atlas not in items:
                 raise UploadError("WOLF_TRIAL_MISSING_ATLAS: "+action)
+        # Explicitly rebuilt frame sheets cannot enter the game if even one
+        # frame touches a neighboring cell. Older preview packs stay isolated.
+        if m.get("normalizedGeometry") is True:
+            anchor=m.get("anchor")
+            if (anchor!={"x":272,"groundY":470,"cell":[544,510]}):
+                raise UploadError("WOLF_ALIGNED_MANIFEST_ANCHOR_INVALID")
+            for action in expected:
+                path="public/assets/beasts/wolf-trial/"+action+".webp"
+                info=audit[path]
+                if ([info.get("width"),info.get("height")]!=[2176,1020] or
+                    info.get("edgeRiskFrames")):
+                    raise UploadError("WOLF_ALIGNED_QA_FRAMES_DIRTY: "+action)
     if (any(name.startswith("public/assets/beasts/wolf-trial/") for name in items) and
         trial_manifest not in items):
         raise UploadError("WOLF_TRIAL_NO_PARTIAL_SPRITE_UPLOADS")
