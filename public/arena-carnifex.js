@@ -7,20 +7,26 @@
 const TIME={arrive:.96,grip:.48,haul:1.92,exit:.34};
 TIME.total=TIME.arrive+TIME.grip+TIME.haul+TIME.exit;
 const W=1280,FLOOR=617,ATLAS_COLS=8,CELL_W=320,CELL_H=390;
+const INK_COLS=4,INK_W=270,INK_H=342,INK_FOOT=326;
+const INK_WALK='assets/npc/carnifex-walk-ink-v1.webp?v=1';
+const INK_HAUL='assets/npc/carnifex-haul-ink-v1.webp?v=1';
 const SD_ART='assets/npc/carnifex-casual-v5.webp?v=5';
 const OLD_ART='assets/npc/carnifex-executioner.svg?v=1';
 const EASE=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
 const LERP=(a,b,t)=>a+(b-a)*t;
-let artwork=null,fallback=null;
+let walkArt=null,haulArt=null,artwork=null,fallback=null;
 function image(source){
  if(typeof Image==='undefined')return null;
  const img=new Image();img.decoding='async';img.src=source;
  return img;
 }
 function preload(){
+ // Atomic ink-pack activation: keep the previous character until both sheets load.
+ if(!walkArt)walkArt=image(INK_WALK);
+ if(!haulArt)haulArt=image(INK_HAUL);
  if(!artwork)artwork=image(SD_ART);
  if(!fallback)fallback=image(OLD_ART);
- return artwork||fallback;
+ return walkArt||artwork||fallback;
 }
 function begin(loser,allyWon,step){
  if(!loser)throw Error('Missing defeated gladiator for Carnifex retrieval');
@@ -66,10 +72,12 @@ function advance(seq,dt){
  return seq.finished;
 }
 function drawExecutioner(ctx,seq,pose,floorY){
- const art=artwork?.complete&&artwork.naturalWidth===ATLAS_COLS*CELL_W&&artwork.naturalHeight===2*CELL_H
-  ?artwork:null;
+ const inkReady=walkArt?.complete&&haulArt?.complete&&
+  walkArt.naturalWidth===INK_COLS*INK_W&&walkArt.naturalHeight===2*INK_H&&
+  haulArt.naturalWidth===INK_COLS*INK_W&&haulArt.naturalHeight===2*INK_H;
+ const art=artwork?.complete&&artwork.naturalWidth===ATLAS_COLS*CELL_W&&artwork.naturalHeight===2*CELL_H?artwork:null;
  const backup=fallback?.complete&&fallback.naturalWidth?fallback:null;
- if(!art&&!backup)return;
+ if(!inkReady&&!art&&!backup)return;
  const side=seq.side;
  // Walk into the arena facing the fallen fighter. Turn during the grip,
  // then move out with the dragging hand behind the character, next to the corpse.
@@ -83,12 +91,17 @@ function drawExecutioner(ctx,seq,pose,floorY){
  ctx.translate(pose.executionerX,floorY+gait);
  ctx.scale(flip?-1:1,1);
  ctx.rotate(tilt);
- ctx.filter='none'; // the approved soft 3D-style shading is baked in
- if(art){
+ ctx.filter='none'; // approved ink outlines and surface details are baked in
+ if(inkReady){
+  const sheet=pose.phase==='walk'?walkArt:haulArt;
+  const frame=Math.max(0,Math.min(7,pose.frame));
+  // Two individually owned 4x2 sheets, a fixed 326px toe anchor in both.
+  ctx.drawImage(sheet,(frame%INK_COLS)*INK_W,Math.floor(frame/INK_COLS)*INK_H,
+    INK_W,INK_H,-218,-468,436,466);
+ }else if(art){
+  // Old complete atlas only during initial loading/error, never a half-loaded pack.
   const row=pose.phase==='walk'?0:1;
-  const frame=pose.frame;
-  // All sixteen independent sprites have toe baseline y=352 and clear axe/boot margins.
-  ctx.drawImage(art,frame*CELL_W,row*CELL_H,CELL_W,CELL_H,
+  ctx.drawImage(art,pose.frame*CELL_W,row*CELL_H,CELL_W,CELL_H,
    -218,-444,436,466);
  }else{
   ctx.drawImage(backup,-205,-447,410,466);
@@ -115,9 +128,13 @@ function draw(ctx,seq,drawBody,floorY=FLOOR){
  }
  ctx.restore();
 }
-root.ArenaCarnifex={version:'5.0.0',TIME,begin,advance,positions,draw,preload,
- isReady:()=>!!(artwork?.complete&&artwork.naturalWidth===ATLAS_COLS*CELL_W),
- sprite:{width:2560,height:780,frameWidth:CELL_W,frameHeight:CELL_H,frames:8,baselineY:352,source:SD_ART}
+root.ArenaCarnifex={version:'6.0.0',TIME,begin,advance,positions,draw,preload,
+ isReady:()=>!!(walkArt?.complete&&haulArt?.complete&&
+  walkArt.naturalWidth===INK_COLS*INK_W&&haulArt.naturalWidth===INK_COLS*INK_W&&
+  walkArt.naturalHeight===2*INK_H&&haulArt.naturalHeight===2*INK_H),
+ sprite:{width:1080,height:684,frameWidth:INK_W,frameHeight:INK_H,
+  frames:8,actions:2,baselineY:INK_FOOT,source:INK_WALK,haulSource:INK_HAUL,
+  legacySource:SD_ART}
 };
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaCarnifex;
 })(globalThis);

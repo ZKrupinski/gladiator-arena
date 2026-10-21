@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "releaseId": "carnifex-ink-retouch-v1-20261021",
+  "approved": true,
+  "source": "user-approved hooded executioner hand-ink retouch",
+  "grid": {
+    "cols": 4,
+    "rows": 2
+  },
+  "cell": {
+    "width": 270,
+    "height": 342
+  },
+  "groundY": 326,
+  "actions": {
+    "walk": {
+      "file": "carnifex-walk-ink-v1.webp",
+      "frames": 8,
+      "sha256": "75c2a95c9a02814c1b9d14bb1bf97a6d5fd6db71b36ce2a1cc687a26e208e476"
+    },
+    "haul": {
+      "file": "carnifex-haul-ink-v1.webp",
+      "frames": 8,
+      "sha256": "60f7bac6d4590ee9ca760dab103c4b257c04936a0a011e88d6f66b048846127b"
+    }
+  },
+  "oldArtBackup": "carnifex-casual-v5.webp",
+  "description": "Motion: walk 0..7, grab haul 0..3, drag haul 4..7. Transparent alpha: adaptive connected silhouette + explicit removal of reviewed foreign neighboring fragment. No source upscale."
+}
