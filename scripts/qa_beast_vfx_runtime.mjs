@@ -9,7 +9,7 @@ const root=path.resolve(here,'../public');
 const js=fs.readFileSync(path.join(root,'arena-beast-vfx.js'),'utf8');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const beast=fs.readFileSync(path.join(root,'arena-beasts.js'),'utf8');
-assert.ok(html.includes('arena-beast-vfx.js?v=1'));
+assert.ok(html.includes('arena-beast-vfx.js?v=2-upper-strike'));
 assert.ok(html.includes("if(f.beastType&&f.action==='attack')return 'attack'"));
 assert.ok(html.includes("beastFx:kind"));
 assert.ok(html.includes("beastFx:'collapse'"));
