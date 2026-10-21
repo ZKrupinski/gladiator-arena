@@ -23,6 +23,31 @@ Every technical pass is pending an art review and game playback review. No origi
 
 Known limitation: geometry checks alone cannot guarantee source art fidelity or distinguish all connected double bodies. Generation prompt does not provide hard compliance with an image model; the actual outputs are checked afterward. A future provider adapter must be connected before this is an automatic one-step generation tool.
 
+## V6 authoritative cutting order — replaces rectangle-first decisions
+
+**This section overrides older rectangular clipping/cell-margin guidance.**
+
+1. Store the approved source image unchanged and record its SHA256.
+2. Find RGBA 8-connected silhouettes on the **whole 4×2 sheet**, before any crop.
+3. Nominal 4×2 cells identify the **inner pose core only**. They are **not**
+   final cutting borders; an owned connected tail or sword may legally cross one.
+4. For each connected component, require **one unique pose core**. A component
+   seeded by two cores means actors have fused: **BLOCK and regenerate**. An
+   unowned/disconnected finger, weapon, tail, dust or extra head must likewise
+   **BLOCK**, not disappear because it is tiny and not be kept because it is big.
+5. Copy the complete proven mask using source RGBA pixels into one common,
+   padded, unchanged-scale canvas for all eight frames. No per-frame
+   bbox-centered zoom, rectangular guillotine, or opaque-background masking.
+6. QA independent frames and preview; confirm foot/pivot alignment, cross-action
+   size, runtime intro/death mappings, final death pose hold, facing/layers/VFX.
+   Only then permit review and live release; preserve old approved art until then.
+
+Implemented in `scripts/spriteforge_connected_mask_v6.py`, called by both
+`spriteforge_pipeline_v3.py` and `spartacus_wolf_import.py`. Automated
+proof records the original connected-component IDs and source bounding boxes.
+**Technical segmentation alone does not prove visual anatomy.** Uncertainty
+stays blocked, not cosmetically 'cleaned'. No minimum resolution applies.
+
 ## 2026-10-21 amendment — frame ownership outranks fragment size (mandatory)
 
 A head, leg, paw, tail, torso or ANY anatomy from a different animation frame
