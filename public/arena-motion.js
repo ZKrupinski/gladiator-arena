@@ -73,8 +73,8 @@ function pulse(f,type,role,dir=1){
  const currentImpact=prev?(RESPONSE[prev.type]?.slide||0)*Math.max(0,1-(prev.t/prev.duration)):0;
  if(!prev||currentImpact<=source.slide*1.1)f.bodySpring=newer;
 }
-function advance(f,dt){
- advanceImpact(f,dt);
+function advance(f,dt,realDt=dt){
+ advanceImpact(f,realDt);
  if(!f?.bodySpring)return;
  f.bodySpring.t=Math.min(f.bodySpring.duration,(f.bodySpring.t||0)+clamp(Number(dt)||0,0,.06));
  if(f.bodySpring.t>=f.bodySpring.duration)f.bodySpring=null;
