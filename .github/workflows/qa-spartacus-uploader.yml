@@ -1,0 +1,43 @@
+name: QA Spartacus uploader
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/spartacus_uploader.py
+      - tests/test_spartacus_uploader.py
+      - scripts/spartacus_wolf_import.py
+      - tests/test_spartacus_wolf_import.py
+      - .github/workflows/spartacus-uploader.yml
+      - .github/workflows/qa-spartacus-uploader.yml
+      - docs/spartacus-uploader.md
+      - AGENTS.md
+  push:
+    branches: [main]
+    paths:
+      - scripts/spartacus_uploader.py
+      - tests/test_spartacus_uploader.py
+      - .github/workflows/spartacus-uploader.yml
+      - .github/workflows/qa-spartacus-uploader.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  uploader-security-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install image decoder
+        run: pip install pillow
+      - name: Syntax check
+        run: python -m py_compile scripts/spartacus_uploader.py
+      - name: Version, asset validation, permissions, atomic commit, deploy QA
+        run: python -m unittest discover -s tests -p 'test_spartacus_uploader.py' -v
+      - name: Validate high-res wolf release gate and per-cell seam protection
+        run: python -m unittest discover -s tests -p 'test_spartacus_wolf_import.py' -v
+      - name: Existing wolf mapping remains compatible
+        run: node scripts/qa_wolf_v3_attack_variants.mjs

@@ -1,0 +1,70 @@
+name: Spartacus one-click uploader — version, QA, GitHub, Cloudflare
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ops/uploader-requests/*.json'
+  workflow_dispatch:
+    inputs:
+      request_file:
+        description: 'Trusted request in ops/uploader-requests/*.json (must already be committed)'
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: spartacus-production-uploader
+  cancel-in-progress: false
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    if: github.repository == 'ZKrupinski/gladiator-arena'
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 2, persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify uploader release safeguards first
+        run: python -m unittest discover -s tests -p 'test_spartacus_uploader.py' -v
+      - name: Resolve trusted inbox manifest
+        shell: bash
+        env:
+          EVENT_KIND: ${{ github.event_name }}
+          REQUEST_FILE: ${{ inputs.request_file }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_KIND" = 'workflow_dispatch' ]; then
+            FILE="$REQUEST_FILE"
+          else
+            mapfile -t FILES < <(git diff --name-only HEAD^ HEAD -- 'ops/uploader-requests/*.json')
+            if [ "${#FILES[@]}" -ne 1 ]; then
+              echo 'One manifest per push required. No changes made.' >&2
+              exit 1
+            fi
+            FILE="${FILES[0]}"
+          fi
+          case "$FILE" in
+            ops/uploader-requests/*.json) ;;
+            *) echo 'Invalid upload manifest path' >&2; exit 1;;
+          esac
+          [ -f "$FILE" ] || exit 1
+          echo "SPARTACUS_UPLOAD_MANIFEST=$FILE" >> "$GITHUB_ENV"
+      - name: Validate manifest, stage, upload atomic commit, verify live bytes
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          python scripts/spartacus_uploader.py process-request "$SPARTACUS_UPLOAD_MANIFEST" | tee /tmp/spartacus-deploy.json
+      - name: Deployment report
+        if: always()
+        shell: bash
+        run: |
+          if [ -f /tmp/spartacus-deploy.json ]; then
+            cat /tmp/spartacus-deploy.json >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'No production write completed or no verified report. Check logs.' >> "$GITHUB_STEP_SUMMARY"
+          fi
