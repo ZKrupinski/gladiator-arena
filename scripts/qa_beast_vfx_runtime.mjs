@@ -14,6 +14,24 @@ assert.ok(html.includes("if(f.beastType&&f.action==='attack')return 'attack'"));
 assert.ok(html.includes("beastFx:kind"));
 assert.ok(html.includes("beastFx:'collapse'"));
 assert.ok(beast.includes("f.action==='special'&&f.actionT>0?'attack4':'roar'"));
+// Regression: switching tabs or taking screenshots must NOT leave an
+// unrequested "PUGNA SUSPENSA" overlay on the live fight.
+const pauseStart=html.indexOf('function suspendBattle(){');
+const pauseEnd=html.indexOf('\n}',pauseStart);
+assert.ok(pauseStart>0&&pauseEnd>pauseStart);
+const pauseSource=html.slice(pauseStart,pauseEnd+2);
+for(const initiallyPaused of [false,true]){
+ const S={phase:'fight',paused:initiallyPaused,keys:new Set(['left']),
+   autoPlaying:true,lastManualInput:0};
+ const sandbox={S,clock:45,togglePause(){throw Error('FOCUS_MUST_NOT_TOGGLE_PAUSE')}};
+ vm.runInNewContext(pauseSource+';suspendBattle();',sandbox);
+ assert.equal(S.paused,initiallyPaused);
+ assert.equal(S.keys.size,0);
+}
+assert.ok(html.includes("beastFx:kind,w:ground?940:bite?790:860"),
+  'beast effects must not regress to undersized, body-hidden 520px canvases');
+assert.ok(html.includes("layer:'front'"),
+  'beast attacks require foreground layers');
 const kinds=['claw','sweep','bite','pounce','hit','step','roar','collapse'];
 let urls=[];
 function mock({fail=false,odd=false}={}){
