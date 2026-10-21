@@ -71,7 +71,7 @@ def _retry_job(original_job,source_sha,report,attempt,output):
         "facing, clothing and native detail. Address EACH failing frame and "
         "its supplied reason codes: "+json.dumps(failures,ensure_ascii=False)+
         ". The head, paws, tail or limbs belonging to ANY neighbor frame "
-        "are FOREIGN regardless of size. Provide native 512x512+ frames "
+        "are FOREIGN regardless of size. Provide complete frames at any resolution "
         "with >=20px safety margins. Never paste/clone/crop a wrong limb."
     )
     output=Path(output)
