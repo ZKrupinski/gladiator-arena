@@ -1,0 +1,14 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "wolf-v3-loader-cache-20261021-b1",
+  "expectedMainSha": "4884277b62ae2e8795e2ae8a5d3adf782fb872f0",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/assets/spartacus-uploads/uploader-bridge-proof.json",
+      "utf8": "{\"project\":\"spartacus\",\"releaseCheck\":\"wolf-v3-loader-cache-20261021\",\"status\":\"production-integration-smoke\"}\n",
+      "sha256": "816a02ecf7c2f0c235a4bf4fe4c58e4c3a39dfc023f96e5d57c05d8053f4b1cd"
+    }
+  ]
+}
