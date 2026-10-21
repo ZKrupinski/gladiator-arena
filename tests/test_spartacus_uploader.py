@@ -230,6 +230,41 @@ class TestSpartacusUploader(unittest.TestCase):
         with self.assertRaisesRegex(u.UploadError,"EXPLICIT_PREVIEW_ONLY"):
             u.publish_files(bad,confirm=True,verify=False)
 
+    def test_inbox_survives_unrelated_main_commit_but_not_asset_overwrite(self):
+        from unittest.mock import Mock
+        head="b"*40
+        event="c"*40
+        base="a"*40
+        class GH:
+            def main_sha(self):return head
+            def request(self,method,path):
+                if "/git/commits/" in path:return {"parents":[{"sha":base}]}
+                if "/compare/" in path:return {"status":"ahead",
+                    "files":[{"filename":"docs/unrelated-qa.md"}]}
+                raise AssertionError(path)
+        spec={"releaseId":"wolf-test-run"}
+        with tempfile.TemporaryDirectory() as temp:
+            filename=pathlib.Path(temp)/"release.json"
+            filename.write_text(json.dumps(spec))
+            with patch.dict(os.environ,{"GITHUB_SHA":event}), \
+                 patch.object(u,"GitHub",return_value=GH()), \
+                 patch.object(u,"stage_request",return_value={"public/assets/beasts/wolf-trial/idle.webp":b"data"}) as stage, \
+                 patch.object(u,"publish_files",return_value={"state":"COMMITTED_DEPLOY_NOT_YET_VERIFIED","deployment":{"state":"DEPLOYED_VERIFIED"}}) as pub:
+                self.assertEqual(u.main(["process-request",str(filename)]),0)
+                stage.assert_called_once_with(spec,main_sha=base)
+                self.assertEqual(pub.call_args.kwargs["expected_sha"],head)
+            class Changed(GH):
+                def request(self,method,path):
+                    if "/compare/" in path:return {"status":"ahead",
+                        "files":[{"filename":"public/assets/beasts/wolf-trial/idle.webp"}]}
+                    return super().request(method,path)
+            with patch.dict(os.environ,{"GITHUB_SHA":event}), \
+                 patch.object(u,"GitHub",return_value=Changed()), \
+                 patch.object(u,"stage_request",return_value={"public/assets/beasts/wolf-trial/idle.webp":b"data"}), \
+                 patch.object(u,"publish_files") as pub:
+                self.assertEqual(u.main(["process-request",str(filename)]),2)
+                pub.assert_not_called()
+
     def test_marker_never_claims_live_deployment(self):
         obj=json.loads(u.marker("wolf-release-v5",{"public/index.html":"a"*64},"b"*40))
         self.assertEqual(obj["branch"],"main")
