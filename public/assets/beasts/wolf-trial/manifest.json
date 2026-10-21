@@ -10,7 +10,7 @@
       510
     ]
   },
-  "source": "recomposed from approved wolf trial sprite pixels; connected-fragment removal and per-cell ground alignment",
+  "source": "2026-10-21 user-approved wolf 9 actions; SpriteForge V6 full-sheet connected alpha ownership",
   "actions": {
     "idle": "idle.webp",
     "walk": "walk.webp",

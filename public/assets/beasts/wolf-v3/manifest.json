@@ -1,0 +1,25 @@
+{
+  "version": 3,
+  "previewOnly": false,
+  "normalizedGeometry": true,
+  "anchor": {
+    "x": 272,
+    "groundY": 470,
+    "cell": [
+      544,
+      510
+    ]
+  },
+  "source": "2026-10-21 user-approved wolf 9 actions; SpriteForge V6 full-sheet connected alpha ownership",
+  "actions": {
+    "idle": "idle.webp",
+    "walk": "walk.webp",
+    "attack1": "attack1.webp",
+    "attack2": "attack2.webp",
+    "attack3": "attack3.webp",
+    "attack4": "attack4.webp",
+    "hit": "hit.webp",
+    "death": "death.webp",
+    "roar": "roar.webp"
+  }
+}
