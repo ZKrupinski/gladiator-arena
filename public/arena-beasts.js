@@ -48,32 +48,54 @@ function wolfFrameIndex(f,pose,clock){
  const progress=f.actionT>0?Math.max(0,Math.min(.999,1-f.actionT/duration)):0;
  return Math.min(7,Math.floor(progress*8));
 }
+// Pin cached atlas URLs to the verified uploader release. If the V3 pack
+// was installed outside the release uploader, use a fresh session nonce so
+// a previously cached 404 or old image cannot silently hide the new sprites.
+async function wolfV3CacheKey(){
+ const uncached=String(Date.now());
+ try{
+  const response=await fetch('uploader-release.json',{cache:'no-store'});
+  if(!response.ok)return uncached;
+  const marker=await response.json();
+  const wolfManifestHash=marker?.assetSha256?.['public/assets/beasts/wolf-v3/manifest.json'];
+  if(marker?.releaseProtocol==='spartacus-uploader-v1'&&
+     typeof marker.releaseId==='string'&&
+     /^[a-zA-Z0-9][a-zA-Z0-9_-]{5,70}$/.test(marker.releaseId)&&
+     typeof wolfManifestHash==='string'&&/^[a-f0-9]{64}$/.test(wolfManifestHash))
+   return marker.releaseId;
+ }catch(_){}
+ return uncached;
+}
 function loadWolfV3(){
  if(wolfV3.state!=='unrequested'||typeof fetch!=='function')return;
  wolfV3.state='loading';
- fetch(WOLF_V3_DIR+'manifest.json?v=1',{cache:'force-cache'}).then(async response=>{
+ Promise.resolve().then(async()=>{
+  const version=encodeURIComponent(await wolfV3CacheKey());
+  const response=await fetch(WOLF_V3_DIR+'manifest.json?v='+version,{cache:'no-store'});
   if(!response.ok)throw Error('Wolf V3 art pack not published');
   const manifest=await response.json();
   if(manifest.version!==3||!manifest.actions)throw Error('Invalid V3 manifest');
   for(const action of WOLF_ACTIONS){
    const item=manifest.actions[action];
-   if(typeof item!=='string'||!/^[-\w]+\.webp$/.test(item))
+   if(typeof item!=='string'||item!==action+'.webp')
     throw Error('Wolf V3 missing required action '+action);
   }
   const loaded=await Promise.all(WOLF_ACTIONS.map(action=>new Promise((resolve,reject)=>{
    const image=new Image();
    image.onload=()=>{
-    if(image.naturalWidth<1024||image.naturalHeight<512)return reject(Error('Low-resolution wolf atlas '+action));
+    const w=image.naturalWidth,h=image.naturalHeight;
+    if(w<3072||h<1536||w%4!==0||h%2!==0)
+     return reject(Error('Non-native 4x2 wolf atlas '+action+' '+w+'x'+h));
     resolve([action,image]);
    };
    image.onerror=()=>reject(Error('Atlas did not load '+action));
-   image.src=WOLF_V3_DIR+manifest.actions[action]+'?v=1';
+   image.src=WOLF_V3_DIR+manifest.actions[action]+'?v='+version;
   })));
+  // Atomic visual activation: never show a partial nine-motion pack.
   for(const [name,img] of loaded)wolfV3.actions.set(name,img);
   wolfV3.state='ready';
  }).catch(e=>{
-  // A parent-frame art test may have installed real frames while the
-  // optional production manifest was still pending; never undo those frames.
+  // Keep using the verified legacy 40-frame art if a V3 pack is incomplete.
   if(wolfV3.state!=='ready'){
    wolfV3.error=String(e);
    wolfV3.state='unavailable';
