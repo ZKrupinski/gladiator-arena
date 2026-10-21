@@ -240,7 +240,19 @@ def stage_request(spec: dict, *, main_sha: str):
     return items
 
 def fetch_public(url: str) -> bytes:
-    with urlopen(Request(url,headers={"User-Agent":"Mozilla/5.0 SpartacusVerifier",
+    """Use the known-working Cloudflare curl client; reject HTTP failures."""
+    cmd=["curl","--fail","--location","--silent","--show-error",
+         "--max-time","30","--header","Cache-Control: no-cache",
+         "--user-agent","Mozilla/5.0 SpartacusUploader/1.0",url]
+    if shutil_which("curl"):
+        run=subprocess.run(cmd,capture_output=True)
+        if run.returncode:
+            raise UploadError("CLOUDFLARE_HTTP_FETCH_FAILED: "+
+                              run.stderr.decode("utf8","replace")[-300:])
+        if len(run.stdout)>MAX_BINARY:
+            raise UploadError("CLOUDFLARE_RESOURCE_TOO_LARGE")
+        return run.stdout
+    with urlopen(Request(url,headers={"User-Agent":"Mozilla/5.0",
                                        "Cache-Control":"no-cache"}),timeout=30) as r:
         return r.read(MAX_BINARY+1)
 
@@ -343,7 +355,15 @@ def main(argv=None):
         elif args.command=="process-request":
             spec=json.loads(Path(args.manifest).read_text(encoding="utf8"))
             gh=GitHub(); head=gh.main_sha()
-            items=stage_request(spec,main_sha=head)
+            # The user's request is itself committed to main. Its recorded
+            # expectedMainSha MUST equal that request commit's first parent,
+            # not the new head, or every inbox request would falsely fail.
+            tip=gh.request("GET", f"/repos/{REPO}/git/commits/{head}")
+            parents=tip.get("parents",[])
+            if not parents:
+                raise UploadError("INBOX_COMMIT_HAS_NO_PARENT")
+            original_head=parents[0]["sha"]
+            items=stage_request(spec,main_sha=original_head)
             result=publish_files(items,confirm=True,git=gh,expected_sha=head,
                                  release_id=spec["releaseId"],
                                  verify=not args.no_verify,
