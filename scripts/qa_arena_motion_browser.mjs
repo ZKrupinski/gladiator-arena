@@ -48,7 +48,8 @@ try{
   assert.equal(impact.defender,name,'both fighters have spring on '+name);
   assert.equal(impact.active,true,'attacks should not prematurely terminate');
   assert.equal(impact.targetFlash,name,'every class and beast uses universal contact flash');
-  assert.ok(impact.targetWhite>.15,'visible on-target white flash');
+  assert.ok(impact.targetWhite>.07,'visible on-target white flash');
+  assert.ok(impact.targetWhite<=.29,'character hit overlay remains translucent');
   assert.ok(impact.kickStrength>=windowShakeFloor(name),'directional camera intensity');
   console.log('ARENA_BOUNCE_HIT '+JSON.stringify(impact));
  }
