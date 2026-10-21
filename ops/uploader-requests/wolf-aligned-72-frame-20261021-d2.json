@@ -1,0 +1,59 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "wolf-aligned-72-frame-20261021-d2",
+  "expectedMainSha": "162cbb2252f17c18253e85fa47cecb36f5b0c515",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/assets/beasts/wolf-trial/idle.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/7a4d980a-144c-439a-af95-8cce3cc9e733.webp",
+      "sha256": "36c6ce555af03432bbe233ccd3b1500f1ff25753f7e62067b3abae7ddd441921"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/walk.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/c39360ba-c027-448a-a254-ad658689713c.webp",
+      "sha256": "b75056fe5b6471e9691bec2b6082dc3454a7667e81b98cce48a4413f62cbe173"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/attack1.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/76570ade-7dac-42ba-ab33-22cde219992b.webp",
+      "sha256": "9b254698ef6b6ef81d28744ef76480a4515b29fe27c40076fad5a9a8c6a4606c"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/attack2.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/c1c58981-7e98-4fa9-9ecd-a6616c8c8b7e.webp",
+      "sha256": "866798652600b36147f801468ee0e0eddea9da27f7b20135e88d42b6eb27cd0f"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/attack3.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/b6474a18-e797-41c8-a175-787cdaef23c6.webp",
+      "sha256": "a683fa8aceec54c66127030115e2c77a15ff2434657a78b8f3d721b95735ca7c"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/attack4.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/47a0154b-6afa-4321-8e4b-5ce26ea446ba.webp",
+      "sha256": "de717b521805b64ad31b60aa23d5987c8d9bad84e14101b32b576605db0b9d9e"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/hit.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/e5397f3d-3616-417a-9dde-00e744cef571.webp",
+      "sha256": "7ed5323f5334e5f72b2ce43536e4136b75f5b5abb3cdee4e6d5513dc97f1e4fb"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/death.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/3469ad2e-bdc6-4251-a96d-82a2802e58e4.webp",
+      "sha256": "a7c348c396582b7eaf5d3d348fdee96a37c2432bb19f292baf5284c729a8c537"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/roar.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/d27d9a82-c38f-4561-b25e-3c9269fc0c8e.webp",
+      "sha256": "948cf2270b467789435579d534bbe319b03bff32c49dc3285b51d97d89fdf395"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/manifest.json",
+      "utf8": "{\n  \"version\": 3,\n  \"previewOnly\": true,\n  \"normalizedGeometry\": true,\n  \"anchor\": {\n    \"x\": 272,\n    \"groundY\": 470,\n    \"cell\": [\n      544,\n      510\n    ]\n  },\n  \"source\": \"recomposed from approved wolf trial sprite pixels; connected-fragment removal and per-cell ground alignment\",\n  \"actions\": {\n    \"idle\": \"idle.webp\",\n    \"walk\": \"walk.webp\",\n    \"attack1\": \"attack1.webp\",\n    \"attack2\": \"attack2.webp\",\n    \"attack3\": \"attack3.webp\",\n    \"attack4\": \"attack4.webp\",\n    \"hit\": \"hit.webp\",\n    \"death\": \"death.webp\",\n    \"roar\": \"roar.webp\"\n  }\n}\n",
+      "sha256": "4cf40e9e74a5daa59581ebce8b6c30478a56b3ff19344ee853dcf40713cbc39c"
+    }
+  ]
+}
