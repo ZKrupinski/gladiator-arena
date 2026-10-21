@@ -40,6 +40,7 @@ async function checkNativeLoader(width,height,trial=false){
   })};
   if(url.startsWith('assets/beasts/'+dir+'/manifest.json'))
    return {ok:true,json:async()=>({version:3,previewOnly:trial,
+    normalizedGeometry:true,
     actions:Object.fromEntries(actions.map(k=>[k,k+'.webp']))})};
   throw Error('Unexpected fetch '+url);
  };
@@ -57,11 +58,47 @@ async function checkNativeLoader(width,height,trial=false){
  vm.runInNewContext(src,sandbox);
  sandbox.window.ArenaBeasts.ensure('wolf');
  for(let i=0;i<4;i++)await new Promise(resolve=>setImmediate(resolve));
- return {state:sandbox.window.ArenaBeasts.status().wolfV3,requested,images};
+ return {state:sandbox.window.ArenaBeasts.status().wolfV3,
+  api:sandbox.window.ArenaBeasts,requested,images};
 }
 const valid=await checkNativeLoader(3072,1536);
 assert.equal(valid.state.status,'ready');
 assert.equal(valid.state.actions.length,9);
+assert.equal(valid.state.normalized,true);
+// Real renderer geometry verification, independent of image resolution:
+// every action keeps identical 6%-smaller scale and 16px lifted paws.
+const expectedScale=348*.82/315*.94;
+const expectedGround=348-16;
+const motions=[
+ {pose:'idle'}, {pose:'walk'}, {pose:'attack',attackVariant:0},
+ {pose:'attack',attackVariant:1},{pose:'attack',attackVariant:2},
+ {pose:'comboDash'}, {pose:'hit'}, {pose:'defeat',dead:true},
+ {pose:'special',action:'idle',actionT:0}
+];
+for(const spec of motions)for(const flip of [false,true]){
+ const calls=[],ops=[];
+ const context={globalAlpha:1,
+  save(){ops.push('save')},restore(){ops.push('restore')},
+  translate(x,y){ops.push(['translate',x,y])},
+  scale(x,y){ops.push(['scale',x,y])},
+  drawImage(...args){calls.push(args)}
+ };
+ const fighter={beastType:'wolf',attackVariant:spec.attackVariant||0,
+  actionDuration:.5,actionT:spec.pose==='attack'?.2:0,
+  action:spec.action||'',dead:!!spec.dead};
+ assert.equal(valid.api.draw(context,{
+  fighter,pose:spec.pose,clock:0,x:0,y:0,w:348,h:348,flip}),true);
+ assert.equal(calls.length,1, spec.pose+' must draw exactly one frame');
+ const draw=calls[0],actualScale=draw[7]/(1536/2);
+ assert.ok(Math.abs(actualScale-expectedScale)<1e-10,
+  spec.pose+' must use a common native-aspect scale');
+ const pawY=draw[6]+470*expectedScale;
+ assert.ok(Math.abs(pawY-expectedGround)<1e-9,
+  spec.pose+' must align the paw to the lifted world-space baseline');
+ if(flip)assert.ok(ops.some(op=>Array.isArray(op)&&op[0]==='scale'&&op[1]===-1),
+  spec.pose+' facing must still mirror correctly');
+}
+console.log('WOLF_V3_UNIFORM_NINE_MOTIONS_SCALE_PAW_HEIGHT_PASS');
 assert.ok(valid.requested.some(r=>r.url==='uploader-release.json'&&r.cache==='no-store'));
 assert.ok(valid.requested.some(r=>r.url.endsWith('manifest.json?v=wolf-release-native-v3')&&r.cache==='no-store'));
 assert.equal(valid.images.filter(url=>url.includes('assets/beasts/wolf-v3/')&&url.includes('.webp?v=wolf-release-native-v3')).length,9);

@@ -30,6 +30,10 @@ const WOLF_ACTIONS=Object.freeze([
  'idle','walk','attack1','attack2','attack3','attack4','hit','death','roar'
 ]);
 const wolfV3={state:'unrequested',actions:new Map(),metrics:new Map(),normalized:false,error:null};
+// Small, unified gameplay presentation adjustment. Keep the same world-space
+// center and shared paw reference across every V3 motion (including death).
+const WOLF_DISPLAY_SCALE=.94; // 6% smaller than the previously approved wolf
+const WOLF_PAW_RAISE=16;      // lift paws by 16 logical arena pixels
 // Read visible alpha extents once per atlas, never trim geometry frame by frame.
 // Neighbor-strip pixels thinner than 1.5% of a cell do not define the foot pivot.
 function wolfAtlasMetrics(img){
@@ -237,8 +241,8 @@ function drawWolfV3(ctx,args){
  // ground-line (x=272,y=470) for all 72 frames. Re-running adaptive
  // bounding-box scale on those frames reintroduces apparent size popping.
  if(wolfV3.normalized){
-  const scale=h*.82/315; // same fixed scale for all nine actions
-  const center=x+w*.5,ground=y+h;
+  const scale=h*.82/315*WOLF_DISPLAY_SCALE; // one uniform scale for every V3 action
+  const center=x+w*.5,ground=y+h-WOLF_PAW_RAISE;
   const walkBox=action==='walk'?actionMetrics?.[index]:null;
   // Recenter only the WALK torso, align planted paws to the same world floor.
   // Never rescale each frame; preserve native-resolution pixel detail.
@@ -252,13 +256,13 @@ function drawWolfV3(ctx,args){
   ctx.restore();return true;
  }
  const box=actionMetrics?.[index];
- const baseScale=h*1.21/cellH;
+ const baseScale=h*1.21/cellH*WOLF_DISPLAY_SCALE;
  // Small source-art silhouette variations may be normalized slightly,
  // but the pounce, roar and death must keep their authentic changing pose.
  const correction=box&&action!=='death'&&action!=='roar'?
    Math.max(.86,Math.min(1.13,322/Math.max(1,box.visibleHeight))):1;
  const scale=baseScale*correction;
- const center=x+w*.5,ground=y+h;
+ const center=x+w*.5,ground=y+h-WOLF_PAW_RAISE;
  const sourceX=box?(box.left+box.right)*.5:cellW*.5;
  const sourceBottom=box?box.bottom:cellH*.90;
  // Only render the owned, alpha-inspected region from this cell. Residual
