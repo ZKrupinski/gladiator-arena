@@ -15,7 +15,7 @@ Generator adapter is NOT connected to ChatGPT ImageGen. Without an actual provid
 Step 3: For images already produced, run:
 python scripts/spriteforge_pipeline_v3.py --mode inspect --job /tmp/leopard-idle/generator_job.json --result /art/result.json --out /tmp/leopard-qa
 
-Quality gates: source-sheet native cells at least max(768px, 80% of the approved reference's shorter side, capped at 1536px). The approved 1448x1086 beast reference requires 869px per cell and a 3476x1738 4x2 sheet; eight unique frames; transparent alpha; no body clipping, shared cell boundary components, second major actor or uncertain detached parts. For accepted images, preserve original pixels, do NOT upscale, and align to estimated foot coordinates on a dynamically sized transparent output canvas.
+Quality gates: NO minimum character, frame, reference or sheet pixel size. Any valid positive-size 4x2 sheet is accepted; eight unique frames; transparent alpha; no body clipping, shared cell boundary components, second major actor or uncertain detached parts. For accepted images, preserve original pixels, do NOT upscale, and align to estimated foot coordinates on a dynamically sized transparent output canvas.
 
 A sheet is examined on its full alpha mask BEFORE cutting into cells. If linked silhouettes cross frame seams, STOP and request regeneration rather than amputating parts. Alpha-based bbox cuts remove transparent padding only. Ambiguous detached pieces are NOT silently erased.
 
@@ -74,19 +74,16 @@ reasonable repeated repair attempts, ask the user with concrete evidence.
 
 **Absolute rule:** Every character sprite generation request and automatic retry
 is ONE character × ONE motion × EIGHT distinct sequential poses × EXACTLY ONE
-high-resolution transparent 4-column × 2-row sprite sheet. No generator request
+transparent 4-column × 2-row sprite sheet. No generator request
 may produce eight independent PNG files or mix motions on a board. Independent
 PNG files are **only the output of SpriteForge's later cutting/QA step**.
 
-Each of the 8 source cells must have native pixel dimensions at least
-`max(768, min(1536, ceil(0.80 * min(approved_reference_width, approved_reference_height))))`
-on **both axes**. Sheet minimum is four times that cell width and twice that
-cell height. Example: an approved 1024×1024 reference requires at least
-820×820 original pixels in every cell, so a sheet >=3280×1640.
-This is a **floor, not a target to downsample toward**. Preserve as much real
-source detail as possible. Disallow fake "high-resolution" created by enlarging
-a tiny original or by blurring and resampling. Native pixels do not guarantee
-visual fidelity; inspect the original subject texture/draw detail too.
+Each of the eight source cells may be any positive pixel dimensions. There is
+**no minimum resolution or character-size requirement**, including for tiny game
+actors. A sheet still has to encode exactly four equal columns and two equal
+rows. The eight complete sprites must preserve art detail at their source
+scale, stable foot anchors, visually consistent proportions and safe frame
+ownership. Never label a simple enlargement as genuinely reconstructed detail.
 
 ### Tool briefs BEFORE any artist or provider begins a pose
 
@@ -139,7 +136,7 @@ Before a single art/image generation call:
    instead. The tool prints the latest Korean briefing and records
    `assistant_preflight.json`. **Read it before art generation.**
 3. Give the drawing tool ALL source-specific requirements from the briefing.
-   Exactly one native-detail high-resolution 4×2 transparent PNG sheet per
+   Exactly one transparent 4×2 transparent PNG sheet per
    motion, 8 unique full-body poses, no clipped body or neighbor-owned
    anatomy. No combined multi-motion boards; no separate source pose files.
 4. Run cutting and visual QC; on failure re-brief (including specific earlier
