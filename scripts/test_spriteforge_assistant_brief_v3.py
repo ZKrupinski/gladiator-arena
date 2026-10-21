@@ -21,8 +21,9 @@ with tempfile.TemporaryDirectory() as temp:
     job_path=Path(session["jobPath"])
     j=json.loads(job_path.read_text(encoding="utf8"))
     assert session["character"]=="wolf" and session["action"]=="walk"
-    assert j["nativeFrameMinimum"]==[800,800]
-    assert j["nativeSheetMinimum"]==[3200,1600]
+    assert "nativeFrameMinimum" not in j
+    assert "nativeSheetMinimum" not in j
+    assert j["resolutionPolicy"]=="ANY_POSITIVE_4x2_GRID_NO_PIXEL_FLOOR"
     assert "무조건 캐릭터 하나·동작 하나" in brief
     assert "4×2" in brief
     assert "옆 프레임" in brief
