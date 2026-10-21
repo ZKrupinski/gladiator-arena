@@ -6,6 +6,7 @@ on:
       - scripts/spartacus_uploader.py
       - tests/test_spartacus_uploader.py
       - scripts/spartacus_wolf_import.py
+      - scripts/spriteforge_connected_mask_v6.py
       - scripts/spartacus_wolf_trial.py
       - tests/test_spartacus_wolf_trial.py
       - tests/test_spartacus_wolf_import.py
@@ -34,12 +35,12 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
       - name: Install image decoder
-        run: pip install pillow
+        run: pip install pillow numpy scipy
       - name: Syntax check
         run: python -m py_compile scripts/spartacus_uploader.py
       - name: Version, asset validation, permissions, atomic commit, deploy QA
         run: python -m unittest discover -s tests -p 'test_spartacus_uploader.py' -v
-      - name: Validate high-res wolf release gate and per-cell seam protection
+      - name: Validate V6 connected-alpha wolf release gate and mask-safe frame extraction
         run: python -m unittest discover -s tests -p 'test_spartacus_wolf_import.py' -v
       - name: Verify trial atlas uses original pixels and is explicitly opt-in
         run: python -m unittest discover -s tests -p 'test_spartacus_wolf_trial.py' -v
