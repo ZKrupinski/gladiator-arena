@@ -65,7 +65,8 @@ function wolfAtlasMetrics(img){
 }
 
 function wolfActionFor(f,pose){
- if(pose==='defeat')return 'death';
+ // KO animation supersedes hit/intro/idle and always holds the final corpse.
+ if(f?.dead||f?.hp<=0||pose==='defeat'||pose==='death')return 'death';
  if(pose==='hit')return 'hit';
  if(pose==='comboDash'||pose==='finisher')return 'attack4';
  // An actual special hit is ATTACK4; only the AI standoff gesture is ROAR.
@@ -83,7 +84,7 @@ function wolfFrameIndex(f,pose,clock){
  const duration=Math.max(.12,Number(f.actionDuration)||.5);
  if(act==='death'){
   if(!Number.isFinite(f._beastDeathSince))f._beastDeathSince=Number(clock)||0;
-  return Math.min(7,Math.max(0,Math.floor(((Number(clock)||0)-f._beastDeathSince)/1.18*8)));
+  return Math.min(7,Math.max(0,Math.floor(((Number(clock)||0)-f._beastDeathSince)/1.10*8)));
  }
  const progress=f.actionT>0?Math.max(0,Math.min(.999,1-f.actionT/duration)):0;
  return Math.min(7,Math.floor(progress*8));
@@ -210,7 +211,7 @@ function drawWolfV3(ctx,args){
  // ground-line (x=272,y=470) for all 72 frames. Re-running adaptive
  // bounding-box scale on those frames reintroduces apparent size popping.
  if(wolfV3.normalized){
-  const scale=h*.90/315;
+  const scale=h*.82/315; // common ~9% visual shrink, same for all 9 poses
   const center=x+w*.5,ground=y+h;
   ctx.save();ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
   if(flip){ctx.translate(2*center,0);ctx.scale(-1,1);}
