@@ -354,7 +354,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-beasts.js?v=7-cleaned"></script><script src="arena-beast-vfx.js?v=1"></script>
 <script src="beast-stage-previews.js?v=2"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
-<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
+<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=2-global-impact"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -1729,6 +1729,8 @@ function attack(f,victim,special=false,dashImpact=false){
    S.flash=Math.max(S.flash,victim.enemy?(special?.19:.13):.19);
    window.ArenaMotion?.pulse?.(victim,'parry','source',victim.face);
    window.ArenaMotion?.pulse?.(f,'parry','target',victim.face);
+   window.ArenaMotion?.impact?.(f,reversal?.critical?'reversal':'parry');
+   window.ArenaMotion?.impact?.(victim,'guard');
    window.ArenaMotion?.shake?.(S,reversal?.critical?'reversal':'parry',victim.face);
    triggerCinematic(reversal?.critical?'reversal':'parry',contact.x,victim.face);
    S.parryBursts.push({x:contact.x,y:contact.y,t:0,max:reversal?.critical?1.05:.79,
@@ -1781,7 +1783,7 @@ function attack(f,victim,special=false,dashImpact=false){
   addFx(2,victim.x-victim.face*30,FLOOR-155,{
    beastFx:'hit',w:610,h:500,owner:victim,track:'body',
    offsetX:-victim.face*30,offsetY:12,
-   flip:attacker.face<0,alpha:.82,duration:.25
+   flip:f.face<0,alpha:.82,duration:.25
   });
  }
  const wasGuarding=!!(victim.guard&&victim.st>0);
@@ -1813,6 +1815,8 @@ function attack(f,victim,special=false,dashImpact=false){
  const collisionStyle=guarded?'guard':dashImpact?'dash':special?'special':'strike';
  window.ArenaMotion?.pulse?.(f,collisionStyle,'source',f.face);
  window.ArenaMotion?.pulse?.(victim,collisionStyle,'target',f.face);
+ // Both gladiators and EVERY beast receive identical flash + elastic hit scale.
+ window.ArenaMotion?.impact?.(victim,collisionStyle);
  window.ArenaMotion?.shake?.(S,collisionStyle,f.face);
  if(!dashImpact){
   // The striker also absorbs a little recoil: bodies compress together,
@@ -1959,7 +1963,7 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
  f.guardRecovery=Math.max(0,f.guardRecovery-dt);f.knockT=Math.max(0,f.knockT-dt);
  f.pressureT=Math.max(0,f.pressureT-dt);
  f.contactCooldown=Math.max(0,(f.contactCooldown||0)-dt);
- window.ArenaMotion?.advance?.(f,dt);
+ window.ArenaMotion?.advance?.(f,dt,realDt);
  if((f.bleedT||0)>0){
    f.bleedT=Math.max(0,f.bleedT-dt);
    f.hp=Math.max(0,f.hp-(f.bleedDPS||2)*dt);
@@ -2379,13 +2383,20 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  // instead of a stale physics-only x coordinate.
  const motionExtra=f.motionVariant===ANIMATED_MURMILLO_VARIANT?
   window.MurmilloMotion?.motionAt?.(f,S,clock):null;
+ const reduceImpact=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ const impactVisual=window.ArenaMotion?.visual?.(f,reduceImpact,S.fx)||{scale:1,flash:0};
  f._fxRender={dx:drawX-(f.x-width/2)+(motionExtra?.x||0),
-  dy:drawY-(feet-height)+(motionExtra?.y||0),tilt,sx:1,sy:1,
+  dy:drawY-(feet-height)+(motionExtra?.y||0),tilt,
+  sx:impactVisual.scale,sy:impactVisual.scale,
   pivotX:f.x,pivotY:feet};
  // No transparency strobing or new vector weapon layer.
  ctx.save();if(tilt){
-  // Rotate whole sprites about planted feet; NEVER apply nonuniform scale.
+  // Feet remain the pivot; all impact scaling is UNIFORM.
   ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.translate(-f.x,-feet);
+ }
+ if(Math.abs(impactVisual.scale-1)>.0001){
+  ctx.translate(f.x,feet);ctx.scale(impactVisual.scale,impactVisual.scale);
+  ctx.translate(-f.x,-feet);
  }
  // All ten poses have independent, pre-cleaned bitmaps; do not truncate any
  // Retiarius attack/defeat weapon just to hide a stray neighboring frame.
@@ -2394,12 +2405,25 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   if(!drawGrowthPose(f,pose,drawX-f.face*38,drawY+6,width,height,f.face<0,.19))atlasFrame(IMG[f.cls],frame,drawX-f.face*38,drawY+6,width,height,f.face<0,.19);
   if(!drawGrowthPose(f,pose,drawX-f.face*73,drawY+12,width,height,f.face<0,.09))atlasFrame(IMG[f.cls],frame,drawX-f.face*73,drawY+12,width,height,f.face<0,.09);
  }
- const drewAnimal=!!f.beastType&&!!window.ArenaBeasts?.draw?.(ctx,{
-  fighter:f,pose,clock,x:drawX,y:drawY,w:width,h:height,flip:f.face>0,alpha:1
- });
- if(!drewAnimal&&
-  !drawGrowthPose(f,pose,drawX,drawY,width,height,f.face<0,1))
-   atlasFrame(IMG[f.cls],frame,drawX,drawY,width,height,f.face<0,1);
+ const renderActor=(alpha)=>{
+  const animal=!!f.beastType&&!!window.ArenaBeasts?.draw?.(ctx,{
+   fighter:f,pose,clock,x:drawX,y:drawY,w:width,h:height,flip:f.face>0,alpha
+  });
+  if(!animal&&
+   !drawGrowthPose(f,pose,drawX,drawY,width,height,f.face<0,alpha))
+    atlasFrame(IMG[f.cls],frame,drawX,drawY,width,height,f.face<0,alpha);
+ };
+ renderActor(1);
+ // A brief white silhouette on the HIT actor only (never every sprite or HUD).
+ // Canvas filter operates on original per-pixel alpha, so cutout edges remain
+ // transparent; all classes and beast atlases use the same render path.
+ if(impactVisual.flash>.02){
+  ctx.save();
+  ctx.globalAlpha*=Math.min(.92,impactVisual.flash*.9);
+  ctx.filter='brightness(0) invert(1)';
+  renderActor(1);
+  ctx.restore();
+ }
  ctx.restore();
  ctx.globalAlpha=1;
 

@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const context={globalThis:{}};
 vm.runInNewContext(fs.readFileSync(new URL('../public/arena-motion.js',import.meta.url),'utf8'),context);
 const M=context.globalThis.ArenaMotion;
-assert.equal(M.version,'1.0.0');
+assert.equal(M.version,'1.1.0');
 const actor=(enemy=false)=>({
  enemy,dead:false,face:enemy?-1:1,
  x:enemy?700:480,vx:0,walkT:0,action:'idle',actionT:0,
@@ -62,6 +62,27 @@ for(const [type,preset] of Object.entries(M.PRESETS)){
  for(let i=0;i<30;i++)M.advanceShake(s,.04);
  assert.equal(s.cameraKick,null,'camera kick returns to zero');
 }
+// Identical global feedback for all three gladiator classes and every beast.
+for(const cls of ['murmillo','retiarius','thraex','wolf','lion','tiger','elephant']){
+ const f={...actor(),cls,beastType:['wolf','lion','tiger','elephant'].includes(cls)?cls:null};
+ for(const kind of ['strike','guard','special','dash','parry','reversal']){
+  M.impact(f,kind);
+  assert.ok(M.visual(f).flash>.15,cls+' '+kind+' visibly flashes');
+  assert.equal(M.visual(f).scale,1,'the planted-foot pivot starts at original scale');
+  M.advance(f,.025,.085);
+  const v=M.visual(f);
+  assert.ok(v.scale>.94&&v.scale<1.13,'uniform impact scale bounded');
+  assert.ok(v.flash>0,'flash survives into contact frame');
+  assert.deepEqual(JSON.parse(JSON.stringify(M.visual(f,true))),{scale:1,flash:0});
+  assert.deepEqual(JSON.parse(JSON.stringify(M.visual(f,false,false))),{scale:1,flash:0});
+  for(let i=0;i<16;i++)M.advance(f,.05,.05);
+  assert.equal(f.hitVisual,null,'impact restores full original size');
+  assert.deepEqual(JSON.parse(JSON.stringify(M.visual(f))),{scale:1,flash:0});
+ }
+}
+assert.ok(M.PRESETS.strike.amp>=14);
+assert.ok(M.PRESETS.special.amp>=23);
+assert.ok(M.PRESETS.reversal.amp>=34);
 const clashA=actor(),clashB=actor(true);
 clashA.x=500;clashB.x=685;clashA.vx=210;clashB.vx=-90;
 assert.equal(M.contactPulse(clashA,clashB,200),true,'approach collision produces body recoil');
@@ -70,4 +91,4 @@ assert.equal(M.contactPulse(clashA,clashB,200),false,'no per-frame vibration spa
 clashA.contactCooldown=0;clashB.contactCooldown=0;
 clashA.vx=0;clashB.vx=0;
 assert.equal(M.contactPulse(clashA,clashB,200),false,'idle near-stationary contact is silent');
-console.log('PASS: all base poses, anchored feet, spring rebound, seven directional shakes, accessibility, cooldown.');
+console.log('PASS: all base poses, anchored feet, spring rebound, strengthened directional shakes and universal hit flash, accessibility, cooldown.');
