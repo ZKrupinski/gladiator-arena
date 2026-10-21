@@ -1,1 +1,25 @@
-{"version":3,"previewOnly":true,"source":"user provided 1672x941 trial sprites","actions":{"idle":"idle.webp","walk":"walk.webp","attack1":"attack1.webp","attack2":"attack2.webp","attack3":"attack3.webp","attack4":"attack4.webp","hit":"hit.webp","death":"death.webp","roar":"roar.webp"}}
+{
+  "version": 3,
+  "previewOnly": true,
+  "normalizedGeometry": true,
+  "anchor": {
+    "x": 272,
+    "groundY": 470,
+    "cell": [
+      544,
+      510
+    ]
+  },
+  "source": "recomposed from approved wolf trial sprite pixels; connected-fragment removal and per-cell ground alignment",
+  "actions": {
+    "idle": "idle.webp",
+    "walk": "walk.webp",
+    "attack1": "attack1.webp",
+    "attack2": "attack2.webp",
+    "attack3": "attack3.webp",
+    "attack4": "attack4.webp",
+    "hit": "hit.webp",
+    "death": "death.webp",
+    "roar": "roar.webp"
+  }
+}

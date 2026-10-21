@@ -1,19 +1,19 @@
 {
   "assetSha256": {
-    "public/assets/beasts/wolf-trial/attack1.webp": "4fa18d6bb0584e50ca789e10c9b80da89c9af9d39c0fa704c82cceef32ebfc8b",
-    "public/assets/beasts/wolf-trial/attack2.webp": "0c9d60003fdc06ef6b594fc0ae4ae6a2cede61538a9b943842e9b04b36907dbf",
-    "public/assets/beasts/wolf-trial/attack3.webp": "821615fd59347e813d4102cac2dd71fea9d4616e23f06ae293cd9a633073bde9",
-    "public/assets/beasts/wolf-trial/attack4.webp": "6d4a8ff37ef5a400d0348b74bd30671487f77a5da4324e9ba3d864131e5d87b9",
-    "public/assets/beasts/wolf-trial/death.webp": "e4d1ad27ae13a6380150eaa65ba0e0d9f0e52796972006a9407167ab61843dc1",
-    "public/assets/beasts/wolf-trial/hit.webp": "429e22596d829f60b2e0900022f040f1767a48bc8aed41f9c53e85014d4bfbe7",
-    "public/assets/beasts/wolf-trial/idle.webp": "34096579305a7d7f63f3e1312176841c874a76178ec008a566ca5df246933499",
-    "public/assets/beasts/wolf-trial/manifest.json": "320806fe348bde9209a929aeff20d95830b17e5e6c33eb2605e98f286cfb730d",
-    "public/assets/beasts/wolf-trial/roar.webp": "8ea57bd67af3e3e077a8028c5e802f325d2a5b88884ff39adc71d02bd7c7b02f",
-    "public/assets/beasts/wolf-trial/walk.webp": "f70fb718b737de9a2bd3ebd0668294104479b2c9d412633a92a47de81b4eae52"
+    "public/assets/beasts/wolf-trial/attack1.webp": "9b254698ef6b6ef81d28744ef76480a4515b29fe27c40076fad5a9a8c6a4606c",
+    "public/assets/beasts/wolf-trial/attack2.webp": "866798652600b36147f801468ee0e0eddea9da27f7b20135e88d42b6eb27cd0f",
+    "public/assets/beasts/wolf-trial/attack3.webp": "a683fa8aceec54c66127030115e2c77a15ff2434657a78b8f3d721b95735ca7c",
+    "public/assets/beasts/wolf-trial/attack4.webp": "de717b521805b64ad31b60aa23d5987c8d9bad84e14101b32b576605db0b9d9e",
+    "public/assets/beasts/wolf-trial/death.webp": "a7c348c396582b7eaf5d3d348fdee96a37c2432bb19f292baf5284c729a8c537",
+    "public/assets/beasts/wolf-trial/hit.webp": "7ed5323f5334e5f72b2ce43536e4136b75f5b5abb3cdee4e6d5513dc97f1e4fb",
+    "public/assets/beasts/wolf-trial/idle.webp": "36c6ce555af03432bbe233ccd3b1500f1ff25753f7e62067b3abae7ddd441921",
+    "public/assets/beasts/wolf-trial/manifest.json": "4cf40e9e74a5daa59581ebce8b6c30478a56b3ff19344ee853dcf40713cbc39c",
+    "public/assets/beasts/wolf-trial/roar.webp": "948cf2270b467789435579d534bbe319b03bff32c49dc3285b51d97d89fdf395",
+    "public/assets/beasts/wolf-trial/walk.webp": "b75056fe5b6471e9691bec2b6082dc3454a7667e81b98cce48a4413f62cbe173"
   },
-  "baseCommit": "e9e03186e2a4c416529cb848891df3e6fb4405af",
+  "baseCommit": "0d612e679bfd412177c4edb7992f7258eb37ff88",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "wolf-trial-user-art-20261021-c1",
+  "releaseId": "wolf-aligned-72-frame-20261021-d2",
   "releaseProtocol": "spartacus-uploader-v1"
 }
