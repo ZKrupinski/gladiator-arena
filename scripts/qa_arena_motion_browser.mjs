@@ -37,12 +37,18 @@ try{
     duration:s.cameraKick?.duration||0,
     distance:Math.abs(s.enemy.x-s.player.x),
     zoom:s.focusFrame?.zoom||0,
+    targetFlash:s.enemy.hitVisual?.kind||null,
+    targetWhite:window.ArenaMotion.visual(s.enemy).flash,
+    kickStrength:s.cameraKick?.amplitude||0,
     active:s.phase==='fight'};
   },name);
   assert.equal(impact.kind,name,kindToString(name,impact));
   assert.equal(impact.attacker,name,'both fighters have spring on '+name);
   assert.equal(impact.defender,name,'both fighters have spring on '+name);
   assert.equal(impact.active,true,'attacks should not prematurely terminate');
+  assert.equal(impact.targetFlash,name,'every class and beast uses universal contact flash');
+  assert.ok(impact.targetWhite>.15,'visible on-target white flash');
+  assert.ok(impact.kickStrength>=windowShakeFloor(name),'directional camera intensity');
   console.log('ARENA_BOUNCE_HIT '+JSON.stringify(impact));
  }
  // Combat springs obey the *simulated* timeline on purpose so slow-motion
@@ -74,11 +80,15 @@ try{
   const m=window.ArenaMotion;
   const f=s.player;
   f.vx=220;f.action='attack';f.actionT=.18;f.actionDuration=.35;
-  return {pose:m.pose(f,1,true),shake:(m.shake(s,'special',1),m.sampleShake(s,true))};
+  m.impact(f,'special');
+  return {pose:m.pose(f,1,true),flash:m.visual(f,true),shake:(m.shake(s,'special',1),m.sampleShake(s,true))};
  });
  assert.deepEqual(calm.pose,{x:0,y:0,sx:1,sy:1,tilt:0});
  assert.deepEqual(calm.shake,{x:0,y:0,angle:0});
+ assert.deepEqual(calm.flash,{scale:1,flash:0});
  assert.deepEqual(errors,[],'browser has no uncaught JS errors');
  console.log('ARENA_BOUNCE_BROWSER_PASS '+JSON.stringify(motion));
 }finally{await browser.close()}
 function kindToString(name,state){return 'expected '+name+' hit feedback; received '+JSON.stringify(state)}
+
+function windowShakeFloor(name){return name==='strike'?14:name==='guard'?11:name==='special'?23:name==='dash'?29:28}
