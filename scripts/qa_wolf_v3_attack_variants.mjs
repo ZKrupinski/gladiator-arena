@@ -66,9 +66,14 @@ assert.ok(valid.requested.some(r=>r.url==='uploader-release.json'&&r.cache==='no
 assert.ok(valid.requested.some(r=>r.url.endsWith('manifest.json?v=wolf-release-native-v3')&&r.cache==='no-store'));
 assert.equal(valid.images.filter(url=>url.includes('assets/beasts/wolf-v3/')&&url.includes('.webp?v=wolf-release-native-v3')).length,9);
 const legacy=await checkNativeLoader(1672,940);
-assert.equal(legacy.state.status,'unavailable','low-res pack must keep legacy fallback');
-assert.equal(legacy.state.actions.length,0,'no partially loaded pack');
-assert.match(legacy.state.error,/Invalid native 4x2 wolf atlas/);
+assert.equal(legacy.state.status,'ready','small native pack is allowed when complete');
+assert.equal(legacy.state.actions.length,9);
+assert.equal(legacy.state.error,null);
+const tiny=await checkNativeLoader(48,32);
+assert.equal(tiny.state.status,'ready','4x2 tiny sprites are valid');
+const badGrid=await checkNativeLoader(49,32);
+assert.equal(badGrid.state.status,'unavailable','invalid grid must still be rejected');
+assert.match(badGrid.state.error,/Invalid 4x2 wolf atlas/);
 console.log('WOLF_V3_PRODUCTION_CACHE_VERSION_AND_NATIVE_FALLBACK_PASS');
 
 const trial=await checkNativeLoader(1672,940,true);
