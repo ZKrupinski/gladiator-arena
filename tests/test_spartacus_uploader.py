@@ -34,7 +34,7 @@ class TestSpartacusUploader(unittest.TestCase):
             with self.subTest(path=p):
                 with self.assertRaises(u.UploadError):u.normalized_path(p)
     def test_binary_hash_and_native_wolf_floor(self):
-        safe=u.check_asset("public/assets/beasts/wolf-v3/idle.png",FAKE_PNG,strict_art=True)
+        safe=u.check_asset("public/assets/spartacus-uploads/idle.png",FAKE_PNG,strict_art=True)
         self.assertEqual(safe["width"],800)
         self.assertEqual(safe["height"],800)
         with self.assertRaisesRegex(u.UploadError,"NATIVE_SHEET_TOO_SMALL"):
@@ -44,6 +44,41 @@ class TestSpartacusUploader(unittest.TestCase):
             u.check_asset("public/assets/foo.png",b"fake.png")
         with self.assertRaisesRegex(u.UploadError,"INVALID_JSON"):
             u.check_asset("public/assets/foo.json",b"not json")
+    def test_native_wolf_webp_4x2_integrity(self):
+        import io
+        from PIL import Image,ImageDraw
+        img=Image.new("RGBA",(3072,1536))
+        brush=ImageDraw.Draw(img)
+        for i in range(8):
+            x=(i%4)*768;y=(i//4)*768
+            brush.rectangle((x+65,y+75,x+700,y+680),fill=(85+i,110,140,255))
+        file=io.BytesIO()
+        img.save(file,"WEBP",lossless=True,method=3)
+        atlas=file.getvalue()
+        path="public/assets/beasts/wolf-v3/idle.webp"
+        info=u.check_asset(path,atlas,strict_art=True)
+        self.assertTrue(info["nativeValidated"])
+        self.assertEqual(info["frames"],8)
+        with self.assertRaisesRegex(u.UploadError,"NOT_WEBP"):
+            u.check_asset(path,b"RIFF" + b"x"*60,strict_art=True)
+        small=io.BytesIO()
+        img.resize((1672,940)).save(small,"WEBP",lossless=True,method=3)
+        with self.assertRaisesRegex(u.UploadError,"NATIVE_SHEET_TOO_SMALL"):
+            u.check_asset(path,small.getvalue(),strict_art=True)
+        bad=img.copy()
+        ImageDraw.Draw(bad).rectangle((0,90,70,135),fill=(55,66,77,255))
+        merged=io.BytesIO()
+        bad.save(merged,"WEBP",lossless=True,method=3)
+        with self.assertRaisesRegex(u.UploadError,"FRAME_SEAM_OR_CLIPPING"):
+            u.check_asset(path,merged.getvalue(),strict_art=True)
+        dup=Image.new("RGBA",(3072,1536))
+        draw=ImageDraw.Draw(dup)
+        for i in range(8):
+            x=(i%4)*768;y=(i//4)*768
+            draw.rectangle((x+65,y+75,x+700,y+680),fill=(85,110,140,255))
+        repeated=io.BytesIO();dup.save(repeated,"WEBP",lossless=True,method=3)
+        with self.assertRaisesRegex(u.UploadError,"DUPLICATE_FRAME"):
+            u.check_asset(path,repeated.getvalue(),strict_art=True)
     def test_package_discovery_and_symlink_refusal(self):
         with tempfile.TemporaryDirectory() as d:
             base=pathlib.Path(d)
