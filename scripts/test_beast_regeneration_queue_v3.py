@@ -23,7 +23,7 @@ with tempfile.TemporaryDirectory() as dir:
  assert result["framesFlaggedByQA"]==3,result
  assert {j["character"] for j in result["items"]}=={"wolf","leopard"}
  assert all(j["framesPerAction"]==8 and j["status"]=="WAITING_FOR_CONNECTED_GENERATOR" for j in result["items"])
- assert all(j["preferred"]=="one native high-resolution 4x2 RGBA sprite sheet per character/action" and
+ assert all(j["preferred"]=="one transparent 4x2 RGBA sprite sheet per character/action at any valid resolution" and
             j["independentPngRole"]=="EXTRACTED_AFTER_QA_ONLY" for j in result["items"])
  assert "autoRegenerate" not in result or result["autoRunOnGeneratorConnection"] is True
  assert result["releaseAuthorized"] is False
