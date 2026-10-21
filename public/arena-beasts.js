@@ -84,7 +84,7 @@ function wolfFrameIndex(f,pose,clock){
  const duration=Math.max(.12,Number(f.actionDuration)||.5);
  if(act==='death'){
   if(!Number.isFinite(f._beastDeathSince))f._beastDeathSince=Number(clock)||0;
-  return Math.min(7,Math.max(0,Math.floor(((Number(clock)||0)-f._beastDeathSince)/1.10*8)));
+  return Math.min(7,Math.max(0,Math.floor(((Number(clock)||0)-f._beastDeathSince)/.68*8)));
  }
  const progress=f.actionT>0?Math.max(0,Math.min(.999,1-f.actionT/duration)):0;
  return Math.min(7,Math.floor(progress*8));
