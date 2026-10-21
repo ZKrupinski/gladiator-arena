@@ -52,6 +52,20 @@ def extract_owned_frames(source, *, alpha_threshold=ALPHA_THRESHOLD):
     labels, number = ndimage.label(foreground, structure=EIGHT_NEIGHBORS)
     if number == 0:
         raise OwnershipError("MISSING_OR_MERGED_FRAME_SILHOUETTE")
+    # Transparent antialias is still part of the source. Attribute very
+    # faint pixels to the UNIQUE nearest connected body within two pixels.
+    # Anything further away is an unowned fragment, not disposable speckle.
+    distance, nearest = ndimage.distance_transform_edt(
+        ~foreground, return_indices=True)
+    fringe_owner = labels[tuple(nearest)]
+    fringe = (alpha > 0) & (~foreground) & (distance <= 2)
+    residue = (alpha > 0) & (~foreground) & (~fringe)
+    if residue.any():
+        ry, rx = np.where(residue)
+        raise OwnershipError(
+            "UNOWNED_LOW_ALPHA_FRAGMENT_NOT_DISCARDED: "
+            f"pixels={int(np.count_nonzero(residue))} "
+            f"at={int(rx.min())},{int(ry.min())}")
     counts = np.bincount(labels.ravel(), minlength=number + 1)
     counts[0] = 0
     core_claims = {i: [] for i in range(8)}
@@ -124,10 +138,10 @@ def extract_owned_frames(source, *, alpha_threshold=ALPHA_THRESHOLD):
     out_w, out_h = cw + pad_l + pad_r, ch + pad_t + pad_b
     frames, details = [], []
     for i, (component, rect, (cell_x, cell_y)) in enumerate(items):
-        # A 1px alpha halo restores valid antialiased edges without extending
-        # the actor to an unrelated full-color neighbor.
+        # Only 1–2px antialias with evidence of nearest ownership is added.
+        # No color, alpha or limb pixels are invented; no tiny alpha is dropped.
         pixels = labels == component
-        halo = ndimage.binary_dilation(pixels, structure=EIGHT_NEIGHBORS) & (labels == 0) & (alpha > 0)
+        halo = fringe & (fringe_owner == component)
         owned = pixels | halo
         yy, xx = np.where(owned)
         x0, y0, x1, y1 = int(xx.min()), int(yy.min()), int(xx.max()) + 1, int(yy.max()) + 1
