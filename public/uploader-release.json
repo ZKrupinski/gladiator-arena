@@ -1,10 +1,10 @@
 {
   "assetSha256": {
-    "public/assets/spartacus-uploads/heartbeat.json": "2564156a5ee387e9376faa1c03f865f8d6c3a781aa748068b13fe1f92260676e"
+    "public/assets/spartacus-uploads/uploader-bridge-proof.json": "816a02ecf7c2f0c235a4bf4fe4c58e4c3a39dfc023f96e5d57c05d8053f4b1cd"
   },
-  "baseCommit": "ee1340e57210323595d3965093e378f718f90f9b",
+  "baseCommit": "c6285e900ba6f3631553ffd183f73ee0d02277f2",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "spartacus-uploader-smoke-20261021-a1",
+  "releaseId": "wolf-v3-loader-cache-20261021-b1",
   "releaseProtocol": "spartacus-uploader-v1"
 }
