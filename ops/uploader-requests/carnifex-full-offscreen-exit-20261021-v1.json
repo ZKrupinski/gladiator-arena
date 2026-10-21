@@ -1,0 +1,25 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "carnifex-full-offscreen-exit-20261021-v1",
+  "expectedMainSha": "7f3ff04470407a3844e7cbd19090df99949246ef",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/arena-carnifex.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/7f3ff04470407a3844e7cbd19090df99949246ef/public/arena-carnifex.js",
+      "sha256": "b0f11dad0b12c7a101ce54cdd2248ed45bc05c7a517fd8b98049dad9d6a2a0a7"
+    },
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/7f3ff04470407a3844e7cbd19090df99949246ef/public/index.html",
+      "sha256": "c07cbbba1fdb2cd27ab31eea2615613f4d38f4db34853db4b5e202497e294634"
+    },
+    {
+      "path": "scripts/qa_carnifex_sd.mjs",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/7f3ff04470407a3844e7cbd19090df99949246ef/scripts/qa_carnifex_sd.mjs",
+      "sha256": "c89ce1ab6bb7d3b2918f641271b895c7b952ccd9e1f90415a8049d8d6b06c969"
+    }
+  ],
+  "instructions": "Approved Carnifex exit continuity. Preserve the both sprites until completely outside actual camera bounds, smoothly continue drag into exit with no teleport, slow the haul, protect original 2x8 painted sprite assets. Release exactly immutable code and QA from commit 7f3ff04470407a3844e7cbd19090df99949246ef"
+}
