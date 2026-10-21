@@ -6,6 +6,12 @@ on:
       - public/arena-beasts.js
       - scripts/qa_wolf_v3_attack_variants.mjs
       - .github/workflows/qa-wolf-v3.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - public/arena-beasts.js
+      - scripts/qa_wolf_v3_attack_variants.mjs
+      - .github/workflows/qa-wolf-v3.yml
   workflow_dispatch:
 jobs:
   wolf-v3:
