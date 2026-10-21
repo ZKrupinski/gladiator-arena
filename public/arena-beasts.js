@@ -29,7 +29,41 @@ const WOLF_MANIFEST_PATH='public/'+WOLF_V3_DIR+'manifest.json';
 const WOLF_ACTIONS=Object.freeze([
  'idle','walk','attack1','attack2','attack3','attack4','hit','death','roar'
 ]);
-const wolfV3={state:'unrequested',actions:new Map(),error:null};
+const wolfV3={state:'unrequested',actions:new Map(),metrics:new Map(),error:null};
+// Read visible alpha extents once per atlas, never trim geometry frame by frame.
+// Neighbor-strip pixels thinner than 1.5% of a cell do not define the foot pivot.
+function wolfAtlasMetrics(img){
+ if(typeof document==='undefined'||!document.createElement)return null;
+ try{
+  const w=img.naturalWidth,h=img.naturalHeight,cw=w/4,ch=h/2;
+  const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+  const cx=canvas.getContext('2d',{willReadFrequently:true});
+  if(!cx)return null;
+  cx.drawImage(img,0,0);
+  const bytes=cx.getImageData(0,0,w,h).data;
+  const frames=[];
+  for(let k=0;k<8;k++){
+   const ox=k%4*cw,oy=Math.floor(k/4)*ch;
+   const rows=new Uint32Array(ch),cols=new Uint32Array(cw);
+   for(let y=0;y<ch;y++)for(let x=0;x<cw;x++){
+    const alpha=bytes[((oy+y)*w+ox+x)*4+3];
+    if(alpha>=56){rows[y]++;cols[x]++;}
+   }
+   // Avoid sparse antialias particles from a neighboring cell changing pivots.
+   const rowFloor=Math.max(2,Math.floor(cw*.014));
+   const colFloor=Math.max(2,Math.floor(ch*.009));
+   const activeRows=[],activeCols=[];
+   for(let y=0;y<ch;y++)if(rows[y]>=rowFloor)activeRows.push(y);
+   for(let x=0;x<cw;x++)if(cols[x]>=colFloor)activeCols.push(x);
+   if(!activeRows.length||!activeCols.length){frames.push(null);continue;}
+   frames.push({left:activeCols[0],right:activeCols[activeCols.length-1]+1,
+     top:activeRows[0],bottom:activeRows[activeRows.length-1]+1,
+     visibleHeight:activeRows[activeRows.length-1]-activeRows[0]+1});
+  }
+  return frames;
+ }catch(_){return null;} // Keep the original atlas fallback if inspection fails.
+}
+
 function wolfActionFor(f,pose){
  if(pose==='defeat')return 'death';
  if(pose==='hit')return 'hit';
@@ -102,7 +136,11 @@ function loadWolfV3(){
    image.src=WOLF_V3_DIR+manifest.actions[action]+'?v='+version;
   })));
   // Atomic visual activation: never show a partial nine-motion pack.
-  for(const [name,img] of loaded)wolfV3.actions.set(name,img);
+  wolfV3.metrics.clear();
+  for(const [name,img] of loaded){
+   wolfV3.actions.set(name,img);
+   wolfV3.metrics.set(name,wolfAtlasMetrics(img));
+  }
   wolfV3.state='ready';
  }).catch(e=>{
   // Keep using the verified legacy 40-frame art if a V3 pack is incomplete.
@@ -164,16 +202,25 @@ function drawWolfV3(ctx,args){
  if(!img)return false;
  const index=wolfFrameIndex(fighter,pose,clock);
  const cellW=img.naturalWidth/4,cellH=img.naturalHeight/2;
- // Fixed viewport and ground pivot: preserve character proportions,
- // no per-frame cropping, no cloning, no nonuniform stretching.
- const targetHeight=h*1.21,targetWidth=targetHeight*cellW/cellH;
+ // A fixed cell-origin causes row-two wolf feet to rise by 40-75 source
+ // pixels. Align the VISIBLE planted paw instead; use one world ground line
+ // for every action, with one UNIFORM scale for width and height.
+ const box=wolfV3.metrics.get(action)?.[index];
+ const baseScale=h*1.21/cellH;
+ // Small source-art silhouette variations may be normalized slightly,
+ // but the pounce, roar and death must keep their authentic changing pose.
+ const correction=box&&action!=='death'&&action!=='roar'?
+   Math.max(.86,Math.min(1.13,322/Math.max(1,box.visibleHeight))):1;
+ const scale=baseScale*correction;
  const center=x+w*.5,ground=y+h;
+ const sourceX=box?(box.left+box.right)*.5:cellW*.5;
+ const sourceBottom=box?box.bottom:cellH*.90;
  ctx.save();
  ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
  if(flip){ctx.translate(center*2,0);ctx.scale(-1,1);}
  ctx.drawImage(img,(index%4)*cellW,Math.floor(index/4)*cellH,
-               cellW,cellH,center-targetWidth*.5,ground-targetHeight*.90,
-               targetWidth,targetHeight);
+               cellW,cellH,center-sourceX*scale,ground-sourceBottom*scale,
+               cellW*scale,cellH*scale);
  ctx.restore();
  return true;
 }
