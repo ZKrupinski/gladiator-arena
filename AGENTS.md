@@ -60,3 +60,35 @@ sheet intent is enough. Applies equally to follow-up prompts like "다음
 
 Never skip a tool briefing because you believe you remember the rules.
 Brief every time because **the policy and failed-frame history can change**.
+
+## Spartacus gameplay update / asset upload / live publish — mandatory one-stop tool
+
+When the user says **"게임에 적용해"**, **"적용하고 배포해"**,
+**"버전 수정해"**, **"업로더 이용해"**, or equivalent for this game:
+
+* **Never ask again for the repository address or game assets path.**
+  Repo: `ZKrupinski/gladiator-arena`; branch: `main`; game root:
+  `public/`; site: `https://gladiator-arena-git.pages.dev/`.
+* Use `scripts/spartacus_uploader.py` and the docs at
+  `docs/spartacus-uploader.md` as the standard release protocol.
+  Get the current live code SHA using the connected GitHub tool first.
+* Code changes are made in GitHub and tested. Image files in an environment
+  with authenticated network access can use
+  `python scripts/spartacus_uploader.py publish --input DIR --mapping MAP.json --confirm`
+  for an atomic direct upload. When using GitHub text-only connector, create
+  a single trusted upload request at `ops/uploader-requests/<id>.json`;
+  the GitHub Actions release uploader handles approved HTTPS asset URLs.
+  Actual binary bytes MUST be accessible to the runner; never invent links.
+* For the nine action V3 wolf atlas, if all source sheets pass the production
+  native-resolution and ownership checks, use
+  `scripts/spartacus_wolf_import.py`. It saves to
+  `public/assets/beasts/wolf-v3/` and existing `arena-beasts.js`
+  automatically loads its manifest. **Do not bypass SpriteForge briefing,
+  art review or high-res gate.**
+* Prefer update current version → test → commit → verify Cloudflare
+  `uploader-release.json` and actual file checksums → send exact live link.
+  Git success is not proof of production deployment. A failed external
+  integration must be reported as **NOT VERIFIED**, not invented success.
+* This rule stays game-specific. Do not transfer the repo URL/branch to
+  another game automatically.
+
