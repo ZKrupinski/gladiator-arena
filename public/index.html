@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
-<script src="arena-beasts.js?v=4"></script>
+<script src="arena-beasts.js?v=5"></script><script src="arena-beast-vfx.js?v=1"></script>
 <script src="beast-stage-previews.js?v=2"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
 <script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
@@ -1483,7 +1483,7 @@ function triggerCinematic(kind,contactX,dir=1){
 function addFx(frame,x,y,opt={}){
  if(!S.fx)return;
  const delay=Math.max(0,opt.delay??0);
- const fx={frame,x,y,owner:opt.owner||null,offsetX:opt.offsetX??0,offsetY:opt.offsetY??0,atlas:opt.atlas||'fx',art:opt.art||null,w:opt.w??220,h:opt.h??220,flip:!!opt.flip,alpha:opt.alpha??1,rotation:opt.rotation??0,t:0,delay,max:(opt.duration??.12)+delay,sequence:opt.sequence||null,track:opt.track||null,layer:opt.layer||'front'};
+ const fx={frame,x,y,owner:opt.owner||null,offsetX:opt.offsetX??0,offsetY:opt.offsetY??0,atlas:opt.atlas||'fx',art:opt.art||null,w:opt.w??220,h:opt.h??220,flip:!!opt.flip,alpha:opt.alpha??1,rotation:opt.rotation??0,t:0,delay,max:(opt.duration??.12)+delay,sequence:opt.sequence||null,beastFx:opt.beastFx||null,track:opt.track||null,layer:opt.layer||'front'};
  S.sparks.push(fx);
 }
 function weaponPoint(f,kind='attack'){
@@ -1841,6 +1841,7 @@ function choosePose(f){
  if(f.parryTriumphT>.19&&!['attack','special','comboDash'].includes(f.action))return 'guard';
  if(f.actionT>0){
   const t=clamp(1-f.actionT/Math.max(.01,f.actionDuration),0,1);
+  if(f.beastType&&f.action==='attack')return 'attack';
   if(f.action==='attack'){
    if(f.attackVariant===1)return t<.18?'guard':'special';
    if(f.attackVariant===2)return t<.22?'walk':'attack';
@@ -2239,7 +2240,7 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  // Result poses stay grounded: the champion holds the pose on the floor instead of floating upward.
  // Character art must never squash, widen or shrink during combat.
  let tilt=0;
- if(f.actionT>0&&f.action==='attack'&&S.phase==='fight'){
+ if(!f.beastType&&f.actionT>0&&f.action==='attack'&&S.phase==='fight'){
   const phase=clamp(1-f.actionT/Math.max(.01,f.actionDuration),0,1);
   const swing=Math.sin(Math.PI*phase),dir=f.face||1;
   if(f.attackVariant===0){
@@ -2440,6 +2441,11 @@ function drawEffects(backOnly=false){
   const {x:cx,y:cy}=fxPoint(v);
   const progress=time.progress;
   const fade=clamp(Math.min(progress*8+.18,(1-progress)*3),0,1);
+   if(v.beastFx){
+    if(S.fx)window.ArenaBeastFX?.draw?.(ctx,v.beastFx,cx,cy,
+      v.w,v.h,progress,v.alpha*fade,v.flip?-1:1);
+    continue;
+   }
   const scale=.9+.13*progress;
   const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   const mapped=v.sequence||({hit_slash:'slash',parry_burst:'guard',
