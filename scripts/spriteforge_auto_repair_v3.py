@@ -18,10 +18,23 @@ MAX_RETRIES_LIMIT=5
 
 def _preview_images(result_file):
     response=json.loads(Path(result_file).read_text(encoding="utf8"))
-    return eight_images(response,Path(result_file).resolve().parent)
+    root=Path(result_file).resolve().parent
+    try:
+        return eight_images(response,root),None
+    except ValueError as error:
+        # ONLY a red diagnostic contact board for a blocked sheet.
+        # These approximate cell ROIs are NEVER exported for game use,
+        # and must never be confused with owned-alpha sprite extraction.
+        if "sheet" not in response:raise
+        source=Image.open(root/response["sheet"]).convert("RGBA")
+        w,h=source.size
+        if w%4 or h%2:raise
+        rois=[source.crop((i%4*w//4,i//4*h//2,
+                           (i%4+1)*w//4,(i//4+1)*h//2)) for i in range(8)]
+        return rois,str(error)
 
 
-def preview(images,root,character,action,failures=None):
+def preview(images,root,character,action,failures=None,diagnostic=None):
     """PNG contact and GIF on checkerboard; result paths are suitable for review."""
     root=Path(root);root.mkdir(parents=True,exist_ok=True)
     bad=set()
@@ -39,9 +52,10 @@ def preview(images,root,character,action,failures=None):
         pict=art.copy()
         pict.thumbnail((282,272),Image.Resampling.LANCZOS)
         tile.alpha_composite(pict,((304-pict.width)//2,(282-pict.height)//2+12))
-        outline=(239,85,73,255) if i in bad else (100,176,132,255)
+        outline=(239,85,73,255) if diagnostic or i in bad else (100,176,132,255)
         grid.rectangle((1,1,302,302),outline=outline,width=3)
-        grid.text((10,284),f"{character} {action} / frame {i+1}",fill=(255,255,255,255))
+        title=("UNVERIFIED ROI" if diagnostic else f"{character} {action}")
+        grid.text((10,284),f"{title} / frame {i+1}",fill=(255,255,255,255))
         frames.append(tile)
     board=Image.new("RGBA",(304*4,304*2),(23,26,31,255))
     for i,f in enumerate(frames):
@@ -52,7 +66,9 @@ def preview(images,root,character,action,failures=None):
     gif_frames=[f.convert("RGB") for f in frames]
     gif_frames[0].save(anim,save_all=True,append_images=gif_frames[1:],loop=0,
                        duration=115,optimize=False)
-    return {"contactPng":str(contact),"motionGif":str(anim)}
+    return {"contactPng":str(contact),"motionGif":str(anim),
+            "diagnosticOnly":bool(diagnostic),
+            "blockedReason":diagnostic}
 
 
 def _retry_job(original_job,source_sha,report,attempt,output):
@@ -135,10 +151,10 @@ def auto_repair(job_path,output,adapter=None,initial_result=None,max_retries=3):
                    "qaJson":str(folder/"qa/qa.json"),
                    "technicalStatus":qa["status"],"failures":qa["failures"]}
             try:
-                imgs=_preview_images(result_file)
+                imgs,diagnostic=_preview_images(result_file)
                 entry["review"]=preview(imgs,folder/"review",
                                         original["character"],original["action"],
-                                        qa["failures"])
+                                        qa["failures"],diagnostic)
             except (OSError,ValueError,KeyError,TypeError) as err:
                 entry["previewError"]=str(err)
             record["attempts"].append(entry)
