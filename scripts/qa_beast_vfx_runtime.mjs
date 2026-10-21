@@ -33,6 +33,36 @@ assert.ok(html.includes("const frontX=attacker.x+dir*clamp(foeGap-50,167,270)"))
 assert.ok(html.includes("const contactY=FLOOR-(ground?252:bite?288:276)"));
 assert.ok(html.includes("flightX:dir*(ground?92:65),flightY:ground?-78:-96"));
 assert.ok(html.includes("rotation:dir>0?-.20:.20"));
+assert.ok(html.includes("flip:attacker.beastType==='wolf'?dir<0:dir>0,layer:'front'"));
+// Actual runtime regression: mirror only the wolf strike art, not its spawn.
+{
+ const start=html.indexOf('function emitAttackFx(');
+ const end=html.indexOf('\nfunction ',start+1);
+ assert.ok(start>=0&&end>start,'combat attack FX function exists');
+ const emitted=[];
+ const runtime={window:{ArenaBeastFX:{ensure(){}}},FLOOR:600,
+  clamp:(v,min,max)=>Math.max(min,Math.min(max,v)),
+  addFx:(frame,x,y,opt)=>emitted.push({frame,x,y,opt})};
+ vm.runInNewContext(html.slice(start,end),runtime);
+ for(const dir of [-1,1]){
+  const victim={x:400+dir*220,face:-dir};
+  const wolf={beastType:'wolf',x:400,face:dir};
+  const lion={beastType:'lion',x:400,face:dir};
+  emitted.length=0;runtime.emitAttackFx(wolf,victim);
+  const wolfAttack=emitted.find(v=>v.opt.beastFx==='claw');
+  assert.equal(wolfAttack?.opt.flip,dir<0,'wolf attack sprite must be mirrored');
+  assert.equal(wolfAttack?.x,400+dir*170);
+  assert.equal(wolfAttack?.y,600-276);
+  assert.equal(wolfAttack?.opt.flightX,dir*65);
+  assert.equal(wolfAttack?.opt.flightY,-96);
+  emitted.length=0;runtime.emitAttackFx(lion,victim);
+  const lionAttack=emitted.find(v=>v.opt.beastFx==='claw');
+  assert.equal(lionAttack?.opt.flip,dir>0,'other beasts keep prior facing');
+  assert.equal(lionAttack?.x,wolfAttack.x,'same spawn as before');
+  assert.equal(lionAttack?.y,wolfAttack.y,'same height as before');
+ }
+}
+
 assert.ok(html.includes("cx+(v.flightX||0)*rise,cy+(v.flightY||0)*rise"));
 assert.ok(html.includes("beastFx:kind,w:(ground?730:bite?560:650)*size"));
 assert.ok(html.includes("beastFx:'step',w:750*size,h:318*size"));
