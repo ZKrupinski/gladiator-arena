@@ -1783,7 +1783,7 @@ function attack(f,victim,special=false,dashImpact=false){
   addFx(2,victim.x-victim.face*30,FLOOR-155,{
    beastFx:'hit',w:610,h:500,owner:victim,track:'body',
    offsetX:-victim.face*30,offsetY:12,
-   flip:attacker.face<0,alpha:.82,duration:.25
+   flip:f.face<0,alpha:.82,duration:.25
   });
  }
  const wasGuarding=!!(victim.guard&&victim.st>0);
