@@ -203,3 +203,16 @@ python scripts/spartacus_wolf_trial.py \
 발 접지 기준점과 프레임 간 실제 캐릭터 비율 일관성이다. 어느 경로도
 예전의 512/768/869px per cell 또는 3072×1536px per sheet를
 출시 차단 요건으로 사용하지 않는다. 외부 파일 SHA256 검증은 그대로 유지한다.
+
+## V6: 전체 시트 연결 알파 추출 (검투사·야수 공통)
+
+`scripts/spartacus_wolf_import.py`과 `spriteforge_pipeline_v3.py`는
+`scripts/spriteforge_connected_mask_v6.py`로 원본 전체 알파를 검사한다.
+4×2 사각형은 프레임 중심을 찾는 참고 구역일 뿐 최종 커팅선이 아니다.
+꼬리·팔다리·검·방패가 사각 경계를 넘어도 해당 포즈 연결 영역이면
+**원본 픽셀을 보존**하며 공통 여백 캔버스로 다시 배치한다.
+인접 포즈가 붙었거나 떨어진 신체의 소속이 불확실하면 블록한다.
+이때 원본 픽셀을 삭제하거나 기존 게임의 승인된 리소스를 교체하지 않는다.
+
+로컬 워크플로 의존성: `pip install pillow numpy scipy`.
+승인된 8프레임 및 실제 게임 재생 검수 후에만 업로드한다.
