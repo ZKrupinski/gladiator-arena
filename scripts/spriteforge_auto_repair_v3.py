@@ -72,7 +72,7 @@ def _retry_job(original_job,source_sha,report,attempt,output):
         "its supplied reason codes: "+json.dumps(failures,ensure_ascii=False)+
         ". The head, paws, tail or limbs belonging to ANY neighbor frame "
         "are FOREIGN regardless of size. Provide complete frames at any resolution "
-        "with >=20px safety margins. Never paste/clone/crop a wrong limb."
+        "with proportional transparent safety gutters and full-sheet unique connected-alpha owners. Never use rectangular amputations, paste/clone/crop a guessed limb."
     )
     output=Path(output)
     output.parent.mkdir(parents=True,exist_ok=True)
