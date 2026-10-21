@@ -50,7 +50,7 @@ def extract_owned_frames(source, *, alpha_threshold=ALPHA_THRESHOLD):
     alpha = rgba[:, :, 3]
     foreground = alpha >= alpha_threshold
     labels, number = ndimage.label(foreground, structure=EIGHT_NEIGHBORS)
-    if number < 8:
+    if number == 0:
         raise OwnershipError("MISSING_OR_MERGED_FRAME_SILHOUETTE")
     counts = np.bincount(labels.ravel(), minlength=number + 1)
     counts[0] = 0
