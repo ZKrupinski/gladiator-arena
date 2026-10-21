@@ -29,7 +29,7 @@ const WOLF_MANIFEST_PATH='public/'+WOLF_V3_DIR+'manifest.json';
 const WOLF_ACTIONS=Object.freeze([
  'idle','walk','attack1','attack2','attack3','attack4','hit','death','roar'
 ]);
-const wolfV3={state:'unrequested',actions:new Map(),metrics:new Map(),error:null};
+const wolfV3={state:'unrequested',actions:new Map(),metrics:new Map(),normalized:false,error:null};
 // Read visible alpha extents once per atlas, never trim geometry frame by frame.
 // Neighbor-strip pixels thinner than 1.5% of a cell do not define the foot pivot.
 function wolfAtlasMetrics(img){
@@ -79,7 +79,7 @@ function wolfActionFor(f,pose){
 function wolfFrameIndex(f,pose,clock){
  const act=wolfActionFor(f,pose);
  if(act==='idle'||act==='walk'||act==='roar')
-  return Math.floor((Number(clock)||0)*(act==='idle'?6:act==='walk'?11:8))%8;
+  return Math.floor((Number(clock)||0)*(act==='idle'?6:act==='walk'?7:8))%8;
  const duration=Math.max(.12,Number(f.actionDuration)||.5);
  if(act==='death'){
   if(!Number.isFinite(f._beastDeathSince))f._beastDeathSince=Number(clock)||0;
@@ -119,6 +119,7 @@ function loadWolfV3(){
    throw Error('Trial atlas manifest must be marked previewOnly');
   if(!WOLF_TRIAL_ENABLED&&manifest.previewOnly===true)
    throw Error('Preview atlas cannot activate production V3');
+  wolfV3.normalized=manifest.normalizedGeometry===true;
   for(const action of WOLF_ACTIONS){
    const item=manifest.actions[action];
    if(typeof item!=='string'||item!==action+'.webp')
@@ -205,6 +206,18 @@ function drawWolfV3(ctx,args){
  // A fixed cell-origin causes row-two wolf feet to rise by 40-75 source
  // pixels. Align the VISIBLE planted paw instead; use one world ground line
  // for every action, with one UNIFORM scale for width and height.
+ // Verified V3.1 rebuilt sheets have a baked center and single paw
+ // ground-line (x=272,y=470) for all 72 frames. Re-running adaptive
+ // bounding-box scale on those frames reintroduces apparent size popping.
+ if(wolfV3.normalized){
+  const scale=h*.90/315;
+  const center=x+w*.5,ground=y+h;
+  ctx.save();ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
+  if(flip){ctx.translate(2*center,0);ctx.scale(-1,1);}
+  ctx.drawImage(img,(index%4)*cellW,Math.floor(index/4)*cellH,
+    cellW,cellH,center-272*scale,ground-470*scale,cellW*scale,cellH*scale);
+  ctx.restore();return true;
+ }
  const box=wolfV3.metrics.get(action)?.[index];
  const baseScale=h*1.21/cellH;
  // Small source-art silhouette variations may be normalized slightly,
@@ -456,5 +469,5 @@ function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
 }
 root.ArenaBeasts={version:'2.1.0',types:SPEC,rows:ROWS_BY_POSE,
  pick,apply,ensure,frameFor,draw,portrait,wolfActionFor,wolfFrameIndex,installWolfPreviewAtlasPack,
- status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name),individual:[...cache].map(([name,e])=>({name,frames:e.individualReady||0})),wolfV3:{status:wolfV3.state,trial:WOLF_TRIAL_ENABLED,actions:[...wolfV3.actions.keys()],anchoredFrames:[...wolfV3.metrics.values()].reduce((n,frames)=>n+(frames?.filter(Boolean).length||0),0),error:wolfV3.error}})};
+ status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name),individual:[...cache].map(([name,e])=>({name,frames:e.individualReady||0})),wolfV3:{status:wolfV3.state,trial:WOLF_TRIAL_ENABLED,normalized:wolfV3.normalized,actions:[...wolfV3.actions.keys()],anchoredFrames:[...wolfV3.metrics.values()].reduce((n,frames)=>n+(frames?.filter(Boolean).length||0),0),error:wolfV3.error}})};
 })(window);
