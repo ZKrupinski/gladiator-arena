@@ -26,6 +26,7 @@ REPO = "ZKrupinski/gladiator-arena"
 MAIN = "main"
 SITE = "https://gladiator-arena-git.pages.dev"
 RELEASE_PROBE = "public/uploader-release.json"
+DEST_WOLF = "public/assets/beasts/wolf-v3/"
 API_ROOT = "https://api.github.com/repos/" + REPO
 ALLOWED_PREFIXES = (
     "public/assets/", "public/arena-", "public/index.html",
@@ -81,7 +82,7 @@ def check_asset(path: str, data: bytes, *, strict_art: bool = False) -> dict:
         if strict_art and "wolf-v3/" in path and path.endswith(".png"):
             if "sheet" in path and (w < 3072 or h < 1536):
                 raise UploadError("SPRITEFORGE_V3_NATIVE_SHEET_TOO_SMALL: " + path)
-    elif suffix == ".webp" and not data.startswith(b"RIFF"):
+    elif suffix == ".webp" and not (data.startswith(b"RIFF") and data[8:12] == b"WEBP"):
         raise UploadError("NOT_WEBP: " + path)
     elif suffix == ".json":
         try: json.loads(data.decode("utf-8"))
@@ -89,6 +90,39 @@ def check_asset(path: str, data: bytes, *, strict_art: bool = False) -> dict:
     elif suffix in (".js", ".mjs", ".html", ".css", ".py", ".md", ".txt", ".svg"):
         try: data.decode("utf-8")
         except Exception as e: raise UploadError("INVALID_UTF8: " + path) from e
+    # The game consumes 4x2 WebP at public/assets/beasts/wolf-v3/,
+    # so low resolution must be rejected on actual runtime atlas paths,
+    # not merely filenames that happen to contain the word "sheet".
+    if (strict_art and path.startswith("public/assets/beasts/wolf-v3/") and
+        suffix in (".png",".webp")):
+        try:
+            import io
+            from PIL import Image
+            with Image.open(io.BytesIO(data)) as wolf:
+                wolf.load()
+                w,h=wolf.size
+                if w%4 or h%2 or w<3072 or h<1536 or w//4<768 or h//2<768:
+                    raise UploadError("SPRITEFORGE_V3_NATIVE_SHEET_TOO_SMALL: " + path)
+                if wolf.mode!="RGBA":
+                    raise UploadError("SPRITEFORGE_V3_RGBA_REQUIRED: " + path)
+                seen=set()
+                cw,ch=w//4,h//2
+                for i in range(8):
+                    x,y=i%4*cw,i//4*ch
+                    cell=wolf.crop((x,y,x+cw,y+ch))
+                    bounds=cell.getchannel("A").getbbox()
+                    if not bounds:
+                        raise UploadError("SPRITEFORGE_V3_EMPTY_FRAME: "+path+":"+str(i))
+                    if (bounds[0]<12 or bounds[1]<12 or
+                        bounds[2]>cw-12 or bounds[3]>ch-12):
+                        raise UploadError("SPRITEFORGE_V3_FRAME_SEAM_OR_CLIPPING: "+path+":"+str(i))
+                    fingerprint=digest(cell.tobytes())
+                    if fingerprint in seen:
+                        raise UploadError("SPRITEFORGE_V3_DUPLICATE_FRAME: "+path+":"+str(i))
+                    seen.add(fingerprint)
+                info.update({"width":w,"height":h,"frames":8,"nativeValidated":True})
+        except ImportError as e:
+            raise UploadError("PILLOW_REQUIRED_FOR_WOLF_V3_NATIVE_QA") from e
     return info
 
 def verify_local_code(paths: dict[str, bytes]) -> None:
@@ -302,6 +336,20 @@ def publish_files(items: dict[str,bytes], *, confirm: bool, release_id: str | No
     audit={}
     for name,data in items.items():
         audit[name]=check_asset(name,data,strict_art=True)
+    # Never activate an incomplete 9-action wolf pack. Current live loader
+    # uses the manifest only when all 9 atlas images are reachable.
+    wolf_manifest="public/assets/beasts/wolf-v3/manifest.json"
+    if wolf_manifest in items:
+        expected=("idle","walk","attack1","attack2","attack3",
+                  "attack4","hit","death","roar")
+        m=json.loads(items[wolf_manifest].decode("utf8"))
+        if (m.get("version")!=3 or not isinstance(m.get("actions"),dict) or
+            set(m["actions"])!=set(expected)):
+            raise UploadError("WOLF_V3_INCOMPLETE_MANIFEST")
+        for action in expected:
+            atlas=DEST_WOLF+action+".webp"
+            if m["actions"][action] != action+".webp" or atlas not in items:
+                raise UploadError("WOLF_V3_MISSING_REQUIRED_ATLAS: "+action)
     verify_local_code(items)
     git=git or GitHub()
     head=git.main_sha()
