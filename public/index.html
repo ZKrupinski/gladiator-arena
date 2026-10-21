@@ -354,7 +354,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-beasts.js?v=7-cleaned"></script><script src="arena-beast-vfx.js?v=1"></script>
 <script src="beast-stage-previews.js?v=2"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
-<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=2-global-impact"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
+<script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=3-short-hit-glint"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -1591,6 +1591,9 @@ function finishFight(winner,loser){
  if(loser.hp>0||S.phase!=='fight')return false;
  if(S.gauntlet)return resolveLineupBout(!winner.enemy);
  loser.hp=0;loser.dead=true;winner.dead=false;
+ // Hit flashes are ONLY live-combat contact cues. The finishing/death
+ // animation must never inherit a white-glint state or full-screen flash.
+ loser.hitVisual=null;winner.hitVisual=null;S.flash=0;
  S.resultWin=!winner.enemy;S.resultApplied=true;S.resultAnim=0;
  setAction(loser,'defeat',2.2);setAction(winner,'finisher',2.2);
  S.phase='finisher';S.slow=2.05;
@@ -1933,7 +1936,7 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
  // Presentation keeps its real-time timing during the simulated slow-motion.
  S.shake=Math.max(0,S.shake-realDt*(S.focusFrame?.active?94:49));
  window.ArenaMotion?.advanceShake?.(S,realDt);
- S.flash=Math.max(0,S.flash-realDt*.9);S.noticeT=Math.max(0,S.noticeT-realDt);
+ S.flash=Math.max(0,S.flash-realDt*5);S.noticeT=Math.max(0,S.noticeT-realDt);
  S.sparks=S.sparks.filter(v=>(v.t+=realDt)<v.max);S.parryBursts=S.parryBursts.filter(v=>(v.t+=realDt)<v.max);
  // These are cosmetic real-time beats, so hitstop does not freeze the reaction.
  for(const f of [S.player,S.enemy])if(f){
@@ -1948,7 +1951,7 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
  if(S.phase==='finisher'){S.resultAnim+=dt;S.slow-=dt;if(S.slow<=0){S.phase='result';showEnd();}return;}
  const p=S.player,e=S.enemy;S.time-=dt;
  if(S.time<=0&&S.gauntlet){return resolveLineupBout(p.hp/p.maxHp>e.hp/e.maxHp,true);}
- if(S.time<=0){S.resultWin=p.hp>e.hp;S.resultApplied=true;S.resultAnim=0;S.phase='finisher';S.slow=2.05;setAction(S.resultWin?p:e,'finisher',2.2);setAction(S.resultWin?e:p,'defeat',2.2);say(S.resultWin?'VICTORIA!':'DEFEAT',1.8);return;}
+ if(S.time<=0){p.hitVisual=null;e.hitVisual=null;S.flash=0;S.resultWin=p.hp>e.hp;S.resultApplied=true;S.resultAnim=0;S.phase='finisher';S.slow=2.05;setAction(S.resultWin?p:e,'finisher',2.2);setAction(S.resultWin?e:p,'defeat',2.2);say(S.resultWin?'VICTORIA!':'DEFEAT',1.8);return;}
  for(const f of [p,e]){
  f.actionT=Math.max(0,f.actionT-dt);f.attackCD=Math.max(0,f.attackCD-dt);f.cd=Math.max(0,f.cd-dt);
  // Visual action completion must never wait for cosmetic FX or linger
@@ -2384,7 +2387,10 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  const motionExtra=f.motionVariant===ANIMATED_MURMILLO_VARIANT?
   window.MurmilloMotion?.motionAt?.(f,S,clock):null;
  const reduceImpact=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
- const impactVisual=window.ArenaMotion?.visual?.(f,reduceImpact,S.fx)||{scale:1,flash:0};
+ const impactVisual=(S.phase==='fight'&&!f.dead&&f.hp>0&&
+  pose!=='defeat'&&pose!=='death')?
+  (window.ArenaMotion?.visual?.(f,reduceImpact,S.fx)||{scale:1,flash:0}):
+  {scale:1,flash:0};
  f._fxRender={dx:drawX-(f.x-width/2)+(motionExtra?.x||0),
   dy:drawY-(feet-height)+(motionExtra?.y||0),tilt,
   sx:impactVisual.scale,sy:impactVisual.scale,
@@ -2419,7 +2425,7 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  // transparent; all classes and beast atlases use the same render path.
  if(impactVisual.flash>.02){
   ctx.save();
-  ctx.globalAlpha*=Math.min(.92,impactVisual.flash*.9);
+  ctx.globalAlpha*=Math.min(.29,impactVisual.flash);
   ctx.filter='brightness(0) invert(1)';
   renderActor(1);
   ctx.restore();
@@ -2664,7 +2670,7 @@ function render(){
  drawEffects();
  ctx.restore();
  // Damage flashes stay screen-fixed; HUD and on-screen buttons are never zoomed.
- if(S.flash>0){ctx.fillStyle=`rgba(255,235,204,${Math.min(.65,S.flash)})`;ctx.fillRect(-45,-45,W+90,H+90);}
+ if(S.phase==='fight'&&S.flash>0){ctx.fillStyle=`rgba(255,235,204,${Math.min(.075,S.flash*.26)})`;ctx.fillRect(-45,-45,W+90,H+90);}
  drawCinematicFocus();
  ctx.restore();
  if(loaded<7){ctx.fillStyle='#f7d3a0';ctx.font='20px system-ui';ctx.fillText('Loading sprite atlases…',25,680);}
