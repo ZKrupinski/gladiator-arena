@@ -28,8 +28,30 @@ for(const initiallyPaused of [false,true]){
  assert.equal(S.paused,initiallyPaused);
  assert.equal(S.keys.size,0);
 }
-assert.ok(html.includes("beastFx:kind,w:ground?940:bite?790:860"),
-  'beast effects must not regress to undersized, body-hidden 520px canvases');
+assert.ok(html.includes("beastFx:kind,w:ground?1120:bite?790:860"),
+  'heavy pounce artwork must be large enough to extend beyond the beast silhouette');
+assert.ok(html.includes("h:ground?700:bite?630:665,flip:ground?!flip:flip"),
+  'beast heavy pounce must reverse its authored ground trail');
+assert.ok(html.includes("beastFx:'step',w:1120,h:560,flip:!flip"),
+  'pounce must spawn a large backwards trailing ground dust sheet');
+assert.ok(html.includes("beastFx:'step',w:680*size,h:330*size"),
+  'walking dirt cannot regress to tiny foot specks');
+assert.ok(html.includes("flip:beast.face>0,layer:'front'"),
+  'walking dirt must reverse its original direction and be visible in front');
+assert.ok(html.includes("beastFx:'step',w:790,h:430"),
+  'dodge dirt must be enlarged');
+assert.ok(html.includes("flip:f.face>0,alpha:.88"),
+  'dodge dirt should mirror the opposite movement direction');
+assert.ok(html.includes("requestAnimationFrame(loop);\n if(!t0)t0=t;"),
+  'next frame must already be scheduled before optional visual Canvas calls');
+assert.ok(html.includes("console.error('ARENA_RENDER_RECOVERED'"),
+  'render faults must no longer stop combat updates');
+assert.ok(html.includes("f.centerX,f.shade,f.bloom,f.cinemaBars,f.elapsed,f.duration"),
+  'invalid cinematic gradients must be skipped before reaching Canvas');
+assert.ok(html.includes("S.cinematic=null;S.focusFrame=null;"),
+  'manual resume must discard interrupted hitstop');
+assert.ok(html.includes("if(f.beastType&&f.actionT<=0&&f.stagger<=0&&!f.comboDash&&"),
+  'expired beast attack state must recover independently of any VFX');
 assert.ok(html.includes("layer:'front'"),
   'beast attacks require foreground layers');
 const kinds=['claw','sweep','bite','pounce','hit','step','roar','collapse'];
