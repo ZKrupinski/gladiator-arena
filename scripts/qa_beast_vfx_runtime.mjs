@@ -29,8 +29,11 @@ for(const initiallyPaused of [false,true]){
  assert.equal(S.keys.size,0);
 }
 // Anatomical world-space anchors must not regress to oversized actor-centered FX.
-assert.ok(html.includes("const frontX=attacker.x+dir*(ground?120:bite?151:132)"));
-assert.ok(html.includes("const contactY=FLOOR-(ground?135:bite?236:173)"));
+assert.ok(html.includes("const frontX=attacker.x+dir*clamp(foeGap-50,167,270)"));
+assert.ok(html.includes("const contactY=FLOOR-(ground?252:bite?288:276)"));
+assert.ok(html.includes("flightX:dir*(ground?92:65),flightY:ground?-78:-96"));
+assert.ok(html.includes("rotation:dir>0?-.20:.20"));
+assert.ok(html.includes("cx+(v.flightX||0)*rise,cy+(v.flightY||0)*rise"));
 assert.ok(html.includes("beastFx:kind,w:(ground?730:bite?560:650)*size"));
 assert.ok(html.includes("beastFx:'step',w:750*size,h:318*size"));
 assert.ok(html.includes("const gaitFrame=Math.floor(clock*7)%8"));
@@ -40,7 +43,9 @@ assert.ok(html.includes("flip:beast.face>0,layer:'back'"));
 assert.ok(html.includes("beastFx:'step',w:560,h:250"));
 assert.ok(html.includes("flip:f.face>0,alpha:.76"));
 assert.ok(beast.includes("if(wolfV3.normalized){"),'clean sheet must avoid adaptive size hopping');
-assert.ok(beast.includes("ground-470*scale"),'all planted paws share one ground line');
+assert.ok(beast.includes("ground-(470-footAdjust)*scale"),'all planted paws share one ground line');
+assert.ok(beast.includes("walkBox?.walkOffset"),'walk torso drift should be compensated');
+assert.ok(beast.includes("actionMetrics?.[index]?.edgeCut"),'corrupt seams must not draw');
 assert.ok(beast.includes("act==='walk'?7:8"),'walk animation must not plow at 11fps');
 assert.ok(html.includes("requestAnimationFrame(loop);\n if(!t0)t0=t;"),
   'next frame must already be scheduled before optional visual Canvas calls');
@@ -100,10 +105,12 @@ function mock({fail=false,odd=false}={}){
   globalAlpha:1,
   save(){ops.push('save')},restore(){ops.push('restore')},
   translate(x,y){ops.push(['translate',x,y])},
+  rotate(r){ops.push(['rotate',r])},
   scale(x,y){ops.push(['scale',x,y])},
   drawImage(...args){calls.push(args)}
  };
- assert.equal(api.draw(drawCtx,'bite',100,80,450,400,.62,.8,-1),true);
+ assert.equal(api.draw(drawCtx,'bite',100,80,450,400,.62,.8,-1,-.20),true);
+ assert.ok(ops.some(x=>Array.isArray(x)&&x[0]==='rotate'&&x[1]===-.20));
  assert.equal(calls.length,1);
  assert.equal(calls[0].length,9);
  assert.equal(calls[0][1],0); // index 4: first column, second row

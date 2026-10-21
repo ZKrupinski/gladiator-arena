@@ -56,10 +56,27 @@ function wolfAtlasMetrics(img){
    for(let y=0;y<ch;y++)if(rows[y]>=rowFloor)activeRows.push(y);
    for(let x=0;x<cw;x++)if(cols[x]>=colFloor)activeCols.push(x);
    if(!activeRows.length||!activeCols.length){frames.push(null);continue;}
+   const top=activeRows[0],bottom=activeRows[activeRows.length-1]+1;
+   // Use torso opacity, not swinging tail/head, to lock a moving pose.
+   const bandTop=Math.max(0,Math.floor(top+(bottom-top)*.29));
+   const bandEnd=Math.min(ch,Math.ceil(top+(bottom-top)*.69));
+   let weightedX=0,weightedMass=0;
+   for(let y=bandTop;y<bandEnd;y++)for(let x=Math.floor(cw*.08);x<Math.ceil(cw*.92);x++){
+    const a=bytes[((oy+y)*w+ox+x)*4+3];
+    if(a>=96){weightedX+=x*a;weightedMass+=a;}
+   }
+   const torsoX=weightedMass?weightedX/weightedMass:
+    (activeCols[0]+activeCols[activeCols.length-1])*.5;
+   // Reject a solid silhouette sliced by the edge of a V6 atlas cell.
+   const edgeInk=cols[0]+cols[1]+cols[cw-2]+cols[cw-1];
    frames.push({left:activeCols[0],right:activeCols[activeCols.length-1]+1,
-     top:activeRows[0],bottom:activeRows[activeRows.length-1]+1,
-     visibleHeight:activeRows[activeRows.length-1]-activeRows[0]+1});
+     top,bottom,visibleHeight:bottom-top,torsoX,
+     edgeCut:edgeInk>Math.max(12,Math.floor(ch*.065))});
   }
+  const centers=frames.filter(Boolean).map(f=>f.torsoX).sort((a,b)=>a-b);
+  const middle=centers.length?centers[Math.floor(centers.length/2)]:cw*.5;
+  for(const f of frames)if(f)
+   f.walkOffset=Math.max(-cw*.18,Math.min(cw*.18,middle-f.torsoX));
   return frames;
  }catch(_){return null;} // Keep the original atlas fallback if inspection fails.
 }
@@ -202,8 +219,17 @@ function drawWolfV3(ctx,args){
  if(fighter?.beastType!=='wolf'||wolfV3.state!=='ready')return false;
  const action=wolfActionFor(fighter,pose),img=wolfV3.actions.get(action);
  if(!img)return false;
- const index=wolfFrameIndex(fighter,pose,clock);
+ let index=wolfFrameIndex(fighter,pose,clock);
  const cellW=img.naturalWidth/4,cellH=img.naturalHeight/2;
+ const actionMetrics=wolfV3.metrics.get(action);
+ // Never display a walk frame with a substantial neighbor-frame seam.
+ // If all eight are invalid, retain the old known-good walk animation.
+ if(action==='walk'&&actionMetrics?.[index]?.edgeCut){
+  const safe=Array.from({length:8},(_,n)=>(index+n)%8)
+   .find(i=>actionMetrics[i]&&!actionMetrics[i].edgeCut);
+  if(safe===undefined)return false;
+  index=safe;
+ }
  // A fixed cell-origin causes row-two wolf feet to rise by 40-75 source
  // pixels. Align the VISIBLE planted paw instead; use one world ground line
  // for every action, with one UNIFORM scale for width and height.
@@ -211,15 +237,21 @@ function drawWolfV3(ctx,args){
  // ground-line (x=272,y=470) for all 72 frames. Re-running adaptive
  // bounding-box scale on those frames reintroduces apparent size popping.
  if(wolfV3.normalized){
-  const scale=h*.82/315; // common ~9% visual shrink, same for all 9 poses
+  const scale=h*.82/315; // same fixed scale for all nine actions
   const center=x+w*.5,ground=y+h;
+  const walkBox=action==='walk'?actionMetrics?.[index]:null;
+  // Recenter only the WALK torso, align planted paws to the same world floor.
+  // Never rescale each frame; preserve native-resolution pixel detail.
+  const anchorX=272-(walkBox?.walkOffset||0);
+  const footAdjust=walkBox?Math.max(-34,Math.min(34,470-walkBox.bottom)):0;
   ctx.save();ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
   if(flip){ctx.translate(2*center,0);ctx.scale(-1,1);}
   ctx.drawImage(img,(index%4)*cellW,Math.floor(index/4)*cellH,
-    cellW,cellH,center-272*scale,ground-470*scale,cellW*scale,cellH*scale);
+    cellW,cellH,center-anchorX*scale,ground-(470-footAdjust)*scale,
+    cellW*scale,cellH*scale);
   ctx.restore();return true;
  }
- const box=wolfV3.metrics.get(action)?.[index];
+ const box=actionMetrics?.[index];
  const baseScale=h*1.21/cellH;
  // Small source-art silhouette variations may be normalized slightly,
  // but the pounce, roar and death must keep their authentic changing pose.

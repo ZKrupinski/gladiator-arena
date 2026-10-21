@@ -52,13 +52,14 @@
  function frameFor(kind,progress){
   return TYPES.includes(kind)?Math.min(7,Math.floor(clamp(progress,0,.999999)*8)):-1;
  }
- function draw(ctx,kind,x,y,w,h,progress=0,alpha=1,face=1){
+ function draw(ctx,kind,x,y,w,h,progress=0,alpha=1,face=1,rotation=0){
   if(!ctx||state.status!=='ready'||!cache.has(kind))return false;
   const img=cache.get(kind),cellW=img.naturalWidth/4,cellH=img.naturalHeight/2;
   const frame=frameFor(kind,progress);
   if(frame<0)return false;
   ctx.save();
   ctx.translate(x,y);
+  ctx.rotate(Number.isFinite(rotation)?rotation:0);
   if(face<0)ctx.scale(-1,1);
   ctx.globalAlpha*=clamp(alpha);
   ctx.drawImage(img,frame%4*cellW,Math.floor(frame/4)*cellH,

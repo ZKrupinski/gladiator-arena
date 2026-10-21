@@ -1483,7 +1483,8 @@ function triggerCinematic(kind,contactX,dir=1){
 function addFx(frame,x,y,opt={}){
  if(!S.fx)return;
  const delay=Math.max(0,opt.delay??0);
- const fx={frame,x,y,owner:opt.owner||null,offsetX:opt.offsetX??0,offsetY:opt.offsetY??0,atlas:opt.atlas||'fx',art:opt.art||null,w:opt.w??220,h:opt.h??220,flip:!!opt.flip,alpha:opt.alpha??1,rotation:opt.rotation??0,t:0,delay,max:(opt.duration??.12)+delay,sequence:opt.sequence||null,beastFx:opt.beastFx||null,track:opt.track||null,layer:opt.layer||'front'};
+ const fx={frame,x,y,owner:opt.owner||null,offsetX:opt.offsetX??0,offsetY:opt.offsetY??0,atlas:opt.atlas||'fx',art:opt.art||null,w:opt.w??220,h:opt.h??220,flip:!!opt.flip,alpha:opt.alpha??1,rotation:opt.rotation??0,t:0,delay,max:(opt.duration??.12)+delay,sequence:opt.sequence||null,beastFx:opt.beastFx||null,track:opt.track||null,layer:opt.layer||'front',
+  flightX:opt.flightX??0,flightY:opt.flightY??0};
  S.sparks.push(fx);
 }
 function weaponPoint(f,kind='attack'){
@@ -1515,17 +1516,19 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
   if(ko)return; // Outcome handled by a separate grounded collapse at KO.
   const kind=dash||special?'pounce':guarded?'hit':
    ['claw','sweep','bite'][Math.max(0,Math.min(2,Number(variant)||0))];
-  // Attach VFX to anatomical contacts rather than a giant canvas
-  // centered over the beast. Separate mouth, claws and ground contact.
+  // Spawn in front of the beast and spray towards the enemy's upper body.
   const ground=kind==='pounce',bite=kind==='bite';
-  const frontX=attacker.x+dir*(ground?120:bite?151:132);
-  const contactY=FLOOR-(ground?135:bite?236:173);
+  const foeGap=Math.abs((Number.isFinite(victim?.x)?victim.x:
+    attacker.x+dir*265)-attacker.x);
+  const frontX=attacker.x+dir*clamp(foeGap-50,167,270);
+  const contactY=FLOOR-(ground?252:bite?288:276);
   const size=attacker.beastType==='elephant'?1.35:1;
   addFx(3,frontX,contactY,{
    beastFx:kind,w:(ground?730:bite?560:650)*size,
    h:(ground?490:bite?430:470)*size,
-   // Original illustrated attack sheets face toward screen-left.
-   flip:dir>0,layer:'front',
+   // Original painted VFX face left; mirror right and tilt UP into opponent.
+   flip:dir>0,layer:'front',rotation:dir>0?-.20:.20,
+   flightX:dir*(ground?92:65),flightY:ground?-78:-96,
    duration:ground?.33:.26,alpha:1,delay:ground?.10:.065
   });
   if(ground){
@@ -2558,8 +2561,10 @@ function drawEffects(backOnly=false){
   const progress=time.progress;
   const fade=clamp(Math.min(progress*8+.18,(1-progress)*3),0,1);
    if(v.beastFx){
-    if(S.fx)window.ArenaBeastFX?.draw?.(ctx,v.beastFx,cx,cy,
-      v.w,v.h,progress,v.alpha*fade,v.flip?-1:1);
+    const rise=clamp(progress*1.12,0,1);
+    if(S.fx)window.ArenaBeastFX?.draw?.(ctx,v.beastFx,
+      cx+(v.flightX||0)*rise,cy+(v.flightY||0)*rise,
+      v.w,v.h,progress,v.alpha*fade,v.flip?-1:1,v.rotation||0);
     continue;
    }
   const scale=.9+.13*progress;
