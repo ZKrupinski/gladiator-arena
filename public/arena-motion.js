@@ -37,7 +37,8 @@ const IMPACTS=Object.freeze({
 const sin=Math.sin,cos=Math.cos,PI=Math.PI;
 // Global gladiator+beast hit cue. Never modifies hitboxes or source art.
 function impact(f,kind='strike'){
- if(!f)return;
+ // Never illuminate a corpse; death/defeat sprites must preserve source art.
+ if(!f||f.dead||f.hp<=0||f.action==='defeat'||f.action==='death')return;
  const preset=IMPACTS[kind]||IMPACTS.strike;
  if(f.hitVisual && (IMPACTS[f.hitVisual.kind]?.grow||0)>preset.grow&&
     f.hitVisual.t<preset.duration*.32)return;
@@ -51,16 +52,22 @@ function advanceImpact(f,dt){
 }
 function visual(f,reduced=false,fx=true){
  const neutral={scale:1,flash:0};
- if(!f?.hitVisual||reduced||!fx)return neutral;
+ if(!f?.hitVisual||f.dead||f.hp<=0||
+    f.action==='defeat'||f.action==='death'||reduced||!fx)return neutral;
  const state=f.hitVisual,p=IMPACTS[state.kind]||IMPACTS.strike;
  const phase=clamp(state.t/state.duration);
  let scale;
  if(phase<.20)scale=1+(p.shrink-1)*phase/.20;
  else if(phase<.49)scale=p.shrink+(p.grow-p.shrink)*(phase-.20)/.29;
  else scale=1+(p.grow-1)*Math.pow((1-phase)/.51,2);
- const flash=phase<.22?p.flash*(1-phase*.42/.22):
-   p.flash*.58*Math.pow((1-phase)/.78,2);
- return {scale:clamp(scale,.94,1.13),flash:clamp(flash)};
+ // Two ultra-short translucent glints (0–32 ms, 47–91 ms).
+ // The source illustration remains 70%+ visible. Longer body recoil is
+ // independent of the flash envelope, even during dramatic slow motion.
+ const t=state.t;
+ const first=t<.032?Math.max(0,1-t/.032):0;
+ const second=t>=.047&&t<.091?Math.max(0,1-Math.abs(t-.067)/.024):0;
+ const flash=p.flash*.29*Math.max(first,.72*second);
+ return {scale:clamp(scale,.94,1.13),flash:clamp(flash,0,.29)};
 }
 function pulse(f,type,role,dir=1){
  if(!f||f.dead)return;
@@ -190,6 +197,6 @@ function contactPulse(a,b,minGap=MIN_GAP){
  pulse(b,'contact','target',dir);
  return true;
 }
-root.ArenaMotion={version:'1.1.0',PRESETS,RESPONSE,IMPACTS,pose,pulse,impact,visual,advance,shake,advanceShake,sampleShake,contactPulse};
+root.ArenaMotion={version:'1.2.0',PRESETS,RESPONSE,IMPACTS,pose,pulse,impact,visual,advance,shake,advanceShake,sampleShake,contactPulse};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaMotion;
 })(globalThis);
