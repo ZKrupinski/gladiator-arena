@@ -17,7 +17,7 @@ assert.equal(api.wolfActionFor(actor,'defeat'),'death');
 assert.equal(api.wolfActionFor(actor,'walk'),'walk');
 delete actor._beastDeathSince;
 assert.equal(api.wolfFrameIndex(actor,'defeat',40),0);
-assert.equal(api.wolfFrameIndex(actor,'defeat',40.60),4);
+assert.equal(api.wolfFrameIndex(actor,'defeat',40.35),4); // 0.35/0.68 * 8 = 4
 assert.equal(api.wolfFrameIndex(actor,'defeat',42),7);
 // If new art is absent, the existing working 40-frame fallback stays intact.
 assert.equal(api.status().wolfV3.status,'unrequested');
