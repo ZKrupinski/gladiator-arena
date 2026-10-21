@@ -1,0 +1,798 @@
+{
+  "protocol": "spriteforge-v3-owner-aware-fx",
+  "families": {
+    "claw": {
+      "sha256": "ed27120e9f4546b857e3e9af7428afe951841ffb2eb25918b8ba1b7a341d5ca6",
+      "bytes": 483536,
+      "sourceSeamCrossingComponents": [],
+      "outputFrameEdgeWarnings": [],
+      "frames": [
+        {
+          "frame": 1,
+          "nonzero": 10269,
+          "bbox": [
+            129,
+            210,
+            334,
+            351
+          ]
+        },
+        {
+          "frame": 2,
+          "nonzero": 22985,
+          "bbox": [
+            80,
+            111,
+            350,
+            365
+          ]
+        },
+        {
+          "frame": 3,
+          "nonzero": 45608,
+          "bbox": [
+            66,
+            77,
+            395,
+            381
+          ]
+        },
+        {
+          "frame": 4,
+          "nonzero": 28958,
+          "bbox": [
+            68,
+            112,
+            372,
+            372
+          ]
+        },
+        {
+          "frame": 5,
+          "nonzero": 25178,
+          "bbox": [
+            80,
+            104,
+            385,
+            367
+          ]
+        },
+        {
+          "frame": 6,
+          "nonzero": 20646,
+          "bbox": [
+            66,
+            115,
+            396,
+            361
+          ]
+        },
+        {
+          "frame": 7,
+          "nonzero": 18800,
+          "bbox": [
+            68,
+            120,
+            385,
+            361
+          ]
+        },
+        {
+          "frame": 8,
+          "nonzero": 4335,
+          "bbox": [
+            58,
+            133,
+            372,
+            355
+          ]
+        }
+      ]
+    },
+    "bite": {
+      "sha256": "81c79c021eea42f755514a860d0c1c62e1a2e7a77a1ef7bde7865b301f0fc254",
+      "bytes": 464482,
+      "sourceSeamCrossingComponents": [],
+      "outputFrameEdgeWarnings": [],
+      "frames": [
+        {
+          "frame": 1,
+          "nonzero": 9685,
+          "bbox": [
+            156,
+            188,
+            338,
+            332
+          ]
+        },
+        {
+          "frame": 2,
+          "nonzero": 23085,
+          "bbox": [
+            84,
+            132,
+            341,
+            347
+          ]
+        },
+        {
+          "frame": 3,
+          "nonzero": 43814,
+          "bbox": [
+            70,
+            101,
+            374,
+            372
+          ]
+        },
+        {
+          "frame": 4,
+          "nonzero": 26827,
+          "bbox": [
+            83,
+            132,
+            354,
+            352
+          ]
+        },
+        {
+          "frame": 5,
+          "nonzero": 22978,
+          "bbox": [
+            84,
+            89,
+            378,
+            321
+          ]
+        },
+        {
+          "frame": 6,
+          "nonzero": 22333,
+          "bbox": [
+            75,
+            106,
+            374,
+            325
+          ]
+        },
+        {
+          "frame": 7,
+          "nonzero": 18578,
+          "bbox": [
+            61,
+            96,
+            370,
+            335
+          ]
+        },
+        {
+          "frame": 8,
+          "nonzero": 8988,
+          "bbox": [
+            91,
+            141,
+            352,
+            320
+          ]
+        }
+      ]
+    },
+    "sweep": {
+      "sha256": "b91e68fb4d24541e245168ede5429640863b32de96a6cbabff86de72fddc9a8f",
+      "bytes": 626354,
+      "sourceSeamCrossingComponents": [
+        {
+          "area": 694,
+          "owner": 6,
+          "spread": [
+            [
+              6,
+              527
+            ],
+            [
+              7,
+              167
+            ]
+          ]
+        },
+        {
+          "area": 365,
+          "owner": 6,
+          "spread": [
+            [
+              6,
+              189
+            ],
+            [
+              7,
+              176
+            ]
+          ]
+        },
+        {
+          "area": 870,
+          "owner": 6,
+          "spread": [
+            [
+              5,
+              135
+            ],
+            [
+              6,
+              735
+            ]
+          ]
+        }
+      ],
+      "outputFrameEdgeWarnings": [],
+      "frames": [
+        {
+          "frame": 1,
+          "nonzero": 14247,
+          "bbox": [
+            90,
+            244,
+            353,
+            386
+          ]
+        },
+        {
+          "frame": 2,
+          "nonzero": 30295,
+          "bbox": [
+            59,
+            163,
+            376,
+            383
+          ]
+        },
+        {
+          "frame": 3,
+          "nonzero": 55383,
+          "bbox": [
+            49,
+            102,
+            406,
+            397
+          ]
+        },
+        {
+          "frame": 4,
+          "nonzero": 34874,
+          "bbox": [
+            62,
+            125,
+            375,
+            396
+          ]
+        },
+        {
+          "frame": 5,
+          "nonzero": 29324,
+          "bbox": [
+            83,
+            107,
+            413,
+            347
+          ]
+        },
+        {
+          "frame": 6,
+          "nonzero": 30389,
+          "bbox": [
+            67,
+            112,
+            404,
+            353
+          ]
+        },
+        {
+          "frame": 7,
+          "nonzero": 24429,
+          "bbox": [
+            51,
+            59,
+            410,
+            348
+          ]
+        },
+        {
+          "frame": 8,
+          "nonzero": 14077,
+          "bbox": [
+            62,
+            56,
+            375,
+            344
+          ]
+        }
+      ]
+    },
+    "pounce": {
+      "sha256": "b1ee74a75d314cc393e18feeb2644e9cd4dc71a8dc47407b778fa9caf5e99f17",
+      "bytes": 628278,
+      "sourceSeamCrossingComponents": [
+        {
+          "area": 227,
+          "owner": 5,
+          "spread": [
+            [
+              5,
+              177
+            ]
+          ]
+        }
+      ],
+      "outputFrameEdgeWarnings": [],
+      "frames": [
+        {
+          "frame": 1,
+          "nonzero": 10049,
+          "bbox": [
+            107,
+            259,
+            346,
+            388
+          ]
+        },
+        {
+          "frame": 2,
+          "nonzero": 25418,
+          "bbox": [
+            64,
+            157,
+            363,
+            390
+          ]
+        },
+        {
+          "frame": 3,
+          "nonzero": 40582,
+          "bbox": [
+            60,
+            124,
+            364,
+            396
+          ]
+        },
+        {
+          "frame": 4,
+          "nonzero": 54402,
+          "bbox": [
+            56,
+            104,
+            380,
+            402
+          ]
+        },
+        {
+          "frame": 5,
+          "nonzero": 37214,
+          "bbox": [
+            75,
+            121,
+            391,
+            353
+          ]
+        },
+        {
+          "frame": 6,
+          "nonzero": 33416,
+          "bbox": [
+            61,
+            132,
+            396,
+            352
+          ]
+        },
+        {
+          "frame": 7,
+          "nonzero": 23957,
+          "bbox": [
+            65,
+            62,
+            385,
+            347
+          ]
+        },
+        {
+          "frame": 8,
+          "nonzero": 12487,
+          "bbox": [
+            83,
+            68,
+            356,
+            344
+          ]
+        }
+      ]
+    },
+    "hit": {
+      "sha256": "73e07c930308f60d85af450534eb8ad1f96342808215b248903092e83c9af8d7",
+      "bytes": 510600,
+      "sourceSeamCrossingComponents": [
+        {
+          "area": 446,
+          "owner": 5,
+          "spread": [
+            [
+              5,
+              365
+            ]
+          ]
+        },
+        {
+          "area": 480,
+          "owner": 5,
+          "spread": [
+            [
+              4,
+              141
+            ],
+            [
+              5,
+              339
+            ]
+          ]
+        }
+      ],
+      "outputFrameEdgeWarnings": [],
+      "frames": [
+        {
+          "frame": 1,
+          "nonzero": 17878,
+          "bbox": [
+            91,
+            155,
+            369,
+            379
+          ]
+        },
+        {
+          "frame": 2,
+          "nonzero": 35173,
+          "bbox": [
+            72,
+            120,
+            362,
+            380
+          ]
+        },
+        {
+          "frame": 3,
+          "nonzero": 48495,
+          "bbox": [
+            67,
+            110,
+            379,
+            383
+          ]
+        },
+        {
+          "frame": 4,
+          "nonzero": 28141,
+          "bbox": [
+            67,
+            152,
+            359,
+            381
+          ]
+        },
+        {
+          "frame": 5,
+          "nonzero": 27601,
+          "bbox": [
+            102,
+            102,
+            379,
+            347
+          ]
+        },
+        {
+          "frame": 6,
+          "nonzero": 18262,
+          "bbox": [
+            51,
+            126,
+            388,
+            343
+          ]
+        },
+        {
+          "frame": 7,
+          "nonzero": 13734,
+          "bbox": [
+            137,
+            137,
+            380,
+            345
+          ]
+        },
+        {
+          "frame": 8,
+          "nonzero": 5906,
+          "bbox": [
+            148,
+            167,
+            349,
+            339
+          ]
+        }
+      ]
+    },
+    "step": {
+      "sha256": "457d27d257247145ef91b5587d0baea6c156da9acc5c13e9749c60c9f3df46b1",
+      "bytes": 504396,
+      "sourceSeamCrossingComponents": [],
+      "outputFrameEdgeWarnings": [],
+      "frames": [
+        {
+          "frame": 1,
+          "nonzero": 6162,
+          "bbox": [
+            118,
+            258,
+            308,
+            362
+          ]
+        },
+        {
+          "frame": 2,
+          "nonzero": 16831,
+          "bbox": [
+            67,
+            180,
+            356,
+            364
+          ]
+        },
+        {
+          "frame": 3,
+          "nonzero": 36851,
+          "bbox": [
+            53,
+            107,
+            386,
+            377
+          ]
+        },
+        {
+          "frame": 4,
+          "nonzero": 34493,
+          "bbox": [
+            53,
+            115,
+            369,
+            378
+          ]
+        },
+        {
+          "frame": 5,
+          "nonzero": 31353,
+          "bbox": [
+            77,
+            98,
+            403,
+            345
+          ]
+        },
+        {
+          "frame": 6,
+          "nonzero": 31301,
+          "bbox": [
+            59,
+            112,
+            404,
+            344
+          ]
+        },
+        {
+          "frame": 7,
+          "nonzero": 25191,
+          "bbox": [
+            58,
+            126,
+            415,
+            345
+          ]
+        },
+        {
+          "frame": 8,
+          "nonzero": 9422,
+          "bbox": [
+            59,
+            167,
+            356,
+            345
+          ]
+        }
+      ]
+    },
+    "roar": {
+      "sha256": "a95d014aaf8ae39e24dee7b73b9f740172f5b3896521513baed299ea27c2fa96",
+      "bytes": 711896,
+      "sourceSeamCrossingComponents": [],
+      "outputFrameEdgeWarnings": [],
+      "frames": [
+        {
+          "frame": 1,
+          "nonzero": 12760,
+          "bbox": [
+            101,
+            235,
+            320,
+            376
+          ]
+        },
+        {
+          "frame": 2,
+          "nonzero": 32702,
+          "bbox": [
+            56,
+            145,
+            365,
+            380
+          ]
+        },
+        {
+          "frame": 3,
+          "nonzero": 57907,
+          "bbox": [
+            41,
+            99,
+            422,
+            388
+          ]
+        },
+        {
+          "frame": 4,
+          "nonzero": 43223,
+          "bbox": [
+            59,
+            119,
+            375,
+            394
+          ]
+        },
+        {
+          "frame": 5,
+          "nonzero": 39052,
+          "bbox": [
+            88,
+            89,
+            417,
+            345
+          ]
+        },
+        {
+          "frame": 6,
+          "nonzero": 37893,
+          "bbox": [
+            51,
+            89,
+            399,
+            345
+          ]
+        },
+        {
+          "frame": 7,
+          "nonzero": 32250,
+          "bbox": [
+            61,
+            102,
+            407,
+            345
+          ]
+        },
+        {
+          "frame": 8,
+          "nonzero": 14258,
+          "bbox": [
+            59,
+            64,
+            364,
+            344
+          ]
+        }
+      ]
+    },
+    "collapse": {
+      "sha256": "879c8913d3c72daec82345fbc0abc19b6d2432724877d001cf02b0a9ae0647f6",
+      "bytes": 627554,
+      "sourceSeamCrossingComponents": [],
+      "outputFrameEdgeWarnings": [],
+      "frames": [
+        {
+          "frame": 1,
+          "nonzero": 14806,
+          "bbox": [
+            74,
+            218,
+            362,
+            391
+          ]
+        },
+        {
+          "frame": 2,
+          "nonzero": 38503,
+          "bbox": [
+            65,
+            135,
+            384,
+            396
+          ]
+        },
+        {
+          "frame": 3,
+          "nonzero": 53599,
+          "bbox": [
+            58,
+            102,
+            386,
+            401
+          ]
+        },
+        {
+          "frame": 4,
+          "nonzero": 45828,
+          "bbox": [
+            60,
+            123,
+            374,
+            399
+          ]
+        },
+        {
+          "frame": 5,
+          "nonzero": 38328,
+          "bbox": [
+            73,
+            120,
+            394,
+            346
+          ]
+        },
+        {
+          "frame": 6,
+          "nonzero": 33892,
+          "bbox": [
+            61,
+            59,
+            390,
+            347
+          ]
+        },
+        {
+          "frame": 7,
+          "nonzero": 24527,
+          "bbox": [
+            59,
+            66,
+            379,
+            350
+          ]
+        },
+        {
+          "frame": 8,
+          "nonzero": 11200,
+          "bbox": [
+            70,
+            65,
+            363,
+            351
+          ]
+        }
+      ]
+    }
+  },
+  "sourceReferenceResolution": [
+    1774,
+    887
+  ],
+  "cropStrategy": "connected-component-owner-preserved-constant-pivot",
+  "outputCell": [
+    444,
+    444
+  ],
+  "releaseAuthorized": false
+}

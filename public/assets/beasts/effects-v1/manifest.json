@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "previewOnly": true,
+  "grid": [
+    4,
+    2
+  ],
+  "frames": 8,
+  "sourceArt": "user approved shared beast painted VFX; ownership-repaired",
+  "families": {
+    "claw": "claw.webp",
+    "bite": "bite.webp",
+    "sweep": "sweep.webp",
+    "pounce": "pounce.webp",
+    "hit": "hit.webp",
+    "step": "step.webp",
+    "roar": "roar.webp",
+    "collapse": "collapse.webp"
+  },
+  "mapping": {
+    "attack1": "claw",
+    "attack2": "sweep",
+    "attack3": "bite",
+    "attack4": "pounce",
+    "special": "pounce",
+    "walk": "step",
+    "hit": "hit",
+    "defeat": "collapse",
+    "roar": "roar"
+  }
+}
