@@ -23,6 +23,7 @@ try{
     f.guardHold=0;f.guardRecovery=0;f.pressureT=0;
     f.knockVX=0;f.knockT=0;f.st=100;
     f.chainHits=0;f.comboDash=null;f.bodySpring=null;f.contactCooldown=0;
+    f.hitVisual=null; // isolate this new combat beat from the prior stronger cue
    }
    if(kind==='parry'){
     s.player.guard=true;s.player.parry=.28;
