@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
-<script src="arena-beasts.js?v=5"></script><script src="arena-beast-vfx.js?v=1"></script>
+<script src="arena-beasts.js?v=6-ground"></script><script src="arena-beast-vfx.js?v=1"></script>
 <script src="beast-stage-previews.js?v=2"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
 <script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
@@ -1515,14 +1515,18 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
   if(ko)return; // Outcome handled by a separate grounded collapse at KO.
   const kind=dash||special?'pounce':guarded?'hit':
    ['claw','sweep','bite'][Math.max(0,Math.min(2,Number(variant)||0))];
-  const ground=kind==='pounce',offsetX=dir*(ground?134:kind==='bite'?115:96);
-  const offsetY=ground?82:kind==='bite'?-12:-8;
+  // Source FX art has a generous transparent gutter: the visible artwork
+  // occupies only part of its requested canvas size. Place the IMPACT at the
+  // forward paw/muzzle, beyond the beast silhouette rather than under its back.
+  const ground=kind==='pounce',bite=kind==='bite';
+  const offsetX=dir*(ground?225:bite?205:192);
+  const offsetY=ground?106:bite?-22:-24;
   addFx(3,attacker.x+offsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+offsetY,{
-   beastFx:kind,w:ground?650:kind==='bite'?460:520,
-   h:ground?380:kind==='bite'?380:450,flip,
-   owner:attacker,offsetX,offsetY,track:'body',
+   beastFx:kind,w:ground?940:bite?790:860,
+   h:ground?590:bite?630:665,flip,
+   owner:attacker,offsetX,offsetY,track:'body',layer:'front',
    duration:window.ArenaBeastFX?.durations?.[kind]||.3,
-   alpha:.93,delay:.035
+   alpha:1,delay:0
   });
   return;
  }
@@ -1768,7 +1772,7 @@ function attack(f,victim,special=false,dashImpact=false){
  if(victim.beastType&&!victim.dead){
   window.ArenaBeastFX?.ensure?.();
   addFx(2,victim.x-victim.face*30,FLOOR-155,{
-   beastFx:'hit',w:360,h:310,owner:victim,track:'body',
+   beastFx:'hit',w:610,h:500,owner:victim,track:'body',
    offsetX:-victim.face*30,offsetY:12,
    flip:attacker.face<0,alpha:.82,duration:.25
   });
@@ -2022,9 +2026,9 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
      beast._beastRoarFxUntil!==beast._beastRoarUntil){
    beast._beastRoarFxUntil=beast._beastRoarUntil;
    window.ArenaBeastFX?.ensure?.();
-   addFx(0,beast.x+beast.face*110,FLOOR-180,{
-    beastFx:'roar',w:630,h:450,duration:.68,
-    flip:beast.face<0,alpha:.86});
+   addFx(0,beast.x+beast.face*225,FLOOR-195,{
+    beastFx:'roar',w:920,h:670,duration:.68,
+    flip:beast.face<0,alpha:.95,layer:'front'});
   }
  }
  for(const f of [p,e])if(f.knockT>0){
@@ -2676,7 +2680,16 @@ window.addEventListener('keydown',e=>{if(S.phase!=='fight'||e.defaultPrevented||
   }else if(!e.repeat)inputAct(k);}if(e.code==='KeyP'&&!e.repeat)togglePause();});
 window.addEventListener('keyup',e=>{const k=keymap[e.code];if(k)S.keys.delete(k);});window.addEventListener('blur',suspendBattle);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendBattle();});
-function suspendBattle(){S.keys.clear();if(S.phase==='fight'&&!S.paused)togglePause();}
+// Browser focus loss is not player intent to pause. Screenshot tools,
+// opening another window and transient mobile UI focus can fire "blur".
+// Release held keys safely, but leave explicit pause/overlay state untouched.
+function suspendBattle(){
+ S.keys.clear();
+ if(S.phase==='fight'&&!S.paused){
+  S.autoPlaying=false;
+  S.lastManualInput=clock;
+ }
+}
 for(const b of document.querySelectorAll('[data-key]')){const k=b.dataset.key,hold=['left','right','guard'].includes(k);b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);markManualInput();if(hold){
    S.keys.add(k);
    if(k==='guard'&&S.phase==='fight'&&!S.paused)beginGuard(S.player,.3);
