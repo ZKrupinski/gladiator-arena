@@ -81,6 +81,22 @@ class TestTopologyExtraction(unittest.TestCase):
         with self.assertRaisesRegex(OwnershipError,"DETACHED_OR_FOREIGN_PART|MULTIPLE_BODY_COMPONENTS"):
             extract_owned_frames(img)
 
+    def test_faint_silhouette_pixels_stay_or_fail_never_disappear(self):
+        img=atlas()
+        # Same wolf's antialias fringe (2 pixels away) must survive.
+        px=img.load()
+        px[23,CH//2]=(11,24,35,8)
+        px[24,CH//2]=(11,24,35,24)
+        frames,_=extract_owned_frames(img)
+        self.assertGreater(int(np.asarray(frames[0].getchannel("A")).sum()),0)
+        before=int(np.asarray(img.getchannel("A")).sum())
+        after=sum(int(np.asarray(f.getchannel("A")).sum()) for f in frames)
+        self.assertEqual(before,after,"no low-alpha source pixels silently deleted")
+        # A detached almost transparent *foreign* fragment still blocks.
+        px[CW-2,2]=(255,0,0,3)
+        with self.assertRaisesRegex(OwnershipError,"UNOWNED_LOW_ALPHA_FRAGMENT"):
+            extract_owned_frames(img)
+
     def test_tiny_character_is_accepted(self):
         img=Image.new("RGBA",(64,32))
         d=ImageDraw.Draw(img)
