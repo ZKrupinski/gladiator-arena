@@ -1,0 +1,19 @@
+name: Gladiator cinematic walk-on and victory pose regression
+on:
+  push:
+    paths:
+      - public/index.html
+      - public/arena-entrance.js
+      - scripts/qa_arena_entrance.mjs
+      - .github/workflows/qa-arena-entrance.yml
+  workflow_dispatch:
+jobs:
+  entrance-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify live arena entrance, triumph pose and lineup reinforcements
+        run: node scripts/qa_arena_entrance.mjs

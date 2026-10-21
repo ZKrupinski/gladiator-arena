@@ -354,7 +354,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-beasts.js?v=11-wolf-load-guard"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
 <script src="beast-stage-previews.js?v=2"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
-<script src="arena-carnifex.js?v=7-complete-exit"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=3-short-hit-glint"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
+<script src="arena-carnifex.js?v=7-complete-exit"></script><script src="arena-entrance.js?v=1-inrush"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=3-short-hit-glint"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -606,13 +606,18 @@ const IMG={};let loaded=0;for(const key of ['bg','murmillo','thraex','retiarius'
   };im.onerror=()=>{if(key!=='bg'&&!im._fallback){im._fallback=true;im.src=String(ASSET[key]).replace('.png','.webp');return;}loaded++;console.error('asset failed',key,im.src);const st=$('#resourceStatus');if(st)st.textContent='일부 그래픽 파일을 읽지 못했습니다: '+key;};im.src=ASSET[key]||('assets/'+(key==='bg'?'arena.webp':key+'_atlas.png'));IMG[key]=im;
 }
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),rand=(a,b)=>a+Math.random()*(b-a);
-let S={phase:'title',time:90,round:1,player:null,enemy:null,keys:new Set(),events:[],sparks:[],parryBursts:[],notice:'',noticeT:0,shake:0,cameraKick:null,flash:0,fx:true,paused:false,slow:0,cinematic:null,focusFrame:null,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
+let S={phase:'title',time:90,round:1,player:null,enemy:null,entrance:null,keys:new Set(),events:[],sparks:[],parryBursts:[],notice:'',noticeT:0,shake:0,cameraKick:null,flash:0,fx:true,paused:false,slow:0,cinematic:null,focusFrame:null,score:0,combo:0,totalScore:0,lastResultWin:false,resultWin:false,resultAnim:0,resultApplied:false,autoplayEnabled:true,autoPlaying:false,lastManualInput:0};
 let t0=0,clock=0,ctxAudio=null,sounds=true;
 const CAMERA={x:W*.5,y:H*.5,zoom:1,initialized:false};
 // Follow both fighters with spring-like smoothing; the arena art uses slower parallax.
 function updateCamera(dt){
  const p=S.player,e=S.enemy;
  if(!p||!e)return;
+ // Frame BOTH visible arena edges throughout the gladiator walk-on.
+ if(S.phase==='entrance'){
+  CAMERA.x=W*.5;CAMERA.zoom=1;CAMERA.y=H*.5;
+  CAMERA.initialized=true;return;
+ }
  // Removed fighters must not pull the finish camera back toward a corpse
  // that has already been carried out of the arena.
  const visible=[p,e].filter(f=>!f.removedFromArena);
@@ -851,7 +856,7 @@ function enterCareer(){
  $('#careerHub').hidden=false;renderCareer();window.LudusScene?.open();
 }
 function returnToCareer(){
- S.careerMatch=false;S.gauntlet=null;S.cleanup=null;updateLineupHud();CAREER_SELECTING=false;MINI=null;$('#careerMini').hidden=true;
+ S.careerMatch=false;S.gauntlet=null;S.cleanup=null;S.entrance=null;updateLineupHud();CAREER_SELECTING=false;MINI=null;$('#careerMini').hidden=true;
  returnToLudus();enterCareer();
 }
 function finishCareerMatch(){
@@ -1098,6 +1103,18 @@ $('#careerCancel').onclick=closeTraining;
 window.addEventListener('keydown',e=>{if(MINI&&!MINI.finished&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
 function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
+// Non-combat phase: walk from the gate, hold an original victory keypose,
+// then charge. Health, stamina, cooldowns and clock remain frozen.
+function beginArenaEntrance(entrants){
+ const seq=window.ArenaEntrance?.begin?.(entrants,W);
+ if(!seq)return false;
+ S.entrance=seq;S.phase='entrance';S.keys.clear();
+ S.autoPlaying=false;S.lastManualInput=clock;
+ S.cinematic=null;S.focusFrame=null;S.shake=0;
+ CAMERA.x=W*.5;CAMERA.zoom=1;CAMERA.y=H*.5;CAMERA.initialized=true;
+ S.notice='AD ARENAM · GLADIATORES';S.noticeT=seq.total;
+ return true;
+}
 // Arena-only animal challenges. They are combatants, not purchasable or
 // recruitable Gladiators; boss encounters keep their original champion art.
 /* VENATIO · 독립 동물전. 기존 루두스 시합/순차 대진 데이터는 수정하지 않는다. */
@@ -1177,7 +1194,7 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
  const careerMatch=mode==='career'||!!beastMatch;
  if(!beastMatch)BEAST_RUN=null;
  S.beastHunt=!!beastMatch;
- S.gauntlet=null;S.cleanup=null;updateLineupHud();
+ S.gauntlet=null;S.cleanup=null;S.entrance=null;updateLineupHud();
  if(careerMatch&&requestedRosterIndex!==null){
   const i=Number(requestedRosterIndex),candidate=CAREER.roster[i];
   if(!Number.isInteger(i)||!candidate||!careerEligible(candidate)){
@@ -1249,6 +1266,8 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
   S.notice='VENATIO · '+BEAST_RUN.stage.label+' '+(BEAST_RUN.roundIndex+1)+'/'+BEAST_RUN.stage.rounds;
   S.noticeT=3;
  }
+ // First human duel (including 1v1) starts behind the gates, never at x=335/940.
+ if(!beastMatch)beginArenaEntrance([S.player,S.enemy]);
  $('#startScreen').hidden=true;$('#endScreen').hidden=true;$('#pauseBtn').textContent='Ⅱ';updateHud();
  window.ArenaAudio?.enterArena?.();
  fxSound('start');
@@ -1324,11 +1343,13 @@ function startLineupMatch(mode,indices){
  catch(error){CAREER.message='출전할 수 없습니다: '+error.message;saveCareer();return false;}
  CAREER.active=chosen[0];CAREER_SELECTING=false;saveCareer();
  start('career',chosen[0],chosen);
- if(S.phase!=='fight')return false;
+ if(S.phase!=='fight'&&S.phase!=='entrance')return false;
  S.gauntlet=q;S.gauntlet.records={};S.gauntlet.bouts={};
  S.gauntlet.records[chosen[0]]={initialHp:S.player.hp,lastHp:S.player.hp,bouts:0};
  S.careerParticipant=chosen[0];S.careerOpponent={...q.enemies[0]};
  S.enemy=lineupEnemy(q.enemies[0]);
+ // Bind opening walk-on to the real round-one gauntlet enemy.
+ beginArenaEntrance([S.player,S.enemy]);
  // Human-only regular gauntlet; dedicated VENATIO handles beasts.
  S.time=90;S.lastManualInput=clock;S.autoPlaying=false;S.cleanup=null;
  window.ArenaCarnifex?.preload?.();
@@ -1396,7 +1417,9 @@ function finishLineupCleanup(){
   cleanDuelSurvivor(S.enemy,940,-1);
  }
  S.time=90;S.phase='fight';S.resultApplied=false;
- S.notice=S.gauntlet.round+'차전 · '+(allyWon?'다음 상대 등장!':'다음 아군 출전!');
+ // Survivor stays standing on stage. Only the next combatant enters.
+ beginArenaEntrance([allyWon?S.enemy:S.player]);
+ S.notice=S.gauntlet.round+'차전 · '+(allyWon?'다음 상대 난입!':'다음 아군 난입!');
  S.noticeT=1.6;
  updateLineupHud();updateHud();
  return true;
@@ -1467,7 +1490,7 @@ function autoPilotPlayer(p,e,dt){
 }
 function returnToLudus(){
  window.ArenaAudio?.leave?.();
- S.phase='title';S.paused=false;S.gauntlet=null;S.cleanup=null;updateLineupHud();S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.cameraKick=null;S.flash=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
+ S.phase='title';S.paused=false;S.gauntlet=null;S.cleanup=null;S.entrance=null;updateLineupHud();S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.cameraKick=null;S.flash=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
  const c=$('#classChoice').value;S.player=fighter(c,335,false);S.enemy=fighter('retiarius',940,true);CAMERA.initialized=false;
  $('#endScreen').hidden=true;$('#startScreen').hidden=false;$('#pauseBtn').textContent='Ⅱ';updateHud();
 }
@@ -1910,6 +1933,8 @@ function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.d
      alpha:.48,owner:f,offsetX:-f.face*32,offsetY:110,duration:.2});}
 function inputAct(action){if(S.phase!=='fight'||S.paused)return;if(action==='attack')attack(S.player,S.enemy);else if(action==='special')attack(S.player,S.enemy,true);else if(action==='dodge')dodge(S.player);else if(action==='guard'){S.keys.add('guard');}}
 function choosePose(f){
+ if(S.phase==='entrance'&&S.entrance)
+  return window.ArenaEntrance?.pose?.(S.entrance,f)||'idle';
  // Beast death starts with its actual FIRST collapse sprite, never replace
  // the first quarter-second with a generic hit/attacker finisher pose.
  if(f?.beastType&&(f.dead||f.hp<=0))return 'defeat';
@@ -1971,6 +1996,17 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
   f.parryFailT=Math.max(0,(f.parryFailT||0)-realDt);
  }
  if(S.phase==='result')return;
+ if(S.phase==='entrance'){
+  const done=window.ArenaEntrance?.advance?.(S.entrance,dt)??true;
+  if(done){
+   S.phase='fight';S.entrance=null;
+   S.lastManualInput=clock;S.autoPlaying=false;S.keys.clear();
+   S.player.vx=0;S.enemy.vx=0;
+   S.notice='PUGNA!';S.noticeT=1.1;fxSound('start');
+   updateHud();
+  }
+  return; // No clock, HP, cooldown, or attack/AI progress during walk-on
+ }
  if(S.phase==='cleanup'){
   if(!S.cleanup||!window.ArenaCarnifex||
    window.ArenaCarnifex.advance(S.cleanup,dt,{
@@ -2359,6 +2395,8 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  let bob=0;
  if(f.dodge>0)bob-=8;
  let drawX=f.x-width/2,drawY=feet-height+bob;
+ if(S.phase==='entrance'&&f._entranceStepT)
+  drawX+=Math.sin(f._entranceStepT)*2;
  // Result poses stay grounded: the champion holds the pose on the floor instead of floating upward.
  // Character art must never squash, widen or shrink during combat.
  let tilt=0;
@@ -2749,6 +2787,7 @@ function loop(t){
 if(new URLSearchParams(window.location.search).has('__arena_qa')){
  Object.defineProperty(window,'__arenaQA',{configurable:true,
   value:{state:S,camera:CAMERA,attack,fxPoint,fxTiming,render,
+   beginArenaEntrance,
    assetsReady:()=>['murmillo','thraex','retiarius'].every(k=>
     !!(IMG[k]?.complete&&IMG[k]?.naturalWidth&&INDEPENDENT_CHARACTER_FRAMES.get(IMG[k])?.length===10)),
    debugFighter:(f)=>{
