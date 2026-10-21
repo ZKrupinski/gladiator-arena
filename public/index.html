@@ -1510,6 +1510,22 @@ function impactPoint(attacker,victim,special=false){
 }
 function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,variant=0,dash=false){
  const dir=attacker.face||1,flip=dir<0;
+ if(attacker.beastType){
+  window.ArenaBeastFX?.ensure?.();
+  if(ko)return; // Outcome handled by a separate grounded collapse at KO.
+  const kind=dash||special?'pounce':guarded?'hit':
+   ['claw','sweep','bite'][Math.max(0,Math.min(2,Number(variant)||0))];
+  const ground=kind==='pounce',offsetX=dir*(ground?134:kind==='bite'?115:96);
+  const offsetY=ground?82:kind==='bite'?-12:-8;
+  addFx(3,attacker.x+offsetX,FLOOR-FIGHTER_DRAW_SIZE*.53+offsetY,{
+   beastFx:kind,w:ground?650:kind==='bite'?460:520,
+   h:ground?380:kind==='bite'?380:450,flip,
+   owner:attacker,offsetX,offsetY,track:'body',
+   duration:window.ArenaBeastFX?.durations?.[kind]||.3,
+   alpha:.93,delay:.035
+  });
+  return;
+ }
  const atlas=attacker.cls==='thraex'?'fx_thraex':attacker.cls==='retiarius'?'fx_retiarius':'fx';
  const style=clamp(variant,0,2);
  // Preserve class-specific, illustrated atlas strikes for everyday attacks.
@@ -1570,6 +1586,13 @@ function finishFight(winner,loser){
  // The official KO settles this fight immediately. Previously the reward
  // existed only after the full cinematic and results dialog had opened.
  if(S.careerMatch)finishCareerMatch();
+ if(loser.beastType){
+  window.ArenaBeastFX?.ensure?.();
+  addFx(0,loser.x,FLOOR-45,{
+   beastFx:'collapse',w:560,h:325,duration:.72,
+   flip:loser.face<0,alpha:.9,layer:'back'
+  });
+ }
  say(winner.enemy?'DEFEAT':'VICTORIA!',1.7);
  // Any lingering pre-KO attack/charge aura on the winner must not obscure
  // their celebration; retain only impact graphics attached to the loser.
@@ -1742,6 +1765,14 @@ function attack(f,victim,special=false,dashImpact=false){
    else updateHud();
    return;
  }
+ if(victim.beastType&&!victim.dead){
+  window.ArenaBeastFX?.ensure?.();
+  addFx(2,victim.x-victim.face*30,FLOOR-155,{
+   beastFx:'hit',w:360,h:310,owner:victim,track:'body',
+   offsetX:-victim.face*30,offsetY:12,
+   flip:attacker.face<0,alpha:.82,duration:.25
+  });
+ }
  const wasGuarding=!!(victim.guard&&victim.st>0);
  if(wasGuarding){dmg*=special?.45:dashImpact?.32:.16;victim.st=clamp(victim.st-(special?37:dashImpact?42:18),0,100);if(victim.st===0){
   victim.guard=false;victim.stagger=.44;say('GUARD BREAK!');
@@ -1809,8 +1840,10 @@ function attack(f,victim,special=false,dashImpact=false){
  emitAttackFx(f,victim,special,guarded,false,f.attackVariant,dashImpact);
  if(!guarded&&(special||dashImpact)){
   const contact=impactPoint(f,victim,special);
-  addFx(2,contact.x,contact.y,{sequence:'hit',art:null,w:310,h:310,
-   flip:f.face<0,alpha:.88,duration:.22});
+  if(!f.beastType&&!victim.beastType){
+   addFx(2,contact.x,contact.y,{sequence:'hit',art:null,w:310,h:310,
+    flip:f.face<0,alpha:.88,duration:.22});
+  }
  }
 
  if(!f.enemy){S.score+=Math.round(dmg);S.combo++;}else S.combo=0;
