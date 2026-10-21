@@ -66,7 +66,7 @@ function mock({fail=false,odd=false}={}){
  assert.equal(api.draw(drawCtx,'bite',100,80,450,400,.62,.8,-1),true);
  assert.equal(calls.length,1);
  assert.equal(calls[0].length,9);
- assert.equal(calls[0][1],444); // frame 4, column 0-based 0? progress .62=>4 (x0)
+ assert.equal(calls[0][1],0); // index 4: first column, second row
  assert.equal(calls[0][2],444);
  assert.ok(ops.some(x=>Array.isArray(x)&&x[0]==='scale'&&x[1]===-1));
  assert.equal(api.draw(drawCtx,'sword',100,80,50,50),false);
