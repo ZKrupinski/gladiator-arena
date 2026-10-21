@@ -1,0 +1,68 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "wolf-trial-user-art-20261021-c1",
+  "expectedMainSha": "631beac38fdc3834aa97126417b5e1d5597eef40",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/assets/beasts/wolf-trial/idle.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/0ef127b3-1d07-4277-8155-6e9cfc496ce6.png",
+      "sha256": "33f4b8beefd2baadc90b69db5cca22904a80d356a340c6f8e4af9d5e9ba5d2e5",
+      "transform": "wolf-trial-source-png"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/walk.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/a5b9ab69-131e-49f2-b4b8-25f9e274b88a.png",
+      "sha256": "4a5468c2777c13ccf229e0b5f0bc58087534bddae84a22ec856d4dfe0efdd90a",
+      "transform": "wolf-trial-source-png"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/attack1.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/8887cabd-f72a-407a-b664-d5e06a58b08c.png",
+      "sha256": "114129a6c0fc3731705534e3f37f46e743d1ce7f70090a1cc2d21addb128df53",
+      "transform": "wolf-trial-source-png"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/attack2.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/c4f405a7-5be5-4bdb-86d3-8f5d32e9a210.png",
+      "sha256": "c1c3f70ad9775c25ed3a995e79d1921a066a844ac7c28cfb7e82c9e6aeb791f8",
+      "transform": "wolf-trial-source-png"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/attack3.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/362123bb-f116-4ab9-8900-26a7e4149dc2.png",
+      "sha256": "568a79ee0f1cd782bd503d703e8f202811bc358ebd5a86c8c2521017d835bca7",
+      "transform": "wolf-trial-source-png"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/attack4.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/8e26e439-4c84-49f3-91e9-06f11e32a622.png",
+      "sha256": "862e4fd35dbf7e9feb2311500e4be4ae8224e12e2abec58147bf572ca0ad401d",
+      "transform": "wolf-trial-source-png"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/hit.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/077c15be-be30-484f-a808-1784fe52298a.png",
+      "sha256": "03ef3cb23b26f606c5789d0337010e6578009223b493dd2c6c6b392d8daa3afd",
+      "transform": "wolf-trial-source-png"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/death.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/dbdc6d52-39be-494a-8b51-bc7264f9d80c.png",
+      "sha256": "c82557c73fcf186b4dab385e54f4b549f9aba67a17bc4e0df2fa77742e447d4d",
+      "transform": "wolf-trial-source-png"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/roar.webp",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/f0ee94e2-25b7-42af-9b8d-7a6822097c52.png",
+      "sha256": "c576dc99ef9d7c4c02d7f7d8d0a6ae32bcf8dd7cbaac0a50f71fb9e094013209",
+      "transform": "wolf-trial-source-png"
+    },
+    {
+      "path": "public/assets/beasts/wolf-trial/manifest.json",
+      "utf8": "{\"version\":3,\"previewOnly\":true,\"source\":\"user provided 1672x941 trial sprites\",\"actions\":{\"idle\":\"idle.webp\",\"walk\":\"walk.webp\",\"attack1\":\"attack1.webp\",\"attack2\":\"attack2.webp\",\"attack3\":\"attack3.webp\",\"attack4\":\"attack4.webp\",\"hit\":\"hit.webp\",\"death\":\"death.webp\",\"roar\":\"roar.webp\"}}\n",
+      "sha256": "320806fe348bde9209a929aeff20d95830b17e5e6c33eb2605e98f286cfb730d"
+    }
+  ]
+}
