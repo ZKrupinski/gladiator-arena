@@ -1,6 +1,6 @@
 {
-  "version": 5,
-  "source": "Spartacus GLADIATOR ARENA art-direction feedback 2026-10-20 and 2026-10-21",
+  "version": 6,
+  "source": "Spartacus unified gladiator/beast art QA; connected-mask extraction 2026-10-21",
   "scope": "all playable gladiators and beasts",
   "requiredAnimationStandard": {
     "name": "New Champion Murmillo",
@@ -76,32 +76,32 @@
       "stage": "segmentation",
       "severity": "block",
       "description": "No duplicated silhouettes, ghost limbs, multiple monsters in one frame",
-      "automatic": "connected_components_heuristic",
+      "automatic": "full_sheet_component_graph_and_double_core_detection",
       "action": "Fail ambiguous merged components and request re-generation"
     },
     {
       "id": "connected_rgba_mask",
       "stage": "extraction",
       "severity": "block",
-      "description": "Preserve only the current frame's own actor, including valid detached parts. Any head, foot, tail, torso or other body from an adjacent frame is FOREIGN and must be removed, regardless of pixel size or anatomical completeness.",
-      "automatic": "source_neighbor_ownership_proof_plus_fail_closed_semantic_review",
-      "action": "Detect frame provenance by comparing source sheet/neighbor exports. Remove verified neighboring-owned regions even when large. Never auto erase current-owned limbs. Unprovable overlaps block release."
+      "description": "Find all RGBA connected silhouettes from the complete uncropped source sheet. 4x2 rectangles are seed search regions only. Preserve the entire single-owner silhouette even if tail/weapon/paw crosses a grid seam. Never clip by cell bounds or keep only the largest island.",
+      "automatic": "full_sheet_component_labels_unique_frame_core_v6",
+      "action": "Assign by unique per-pose inner-core evidence, generate a full owned-alpha mask, copy unchanged RGBA to same-sized padded frame canvases. Block fused/two-core or detached/unowned regions."
     },
     {
       "id": "frame_ownership_over_pixel_size",
       "stage": "segmentation",
       "severity": "block",
-      "description": "Foreign ownership ALWAYS overrides small-speck/large-body thresholds. A large neighbor body fragment must be deleted; a small current-owned limb must stay.",
-      "automatic": "neighbor_export_pixel_correspondence_and_source_grid_provenance",
-      "action": "Compare current-frame regions against both adjacent poses in source coordinates; erase pixel-proven foreign fragments, record mask and proof, require visual QA for glued or ambiguous body pieces."
+      "description": "Size cannot prove belonging. No small-part auto-deletion or dominant-blob shortcut; separated own weapon/tail requires proof or review, neighboring head must never be kept.",
+      "automatic": "audited_connected_mask_provenance_no_silent_fragment_deletion",
+      "action": "Fail uncertain ownership rather than invent a partition. Keep approved old game sprite until full quality gate passes."
     },
     {
       "id": "ambiguous_frame_ownership_release_block",
       "stage": "extraction",
       "severity": "block",
-      "description": "If a body region touches another pose and its ownership cannot be proved, never release it as clean and never silently amputate it.",
-      "automatic": "edge_component_review_and_full_sheet_seam_gate",
-      "action": "Automatically retry/regenerate the failed action (all eight poses) with specific pixel-ownership error feedback, then re-extract, QC, and preview; repeat for up to three configured retries. If no provider is connected, leave executable job QUEUED rather than claiming completion. Ask the user only when cause remains unresolved after retrial."
+      "description": "Crossing a nominal rectangle is ALLOWED if one connected component has one unique frame core. Actual fused poses claiming two cores or orphans are BLOCKING; do not regenerate valid one-core overhang.",
+      "automatic": "multi_core_vs_single_core_component_classification",
+      "action": "Report exact source component, claimed pose indices and affected bounds; regenerate only the one bad action when ambiguous."
     },
     {
       "id": "automatic_repair_recheck_preview",
@@ -115,16 +115,16 @@
       "id": "wide_safety_gutters",
       "stage": "generation",
       "severity": "block",
-      "description": "Keep full tails, claws, helmets, shields and weapons inside enlarged X and Y gutters",
+      "description": "Preserve silhouette and source pixel fidelity, and use shared proportional output gutters. A rectangular seam is NOT permission to amputate a connected limb.",
       "automatic": "boundary_scan",
-      "action": "Widen source frame canvas instead of shrinking artwork"
+      "action": "Expand output canvas with unchanged source geometry; do not shrink or re-scale the actor to fit a predetermined cell."
     },
     {
       "id": "uniform_scale_and_ground_anchor",
       "stage": "alignment",
       "severity": "block",
-      "description": "Same scale across all eight frames; anchor stable feet",
-      "automatic": "implemented",
+      "description": "All frames same pixel scale and shared canvas origin; planted stance stable, but intentional pounce/death poses may differ. No per-frame bbox-centered zoom.",
+      "automatic": "shared_canvas_origin_and_bounded_ground_motion_qc",
       "action": "Use stable planted feet, never per-frame recenter or zoom"
     },
     {
@@ -163,15 +163,15 @@
       "id": "death_completion",
       "stage": "runtime",
       "severity": "block",
-      "description": "Death plays all 8 frames and holds last frame",
-      "automatic": "frame_timing",
+      "description": "On every gladiator and beast HP=0, map death pose, play 8 sequential frames, hold final frame. Never overlay hit flash on dying body or allow idle to replace death.",
+      "automatic": "required_action_mapping_and_actual_browser_playback",
       "action": "Verify no restart/flicker"
     },
     {
       "id": "shipping_gate",
       "stage": "delivery",
       "severity": "block",
-      "description": "Do not replace approved production sprites without full coverage and browser validation",
+      "description": "Do not publish on successful PNG generation alone. Require mask ownership, foot consistency, cross-action scale, pose/frame map, death/intro playback, facing/layer/timing VFX, and browser release verification.",
       "automatic": "ci_and_visual_review",
       "action": "Preserve old manifest until safe deployment"
     }
@@ -184,10 +184,45 @@
     "regenerationNeedsConnectedProvider": true,
     "providerMissing": "GENERATE_JOB_QUEUE_AND_EXPLICITLY_MARK_NOT_EXECUTED",
     "userInterruptionPolicy": "Solve reproducible diagnosed issues automatically; escalate only after repeated unresolved or unknown-root-cause failures.",
-    "releaseGate": "8/8 QA + visual review + in-game browser playback before replacing production",
+    "releaseGate": "8/8 UNIQUE CONNECTED MASK OWNERS + common anchors + runtime motion/VFX QA + review + live verification",
     "preGenerationBriefingMandatory": true,
     "preGenerationBriefingEveryRetry": true,
     "sheetOnlyGeneration": true,
     "referenceDetailRule": "NO_MINIMUM_PIXEL_SIZE; preserve submitted pixels and visual design; do not use simple enlargement as proof of detail"
+  },
+  "processingConstitution": {
+    "authority": "DO_NOT_LOSE_SOURCE_ART_TO_PASS_QA",
+    "stages": [
+      {
+        "id": "01_identity",
+        "method": "Approved reference SHA + action contract + full source sheet immutable"
+      },
+      {
+        "id": "02_ownership",
+        "method": "Connected alpha components across WHOLE sheet; nominal 4x2 cores seed ownership but never slice actor"
+      },
+      {
+        "id": "03_ambiguity",
+        "method": "If component enters multiple frame cores OR unowned/detached fragments remain, BLOCK; no largest-blob/noise-area deletion and no guessed limb reconstruction"
+      },
+      {
+        "id": "04_alignment",
+        "method": "Same padded canvas, same root/foot anchor, no per-frame resize, protect intentional airborne/lying poses"
+      },
+      {
+        "id": "05_runtime",
+        "method": "Verify every required motion is mapped and actually plays; no idle overriding death; correct VFX facing, layer and anatomy contacts"
+      },
+      {
+        "id": "06_release",
+        "method": "Technical pass + art review + real gameplay pass + deployed hash check, otherwise preserve prior version"
+      }
+    ],
+    "maskAlgorithm": "FULL_SHEET_CONNECTED_ALPHA_UNIQUE_CORE_V6",
+    "nominalGridPurpose": "SEED_IDENTITY_ONLY_NOT_CUTTING_BOUNDARY",
+    "noMinimumResolution": true,
+    "noAutoDeleteDetachedLimbs": true,
+    "noLargestComponentWins": true,
+    "uncertaintyPolicy": "BLOCK_AND_REGENERATE_SAME_ACTION_KEEP_PREVIOUS_RELEASE"
   }
 }

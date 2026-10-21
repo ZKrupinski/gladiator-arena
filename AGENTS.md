@@ -47,12 +47,20 @@ sheet intent is enough. Applies equally to follow-up prompts like "다음
    generation. The image-generation tool is not connected to the adapter and
    cannot provide a machine-signed acknowledgement; do NOT pretend it did.
    Nevertheless the tool's latest brief is mandatory input to the artist.
-5. After generation, verify source pixels and run SpriteForge V3 sheet
+5. **Extraction V6 immutable rule:** The 4×2 nominal rectangle is ONLY a
+   pose-ID seed. Run `scripts/spriteforge_connected_mask_v6.py` on the WHOLE
+   source alpha mask first. Export each uniquely connected pose INCLUDING its
+   legitimate tail/weapon crossing a rectangle. Never use a hard rectangle
+   as a final cutting mask or choose the largest blob then erase the rest.
+   If two core poses are fused or separated anatomy cannot be attributed,
+   mark BLOCKED and retry the same action. This applies to both gladiators
+   and beasts, at any source resolution. Leave approved production art intact.
+6. After generation, verify source pixels and run SpriteForge V3 sheet
    inspections, cutting QA, eight-frame animation preview and compare against
    the approved design. Fix diagnosed issues and regenerate just the failing
    action automatically, with a **fresh briefing on each retry**. Do not
    declare success merely because the image tool returned a picture.
-6. Production game integration only after all frames and playback are
+7. Production game integration only after all frames and playback are
    validated, preserving the previous working assets during review. If
    source access, generator connection, or identity reference is genuinely
    missing, state the precise blocker instead of claiming a completed game

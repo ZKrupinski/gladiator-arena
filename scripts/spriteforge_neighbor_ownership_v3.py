@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""SpriteForge V3 frame-ownership proof for neighboring exports of ONE source sheet.
+"""LEGACY-ONLY SpriteForge V3 ownership proof for 512px overlapping exports.
+
+Not a production animation cutter. All new gladiator/beast 4x2 sheets must go
+through spriteforge_connected_mask_v6.py BEFORE frame extraction. Do not apply
+the fixed 512px offsets or automatic old-legacy pixel erasure to new artwork.
+
+Legacy frame-ownership proof for neighboring exports of ONE source sheet.
 
 An adjacent actor's head, paw or tail is foreign even if it is a BIG,
 anatomically intact piece. Size is not a keep criterion: source ownership wins.

@@ -45,8 +45,9 @@ def plan(reference,kind,action,out,extra=()):
         "NEVER generate eight separate PNG input files or falsely claim more detail via upscaling. "
         "Retain the approved reference's original microdetails. Keep wide X/Y gutters, "
         "unclipped feet/tail/equipment. NO mixed actions, extra animals, opaque background, "
-        "cut body, duplicate frame, merged poses or neighboring fragments.",
-      "frameOwnershipPolicy":"Any anatomy from a neighboring pose is FOREIGN, even a full head, tail or leg, regardless of size. Preserve only this frame's actor. Compare original sheet and adjacent poses; erase pixel-proven foreign body parts; block uncertain glued regions. Never decide ownership by speck size.",
+        "cut body, duplicate frame, merged poses or neighboring fragments. Frame cutting follows connected alpha silhouettes, NEVER rigid rectangles.",
+      "frameOwnershipPolicy":"V6: Detect connected RGBA masks on the COMPLETE source sheet FIRST. 4x2 cells only define unique pose cores; never crop silhouettes with cell rectangles or choose largest component by pixel count. Preserve the entire uniquely owned actor even across nominal cell seams. Multiple cores fused, disconnected/foreign fragments, uncertain anatomy: BLOCK and regenerate, never silently delete a limb.",
+      "extractionMode":"FULL_SHEET_CONNECTED_ALPHA_UNIQUE_FRAME_CORE_V6",
       "requiredStatus":"TECHNICAL_PASS_THEN_VISUAL_REVIEW",
       "releaseAuthorized":False}
     target=out/"generator_job.json"
@@ -63,27 +64,16 @@ def rgba(p):
         raise ValueError("NOT_A_TRANSPARENT_IMAGE")
     return src.convert("RGBA")
 
-def eight_images(response,root,job=None):
-    """Production generation MUST be one native 4x2 transparent sheet."""
+def eight_images(response,root,job=None,*,with_proof=False):
+    """V6: grid finds pose cores, but extraction follows full connected alpha."""
     if "frames" in response or "sheet" not in response:
         raise ValueError("SINGLE_4x2_HIGH_RES_SHEET_REQUIRED_EIGHT_FILES_REJECTED")
     if response.get("upscaledFrom") or response.get("resampledLowResolution"):
         raise ValueError("ARTIFICIALLY_UPSCALED_SOURCE_FORBIDDEN")
     sheet=rgba((root/response["sheet"]).resolve())
-    w,h=sheet.size
-    if not w or not h or w%4 or h%2:
-        raise ValueError("INVALID_4x2_SHEET_GRID")
-    mask=np.asarray(sheet.getchannel("A"))>ALPHA
-    labels,n=ndimage.label(mask,structure=np.ones((3,3),dtype=np.uint8))
-    if n:
-        yy,xx=np.where(labels>0)
-        for k in np.unique(labels[yy,xx]):
-            cy,cx=np.where(labels==k)
-            if len(cx)<max(1,round(w*h*.0003)): continue
-            if len(np.unique(cx*4//w))>1 or len(np.unique(cy*2//h))>1:
-                raise ValueError("MERGED_SILHOUETTE_ACROSS_GRID_SEAM_REGENERATE")
-    return [sheet.crop((i%4*w//4,i//4*h//2,(i%4+1)*w//4,(i//4+1)*h//2))
-            for i in range(8)]
+    from spriteforge_connected_mask_v6 import extract_owned_frames
+    frames, proof=extract_owned_frames(sheet,alpha_threshold=ALPHA)
+    return (frames,proof) if with_proof else frames
 
 def measure(frame):
     w,h=frame.size;fail=[]
@@ -139,7 +129,8 @@ def inspect(job_path,result_path,destination):
         if response.get("preflightSha256")!=receipt["briefingSha256"]:
             raise ValueError("GENERATOR_DID_NOT_BIND_RESULT_TO_PREFLIGHT")
         report["preflight"]=receipt
-        images=eight_images(response,Path(result_path).resolve().parent,job)
+        images,ownership=eight_images(response,Path(result_path).resolve().parent,job,with_proof=True)
+        report["ownership"]=ownership
         for i,frame in enumerate(images):
             entry=measure(frame);entry["index"]=i+1
             report["frames"].append(entry)
