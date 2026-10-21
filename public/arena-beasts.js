@@ -20,7 +20,12 @@ const cache=new Map();
 // Wolf V3 is opt-in and source-complete-only. The original 40-frame art remains
 // visible until the full approved atlas manifest and the requested action load.
 // Missing unfinished packs never result in invisible opponents.
-const WOLF_V3_DIR='assets/beasts/wolf-v3/';
+// The user-approved trial is completely isolated from native V3 production.
+const WOLF_TRIAL_ENABLED=typeof location!=='undefined'&&
+ new URLSearchParams(location.search).get('wolfTrial')==='1';
+const WOLF_V3_DIR=WOLF_TRIAL_ENABLED
+ ? 'assets/beasts/wolf-trial/' : 'assets/beasts/wolf-v3/';
+const WOLF_MANIFEST_PATH='public/'+WOLF_V3_DIR+'manifest.json';
 const WOLF_ACTIONS=Object.freeze([
  'idle','walk','attack1','attack2','attack3','attack4','hit','death','roar'
 ]);
@@ -57,7 +62,7 @@ async function wolfV3CacheKey(){
   const response=await fetch('uploader-release.json',{cache:'no-store'});
   if(!response.ok)return uncached;
   const marker=await response.json();
-  const wolfManifestHash=marker?.assetSha256?.['public/assets/beasts/wolf-v3/manifest.json'];
+  const wolfManifestHash=marker?.assetSha256?.[WOLF_MANIFEST_PATH];
   if(marker?.releaseProtocol==='spartacus-uploader-v1'&&
      typeof marker.releaseId==='string'&&
      /^[a-zA-Z0-9][a-zA-Z0-9_-]{5,70}$/.test(marker.releaseId)&&
@@ -75,6 +80,10 @@ function loadWolfV3(){
   if(!response.ok)throw Error('Wolf V3 art pack not published');
   const manifest=await response.json();
   if(manifest.version!==3||!manifest.actions)throw Error('Invalid V3 manifest');
+  if(WOLF_TRIAL_ENABLED&&manifest.previewOnly!==true)
+   throw Error('Trial atlas manifest must be marked previewOnly');
+  if(!WOLF_TRIAL_ENABLED&&manifest.previewOnly===true)
+   throw Error('Preview atlas cannot activate production V3');
   for(const action of WOLF_ACTIONS){
    const item=manifest.actions[action];
    if(typeof item!=='string'||item!==action+'.webp')
@@ -84,8 +93,10 @@ function loadWolfV3(){
    const image=new Image();
    image.onload=()=>{
     const w=image.naturalWidth,h=image.naturalHeight;
-    if(w<3072||h<1536||w%4!==0||h%2!==0)
-     return reject(Error('Non-native 4x2 wolf atlas '+action+' '+w+'x'+h));
+    if(w%4!==0||h%2!==0||w<(WOLF_TRIAL_ENABLED?1600:3072)||
+       h<(WOLF_TRIAL_ENABLED?900:1536))
+     return reject(Error('Invalid '+(WOLF_TRIAL_ENABLED?'trial':'native')+
+       ' 4x2 wolf atlas '+action+' '+w+'x'+h));
     resolve([action,image]);
    };
    image.onerror=()=>reject(Error('Atlas did not load '+action));
@@ -388,5 +399,5 @@ function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
 }
 root.ArenaBeasts={version:'2.1.0',types:SPEC,rows:ROWS_BY_POSE,
  pick,apply,ensure,frameFor,draw,portrait,wolfActionFor,wolfFrameIndex,installWolfPreviewAtlasPack,
- status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name),individual:[...cache].map(([name,e])=>({name,frames:e.individualReady||0})),wolfV3:{status:wolfV3.state,actions:[...wolfV3.actions.keys()],error:wolfV3.error}})};
+ status:()=>({loaded,failed,ready:[...cache].filter(([,x])=>x.ready).map(([name])=>name),individual:[...cache].map(([name,e])=>({name,frames:e.individualReady||0})),wolfV3:{status:wolfV3.state,trial:WOLF_TRIAL_ENABLED,actions:[...wolfV3.actions.keys()],error:wolfV3.error}})};
 })(window);
