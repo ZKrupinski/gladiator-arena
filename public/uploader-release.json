@@ -1,15 +1,12 @@
 {
   "assetSha256": {
-    "public/arena-carnifex.js": "3c07fcc9da3a8e5841705ae1a554a11f87048f5ed92c6c529bef02fcb3172be4",
-    "public/assets/npc/carnifex-haul-ink-v1.webp": "60f7bac6d4590ee9ca760dab103c4b257c04936a0a011e88d6f66b048846127b",
-    "public/assets/npc/carnifex-ink-v1.json": "15b6c889462a2bd2c209a1ed15da07d70da6452a0785ee0343c01f1b6bfe7295",
-    "public/assets/npc/carnifex-walk-ink-v1.webp": "75c2a95c9a02814c1b9d14bb1bf97a6d5fd6db71b36ce2a1cc687a26e208e476",
-    "public/index.html": "75b4b6d27e7b81d124f10109e94c8096f6664246735da4db6fec7c0216d372f2",
-    "scripts/qa_carnifex_sd.mjs": "f6c14dbf2813218c0cf7d1bfb4950701ba02a9ed31f81a58d908933efa74f679"
+    "public/arena-carnifex.js": "b0f11dad0b12c7a101ce54cdd2248ed45bc05c7a517fd8b98049dad9d6a2a0a7",
+    "public/index.html": "c07cbbba1fdb2cd27ab31eea2615613f4d38f4db34853db4b5e202497e294634",
+    "scripts/qa_carnifex_sd.mjs": "c89ce1ab6bb7d3b2918f641271b895c7b952ccd9e1f90415a8049d8d6b06c969"
   },
-  "baseCommit": "a585589e4d8fa077c1a574cf90d605994c32cafc",
+  "baseCommit": "87094f3233593d426a79fc5eabc6fb3ba2085fe2",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "carnifex-ink-retouch-v1b-20261021",
+  "releaseId": "carnifex-full-offscreen-exit-20261021-v1",
   "releaseProtocol": "spartacus-uploader-v1"
 }
