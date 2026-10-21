@@ -52,12 +52,11 @@ def prepare(source: Path, destination: Path):
             width, height = image.size
             if (width, height) != (1672, 941):
                 raise UploadError("TRIAL_SOURCE_DIMENSIONS_CHANGED: " + original_name)
-            if image.getchannel("A").crop((0,940,1672,941)).getbbox():
-                raise UploadError("TRIAL_LAST_ROW_HAS_PIXELS_CANNOT_SAFE_TRIM: " + original_name)
-            # Only remove one fully transparent bottom row for an even 4x2
-            # grid; no sprite is scaled, erased or artificially reconstructed.
-            atlas=image.crop((0,0,1672,940))
-            cw,ch=418,470
+            # 941 is odd. PAD with one transparent pixel row, do not
+            # trim the user's real paws or body at y=940. No resampling.
+            atlas=Image.new("RGBA",(1672,942),(0,0,0,0))
+            atlas.paste(image,(0,0))
+            cw,ch=418,471
             risk=[]
             for frame_index in range(8):
                 x=frame_index%4*cw
@@ -74,7 +73,7 @@ def prepare(source: Path, destination: Path):
             atlas_bytes[DEST+action+".webp"]=payload
             report["sheets"].append({"action":action,"original":original_name,
                 "originalSha256":hashlib.sha256(filename.read_bytes()).hexdigest(),
-                "nativePixels":[1672,940],"frames":8,"edgeRiskFrames":risk,
+                "nativePixels":[1672,942],"frames":8,"edgeRiskFrames":risk,
                 "sha256":hashlib.sha256(payload).hexdigest()})
             if risk:
                 report["warnings"].append(action+": frames at risk "+str(risk))
