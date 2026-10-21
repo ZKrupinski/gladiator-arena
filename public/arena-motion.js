@@ -11,12 +11,12 @@ const MIN_GAP=200;
 const PRESETS=Object.freeze({
  brush:Object.freeze({amp:1.8,time:.13,hz:29,axis:'x',roll:0}),
  contact:Object.freeze({amp:5.5,time:.22,hz:25,axis:'x',roll:.0014}),
- strike:Object.freeze({amp:9.5,time:.25,hz:31,axis:'diag',roll:.003}),
- guard:Object.freeze({amp:7.5,time:.25,hz:23,axis:'x',roll:.002}),
- special:Object.freeze({amp:17,time:.39,hz:21,axis:'y',roll:.006}),
- dash:Object.freeze({amp:25,time:.48,hz:24,axis:'diag',roll:.009}),
- parry:Object.freeze({amp:23,time:.49,hz:17,axis:'double',roll:.007}),
- reversal:Object.freeze({amp:30,time:.62,hz:17,axis:'double',roll:.009})
+ strike:Object.freeze({amp:14,time:.27,hz:31,axis:'diag',roll:.003}),
+ guard:Object.freeze({amp:11,time:.26,hz:23,axis:'x',roll:.002}),
+ special:Object.freeze({amp:23,time:.43,hz:21,axis:'y',roll:.006}),
+ dash:Object.freeze({amp:29,time:.50,hz:24,axis:'diag',roll:.009}),
+ parry:Object.freeze({amp:28,time:.49,hz:17,axis:'double',roll:.007}),
+ reversal:Object.freeze({amp:34,time:.64,hz:17,axis:'double',roll:.009})
 });
 const RESPONSE=Object.freeze({
  strike:{duration:.29,compression:.065,slide:9},
@@ -26,7 +26,42 @@ const RESPONSE=Object.freeze({
  parry:{duration:.47,compression:.080,slide:17},
  contact:{duration:.26,compression:.047,slide:7}
 });
+const IMPACTS=Object.freeze({
+ strike:Object.freeze({duration:.22,flash:.78,grow:1.055,shrink:.978}),
+ guard:Object.freeze({duration:.18,flash:.38,grow:1.028,shrink:.986}),
+ special:Object.freeze({duration:.32,flash:.92,grow:1.092,shrink:.961}),
+ dash:Object.freeze({duration:.35,flash:1,grow:1.108,shrink:.953}),
+ parry:Object.freeze({duration:.29,flash:.88,grow:1.083,shrink:.969}),
+ reversal:Object.freeze({duration:.39,flash:1,grow:1.115,shrink:.950})
+});
 const sin=Math.sin,cos=Math.cos,PI=Math.PI;
+// Global gladiator+beast hit cue. Never modifies hitboxes or source art.
+function impact(f,kind='strike'){
+ if(!f)return;
+ const preset=IMPACTS[kind]||IMPACTS.strike;
+ if(f.hitVisual && (IMPACTS[f.hitVisual.kind]?.grow||0)>preset.grow&&
+    f.hitVisual.t<preset.duration*.32)return;
+ f.hitVisual={kind,t:0,duration:preset.duration};
+}
+function advanceImpact(f,dt){
+ if(!f?.hitVisual)return;
+ const state=f.hitVisual;
+ state.t=Math.min(state.duration,state.t+clamp(Number(dt)||0,0,.08));
+ if(state.t>=state.duration)f.hitVisual=null;
+}
+function visual(f,reduced=false,fx=true){
+ const neutral={scale:1,flash:0};
+ if(!f?.hitVisual||reduced||!fx)return neutral;
+ const state=f.hitVisual,p=IMPACTS[state.kind]||IMPACTS.strike;
+ const phase=clamp(state.t/state.duration);
+ let scale;
+ if(phase<.20)scale=1+(p.shrink-1)*phase/.20;
+ else if(phase<.49)scale=p.shrink+(p.grow-p.shrink)*(phase-.20)/.29;
+ else scale=1+(p.grow-1)*Math.pow((1-phase)/.51,2);
+ const flash=phase<.22?p.flash*(1-phase*.42/.22):
+   p.flash*.58*Math.pow((1-phase)/.78,2);
+ return {scale:clamp(scale,.94,1.13),flash:clamp(flash)};
+}
 function pulse(f,type,role,dir=1){
  if(!f||f.dead)return;
  const source=RESPONSE[type]||RESPONSE.strike;
@@ -39,6 +74,7 @@ function pulse(f,type,role,dir=1){
  if(!prev||currentImpact<=source.slide*1.1)f.bodySpring=newer;
 }
 function advance(f,dt){
+ advanceImpact(f,dt);
  if(!f?.bodySpring)return;
  f.bodySpring.t=Math.min(f.bodySpring.duration,(f.bodySpring.t||0)+clamp(Number(dt)||0,0,.06));
  if(f.bodySpring.t>=f.bodySpring.duration)f.bodySpring=null;
@@ -154,6 +190,6 @@ function contactPulse(a,b,minGap=MIN_GAP){
  pulse(b,'contact','target',dir);
  return true;
 }
-root.ArenaMotion={version:'1.0.0',PRESETS,RESPONSE,pose,pulse,advance,shake,advanceShake,sampleShake,contactPulse};
+root.ArenaMotion={version:'1.1.0',PRESETS,RESPONSE,IMPACTS,pose,pulse,impact,visual,advance,shake,advanceShake,sampleShake,contactPulse};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaMotion;
 })(globalThis);
