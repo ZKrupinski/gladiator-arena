@@ -1,4 +1,4 @@
-"""SpriteForge V3 wolf profile must not silently deploy undersized sprites."""
+"""SpriteForge V3 wolf importer accepts any image size, not malformed artwork."""
 import importlib.util
 import pathlib
 import sys
@@ -19,16 +19,20 @@ class TestWolfImport(unittest.TestCase):
             root=pathlib.Path(td)
             with self.assertRaisesRegex(UploadError,"WOLF_ACTION_NOT_PRESENT"):
                 convert(root,root/"previews")
-    def test_legacy_image_native_resolution_cannot_be_upscaled(self):
+    def test_small_sheets_are_allowed_when_4x2_rgba_and_complete(self):
         with tempfile.TemporaryDirectory() as td:
             root=pathlib.Path(td)
-            im=Image.new("RGBA",(1672,941))
-            for x in range(0,1672,418):
-                ImageDraw.Draw(im).rectangle((x+25,100,x+385,420),fill=(50,75,100,255))
-            im.save(root/"idle.png")
-            with self.assertRaisesRegex(UploadError,"SPRITEFORGE_V3_NATIVE_HIGH_RES_NOT_MET"):
-                convert(root,root/"previews")
-            self.assertFalse((root/"previews"/"manifest.json").exists())
+            im=Image.new("RGBA",(160,80))
+            draw=ImageDraw.Draw(im)
+            for i in range(8):
+                x=(i%4)*40;y=(i//4)*40
+                draw.rectangle((x+5,y+5,x+30,y+30),
+                               fill=(50+i*6,75,100,255))
+            for action in ACTIONS:
+                im.save(root/(action+".png"))
+            package,review=convert(root,root/"previews")
+            self.assertEqual(len(package),10)
+            self.assertEqual(review["actions"]["idle"]["nativeSize"],[160,80])
     def test_frame_seam_is_hard_blocked_even_if_sheet_pixels_are_large(self):
         with tempfile.TemporaryDirectory() as td:
             root=pathlib.Path(td)
