@@ -33,11 +33,14 @@ assert.ok(html.includes("const frontX=attacker.x+dir*clamp(foeGap-50,167,270)"))
 assert.ok(html.includes("const contactY=FLOOR-(ground?252:bite?288:276)"));
 assert.ok(html.includes("flightX:dir*(ground?92:65),flightY:ground?-78:-96"));
 assert.ok(html.includes("rotation:dir>0?-.20:.20"));
-assert.ok(html.includes("flip:attacker.beastType==='wolf'?dir<0:dir>0,layer:'front'"));
+assert.ok(html.includes("flip:beastFxFlip(attacker),layer:'front'"));
+assert.ok(html.includes("flip:beastFxFlip(loser),alpha:.9,layer:'back'"));
+assert.ok(html.includes("flip:beastFxFlip(victim),alpha:.82,duration:.25"));
+assert.ok(html.includes("flip:beastFxFlip(beast),layer:'back',alpha:.7"));
 // Actual runtime regression: mirror only the wolf strike art, not its spawn.
 {
- const start=html.indexOf('function emitAttackFx(');
- const end=html.indexOf('\nfunction ',start+1);
+ const start=html.indexOf('function beastFxFlip(');
+ const end=html.indexOf('\nfunction ',html.indexOf('function emitAttackFx(')+1);
  assert.ok(start>=0&&end>start,'combat attack FX function exists');
  const emitted=[];
  const runtime={window:{ArenaBeastFX:{ensure(){}}},FLOOR:600,
@@ -48,6 +51,16 @@ assert.ok(html.includes("flip:attacker.beastType==='wolf'?dir<0:dir>0,layer:'fro
   const victim={x:400+dir*220,face:-dir};
   const wolf={beastType:'wolf',x:400,face:dir};
   const lion={beastType:'lion',x:400,face:dir};
+  assert.equal(runtime.beastFxFlip(wolf),dir<0);
+  assert.equal(runtime.beastFxFlip(lion),dir>0);
+  const floor=runtime.beastGroundFx(wolf,400,550,400,172);
+  assert.equal(floor.x,400);
+  assert.equal(floor.y,534);
+  assert.equal(floor.w,360);
+  assert.ok(Math.abs(floor.h-154.8)<1e-9);
+  const unchanged=runtime.beastGroundFx(lion,400,550,400,172);
+  assert.equal(unchanged.y,550);
+  assert.equal(unchanged.w,400);
   emitted.length=0;runtime.emitAttackFx(wolf,victim);
   const wolfAttack=emitted.find(v=>v.opt.beastFx==='claw');
   assert.equal(wolfAttack?.opt.flip,dir<0,'wolf attack sprite must be mirrored');
@@ -65,14 +78,17 @@ assert.ok(html.includes("flip:attacker.beastType==='wolf'?dir<0:dir>0,layer:'fro
 
 assert.ok(html.includes("cx+(v.flightX||0)*rise,cy+(v.flightY||0)*rise"));
 assert.ok(html.includes("beastFx:kind,w:(ground?730:bite?560:650)*size"));
-assert.ok(html.includes("beastFx:'step',w:750*size,h:318*size"));
+assert.ok(html.includes("const stomp=beastGroundFx(attacker,footX,FLOOR-49,750*size,318*size)"));
 assert.ok(html.includes("const gaitFrame=Math.floor(clock*7)%8"));
 assert.ok(html.includes("gaitFrame===1||gaitFrame===5"));
-assert.ok(html.includes("beastFx:'step',w:400*size,h:172*size"));
-assert.ok(html.includes("flip:beast.face>0,layer:'back'"));
-assert.ok(html.includes("beastFx:'step',w:560,h:250"));
-assert.ok(html.includes("flip:f.face>0,alpha:.76"));
+assert.ok(html.includes("beastFx:'step',w:step.w,h:step.h"));
+assert.ok(html.includes("flip:beastFxFlip(beast),layer:'back'"));
+assert.ok(html.includes("const dodgeStep=beastGroundFx(f,f.x+f.face*75,FLOOR-46,560,250)"));
+assert.ok(html.includes("flip:beastFxFlip(f),alpha:.76"));
 assert.ok(beast.includes("if(wolfV3.normalized){"),'clean sheet must avoid adaptive size hopping');
+assert.ok(beast.includes("return drawWolfPending(ctx,{x,y,w,h,flip,alpha})"),
+ 'first appearance cannot show the mixed-frame legacy atlas');
+assert.ok(beast.includes("wolfV3.loadingStill=image"),'approved idle pose must show while streaming');
 assert.ok(beast.includes("ground-(470-footAdjust)*scale"),'all planted paws share one ground line');
 assert.ok(beast.includes("walkBox?.walkOffset"),'walk torso drift should be compensated');
 assert.ok(beast.includes("actionMetrics?.[index]?.edgeCut"),'corrupt seams must not draw');

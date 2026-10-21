@@ -351,7 +351,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
-<script src="arena-beasts.js?v=10-wolf-foot-size"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
+<script src="arena-beasts.js?v=11-wolf-load-guard"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
 <script src="beast-stage-previews.js?v=2"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
 <script src="arena-carnifex.js?v=5"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=3-short-hit-glint"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
@@ -1509,6 +1509,16 @@ function impactPoint(attacker,victim,special=false){
  const baseY=FLOOR-(special?176:170);
  return {x:baseX,y:baseY};
 }
+function beastFxFlip(f){
+ const face=f?.face||1;
+ return f?.beastType==='wolf'?face<0:face>0;
+}
+// Adjust only grounded wolf effects to its 6%-smaller, 16px-raised paws.
+function beastGroundFx(f,x,y,w,h){
+ return f?.beastType==='wolf'
+  ?{x,y:y-16,w:w*.90,h:h*.90}
+  :{x,y,w,h};
+}
 function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,variant=0,dash=false){
  const dir=attacker.face||1,flip=dir<0;
  if(attacker.beastType){
@@ -1529,15 +1539,16 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
    // Wolf attack FX artwork is authored in the opposite facing direction.
    // Mirror ONLY wolf attacks; do not change the world-space effect position,
    // upward spray, rotation, scale, timing or any other beast's effects.
-   flip:attacker.beastType==='wolf'?dir<0:dir>0,layer:'front',rotation:dir>0?-.20:.20,
+   flip:beastFxFlip(attacker),layer:'front',rotation:dir>0?-.20:.20,
    flightX:dir*(ground?92:65),flightY:ground?-78:-96,
    duration:ground?.33:.26,alpha:1,delay:ground?.10:.065
   });
   if(ground){
    const footX=attacker.x+dir*93;
-   addFx(1,footX,FLOOR-49,{
-    beastFx:'step',w:750*size,h:318*size,
-    flip:dir>0,layer:'front',duration:.39,alpha:.86,delay:.13
+   const stomp=beastGroundFx(attacker,footX,FLOOR-49,750*size,318*size);
+   addFx(1,stomp.x,stomp.y,{
+    beastFx:'step',w:stomp.w,h:stomp.h,
+    flip:beastFxFlip(attacker),layer:'front',duration:.39,alpha:.86,delay:.13
    });
   }
   return;
@@ -1608,9 +1619,10 @@ function finishFight(winner,loser){
  if(S.careerMatch)finishCareerMatch();
  if(loser.beastType){
   window.ArenaBeastFX?.ensure?.();
-  addFx(0,loser.x,FLOOR-45,{
-   beastFx:'collapse',w:560,h:325,duration:.72,
-   flip:loser.face<0,alpha:.9,layer:'back'
+  const collapse=beastGroundFx(loser,loser.x,FLOOR-45,560,325);
+  addFx(0,collapse.x,collapse.y,{
+   beastFx:'collapse',w:collapse.w,h:collapse.h,duration:.72,
+   flip:beastFxFlip(loser),alpha:.9,layer:'back'
   });
  }
  say(winner.enemy?'DEFEAT':'VICTORIA!',1.7);
@@ -1789,10 +1801,11 @@ function attack(f,victim,special=false,dashImpact=false){
  }
  if(victim.beastType&&!victim.dead){
   window.ArenaBeastFX?.ensure?.();
+  const wolfHit=victim.beastType==='wolf'?.92:1;
   addFx(2,victim.x-victim.face*30,FLOOR-155,{
-   beastFx:'hit',w:610,h:500,owner:victim,track:'body',
+   beastFx:'hit',w:610*wolfHit,h:500*wolfHit,owner:victim,track:'body',
    offsetX:-victim.face*30,offsetY:12,
-   flip:f.face<0,alpha:.82,duration:.25
+   flip:beastFxFlip(victim),alpha:.82,duration:.25
   });
  }
  const wasGuarding=!!(victim.guard&&victim.st>0);
@@ -1886,8 +1899,9 @@ function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.d
  window.ArenaMotion?.pulse?.(f,'contact','source',f.face);f.x=clamp(f.x+(f.enemy?-1:-1)*f.face*84,120,1160);const p=weaponPoint(f,'dodge');window.ArenaAudio?.play?.('dodge',{gain:.56,pan:(f.x-640)/720});
  if(f.beastType){
    window.ArenaBeastFX?.ensure?.();
-   addFx(1,f.x+f.face*75,FLOOR-46,{beastFx:'step',w:560,h:250,
-     flip:f.face>0,alpha:.76,duration:.31,layer:'front'});
+   const dodgeStep=beastGroundFx(f,f.x+f.face*75,FLOOR-46,560,250);
+   addFx(1,dodgeStep.x,dodgeStep.y,{beastFx:'step',w:dodgeStep.w,h:dodgeStep.h,
+     flip:beastFxFlip(f),alpha:.76,duration:.31,layer:'front'});
  }else addFx(1,p.x,p.y,{art:'dash_trail',w:360,h:120,flip:f.face<0,
      alpha:.48,owner:f,offsetX:-f.face*32,offsetY:110,duration:.2});}
 function inputAct(action){if(S.phase!=='fight'||S.paused)return;if(action==='attack')attack(S.player,S.enemy);else if(action==='special')attack(S.player,S.enemy,true);else if(action==='dodge')dodge(S.player);else if(action==='guard'){S.keys.add('guard');}}
@@ -2051,9 +2065,11 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
    beast._beastStepFxAt=clock;
    window.ArenaBeastFX?.ensure?.();
    const size=beast.beastType==='elephant'?1.5:1;
-   addFx(0,beast.x+beast.face*84,FLOOR-43,{
-     beastFx:'step',w:400*size,h:172*size,duration:.27,
-     flip:beast.face>0,layer:'back',alpha:.7});
+   const step=beastGroundFx(beast,beast.x+beast.face*84,FLOOR-43,
+     400*size,172*size);
+   addFx(0,step.x,step.y,{
+     beastFx:'step',w:step.w,h:step.h,duration:.27,
+     flip:beastFxFlip(beast),layer:'back',alpha:.7});
   }
   if(beast._beastRoarUntil>clock&&
      beast._beastRoarFxUntil!==beast._beastRoarUntil){
@@ -2061,7 +2077,7 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
    window.ArenaBeastFX?.ensure?.();
    addFx(0,beast.x+beast.face*155,FLOOR-243,{
     beastFx:'roar',w:640,h:460,duration:.66,
-    flip:beast.face>0,alpha:.93,layer:'front'});
+    flip:beastFxFlip(beast),alpha:.93,layer:'front'});
   }
  }
  for(const f of [p,e])if(f.knockT>0){

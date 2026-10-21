@@ -29,7 +29,8 @@ const WOLF_MANIFEST_PATH='public/'+WOLF_V3_DIR+'manifest.json';
 const WOLF_ACTIONS=Object.freeze([
  'idle','walk','attack1','attack2','attack3','attack4','hit','death','roar'
 ]);
-const wolfV3={state:'unrequested',actions:new Map(),metrics:new Map(),normalized:false,error:null};
+const wolfV3={state:'unrequested',actions:new Map(),metrics:new Map(),
+ normalized:false,error:null,loadingStill:null};
 // Small, unified gameplay presentation adjustment. Keep the same world-space
 // center and shared paw reference across every V3 motion (including death).
 const WOLF_DISPLAY_SCALE=.94; // 6% smaller than the previously approved wolf
@@ -153,6 +154,7 @@ function loadWolfV3(){
     const w=image.naturalWidth,h=image.naturalHeight;
     if(!w||!h||w%4!==0||h%2!==0)
      return reject(Error('Invalid 4x2 wolf atlas '+action+' '+w+'x'+h));
+    if(action==='idle')wolfV3.loadingStill=image;
     resolve([action,image]);
    };
    image.onerror=()=>reject(Error('Atlas did not load '+action));
@@ -169,6 +171,7 @@ function loadWolfV3(){
   // Keep using the verified legacy 40-frame art if a V3 pack is incomplete.
   if(wolfV3.state!=='ready'){
    wolfV3.error=String(e);
+   wolfV3.loadingStill=null;
    wolfV3.state='unavailable';
   }
  });
@@ -217,6 +220,29 @@ if(WOLF_PREVIEW_ENABLED&&typeof window!=='undefined'){
     actions:[...wolfV3.actions.keys()]
   },event.origin||'*');
  });
+}
+// Before nine actions load, prevent the FIRST fight from showing the older
+// 8x5 rectangular cuts containing art from neighboring animation frames.
+// Paint one intact idle source instead, then atomically enter full V3 animation.
+function drawWolfPending(ctx,{x,y,w,h,flip=false,alpha=1}){
+ const approved=wolfV3.normalized?wolfV3.loadingStill:null;
+ const indy=cache.get('wolf')?.individual?.get('idle:0');
+ if(!approved&&!indy?.naturalWidth)return false;
+ const center=x+w*.5,ground=y+h-WOLF_PAW_RAISE;
+ ctx.save();
+ ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
+ if(flip){ctx.translate(2*center,0);ctx.scale(-1,1);}
+ if(approved){
+  const cw=approved.naturalWidth/4,ch=approved.naturalHeight/2;
+  const scale=h*.82/315*WOLF_DISPLAY_SCALE;
+  ctx.drawImage(approved,0,0,cw,ch,
+    center-272*scale,ground-470*scale,cw*scale,ch*scale);
+ }else{
+  const dw=w*WOLF_DISPLAY_SCALE,dh=h*WOLF_DISPLAY_SCALE;
+  ctx.drawImage(indy,center-dw*.5,ground-dh*.88,dw,dh);
+ }
+ ctx.restore();
+ return true;
 }
 function drawWolfV3(ctx,args){
  const {fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}=args;
@@ -454,6 +480,11 @@ function frameFor(f,pose,clock){
 function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
  if(!fighter?.beastType)return false;
  if(drawWolfV3(ctx,{fighter,pose,clock,x,y,w,h,flip,alpha}))return true;
+ // The old wolf 8x5 cutter is not a permitted transient or ready fallback:
+ // the first encounter would briefly show neighboring or double poses.
+ if(fighter.beastType==='wolf'&&
+   ['unrequested','loading','ready'].includes(wolfV3.state))
+  return drawWolfPending(ctx,{x,y,w,h,flip,alpha});
  const info=SPEC[fighter.beastType],entry=cache.get(fighter.beastType);
  if(!info)return false;
  // A pending image must not result in invisible foes. Let the existing

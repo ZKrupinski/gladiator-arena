@@ -1,29 +1,13 @@
 {
   "assetSha256": {
-    "public/assets/beasts/wolf-trial/attack1.webp": "39c1934c045d3bdbc55bf9877fe94bfead92b72e6b83f6bf71a34f3b831a9adf",
-    "public/assets/beasts/wolf-trial/attack2.webp": "a638eb3fbc087e319e9a1270198b1216b61fb4b5c028441f394ec52b814ad2ff",
-    "public/assets/beasts/wolf-trial/attack3.webp": "e40984f3a650141cf7831f659e0e731f6ec18df32dd8ae525dadfc7dfc4b0843",
-    "public/assets/beasts/wolf-trial/attack4.webp": "3b8a3c62d1f5119eed26d7ef26d5febb53c18253161ee9e80dbfff6c2c32e166",
-    "public/assets/beasts/wolf-trial/death.webp": "f990cd7fc8c99ceea63361d96710aef363b30b15371d5eb294ff550935f321fe",
-    "public/assets/beasts/wolf-trial/hit.webp": "e6506e2fa2750129a67e423b8f5dbe7fc06a8209ba913a260bc3587d8803d3bd",
-    "public/assets/beasts/wolf-trial/idle.webp": "37cf7fe2d42d03bb5b2e34cd79754516f01cf64767ba611e6c9121a863be2066",
-    "public/assets/beasts/wolf-trial/manifest.json": "9c9bed704e5aa2bd11588b6eb28eb3f60e37c7161bfd02c55abda53c5feac1d3",
-    "public/assets/beasts/wolf-trial/roar.webp": "cb99644b45d9929f143b00c9f2f2e8fd78b4f7994e04ab040097d3de0156da56",
-    "public/assets/beasts/wolf-trial/walk.webp": "f4362ae89231361d23c7503c98fa1bca14b81f7707d28a7720c38a0439a40e66",
-    "public/assets/beasts/wolf-v3/attack1.webp": "39c1934c045d3bdbc55bf9877fe94bfead92b72e6b83f6bf71a34f3b831a9adf",
-    "public/assets/beasts/wolf-v3/attack2.webp": "a638eb3fbc087e319e9a1270198b1216b61fb4b5c028441f394ec52b814ad2ff",
-    "public/assets/beasts/wolf-v3/attack3.webp": "e40984f3a650141cf7831f659e0e731f6ec18df32dd8ae525dadfc7dfc4b0843",
-    "public/assets/beasts/wolf-v3/attack4.webp": "3b8a3c62d1f5119eed26d7ef26d5febb53c18253161ee9e80dbfff6c2c32e166",
-    "public/assets/beasts/wolf-v3/death.webp": "f990cd7fc8c99ceea63361d96710aef363b30b15371d5eb294ff550935f321fe",
-    "public/assets/beasts/wolf-v3/hit.webp": "e6506e2fa2750129a67e423b8f5dbe7fc06a8209ba913a260bc3587d8803d3bd",
-    "public/assets/beasts/wolf-v3/idle.webp": "37cf7fe2d42d03bb5b2e34cd79754516f01cf64767ba611e6c9121a863be2066",
-    "public/assets/beasts/wolf-v3/manifest.json": "f9f9d831e5e80fd1209eb8df4e4645b8e13932403b5201a8ad35b2b59552ded6",
-    "public/assets/beasts/wolf-v3/roar.webp": "cb99644b45d9929f143b00c9f2f2e8fd78b4f7994e04ab040097d3de0156da56",
-    "public/assets/beasts/wolf-v3/walk.webp": "f4362ae89231361d23c7503c98fa1bca14b81f7707d28a7720c38a0439a40e66"
+    "public/arena-beasts.js": "a28301c43925f966eadfe53e40a65036d0ec210b818c92a7ff244d009926c950",
+    "public/index.html": "88a2d6256eee2b64ccb816e23987c60bc24da2902aae6c7d00ff44e0bf244052",
+    "scripts/qa_beast_vfx_runtime.mjs": "61acb36f6a82e9b79d917bd60473d57a445fa1fd958e9e13cddef30e62599f9b",
+    "scripts/qa_wolf_v3_attack_variants.mjs": "341c9d70d2b7450d2caa940c4b208a1b62d3f3d2f3c26b0e5c20f7674216a08f"
   },
-  "baseCommit": "c4f4afeb0f6f4aa9d7fcde063b9633c3273e7a6c",
+  "baseCommit": "0e57634feb2e7e73beff6bf51948ab87712d577d",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "wolf-approved-v6-72frames-20261021-pub",
+  "releaseId": "wolf-fx-firstspawn-v1-20261021",
   "releaseProtocol": "spartacus-uploader-v1"
 }
