@@ -159,6 +159,35 @@ class TestSpartacusUploader(unittest.TestCase):
                  "approvedForProduction":True,"releaseId":"wolf-release-v3","files":[row]}
         with self.assertRaisesRegex(u.UploadError,"RESERVED"):
             u.stage_request(request,main_sha=head)
+    def test_wolf_trial_is_isolated_and_reports_edge_risks(self):
+        import io
+        from PIL import Image, ImageDraw
+        art=Image.new("RGBA",(1672,940))
+        brush=ImageDraw.Draw(art)
+        for i in range(8):
+            x=i%4*418;y=i//4*470
+            brush.rectangle((x,y+20,x+417,y+430),fill=(30+i,60,110,255))
+        data=io.BytesIO()
+        art.save(data,"WEBP",lossless=True,method=3)
+        trial="public/assets/beasts/wolf-trial/idle.webp"
+        review=u.check_asset(trial,data.getvalue(),strict_art=True)
+        self.assertFalse(review["nativeValidated"])
+        self.assertTrue(review["previewOnly"])
+        self.assertEqual(review["edgeRiskFrames"],list(range(1,9)))
+        with self.assertRaisesRegex(u.UploadError,"NATIVE_SHEET_TOO_SMALL"):
+            u.check_asset("public/assets/beasts/wolf-v3/idle.webp",data.getvalue(),strict_art=True)
+        with self.assertRaisesRegex(u.UploadError,"NO_PARTIAL_SPRITE_UPLOADS"):
+            u.publish_files({trial:data.getvalue()},confirm=True,verify=False)
+        actions=("idle","walk","attack1","attack2","attack3",
+                 "attack4","hit","death","roar")
+        folder="public/assets/beasts/wolf-trial/"
+        base={folder+a+".webp":data.getvalue() for a in actions}
+        bad=dict(base)
+        bad[folder+"manifest.json"]=json.dumps({"version":3,"previewOnly":False,
+          "actions":{a:a+".webp" for a in actions}}).encode()
+        with self.assertRaisesRegex(u.UploadError,"EXPLICIT_PREVIEW_ONLY"):
+            u.publish_files(bad,confirm=True,verify=False)
+
     def test_marker_never_claims_live_deployment(self):
         obj=json.loads(u.marker("wolf-release-v5",{"public/index.html":"a"*64},"b"*40))
         self.assertEqual(obj["branch"],"main")
