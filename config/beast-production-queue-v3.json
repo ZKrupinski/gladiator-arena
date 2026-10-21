@@ -42,7 +42,15 @@
     "groundAnchorMandatory": true,
     "doNotCropFusedLimbs": true,
     "allPendingUntilRealGenerationAndVisualAndGameQA": true,
-    "prohibitLegacy1586x992_40poseSource": true
+    "prohibitLegacy1586x992_40poseSource": true,
+    "exactlyOneNative4x2SheetPerMotion": true,
+    "independentPngOnlyAfterQASheetExtraction": true,
+    "nativeReferenceFidelityFloor": 0.8,
+    "minimumNativePixelsPerCell": 869,
+    "minimumNativePixelsPerSheet": [
+      3476,
+      1738
+    ]
   },
   "taskCount": 50,
   "tasks": [
@@ -55,12 +63,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "wolf.walk",
@@ -71,12 +88,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "wolf.slash",
@@ -87,12 +113,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "wolf.sweep",
@@ -103,12 +138,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "wolf.thrust",
@@ -119,12 +163,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "wolf.heavy",
@@ -135,12 +188,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "wolf.guard",
@@ -151,12 +213,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "wolf.hit",
@@ -167,12 +238,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "wolf.death",
@@ -183,12 +263,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "wolf.roar",
@@ -199,12 +288,21 @@
       "required": false,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "6e1c35d202944fdabf5e68b48af7ed4c301eefc7c84d21f76e38d4d4db30e8a2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "leopard.idle",
@@ -215,12 +313,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "leopard.walk",
@@ -231,12 +338,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "leopard.slash",
@@ -247,12 +363,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "leopard.sweep",
@@ -263,12 +388,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "leopard.thrust",
@@ -279,12 +413,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "leopard.heavy",
@@ -295,12 +438,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "leopard.guard",
@@ -311,12 +463,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "leopard.hit",
@@ -327,12 +488,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "leopard.death",
@@ -343,12 +513,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "leopard.roar",
@@ -359,12 +538,21 @@
       "required": false,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "9bc09da03d71682fbea1d4e2081de4014892a94a5b3e4e536340949a4e54c7d6",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "tiger.idle",
@@ -375,12 +563,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "tiger.walk",
@@ -391,12 +588,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "tiger.slash",
@@ -407,12 +613,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "tiger.sweep",
@@ -423,12 +638,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "tiger.thrust",
@@ -439,12 +663,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "tiger.heavy",
@@ -455,12 +688,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "tiger.guard",
@@ -471,12 +713,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "tiger.hit",
@@ -487,12 +738,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "tiger.death",
@@ -503,12 +763,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "tiger.roar",
@@ -519,12 +788,21 @@
       "required": false,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "44af2a10476a6c9e503678ca82ca81001f82d91b9d3255d6d405edca1625b6fe",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "lion.idle",
@@ -535,12 +813,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "lion.walk",
@@ -551,12 +838,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "lion.slash",
@@ -567,12 +863,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "lion.sweep",
@@ -583,12 +888,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "lion.thrust",
@@ -599,12 +913,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "lion.heavy",
@@ -615,12 +938,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "lion.guard",
@@ -631,12 +963,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "lion.hit",
@@ -647,12 +988,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "lion.death",
@@ -663,12 +1013,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "lion.roar",
@@ -679,12 +1038,21 @@
       "required": false,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "dce82512b55d49eb7fae6e53631b43d72b84f0941bb73fd41e69673007e0cf13",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "elephant.idle",
@@ -695,12 +1063,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "elephant.walk",
@@ -711,12 +1088,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "elephant.slash",
@@ -727,12 +1113,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "elephant.sweep",
@@ -743,12 +1138,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "elephant.thrust",
@@ -759,12 +1163,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "elephant.heavy",
@@ -775,12 +1188,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "elephant.guard",
@@ -791,12 +1213,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "elephant.hit",
@@ -807,12 +1238,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "elephant.death",
@@ -823,12 +1263,21 @@
       "required": true,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     },
     {
       "id": "elephant.roar",
@@ -839,12 +1288,21 @@
       "required": false,
       "state": "AWAIT_GENERATION",
       "minimumNativePixelsPerFrame": [
-        512,
-        512
+        869,
+        869
       ],
       "approvedReferenceSha256": "f640f4633c851a6064b01382eae89671033de40e8c65435570046b9659aa43b2",
-      "sourceMode": "8 independent RGBA PNG preferred",
-      "readyToReplaceGame": false
+      "sourceMode": "EXACTLY_ONE_NATIVE_RGBA_4X2_SHEET",
+      "readyToReplaceGame": false,
+      "minimumNativePixelsPerSheet": [
+        3476,
+        1738
+      ],
+      "sheetGrid": [
+        4,
+        2
+      ],
+      "separatePngs": "QA_EXTRACTION_ONLY_NOT_GENERATION_INPUT"
     }
   ]
 }

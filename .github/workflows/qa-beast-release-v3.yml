@@ -7,6 +7,13 @@ on:
       - scripts/test_beast_release_gate_v3.py
       - config/beast-production-queue-v3.json
       - .github/workflows/qa-beast-release-v3.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/check_beast_release_v3.py
+      - scripts/test_beast_release_gate_v3.py
+      - config/beast-production-queue-v3.json
+      - .github/workflows/qa-beast-release-v3.yml
   workflow_dispatch:
 jobs:
   gate:

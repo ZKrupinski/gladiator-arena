@@ -21,7 +21,26 @@ def validate(queue,root,report_path):
                 if q.get("status")!="TECHNICAL_PASS_PENDING_ART_AND_GAME_REVIEW":
                     reasons.append("V3_QA_NOT_PASSED")
                 if q.get("releaseAuthorized") is not False:reasons.append("UNTRUSTED_RELEASE_FLAG")
-                if len(q.get("frames",[]))!=8:reasons.append("NOT_EIGHT_QA_FRAMES")
+                frames=q.get("frames",[])
+                if len(frames)!=8:reasons.append("NOT_EIGHT_QA_FRAMES")
+                preflight=q.get("preflight")
+                if (not isinstance(preflight,dict) or
+                    preflight.get("preflightAccepted") is not True or
+                    (preflight.get("character"),preflight.get("action"))!=
+                      (task["character"],task["action"])):
+                    reasons.append("MISSING_VERIFIED_V3_PREGEN_BRIEFING")
+                # These dimensions come from the ORIGINAL native 4x2 sheet,
+                # before any legitimate crop/ground-anchor alignment. A large
+                # resized export must never masquerade as native V3 source art.
+                minimum=task["minimumNativePixelsPerFrame"]
+                if len(frames)==8:
+                    for frame in frames:
+                        dims=frame.get("native") if isinstance(frame,dict) else None
+                        if (not isinstance(dims,list) or len(dims)!=2 or
+                            any(not isinstance(value,int) for value in dims) or
+                            dims[0]<minimum[0] or dims[1]<minimum[1]):
+                            reasons.append("SOURCE_SHEET_NATIVE_DETAIL_BELOW_FLOOR")
+                            break
                 images=sorted((base/"draft_frames"/task["action"]).glob("*.png"))
                 if len(images)!=8:reasons.append("NOT_EIGHT_PNGS")
                 for im_path in images:

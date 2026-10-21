@@ -7,7 +7,7 @@ Core motions: idle, walk, slash, sweep, thrust, heavy, guard, hit, death. Option
 Step 1: Create a locked, SHA256-referenced generation job:
 python scripts/spriteforge_pipeline_v3.py --mode plan --reference /art/approved_leopard.png --character leopard --action idle --out /tmp/leopard-idle
 
-Step 2: Connect a real provider adapter that reads the generation_job.json, follows its instructions and returns result.json with EITHER eight PNG filenames OR one 4x2 sheet plus jobSha256 equal to the SHA256 of the original job file:
+Step 2: Connect a real provider adapter that reads the generation_job.json, follows its instructions and returns result.json with EXACTLY ONE native-resolution transparent 4x2 sheet plus jobSha256 equal to the SHA256 of the original job file. Eight separately generated PNGs are prohibited; PNG frames are cut only AFTER source-sheet QA:
 python scripts/spriteforge_pipeline_v3.py --mode generate --job /tmp/leopard-idle/generator_job.json --adapter /trusted/provider_adapter.py --out /tmp/render
 
 Generator adapter is NOT connected to ChatGPT ImageGen. Without an actual provider adapter, generation FAILS. It is wrong to claim autonomous drawing is done when only the job contract exists.
@@ -15,7 +15,7 @@ Generator adapter is NOT connected to ChatGPT ImageGen. Without an actual provid
 Step 3: For images already produced, run:
 python scripts/spriteforge_pipeline_v3.py --mode inspect --job /tmp/leopard-idle/generator_job.json --result /art/result.json --out /tmp/leopard-qa
 
-Quality gates: native pixel resolution at least 512x512 per frame, or 4x2 at least 2048x1024; eight unique frames; transparent alpha; no body clipping, shared cell boundary components, second major actor or uncertain detached parts. For accepted images, preserve original pixels, do NOT upscale, and align to estimated foot coordinates on a dynamically sized transparent output canvas.
+Quality gates: source-sheet native cells at least max(768px, 80% of the approved reference's shorter side, capped at 1536px). The approved 1448x1086 beast reference requires 869px per cell and a 3476x1738 4x2 sheet; eight unique frames; transparent alpha; no body clipping, shared cell boundary components, second major actor or uncertain detached parts. For accepted images, preserve original pixels, do NOT upscale, and align to estimated foot coordinates on a dynamically sized transparent output canvas.
 
 A sheet is examined on its full alpha mask BEFORE cutting into cells. If linked silhouettes cross frame seams, STOP and request regeneration rather than amputating parts. Alpha-based bbox cuts remove transparent padding only. Ambiguous detached pieces are NOT silently erased.
 
