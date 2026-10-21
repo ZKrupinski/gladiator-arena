@@ -506,15 +506,27 @@ def main(argv=None):
         elif args.command=="process-request":
             spec=json.loads(Path(args.manifest).read_text(encoding="utf8"))
             gh=GitHub(); head=gh.main_sha()
-            # The user's request is itself committed to main. Its recorded
-            # expectedMainSha MUST equal that request commit's first parent,
-            # not the new head, or every inbox request would falsely fail.
-            tip=gh.request("GET", f"/repos/{REPO}/git/commits/{head}")
+            # The workflow is triggered by the inbox-commit, not by an
+            # unrelated QA/Docs commit that may have landed while staging
+            # nine large images. GITHUB_SHA is the event's immutable commit.
+            inbox_sha=os.environ.get("GITHUB_SHA") or head
+            tip=gh.request("GET", f"/repos/{REPO}/git/commits/{inbox_sha}")
             parents=tip.get("parents",[])
-            if not parents:
-                raise UploadError("INBOX_COMMIT_HAS_NO_PARENT")
+            if not parents:raise UploadError("INBOX_COMMIT_HAS_NO_PARENT")
             original_head=parents[0]["sha"]
             items=stage_request(spec,main_sha=original_head)
+            if inbox_sha!=head:
+                cmp=gh.request("GET",f"/repos/{REPO}/compare/{inbox_sha}...{head}")
+                if cmp.get("status")!="ahead" or not isinstance(cmp.get("files"),list):
+                    raise UploadError("INBOX_EVENT_NO_LONGER_MAIN_ANCESTOR")
+                if len(cmp["files"])>=300:
+                    raise UploadError("INBOX_CHANGED_FILE_SET_TRUNCATED")
+                intervening={x["filename"] for x in cmp["files"]}
+                protected_targets=set(items)|{RELEASE_PROBE}
+                if intervening & protected_targets:
+                    raise UploadError("INBOX_TARGET_MODIFIED_BY_NEWER_COMMIT")
+            # Keep expected_sha=head, so an additional concurrent writer
+            # during upload still fails closed instead of overwriting them.
             result=publish_files(items,confirm=True,git=gh,expected_sha=head,
                                  release_id=spec["releaseId"],
                                  verify=not args.no_verify,
