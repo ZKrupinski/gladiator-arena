@@ -5,7 +5,13 @@ try {
  const page=await browser.newPage({viewport:{width:1200,height:900}});
  await page.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>!!window.ArenaFocus&&!!window.__arenaQA,{timeout:15000});
- await page.locator('#startBtn').click();
+ // Blood & Glory launches directly into LUDUS. The old arcade button
+ // is intentionally hidden; enter the actual fight via the QA-only hook.
+ await page.evaluate(()=>{
+  const s=window.__arenaQA.state;
+  s.phase='fight';s.time=110;s.paused=false;
+  s.gauntlet=null;s.autoplayEnabled=false;s.autoPlaying=false;
+ });
  await page.waitForFunction(()=>window.__arenaQA.state.phase==='fight',{timeout:15000});
  const result=await page.evaluate(()=>{
   const {state:s,attack,finishLineupCleanup,showEnd}=window.__arenaQA;
