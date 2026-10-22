@@ -305,7 +305,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
-<div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div><div id="lineupHud" class="lineup-hud" aria-live="polite" hidden></div>
+<div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div><div id="crowdHeat" class="arena-crowd-hud" aria-label="관중 흥미도" hidden><span id="crowdHeatLabel">관중 흥미도 · 관심 0</span><div class="arena-crowd-track"><i id="crowdHeatFill"></i></div></div><div id="lineupHud" class="lineup-hud" aria-live="polite" hidden></div>
 <section class="overlay overlay-title" id="startScreen">
 <button type="button" id="ludusResetOpen" class="ludus-reset-trigger" aria-haspopup="dialog" aria-controls="ludusResetDialog">루두스 초기화</button>
 <div class="stage-panel stage-panel-title spartacus-home">
@@ -352,7 +352,7 @@ body{min-height:100dvh;overscroll-behavior:none}
    <div class="result-versus" aria-hidden="true">✦</div>
    <div class="result-pose-card defeated"><div class="result-pose-art" id="loserPose" role="img" aria-label="패배한 검투사 포즈"></div><span id="loserName">DEFEATED</span><small>DEFEAT · FRAME 10</small></div>
   </div>
-  <p id="endReason"></p><p id="endStats"></p>
+  <p id="endReason"></p><p id="endStats"></p><div id="endLoot" class="arena-result-loot" role="region" aria-label="경기 보상 및 획득 장비" hidden></div>
   <div class="end-actions"><button id="againBtn" class="start">다시 하기</button><button id="continueBtn" class="start secondary">계속 하기</button></div>
  </div>
 </section>
@@ -375,7 +375,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=whip-real-hit-v3"></script>
 <script src="champion-murmillo.js?v=3"></script>
-<script src="arena-gear-catalog.js?v=armory-v2"></script><script src="arena-loot.js?v=loot-economy-v2"></script><script src="arena-balance.js?v=unlimited-growth-v1"></script>
+<script src="arena-gear-catalog.js?v=armory-v2"></script><script src="arena-loot.js?v=loot-economy-v3"></script><script src="arena-excitement.js?v=crowd-heat-v1"></script><script src="arena-balance.js?v=unlimited-growth-v1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
 <script src="arena-beasts.js?v=versus-v5"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
@@ -1336,7 +1336,7 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
  const opposition=['murmillo','thraex','retiarius'].filter(cls=>cls!==selected);
  const rival=careerMatch?S.careerOpponent.cls:$('#opponentChoice').value==='random'?opposition[(S.round-1)%2]:$('#opponentChoice').value;
  S.phase='fight';S.paused=false;S.time=110;S.score=0;S.combo=0;S.notice='PUGNA!';S.noticeT=1.5;S.events=[];S.sparks=[];S.parryBursts=[];S.keys.clear();S.shake=0;S.cameraKick=null;S.flash=0;S.slow=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
- S.autoPlaying=false;S.lastManualInput=clock;S.careerRewardApplied=false;
+ S.autoPlaying=false;S.lastManualInput=clock;S.careerRewardApplied=false;S.crowd=ArenaCrowd.create();S.matchLoot=[];
  S.player=fighter(selected,335,false);S.enemy=fighter(rival,940,true);CAMERA.initialized=false;
  if(careerMatch){
   if(isChampionMurmillo(CAREER.hero)){
@@ -1778,6 +1778,7 @@ function clearCombatAfterimages(...actors){
 }
 function finishFight(winner,loser){
  if(loser.hp>0||S.phase!=='fight')return false;
+ crowdEvent('finisher');
  if(S.gauntlet)return resolveLineupBout(!winner.enemy);
  loser.hp=0;loser.dead=true;winner.dead=false;
  if(loser.beastType)loser._beastDeathSince=clock;
@@ -1866,6 +1867,7 @@ function launchCombatRecoil(target,dir,distance,kind){
   amp:kind==='parry'?15:20,dir:side};
  return target.specialRecoil;
 }
+function crowdEvent(kind){if(S.careerMatch&&S.crowd)ArenaCrowd.record(S.crowd,kind,clock);}
 function attack(f,victim,special=false,dashImpact=false){
  if(!f||!victim||S.phase!=='fight'||f.dead||victim.dead||f.stagger>0)return;
  if(!dashImpact&&(f.attackCD>0||f.comboDash))return;
@@ -1930,6 +1932,8 @@ function attack(f,victim,special=false,dashImpact=false){
     Math.round(enemyCounter*(S.careerMatch?(victim.championBoss?1.45:1.18):1)):
     (careerCounter??playerCounter);
    const reversal=window.ArenaBalance?.comebackParry?.(victim,f,baseCounter,victim.comebackUsed);
+    crowdEvent(reversal?.critical?'reversal':'parry');
+    if(!victim.enemy&&victim.hp/victim.maxHp<=.28)crowdEvent('comeback');
    const counterDamage=ArenaBalance.combatDamage(reversal?.damage??baseCounter,'parry');
    if(reversal?.critical)victim.comebackUsed=true;
    victim.parry=0;breakAttackChain(victim);victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
@@ -2037,8 +2041,8 @@ function attack(f,victim,special=false,dashImpact=false){
   });
  }
  const wasGuarding=!!(victim.guard&&victim.st>0);
- if(wasGuarding){dmg*=special?.45:dashImpact?.32:.16;victim.st=clamp(victim.st-(special?37:dashImpact?42:18),0,100);if(victim.st===0){
-  victim.guard=false;victim.stagger=.44;say('GUARD BREAK!');
+ if(wasGuarding){crowdEvent('guard');dmg*=special?.45:dashImpact?.32:.16;victim.st=clamp(victim.st-(special?37:dashImpact?42:18),0,100);if(victim.st===0){
+  victim.guard=false;victim.stagger=.44;say('GUARD BREAK!');crowdEvent('guardBreak');
   const guardAtlas=victim.cls==='thraex'?'fx_thraex':victim.cls==='retiarius'?'fx_retiarius':'fx';
   addFx(7,victim.x+victim.face*30,FLOOR-FIGHTER_DRAW_SIZE*.53,{
    art:null,sequence:'guard',atlas:guardAtlas,w:470,h:470,alpha:.9,duration:.34,
@@ -2066,6 +2070,10 @@ function attack(f,victim,special=false,dashImpact=false){
  const maxChunk=Math.max(12,Math.round(victim.maxHp*(dashImpact?.35:special?.27:.18)));
  dmg=Math.min(dmg,maxChunk);
  victim.hp=Math.max(0,victim.hp-dmg);
+  crowdEvent('clash');
+  if(special&&!guarded)crowdEvent('special');
+  if(dashImpact&&!guarded)crowdEvent('rush');
+  if(!victim.enemy&&victim.hp/victim.maxHp<=.28&&f.hp/f.maxHp<=.3)crowdEvent('comeback');
   if(S.careerMatch&&f.gearEffects?.lifesteal&&!guarded){
    const heal=Math.min(f.maxHp*.04,Math.max(1,Math.round(dmg*f.gearEffects.lifesteal)));
    f.hp=Math.min(f.maxHp,f.hp+heal);
@@ -2159,7 +2167,7 @@ function attack(f,victim,special=false,dashImpact=false){
   if(!guarded){
     f.chainHits=Math.min(3,f.chainHits+1);
     f.chainExpire=clock+COMBO_CHAIN_SECONDS;
-    if(f.chainHits===3&&!f.enemy)say('3 HIT · 4TH RUSH READY!',1);
+    if(f.chainHits===3&&!f.enemy){say('3 HIT · 4TH RUSH READY!',1);crowdEvent('combo');}
   }else breakAttackChain(f);
  }else if(dashImpact)breakAttackChain(f);
  if(!special&&!dashImpact&&!guarded&&victim.hp>0){
@@ -2182,6 +2190,7 @@ function dodge(f){
  const startX=f.x,dir=-(f.face||1);
  f.st-=23;
  f.dodge=.54;f.invuln=.3;setAction(f,'dodge',.58);
+ if(Math.abs(f.x-((f===S.player?S.enemy:S.player)?.x??f.x))<520)crowdEvent('dodge');
  // A full 300px retreat with the SAME 0.3s effective i-frames.
  // The hitbox is moved immediately; the original sprite visibly travels over
  // 0.26 real seconds as time slows. Its aspect ratio never changes.
@@ -2470,7 +2479,7 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
       sequence:'slash',w:390,h:390,flip:c.dir<0,
       alpha:.75,duration:.27,layer:'front'});
     fxSound('heavy_hit');
-    if(!f.enemy){S.score+=bonus;S.combo++;}
+    if(!f.enemy){S.score+=bonus;S.combo++;crowdEvent('riposte');}
     else S.combo=0;
     if(enemy.hp<=0)finishFight(f,enemy);
    }
@@ -2659,7 +2668,10 @@ function renderResultPortrait(id,f,index){
   }
  }
 }
-function updateHud(){const p=S.player,e=S.enemy;if(!p||!e)return;for(const [f,pre] of [[p,'p'],[e,'e']]){const h=$('#'+pre+'Hp'),st=$('#'+pre+'St');h.style.width=(f.hp/f.maxHp*100).toFixed(1)+'%';st.style.width=f.st.toFixed(1)+'%';$('#'+pre+'Value').textContent=Math.ceil(f.hp)+' / '+f.maxHp;}$('#pName').textContent=p.cfg.name;$('#eName').textContent=e.cfg.name;$('#clock').textContent=Math.max(0,Math.ceil(S.time));$('#roundLabel').textContent=`ROUND ${S.round}`;$('#cooldown').textContent=p.cd>0?`필살기 ${p.cd.toFixed(1)}초`:'필살기 준비 완료';$('#autoState').textContent=S.phase!=='fight'?'AUTO 대기':!S.autoplayEnabled?'AUTO OFF':S.autoPlaying?'● AUTO 전투 중 · 조작하면 해제':`AUTO ${Math.max(1,Math.ceil(AUTO_IDLE_SECONDS-(clock-S.lastManualInput)))}초 후`;$('#autoState').classList.toggle('active',S.autoPlaying);const announcement=S.noticeT>0?S.notice:'';$('#combatNotice').textContent=announcement;window.ArenaHerald?.sync(announcement,{lineup:!!S.gauntlet,round:S.gauntlet?.round||0,phase:S.phase});if(S.gauntlet)updateLineupHud();}
+function updateHud(){const p=S.player,e=S.enemy;if(!p||!e)return;for(const [f,pre] of [[p,'p'],[e,'e']]){const h=$('#'+pre+'Hp'),st=$('#'+pre+'St');h.style.width=(f.hp/f.maxHp*100).toFixed(1)+'%';st.style.width=f.st.toFixed(1)+'%';$('#'+pre+'Value').textContent=Math.ceil(f.hp)+' / '+f.maxHp;}$('#pName').textContent=p.cfg.name;$('#eName').textContent=e.cfg.name;$('#clock').textContent=Math.max(0,Math.ceil(S.time));$('#roundLabel').textContent=`ROUND ${S.round}`;$('#cooldown').textContent=p.cd>0?`필살기 ${p.cd.toFixed(1)}초`:'필살기 준비 완료';$('#autoState').textContent=S.phase!=='fight'?'AUTO 대기':!S.autoplayEnabled?'AUTO OFF':S.autoPlaying?'● AUTO 전투 중 · 조작하면 해제':`AUTO ${Math.max(1,Math.ceil(AUTO_IDLE_SECONDS-(clock-S.lastManualInput)))}초 후`;$('#autoState').classList.toggle('active',S.autoPlaying);const heat=$('#crowdHeat');const showHeat=!!(S.careerMatch&&S.crowd&&S.phase==='fight');
+ heat.hidden=!showHeat;
+ if(showHeat){const meter=ArenaCrowd.snapshot(S.crowd);$('#crowdHeatLabel').textContent='관중 · '+meter.grade.name+' '+meter.score+'/100';$('#crowdHeatFill').style.width=meter.score+'%';heat.dataset.grade=meter.grade.key;}
+ const announcement=S.noticeT>0?S.notice:'';$('#combatNotice').textContent=announcement;window.ArenaHerald?.sync(announcement,{lineup:!!S.gauntlet,round:S.gauntlet?.round||0,phase:S.phase});if(S.gauntlet)updateLineupHud();}
 // One coherent arena panorama, separated at its own architectural ground line.
 // The source art is very wide (about 3:1), with its sand beginning near 75%.
 // Draw wall and sand with different vertical scales so the characters STAND
