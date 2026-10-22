@@ -1,0 +1,30 @@
+name: QA slower duels and stronger parry-rush feedback
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - public/arena-balance.js
+      - public/arena-focus.js
+      - public/arena-motion.js
+      - scripts/qa_combat_pacing_impact_browser.mjs
+      - .github/workflows/qa-combat-pacing-v3.yml
+  workflow_dispatch:
+jobs:
+  pacing-and-impact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Host the real battle game
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/combat-pace-qa.log 2>&1 &
+          sleep 3
+      - name: Verify dual combat pacing, parry and 4th-hit rush
+        run: node scripts/qa_combat_pacing_impact_browser.mjs
