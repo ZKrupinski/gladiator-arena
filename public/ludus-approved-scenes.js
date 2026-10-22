@@ -191,6 +191,7 @@ function open(name){setup();room=name==='gear'?'armory':'training';if(room==='tr
 function close(){window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();if(screen)screen.hidden=true;}
 function refresh(){if(screen&&!screen.hidden)render();}
 window.LudusApprovedScenes={open,close,refresh,goHome};
+window.addEventListener('arena-gear-atlas-ready',()=>{if(screen&&!screen.hidden&&room==='armory')refresh();});
 // Career navigation is still handled by the original engine; these listeners only replace its view.
 for(const [id,name] of [['careerTrainTab','training'],['careerGearTab','gear']])document.getElementById(id)?.addEventListener('click',()=>open(name));
 document.getElementById('careerRosterTab')?.addEventListener('click',close);
