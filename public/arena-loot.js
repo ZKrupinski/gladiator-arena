@@ -24,37 +24,83 @@ const oldText=catalog.effectText;
 catalog.effectText=(key,value)=>extraEffects[key]?extraEffects[key]+' +'+Math.round(Number(value)*100)+'%':oldText(key,value);
 const find=id=>catalog.items.find(x=>x.id===id);
 const isShopItem=g=>!!g&&rank.indexOf(g.rarity)<2&&g.id!=='wood';
-const quantity=(hero,id)=>Array.isArray(hero?.inventory)?hero.inventory.filter(v=>v===id).length:0;
 const level=g=>Number(g.minLevel)||(
  g.rarity==='relic'?19:g.rarity==='legendary'?13:g.rarity==='epic'?7:g.rarity==='rare'?3:
  g.rarity==='uncommon'?Math.max(2,Math.ceil(g.cost/230)):1);
+/* One shared Ludus storeroom. Equipped items are allocated, never duplicated. */
 function ensure(career){
+ if(!Array.isArray(career.armoryInventory))career.armoryInventory=[];
+ const prior=career.roster||[];
+ if(career.gearStorageV2!==true){
+  // Old saves stored inventory on each fighter, including equipped gear.
+  // Move every unequipped copy into the Ludus store without duplicating worn copies.
+  for(const h of prior){
+   const incoming=Array.isArray(h.inventory)?h.inventory.slice():[];
+   for(const slot of ['weapon','shield','armor']){
+    const worn=h.equipment?.[slot],at=incoming.indexOf(worn);
+    if(worn&&at>=0)incoming.splice(at,1);
+   }
+   for(const id of incoming)if(find(id))career.armoryInventory.push(id);
+   h.inventory=[];
+  }
+  career.gearStorageV2=true;
+ }
+ // Newly recruited fighters may still arrive with a legacy starter inventory.
+ for(const h of prior)if(Array.isArray(h.inventory)&&h.inventory.length){
+  const incoming=h.inventory.slice();
+  for(const slot of ['weapon','shield','armor']){
+   const worn=h.equipment?.[slot],at=incoming.indexOf(worn);
+   if(worn&&at>=0)incoming.splice(at,1);
+  }
+  for(const id of incoming)if(find(id))career.armoryInventory.push(id);
+  h.inventory=[];
+ }
  if(!Array.isArray(career.discoveredGear)){
-  // Legacy purchases count as discovered; do not delete or reassign existing equipment.
-  career.discoveredGear=[...new Set((career.roster||[]).flatMap(h=>Array.isArray(h.inventory)?h.inventory:[]).filter(id=>isShopItem(find(id))))];
+  career.discoveredGear=[...new Set([...career.armoryInventory,...prior.flatMap(h=>Object.values(h.equipment||{}))].filter(id=>isShopItem(find(id))))];
  }
  if(!Number.isFinite(career.lootDryStreak))career.lootDryStreak=0;
  if(!Number.isFinite(career.lootRareStreak))career.lootRareStreak=0;
  return career;
 }
-function visible(career,hero,g){ensure(career);return !!g&&(g.id==='wood'?quantity(hero,'wood')>0:quantity(hero,g.id)>0||(isShopItem(g)&&career.discoveredGear.includes(g.id)));}
+const quantity=(career,id)=>ensure(career).armoryInventory.filter(v=>v===id).length;
+const allocated=(career,id)=>ensure(career).roster.filter(h=>Object.values(h.equipment||{}).includes(id)).length;
+const total=(career,id)=>quantity(career,id)+allocated(career,id);
+function visible(career,hero,g){ensure(career);return !!g&&(total(career,g.id)>0||(isShopItem(g)&&career.discoveredGear.includes(g.id)));}
 function offer(career,hero){return catalog.items.filter(g=>visible(career,hero,g));}
 function shopEnabled(career,g){return isShopItem(g)&&ensure(career).discoveredGear.includes(g.id);}
-function buy(career,hero,id){
- const g=find(id);if(!hero||!shopEnabled(career,g))return {ok:false,message:'이 장비는 전리품으로 발견한 후에만 구매할 수 있습니다. 희귀 이상은 오직 전투 보상입니다.'};
+function buy(career,id){
+ const g=find(id);
+ if(!shopEnabled(career,g))return {ok:false,message:'발견한 일반·고급 장비만 구매할 수 있습니다. 희귀 이상은 전투 전리품 전용입니다.'};
  if(career.gold<g.cost)return {ok:false,message:g.name+' 구매에 '+g.cost+'D가 필요합니다.'};
- career.gold-=g.cost;if(!Array.isArray(hero.inventory))hero.inventory=[];
- hero.inventory.push(id);
- return {ok:true,message:'구매 성공! '+g.name+' · '+g.cost+'D 사용 · 보유 ×'+quantity(hero,id)};
+ career.gold-=g.cost;career.armoryInventory.push(id);
+ return {ok:true,message:'루두스 창고에 '+g.name+' ×1 추가 · '+g.cost+'D 사용 · 보관 ×'+quantity(career,id)};
 }
-function sell(career,hero,id){
- const g=find(id),q=quantity(hero,id);
- if(!hero||!g||!q||g.id==='wood')return {ok:false,message:'판매할 장비가 없습니다.'};
- if(hero.equipment?.[g.slot]===id&&q<2)return {ok:false,message:'마지막 장착 장비는 먼저 해제해야 판매할 수 있습니다.'};
+function equip(career,hero,id){
+ const g=find(id);if(!hero||!g)return {ok:false,message:'장비와 검투사를 선택하세요.'};
+ ensure(career);
+ hero.equipment=hero.equipment||{};
+ if(hero.equipment[g.slot]===id)return {ok:true,message:g.name+' · 이미 장착 중입니다.'};
+ if(quantity(career,id)<1)return {ok:false,message:g.name+' 창고 재고가 없습니다. 발견한 일반·고급 장비는 추가 구입할 수 있습니다.'};
+ // Allocate one store copy to this fighter, release previous equipped item to store.
+ const prev=hero.equipment[g.slot];
+ const index=career.armoryInventory.indexOf(id);
+ career.armoryInventory.splice(index,1);
+ if(prev&&find(prev))career.armoryInventory.push(prev);
+ hero.equipment[g.slot]=id;
+ return {ok:true,message:hero.name+'에게 '+g.name+' 배정 완료 · 루두스 보관 ×'+quantity(career,id)};
+}
+function remove(career,hero,id){
+ const g=find(id);if(!hero||!g||hero.equipment?.[g.slot]!==id)return {ok:false,message:'선택한 장비를 장착 중이지 않습니다.'};
+ ensure(career);hero.equipment[g.slot]=null;career.armoryInventory.push(id);
+ return {ok:true,message:hero.name+'의 '+g.name+' 해제 → 루두스 공용 창고 ×'+quantity(career,id)};
+}
+function sell(career,id){
+ const g=find(id),q=quantity(career,id);
+ if(!g||!q||g.id==='wood')return {ok:false,message:'루두스 창고에 판매할 미착용 장비가 없습니다.'};
  const price=Math.max(1,Math.floor(g.cost*.42));
- if(!price)return {ok:false,message:'판매 가능한 장비가 아닙니다.'};
- hero.inventory.splice(hero.inventory.indexOf(id),1);career.gold+=price;
- return {ok:true,message:g.name+' 판매 +'+price+'D · 남은 수량 ×'+quantity(hero,id),gold:price};
+ if(!price)return {ok:false,message:'판매 불가능한 장비입니다.'};
+ career.armoryInventory.splice(career.armoryInventory.indexOf(id),1);career.gold+=price;
+ return {ok:true,message:g.name+' ×1 판매 +'+price+'D · 창고 재고 ×'+quantity(career,id),gold:price};
 }
 function choose(career,hero,context={},rng=Math.random){
  ensure(career);
@@ -72,7 +118,7 @@ function choose(career,hero,context={},rng=Math.random){
  const bands=rank.map(r=>({r,items:catalog.items.filter(g=>g.id!=='wood'&&g.rarity===r&&level(g)<=lv),w:weights[r]})).filter(x=>x.items.length&&x.w>0);
  const total=bands.reduce((s,x)=>s+x.w,0);if(!total)return null;
  let pick=rng()*total,band=bands[bands.length-1];for(const x of bands){pick-=x.w;if(pick<0){band=x;break;}}
- const variants=band.items.filter(g=>!quantity(hero,g.id));
+ const variants=band.items.filter(g=>!total(career,g.id));
  const pool=variants.length&&rng()<.76?variants:band.items;
  const item=pool[Math.min(pool.length-1,Math.floor(rng()*pool.length))];
  if(rank.indexOf(item.rarity)>=2)career.lootRareStreak=0;else career.lootRareStreak++;
@@ -80,10 +126,9 @@ function choose(career,hero,context={},rng=Math.random){
 }
 function award(career,hero,context={},rng=Math.random){
  const item=choose(career,hero,context,rng);if(!item)return null;
- if(!Array.isArray(hero.inventory))hero.inventory=[];
- hero.inventory.push(item.id);
+ career.armoryInventory.push(item.id);
  if(isShopItem(item)&&!career.discoveredGear.includes(item.id))career.discoveredGear.push(item.id);
- return {id:item.id,name:item.name,rarity:item.rarity,level:level(item),count:quantity(hero,item.id),unlocked:isShopItem(item),hero:hero.name};
+ return {id:item.id,name:item.name,rarity:item.rarity,level:level(item),count:quantity(career,item.id),unlocked:isShopItem(item),hero:hero.name};
 }
-root.ArenaLoot={rank,quantity,level,ensure,visible,offer,shopEnabled,buy,sell,choose,award,isShopItem};
+root.ArenaLoot={rank,quantity,allocated,total,level,ensure,visible,offer,shopEnabled,buy,equip,remove,sell,choose,award,isShopItem};
 })(globalThis);
