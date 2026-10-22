@@ -10,13 +10,13 @@ const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
 const MIN_GAP=200;
 const PRESETS=Object.freeze({
  brush:Object.freeze({amp:1.8,time:.13,hz:29,axis:'x',roll:0}),
- contact:Object.freeze({amp:5.5,time:.22,hz:25,axis:'x',roll:.0014}),
- strike:Object.freeze({amp:14,time:.27,hz:31,axis:'diag',roll:.003}),
- guard:Object.freeze({amp:11,time:.26,hz:23,axis:'x',roll:.002}),
- special:Object.freeze({amp:56,time:.81,hz:18,axis:'y',roll:.015}),
- dash:Object.freeze({amp:37,time:.66,hz:22,axis:'diag',roll:.012}),
- parry:Object.freeze({amp:35,time:.62,hz:16,axis:'double',roll:.009}),
- reversal:Object.freeze({amp:40,time:.72,hz:16,axis:'double',roll:.011})
+ contact:Object.freeze({amp:11,time:.27,hz:25,axis:'x',roll:.0026}),
+ strike:Object.freeze({amp:23,time:.34,hz:30,axis:'diag',roll:.0048}),
+ guard:Object.freeze({amp:17,time:.30,hz:23,axis:'x',roll:.0035}),
+ special:Object.freeze({amp:88,time:1.00,hz:18,axis:'y',roll:.023}),
+ dash:Object.freeze({amp:60,time:.83,hz:22,axis:'diag',roll:.019}),
+ parry:Object.freeze({amp:56,time:.75,hz:16,axis:'double',roll:.013}),
+ reversal:Object.freeze({amp:69,time:.88,hz:16,axis:'double',roll:.018})
 });
 const RESPONSE=Object.freeze({
  strike:{duration:.29,compression:.065,slide:9},
@@ -197,6 +197,6 @@ function contactPulse(a,b,minGap=MIN_GAP){
  pulse(b,'contact','target',dir);
  return true;
 }
-root.ArenaMotion={version:'1.3.0',PRESETS,RESPONSE,IMPACTS,pose,pulse,impact,visual,advance,shake,advanceShake,sampleShake,contactPulse};
+root.ArenaMotion={version:'1.4.0',PRESETS,RESPONSE,IMPACTS,pose,pulse,impact,visual,advance,shake,advanceShake,sampleShake,contactPulse};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaMotion;
 })(globalThis);
