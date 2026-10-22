@@ -1,45 +1,45 @@
 {
-  "testedAt": "2026-10-21T12:05:09.940Z",
+  "testedAt": "2026-10-22T02:26:59.949Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 61823,
-      "totalDifference": 4541391,
+      "changedChannels": 9030,
+      "totalDifference": 819793,
       "retries": 0
     },
     "walk": {
-      "changedChannels": 98074,
-      "totalDifference": 8381472,
+      "changedChannels": 112538,
+      "totalDifference": 9704437,
       "retries": 0
     },
     "sweep": {
-      "changedChannels": 103423,
-      "totalDifference": 9193122,
+      "changedChannels": 116452,
+      "totalDifference": 10147961,
       "retries": 0
     },
     "defeat": {
-      "changedChannels": 101086,
-      "totalDifference": 8960610,
-      "retries": 0
+      "changedChannels": 93990,
+      "totalDifference": 8302582,
+      "retries": 1
     },
     "slash": {
-      "changedChannels": 104531,
-      "totalDifference": 9401163,
+      "changedChannels": 115723,
+      "totalDifference": 10124549,
       "retries": 0
     },
     "thrust": {
-      "changedChannels": 92071,
-      "totalDifference": 8172950,
+      "changedChannels": 119257,
+      "totalDifference": 10042279,
       "retries": 0
     },
     "victory": {
-      "changedChannels": 41691,
-      "totalDifference": 2907899,
+      "changedChannels": 75389,
+      "totalDifference": 6389689,
       "retries": 0
     },
     "guard": {
-      "changedChannels": 18189,
-      "totalDifference": 1226016,
+      "changedChannels": 63437,
+      "totalDifference": 4937335,
       "retries": 0
     }
   },
@@ -74,27 +74,7 @@
     "newMotionBattleScale": 0.75,
     "rosterAfterMigration": 4
   },
-  "deployment": {
-    "mainCTA": true,
-    "ludusCTA": true,
-    "lobbyArtHitZone": true,
-    "sidebarCTA": true,
-    "selectOld": true,
-    "selectAnimated": true,
-    "selectOther": true,
-    "lobbyHitArea": {
-      "width": 177.3480224609375,
-      "height": 212.1546630859375,
-      "target": "ll-hit-arena",
-      "isTarget": true,
-      "pointer": "auto",
-      "stageHasArt": true
-    },
-    "names": [
-      "기존 무르밀로",
-      "무르밀로 · 애니메이션",
-      "기존 레티아리우스"
-    ]
-  },
-  "status": "PASS"
+  "status": "FAIL",
+  "error": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#titleCareerFight')\n    - locator resolved to <button type=\"button\" id=\"titleCareerFight\">내 검투사 출전</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    55 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n",
+  "consoleErrors": []
 }
