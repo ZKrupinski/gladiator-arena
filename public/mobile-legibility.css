@@ -255,3 +255,36 @@
   }
   .la-stage.armory .ra-collection footer {position:relative}
 }
+
+
+/* Armory V7: preserve readable one-line buttons and item statuses on phones. */
+@media(orientation:landscape) and (max-width:1150px){
+ .ra-collection .ra-item .ra-flag{font-size:25px!important;line-height:1.05!important;white-space:nowrap!important;padding:4px 8px!important}
+ .ra-collection .ra-combat-stats h3{font-size:25px}
+ .ra-collection .ra-combat-stats h3 small{font-size:19px}
+ .ra-collection .ra-live-stat>span{font-size:20px}
+ .ra-collection .ra-live-stat strong{font-size:28px}
+ .ra-collection .ra-live-stat em{font-size:20px}
+ .ra-collection .ra-comparison h3{font-size:28px}
+ .ra-collection .ra-comparison h3 small{font-size:20px}
+ .ra-collection .ra-metric-values b{font-size:25px}
+ .ra-collection .ra-metric-values strong{font-size:27px}
+ .ra-collection .ra-metric-values span{font-size:20px}
+ .ra-collection .ra-stat-diff em{font-size:19px}
+ .ra-collection .ra-buttons button{min-height:86px;height:86px;gap:4px}
+ .ra-collection .ra-buttons button strong{font-size:28px;white-space:nowrap}
+ .ra-collection .ra-buttons button small{font-size:21px;white-space:nowrap}
+ .ra-collection .ra-detail-title>span{white-space:nowrap}
+}
+@media(orientation:portrait) and (max-width:700px){
+ .ra-collection .ra-item .ra-flag{font-size:16px!important;line-height:1.1!important;white-space:nowrap!important;padding:4px 7px!important}
+ .ra-collection .ra-buttons button strong{font-size:19px;white-space:nowrap}
+ .ra-collection .ra-buttons button small{font-size:12px;white-space:nowrap}
+ .ra-collection .ra-live-stat>span{font-size:13px}
+ .ra-collection .ra-live-stat strong{font-size:18px}
+ .ra-collection .ra-metric-values b{font-size:17px}
+ .ra-collection .ra-metric-values strong{font-size:18px}
+ .ra-collection .ra-stat-diff em{font-size:12px}
+ .ra-collection .ra-sets summary{font-size:15px}
+ .ra-collection .ra-buttons button{min-height:62px;height:62px}
+}
