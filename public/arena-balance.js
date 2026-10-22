@@ -3,6 +3,15 @@
 (function(root){
  'use strict';
  const clamp=(n,min,max)=>Math.min(max,Math.max(min,Number.isFinite(n)?n:min));
+ // No hard cap on trained points. Beyond +10, the contribution to combat
+ // grows continuously but with decreasing marginal returns.
+ const TRAINING_SOFTCAP=10;
+ function trainedStat(value){
+  const n=Number(value);
+  if(!Number.isFinite(n)||n<=0)return 0;
+  return n<=TRAINING_SOFTCAP?n:
+   TRAINING_SOFTCAP+6*Math.log1p((n-TRAINING_SOFTCAP)/6);
+ }
  const TRAITS={
   murmillo:{armor:.16,parry:.22,stamina:1.12,speed:.90,role:'방패 수호자',special:'방패 충격·가드 파괴'},
   thraex:{armor:.06,parry:.12,stamina:1.00,speed:1.14,role:'기동 처형자',special:'연속 출혈·측면 기습'},
@@ -16,7 +25,7 @@
   '3v3':{allies:3,enemies:3,label:'군단전',reward:1.75}
  };
  function trainingCost(h,stat){
-  const level=clamp(h?.stats?.[stat]||0,0,10);
+  const level=Math.max(0,Number(h?.stats?.[stat])||0);
   return Math.round(18+11*Math.pow(level,1.6));
  }
  function heroPower(h){
@@ -24,10 +33,10 @@
   const s=h.stats||{},equip=h.equipment||{};
   const level=clamp(h.level||1,1,20);
   return Math.round(level*2.8+
-    clamp(s.str||0,0,10)*6.5+
-    clamp(s.agi||0,0,10)*5.2+
-    clamp(s.end||0,0,10)*6.2+
-    clamp(s.focus||0,0,10)*6.1+
+    trainedStat(s.str)*6.5+
+    trainedStat(s.agi)*5.2+
+    trainedStat(s.end)*6.2+
+    trainedStat(s.focus)*6.1+
     (equip.weapon&&equip.weapon!=='wood'?13:0)+
     (equip.shield?9:0)+(equip.armor?15:0));
  }
@@ -39,13 +48,13 @@
  function matchStrength(h){
   const s=h?.stats||{},equip=h?.equipment||{},base=BASE[h?.cls]||BASE.murmillo;
   const level=clamp(h?.level||1,1,20);
-  const training=['str','agi','end','focus'].reduce((n,k)=>n+clamp(s[k]||0,0,10),0);
+  const training=['str','agi','end','focus'].reduce((n,k)=>n+trainedStat(s[k]),0);
   const worn=['weapon','shield','armor'].map(k=>EQUIP[equip[k]]||null).filter(Boolean);
   const equipment=worn.filter(g=>g.atk||g.hp).length;
   const gear=worn.reduce((sum,g)=>({atk:sum.atk+g.atk,hp:sum.hp+g.hp}),{atk:0,hp:0});
   const injury=clamp(h?.injury||0,0,120),fatigue=clamp(h?.fatigue||0,0,100);
-  const hp=Math.max(1,Math.round(base.hp+clamp(s.end||0,0,10)*15+gear.hp-injury));
-  const atk=Math.round(base.atk+clamp(s.str||0,0,10)*2.65+gear.atk);
+  const hp=Math.max(1,Math.round(base.hp+trainedStat(s.end)*15+gear.hp-injury));
+  const atk=Math.round(base.atk+trainedStat(s.str)*2.65+gear.atk);
   const effectiveLevel=clamp(1+(level-1)*.58+training*.255+equipment*1.15
     -injury*.024-fatigue*.016,1,20);
   return {level,hp,atk,training,equipment,injury,fatigue,
@@ -109,15 +118,15 @@
   const s=h?.stats||{};
   const trait=TRAITS[h?.cls]||TRAITS.murmillo;
   return {
-   atk:Math.round(base.atk+clamp(s.str||0,0,10)*2.65+(gear.atk||0)),
-   hp:Math.round(base.hp+clamp(s.end||0,0,10)*15+(gear.hp||0)),
-   move:Math.round(base.move*(1+clamp(s.agi||0,0,10)*.041)),
-   sp:Math.round(base.sp+clamp(s.focus||0,0,10)*4.9+clamp(s.str||0,0,10)*.65+(gear.sp||0)),
-   staminaRegen:1+clamp(s.agi||0,0,10)*.048+(gear.stamina||0),
-   specialCooldown:clamp(7-clamp(s.focus||0,0,10)*.33-(gear.cooldown||0),3.1,7),
-   armor:clamp(trait.armor+clamp(s.end||0,0,10)*.007+(gear.armor||0),0,.48),
-   focus:clamp(s.focus||0,0,10),
-   parry:clamp(trait.parry+clamp(s.focus||0,0,10)*.016,0,.48)
+   atk:Math.round(base.atk+trainedStat(s.str)*2.65+(gear.atk||0)),
+   hp:Math.round(base.hp+trainedStat(s.end)*15+(gear.hp||0)),
+   move:Math.round(base.move*(1+trainedStat(s.agi)*.041)),
+   sp:Math.round(base.sp+trainedStat(s.focus)*4.9+trainedStat(s.str)*.65+(gear.sp||0)),
+   staminaRegen:1+trainedStat(s.agi)*.048+(gear.stamina||0),
+   specialCooldown:clamp(7-trainedStat(s.focus)*.33-(gear.cooldown||0),3.1,7),
+   armor:clamp(trait.armor+trainedStat(s.end)*.007+(gear.armor||0),0,.48),
+   focus:trainedStat(s.focus),
+   parry:clamp(trait.parry+trainedStat(s.focus)*.016,0,.48)
   };
  }
  function enemyAi(level,boss=false,cls='murmillo',hpRatio=1){
@@ -158,7 +167,7 @@
  function combatDamage(value,kind='normal'){
   return Math.max(1,Math.round(Math.max(0,Number(value)||0)*(DAMAGE_RATES[kind]??DAMAGE_RATES.normal)));
  }
- root.ArenaBalance={version:'1.3.0',combatDamage,DAMAGE_RATES,TRAITS,MODES,trainingCost,heroPower,
+ root.ArenaBalance={version:'1.4.0',TRAINING_SOFTCAP,trainedStat,combatDamage,DAMAGE_RATES,TRAITS,MODES,trainingCost,heroPower,
   matchStrength,makeMatch,comebackParry,
   encounterLevel,duelEnemy,heroStats,enemyAi,damageReduction,
   playerParryDamage,rewards};
