@@ -327,3 +327,20 @@
 @media(prefers-reduced-motion:reduce){
  .ra-collection .ra-live-stat.changed{animation:none}
 }
+
+
+/* Armory V8: the selected worn item reveals its live contribution immediately. */
+.ra-collection .ra-live-stat.equipped-active:not(.changed){
+ border-color:#d5ba69;
+ background:linear-gradient(145deg,#5d4726e8,#2f2819f5);
+ box-shadow:inset 0 0 11px #e0ac4852,0 0 8px #e8be5970;
+}
+.ra-collection .ra-live-stat.equipped-active>span{color:#ffe0a0}
+.ra-collection .ra-live-stat.equipped-active strong{color:#fff3b4;text-shadow:0 0 7px #ffc6707d}
+.ra-collection .ra-live-stat.equipped-active em{
+ display:block;
+ color:#ffe4a1;
+ font-style:normal;
+ font-weight:900;
+}
+.ra-collection .ra-portrait.selected{border-color:#ffeb9f;box-shadow:0 0 12px #f6ca78a8}
