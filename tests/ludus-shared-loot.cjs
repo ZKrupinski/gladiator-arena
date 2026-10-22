@@ -75,6 +75,23 @@ assert(tallies[5]>0&&tallies[5]<90,'perfect five-drop jackpots remain below 2.6%
 assert(tallies[0]>0&&tallies[1]>0&&tallies[2]>0,'variable outcome exists at maximum heat: '+tallies);
 assert.equal(excited.armoryInventory.length,5);
 assert(high.every(item=>item.level<=20));
+// Every drop is checked against BOTH its fighter-level rarity cap and its
+// per-equipment minimum level, even during a 100/100 crowd spectacle.
+const rarityCap={1:1,2:1,3:2,6:2,7:3,12:3,13:4,18:4,19:5,20:5};
+for(const [lvText,maximum] of Object.entries(rarityCap)){
+ const lv=Number(lvText);
+ const fighter=hero('Level '+lv,[],null,lv);
+ const storage={roster:[fighter],gold:0,armoryInventory:[],gearStorageV2:true,discoveredGear:[],lootDryStreak:0,lootRareStreak:0};
+ let seed=lv+34021;
+ const dice=()=>{seed=(Math.imul(seed,1103515245)+12345)>>>0;return seed/4294967296;};
+ for(let round=0;round<350;round++){
+  const found=loot.awardBattle(storage,fighter,{excitement:100,boss:true},dice);
+  for(const item of found){
+   assert(loot.rank.indexOf(item.rarity)<=maximum,'Lv.'+lv+' may not get '+item.rarity);
+   assert(item.level<=lv,'Lv.'+lv+' may not get equipment requiring Lv.'+item.level);
+  }
+ }
+}
 const take=crowd.create();
 assert.equal(crowd.snapshot(take).score,0);
 assert(crowd.record(take,'clash',10)>0);
