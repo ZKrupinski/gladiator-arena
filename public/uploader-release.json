@@ -1,12 +1,13 @@
 {
   "assetSha256": {
-    "public/index.html": "c8e8409e217213bf7f31598d78a9f56b27f2f455fd83f13ebb84b2815c1c7e9a",
-    "public/ludus-armory-live.css": "18aad08cdc49fe6ac987958f560463c91276c72614750ca70e64cd93bf7f8fde",
-    "public/ludus-armory-live.js": "9ad955ab07afbb0f23d6cca68b643327ae90f1cd169ed2dd207cf7ef08b77e24"
+    "public/index.html": "467771cd2b56192a6d4d2d07d9ad4910be9207961c337076b86aff83cb6be4ea",
+    "public/ludus-approved-scenes.js": "2cc83cfdd40c8af12e48c6bac77e8e2514d8d00660033d85123573770256db89",
+    "public/ludus-armory-live.css": "1b2f53a6bd1254473686caf73f8f30f77b1c81f26840e299c076bf2ee2a4fde3",
+    "public/ludus-armory-live.js": "41ff4634098b9b21ca7ad8daf5c35b92570fcf4f318f590f8be4b635746da91b"
   },
-  "baseCommit": "d03a7458c2b4e55c0d216055e63d2afa4550a4f6",
+  "baseCommit": "b0c4c4f9e96a722bf0af10d9d09a0846ed4eaf16",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "armory-roster-scroll-live-equipped-20261023-v1",
+  "releaseId": "armory-equipped-slot-shortcut-20261023-v1",
   "releaseProtocol": "spartacus-uploader-v1"
 }
