@@ -141,18 +141,15 @@ async function check(size,preview){
    window.__arenaQA.showEnd();
    const after=tray.innerText;
    const counts=[];
+   const completeDrops=S.matchLoot.slice();
    for(const n of [0,1,2,3,4]){
-    S.matchLoot=S.matchLoot.slice(0,n);
+    S.matchLoot=completeDrops.slice(0,n);
     window.__arenaQA.showEnd();
     const children=[...tray.querySelectorAll('.arena-loot-drop')],boxes=children.map(x=>x.getBoundingClientRect());
     counts.push({n,cardCount:children.length,oneRow:oneRow(boxes),sameWidth:equalWidths(boxes),centered:isCentered(boxes),
      coin:children[0]?.classList.contains('arena-loot-coin')});
    }
-   S.matchLoot=[
-    {id:'iron',rarity:'common',count:1},{id:'trainer_blade',rarity:'rare',count:1},
-    {id:'venatio_blade',rarity:'rare',count:2},{id:'blood_oath',rarity:'epic',count:1},
-    {id:'imperial_aquila',rarity:'relic',count:1}
-   ];
+   S.matchLoot=completeDrops;
    window.__arenaQA.showEnd();
    return {cards:cards.length,wide,counts,
     ids:cards.slice(1).map(x=>x.querySelector('img')?.getAttribute('src')),
