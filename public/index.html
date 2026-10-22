@@ -2529,24 +2529,35 @@ function renderBattleRewardTray(){
  const summary=ArenaCrowd.snapshot(S.crowd),rewards=Array.isArray(S.matchLoot)?S.matchLoot.slice(0,5):[];
  const header=document.createElement('div');header.className='arena-loot-heading';
  const medal=document.createElement('strong');medal.textContent='SPECTACVLVM · '+summary.grade.name+' '+summary.score+'/100';medal.style.color=summary.grade.color;
- const money=document.createElement('b');money.textContent='획득 +'+Math.round(S.matchGold||0).toLocaleString('ko-KR')+' D · 장비 '+rewards.length+'/5';
+ const earned=Math.max(0,Math.round(Number(S.matchGold)||0));
+ const money=document.createElement('b');money.textContent='획득 +'+earned.toLocaleString('ko-KR')+' D · 장비 '+rewards.length+'/5';
  header.append(medal,money);tray.appendChild(header);
+ // The six identical columns are one coin slot and at most five equipment slots.
+ // Missing rewards do not create placeholders: CSS centers the remaining cards.
  const list=document.createElement('div');list.className='arena-loot-items';
- if(!rewards.length){
-  const empty=document.createElement('p');empty.className='arena-loot-none';
-  empty.textContent=S.lastResultWin?'획득 장비 없음 · 다음 경기에서 더 멋진 공방을 펼쳐보세요!':'패배 · 전리품 없음';
-  list.appendChild(empty);
- }else for(const drop of rewards){
+ const coin=document.createElement('div');coin.className='arena-loot-drop arena-loot-coin';
+ coin.style.setProperty('--loot-color','#f3c76a');
+ coin.setAttribute('aria-label','경기 획득 데나리우스 '+earned.toLocaleString('ko-KR')+' D');
+ const coinArt=document.createElement('span');coinArt.className='arena-loot-coin-icon';
+ coinArt.setAttribute('aria-hidden','true');coinArt.textContent='D';
+ const coinCopy=document.createElement('span'),coinTier=document.createElement('small');
+ const coinName=document.createElement('strong'),coinAmount=document.createElement('em');
+ coinTier.textContent='획득 화폐';coinName.textContent='데나리우스';
+ coinAmount.textContent='+'+earned.toLocaleString('ko-KR')+' D';
+ coinCopy.append(coinTier,coinName,coinAmount);coin.append(coinArt,coinCopy);list.appendChild(coin);
+ for(const drop of rewards){
   const gear=GEAR.find(g=>g.id===drop.id),r=ArenaGearCatalog.rarities[drop.rarity];if(!gear||!r)continue;
   const card=document.createElement('div');card.className='arena-loot-drop rarity-'+gear.rarity;card.style.setProperty('--loot-color',r.color);
   const icon=document.createElement('img');icon.src=gear.icon;icon.alt=gear.name;icon.loading='lazy';icon.width=52;icon.height=52;
   const copy=document.createElement('span'),tier=document.createElement('small'),name=document.createElement('strong'),qty=document.createElement('em');
-  tier.textContent='✦ '+r.name;name.textContent=gear.name;qty.textContent='공용 창고 +1 · 보유 ×'+drop.count;
+  tier.textContent='✦ '+r.name;name.textContent=gear.name;qty.textContent='창고 +1 · 보유 ×'+drop.count;
   copy.append(tier,name,qty);card.append(icon,copy);list.appendChild(card);
  }
  tray.appendChild(list);
  const note=document.createElement('small');note.className='arena-loot-notice';
- note.textContent='관중의 환호가 클수록 전리품 횟수(최대 5회)와 희귀 장비 등장 확률이 증가합니다.';
+ note.textContent=!rewards.length
+  ?(S.lastResultWin?'장비 획득 없음 · 관중을 열광시키면 전리품 횟수와 희귀도 확률이 높아집니다.':'패배 · 장비 전리품 없음')
+  :'관중의 환호가 클수록 전리품 횟수(최대 5회)와 희귀 장비 등장 확률이 증가합니다.';
  tray.appendChild(note);
 }
 function showEnd(){
