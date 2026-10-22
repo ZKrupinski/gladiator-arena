@@ -242,6 +242,15 @@ try{
  assert.ok(portraitMetrics.pricePx>=24,'important prices bold and large');
  assert.equal(portraitMetrics.orientationHidden,true);
  assert.ok(portraitMetrics.itemWidth<=portraitMetrics.listingWidth+1);
+ const portraitTabs=await page.evaluate(()=>{
+  const root=document.querySelector('.ra-cats'),nav=root.getBoundingClientRect();
+  const buttons=[...root.querySelectorAll('.ra-tab-btn')],boxes=buttons.map(b=>b.getBoundingClientRect());
+  return {count:buttons.length,inRow:boxes.every(b=>Math.abs(b.top-boxes[0].top)<2),
+   contained:boxes.every(b=>b.left>=nav.left-2&&b.right<=nav.right+2),
+   allImagesLoaded:buttons.slice(1).every(b=>b.querySelector('img')?.naturalWidth>0)};
+ });
+ assert(portraitTabs.count===6&&portraitTabs.inRow&&portraitTabs.contained&&portraitTabs.allImagesLoaded,
+  'portrait: six pictogram filters must remain in one row: '+JSON.stringify(portraitTabs));
  // Landscape phone: stay in familiar widescreen composition but with
  // visibly enlarged text and stronger purchase / equip indicators.
  await page.setViewportSize({width:844,height:390});
