@@ -1,14 +1,19 @@
 {
   "assetSha256": {
-    "public/arena-excitement.css": "99bafd4184d929e4b8c6858201d3c6ef0ced327d85f45f7c446304ddd9863a70",
-    "public/arena-excitement.js": "3e53228b421167878437bda17d3352f267a616fb6ae036844732d5b0724582d2",
-    "public/arena-loot.js": "e67d25509d22d94ea7100f5537ebfe4381b09f58eb5f4f1c6335f25130105f1b",
-    "public/arena-result-roman-v2.css": "db6bf670b9fa63800dc8a1e42468e8a138b4ad2cba60d4929297faa52127241c",
-    "public/index.html": "648694f066454384a47d2674b4da51b3ad4b6c7aedfb904b00050933585a70d2"
+    "public/arena-gear-bitmap.js": "7bbdb1bf41170de01fefbcf2164d013edf070170730e96bc5199d689f5002f61",
+    "public/arena-gear-catalog.js": "7aa04ffb1a8549e43365fe6d2394f578637ccbefe1fb75a8df316b117969bc80",
+    "public/arena-loot.js": "01ca4b43a6c92562846b5f1cef29d65d3d507358d7cca1871517671402bffda5",
+    "public/assets/gear-atlas/conquered_gladiators_atlas_v3_192.webp": "edbd9bb66df7e51c0f89157f973b469869c305004cbc8e8aac780cfdfe2aa261",
+    "public/assets/gear-atlas/gladiator_rarities_atlas_v3_192.webp": "217d6c5a02a2c637e660ea54535038f8ed5175f5608f3ecd89e4fe532ea406d5",
+    "public/index.html": "f10d10452214629ccad3ec5cfffb5033ad8155688f3c022026f2a5accc8801bb",
+    "public/ludus-approved-scenes.js": "27b8da60a974fb1aa9a54d8341ca8f55d4615c4f09d016f259b9f19728da8010",
+    "public/ludus-armory-live.css": "78178e9da63dd0a5c021112ba582dd3e53dc8834d66485d73ae1f0e4da262933",
+    "public/ludus-armory-live.js": "fda23a4b3ecfe39ea545c9b24e681cddbb370a733cc4e414f9331ecc72c4d00b",
+    "scripts/qa_armory_collection_browser.mjs": "2eec02aa874684c8cd73db2bbef04c74c77406faf359e4ff43b10fe2de40e0a6"
   },
-  "baseCommit": "72e887a83d046ff7e33b6730503758471c2796f6",
+  "baseCommit": "aa566b04af6c77c79bed16921670ce1e51641e18",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "roman-result-six-rewards-rare-jackpot-20261023-v1",
+  "releaseId": "roman-gladiator-bitmap-76-items-five-slots-v12-20261023",
   "releaseProtocol": "spartacus-uploader-v1"
 }
