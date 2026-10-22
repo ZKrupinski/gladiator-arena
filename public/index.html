@@ -1097,7 +1097,7 @@ $('#careerExit').onclick=()=>{if(MINI)return;window.LudusScene?.close();$('#care
 $('#careerHit').onclick=completeTraining;
 $('#careerCancel').onclick=closeTraining;
 window.addEventListener('keydown',e=>{if(MINI&&!MINI.finished&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
-function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38,dodgeEcho:null,attackLunge:null,specialLunge:null,specialRecoil:null};}
+function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38,dodgeEcho:null,attackLunge:null,specialLunge:null,specialRecoil:null,hitRumble:null};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 // Non-combat phase: walk from the gate, hold an original victory keypose,
 // then charge. Health, stamina, cooldowns and clock remain frozen.
@@ -1361,7 +1361,7 @@ function lineupEnemy(opponent){
 }
 function cleanDuelSurvivor(f,x,face){
  f.x=x;f.face=face;f.vx=0;f.guard=false;f.guardHold=0;f.parry=0;
- f.stagger=0;f.net=0;f.dodge=0;f.dodgeEcho=null;f.attackLunge=null;f.specialLunge=null;f.specialRecoil=null;f.knockT=0;f.knockVX=0;
+ f.stagger=0;f.net=0;f.dodge=0;f.dodgeEcho=null;f.attackLunge=null;f.specialLunge=null;f.specialRecoil=null;f.hitRumble=null;f.knockT=0;f.knockVX=0;
  f.attackCD=0;f.actionT=0;f.action='idle';f.comboDash=null;
  f.chainHits=0;f.chainExpire=0;f.pressureT=0;f.invuln=.65;
  f.comebackUsed=false;
@@ -1677,7 +1677,7 @@ function clearCombatAfterimages(...actors){
  for(const f of actors){
   if(!f)continue;
   f.dodgeEcho=null;f.attackLunge=null;f.specialLunge=null;
-  f.comboDash=null;f.specialRecoil=null;
+  f.comboDash=null;f.specialRecoil=null;f.hitRumble=null;
  }
  // Results render only the approved victory/defeat art. No stale charge,
  // slash, dash, attack-afterimage or special effect survives a match.
@@ -1756,6 +1756,24 @@ function advanceComboDash(f,dt){
    attack(f,target,false,true);
  }
  if(a.t>=COMBO_DASH_DURATION)f.comboDash=null;
+}
+// Real-time knockback (not slowed by hitstop). Temporarily cross the arena
+// rail by up to 400px, then spring back inside play. Both gladiators and
+// beasts use the SAME physical movement; an edge no longer cancels the blow.
+function launchCombatRecoil(target,dir,distance,kind){
+ const side=dir<0?-1:1,startX=target.x;
+ const farX=clamp(startX+side*distance,-300,1580);
+ const initialX=clamp(startX+side*Math.min(190,distance*.47),-300,1580);
+ const restX=clamp(startX+side*(kind==='parry'?125:120),110,1170);
+ target.specialRecoil={kind,startX,initialX,farX,restX,
+  elapsed:0,total:kind==='parry'?.93:1.18};
+ target.x=initialX;target.knockT=0;
+ target.knockVX=side*(kind==='parry'?1050:1180);
+ target.stagger=Math.max(target.stagger,kind==='parry'?1.08:1.37);
+ target.attackCD=Math.max(target.attackCD,kind==='parry'?1.04:1.25);
+ target.hitRumble={t:0,total:kind==='parry'?.68:.85,
+  amp:kind==='parry'?15:20,dir:side};
+ return target.specialRecoil;
 }
 function attack(f,victim,special=false,dashImpact=false){
  if(!f||!victim||S.phase!=='fight'||f.dead||victim.dead||f.stagger>0)return;
@@ -1836,14 +1854,17 @@ function attack(f,victim,special=false,dashImpact=false){
    const away=Math.sign(f.x-victim.x)||-f.face;
    f.stagger=special?.89:.70;f.attackCD=Math.max(f.attackCD,special?.95:.83);
    setAction(f,'hit',f.stagger);
-   f.knockVX=away*(special?800:660);f.knockT=special?.61:.53;
-   f.x=clamp(f.x+away*(special?107:83),125,1165);
+   // Existing knockVX moved on gameDt, so parry barely moved in slow-mo.
+   // Use the real-time launcher at both sides of the arena.
+   launchCombatRecoil(f,away,reversal?.critical?360:
+     special?330:285,'parry');
    S.shake=Math.max(S.shake,victim.enemy?(special?42:38):(special?54:49));
    S.flash=Math.max(S.flash,victim.enemy?(special?.43:.32):.48);
    window.ArenaMotion?.pulse?.(victim,'parry','source',victim.face);
    window.ArenaMotion?.pulse?.(f,'parry','target',victim.face);
    window.ArenaMotion?.impact?.(f,reversal?.critical?'reversal':'parry');
    window.ArenaMotion?.impact?.(victim,'guard');
+   victim.hitRumble={t:0,total:.38,amp:7,dir:-away};
    window.ArenaMotion?.shake?.(S,reversal?.critical?'reversal':'parry',victim.face);
    triggerCinematic(reversal?.critical?'reversal':'parry',contact.x,victim.face);
    S.parryBursts.push({x:contact.x,y:contact.y,t:0,max:reversal?.critical?1.05:.79,
@@ -1993,21 +2014,7 @@ function attack(f,victim,special=false,dashImpact=false){
   S.shake=Math.max(S.shake,72);
   S.flash=Math.max(S.flash,.66);
   if(victim.hp>0){
-   const startX=victim.x,dir=f.face;
-   // Up to 400px backward, then return to 120px beyond original.
-   // 160px initial kick prevents 150px lunges from overlapping the victim.
-   // Arena edge clamps remain authoritative for both human and beast fights.
-   const initialX=clamp(startX+dir*160,115,1165);
-   victim.specialRecoil={
-    startX,initialX,
-    farX:clamp(startX+dir*400,115,1165),
-    restX:clamp(startX+dir*120,115,1165),
-    elapsed:0,total:1.18
-   };
-   victim.x=initialX;
-   victim.knockVX=dir*1180;victim.knockT=0;
-   victim.stagger=Math.max(victim.stagger,1.37);
-   victim.attackCD=Math.max(victim.attackCD,1.25);
+   launchCombatRecoil(victim,f.face,400,'special');
   }
   triggerCinematic('special',contact.x,f.face);
   if(S.cinematic?.kind==='special')S.cinematic.title=f.cfg.special;
@@ -2161,6 +2168,10 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
  for(const f of [S.player,S.enemy])if(f){
   f.parryTriumphT=Math.max(0,(f.parryTriumphT||0)-realDt);
   f.parryFailT=Math.max(0,(f.parryFailT||0)-realDt);
+  if(f.hitRumble){
+   f.hitRumble.t=Math.min(f.hitRumble.total,f.hitRumble.t+realDt);
+   if(f.hitRumble.t>=f.hitRumble.total)f.hitRumble=null;
+  }
  }
  if(S.phase==='result')return;
  if(S.phase==='entrance'){
@@ -2322,7 +2333,8 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
    f.x+=f.knockVX*dt*(.3+.7*clamp(f.knockT/.48,0,1));
   }
  }
- p.x=clamp(p.x,100,1180);e.x=clamp(e.x,100,1180);
+ p.x=clamp(p.x,p.specialRecoil?-300:100,p.specialRecoil?1580:1180);
+ e.x=clamp(e.x,e.specialRecoil?-300:100,e.specialRecoil?1580:1180);
  // Physical body separation: never let the front silhouettes merge.
  const sep=Math.abs(e.x-p.x);
  if(sep<MIN_FIGHTER_DISTANCE){
@@ -2667,6 +2679,17 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  if(secondary){
   tilt+=secondary.tilt;
   drawX+=secondary.x;drawY+=secondary.y;
+ }
+ // Layer 2: independent hit body shiver, drawn AFTER the global backdrop +
+ // fighter camera shake. Never resize or warp the approved source sprite.
+ const rumble=f.hitRumble;
+ if(rumble&&S.phase==='fight'&&S.fx&&
+    !window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches){
+  const progress=clamp(rumble.t/rumble.total,0,1);
+  const envelope=Math.pow(1-progress,1.25);
+  drawX+=Math.sin(rumble.t*127+(f.enemy?1.1:.3))*rumble.amp*envelope;
+  drawY+=Math.cos(rumble.t*97+(f.enemy?.8:0))*rumble.amp*.54*envelope;
+  tilt+=Math.sin(rumble.t*83)*envelope*.015*(rumble.dir||1);
  }
  // Directional emotional counterpoint: the victor presses forward and the
  // cancelled striker buckles backwards. These transforms are cosmetic only.
