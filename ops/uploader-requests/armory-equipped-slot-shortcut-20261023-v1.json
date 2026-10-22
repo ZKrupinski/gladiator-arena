@@ -1,0 +1,29 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "armory-equipped-slot-shortcut-20261023-v1",
+  "expectedMainSha": "bebc454c9fd32514893d2a941e991360f19c4242",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/bebc454c9fd32514893d2a941e991360f19c4242/public/index.html",
+      "sha256": "467771cd2b56192a6d4d2d07d9ad4910be9207961c337076b86aff83cb6be4ea"
+    },
+    {
+      "path": "public/ludus-armory-live.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/bebc454c9fd32514893d2a941e991360f19c4242/public/ludus-armory-live.js",
+      "sha256": "41ff4634098b9b21ca7ad8daf5c35b92570fcf4f318f590f8be4b635746da91b"
+    },
+    {
+      "path": "public/ludus-armory-live.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/bebc454c9fd32514893d2a941e991360f19c4242/public/ludus-armory-live.css",
+      "sha256": "1b2f53a6bd1254473686caf73f8f30f77b1c81f26840e299c076bf2ee2a4fde3"
+    },
+    {
+      "path": "public/ludus-approved-scenes.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/bebc454c9fd32514893d2a941e991360f19c4242/public/ludus-approved-scenes.js",
+      "sha256": "2cc83cfdd40c8af12e48c6bac77e8e2514d8d00660033d85123573770256db89"
+    }
+  ]
+}
