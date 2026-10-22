@@ -4,7 +4,8 @@
 (function(){
 'use strict';
 const E=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let timer=null,tick=0,current=null,frameIndex=-1;
+let timer=null,tick=0,current=null,frameIndex=-1,impactStage=null,impactHandler=null;
+const HIT_MS=640;
 const names={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};
 const FRAME_MS=88;
 const ACTION_CYCLE=[
@@ -12,7 +13,13 @@ const ACTION_CYCLE=[
  {name:'thrust',ticks:11},{name:'heavy',ticks:13}
 ];
 const artBounds=new WeakMap();
-function stop(){if(timer!==null){clearInterval(timer);timer=null;}current=null;tick=0;frameIndex=-1;}
+function stop(){
+ if(timer!==null){clearInterval(timer);timer=null;}
+ if(impactStage&&impactHandler)impactStage.removeEventListener('ludus:whip-impact',impactHandler);
+ impactStage=null;impactHandler=null;
+ if(current?.parentElement)current.parentElement.classList.remove('whip-hit');
+ current=null;tick=0;frameIndex=-1;
+}
 function visibleBounds(img){
  if(artBounds.has(img))return artBounds.get(img);
  // Scan a quarter-resolution copy so padded 960×540 champion frames do not
@@ -75,15 +82,18 @@ function paintTrainingFighter(canvas,img,action,progress,profile){
  const box=visibleBounds(img);
  const scale=profile?.scale??profileFor(canvas,img)?.scale??1;
  const width=box.w*scale,height=box.h*scale;
- const strike=action!=='idle'?Math.sin(Math.PI*progress):0;
- // The scale is fixed for the entire fighter; grounded, restrained forward
- // motion supports the attack artwork without distorting its proportions.
- const towardDoctore=(action==='thrust'?15:action==='heavy'?10:8)*strike;
- const lean=(action==='slash'?.04:action==='sweep'?.033:action==='thrust'?.018:.027)*strike;
+ const isHit=action==='hit';
+ const strike=!isHit&&action!=='idle'?Math.sin(Math.PI*progress):0;
+ // Whip contact interrupts sword practice: a sharp recoil away from the
+ // instructor, stagger and return to guard. Keep the exact idle art scale.
+ const recoil=isHit?Math.sin(Math.PI*Math.max(0,Math.min(1,progress)))*(1-.26*progress):0;
+ const towardDoctore=isHit?-33*recoil:(action==='thrust'?15:action==='heavy'?10:8)*strike;
+ const lean=isHit?-.15*recoil:(action==='slash'?.04:action==='sweep'?.033:action==='thrust'?.018:.027)*strike;
+ const tremor=isHit&&progress<.38?Math.sin(progress*95)*4*(1-progress/.38):0;
  ctx.save();
- ctx.translate(canvas.width/2-towardDoctore,canvas.height-9);
+ ctx.translate(canvas.width/2-towardDoctore+tremor,canvas.height-9);
  ctx.rotate(-lean);
- ctx.scale(-1,1);
+ ctx.scale(-1,isHit?1-.055*recoil:1);
  try{ctx.drawImage(img,box.x,box.y,box.w,box.h,-width/2,-height,width,height);}catch(error){}
  ctx.restore();
 }
@@ -104,23 +114,36 @@ function animate(a,stage,selected){
  stop();
  const canvas=stage.querySelector('.lt-fighter-canvas');
  if(!canvas||selected==null)return;
- let profile=null;
+ const zone=canvas.closest('.lt-fighter-zone');
+ let profile=null,hitStart=-1,hitCount=0;
  const draw=()=>{
   if(!canvas.isConnected){stop();return;}
-  // Lazily re-establish the single calibration if the higher-quality idle
-  // asset loads asynchronously; never recalibrate for a sword attack frame.
+  // Calibrate all motion against the SAME idle pose; never rescale on impact.
   const idle=a.trainingFrame?.(selected,'idle',0)||a.portrait(selected);
   if(idle&&profile?.source!==idle)profile=profileFor(canvas,idle);
-  const motion=actionAt(tick);
-  const src=a.trainingFrame?.(selected,motion.action,motion.frame)||idle;
+  const elapsed=hitStart<0?HIT_MS:performance.now()-hitStart;
+  const takingHit=elapsed<HIT_MS;
+  const motion=takingHit?
+   {action:'hit',progress:Math.max(0,Math.min(1,elapsed/HIT_MS)),frame:0}:actionAt(tick);
+  // Never substitute the growth atlas's dodge, defeat or death keyposes.
+  const src=a.trainingFrame?.(selected,takingHit?'idle':motion.action,motion.frame)||idle;
   paintTrainingFighter(canvas,src,motion.action,motion.progress,profile);
   canvas.dataset.attack=motion.action;
   canvas.dataset.face='left';
   canvas.dataset.fixedScale=profile?String(profile.scale):'pending';
+  canvas.dataset.hitCount=String(hitCount);
+  zone?.classList.toggle('whip-hit',takingHit);
   const ribbon=stage.querySelector('.lt-motion-slash');
-  if(ribbon){ribbon.classList.toggle('active',motion.action!=='idle');ribbon.dataset.action=motion.action;}
-  tick++;
+  if(ribbon){ribbon.classList.toggle('active',!takingHit&&motion.action!=='idle');ribbon.dataset.action=motion.action;}
+  if(!takingHit)tick++;
  };
+ impactHandler=event=>{
+  if(!canvas.isConnected||event.detail?.source!=='doctore')return;
+  hitStart=performance.now();hitCount++;tick=0;
+  draw(); // No 88ms timing lag: begin the stagger on the impact frame.
+ };
+ impactStage=stage;
+ stage.addEventListener('ludus:whip-impact',impactHandler);
  draw();timer=setInterval(draw,FRAME_MS);
  current=canvas;
 }
@@ -186,5 +209,5 @@ function mount(stage,a,s,cbs){
  home.setAttribute('aria-label','메인 루두스 로비로 돌아가기');home.onclick=cbs.onHome;stage.appendChild(home);
  if(h)animate(a,stage,s.active);
 }
-window.LudusTrainingV2={mount,stop};
+window.LudusTrainingV2={version:'6.6.0',mount,stop};
 })();

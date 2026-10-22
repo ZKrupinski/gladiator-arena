@@ -24,6 +24,7 @@ const INFO={
 const sources={},ready={idle:false,talk:false,command:false,whip:false};
 const whipImages=[],whipNodes=[];
 let actor=null,body=null,layer=null,frame=-1,mode='idle',stamp=0,clock=0,until=0,raf=0;
+let impactSent=false;
 for(const [kind,settings] of Object.entries(INFO)){
  if(typeof Image==='undefined')continue;
  if(kind==='whip'){
@@ -110,11 +111,19 @@ function paint(n){
   actor.dataset.crop=JSON.stringify(rect);
   actor.dataset.wide='false';
  }
+ // Emit the contact precisely once, at the first extended-whip frame.
+ // The mounted trainee responds; scene rerenders remove its old listener.
+ if(mode==='whip'&&idx===4&&!impactSent){
+  impactSent=true;
+  actor.dispatchEvent(new CustomEvent('ludus:whip-impact',{
+   bubbles:true,detail:{frame:idx,source:'doctore'}
+  }));
+ }
 }
 function stop(){
  if(raf)cancelAnimationFrame(raf);
  raf=0;actor=null;body=null;layer=null;whipNodes.length=0;
- frame=-1;mode='idle';stamp=0;clock=0;until=0;
+ frame=-1;mode='idle';stamp=0;clock=0;until=0;impactSent=false;
 }
 function tick(now){
  if(!actor||!actor.isConnected){stop();return;}
@@ -139,12 +148,12 @@ function mount(node){
 function react(id){
  if(!actor)return false;
  mode=id===1?'talk':id===2?'command':id===3?'whip':'idle';
- frame=-1;clock=0;
+ frame=-1;clock=0;impactSent=false;
  until=mode==='idle'?0:(stamp||performance.now())+
   8*INFO[mode].duration*(mode==='whip'?1:1.6);
  paint(0);return true;
 }
-root.LudusDoctoreAnim={version:'4.2.0',mount,react,unmount:stop,
+root.LudusDoctoreAnim={version:'4.3.0',mount,react,unmount:stop,
  sprite:{sheets:Object.fromEntries(Object.entries(INFO).map(([key,s])=>[key,DIR+s.file])),
   whipFrames:WHIP_ORDER,wideWhip:WHIP_BOXES[WIDE_ID].w,
   framesPerAction:8,scale:SCALE,whipScale:WHIP_SCALE,baseline:GROUND,

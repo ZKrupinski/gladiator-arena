@@ -135,3 +135,21 @@
  .la-stage.training .lt-motion-slash.active{animation:none}
  .la-stage.training .lt-fighter-canvas{transition:none}
 }
+
+/* Whip-contact response: compact recoil flash behind the existing gladiator art.
+ * Do not stretch the source pose or add a substitute character sprite. */
+.la-stage.training .lt-fighter-zone.whip-hit::after{
+ content:'';position:absolute;z-index:3;left:112px;top:87px;
+ width:164px;height:174px;pointer-events:none;
+ background:radial-gradient(ellipse at 45% 45%,#fff4c3bd 0%,#ffbd6970 16%,#ef6c282d 33%,transparent 67%);
+ mix-blend-mode:screen;transform-origin:center;
+ animation:lt-whip-contact .38s ease-out both;
+}
+@keyframes lt-whip-contact{
+ 0%{opacity:.92;transform:scale(.46) rotate(-11deg)}
+ 52%{opacity:.64;transform:scale(1.16) rotate(5deg)}
+ 100%{opacity:0;transform:scale(1.52) rotate(13deg)}
+}
+@media(prefers-reduced-motion:reduce){
+ .la-stage.training .lt-fighter-zone.whip-hit::after{animation:none;opacity:.24}
+}

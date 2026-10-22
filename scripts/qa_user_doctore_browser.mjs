@@ -82,6 +82,24 @@ try{
  assert.equal(lash.activeWhips[0].w,Math.round(856*1.335)+'px',
   'whip has independent constant display scale');
  assert.equal(lash.rootWidth,idle.rootWidth,'animation never changes actor root dimensions');
+ // The trainee recoils on the very same extended whip frame, then recovers.
+ await page.waitForFunction(()=>document.querySelector('.la-stage.training .lt-fighter-canvas')?.dataset.attack==='hit',{timeout:1800});
+ const trainee=await page.locator('.la-stage.training .lt-fighter-canvas').evaluate(c=>({
+  action:c.dataset.attack,hitCount:Number(c.dataset.hitCount),
+  scale:c.dataset.fixedScale,zoneHit:c.parentElement.classList.contains('whip-hit')
+ }));
+ assert.equal(trainee.action,'hit','trainee must visibly react to lash contact');
+ assert.equal(trainee.hitCount,1,'the two identical extended lash frames only trigger one impact');
+ assert.ok(trainee.zoneHit,'trainee shows a short contact effect');
+ assert.ok(Number(trainee.scale)>0,'fighter keeps its calibrated art scale');
+ await page.waitForFunction(()=>{
+  const c=document.querySelector('.la-stage.training .lt-fighter-canvas');
+  return !!c&&c.dataset.hitCount==='1'&&c.dataset.attack!=='hit';
+ },{timeout:3000});
+ const recoveredTrainee=await page.locator('.la-stage.training .lt-fighter-canvas').evaluate(c=>({
+  attack:c.dataset.attack,hitCount:c.dataset.hitCount,zoneHit:c.parentElement.classList.contains('whip-hit')
+ }));
+ assert.equal(recoveredTrainee.zoneHit,false,'trainee must recover its normal fighting stance');
  await page.waitForFunction(()=>{
   const a=document.querySelector('.la-stage.training .la-doctore-live');
   return a?.dataset.action==='idle';
