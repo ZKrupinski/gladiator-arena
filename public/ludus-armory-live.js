@@ -4,7 +4,7 @@ const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const fmt=n=>Math.round(Number(n)||0).toLocaleString('ko-KR');
 const labels={weapon:'무기',shield:'방패',armor:'갑옷'};
 const rk=['common','uncommon','rare','epic','legendary','relic'];
-let onlyOwned=false,onlySet=false,rarity='all',lastScroll=0,lastScreenScroll=0,lastDetailScroll=0,statFlash=null;
+let onlyOwned=false,onlySet=false,rarity='all',lastScroll=0,lastScreenScroll=0,lastDetailScroll=0,lastRosterScrollLeft=0,statFlash=null;
 function portrait(canvas,source){if(!canvas||!source?.width||!source?.height)return;const c=canvas.getContext('2d'),s=Math.min((canvas.width-12)/source.width,(canvas.height-12)/source.height);try{c.drawImage(source,(canvas.width-source.width*s)/2,canvas.height-source.height*s-3,source.width*s,source.height*s);}catch(_){}}
 function render(stage,a,cb){
  const state=a.state(),hero=state.roster[state.active],stock=a.catalog(),eq=hero?.equipment||{},rar=a.gearRarities(),sets=a.gearSets();
@@ -26,6 +26,9 @@ function render(stage,a,cb){
  const equippedSlots=['weapon','shield','armor'].map(slot=>'<div class="ra-eq-line"><span>'+labels[slot]+'</span><strong>'+esc(stock.find(x=>x.slot===slot&&x.id===eq[slot])?.name||'미장착')+'</strong></div>').join('');
  const now=a.gearSummary(state.active),previewEquipment=g?{...eq,[g.slot]:wear?null:g.id}:eq,after=g?a.gearSummary(state.active,previewEquipment):now;
  const actual=a.combatStats(state.active),preview=g?a.combatStats(state.active,previewEquipment):actual;
+ // A selected, already-equipped item should reveal its contribution at once.
+ // Recompute real combat stats without this piece (including any lost set bonus).
+ const unequippedStats=wear?a.combatStats(state.active,{...eq,[g.slot]:null}):null;
  const measures=[
   {id:'atk',label:'공격력',fmt:v=>fmt(v)},
   {id:'hp',label:'최대 HP',fmt:v=>fmt(v)},
@@ -36,7 +39,7 @@ function render(stage,a,cb){
  ];
  const deltaClass=(a,b,inverse=false)=>Math.abs(b-a)<.0001?'zero':((b-a)*(inverse?-1:1)>0?'plus':'minus');
  const deltaLabel=(a,b,m)=>{const d=b-a;if(Math.abs(d)<.0001)return '변화 없음';return (d>0?'+':'−')+m.fmt(Math.abs(d));};
- const quickStats=actual?measures.map(m=>{const value=actual[m.id]||0;const last=statFlash?.fighter===state.active?statFlash.before?.[m.id]:undefined;const changed=Number.isFinite(last)&&Math.abs(value-last)>.0001;return '<div class="ra-live-stat '+(changed?'changed '+deltaClass(last,value,m.inverse):'')+'"><span>'+m.label+'</span><strong>'+m.fmt(value)+'</strong>'+(changed?'<em>'+deltaLabel(last,value,m)+'</em>':'')+'</div>';}).join(''):'<span>검투사 없음</span>';
+ const quickStats=actual?measures.map(m=>{const value=actual[m.id]||0;const last=statFlash?.fighter===state.active?statFlash.before?.[m.id]:undefined;const changed=Number.isFinite(last)&&Math.abs(value-last)>.0001;const without=unequippedStats?.[m.id];const active=Number.isFinite(without)&&Math.abs(value-without)>.0001;const tone=changed?deltaClass(last,value,m.inverse):'';const contribution=active?'장비 '+deltaLabel(without,value,m):'';return '<div class="ra-live-stat '+(changed?'changed '+tone:'')+(active?' equipped-active':'')+'" data-stat="'+m.id+'"><span>'+m.label+'</span><strong>'+m.fmt(value)+'</strong>'+(changed?'<em>'+deltaLabel(last,value,m)+'</em>':active?'<em>'+contribution+'</em>':'')+'</div>';}).join(''):'<span>검투사 없음</span>';
  const statLines=actual&&preview?measures.map(m=>{const before=actual[m.id]||0,next=preview[m.id]||0,change=deltaClass(before,next,m.inverse);return '<div class="ra-stat-diff '+change+'"><small>'+m.label+'</small><div class="ra-metric-values"><b>'+m.fmt(before)+'</b><span aria-hidden="true">→</span><strong>'+m.fmt(next)+'</strong></div><em>'+deltaLabel(before,next,m)+'</em></div>';}).join(''):'';
 
  const set=sets[g?.setId],setCount=set?(after.pieces[g.setId]||0):0;
@@ -48,21 +51,24 @@ function render(stage,a,cb){
  '<section class="ra-col ra-fighters"><h2>♜ 소속 검투사</h2><div class="ra-roster">'+fighters+'</div><div class="ra-stage"><canvas id="raHero" width="405" height="392"></canvas></div><div class="ra-hero-info"><strong>'+(hero?esc(hero.name):'영입 필요')+'</strong><small>'+(hero?esc(hero.cls)+' · Lv.'+Number(hero.level||1):'')+'</small></div><div class="ra-combat-stats"><h3>실전 능력치 <small>장비 반영</small></h3><div class="ra-combat-grid">'+quickStats+'</div></div><div class="ra-stats">'+(hero?Object.entries({STR:hero.stats?.str||0,AGI:hero.stats?.agi||0,END:hero.stats?.end||0,FOCUS:hero.stats?.focus||0}).map(([k,v])=>'<span>'+k+' <b>'+v+'</b></span>').join(''):'')+'</div><details class="ra-sets"><summary>◈ 활성 세트 효과</summary>'+setLines+'</details></section>'+
  '<section class="ra-col ra-items"><h2>⚔ 루두스 창고 <small>창고 '+totalCopies+' · 발견 '+knownCount+'/'+totalCatalog+'</small></h2><nav class="ra-cats">'+cats+'</nav><div class="ra-filters"><button id="raOwned" class="'+(onlyOwned?'active':'')+'">◆ 보유만</button><button id="raSet" class="'+(onlySet?'active':'')+'">◈ 세트만</button><select id="raRarity" aria-label="희귀도"><option value="all">전체 등급</option>'+rk.map(k=>'<option value="'+k+'" '+(rarity===k?'selected':'')+'>'+rar[k].name+'</option>').join('')+'</select></div><div class="ra-list">'+(cards||'<p class="ra-empty-store">아직 발견한 장비가 없습니다.<br>투기장에서 승리하면 보상으로 장비를 발견할 수 있습니다.<br>일반·고급 장비는 한 번 발견하면 이곳에서 추가 구매 가능!</p>')+'</div><button id="raSort" class="ra-sort">⇅ '+['기본순','가격순','보유순','희귀순'][sort]+'</button></section>'+
  '<section class="ra-col ra-details"><h2>✦ 장비 상세</h2><div class="ra-selected">'+(g?'<div class="ra-detail-head"><div class="ra-detail-image rarity-'+g.rarity+'" style="--ra-tone:'+rar[g.rarity].color+'">'+icon(g)+'</div><div class="ra-detail-title"><small style="color:'+rar[g.rarity].color+'">✦ '+rar[g.rarity].name+'</small><h3>'+esc(g.name)+'</h3><strong>'+(shop(g.id)?'추가 구매 '+fmt(g.cost)+' D':'전투 보상 전용')+'</strong><span class="'+(wear?'worn':qty?'owned':'')+'">루두스 창고 ×'+qty+' · 장착 ×'+assigned(g.id)+'</span></div></div><p>'+esc(g.desc)+'</p><div class="ra-effects"><strong>공격 +'+g.atk+' / 최대 HP +'+g.hp+'</strong>'+effects+'</div>':'전투에서 장비를 획득하면 이곳에 나타납니다.')+'</div>'+
- '<div class="ra-comparison"><h3>장착 전 · 후 <small>실전 스탯</small></h3><div class="ra-stats-diff">'+statLines+'</div></div>'+
+ '<div class="ra-comparison"><h3>'+(wear?'현재 장착 · 해제 시':'장착 시 변화')+' <small>실전 스탯</small></h3><div class="ra-stats-diff">'+statLines+'</div></div>'+
  (set?'<div class="ra-set-detail"><h3>◈ '+esc(set.name)+' <small>'+setCount+'/3</small></h3><p class="'+(setCount>=2?'active':'')+'">2세트 · '+esc(set.two)+'</p><p class="'+(setCount>=3?'active':'')+'">3세트 · '+esc(set.three)+'</p></div>':'')+
  '<div class="ra-equipped"><h3>현재 장착</h3>'+equippedSlots+'</div><div class="ra-buttons"><button id="raEquip" '+(!canEquip?'disabled':'')+'><strong>장착</strong><small>'+(wear?'장착 중':qty?'창고 −1':'재고 없음')+'</small></button><button id="raRemove" '+(!wear?'disabled':'')+'><strong>해제</strong><small>창고 +1</small></button><button id="raBuy" '+(!canBuy?'disabled':'')+'><strong>구매</strong><small>'+(buyAllowed?fmt(g?.cost||0)+' D':'전리품 전용')+'</small></button><button id="raSell" '+(!canSell?'disabled':'')+'><strong>판매</strong><small>'+(g?'+'+fmt(Math.floor(g.cost*.42))+' D':'불가')+'</small></button></div></section></main><footer>미장착 장비는 루두스 공용 · 장착 시 검투사에게 1개 배정 · 희귀 이상은 전투로만 획득</footer></section>');
- const root=stage.querySelector('.ra-collection'),list=root.querySelector('.ra-list');
+ const root=stage.querySelector('.ra-collection'),list=root.querySelector('.ra-list'),rosterScroll=root.querySelector('.ra-roster');
  // Visual and keyboard order follow the same left → center → right path.
  const main=root.querySelector('main');main.append(root.querySelector('.ra-fighters'),root.querySelector('.ra-details'),root.querySelector('.ra-items'));
  const detailPane=root.querySelector('.ra-details');detailPane.insertBefore(detailPane.querySelector('.ra-comparison'),detailPane.querySelector('.ra-selected'));
  portrait(root.querySelector('#raHero'),hero&&a.portrait(state.active));
  root.querySelectorAll('[data-portrait]').forEach(c=>portrait(c,a.portrait(Number(c.dataset.portrait))));
  list.scrollTop=lastScroll;root.scrollTop=lastScreenScroll;
+ // The fighter carousel is rebuilt on every selection; restore the exact user position.
+ rosterScroll.scrollLeft=lastRosterScrollLeft;
+ rosterScroll.addEventListener('scroll',()=>{lastRosterScrollLeft=rosterScroll.scrollLeft;},{passive:true});
  const details=root.querySelector('.ra-details');if(details)details.scrollTop=lastDetailScroll;
- const keep=(fn,resetDetail=false)=>{lastScroll=list.scrollTop;lastScreenScroll=root.scrollTop;lastDetailScroll=resetDetail?0:(details?.scrollTop||0);fn();};
+ const keep=(fn,resetDetail=false)=>{lastScroll=list.scrollTop;lastScreenScroll=root.scrollTop;lastRosterScrollLeft=rosterScroll.scrollLeft;lastDetailScroll=resetDetail?0:(details?.scrollTop||0);fn();};
  root.querySelector('#raHome').onclick=cb.goHome;
  root.querySelectorAll('[data-fighter]').forEach(b=>b.onclick=()=>keep(()=>{statFlash=null;cb.selectHero(Number(b.dataset.fighter));}));
- root.querySelectorAll('[data-item]').forEach(b=>b.onclick=()=>keep(()=>cb.setGear(b.dataset.item),true));
+ root.querySelectorAll('[data-item]').forEach(b=>b.onclick=()=>keep(()=>{statFlash=null;cb.setGear(b.dataset.item);},true));
  root.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{lastScroll=0;lastDetailScroll=0;lastScreenScroll=root.scrollTop;cb.setCategory(b.dataset.cat);});
  root.querySelector('#raOwned').onclick=()=>{onlyOwned=!onlyOwned;lastScroll=0;lastScreenScroll=root.scrollTop;lastDetailScroll=0;cb.setGear(g?.id||'wood');};
  root.querySelector('#raSet').onclick=()=>{onlySet=!onlySet;lastScroll=0;lastScreenScroll=root.scrollTop;lastDetailScroll=0;cb.setGear(g?.id||'wood');};
