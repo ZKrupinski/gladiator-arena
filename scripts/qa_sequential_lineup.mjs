@@ -8,7 +8,7 @@ import vm from 'node:vm';
 const base=new URL('../public/',import.meta.url);
 const source=file=>fs.readFileSync(new URL(file,base),'utf8');
 const root={};
-for(const file of ['arena-balance.js','arena-lineup.js']){
+for(const file of ['arena-balance.js','arena-lineup.js','arena-entrance.js']){
  vm.runInNewContext(source(file),{globalThis:root},{filename:file});
 }
 vm.runInNewContext(source('arena-carnifex.js'),{globalThis:root,Image:class {constructor(){this.complete=true;this.naturalWidth=500;this.naturalHeight=700;}set src(v){this._src=v;}}},{filename:'arena-carnifex.js'});
@@ -48,18 +48,26 @@ const assertFormats=()=>{
  assert.ok(L.fatigueGain(150,0,3)>L.fatigueGain(150,150,1));
 };
 assertFormats();
+function finishEntry(S){
+ if(S.phase!=='entrance')return;
+ assert.ok(S.entrance,'replacement uses a real entrance sequence');
+ assert.equal(root.ArenaEntrance.advance(S.entrance,root.ArenaEntrance.TOTAL+.01),true);
+ S.phase='fight';S.entrance=null;
+}
+
 const html=source('index.html');
 const first=html.indexOf('/* Ordered arena events:');
 const last=html.indexOf('function markManualInput(){',first);
 const knockout=html.indexOf('function finishFight(winner,loser){');
 const knockoutEnd=html.indexOf('function breakAttackChain(f){',knockout);
 assert.ok(first>0&&last>first&&knockout>0&&knockoutEnd>knockout);
-const mechanicSource=html.slice(first,last)+'\n'+html.slice(knockout,knockoutEnd);
+const entranceSource=html.slice(html.indexOf('function beginArenaEntrance('),html.indexOf('// Arena-only animal challenges.'));
+const mechanicSource=entranceSource+'\n'+html.slice(first,last)+'\n'+html.slice(knockout,knockoutEnd);
 const facadeSource='(function(S,CAREER,ArenaLineup,ArenaBalance,document,LudusRoster,'+
  'fighter,CHAMPION_MURMILLO_VARIANT,ANIMATED_MURMILLO_VARIANT,isChampionMurmillo,'+
  'isAnimatedMurmillo,growthType,careerStage,careerLevel,equipmentBonus,'+
  'setAction,start,saveCareer,grantCareerXp,updateHud,say,clock,clamp,'+
- 'emitAttackFx,fxSound,careerEligible,window){let CAREER_SELECTING=true;'+mechanicSource+
+ 'emitAttackFx,fxSound,careerEligible,window){const W=1280,H=720,CAMERA={x:640,y:360,zoom:1};let CAREER_SELECTING=true;'+mechanicSource+
  ';return {startLineupMatch,finishFight,resolveLineupBout,finishLineupCleanup,finishLineupCareerMatch};})';
 const build=()=>{
  const roster=Array.from({length:5},(_,i)=>({...hero(i),injury:8,fatigue:5}));
@@ -89,12 +97,12 @@ const build=()=>{
   ()=>saves.push(career.message),
   (h,xp)=>{h.xp=(h.xp||0)+xp;return 0},
   ()=>{},t=>{S.notice=t},12,Math.max,()=>{},()=>{},
-  h=>L.condition(h).eligible,{ArenaCarnifex:X});
+  h=>L.condition(h).eligible,{ArenaCarnifex:X,ArenaEntrance:root.ArenaEntrance});
  return {api,career,S,hud,saves};
 };
 {
  const {api,S,career,saves}=build();
- assert.equal(api.startLineupMatch('1v3',[0]),true);
+ assert.equal(api.startLineupMatch('1v3',[0]),true);finishEntry(S);
  assert.equal(S.gauntlet.enemies.length,3);
  for(const [step,hp] of [[1,150],[2,110],[3,60]]){
   S.player.hp=hp;S.enemy.hp=0;
@@ -103,12 +111,12 @@ const build=()=>{
   assert.ok(S.cleanup?.body?.dead,'actual original defeated sprite is retained');
   assert.equal(S.player.hp,hp);
   X.advance(S.cleanup,X.TIME.total);
-  api.finishLineupCleanup();
+  api.finishLineupCleanup();finishEntry(S);
   if(step<3){assert.equal(S.gauntlet.enemyIndex,step);assert.equal(S.player.hp,hp);
    assert.equal(S.phase,'fight');}
  }
  assert.equal(S.phase,'finisher');assert.equal(S.gauntlet.won,true);
- assert.ok(S.enemy.x>1280,'collected defeated enemy must not reappear during final victory animation');
+ assert.ok(S.enemy.removedFromArena===true,'collected defeated enemy must not reappear during final victory animation');
  api.finishLineupCareerMatch();api.finishLineupCareerMatch();
  assert.equal(career.fights,1);
  assert.equal(career.roster.length,6,'boss recruitment only on victory');
@@ -118,7 +126,7 @@ const build=()=>{
 }
 {
  const {api,S,career}=build();
- assert.equal(api.startLineupMatch('2v2',[0,1]),true);
+ assert.equal(api.startLineupMatch('2v2',[0,1]),true);finishEntry(S);
  const remainingHP=S.enemy.hp-40;S.enemy.hp=remainingHP;
  S.player.hp=0;api.finishFight(S.enemy,S.player);
  assert.equal(S.phase,'cleanup');
@@ -126,24 +134,24 @@ const build=()=>{
  assert.equal(S.gauntlet.enemyIndex,0);
  assert.equal(S.enemy.hp,remainingHP,'winning enemy must keep their HP');
  assert.notEqual(S.player.cls,career.roster[1].cls,'new fighter must wait for body retrieval');
- X.advance(S.cleanup,X.TIME.total);api.finishLineupCleanup();
+ X.advance(S.cleanup,X.TIME.total);api.finishLineupCleanup();finishEntry(S);
  assert.equal(S.player.cls,career.roster[1].cls,'replacement fighter should be controlled');
  S.enemy.hp=0;api.finishFight(S.player,S.enemy);
- assert.equal(S.phase,'cleanup');X.advance(S.cleanup,X.TIME.total);api.finishLineupCleanup();
+ assert.equal(S.phase,'cleanup');X.advance(S.cleanup,X.TIME.total);api.finishLineupCleanup();finishEntry(S);
  assert.equal(S.gauntlet.enemyIndex,1);
  S.player.hp=0;api.finishFight(S.enemy,S.player);
- assert.equal(S.phase,'cleanup');X.advance(S.cleanup,X.TIME.total);api.finishLineupCleanup();
+ assert.equal(S.phase,'cleanup');X.advance(S.cleanup,X.TIME.total);api.finishLineupCleanup();finishEntry(S);
  assert.equal(S.phase,'finisher');assert.equal(S.gauntlet.won,false);
- assert.ok(S.player.x<0,'collected defeated ally must not reappear during final defeat animation');
+ assert.ok(S.player.removedFromArena===true,'collected defeated ally must not reappear during final defeat animation');
  api.finishLineupCareerMatch();
  assert.equal(career.fights,1);
  assert.equal(career.roster.length,5,'defeat cannot recruit a champion');
  assert.ok(career.roster[0].fatigue>5&&career.roster[1].fatigue>5);
 }
 assert.match(html,/id="lineupHud"/);
-assert.match(html,/arena-carnifex\.js\?v=4/);
-assert.match(html,/arena-lineup-visual\.css\?v=2/);
-assert.match(html,/arena-lineup-visual\.js\?v=2/);
+assert.match(html,/arena-carnifex\.js\?v=[^"\s]+/);
+assert.match(html,/arena-lineup-visual\.css\?v=[^"\s]+/);
+assert.match(html,/arena-lineup-visual\.js\?v=[^"\s]+/);
 assert.match(source('arena-lineup-visual.css'),/background:none;border:0;box-shadow:none/);
 assert.match(source('arena-lineup-visual.js'),/CARNIFEX/);
 assert.match(source('assets\/npc\/carnifex-executioner.svg'),/Carnifex/);

@@ -1,12 +1,13 @@
 {
   "assetSha256": {
-    "public/arena-entrance.js": "3dc6e5c463fa3fb64b5c1782f1e8a4aef3b879d8fc18f0aa46a926d25d107a26",
-    "public/index.html": "f5915104593321e32cf4ef767168c02a2688f964aa683d7db4224e190531f6a5",
-    "scripts/qa_arena_entrance.mjs": "38d2dbc30350f0ccd80ca9367d46421ca2a44186d4a439aed2e66531d242daee"
+    "docs/qa-fun-combat-20261022.md": "d91e09d32d5ae5a90f2e78d238871c474cfe83b949adf1c4d7a7b4f3b132d335",
+    "public/index.html": "76d6bb5fe4cb31f858388c68bac0bf4ea2ef503f920c29329bd1ac9733ef8eeb",
+    "scripts/qa_combat_fairness.mjs": "b4ff30f41c07500f990b9497aefbe7193c14b00023c3b53acc4262c7ffda0db3",
+    "scripts/qa_sequential_lineup.mjs": "bb630f3eaa029f5a0d87b61e9a5f6fecb0f903a078e3610fa0d5e664c21974b8"
   },
-  "baseCommit": "69e047f2ed14c5bd35ff4a86f0168db6d2764c48",
+  "baseCommit": "292584f91c02282b11ef9877e5936790e66f4a71",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "arena-gladiator-entrance-v1-20261021",
+  "releaseId": "combat-fun-qa-20261022-v1",
   "releaseProtocol": "spartacus-uploader-v1"
 }

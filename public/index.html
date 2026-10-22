@@ -1460,6 +1460,7 @@ function markManualInput(){
  if(S.autoPlaying){S.autoPlaying=false;S.player.vx=0;S.player.guard=false;S.player.guardHold=0;S.player.parry=0;}
 }
 function beginGuard(f,hold=PARRY_GUARD_HOLD){
+ if(f===S.player)S.pendingInput=null;
  if(!f||f.dead||f.st<=8||f.stagger>0||f.dodge>0)return false;
  if(!f.guard){f.parry=PARRY_WINDOW;setAction(f,'guard',.24);}
  f.guard=true;f.guardHold=Math.max(f.guardHold,hold);
@@ -1933,7 +1934,35 @@ function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.d
      flip:beastFxFlip(f),alpha:.76,duration:.31,layer:'front'});
  }else addFx(1,p.x,p.y,{art:'dash_trail',w:360,h:120,flip:f.face<0,
      alpha:.48,owner:f,offsetX:-f.face*32,offsetY:110,duration:.2});}
-function inputAct(action){if(S.phase!=='fight'||S.paused)return;if(action==='attack')attack(S.player,S.enemy);else if(action==='special')attack(S.player,S.enemy,true);else if(action==='dodge')dodge(S.player);else if(action==='guard'){S.keys.add('guard');}}
+// One short manual input reservation: accept a tap near recovery, never a combo macro.
+function inputAct(action){
+ if(S.phase!=='fight'||S.paused||document.hidden)return;
+ const p=S.player;
+ S.pendingInput=null;
+ if((action==='attack'||action==='special')&&!p.dead&&!p.comboDash){
+  const wait=Math.max(p.attackCD,p.stagger);
+  if(wait>0&&wait<=.16&&p.st>=(action==='special'?36:17)&&
+     (action!=='special'||p.cd<=0)){
+   S.pendingInput={action,owner:p,target:S.enemy,until:clock+.18};return;
+  }
+ }
+ if(action==='attack')attack(p,S.enemy);
+ else if(action==='special')attack(p,S.enemy,true);
+ else if(action==='dodge')dodge(p);
+ else if(action==='guard')S.keys.add('guard');
+}
+function flushCombatInput(){
+ const q=S.pendingInput;if(!q)return;
+ const p=S.player;
+ if(S.phase!=='fight'||S.paused||q.owner!==p||q.target!==S.enemy||
+    clock>q.until||p.dead||S.enemy.dead||p.comboDash||S.keys.has('guard')){
+  S.pendingInput=null;return;
+ }
+ if(p.attackCD>0||p.stagger>0)return;
+ S.pendingInput=null;
+ attack(p,S.enemy,q.action==='special');
+}
+
 function choosePose(f){
  if(S.phase==='entrance'&&S.entrance)
   return window.ArenaEntrance?.pose?.(S.entrance,f)||'idle';
@@ -1986,7 +2015,7 @@ function preEngagementFootwork(f,other,dt,playerIdle=false){
  f.x+=f.vx*dt;
  return true;
 }
-function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)return;
+function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S.phase==='title')return;
  // Presentation keeps its real-time timing during the simulated slow-motion.
  S.shake=Math.max(0,S.shake-realDt*(S.focusFrame?.active?94:49));
  window.ArenaMotion?.advanceShake?.(S,realDt);
@@ -2020,7 +2049,7 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
  if(S.phase==='finisher'){S.resultAnim+=dt;S.slow-=dt;if(S.slow<=0){S.phase='result';showEnd();}return;}
  const p=S.player,e=S.enemy;S.time-=dt;
  if(S.time<=0&&S.gauntlet){return resolveLineupBout(p.hp/p.maxHp>e.hp/e.maxHp,true);}
- if(S.time<=0){p.hitVisual=null;e.hitVisual=null;S.flash=0;S.resultWin=p.hp>e.hp;S.resultApplied=true;S.resultAnim=0;S.phase='finisher';S.slow=2.05;setAction(S.resultWin?p:e,'finisher',2.2);setAction(S.resultWin?e:p,'defeat',2.2);say(S.resultWin?'VICTORIA!':'DEFEAT',1.8);return;}
+ if(S.time<=0){p.hitVisual=null;e.hitVisual=null;S.flash=0;S.resultWin=p.hp/Math.max(1,p.maxHp)>e.hp/Math.max(1,e.maxHp);S.resultApplied=true;S.resultAnim=0;S.phase='finisher';S.slow=2.05;setAction(S.resultWin?p:e,'finisher',2.2);setAction(S.resultWin?e:p,'defeat',2.2);say(S.resultWin?'VICTORIA!':'DEFEAT',1.8);return;}
  for(const f of [p,e]){
  f.actionT=Math.max(0,f.actionT-dt);f.attackCD=Math.max(0,f.attackCD-dt);f.cd=Math.max(0,f.cd-dt);
  // Visual action completion must never wait for cosmetic FX or linger
@@ -2048,6 +2077,8 @@ function update(dt,realDt=dt){clock+=dt;if(S.phase==='title')return;if(S.paused)
  if(S.phase==='fight'&&e.hp<=0){finishFight(p,e);return;}
  // Dash is simulated independently of the input/auto AI.
  for(const f of [p,e])advanceComboDash(f,dt);
+ if(S.phase!=='fight'){updateHud();return;}
+ flushCombatInput();
  if(S.phase!=='fight'){updateHud();return;}
  const activeHold=S.keys.has('left')||S.keys.has('right')||S.keys.has('guard');
  S.autoPlaying=!!(S.autoplayEnabled&&!activeHold&&(clock-S.lastManualInput)>=AUTO_IDLE_SECONDS);
@@ -2176,7 +2207,8 @@ function showEnd(){
  endBanner.onerror=()=>{endBanner.hidden=true;endTitle.classList.remove('sr-only');};
  endBanner.onload=()=>{endBanner.hidden=false;endTitle.classList.add('sr-only');};
  endBanner.src=CINEMATIC_ASSETS[win?'victory_banner':'defeat_banner'];
- $('#endReason').textContent=S.careerMatch?(win?'승리했습니다. 다음 시합에 출전할 검투사를 선택하거나 루두스에서 정비하세요.':'출전자를 다시 고르거나 루두스에서 부상을 치료하세요.'):win?`${S.round}라운드 승리! 다음 검투사와 겨루거나 이번 시합을 다시 도전하세요.`:S.player.dead?'체력이 모두 소진되었습니다. 다시 도전하거나 Ludus로 돌아갈 수 있습니다.':'시간 종료 — 남은 체력으로 결과가 결정되었습니다.';
+ $('#endReason').textContent=S.careerMatch?(win?'승리했습니다. 다음 시합에 출전할 검투사를 선택하거나 루두스에서 정비하세요.':'출전자를 다시 고르거나 루두스에서 부상을 치료하세요.'):win?`${S.round}라운드 승리! 다음 검투사와 겨루거나 이번 시합을 다시 도전하세요.`:S.player.dead?'체력이 모두 소진되었습니다. 다시 도전하거나 Ludus로 돌아갈 수 있습니다.':'시간 종료 — 남은 체력 비율로 판정합니다. 동률은 도전자 패배입니다.';
+ if(S.time<=0)$('#endReason').textContent='시간 종료 · 남은 체력 비율 판정 (동률은 도전자 패배). '+$('#endReason').textContent;
  $('#endStats').textContent=S.careerMatch?CAREER.message:`ROUND ${S.round} · 획득 점수 ${S.score} · 총점 ${S.totalScore+S.score} · 남은 시간 ${Math.max(0,Math.ceil(S.time))}초`;
  $('#againBtn').classList.remove('beast-back-selection');
  $('#continueBtn').classList.remove('beast-next');
@@ -2760,11 +2792,11 @@ function loop(t){
  // The simulation alone slows; camera, input, canvas and audio timing stay
  // responsive. The clock runs in real time so focus ends even during hitstop.
  let gameDt=dt;
- if(S.phase==='fight'||S.phase==='finisher'||S.phase==='cleanup'){
+ if(!S.paused&&!document.hidden&&(S.phase==='fight'||S.phase==='finisher'||S.phase==='cleanup')){
   const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   const focus=window.ArenaFocus?.advance?.(S.cinematic,dt,reduced);
   if(focus){S.cinematic=focus.state;S.focusFrame=focus.active?focus:null;gameDt=focus.gameDt;}
- }else{S.cinematic=null;S.focusFrame=null;}
+ }else if(!S.paused&&!document.hidden){S.cinematic=null;S.focusFrame=null;}
  update(gameDt,dt);updateCamera(dt);
  window.ArenaAudio?.update?.({phase:S.phase,paused:S.paused,combo:S.combo,
   health:S.player?S.player.hp/Math.max(1,S.player.maxHp):1,
@@ -2818,24 +2850,26 @@ window.addEventListener('keydown',e=>{if(S.phase!=='fight'||e.defaultPrevented||
    if(k==='guard'&&!e.repeat&&S.phase==='fight'&&!S.paused)beginGuard(S.player,.3);
   }else if(!e.repeat)inputAct(k);}if(e.code==='KeyP'&&!e.repeat)togglePause();});
 window.addEventListener('keyup',e=>{const k=keymap[e.code];if(k)S.keys.delete(k);});window.addEventListener('blur',suspendBattle);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendBattle();});
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden){suspendBattle();if(S.phase==='fight'&&!S.paused)togglePause();}
+});
 // Browser focus loss is not player intent to pause. Screenshot tools,
 // opening another window and transient mobile UI focus can fire "blur".
 // Release held keys safely, but leave explicit pause/overlay state untouched.
 function suspendBattle(){
- S.keys.clear();
+ S.pendingInput=null;S.keys.clear();
  if(S.phase==='fight'&&!S.paused){
   S.autoPlaying=false;
   S.lastManualInput=clock;
  }
 }
-for(const b of document.querySelectorAll('[data-key]')){const k=b.dataset.key,hold=['left','right','guard'].includes(k);b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);markManualInput();if(hold){
+for(const b of document.querySelectorAll('[data-key]')){const k=b.dataset.key,hold=['left','right','guard'].includes(k);b.addEventListener('pointerdown',e=>{e.preventDefault();if(S.phase!=='fight'||S.paused)return;b.setPointerCapture(e.pointerId);markManualInput();if(hold){
    S.keys.add(k);
    if(k==='guard'&&S.phase==='fight'&&!S.paused)beginGuard(S.player,.3);
   }else inputAct(k);});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{S.keys.delete(k);if(S.phase==='fight')markManualInput();});}
 function togglePause(){
  if(S.phase!=='fight')return;
- S.paused=!S.paused;S.keys.clear();
+ S.paused=!S.paused;S.pendingInput=null;S.keys.clear();
  if(!S.paused){
   // A prior hitstop must not pin combat poses after explicit RESUME.
   // Keep ongoing attacks and their normal cooldowns; discard only a stale
