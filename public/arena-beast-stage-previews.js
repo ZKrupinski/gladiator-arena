@@ -56,7 +56,7 @@ function animate(now){
  if(!gallery||!document.getElementById('careerHub')||document.getElementById('careerHub').hidden){
   lastGallery=null;return;
  }
- if(gallery!==lastGallery){lastGallery=gallery;selected=null;selectedAt=0;}
+ if(gallery!==lastGallery){lastGallery=gallery;if(!gallery.querySelector('canvas[data-beast-preview="'+selected+'"]')){selected=null;selectedAt=0;}}
  if(!document.hidden){
   gallery.querySelectorAll('canvas[data-beast-preview]').forEach(c=>{
    if(types.includes(c.dataset.beastPreview))paint(c,c.dataset.beastPreview,now);
@@ -67,6 +67,7 @@ function animate(now){
 function select(type){
  if(!types.includes(type))return false;
  selected=type;selectedAt=performance.now();
+ if(type==='wolf')root.ArenaBeasts?.ensure?.(type);else loadIdle(type);
  const area=document.querySelector('.beast-gallery');
  area?.querySelectorAll('.beast-stage-card').forEach(card=>{
   const active=card.dataset.beastType===type;

@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>GLADIATOR · SPARTACUS — 투기장 v4.9</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#18110e"><title>SPARTACUS — 노예들의 왕 · BLOOD &amp; GLORY</title><style>
 *{box-sizing:border-box}html{background:#130d0b}body{margin:0;min-height:100vh;background:#110d0b;color:#f6e8d5;font:14px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
 button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid #eac391;outline-offset:2px}a{color:#f4cc96;text-decoration:none}a:hover{text-decoration:underline}
 .page{max-width:1512px;margin:auto;padding:17px 22px 42px}.masthead{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0 13px;border-bottom:1px solid #735339}.brand{font:700 clamp(19px,3vw,30px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.17em;color:#f3d4a3}.brand small{display:block;font:600 10px system-ui;letter-spacing:.28em;color:#c0a17d;margin-top:7px}.links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.links a{border:1px solid #896840;padding:9px 11px;border-radius:7px}.links .gold{background:#79502c;color:#fff2d3}
@@ -287,34 +287,35 @@ body{min-height:100dvh;overscroll-behavior:none}
  text-align:center;pointer-events:none;white-space:normal}
 .lineup-hud[hidden]{display:none!important}
 @media(max-width:720px){.lineup-hud:not([hidden]){top:10%;font-size:10px;max-width:98%;padding:3px 6px}}
-</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=6"><link rel="stylesheet" href="ludus-armory-live.css?v=3"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=5"><link rel="stylesheet" href="beast-hunt.css?v=4"></head><body>
+</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=6"><link rel="stylesheet" href="ludus-armory-live.css?v=3"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=5"><link rel="stylesheet" href="beast-hunt.css?v=versus-v5"><link rel="stylesheet" href="spartacus-title.css?v=glory-v1"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div><div id="lineupHud" class="lineup-hud" aria-live="polite" hidden></div>
 <section class="overlay overlay-title" id="startScreen">
- <div class="stage-panel stage-panel-title">
-  <div class="title-lockup">
-   <div class="eyebrow">ROMA · LUDUS MAGNUS · THE ARENA</div>
-   <div class="title-emblem" aria-hidden="true">✦ <span>⚔</span> ✦</div>
-   <h1 class="game-logo"><span>GLADIATOR</span></h1>
-   <div class="logo-subline">SPARTACUS · THE GLADIUS RENAISSANCE</div>
-  </div>
-  <p class="title-intro">검투사의 명예를 걸고 투기장에 입장하세요. 병과를 선택한 뒤 90초 동안 결투합니다.</p>
-  <div class="fighter-previews" id="fighterPreviews" role="group" aria-label="플레이어 검투사 선택">
-   <button type="button" class="fighter-preview active" data-fighter="murmillo" aria-pressed="true"><span class="preview-art" data-sprite="murmillo" aria-hidden="true"></span><span class="preview-caption">무르밀로 <small>MURMILLO</small></span></button>
-   <button type="button" class="fighter-preview" data-fighter="thraex" aria-pressed="false"><span class="preview-art" data-sprite="thraex" aria-hidden="true"></span><span class="preview-caption">트라엑스 <small>THRAEX</small></span></button>
-   <button type="button" class="fighter-preview" data-fighter="retiarius" aria-pressed="false"><span class="preview-art" data-sprite="retiarius" aria-hidden="true"></span><span class="preview-caption">레티아리우스 <small>RETIARIUS</small></span></button>
-  </div>
-  <div class="selectors"><label>내 클래스<select id="classChoice"><option value="murmillo">무르밀로 · 대형 방패</option><option value="thraex">트라엑스 · 곡검</option><option value="retiarius">레티아리우스 · 삼지창/그물</option></select></label><label>상대 클래스<select id="opponentChoice"><option value="random">자동 매칭</option><option value="murmillo">무르밀로</option><option value="thraex">트라엑스</option><option value="retiarius">레티아리우스</option></select></label></div>
-  <button id="titleCareerFight" class="start" type="button">⚔ 내 검투사 출전</button>
-<div style="margin:9px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-<button id="careerEnter" class="career-launch" type="button">🏛 루두스</button>
-<button id="startBtn" class="start secondary" type="button">아케이드 자유 대전</button></div>
-  <p class="small">선택 병과: <span id="classSubtitle">MURMILLO</span> · 3회 연속 적중 후 4타 점프 돌진 · 미조작 2초 후 자동 전투</p>
-  <p id="resourceStatus" class="resource-status" aria-live="polite"></p>
+<div class="stage-panel stage-panel-title spartacus-home">
+ <div class="spartacus-crest" aria-hidden="true">✦ &nbsp; ⚔ &nbsp; ✦</div>
+ <div class="spartacus-roman">ROMA · LUDUS MAGNUS · THE ARENA</div>
+ <h1 class="game-logo">SPARTACUS</h1><div class="spartacus-korean">노 예 들 의 &nbsp; 왕</div>
+ <div class="spartacus-separator">❧ &nbsp; GLORIA · LIBERTAS &nbsp; ❧</div>
+ <p class="spartacus-motto">노예로 시작하여, 전설로 남아라.</p>
+ <button id="careerEnter" class="spartacus-blood-button" type="button">
+  <span>BLOOD <em>&amp;</em> GLORY</span><small>▶ GAME START · 루두스 입장</small>
+ </button><p class="spartacus-hint">검투사를 키우고 로마의 투기장에 출전하세요.</p>
+ <div class="legacy-arcade-controls" hidden aria-hidden="true">
+   <div id="fighterPreviews" class="fighter-previews">
+    <button type="button" class="fighter-preview active" data-fighter="murmillo" aria-pressed="true"><span class="preview-art" data-sprite="murmillo"></span><span class="preview-caption">무르밀로</span></button>
+    <button type="button" class="fighter-preview" data-fighter="thraex" aria-pressed="false"><span class="preview-art" data-sprite="thraex"></span><span class="preview-caption">트라엑스</span></button>
+    <button type="button" class="fighter-preview" data-fighter="retiarius" aria-pressed="false"><span class="preview-art" data-sprite="retiarius"></span><span class="preview-caption">레티아리우스</span></button>
+   </div>
+   <select id="classChoice" aria-label="비공개 아케이드 병과"><option value="murmillo">무르밀로</option><option value="thraex">트라엑스</option><option value="retiarius">레티아리우스</option></select>
+   <select id="opponentChoice" aria-label="비공개 상대"><option value="random">자동 매칭</option><option value="murmillo">무르밀로</option><option value="thraex">트라엑스</option><option value="retiarius">레티아리우스</option></select>
+   <button id="titleCareerFight" type="button">내 검투사 출전</button>
+   <button id="startBtn" type="button">아케이드 자유 대전</button><span id="classSubtitle">MURMILLO</span>
  </div>
-</section>
+ <p id="resourceStatus" class="resource-status" aria-live="polite"></p>
+</div></section>
+
 <section class="overlay overlay-ending" id="endScreen" hidden>
  <div class="stage-panel stage-panel-ending">
   <div class="eyebrow">THE CROWD HAS DECIDED</div>
@@ -351,8 +352,8 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-balance.js?v=wolf-surfaces-pace-20261022"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
-<script src="arena-beasts.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
-<script src="arena-beast-stage-previews.js?v=wolf-surfaces-pace-20261022"></script>
+<script src="arena-beasts.js?v=versus-v5"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
+<script src="arena-beast-stage-previews.js?v=versus-v5"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
 <script src="arena-carnifex.js?v=7-complete-exit"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=3-short-hit-glint"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
 <script src="ludus-roster.js?v=3"></script>
@@ -1119,27 +1120,39 @@ function beginArenaEntrance(entrants){
 // recruitable Gladiators; boss encounters keep their original champion art.
 /* VENATIO · 독립 동물전. 기존 루두스 시합/순차 대진 데이터는 수정하지 않는다. */
 const BEAST_STAGES=Object.freeze([{"id":"wolf","label":"늑대전","rounds":3,"reward":300,"level":3,"difficulty":1,"caption":"민첩한 늑대의 추격 · 3연전"},{"id":"leopard","label":"표범전","rounds":3,"reward":500,"level":5,"difficulty":2,"caption":"날렵한 표범의 도약 · 3연전"},{"id":"tiger","label":"호랑이전","rounds":3,"reward":800,"level":7,"difficulty":3,"caption":"강력한 호랑이의 일격 · 3연전"},{"id":"lion","label":"사자전","rounds":3,"reward":1200,"level":9,"difficulty":4,"caption":"투기장의 제왕 · 3연전"},{"id":"elephant","label":"코끼리전","rounds":1,"reward":2000,"level":12,"difficulty":5,"caption":"육중한 전투 코끼리 · 보스전"}]);
-let BEAST_RUN=null;
+let BEAST_RUN=null,BEAST_SELECTED='wolf';
 function renderBeastHunt(){
  CAREER_SELECTING=false;
- const choices=CAREER.roster.map((h,i)=>({h,i})).filter(x=>careerEligible(x.h));
- const info=window.ArenaBeasts?.types||{};
- const hero=choices.some(x=>x.i===CAREER.active)?CAREER.active:(choices[0]?.i??-1);
- const select=choices.length?'<label class="beast-fighter-label">출전 검투사 <select id="beastHeroSelect">'+choices.map(({h,i})=>'<option value="'+i+'" '+(i===hero?'selected':'')+'>'+h.name+' · Lv.'+careerLevel(h)+'</option>').join('')+'</select></label>':'<p class="career-status">출전 가능한 검투사가 없습니다. 시장에서 영입하거나 치료해 주세요.</p>';
- $('#careerBody').innerHTML='<section class="beast-gallery career-card"><header class="beast-gallery-head"><div><small>VENATIO · ARENA BESTIARUM</small><h2>야수전</h2><p>야수 종류를 선택해 검투사 한 명으로 3연전! 코끼리는 단일 보스전입니다.</p><button type="button" id="beastBackDraft" class="beast-back">◀ 전투 준비로</button></div>'+select+'</header><div class="beast-stage-grid">'+BEAST_STAGES.map((s,i)=>{
- const spec=info[s.id]||{};
- return '<article class="beast-stage-card" data-beast-type="'+s.id+'" tabindex="0" aria-label="'+s.label+' 선택하여 야수 동작 미리보기"><div class="beast-stage-thumb" role="img" aria-label="'+s.label+' 대기 애니메이션"><canvas data-beast-preview="'+s.id+'" width="600" height="400" aria-hidden="true"></canvas><span>STAGE '+String(i+1).padStart(2,'0')+'</span></div><div class="beast-stage-detail"><small>'+(spec.latin||'BESTIA')+' · '+('★'.repeat(s.difficulty))+'</small><h3>'+s.label+'</h3><p>'+s.caption+'</p><p class="beast-stage-meta">권장 Lv.'+s.level+' · '+s.rounds+'회 전투 · <b>'+s.reward+' D</b></p><button class="beast-challenge" data-beast-stage="'+s.id+'" '+(!choices.length?'disabled':'')+'>⚔ 도전하기</button></div></article>'
- }).join('')+'</div><footer class="beast-gallery-footer">일반 아레나에는 동물이 등장하지 않습니다. 연전 최종 승리 시 보상이 한 번 지급됩니다.</footer></section>';
- $('#careerRosterTab').setAttribute('aria-pressed','false');
- $('#careerTrainTab').setAttribute('aria-pressed','false');
- $('#careerGearTab').setAttribute('aria-pressed','false');
- for(const button of document.querySelectorAll('[data-beast-stage]'))button.onclick=()=>{
-  const chosen=Number($('#beastHeroSelect')?.value??hero);
-  beginBeastHunt(button.dataset.beastStage,chosen);
+ const options=CAREER.roster.map((h,i)=>({h,i})).filter(x=>careerEligible(x.h));
+ const hero=options.some(x=>x.i===CAREER.active)?CAREER.active:(options[0]?.i??-1);
+ const safe=v=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]||'&#39;'));
+ const fighters=options.length?'<label for="beastHeroSelect">출전 검투사 선택</label><select id="beastHeroSelect">'+options.map(({h,i})=>'<option value="'+i+'" '+(i===hero?'selected':'')+'>'+safe(h.name)+' · Lv.'+careerLevel(h)+'</option>').join('')+'</select><p>훈련과 장비를 마친 검투사를 선택하세요.</p>':'<p>출전 가능한 검투사가 없습니다. 영입하거나 치료해 주세요.</p>';
+ const selected=BEAST_STAGES.find(s=>s.id===BEAST_SELECTED)||BEAST_STAGES[0];
+ $('#careerBody').innerHTML='<section class="beast-gallery venatio-select career-card"><header class="beast-gallery-head"><div><small>VENATIO · ARENA BESTIARUM</small><h2>야수전</h2><p>왼쪽의 출전 검투사, 오른쪽의 야수를 골라 출전하세요.</p></div><button id="beastBackDraft" class="beast-back" type="button">◀ 전투 준비로</button></header>'+
+ '<div class="venatio-versus-layout"><section class="venatio-gladiator"><small>I · GLADIATOR</small><h3>출전 검투사</h3><div class="venatio-symbol" aria-hidden="true">⚔</div>'+fighters+'</section><div class="venatio-vs" aria-hidden="true">VS</div>'+
+ '<section class="venatio-beast"><small>II · BESTIA</small><h3>등장 야수</h3><div class="venatio-slider"><button id="beastPrev" type="button" aria-label="이전 야수">❮</button><div class="venatio-preview"><canvas id="beastSpotlightPreview" data-beast-preview="'+selected.id+'" width="600" height="400" aria-label="움직이는 야수 미리보기"></canvas><span id="beastCounter"></span></div><button id="beastNext" type="button" aria-label="다음 야수">❯</button></div>'+
+ '<div class="venatio-name"><small id="beastLatin"></small><h4 id="beastName"></h4><div id="beastStars"></div></div>'+
+ '<label for="beastTypeSelect">야수 선택</label><select id="beastTypeSelect">'+BEAST_STAGES.map(s=>'<option value="'+s.id+'">'+s.label+'</option>').join('')+'</select>'+
+ '<p id="beastCaption"></p><p id="beastStats"></p><button id="beastStart" class="beast-challenge" type="button" '+(options.length?'':'disabled')+'>⚔ 야수전 출전</button></section></div>'+
+ '<footer class="beast-gallery-footer">연전 최종 승리 시에만 야수전 보상이 지급됩니다. 야수는 영입되지 않습니다.</footer></section>';
+ ['careerRosterTab','careerTrainTab','careerGearTab'].forEach(id=>$('#'+id).setAttribute('aria-pressed','false'));
+ const choose=id=>{
+  const s=BEAST_STAGES.find(x=>x.id===id);if(!s)return;
+  BEAST_SELECTED=s.id;$('#beastTypeSelect').value=s.id;
+  $('#beastSpotlightPreview').dataset.beastPreview=s.id;
+  $('#beastCounter').textContent=String(BEAST_STAGES.indexOf(s)+1).padStart(2,'0')+' / 05';
+  $('#beastLatin').textContent=window.ArenaBeasts?.types?.[s.id]?.latin||'BESTIA';
+  $('#beastName').textContent=s.label;$('#beastStars').textContent='★'.repeat(s.difficulty);
+  $('#beastCaption').textContent=s.caption;
+  $('#beastStats').textContent='권장 Lv.'+s.level+' · '+s.rounds+'회 전투 · '+s.reward+' D';
+  window.BeastStagePreviews?.select?.(s.id);
  };
+ $('#beastPrev').onclick=()=>choose(BEAST_STAGES[(BEAST_STAGES.findIndex(s=>s.id===BEAST_SELECTED)+4)%5].id);
+ $('#beastNext').onclick=()=>choose(BEAST_STAGES[(BEAST_STAGES.findIndex(s=>s.id===BEAST_SELECTED)+1)%5].id);
+ $('#beastTypeSelect').onchange=e=>choose(e.target.value);
+ $('#beastStart').onclick=()=>beginBeastHunt(BEAST_SELECTED,Number($('#beastHeroSelect')?.value??hero));
  $('#beastBackDraft').onclick=openCareerDraft;
- window.LudusApprovedScenes?.close();
- window.BeastStagePreviews?.mount?.();
+ window.LudusApprovedScenes?.close();window.BeastStagePreviews?.mount?.();choose(selected.id);
 }
 function beginBeastHunt(id,rosterIndex){
  const stage=BEAST_STAGES.find(s=>s.id===id),h=CAREER.roster[rosterIndex];

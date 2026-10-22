@@ -14,6 +14,8 @@ try{
  // Beast menu must exist ONLY inside the Ludus arena preparation screen.
  assert.equal(await page.locator('#titleBeastEnter').count(),0);
  assert.equal(await page.locator('#beastQuickAccess').count(),0);
+ assert.ok((await page.locator('#careerEnter').innerText()).includes('BLOOD'));
+ assert.equal(await page.locator('#startBtn').isVisible(),false);
  await page.locator('#careerEnter').click();
  assert.equal(await page.locator('#ludusScene .ll-beast-quick').count(),0);
  await page.locator('#ludusScene .ll-menu [data-action="arena"]').click();
@@ -24,43 +26,37 @@ try{
  const modeRow=await page.locator('.lc-mode-picker button').evaluateAll(items=>items.map(el=>({x:el.getBoundingClientRect().x,w:el.getBoundingClientRect().width})));
  assert.equal(modeRow.every((v,i)=>v.w>30&&(i===0||v.x>modeRow[i-1].x)),true,'six modes fit the same horizontal row');
  await page.locator('.lc-mode-picker [data-beast-hunt]').click();
- await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
- assert.equal(await page.locator('.beast-stage-card').count(),5);
+ await page.waitForSelector('#careerHub:not([hidden]) .venatio-versus-layout');
+ assert.equal(await page.locator('.venatio-versus-layout').count(),1);
  const types=['wolf','leopard','tiger','lion','elephant'];
  for(const type of types){
-  const card=page.locator('.beast-stage-card').filter({has:page.locator('[data-beast-stage="'+type+'"]')});
-  // Every card displays real animated idle frames, no separately painted still.
-  const canvas=card.locator('canvas[data-beast-preview="'+type+'"]');
-  await canvas.waitFor();
-  assert.equal(await canvas.getAttribute('width'),'600');
-  assert.equal(await canvas.getAttribute('height'),'400');
-  assert.equal(await card.locator('img').count(),0,'no still thumbnail for '+type);
-  await page.waitForFunction(kind=>BeastStagePreviews.status().loaded.includes(kind),type,{timeout:30000});
-  await page.waitForFunction(kind=>{
-    const c=document.querySelector('[data-beast-preview="'+kind+'"]');
-    if(!c)return false;const rgba=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
-    for(let i=3;i<rgba.length;i+=64)if(rgba[i]>60)return true;
-    return false;
-  },type,{timeout:15000});
+  await page.locator('#beastTypeSelect').selectOption(type);
+  assert.equal(await page.locator('#beastSpotlightPreview').getAttribute('data-beast-preview'),type);
+  await page.waitForFunction(kind=>kind==='wolf'?ArenaBeasts.status().wolfV3.status==='ready':BeastStagePreviews.status().loaded.includes(kind),type,{timeout:45000});
+  await page.waitForFunction(()=>{
+   const c=document.getElementById('beastSpotlightPreview'),d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+   for(let i=3;i<d.length;i+=64)if(d[i]>60)return true;return false;
+  },{timeout:15000});
  }
- await page.locator('.beast-stage-card[data-beast-type="wolf"]').hover();
- assert.equal(await page.locator('.beast-stage-card[data-beast-type="wolf"]').getAttribute('aria-selected'),'true');
- assert.equal(await page.evaluate(()=>SpriteMotionRegistry.describe('wolf').extras.some(x=>x.name==='roar')),true);
- assert.equal(await page.evaluate(()=>SpriteMotionRegistry.canRoar('wolf')),false,'no fake roar animation when art not published');
+ await page.locator('#beastTypeSelect').selectOption('wolf');
+ await page.locator('#beastNext').click();assert.equal(await page.locator('#beastTypeSelect').inputValue(),'leopard');
+ await page.locator('#beastPrev').click();assert.equal(await page.locator('#beastTypeSelect').inputValue(),'wolf');
  assert.ok(await page.locator('#beastHeroSelect option').count()>0,'starter gladiator present');
  const initial=await page.evaluate(()=>LudusBridge.state().gold);
- await page.locator('[data-beast-stage="wolf"]').click();
+ await page.locator('#beastTypeSelect').selectOption('wolf');
+ await page.locator('#beastStart').click();
  await page.waitForFunction(()=>__arenaQA.state.phase==='fight',{timeout:12000});
  await win();
  assert.equal(await page.locator('#againBtn').innerText(),'야수 선택으로 돌아가기');
  assert.equal(await page.locator('#continueBtn').innerText(),'다음 라운드 2/3');
  // Explicit back must NOT start another wolf fight.
  await page.locator('#againBtn').click();
- await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
- assert.equal(await page.locator('.beast-stage-card').count(),5);
+ await page.waitForSelector('#careerHub:not([hidden]) .venatio-versus-layout');
+ assert.equal(await page.locator('.venatio-versus-layout').count(),1);
  assert.equal(await page.evaluate(()=>__arenaQA.state.beastHunt),false);
  assert.equal(await page.evaluate(()=>LudusBridge.state().gold),initial,'no payout for abandoning 1/3');
- await page.locator('[data-beast-stage="wolf"]').click();
+ await page.locator('#beastTypeSelect').selectOption('wolf');
+ await page.locator('#beastStart').click();
  for(let i=0;i<3;i++){
   await page.waitForFunction(()=>__arenaQA.state.phase==='fight',{timeout:12000});
   assert.equal(await page.evaluate(()=>__arenaQA.state.enemy.beastType),'wolf');
@@ -72,11 +68,12 @@ try{
  }
  // Final choice A: choose a different species. No forced wolf rematch.
  await page.locator('#againBtn').click();
- await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
+ await page.waitForSelector('#careerHub:not([hidden]) .venatio-versus-layout');
  const receipt=await page.evaluate(()=>JSON.parse(localStorage.getItem('gladiator.ludus.v1')).lastPrize);
  assert.equal(receipt.mode,'beast_hunt');assert.equal(receipt.gold,300);
  for(const type of types.slice(1)){
-  await page.locator('[data-beast-stage="'+type+'"]').click();
+  await page.locator('#beastTypeSelect').selectOption(type);
+  await page.locator('#beastStart').click();
   await page.waitForFunction(()=>__arenaQA.state.phase==='fight',{timeout:10000});
   assert.equal(await page.evaluate(()=>__arenaQA.state.enemy.beastType),type);
   await page.waitForFunction(type=>ArenaBeasts.status().individual.some(s=>s.name===type&&s.frames===40),type,{timeout:45000});
@@ -110,11 +107,12 @@ try{
     await lose();
   }
   await page.locator('#againBtn').click();
-  await page.waitForSelector('#careerHub:not([hidden]) .beast-stage-card');
+  await page.waitForSelector('#careerHub:not([hidden]) .venatio-versus-layout');
   assert.equal(await page.evaluate(()=>__arenaQA.state.beastHunt),false);
  }
  // Final single-boss clear offers a distinct path to the six-mode draft.
- await page.locator('[data-beast-stage="elephant"]').click();
+ await page.locator('#beastTypeSelect').selectOption('elephant');
+ await page.locator('#beastStart').click();
  await page.waitForFunction(()=>__arenaQA.state.phase==='fight',{timeout:12000});
  await win();
  assert.equal(await page.locator('#againBtn').innerText(),'야수 선택으로 돌아가기');

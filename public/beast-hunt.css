@@ -36,3 +36,24 @@
 /* Clear beast-result navigation: back is dark and next bout is gold. */
 #endScreen .end-actions .beast-back-selection{background:linear-gradient(135deg,#5d4b3a,#30251e);color:#ffe9c9;border:1px solid #bd9a6f;box-shadow:inset 0 1px #e7c28d55}
 #endScreen .end-actions #continueBtn.beast-next{background:linear-gradient(130deg,#f2c77c,#a56434);color:#241308;border:1px solid #fce3a9;box-shadow:0 0 12px #f1b96555;font-weight:900}
+
+/* VENATIO v5 — two-sided stage selector and one real animation viewport */
+.beast-gallery.venatio-select{max-width:1100px;margin:auto}
+.venatio-versus-layout{display:grid;grid-template-columns:minmax(0,1fr) 62px minmax(0,1.2fr);gap:10px;align-items:stretch}
+.venatio-gladiator,.venatio-beast{min-width:0;padding:clamp(10px,2vw,24px);background:linear-gradient(145deg,#432b25,#1a1111);border:1px solid #b98a54;border-radius:12px;box-shadow:inset 0 1px #fff4c539,0 10px 22px #0007}
+.venatio-gladiator small,.venatio-beast small{color:#dfbb80;font:700 11px Georgia,serif;letter-spacing:.16em}
+.venatio-gladiator h3,.venatio-beast h3{font:800 clamp(17px,2.7vw,29px) Georgia,serif;color:#ffe0a1;margin:7px 0 16px}
+.venatio-gladiator label,.venatio-beast label{display:block;margin:8px 0;color:#f2d6a8;font-size:13px}
+.venatio-gladiator select,.venatio-beast select{display:block;width:100%;min-height:46px;padding:8px;color:#ffe5b0;border:1px solid #c8a06b;border-radius:8px;background:#281814}
+.venatio-gladiator p{color:#cbb194;font-size:12px}
+.venatio-symbol{display:grid;place-items:center;min-height:210px;margin:0 0 14px;font:100px Georgia,serif;color:#e2ba75;text-shadow:0 4px #170906,0 0 25px #a66d38a8;background:radial-gradient(ellipse,#aa794236,transparent 70%)}
+.venatio-vs{align-self:center;justify-self:center;font:900 clamp(18px,3vw,36px) Georgia,serif;color:#f5d594;text-shadow:0 0 13px #e7af58a0}
+.venatio-slider{display:grid;grid-template-columns:40px minmax(0,1fr) 40px;align-items:center;gap:6px}
+.venatio-slider button{height:69px;width:40px;border:1px solid #e1b77c;border-radius:6px;background:linear-gradient(#654027,#301b16);color:#ffe6b4;font-size:24px;cursor:pointer}
+.venatio-slider button:active{transform:scale(.92)}
+.venatio-preview{position:relative;min-width:0;aspect-ratio:3/2;background:radial-gradient(ellipse,#885e40,#241515);border:1px solid #be8d5a;border-radius:8px;overflow:hidden}
+.venatio-preview canvas{display:block;width:100%;height:100%;object-fit:contain}
+.venatio-preview span{position:absolute;top:6px;right:6px;color:#ffdeb2;padding:3px 6px;background:#291811bd;border-radius:4px;font:700 12px Georgia,serif}
+.venatio-name{text-align:center;color:#f1cf9c}.venatio-name h4{margin:2px 0;color:#ffe5ad;font:700 clamp(22px,3.6vw,36px) Georgia,serif}
+#beastStars{color:#e9b96b;letter-spacing:.18em}#beastCaption,#beastStats{text-align:center;color:#e0c3a0;margin:6px 0}#beastStats{color:#ffdaa1;font-size:13px}.venatio-beast .beast-challenge{font-size:17px}
+@media(max-width:700px){.venatio-versus-layout{grid-template-columns:minmax(0,.9fr) 30px minmax(0,1.1fr);gap:4px}.venatio-gladiator,.venatio-beast{padding:8px}.venatio-symbol{min-height:130px;font-size:60px}.venatio-slider{grid-template-columns:28px minmax(0,1fr) 28px;gap:2px}.venatio-slider button{width:28px;height:50px;font-size:16px}.venatio-vs{font-size:16px}.venatio-name h4{font-size:23px}}

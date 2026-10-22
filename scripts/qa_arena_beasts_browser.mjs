@@ -27,7 +27,7 @@ try{
  assert.equal(checks.boss,null,'champions never replaced by beasts');
  assert.deepEqual(checks.scheduled,['wolf','leopard','tiger','lion','elephant']);
  assert.equal(checks.boot.loaded,0,'do not download all 13MB at startup');
- await page.locator('#startBtn').click();
+ await page.evaluate(()=>document.getElementById('startBtn').click());
  await page.waitForFunction(()=>__arenaQA.state.phase==='fight',{timeout:10000});
  await page.evaluate(()=>{__arenaQA.state.paused=true;});
  const results=[];

@@ -228,8 +228,7 @@ if(WOLF_PREVIEW_ENABLED&&typeof window!=='undefined'){
 // Paint one intact idle source instead, then atomically enter full V3 animation.
 function drawWolfPending(ctx,{x,y,w,h,flip=false,alpha=1}){
  const approved=wolfV3.normalized?wolfV3.loadingStill:null;
- const indy=cache.get('wolf')?.individual?.get('idle:0');
- if(!approved&&!indy?.naturalWidth)return false;
+ // Never flash a legacy wolf while the V3 atlas loads.
  const center=x+w*.5,ground=y+h-WOLF_PAW_RAISE;
  ctx.save();
  ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
@@ -240,8 +239,8 @@ function drawWolfPending(ctx,{x,y,w,h,flip=false,alpha=1}){
   ctx.drawImage(approved,0,0,cw,ch,
     center-272*scale,ground-470*scale,cw*scale,ch*scale);
  }else{
-  const dw=w*WOLF_DISPLAY_SCALE,dh=h*WOLF_DISPLAY_SCALE;
-  ctx.drawImage(indy,center-dw*.5,ground-dh*.88,dw,dh);
+  ctx.globalAlpha*=.25;ctx.fillStyle='#231814';ctx.beginPath();
+  ctx.ellipse(center,ground-3,w*.24,h*.036,0,0,Math.PI*2);ctx.fill();
  }
  ctx.restore();
  return true;
