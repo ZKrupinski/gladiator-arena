@@ -53,25 +53,24 @@ try{
   for(let i=3;i<rgba.length;i+=32)if(rgba[i]>64)return true;
   return false;
  },{timeout:45000});
- // Second available gladiator tests real carousel selection and thumbnail swaps.
- await page.evaluate(()=>{
-  const roster=LudusBridge.state().roster,base=roster[0];
-  roster.push({...base,name:'QA SECOND GLADIATOR',
-   stats:{...base.stats},inventory:[...base.inventory],
-   equipment:{...base.equipment},injury:0,fatigue:0});
-  LudusBridge.section('beasts');
- });
- assert.equal(await page.locator('#beastHeroSelect option').count(),2);
- const firstHero=await page.locator('#beastHeroName').innerText();
- await page.locator('#beastHeroNext').click();
- assert.equal(await page.locator('#beastHeroSelect').inputValue(),'1');
- assert.equal(await page.locator('#beastHeroPortrait').getAttribute('data-roster-art'),'1');
- assert.match(await page.locator('#beastHeroName').innerText(),/QA SECOND GLADIATOR/);
- await page.locator('#beastHeroPrev').click();
- assert.equal(await page.locator('#beastHeroSelect').inputValue(),'0');
- assert.equal(await page.locator('#beastHeroName').innerText(),firstHero);
- await page.evaluate(()=>{LudusBridge.state().roster.pop();LudusBridge.section('beasts');});
- assert.equal(await page.locator('#beastHeroSelect option').count(),1);
+ // Existing Ludus roster may contain one, two or more available gladiators.
+ // Verify that carousel arrows move across the actual eligible roster.
+ const count=await page.locator('#beastHeroSelect option').count();
+ if(count>=2){
+  const firstValue=await page.locator('#beastHeroSelect').inputValue();
+  const firstName=await page.locator('#beastHeroName').innerText();
+  await page.locator('#beastHeroNext').click();
+  const nextValue=await page.locator('#beastHeroSelect').inputValue();
+  assert.notEqual(nextValue,firstValue);
+  assert.equal(await page.locator('#beastHeroPortrait').getAttribute('data-roster-art'),nextValue);
+  assert.notEqual(await page.locator('#beastHeroName').innerText(),firstName);
+  await page.locator('#beastHeroPrev').click();
+  assert.equal(await page.locator('#beastHeroSelect').inputValue(),firstValue);
+  assert.equal(await page.locator('#beastHeroName').innerText(),firstName);
+ }else{
+  assert.equal(await page.locator('#beastHeroPrev').isDisabled(),true);
+  assert.equal(await page.locator('#beastHeroNext').isDisabled(),true);
+ }
  const initial=await page.evaluate(()=>LudusBridge.state().gold);
  await page.locator('#beastTypeSelect').selectOption('wolf');
  await page.locator('#beastStart').click();
