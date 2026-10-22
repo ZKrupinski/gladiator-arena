@@ -112,10 +112,10 @@
    atk:Math.round(base.atk+clamp(s.str||0,0,10)*2.65+(gear.atk||0)),
    hp:Math.round(base.hp+clamp(s.end||0,0,10)*15+(gear.hp||0)),
    move:Math.round(base.move*(1+clamp(s.agi||0,0,10)*.041)),
-   sp:Math.round(base.sp+clamp(s.focus||0,0,10)*4.9+clamp(s.str||0,0,10)*.65),
-   staminaRegen:1+clamp(s.agi||0,0,10)*.048,
-   specialCooldown:clamp(7-clamp(s.focus||0,0,10)*.33,3.7,7),
-   armor:clamp(trait.armor+clamp(s.end||0,0,10)*.007,0,.38),
+   sp:Math.round(base.sp+clamp(s.focus||0,0,10)*4.9+clamp(s.str||0,0,10)*.65+(gear.sp||0)),
+   staminaRegen:1+clamp(s.agi||0,0,10)*.048+(gear.stamina||0),
+   specialCooldown:clamp(7-clamp(s.focus||0,0,10)*.33-(gear.cooldown||0),3.1,7),
+   armor:clamp(trait.armor+clamp(s.end||0,0,10)*.007+(gear.armor||0),0,.48),
    focus:clamp(s.focus||0,0,10),
    parry:clamp(trait.parry+clamp(s.focus||0,0,10)*.016,0,.48)
   };

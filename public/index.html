@@ -287,7 +287,7 @@ body{min-height:100dvh;overscroll-behavior:none}
  text-align:center;pointer-events:none;white-space:normal}
 .lineup-hud[hidden]{display:none!important}
 @media(max-width:720px){.lineup-hud:not([hidden]){top:10%;font-size:10px;max-width:98%;padding:3px 6px}}
-</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=6"><link rel="stylesheet" href="ludus-armory-live.css?v=3"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=5"><link rel="stylesheet" href="beast-hunt.css?v=gladiator-arrows-v6"><link rel="stylesheet" href="spartacus-title.css?v=glory-v1"></head><body>
+</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=6"><link rel="stylesheet" href="ludus-armory-live.css?v=armory-v2"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=5"><link rel="stylesheet" href="beast-hunt.css?v=gladiator-arrows-v6"><link rel="stylesheet" href="spartacus-title.css?v=glory-v1"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
@@ -349,7 +349,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=6"></script>
 <script src="champion-murmillo.js?v=3"></script>
-<script src="arena-balance.js?v=wolf-surfaces-pace-20261022"></script>
+<script src="arena-gear-catalog.js?v=armory-v2"></script><script src="arena-balance.js?v=armory-v2"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
 <script src="arena-beasts.js?v=versus-v5"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
@@ -663,12 +663,7 @@ function fxSound(type){
  if(!sounds)return;
  window.ArenaAudio?.play?.(type);
 }
-const GEAR=[
- {id:'wood',slot:'weapon',name:'훈련용 목검',cost:0,atk:0,hp:0,desc:'기본 장비'},
- {id:'iron',slot:'weapon',name:'단조 글라디우스',cost:90,atk:5,hp:0,desc:'공격력 +5'},
- {id:'shield',slot:'shield',name:'청동 방패',cost:105,atk:0,hp:24,desc:'최대 체력 +24'},
- {id:'elite',slot:'armor',name:'챔피언 갑옷',cost:220,atk:9,hp:15,desc:'공격력 +9 · 체력 +15'}
-];
+const GEAR=window.ArenaGearCatalog.items;
 // Approved original 4x3 atlases, served losslessly from the same deployment.
 const GROWTH_TYPES={thraex_a:'트라엑스 A',thraex_b:'트라엑스 B',murmillo_a:'무르밀로 A',retiarius_a:'레티아리우스 A'};
 const GROWTH_IMAGES=new Map();
@@ -778,10 +773,7 @@ function normalizeEquipment(h){
 CAREER.roster.forEach(h=>{normalizeEquipment(h);h.level=careerLevel(h);h.xp=Math.max(0,Number(h.xp)||0);h.fatigue=Math.max(0,Math.min(100,Number(h.fatigue)||0));});
 function equipmentBonus(h){
  normalizeEquipment(h);
- return Object.values(h.equipment).reduce((o,id)=>{
-  const g=GEAR.find(g=>g.id===id);
-  if(g){o.atk+=g.atk;o.hp+=g.hp;}return o;
- },{atk:0,hp:0});
+ return window.ArenaGearCatalog.summary(h);
 }
 Object.defineProperty(CAREER,'hero',{get(){return this.roster[this.active]||null;}});
 function careerHealth(h){const max=ArenaBalance.heroStats(h,DATA[h.cls],equipmentBonus(h)).hp;return {max,current:Math.max(1,max-h.injury)};}
@@ -871,13 +863,13 @@ function finishCareerMatch(){
  S.careerRewardApplied=true;
  const win=!!S.resultWin;
  const payout=ArenaBalance.rewards(win,S.careerOpponent?.round||1,'1v1');
- const reward=payout.gold;
+ const reward=Math.round(payout.gold*(win?1+equipmentBonus(h).goldBonus:1));
  CAREER.fights++;if(win){CAREER.wins++;CAREER.glory+=payout.glory;}
  const beforeGold=CAREER.gold;CAREER.gold+=reward;
  CAREER.lastPrize={mode:'1v1',win,round:S.careerOpponent?.round||1,
   gold:reward,before:beforeGold,after:CAREER.gold,at:Date.now()};
- h.injury=Math.min(120,h.injury+Math.max(8,Math.round(Math.max(0,S.careerStartingHp-S.player.hp)*.62)));
- h.fatigue=Math.min(100,(Number(h.fatigue)||0)+ArenaLineup.fatigueGain(S.careerStartingHp,S.player.hp,1));
+ h.injury=Math.min(120,h.injury+Math.max(3,Math.round(Math.max(0,S.careerStartingHp-S.player.hp)*.62*(1-equipmentBonus(h).injuryReduction))));
+ h.fatigue=Math.min(100,(Number(h.fatigue)||0)+Math.round(ArenaLineup.fatigueGain(S.careerStartingHp,S.player.hp,1)*(1-equipmentBonus(h).fatigueReduction)));
  h.fights++;if(win)h.wins++;
  const earned=payout.xp,stageBefore=careerStage(h),gained=grantCareerXp(h,earned);
  CAREER.message=(win?'승리! ':'패배. ')+reward+'D · 경험치 +'+earned+(gained?' · LEVEL UP!':'')+(careerStage(h)>stageBefore?' · 성장 '+careerStage(h)+'단계!':'')+
@@ -1029,7 +1021,7 @@ function renderCareer(){
 function autoCareerTrain(stat){
  const h=CAREER.hero;
  if(!h||!['str','agi','end','focus'].includes(stat)||h.stats[stat]>=10)return;
- const cost=ArenaBalance.trainingCost(h,stat);
+ const cost=Math.max(1,Math.round(ArenaBalance.trainingCost(h,stat)*(1-equipmentBonus(h).trainingDiscount)));
  if(CAREER.gold<cost){careerMessage('훈련 비용 '+cost+'D가 부족합니다.');return;}
  const before=h.stats[stat],gained=grantCareerXp(h,Math.max(7,17-Math.floor(before/3)));
  CAREER.gold-=cost;
@@ -1204,12 +1196,12 @@ function finishBeastMatch(){
  S.careerRewardApplied=true;
  const win=!!S.resultWin,final=win&&run.roundIndex+1===run.stage.rounds;
  const damage=Math.max(0,S.careerStartingHp-Math.max(0,S.player.hp));
- h.injury=Math.min(120,(Number(h.injury)||0)+Math.max(2,Math.round(damage*.40))+(win?0:8));
- h.fatigue=Math.min(100,(Number(h.fatigue)||0)+Math.max(2,Math.round(ArenaLineup.fatigueGain(S.careerStartingHp,Math.max(0,S.player.hp),1)*.55)));
+ h.injury=Math.min(120,(Number(h.injury)||0)+Math.max(2,Math.round(damage*.40*(1-equipmentBonus(h).injuryReduction)))+(win?0:8));
+ h.fatigue=Math.min(100,(Number(h.fatigue)||0)+Math.max(2,Math.round(ArenaLineup.fatigueGain(S.careerStartingHp,Math.max(0,S.player.hp),1)*.55*(1-equipmentBonus(h).fatigueReduction))));
  if(final||!win){
   CAREER.fights++;h.fights=(h.fights||0)+1;
   if(final){CAREER.wins++;h.wins=(h.wins||0)+1;CAREER.glory+=run.stage.difficulty*3;}
-  const prize=final?run.stage.reward:0;
+  const prize=final?Math.round(run.stage.reward*(1+equipmentBonus(h).goldBonus)):0;
   const before=CAREER.gold;
   CAREER.gold+=prize;
   CAREER.lastPrize={mode:'beast_hunt',stage:run.stage.id,win:final,round:run.roundIndex+1,gold:prize,before,after:CAREER.gold,at:Date.now()};
@@ -1281,6 +1273,7 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
   S.player.maxHp=tuned.hp;S.player.hp=Math.max(1,tuned.hp-CAREER.hero.injury);
   S.careerStartingHp=S.player.hp;S.player.armor=tuned.armor;S.player.focus=tuned.focus;
   S.player.staminaRegen=tuned.staminaRegen;S.player.specialCooldown=tuned.specialCooldown;
+  S.player.gearEffects=equipmentBonus(CAREER.hero);
   S.player.st=Math.max(60,100-(Number(CAREER.hero.fatigue)||0)*.35);
  }
  // Later rounds slightly tougher without increasing collision box or sprite scale.
@@ -1344,6 +1337,7 @@ function lineupHero(index){
  f.maxHp=cfg.hp;f.hp=Math.max(1,cfg.hp-(Number(h.injury)||0));
  f.armor=cfg.armor;f.focus=cfg.focus;f.staminaRegen=cfg.staminaRegen;
  f.specialCooldown=cfg.specialCooldown;
+ f.gearEffects=equipmentBonus(h);
  f.st=Math.max(60,100-(Number(h.fatigue)||0)*.35);
  f.invuln=.60;
  return f;
@@ -1503,7 +1497,7 @@ function markManualInput(){
 function beginGuard(f,hold=PARRY_GUARD_HOLD){
  if(f===S.player)S.pendingInput=null;
  if(!f||f.dead||f.st<=8||f.stagger>0||f.dodge>0)return false;
- if(!f.guard){f.parry=PARRY_WINDOW;setAction(f,'guard',.24);}
+ if(!f.guard){f.parry=PARRY_WINDOW+Math.min(.22,f.gearEffects?.parryWindow||0);setAction(f,'guard',.24);}
  f.guard=true;f.guardHold=Math.max(f.guardHold,hold);
  if(f===S.player&&f.parry>0)window.ArenaAudio?.play?.('guard',{gain:.29,pan:(f.x-640)/720});
  return true;
@@ -1902,6 +1896,7 @@ function attack(f,victim,special=false,dashImpact=false){
   // Shields and endurance mitigate hits without a permanent invulnerability.
   dmg=Math.max(1,Math.round(dmg*(1-ArenaBalance.damageReduction(victim,false))));
  }
+ if(victim.beastType&&f.gearEffects?.beastDamage)dmg=Math.round(dmg*(1+f.gearEffects.beastDamage));
  dmg=ArenaBalance.combatDamage(dmg);
  victim.hp=Math.max(0,victim.hp-dmg);
  // Short, foot-anchored compress/rebound envelopes make every actual clash
@@ -2969,7 +2964,7 @@ $('#classSubtitle').textContent=DATA[$('#classChoice').value].eng;
 
 /* Visual Ludus adapter; the existing career state remains authoritative. */
 window.LudusBridge={
- trainingCost:(i,stat)=>ArenaBalance.trainingCost(CAREER.roster[i],stat),
+ trainingCost:(i,stat)=>{const h=CAREER.roster[i];return h?Math.max(1,Math.round(ArenaBalance.trainingCost(h,stat)*(1-equipmentBonus(h).trainingDiscount))):0;},
  squadSprite:(hero,action='idle',tick=0)=>{
   if(!hero)return null;
   const index={idle:0,walk:1,attack:2,special:3,guard:6,hit:7,death:11,dodge:8}[action]??0;
@@ -3031,6 +3026,9 @@ window.LudusBridge={
  returnHome:()=>{CAREER_SELECTING=false;CAREER_TAB='roster';$('#careerHub').hidden=false;renderCareer();window.LudusApprovedScenes?.close();},
  market:openSlaveMarket,
  catalog:()=>GEAR.map(g=>({...g})),
+ gearSummary:(i,override)=>window.ArenaGearCatalog.summary(CAREER.roster[i],override),
+ gearSets:()=>window.ArenaGearCatalog.sets,
+ gearRarities:()=>window.ArenaGearCatalog.rarities,
  train:(stat)=>{autoCareerTrain(stat);return CAREER.message;},
  equip:(id,mode='equip')=>{
   const h=CAREER.hero,g=GEAR.find(x=>x.id===id);
@@ -3084,6 +3082,6 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=22"></script><script src="ludus-training-runtime.js?v=6"></script><script src="ludus-doctore-anim.js?v=7"></script><script src="ludus-approved-scenes.js?v=15"></script><script src="ludus-armory-live.js?v=2"></script><script src="ludus-cards.js?v=10"></script>
+<script src="ludus-scene.js?v=22"></script><script src="ludus-training-runtime.js?v=6"></script><script src="ludus-doctore-anim.js?v=7"></script><script src="ludus-approved-scenes.js?v=armory-v2"></script><script src="ludus-armory-live.js?v=armory-v2"></script><script src="ludus-cards.js?v=10"></script>
 
 </body></html>
