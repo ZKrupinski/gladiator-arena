@@ -106,9 +106,12 @@ function choose(career,hero,context={},rng=Math.random){
  ensure(career);
  const heat=Math.max(0,Math.min(100,Number(context.excitement)||0));
  const bonus=(catalog.summary(hero).lootLuck||0);
- const chance=Math.min(.96,Math.max(0,(context.beast?.42:context.boss?.55:context.lineup?.36:.29)+heat*.0052+Math.min(.16,bonus)+Math.min(.10,career.lootDryStreak*.013))*Math.max(0,Number(context.rollModifier??1)));
- const guaranteed=context.guaranteed===true;
- if(!guaranteed&&rng()>=chance){career.lootDryStreak++;return null;}
+ const base=(context.beast?.35:context.boss?.46:context.lineup?.31:.26);
+ // Excitement opens more chances but none are guaranteed, even at score 100.
+ const chance=Math.min(.88,Math.max(.03,
+  (base+heat*.0041+Math.min(.12,bonus)+Math.min(.07,career.lootDryStreak*.011))
+  *Math.max(0,Number(context.rollModifier??1))));
+ if(rng()>=chance){career.lootDryStreak++;return null;}
  career.lootDryStreak=0;
  const lv=Math.max(1,Number(hero?.level)||1);
  let weights={common:56,uncommon:28,rare:11,epic:3.6,legendary:1.2,relic:.2};
@@ -144,8 +147,11 @@ function awardBattle(career,hero,context={},rng=Math.random){
  const heat=Math.max(0,Math.min(100,Number(context.excitement)||0));
  const slots=Math.min(5,1+(heat>=22?1:0)+(heat>=44?1:0)+(heat>=66?1:0)+(heat>=88?1:0));
  const loot=[];
+ // Each additional drop is another independent roll, with sharply diminishing odds.
+ // 5/5 requires a true jackpot streak, not merely reaching 88 crowd heat.
+ const rollStrength=[1,.84,.66,.42,.21];
  for(let i=0;i<slots;i++){
-  const item=award(career,hero,{...context,excitement:heat,guaranteed:i===0&&heat>=88,rollModifier:Math.max(.53,1-i*.105)},rng);
+  const item=award(career,hero,{...context,excitement:heat,rollModifier:rollStrength[i]},rng);
   if(item)loot.push(item);
  }
  return loot;
