@@ -4,7 +4,7 @@ const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const fmt=n=>Math.round(Number(n)||0).toLocaleString('ko-KR');
 const labels={weapon:'무기',shield:'방패',armor:'갑옷'};
 const rk=['common','uncommon','rare','epic','legendary','relic'];
-let onlyOwned=false,onlySet=false,rarity='all',lastScroll=0,lastScreenScroll=0,lastDetailScroll=0,lastRosterScrollLeft=0,statFlash=null;
+let onlyOwned=false,onlySet=false,rarity='all',lastScroll=0,lastScreenScroll=0,lastDetailScroll=0,lastRosterScrollLeft=0,statFlash=null,jumpToGearId=null;
 function portrait(canvas,source){if(!canvas||!source?.width||!source?.height)return;const c=canvas.getContext('2d'),s=Math.min((canvas.width-12)/source.width,(canvas.height-12)/source.height);try{c.drawImage(source,(canvas.width-source.width*s)/2,canvas.height-source.height*s-3,source.width*s,source.height*s);}catch(_){}}
 function render(stage,a,cb){
  const state=a.state(),hero=state.roster[state.active],stock=a.catalog(),eq=hero?.equipment||{},rar=a.gearRarities(),sets=a.gearSets();
@@ -30,7 +30,7 @@ function render(stage,a,cb){
  const equippedSlots=['weapon','shield','armor'].map(slot=>'<div class="ra-eq-line"><span>'+labels[slot]+'</span><strong>'+esc(wornGear(slot)?.name||'미장착')+'</strong></div>').join('');
  const fighterLoadout=['weapon','shield','armor'].map(slot=>{
   const item=wornGear(slot),tier=item&&rar[item.rarity],highlight=!!item&&g?.id===item.id;
-  return '<div class="ra-loadout-slot'+(item?' is-equipped rarity-'+item.rarity:' is-empty')+(highlight?' is-selected':'')+'" data-loadout-slot="'+slot+'" data-loadout-gear="'+esc(item?.id||'')+'" title="'+esc(labels[slot]+': '+(item?.name||'미장착'))+'" aria-label="'+esc(labels[slot]+': '+(item?.name||'미장착'))+'" style="--ra-tone:'+(tier?.color||'#816c53')+'"><div class="ra-loadout-art">'+(item?icon(item):'<span class="ra-loadout-empty" aria-hidden="true">+</span>')+'</div><span class="ra-loadout-label">'+labels[slot]+'</span></div>';
+  return '<button type="button"'+(item?'':' disabled')+' class="ra-loadout-slot'+(item?' is-equipped rarity-'+item.rarity:' is-empty')+(highlight?' is-selected':'')+'" data-loadout-slot="'+slot+'" data-loadout-gear="'+esc(item?.id||'')+'" title="'+esc(labels[slot]+': '+(item?.name||'미장착'))+'" aria-label="'+esc(labels[slot]+': '+(item?.name||'미장착'))+'" aria-pressed="'+highlight+'" style="--ra-tone:'+(tier?.color||'#816c53')+'"><div class="ra-loadout-art">'+(item?icon(item):'<span class="ra-loadout-empty" aria-hidden="true">+</span>')+'</div><span class="ra-loadout-label">'+labels[slot]+'</span></button>';
  }).join('');
  const now=a.gearSummary(state.active),previewEquipment=g?{...eq,[g.slot]:wear?null:g.id}:eq,after=g?a.gearSummary(state.active,previewEquipment):now;
  const actual=a.combatStats(state.active),preview=g?a.combatStats(state.active,previewEquipment):actual;
@@ -69,6 +69,18 @@ function render(stage,a,cb){
  portrait(root.querySelector('#raHero'),hero&&a.portrait(state.active));
  root.querySelectorAll('[data-portrait]').forEach(c=>portrait(c,a.portrait(Number(c.dataset.portrait))));
  list.scrollTop=lastScroll;root.scrollTop=lastScreenScroll;
+ if(jumpToGearId){
+  const target=[...list.querySelectorAll('[data-item]')].find(el=>el.dataset.item===jumpToGearId);
+  if(target){
+   // Scroll only the inventory list, never the entire armory or fighter carousel.
+   const from=list.getBoundingClientRect(),to=target.getBoundingClientRect();
+   const offset=to.top-from.top,margin=12;
+   if(offset<margin)list.scrollTop+=offset-margin;
+   else if(to.bottom>from.bottom-margin)list.scrollTop+=to.bottom-from.bottom+margin;
+   lastScroll=list.scrollTop;
+  }
+  jumpToGearId=null;
+ }
  // The fighter carousel is rebuilt on every selection; restore the exact user position.
  rosterScroll.scrollLeft=lastRosterScrollLeft;
  rosterScroll.addEventListener('scroll',()=>{lastRosterScrollLeft=rosterScroll.scrollLeft;},{passive:true});
@@ -77,6 +89,17 @@ function render(stage,a,cb){
  root.querySelector('#raHome').onclick=cb.goHome;
  root.querySelectorAll('[data-fighter]').forEach(b=>b.onclick=()=>keep(()=>{statFlash=null;cb.selectHero(Number(b.dataset.fighter));}));
  root.querySelectorAll('[data-item]').forEach(b=>b.onclick=()=>keep(()=>{statFlash=null;cb.setGear(b.dataset.item);},true));
+ root.querySelectorAll('.ra-loadout-slot[data-loadout-gear]').forEach(b=>b.onclick=()=>{
+  const itemId=b.dataset.loadoutGear;
+  if(!itemId||!eq[b.dataset.loadoutSlot]||eq[b.dataset.loadoutSlot]!==itemId)return;
+  keep(()=>{
+   // Allocated gear may be hidden by category/rarity/owned/set filtering.
+   // A loadout click must always reveal it in both detail and inventory.
+   onlyOwned=false;onlySet=false;rarity='all';
+   lastScroll=0;jumpToGearId=itemId;statFlash=null;
+   cb.focusGear(itemId);
+  },true);
+ });
  root.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{lastScroll=0;lastDetailScroll=0;lastScreenScroll=root.scrollTop;cb.setCategory(b.dataset.cat);});
  root.querySelector('#raOwned').onclick=()=>{onlyOwned=!onlyOwned;lastScroll=0;lastScreenScroll=root.scrollTop;lastDetailScroll=0;cb.setGear(g?.id||'wood');};
  root.querySelector('#raSet').onclick=()=>{onlySet=!onlySet;lastScroll=0;lastScreenScroll=root.scrollTop;lastDetailScroll=0;cb.setGear(g?.id||'wood');};
