@@ -919,7 +919,7 @@ function finishCareerMatch(){
   const loot=win?ArenaLoot.awardBattle(CAREER,h,{boss:!!S.careerOpponent?.boss,excitement:S.crowd?.score||0}):[];
   S.matchLoot=loot;CAREER.lastLoot=loot;CAREER.lastPrize.loot=loot;CAREER.lastPrize.excitement=ArenaCrowd.snapshot(S.crowd);
  CAREER.message=(win?'승리! ':'패배. ')+reward+'D · 경험치 +'+earned+(gained?' · LEVEL UP!':'')+(careerStage(h)>stageBefore?' · 성장 '+careerStage(h)+'단계!':'')+
-  ' · 잔액 '+CAREER.gold+'D'+(loot.length?' · 전리품 '+loot.length+'개 루두스 창고에 입고!':' · 장비 드롭 없음')+' · 루두스로 돌아가세요.';
+  ' · 잔액 '+CAREER.gold+'D'+(loot.length?' · 전리품 '+loot.length+'개 루두스 창고에 입고!':' · 장비 드롭 없음')+';
  if(win){
   const joined=LudusRoster.recruitBoss(CAREER,S.careerOpponent);
   if(joined)CAREER.message+=' · '+joined.name+'이 루두스에 합류했습니다!';
