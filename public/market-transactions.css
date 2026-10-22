@@ -98,8 +98,8 @@
   linear-gradient(90deg,#100a0670,transparent 10%,transparent 90%,#100a0670),
   url('assets/market/market_keyvisual_no_merchant.webp?v=3');
  background-repeat:no-repeat;
- background-size:100% 100%,1672px 1930px;
- background-position:0 0,var(--backdrop-x) -282px;
+ background-size:100% 100%,1672px 2560px;
+ background-position:0 0,var(--backdrop-x) -421px;
  box-shadow:inset 0 5px 12px #130b0754,inset 0 -12px 15px #21110766;
 }
 .gm-screen .gm-stage .gm-empty-podium[data-i="0"] {left:472px;width:271px;--backdrop-x:-472px}
