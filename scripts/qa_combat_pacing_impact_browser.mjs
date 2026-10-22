@@ -225,6 +225,65 @@ try{
  assert.ok(beast.special.beastRecoil?.farX-beast.special.beastRecoil?.startX>=395,
   'beast must be thrown 400px when arena space permits: '+JSON.stringify(beast));
  assert.ok(beast.special.fighterGhost>=.8&&beast.special.cinematic==='special');
+ // Regression: old parry velocity was barely visible during slow-mo, and
+ // specials stopped against the right edge. Test the *actual combat pipeline*
+ // near the arena rail in a live browser, including independent body rumble.
+ const edge=await page.evaluate(()=>{
+  const {state:s,attack,camera,render}=window.__arenaQA;
+  const p=s.player,e=s.enemy;
+  s.phase='fight';s.time=110;s.paused=false;s.fx=true;s.gauntlet=null;
+  s.autoplayEnabled=false;s.autoPlaying=false;
+  s.cinematic=null;s.focusFrame=null;s.sparks=[];
+  const ready=(x1,x2)=>{
+   Object.assign(p,{x:x1,face:1,dead:false,removedFromArena:false,
+    hp:300,maxHp:300,st:100,stagger:0,dodge:0,invuln:0,
+    attackCD:0,cd:0,guard:false,parry:0,comboDash:null,
+    specialRecoil:null,hitRumble:null,chainHits:0});
+   Object.assign(e,{x:x2,face:-1,dead:false,removedFromArena:false,
+    hp:300,maxHp:300,st:100,stagger:0,dodge:0,invuln:0,
+    attackCD:0,cd:0,guard:false,parry:0,comboDash:null,
+    specialRecoil:null,hitRumble:null,chainHits:0,beastType:null});
+  };
+  ready(870,1150);attack(p,e,true);
+  const special={start:e.specialRecoil?.startX,
+   far:e.specialRecoil?.farX,initial:e.x,
+   final:e.specialRecoil?.restX,
+   rumble:e.hitRumble?.amp,focus:s.cinematic?.kind};
+  ready(950,1150);p.guard=true;p.parry=.3;
+  attack(e,p,false,false);
+  const parry={start:e.specialRecoil?.startX,
+   far:e.specialRecoil?.farX,initial:e.x,
+   final:e.specialRecoil?.restX,
+   rumble:e.hitRumble?.amp,defenderRumble:p.hitRumble?.amp,
+   focus:s.cinematic?.kind};
+  // Ensure a high zoom camera is safe with the approved backdrop art;
+  // the actual render executes both the shared backdrop and fighter lens.
+  camera.zoom=1.32;camera.initialized=true;
+  render();
+  const scene={zoom:camera.zoom,backgroundZoom:1+(camera.zoom-1)*.62,
+   phase:s.phase};
+  return {special,parry,scene};
+ });
+ assert.ok(edge.special.far-edge.special.start>=390,
+  'special near RIGHT EDGE must fly full 400px, not clamp at 1165: '+JSON.stringify(edge));
+ assert.ok(edge.special.initial-edge.special.start>=170,'instant strong special launch');
+ assert.ok(edge.special.final<=1170,'special returns to in-bounds combat');
+ assert.equal(edge.special.focus,'special');
+ assert.ok(edge.special.rumble>=18,'fighter should shudder independently of screen');
+ assert.ok(edge.parry.far-edge.parry.start>=280,
+  'perfect parry attacker should travel >280px even by the arena wall: '+JSON.stringify(edge));
+ assert.ok(edge.parry.initial-edge.parry.start>=120,'parry must throw attacker immediately');
+ assert.ok(edge.parry.rumble>=14&&edge.parry.defenderRumble>=7);
+ assert.equal(edge.parry.focus,'parry');
+ assert.ok(edge.scene.backgroundZoom>1.18,'backdrop must also move with close-up');
+ assert.equal(edge.scene.phase,'fight');
+ const renderSource=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
+ assert.match(renderSource,/const bottomBar=Math\.round\(topBar\*\(f\.kind==='special'\?\.20:1\)\)/,
+  'special bottom bar must be only 20% of top to preserve fighter silhouettes');
+ assert.match(renderSource,/ctx\.scale\(bgZoom,bgZoom\)/,
+  'background must be zoomed separately with scene camera');
+ assert.match(renderSource,/const rumble=f\.hitRumble/,
+  'fighter-only hit rumble must overlay global whole-scene shaking');
  // Real KO transition: a fighter may still have an active afterimage,
  // a fourth-hit combo dash and cinematic when the final lethal strike lands.
  // All those MUST be removed before the victory pose is painted.
@@ -254,6 +313,6 @@ try{
  assert.equal(winCleanup.lingering,0,'only the approved victory/finisher art may remain');
  assert.deepEqual(errors,[],'no runtime errors in the actual combat pipeline');
  console.log('ARENA_COMBAT_DRAMA_V7_PASS '+JSON.stringify({
-  sample,enhanced,displaced,returned,beast,ghostCurves,winCleanup
+  sample,enhanced,displaced,returned,beast,edge,ghostCurves,winCleanup
  }));
 }finally{await browser.close();}
