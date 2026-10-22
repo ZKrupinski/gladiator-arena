@@ -1,0 +1,29 @@
+name: QA Ludus drag roster panel
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/ludus-scene.js
+      - public/ludus-scene.css
+      - public/index.html
+      - scripts/qa_ludus_roster_drag_browser.mjs
+      - .github/workflows/qa-ludus-roster-drag.yml
+  workflow_dispatch:
+jobs:
+  drag-roster:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Start local game
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/ludus-roster.log 2>&1 &
+          sleep 3
+      - name: Verify panel size, swipe and fighter selection on landscape phone
+        run: node scripts/qa_ludus_roster_drag_browser.mjs
