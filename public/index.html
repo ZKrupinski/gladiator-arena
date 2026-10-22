@@ -355,7 +355,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-beasts.js?v=versus-v5"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
 <script src="arena-beast-stage-previews.js?v=versus-v5"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
-<script src="arena-carnifex.js?v=7-complete-exit"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=duel-pace-v3"></script><script src="arena-motion.js?v=duel-pace-v3"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
+<script src="arena-carnifex.js?v=7-complete-exit"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=dodge-special-v4"></script><script src="arena-motion.js?v=duel-pace-v3"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -1094,7 +1094,7 @@ $('#careerExit').onclick=()=>{if(MINI)return;window.LudusScene?.close();$('#care
 $('#careerHit').onclick=completeTraining;
 $('#careerCancel').onclick=closeTraining;
 window.addEventListener('keydown',e=>{if(MINI&&!MINI.finished&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
-function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38};}
+function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38,dodgeEcho:null};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 // Non-combat phase: walk from the gate, hold an original victory keypose,
 // then charge. Health, stamina, cooldowns and clock remain frozen.
@@ -1358,7 +1358,7 @@ function lineupEnemy(opponent){
 }
 function cleanDuelSurvivor(f,x,face){
  f.x=x;f.face=face;f.vx=0;f.guard=false;f.guardHold=0;f.parry=0;
- f.stagger=0;f.net=0;f.dodge=0;f.knockT=0;f.knockVX=0;
+ f.stagger=0;f.net=0;f.dodge=0;f.dodgeEcho=null;f.knockT=0;f.knockVX=0;
  f.attackCD=0;f.actionT=0;f.action='idle';f.comboDash=null;
  f.chainHits=0;f.chainExpire=0;f.pressureT=0;f.invuln=.65;
  f.comebackUsed=false;
@@ -1542,7 +1542,7 @@ function triggerCinematic(kind,contactX,dir=1){
  S.focusFrame=window.ArenaFocus.advance(candidate,0,
    !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
  if(S.fx&&!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches)
-  S.shake=Math.max(S.shake,kind==='parry'?32:36);
+  S.shake=Math.max(S.shake,kind==='parry'?32:kind==='special'?18:36);
 }
 function addFx(frame,x,y,opt={}){
  if(!S.fx)return;
@@ -1645,7 +1645,7 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
  let art='special_aura',w=715,h=715,duration=.43,alpha=.85;
  let offsetX=dir*42,offsetY=-12,rotation=0,frame=3;
  if(guarded){art=null;w=510;h=510;offsetX=victim.face*55;offsetY=-6;alpha=.91;duration=.32;frame=7;}
- if(special){art=null;w=735;h=735;offsetX=dir*15;offsetY=-12;duration=.59;alpha=.92;frame=3;}
+ if(special){art=null;w=1010;h=920;offsetX=dir*92;offsetY=-18;duration=.76;alpha:1;frame=3;}
  if(dash){art=null;w=1450;h=735;offsetX=dir*175;offsetY=-18;duration=.69;alpha=1;frame=4;}
  if(ko){
   // The finishing impact belongs to the DEFEATED fighter, never the victor.
@@ -1763,7 +1763,16 @@ function attack(f,victim,special=false,dashImpact=false){
        f.x=clamp(f.x+f.face*step,110,1170);
      }
    }
-   setAction(f,special?'special':'attack',special?.48:.35);
+   setAction(f,special?'special':'attack',special?.68:.35);
+   if(special&&!f.beastType&&S.fx){
+    // Pre-impact illustrated charge: attached BEHIND the original fighter,
+    // not a generated vector ring and not the same ordinary sword slash.
+    addFx(3,f.x+f.face*7,FLOOR-FIGHTER_DRAW_SIZE*.53-23,{
+     sequence:'special',w:870,h:800,flip:f.face<0,
+     owner:f,offsetX:f.face*7,offsetY:-23,track:'body',
+     layer:'back',duration:.64,alpha:.82
+    });
+   }
    fxSound(special?'heavy_swing':'swing');
  }
  const dist=Math.abs(f.x-victim.x),reach=f.cfg.reach+(special?40:0)+(dashImpact?102:0);
@@ -1948,6 +1957,32 @@ function attack(f,victim,special=false,dashImpact=false){
   S.shake=Math.max(S.shake,special?14:6);S.flash=Math.max(S.flash,special?.18:.09);
  }
  emitAttackFx(f,victim,special,guarded,false,f.attackVariant,dashImpact);
+ if(special&&!dashImpact&&!guarded&&!f.beastType){
+  const contact=impactPoint(f,victim,true);
+  // Impact at the VICTIM, separate from the illustrated charge at the source.
+  addFx(3,contact.x+f.face*26,contact.y-16,{
+   sequence:'special',w:980,h:875,alpha:1,
+   flip:f.face<0,duration:.73,delay:.05
+  });
+  // Directional painted trailing blade arc, readable after the first flash.
+  addFx(2,contact.x+f.face*54,contact.y-21,{
+   sequence:f.cls==='retiarius'?'thrust':f.cls==='thraex'?'sweep':'slash',
+   w:625,h:570,flip:f.face<0,alpha:.83,delay:.13,duration:.39
+  });
+  window.ArenaMotion?.shake?.(S,'special',f.face,1.18);
+  S.shake=Math.max(S.shake,21);
+  S.flash=Math.max(S.flash,.24);
+  if(victim.hp>0){
+   victim.knockVX=f.face*290;
+   victim.knockT=Math.max(victim.knockT,.25);
+   victim.stagger=Math.max(victim.stagger,.56);
+  }
+  triggerCinematic('special',contact.x,f.face);
+  if(S.cinematic?.kind==='special')S.cinematic.title=f.cfg.special;
+  if(sounds)window.ArenaAudio?.play?.('dash_hit',{
+    gain:.39,delay:.10,pan:(contact.x-640)/720
+  });
+ }
  if(!guarded&&(special||dashImpact)){
   const contact=impactPoint(f,victim,special);
   if(!f.beastType&&!victim.beastType){
@@ -1970,16 +2005,36 @@ function attack(f,victim,special=false,dashImpact=false){
  });
  if(victim.hp<=0)finishFight(f,victim);else updateHud();
 }
-function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.dodge=.34;f.invuln=.3;setAction(f,'dodge',.34);
- // Visible takeoff and landing energy without changing dodge i-frames.
- window.ArenaMotion?.pulse?.(f,'contact','source',f.face);f.x=clamp(f.x+(f.enemy?-1:-1)*f.face*84,120,1160);const p=weaponPoint(f,'dodge');window.ArenaAudio?.play?.('dodge',{gain:.56,pan:(f.x-640)/720});
+function dodge(f){
+ if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;
+ const startX=f.x,dir=-(f.face||1);
+ f.st-=23;
+ f.dodge=.40;f.invuln=.3;setAction(f,'dodge',.48);
+ // Gameplay displacement stays immediate for predictable invulnerability;
+ // three FULL, correctly proportioned sprite echoes show the path clearly.
+ f.x=clamp(startX+dir*119,120,1160);
+ f.dodgeEcho={fromX:startX,toX:f.x,t:.56,total:.56};
+ window.ArenaMotion?.pulse?.(f,'contact','source',f.face);
+ window.ArenaMotion?.shake?.(S,'contact',dir,.77);
+ window.ArenaAudio?.play?.('dodge',{gain:.85,pan:(f.x-640)/720});
  if(f.beastType){
    window.ArenaBeastFX?.ensure?.();
    const dodgeStep=beastGroundFx(f,f.x+f.face*75,FLOOR-46,560,250);
    addFx(1,dodgeStep.x,dodgeStep.y,{beastFx:'step',w:dodgeStep.w,h:dodgeStep.h,
      flip:beastFxFlip(f),alpha:.76,duration:.31,layer:'front'});
- }else addFx(1,p.x,p.y,{art:'dash_trail',w:360,h:120,flip:f.face<0,
-     alpha:.48,owner:f,offsetX:-f.face*32,offsetY:110,duration:.2});}
+ }else if(S.fx){
+   // Existing painted 12-frame texture: low, horizontal and directional.
+   // Layer BEHIND the fighter so the feet and face remain readable.
+   addFx(1,(startX+f.x)*.5,FLOOR-47,{
+    art:null,sequence:'dash',w:740,h:210,flip:dir<0,
+    duration:.34,alpha:.69,layer:'back'
+   });
+   addFx(1,f.x,FLOOR-49,{
+    art:null,sequence:'dash',w:415,h:140,flip:dir<0,
+    duration:.28,delay:.07,alpha:.48,layer:'back'
+   });
+ }
+}
 // One short manual input reservation: accept a tap near recovery, never a combo macro.
 function inputAct(action){
  if(S.phase!=='fight'||S.paused||document.hidden)return;
@@ -2105,6 +2160,10 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
    f.action='idle';
  }
  f.dodge=Math.max(0,f.dodge-dt);f.stagger=Math.max(0,f.stagger-dt);
+ if(f.dodgeEcho){
+  f.dodgeEcho.t=Math.max(0,f.dodgeEcho.t-realDt);
+  if(f.dodgeEcho.t<=0)f.dodgeEcho=null;
+ }
  f.invuln=Math.max(0,f.invuln-dt);f.net=Math.max(0,f.net-dt);
  f.parry=Math.max(0,f.parry-dt);f.guardHold=Math.max(0,f.guardHold-dt);
  f.guardRecovery=Math.max(0,f.guardRecovery-dt);f.knockT=Math.max(0,f.knockT-dt);
@@ -2584,14 +2643,24 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   if(!drawGrowthPose(f,pose,drawX-f.face*38,drawY+6,width,height,f.face<0,.19))atlasFrame(IMG[f.cls],frame,drawX-f.face*38,drawY+6,width,height,f.face<0,.19);
   if(!drawGrowthPose(f,pose,drawX-f.face*73,drawY+12,width,height,f.face<0,.09))atlasFrame(IMG[f.cls],frame,drawX-f.face*73,drawY+12,width,height,f.face<0,.09);
  }
- const renderActor=(alpha)=>{
+ const renderActor=(alpha,x=drawX,y=drawY)=>{
   const animal=!!f.beastType&&!!window.ArenaBeasts?.draw?.(ctx,{
-   fighter:f,pose,clock,x:drawX,y:drawY,w:width,h:height,flip:f.face>0,alpha
+   fighter:f,pose,clock,x,y,w:width,h:height,flip:f.face>0,alpha
   });
   if(!animal&&
-   !drawGrowthPose(f,pose,drawX,drawY,width,height,f.face<0,alpha))
-    atlasFrame(IMG[f.cls],frame,drawX,drawY,width,height,f.face<0,alpha);
+   !drawGrowthPose(f,pose,x,y,width,height,f.face<0,alpha))
+    atlasFrame(IMG[f.cls],frame,x,y,width,height,f.face<0,alpha);
  };
+ if(f.dodgeEcho&&S.phase==='fight'&&!f.beastType&&S.fx&&!reduceImpact){
+  const trail=f.dodgeEcho,progress=clamp(1-trail.t/trail.total,0,1);
+  const gap=trail.fromX-trail.toX;
+  const fade=Math.pow(1-progress,1.35);
+  // Show the PREVIOUS positions on the same ground pivot, preserving the
+  // original approved sprite's width/height (no squash or vector ghosts).
+  for(const [fraction,opacity] of [[.35,.23],[.68,.15],[1,.095]]){
+   renderActor(opacity*fade,drawX+gap*fraction,drawY+3*fraction);
+  }
+ }
  renderActor(1);
  // A brief white silhouette on the HIT actor only (never every sprite or HUD).
  // Canvas filter operates on original per-pixel alpha, so cutout edges remain
@@ -2804,10 +2873,17 @@ function drawCinematicFocus(){
  const textAlpha=Math.min(.94,reveal,dissolve);
  // Parry tells its story near the two actual fighters; only rush keeps a
  // top-center Roman proclamation. No repeated generic 'PARRY!' graphics.
- if(textAlpha>0&&f.kind!=='parry'&&!window.ArenaHerald?.visible?.()){
+ if(textAlpha>0&&f.kind==='special'){
+  // A unique strike callout, not the routine herald or 4-hit dash title.
+  window.ArenaHerald?.drawCanvasCallout?.(ctx,'ARS ULTIMA',W*.5,H*.155,{
+   size:37,tone:'gold',subtitle:f.state?.title||'SPECIAL TECHNIQUE',
+   alpha:textAlpha,maxWidth:470
+  });
+ }else if(textAlpha>0&&f.kind==='dash'&&!window.ArenaHerald?.visible?.()){
   window.ArenaHerald?.drawCanvasCallout?.(ctx,'IMPETUS',W*.5,H*.145,{
    size:33,tone:'ember',subtitle:'RUSH IMPACT',alpha:textAlpha,maxWidth:420
-  }); }
+  });
+ }
  ctx.restore();
 }
 function render(){

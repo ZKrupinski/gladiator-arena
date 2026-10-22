@@ -6,6 +6,12 @@
 (function(root){
 'use strict';
 const PRESETS=Object.freeze({
+ special:Object.freeze({
+  // Readable 3-beat technique: short impact stop, illustrated release and recovery.
+  // Slight zoom only, keeping both duelists inside the arena as with parry.
+  duration:.78,hitstop:.085,slowEnd:.44,minRate:.36,
+  zoom:.075,vignette:.10,bloom:.48,letterbox:0
+ }),
  dash:Object.freeze({
    duration:1.18,hitstop:.17,slowEnd:.80,minRate:.09,
    zoom:.38,vignette:.41,bloom:.58,letterbox:32
@@ -60,6 +66,6 @@ function advance(state,realDt,reducedMotion=false){
   centerX:state.centerX,dir:state.dir,reduced:!!reducedMotion
  };
 }
-root.ArenaFocus={version:'2.1.0',PRESETS,start,advance};
+root.ArenaFocus={version:'2.2.0',PRESETS,start,advance};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaFocus;
 })(globalThis);

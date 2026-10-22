@@ -17,6 +17,8 @@ const focus=fx.globalThis.ArenaFocus;
 assert.ok(focus.PRESETS.parry.duration>.8);
 assert.equal(focus.PRESETS.parry.zoom,0,'no camera cut that hides fighters');
 assert.ok(focus.PRESETS.dash.hitstop>=.16);
+assert.ok(focus.PRESETS.special.hitstop>=.08);
+assert.ok(focus.PRESETS.special.zoom<.09,'specials must not crop opponents');
 const camera={globalThis:{}};
 vm.runInNewContext(readFileSync(new URL('../public/arena-motion.js',import.meta.url),'utf8'),camera);
 assert.ok(camera.globalThis.ArenaMotion.PRESETS.parry.amp>=34);
