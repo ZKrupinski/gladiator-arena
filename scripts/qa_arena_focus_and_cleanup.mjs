@@ -8,7 +8,15 @@ const root={};
 const focus=fs.readFileSync(new URL('../public/arena-focus.js',import.meta.url),'utf8');
 vm.runInNewContext(focus,{globalThis:root});
 const F=root.ArenaFocus;
-assert.equal(F.version,'2.3.0');
+assert.equal(F.version,'2.4.0');
+const spec=F.PRESETS.special;
+assert.ok(spec.letterbox>=160,'special closes top and bottom 5x deeper');
+assert.ok(spec.hitstop>=.20&&spec.minRate<=.08,'special freezes then slows hard');
+assert.ok(F.PRESETS.strike.minRate<.7,'normal hits now punctuated with slow motion');
+assert.ok(F.PRESETS.dodge.minRate<.2,'dodge slow motion more visible');
+const huge=F.start('special',640);
+F.advance(huge,.05);const bars=F.advance(huge,.05);
+assert.ok(bars.cinemaBars>=145,'real rendered cinematic bars reach 5x the original 32px accent');
 for(const name of ['dash','parry']){
  const s=F.start(name,575);
  assert.equal(s.kind,name);
@@ -57,11 +65,14 @@ for(const name of ['dash','parry']){
 }
 const html=fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
 const carnifex=fs.readFileSync(new URL('../public/arena-carnifex.js',import.meta.url),'utf8');
-assert.match(html,/arena-focus\.js\?v=dodge-special-v5/,'new combat focus loaded before main game');
+assert.match(html,/arena-focus\.js\?v=combat-drama-v6/,'new combat focus loaded before main game');
 assert.match(html,/drawCinematicWorldAccent\(\)/,'illustrated dash and parry burst layered in real world');
 assert.match(html,/ArenaHerald\?\.drawCanvasCallout\?\.\(ctx,'CONTRA!'/,'defender Roman parry callout visible');
 assert.match(html,/ArenaHerald\?\.drawCanvasCallout\?\.\(ctx,'FRVSTRA!'/,'attacker Roman parry callout visible');
 assert.match(html,/IMPETUS/,'dramatic dash title visible');
+assert.match(html,/clearCombatAfterimages\(winner,loser\)/,'KO explicitly removes lingering ghost sprite states');
+assert.match(html,/clearCombatAfterimages\(p,e\)/,'timer finish also clears fighter ghosts');
+assert.match(html,/if\(S.phase==='fight'&&f.comboDash&&/,'4th-hit dash ghosts never appear during a victory pose');
 assert.match(html,/triggerCinematic\(reversal\?\.critical\?'reversal':'parry'/,'normal parry and low-health reversal choose distinct focus');
 assert.match(html,/triggerCinematic\('dash'/,'successful dash triggers focus');
 assert.match(html,/S\.cinematic=focus\.state/,'cinematic state expires');
