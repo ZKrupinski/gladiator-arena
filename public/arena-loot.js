@@ -45,7 +45,7 @@ function ensure(career){
   // Move every unequipped copy into the Ludus store without duplicating worn copies.
   for(const h of prior){
    const incoming=Array.isArray(h.inventory)?h.inventory.slice():[];
-   for(const slot of catalog.slots{
+   for(const slot of catalog.slots){
     const worn=h.equipment?.[slot],at=incoming.indexOf(worn);
     if(worn&&at>=0)incoming.splice(at,1);
    }
@@ -57,7 +57,7 @@ function ensure(career){
  // Newly recruited fighters may still arrive with a legacy starter inventory.
  for(const h of prior)if(Array.isArray(h.inventory)&&h.inventory.length){
   const incoming=h.inventory.slice();
-  for(const slot of catalog.slots{
+  for(const slot of catalog.slots){
    const worn=h.equipment?.[slot],at=incoming.indexOf(worn);
    if(worn&&at>=0)incoming.splice(at,1);
   }
