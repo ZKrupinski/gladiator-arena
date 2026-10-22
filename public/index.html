@@ -1858,6 +1858,10 @@ function attack(f,victim,special=false,dashImpact=false){
    // Use the real-time launcher at both sides of the arena.
    launchCombatRecoil(f,away,reversal?.critical?360:
      special?330:285,'parry');
+   // Cut the failed incoming attack's FORWARD silhouette before drawing the
+   // victim's BACKWARD flying ghosts. Likewise the parrier starts a NEW chase.
+   f.attackLunge=null;f.specialLunge=null;
+   victim.attackLunge=null;victim.specialLunge=null;
    // True PARRY COUNTER: defeated striker flies BACK in visible slow-time.
    // Successful defender simultaneously bursts FORWARD at ~1050px/s,
    // tracing full-size sprite ghosts and leaving a fast follow-up opening.
