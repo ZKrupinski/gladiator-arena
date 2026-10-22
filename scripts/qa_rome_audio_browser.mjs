@@ -83,7 +83,7 @@ try{
  assert.ok(ceremonies.start>=2.15,'no chirpy sub-second start trumpet');
  assert.ok(ceremonies.victory>=2.60,'grand resonant horn triumph is sustained');
  assert.ok(ceremonies.defeat>=2.15,'somber horn/tuba defeat is sustained');
- assert.equal(await page.evaluate(()=>window.ArenaAudio.version),'5.1.0');
+ assert.equal(await page.evaluate(()=>window.ArenaAudio.version),'5.2.0');
  await page.waitForFunction(()=>!!window.ArenaAudio,{timeout:18000});
  await page.locator('#startBtn').click();
  await page.waitForFunction(()=>window.ArenaAudio?.status()?.ready===true,{timeout:90000});
