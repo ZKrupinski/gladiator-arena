@@ -57,6 +57,22 @@ try{
  });
  await page.waitForSelector('.ra-collection .ra-list');
  assert.ok(await page.locator('.ra-item').count()>=4);
+ // Icon-only tabs must keep all six categories on one line, without wrapped text.
+ assert.equal(await page.locator('.ra-cats .ra-tab-btn').count(),6,'six warehouse category icon tabs');
+ assert.equal(await page.locator('.ra-cats .ra-cat-icon').count(),5,'five illustrative bitmap tab icons');
+ assert.equal(await page.locator('.ra-cats .ra-cat-all-icon').count(),1,'all-category grid icon');
+ const tabState=await page.evaluate(()=>{
+  const nav=document.querySelector('.ra-cats'),tabs=[...nav.querySelectorAll('.ra-tab-btn')];
+  const bounds=tabs.map(t=>t.getBoundingClientRect());
+  return {labels:tabs.map(t=>t.getAttribute('aria-label')),
+   bitmap:tabs.slice(1).every(t=>t.querySelector('img')?.naturalWidth>0),
+   sameRow:bounds.every(r=>Math.abs(r.top-bounds[0].top)<2),
+   noOverflow:bounds.every(r=>r.width>=35&&r.right<=nav.getBoundingClientRect().right+2),
+   selected:tabs.filter(t=>t.getAttribute('aria-pressed')==='true').length};
+ });
+ assert.deepEqual(tabState.labels,['전체 장비','무기','방패','갑옷','투구','팔 보호대']);
+ assert(tabState.bitmap&&tabState.sameRow&&tabState.noOverflow&&tabState.selected===1,
+  'one-row bitmap categories: '+JSON.stringify(tabState));
  await page.waitForFunction(()=>document.querySelector('.ra-item-img')?.naturalWidth>0,{timeout:25000});
  assert.equal(await page.locator('.ra-stat-diff').count(),6,'all six real combat stats compare equipment before and after');
  const geometry=await page.evaluate(()=>{
