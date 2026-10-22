@@ -1,0 +1,39 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "roman-gear-bitmap-icon-tabs-20261023-v13",
+  "expectedMainSha": "aec6a19523ff43e55effad5f7b2e4c71d3d3f7f3",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/aec6a19523ff43e55effad5f7b2e4c71d3d3f7f3/public/index.html",
+      "sha256": "70358f5a8b3d331af01eba963279091721e0548bb4f814d536256977b06520ef"
+    },
+    {
+      "path": "public/ludus-armory-live.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/aec6a19523ff43e55effad5f7b2e4c71d3d3f7f3/public/ludus-armory-live.js",
+      "sha256": "1b3000ab188204af6f7c6f04729d8b5b83ada31fcafe8fd0e747897f19e01b75"
+    },
+    {
+      "path": "public/ludus-armory-live.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/aec6a19523ff43e55effad5f7b2e4c71d3d3f7f3/public/ludus-armory-live.css",
+      "sha256": "6f8a5617d2504337a55e42f38d85edd7b5ff79cd354744ec1225ab72f30893fe"
+    },
+    {
+      "path": "public/arena-gear-bitmap.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/aec6a19523ff43e55effad5f7b2e4c71d3d3f7f3/public/arena-gear-bitmap.js",
+      "sha256": "7bbdb1bf41170de01fefbcf2164d013edf070170730e96bc5199d689f5002f61"
+    },
+    {
+      "path": "public/assets/gear-atlas/conquered_gladiators_atlas_v3_192.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/aec6a19523ff43e55effad5f7b2e4c71d3d3f7f3/public/assets/gear-atlas/conquered_gladiators_atlas_v3_192.webp",
+      "sha256": "edbd9bb66df7e51c0f89157f973b469869c305004cbc8e8aac780cfdfe2aa261"
+    },
+    {
+      "path": "public/assets/gear-atlas/gladiator_rarities_atlas_v3_192.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/aec6a19523ff43e55effad5f7b2e4c71d3d3f7f3/public/assets/gear-atlas/gladiator_rarities_atlas_v3_192.webp",
+      "sha256": "217d6c5a02a2c637e660ea54535038f8ed5175f5608f3ecd89e4fe532ea406d5"
+    }
+  ]
+}
