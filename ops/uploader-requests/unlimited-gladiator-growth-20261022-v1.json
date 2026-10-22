@@ -1,0 +1,25 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "unlimited-gladiator-growth-20261022-v1",
+  "expectedMainSha": "f92d7eb123da6d4f25afdff00f02363ce2beb467",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/f92d7eb123da6d4f25afdff00f02363ce2beb467/public/index.html",
+      "sha256": "6de3c98390cf838ea4117cf3b055476b5b6885596044d07cd76256a5db17b88a"
+    },
+    {
+      "path": "public/arena-balance.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/f92d7eb123da6d4f25afdff00f02363ce2beb467/public/arena-balance.js",
+      "sha256": "7efe30a775475687b7f6895bd9c04a60b69fa4a5db5ca5a50690a51ff91c6711"
+    },
+    {
+      "path": "public/ludus-approved-scenes.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/f92d7eb123da6d4f25afdff00f02363ce2beb467/public/ludus-approved-scenes.js",
+      "sha256": "7f352fd0bdadff24b1945ae2f0782b132d1466a124b31725bfeaf85d3e7a2a9a"
+    }
+  ],
+  "instructions": "Approved code-only release: upload all three Ludus growth source files pinned to this Git commit; no art assets. Validate Cloudflare hashes and retain saved careers and 5-tier assets."
+}
