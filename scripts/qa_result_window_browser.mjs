@@ -125,11 +125,37 @@ async function check(size,preview){
    const tray=document.getElementById('endLoot');
    const rect=panel.getBoundingClientRect(),trayRect=tray.getBoundingClientRect();
    const cards=[...tray.querySelectorAll('.arena-loot-drop')];
+   const cardBoxes=cards.map(x=>x.getBoundingClientRect());
+   const row=tray.querySelector('.arena-loot-items').getBoundingClientRect();
+   const stats=panel.querySelector('#endStats').getBoundingClientRect();
+   const buttons=panel.querySelector('.end-actions').getBoundingClientRect();
+   const coin=tray.querySelector('.arena-loot-coin');
+   const isCentered=boxes=>boxes.length&&Math.abs((boxes[0].left+boxes.at(-1).right)/2-(row.left+row.right)/2)<3;
+   const oneRow=boxes=>boxes.every(rect=>Math.abs(rect.top-boxes[0].top)<2);
+   const equalWidths=boxes=>boxes.every(rect=>Math.abs(rect.width-boxes[0].width)<2);
+   const wide={oneRow:oneRow(cardBoxes),sameWidth:equalWidths(cardBoxes),centered:isCentered(cardBoxes),
+     textNotOverlapped:buttons.top>=stats.bottom-2,coinText:coin?.innerText,coinIcon:!!coin?.querySelector('.arena-loot-coin-icon'),
+     noOverflow:cardBoxes.every(box=>box.left>=row.left-2&&box.right<=row.right+2)};
+
    const before=tray.innerText;
    window.__arenaQA.showEnd();
    const after=tray.innerText;
-   return {cards:cards.length,
-    ids:cards.map(x=>x.querySelector('img')?.getAttribute('src')),
+   const counts=[];
+   for(const n of [0,1,2,3,4]){
+    S.matchLoot=S.matchLoot.slice(0,n);
+    window.__arenaQA.showEnd();
+    const children=[...tray.querySelectorAll('.arena-loot-drop')],boxes=children.map(x=>x.getBoundingClientRect());
+    counts.push({n,cardCount:children.length,oneRow:oneRow(boxes),sameWidth:equalWidths(boxes),centered:isCentered(boxes),
+     coin:children[0]?.classList.contains('arena-loot-coin')});
+   }
+   S.matchLoot=[
+    {id:'iron',rarity:'common',count:1},{id:'trainer_blade',rarity:'rare',count:1},
+    {id:'venatio_blade',rarity:'rare',count:2},{id:'blood_oath',rarity:'epic',count:1},
+    {id:'imperial_aquila',rarity:'relic',count:1}
+   ];
+   window.__arenaQA.showEnd();
+   return {cards:cards.length,wide,counts,
+    ids:cards.slice(1).map(x=>x.querySelector('img')?.getAttribute('src')),
     labels:cards.map(x=>x.innerText),
     visible:!tray.hidden,
     score:tray.querySelector('.arena-loot-heading')?.innerText,
@@ -140,12 +166,25 @@ async function check(size,preview){
     overflow:getComputedStyle(modal).overflowY,
     artAspect:rect.width/rect.height,
     totalAccessible:modal.scrollHeight>=modal.clientHeight,
-    selectionCap:cards.length===5};
+    selectionCap:cards.length===6};
   });
-  assert.equal(inventory.cards,5,'full crowd heat displays all five won items');
+  assert.equal(inventory.cards,6,'one denarius icon plus five won items occupy six cards');
+  assert.equal(inventory.selectionCap,true);
+  assert.equal(inventory.wide.oneRow,true,'the six reward slots stay on one row');
+  assert.equal(inventory.wide.sameWidth,true,'all six reward slots have identical width');
+  assert.equal(inventory.wide.centered,true,'six reward slots form a centered strip');
+  assert.equal(inventory.wide.noOverflow,true,'all six cards fit within reward container');
+  assert.equal(inventory.wide.coinIcon,true,'denarii card has a visible coin icon');
+  assert.match(inventory.wide.coinText,/512/,'the coin card displays earned denarii');
+  assert.equal(inventory.wide.textNotOverlapped,true,'lowered actions must not overlap result text');
+  for(const test of inventory.counts){
+   assert.equal(test.cardCount,test.n+1,'one coin + '+test.n+' earned gear icons');
+   assert(test.oneRow&&test.sameWidth&&test.centered&&test.coin,
+    'partial loot must be centered, one row, same sized, coin first: '+JSON.stringify(test));
+  }
   assert.equal(inventory.visible,true);
   assert.equal(inventory.containsD,true);
-  assert.ok(inventory.score.includes('관중 광란'),JSON.stringify(inventory));
+  assert.ok(inventory.score.includes('5개 전리품 잭팟'),JSON.stringify(inventory));
   assert.equal(inventory.idempotent,true,'reopening results cannot duplicate reward cards');
   assert.equal(inventory.panelWithin,true,'the approved 4:3 frame fits the viewport');
   assert.ok(Math.abs(inventory.artAspect-4/3)<.015,'reward cards never distort approved artwork');
