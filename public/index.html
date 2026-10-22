@@ -1932,7 +1932,9 @@ function attack(f,victim,special=false,dashImpact=false){
  if(!dashImpact){
   // The striker also absorbs a little recoil: bodies compress together,
   // rebound apart, then land back on the established 200px spacing.
-  f.x=clamp(f.x-f.face*(guarded?5:special?9:7),105,1175);
+  // Heavy technique commits to its 46px forward lunge instead of undoing
+  // nine pixels with the routine light-attack recoil.
+  f.x=clamp(f.x-f.face*(guarded?5:special?0:7),105,1175);
   if(!guarded&&!special){
    victim.knockVX=f.face*140;
    victim.knockT=Math.max(victim.knockT,.15);
