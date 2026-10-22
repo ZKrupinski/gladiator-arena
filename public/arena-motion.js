@@ -13,7 +13,7 @@ const PRESETS=Object.freeze({
  contact:Object.freeze({amp:5.5,time:.22,hz:25,axis:'x',roll:.0014}),
  strike:Object.freeze({amp:14,time:.27,hz:31,axis:'diag',roll:.003}),
  guard:Object.freeze({amp:11,time:.26,hz:23,axis:'x',roll:.002}),
- special:Object.freeze({amp:56,time:.81,hz:18,axis:'diag',roll:.015}),
+ special:Object.freeze({amp:56,time:.81,hz:18,axis:'y',roll:.015}),
  dash:Object.freeze({amp:37,time:.66,hz:22,axis:'diag',roll:.012}),
  parry:Object.freeze({amp:35,time:.62,hz:16,axis:'double',roll:.009}),
  reversal:Object.freeze({amp:40,time:.72,hz:16,axis:'double',roll:.011})
