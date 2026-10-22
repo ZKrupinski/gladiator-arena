@@ -299,13 +299,13 @@
    text above the border whenever an item had a set bonus. */
 @media(max-width:1150px){
  .ra-collection .ra-list{
-  grid-auto-rows:minmax(160px,max-content);
+  grid-auto-rows:minmax(186px,max-content);
   align-content:start;
  }
  .ra-collection .ra-list .ra-item{
   grid-template-columns:100px minmax(0,1fr);
   grid-template-rows:auto auto;
-  min-height:160px;height:auto;
+  min-height:186px;height:auto;
   padding:8px 10px;
   column-gap:12px;row-gap:6px;
  }
