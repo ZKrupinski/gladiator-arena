@@ -148,3 +148,20 @@
  #endScreen .arena-loot-drop small,#endScreen .arena-loot-drop em{font-size:8px}
  #endScreen .arena-loot-notice{display:none}
 }
+
+
+/* Rare full 5/5 reward jackpot: celebrate inside the six-card reward strip. */
+#endScreen .arena-result-loot.arena-loot-jackpot{
+ border-color:#f8d377;
+ background:radial-gradient(ellipse at 50% 0%,#88612cbd,#28170ff2 78%);
+ box-shadow:inset 0 0 24px #f9cf7355,0 0 21px #ffc7677f,0 7px 18px #0009;
+}
+#endScreen .arena-result-loot.arena-loot-jackpot .arena-loot-heading strong{
+ color:#ffe6ab!important;text-shadow:0 0 14px #ffc86f;
+}
+#endScreen .arena-result-loot.arena-loot-jackpot .arena-loot-drop{
+ border-color:#f7d88a;box-shadow:0 0 14px #ffcf6b85;
+}
+@media(prefers-reduced-motion:reduce){
+ #endScreen .arena-result-loot.arena-loot-jackpot .arena-loot-drop{animation:none}
+}
