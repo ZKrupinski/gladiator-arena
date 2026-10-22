@@ -30,8 +30,13 @@ try{
  assert.ok(initial.visible<8,'undiscovered gear stays hidden');
  await page.evaluate(()=>{
   const s=LudusBridge.state();
-  s.armoryInventory.push('iron','iron','trainer_blade','red_fang','shield');
-  s.discoveredGear.push('iron','shield');
+  if(!s.roster.length){
+   s.roster.push(LudusRoster.create('murmillo',1));
+   LudusBridge.select(0);
+  }
+  const state=LudusBridge.state();
+  state.armoryInventory.push('iron','iron','trainer_blade','red_fang','shield');
+  state.discoveredGear.push('iron','shield');
   LudusApprovedScenes.open('gear');
  });
  await page.waitForSelector('.ra-collection .ra-list');
