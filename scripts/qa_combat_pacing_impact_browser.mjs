@@ -10,10 +10,12 @@ const combatSource=readFileSync(new URL('../public/index.html',import.meta.url),
 const dodgeStops=combatSource.match(/for\(const \[t,a\] of (\[\[[^\n]+?\]\])\)\{/);
 const attackStops=combatSource.match(/const echoes=strong\s*\?\s*(\[\[[^\n]+\]\])\s*:\s*(\[\[[^\n]+\]\]);/);
 assert.ok(dodgeStops&&attackStops,'real sprite afterimage curves must exist');
+// Source opacity stops use valid JS .08 shorthand; normalize for JSON.parse.
+const stopsJSON=value=>JSON.parse(value.replace(/(?<=[\[,])\./g,'0.'));
 const ghostCurves={
- dodge:JSON.parse(dodgeStops[1]),
- special:JSON.parse(attackStops[1]),
- normal:JSON.parse(attackStops[2])
+ dodge:stopsJSON(dodgeStops[1]),
+ special:stopsJSON(attackStops[1]),
+ normal:stopsJSON(attackStops[2])
 };
 for(const [kind,stops] of Object.entries(ghostCurves)){
  assert.ok(stops.length>=5,'several physical afterimages for '+kind);
