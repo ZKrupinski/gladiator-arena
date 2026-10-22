@@ -108,6 +108,7 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
    selectedGear,category,sortMode,goHome,
    selectHero:i=>{a.select(i);refresh();},
    setGear:id=>{selectedGear=id;refresh();},
+   focusGear:id=>{selectedGear=id;category='all';refresh();},
    setCurrentGear:id=>{selectedGear=id;},
    setCategory:c=>{category=c;refresh();},
    sort:()=>{sortMode++;refresh();},
