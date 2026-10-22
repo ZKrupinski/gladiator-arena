@@ -17,12 +17,14 @@ const focus=fx.globalThis.ArenaFocus;
 assert.ok(focus.PRESETS.parry.duration>.8);
 assert.equal(focus.PRESETS.parry.zoom,0,'no camera cut that hides fighters');
 assert.ok(focus.PRESETS.dash.hitstop>=.16);
-assert.ok(focus.PRESETS.special.hitstop>=.08);
+assert.ok(focus.PRESETS.special.hitstop>=.16);
+assert.ok(focus.PRESETS.dodge.duration>=.55&&focus.PRESETS.dodge.minRate<=.3);
 assert.ok(focus.PRESETS.special.zoom<.09,'specials must not crop opponents');
 const camera={globalThis:{}};
 vm.runInNewContext(readFileSync(new URL('../public/arena-motion.js',import.meta.url),'utf8'),camera);
 assert.ok(camera.globalThis.ArenaMotion.PRESETS.parry.amp>=34);
 assert.ok(camera.globalThis.ArenaMotion.PRESETS.dash.amp>=36);
+assert.ok(camera.globalThis.ArenaMotion.PRESETS.special.amp>=55);
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 const page=await browser.newPage({viewport:{width:1280,height:820}});
 const errors=[];page.on('pageerror',error=>errors.push(String(error)));
@@ -76,7 +78,7 @@ try{
  assert.ok(sample.parry.shake>=34);
  // Exercise the ACTUAL configured keyboard inputs, not an artificial helper.
  // Dodge displacement is immediate for fair hitboxes, while real approved
- // sprite ghosts and low painted dash textures carry the visible action.
+ // sprite ghosts carry the visible motion; squashed dash FX are removed.
  const enhanced=await page.evaluate(()=>{
   const {state:s}=window.__arenaQA,p=s.player,e=s.enemy;
   s.phase='fight';s.paused=false;s.fx=true;
@@ -87,9 +89,12 @@ try{
   p.x=550;p.face=1;e.x=815;e.face=-1;
   window.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyL',bubbles:true}));
   const dodge={from:p.dodgeEcho?.fromX,to:p.x,total:p.dodgeEcho?.total,
-   invulnerable:p.invuln,cost:100-p.st,frames:s.sparks.filter(v=>v.sequence==='dash'&&v.layer==='back').length};
+   travel:p.dodgeEcho?.travel,cinematic:s.cinematic?.kind,
+   slowSpec:window.ArenaFocus.PRESETS.dodge.minRate,
+   invulnerable:p.invuln,cost:100-p.st,
+   squashedFx:s.sparks.filter(v=>v.sequence==='dash').length};
   // New fighter timing: do not allow a leftover dodge visual to interfere.
-  p.st=100;p.dodge=0;p.invuln=0;p.dodgeEcho=null;p.stagger=0;p.attackCD=0;p.cd=0;
+  p.st=100;p.dodge=0;p.invuln=0;p.dodgeEcho=null;p.stagger=0;p.attackCD=0;p.cd=0;p.specialLunge=null;
   p.x=500;e.x=729;p.face=1;e.face=-1;
   e.hp=300;e.stagger=0;e.invuln=0;e.guard=false;
   s.sparks=[];s.cinematic=null;s.cameraKick=null;
@@ -100,19 +105,53 @@ try{
    directional:s.sparks.some(v=>['slash','sweep','thrust'].includes(v.sequence)),
    backdrop:s.sparks.some(v=>v.layer==='back'&&v.sequence==='special'),
    knock:e.knockVX,flash:s.flash,cooldown:p.cd,
-   note:s.notice};
+   attackerForward:p.x-500,lunge:p.specialLunge,
+   recoil:e.specialRecoil?{...e.specialRecoil}:null,
+   shake:s.cameraKick?.amplitude,note:s.notice};
   return {dodge,special};
  });
- assert.ok(enhanced.dodge.from-enhanced.dodge.to>=105,JSON.stringify(enhanced));
- assert.ok(enhanced.dodge.total>=.53&&enhanced.dodge.frames>=2,JSON.stringify(enhanced));
+ assert.ok(enhanced.dodge.from-enhanced.dodge.to>=290,JSON.stringify(enhanced));
+ assert.ok(enhanced.dodge.total>=.9&&enhanced.dodge.travel>=.24,JSON.stringify(enhanced));
+ assert.equal(enhanced.dodge.cinematic,'dodge');
+ assert.ok(enhanced.dodge.slowSpec<=.3,'dodge must visibly slow');
+ assert.equal(enhanced.dodge.squashedFx,0,'no crushed dash textures during dodge');
  assert.equal(enhanced.dodge.invulnerable,.3,'existing fair dodge i-frames retained');
  assert.equal(enhanced.dodge.cost,23);
  assert.ok(enhanced.special.damage>0&&enhanced.special.cooldown>0,JSON.stringify(enhanced));
  assert.equal(enhanced.special.focus,'special',JSON.stringify(enhanced));
  assert.ok(enhanced.special.duration>=.75&&enhanced.special.strikeFrames>=2,JSON.stringify(enhanced));
  assert.ok(enhanced.special.directional&&enhanced.special.backdrop,JSON.stringify(enhanced));
- assert.ok(enhanced.special.knock>=200&&enhanced.special.flash>=.23,JSON.stringify(enhanced));
+ assert.ok(enhanced.special.attackerForward>=40&&enhanced.special.attackerForward<=50,
+  'special must actually step ~46px forward: '+JSON.stringify(enhanced));
+ assert.ok(enhanced.special.lunge?.travel>=.1,'visibly interpolated special lunge');
+ assert.ok(enhanced.special.recoil?.farX-enhanced.special.recoil?.startX>=250,
+  'special must launch enemy ~285px: '+JSON.stringify(enhanced));
+ assert.ok(enhanced.special.recoil?.restX-enhanced.special.recoil?.startX>=90,
+  'enemy must spring back toward its original fighting range');
+ assert.ok(enhanced.special.recoil?.total>=1,'slow outgoing/recoil travel');
+ assert.ok(enhanced.special.knock>=1000&&enhanced.special.flash>=.3,JSON.stringify(enhanced));
+ assert.ok(enhanced.special.shake>=65,'huge camera shake on hit');
  assert.ok(enhanced.special.title,'class special title must appear during cinematic');
+ // The animation must actually move the enemy across successive REAL frames:
+ // first rocket outward, then rebound part-way to a playable distance.
+ await page.waitForTimeout(465);
+ const displaced=await page.evaluate(()=>({
+   enemy:window.__arenaQA.state.enemy.x,
+   recoil:window.__arenaQA.state.enemy.specialRecoil?.elapsed,
+   phase:window.__arenaQA.state.phase
+ }));
+ assert.equal(displaced.phase,'fight','special effect cannot unexpectedly end duel');
+ assert.ok(displaced.enemy-enhanced.special.recoil.startX>210,
+  'enemy must visibly fly far from the striker: '+JSON.stringify({enhanced,displaced}));
+ await page.waitForTimeout(860);
+ const returned=await page.evaluate(()=>({
+   enemy:window.__arenaQA.state.enemy.x,
+   recoil:window.__arenaQA.state.enemy.specialRecoil
+ }));
+ assert.ok(returned.enemy<displaced.enemy-75,
+  'enemy must visibly rebound after reaching the peak: '+JSON.stringify({displaced,returned}));
+ assert.ok(Math.abs(returned.enemy-enhanced.special.recoil.restX)<60,
+  'settle near recoverable combat distance: '+JSON.stringify({displaced,returned}));
  assert.deepEqual(errors,[],'no runtime errors in the actual combat pipeline');
- console.log('ARENA_COMBAT_PACING_V4_PASS '+JSON.stringify({sample,enhanced}));
+ console.log('ARENA_COMBAT_PACING_V5_PASS '+JSON.stringify({sample,enhanced,displaced,returned}));
 }finally{await browser.close();}
