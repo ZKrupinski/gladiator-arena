@@ -1,0 +1,59 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "roman-gladiator-bitmap-76-items-five-slots-v12-20261023",
+  "expectedMainSha": "1f63c79eb56cb750d04f23177e36288b4534b182",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/1f63c79eb56cb750d04f23177e36288b4534b182/public/index.html",
+      "sha256": "f10d10452214629ccad3ec5cfffb5033ad8155688f3c022026f2a5accc8801bb"
+    },
+    {
+      "path": "public/arena-gear-bitmap.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/1f63c79eb56cb750d04f23177e36288b4534b182/public/arena-gear-bitmap.js",
+      "sha256": "7bbdb1bf41170de01fefbcf2164d013edf070170730e96bc5199d689f5002f61"
+    },
+    {
+      "path": "public/arena-gear-catalog.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/1f63c79eb56cb750d04f23177e36288b4534b182/public/arena-gear-catalog.js",
+      "sha256": "7aa04ffb1a8549e43365fe6d2394f578637ccbefe1fb75a8df316b117969bc80"
+    },
+    {
+      "path": "public/arena-loot.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/1f63c79eb56cb750d04f23177e36288b4534b182/public/arena-loot.js",
+      "sha256": "01ca4b43a6c92562846b5f1cef29d65d3d507358d7cca1871517671402bffda5"
+    },
+    {
+      "path": "public/ludus-armory-live.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/1f63c79eb56cb750d04f23177e36288b4534b182/public/ludus-armory-live.js",
+      "sha256": "fda23a4b3ecfe39ea545c9b24e681cddbb370a733cc4e414f9331ecc72c4d00b"
+    },
+    {
+      "path": "public/ludus-armory-live.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/1f63c79eb56cb750d04f23177e36288b4534b182/public/ludus-armory-live.css",
+      "sha256": "78178e9da63dd0a5c021112ba582dd3e53dc8834d66485d73ae1f0e4da262933"
+    },
+    {
+      "path": "public/ludus-approved-scenes.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/1f63c79eb56cb750d04f23177e36288b4534b182/public/ludus-approved-scenes.js",
+      "sha256": "27b8da60a974fb1aa9a54d8341ca8f55d4615c4f09d016f259b9f19728da8010"
+    },
+    {
+      "path": "scripts/qa_armory_collection_browser.mjs",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/1f63c79eb56cb750d04f23177e36288b4534b182/scripts/qa_armory_collection_browser.mjs",
+      "sha256": "2eec02aa874684c8cd73db2bbef04c74c77406faf359e4ff43b10fe2de40e0a6"
+    },
+    {
+      "path": "public/assets/gear-atlas/conquered_gladiators_atlas_v3_192.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/8d00486864f99a51df3eefb630bfcc3c184819da/public/assets/gear-atlas/conquered_gladiators_atlas_v3_192.webp",
+      "sha256": "edbd9bb66df7e51c0f89157f973b469869c305004cbc8e8aac780cfdfe2aa261"
+    },
+    {
+      "path": "public/assets/gear-atlas/gladiator_rarities_atlas_v3_192.webp",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/8d00486864f99a51df3eefb630bfcc3c184819da/public/assets/gear-atlas/gladiator_rarities_atlas_v3_192.webp",
+      "sha256": "217d6c5a02a2c637e660ea54535038f8ed5175f5608f3ecd89e4fe532ea406d5"
+    }
+  ]
+}
