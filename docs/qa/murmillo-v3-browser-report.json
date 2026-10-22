@@ -1,45 +1,45 @@
 {
-  "testedAt": "2026-10-22T10:25:13.714Z",
+  "testedAt": "2026-10-22T11:11:23.941Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 51678,
-      "totalDifference": 3564021,
+      "changedChannels": 71983,
+      "totalDifference": 5498708,
       "retries": 0
     },
     "walk": {
-      "changedChannels": 118212,
-      "totalDifference": 10016576,
+      "changedChannels": 119793,
+      "totalDifference": 10210268,
       "retries": 0
     },
     "sweep": {
-      "changedChannels": 100976,
-      "totalDifference": 8807218,
+      "changedChannels": 119187,
+      "totalDifference": 10415639,
       "retries": 0
     },
     "defeat": {
       "changedChannels": 93990,
       "totalDifference": 8302582,
-      "retries": 1
+      "retries": 0
     },
     "slash": {
-      "changedChannels": 105254,
-      "totalDifference": 9473468,
+      "changedChannels": 113630,
+      "totalDifference": 9900789,
       "retries": 0
     },
     "thrust": {
-      "changedChannels": 92112,
-      "totalDifference": 8181829,
+      "changedChannels": 119112,
+      "totalDifference": 10061624,
       "retries": 0
     },
     "victory": {
-      "changedChannels": 86655,
-      "totalDifference": 7440506,
+      "changedChannels": 67225,
+      "totalDifference": 5495534,
       "retries": 0
     },
     "guard": {
-      "changedChannels": 90508,
-      "totalDifference": 8210919,
+      "changedChannels": 63953,
+      "totalDifference": 4984583,
       "retries": 0
     }
   },
@@ -75,6 +75,6 @@
     "rosterAfterMigration": 4
   },
   "status": "FAIL",
-  "error": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#titleCareerFight')\n    - locator resolved to <button type=\"button\" id=\"titleCareerFight\">내 검투사 출전</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    54 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n",
+  "error": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#titleCareerFight')\n    - locator resolved to <button type=\"button\" id=\"titleCareerFight\">내 검투사 출전</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    54 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n    - waiting for element to be visible, enabled and stable\n",
   "consoleErrors": []
 }
