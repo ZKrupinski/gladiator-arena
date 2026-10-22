@@ -1,0 +1,24 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "armory-roster-scroll-live-equipped-20261023-v1",
+  "expectedMainSha": "7549d1a9c891911a9d37f92eeff2920ae33bde5b",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/7549d1a9c891911a9d37f92eeff2920ae33bde5b/public/index.html",
+      "sha256": "c8e8409e217213bf7f31598d78a9f56b27f2f455fd83f13ebb84b2815c1c7e9a"
+    },
+    {
+      "path": "public/ludus-armory-live.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/7549d1a9c891911a9d37f92eeff2920ae33bde5b/public/ludus-armory-live.js",
+      "sha256": "9ad955ab07afbb0f23d6cca68b643327ae90f1cd169ed2dd207cf7ef08b77e24"
+    },
+    {
+      "path": "public/ludus-armory-live.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/7549d1a9c891911a9d37f92eeff2920ae33bde5b/public/ludus-armory-live.css",
+      "sha256": "18aad08cdc49fe6ac987958f560463c91276c72614750ca70e64cd93bf7f8fde"
+    }
+  ]
+}
