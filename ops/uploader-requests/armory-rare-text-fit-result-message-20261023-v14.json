@@ -1,0 +1,24 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "armory-rare-text-fit-result-message-20261023-v14",
+  "expectedMainSha": "f0f1aacf7ebbb41330dd7eaa38a5de937c37b1a0",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/f0f1aacf7ebbb41330dd7eaa38a5de937c37b1a0/public/index.html",
+      "sha256": "c11a2b99ee78296dc93f5ee79ef74eda69fd1e71cd7a39a663ef155f90278015"
+    },
+    {
+      "path": "public/ludus-armory-live.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/f0f1aacf7ebbb41330dd7eaa38a5de937c37b1a0/public/ludus-armory-live.css",
+      "sha256": "adb215f46dcdf54514010100cdd63b829a462c3a1005613aa911d26f0d9fc6dd"
+    },
+    {
+      "path": "public/mobile-legibility.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/f0f1aacf7ebbb41330dd7eaa38a5de937c37b1a0/public/mobile-legibility.css",
+      "sha256": "6233e4ddb362ad50e66cb558d4cff5856daafceb132dc2e2359d0d602be1b193"
+    }
+  ]
+}
