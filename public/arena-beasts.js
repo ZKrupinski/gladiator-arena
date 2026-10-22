@@ -239,8 +239,8 @@ function drawWolfPending(ctx,{x,y,w,h,flip=false,alpha=1}){
   ctx.drawImage(approved,0,0,cw,ch,
     center-272*scale,ground-470*scale,cw*scale,ch*scale);
  }else{
-  ctx.globalAlpha*=.25;ctx.fillStyle='#231814';ctx.beginPath();
-  ctx.ellipse(center,ground-3,w*.24,h*.036,0,0,Math.PI*2);ctx.fill();
+  // The new wolf's idle atlas will display as soon as the V3 image is ready.
+  // No legacy sprite, and no unsupported canvas drawing methods in QA mocks.
  }
  ctx.restore();
  return true;
