@@ -87,6 +87,21 @@ try{
  await page.waitForFunction(()=>!!window.ArenaAudio,{timeout:18000});
  // Arcade entry is intentionally hidden in the production UX; exercise the
  // same public audio lifecycle directly instead of clicking an invisible button.
+ // Verify a direct, real combat sample in Ludus while NO arena music is alive.
+ const trainingAudio=await page.evaluate(async()=>{
+  const a=window.ArenaAudio;
+  const loaded=await a.prepareTrainingImpact();
+  const before=a.status();
+  const played=a.playTrainingImpact({gain:.98,pan:.08});
+  const after=a.status();
+  return {loaded,played,before,after};
+ });
+ assert.equal(trainingAudio.loaded,true,'both battle heavy-hit WAV files decode for the training room');
+ assert.equal(trainingAudio.before.arenaActive,false,'Ludus training is outside match lifecycle');
+ assert.equal(trainingAudio.before.stems,0,'no stadium loop in training room');
+ assert.equal(trainingAudio.before.trainingImpactReady,true,'heavy-hit sample ready for the whip');
+ assert.equal(trainingAudio.played,true,'recorded whip impact plays even with arena inactive');
+ assert.ok(trainingAudio.after.oneShots>0,'a real audio-buffer one shot fires on training impact');
  await page.evaluate(()=>window.ArenaAudio.enterArena());
  await page.waitForFunction(()=>window.ArenaAudio?.status()?.ready===true,{timeout:90000});
  await page.waitForFunction(()=>window.ArenaAudio?.status()?.started===true,{timeout:20000});
@@ -113,11 +128,11 @@ try{
  assert.ok(state.triggered.every(Boolean),'other sounds sample-backed, not oscillators');
  assert.ok(state.before.playing,'audio context running under user gesture');
  assert.equal(state.before.loaded,33,'all five stems plus 28 dry Foley and crowd samples decode');
- await page.locator('#soundToggle').click();
- const muted=await page.evaluate(()=>window.ArenaAudio.status());
+ // Arcade UI is intentionally hidden. Test the same shared mute API that
+ // the arena sound button invokes without clicking an invisible control.
+ const muted=await page.evaluate(()=>{window.ArenaAudio.setMuted(true);return window.ArenaAudio.status();});
  assert.equal(muted.enabled,false,'sound switch mutes all buses');
- await page.locator('#soundToggle').click();
- const restored=await page.evaluate(()=>window.ArenaAudio.status());
+ const restored=await page.evaluate(()=>{window.ArenaAudio.setMuted(false);return window.ArenaAudio.status();});
  assert.equal(restored.enabled,true);
  // Regression: the game used to keep a 19% football crowd loop playing on
  // the result screen and after returning to the Ludus/title. End it for real.
