@@ -114,3 +114,30 @@
  background:linear-gradient(90deg,#201913,#18130e 40%,#1c1510 85%,#291b12);
 }
 /* Low-cost UI only: background key visual, merchant and all buttons stay unchanged. */
+
+/* v6.9 · Place the actual treasury exactly over the key-art's painted
+   3,200/coin header. Extend toward screen center, never into Home (x>=1575).
+   This overrides v6.8's detached plaque which visually looked unapplied. */
+.gm-screen .gm-stage .gm-wallet-value {
+  box-sizing:border-box;
+  left:1147px;top:8px;width:418px;height:78px;
+  gap:12px;padding:6px 12px;
+  border:5px ridge #e3b974;border-radius:12px;
+  background:linear-gradient(109deg,#24160ffc,#3d2718ff 44%,#160e0bff);
+  box-shadow:inset 0 0 0 2px #81532d,inset 0 0 19px #080403,0 5px 17px #100704a8;
+  z-index:20;pointer-events:none;
+}
+.gm-screen .gm-stage .gm-wallet-label {
+  font:900 22px/1.1 'Noto Sans KR',sans-serif;
+  color:#f0cf91;letter-spacing:-.035em;
+}
+.gm-screen .gm-stage .gm-wallet-amount {
+  font:950 47px/1 Georgia,'Noto Sans KR',sans-serif;
+  letter-spacing:-.03em;color:#fff2c3;
+  text-shadow:0 2px 7px #000;
+}
+.gm-screen .gm-stage .gm-wallet-amount.is-compact {
+  font-size:32px;letter-spacing:-.055em;
+}
+.gm-screen .gm-stage .gm-wallet-unit {font:900 21px Georgia,serif}
+.gm-screen .gm-stage .gm-wallet-legacy-mask {display:none!important}

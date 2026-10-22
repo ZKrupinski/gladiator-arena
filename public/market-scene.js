@@ -63,7 +63,10 @@ function overlayPanel(hero,i,visible){const el=$('#gmPanel'+i);el.hidden=!visibl
 function render(){if(!scene||scene.hidden)return;
  const list=inventory(),state=opts.state;selection=pick(selection);
  const wallet=$('#gmWallet');wallet.hidden=false;
- wallet.querySelector('.gm-wallet-amount').textContent=Math.max(0,Number(state.gold)||0).toLocaleString('ko-KR');
+ const balanceText=Math.max(0,Number(state.gold)||0).toLocaleString('ko-KR');
+ const amount=wallet.querySelector('.gm-wallet-amount');
+ amount.textContent=balanceText;
+ amount.classList.toggle('is-compact',balanceText.length>8);
  for(let i=0;i<3;i++){
   const h=list[i],btn=$('#gmCard'+i),sold=$('#gmVacant'+i),selected=(i===selection&&!!h);
   btn.disabled=!h;btn.setAttribute('aria-pressed',String(selected));

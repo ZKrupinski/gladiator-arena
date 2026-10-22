@@ -41,3 +41,34 @@
 .gm-dialog[data-mode="success"] .gm-dialog-content{background:radial-gradient(ellipse at 50% 28%,#74512a,#3c2517 85%)}
 .gm-dialog[data-mode="success"] .gm-dialog-content h2{color:#ffe9a5}
 @media (prefers-reduced-motion:reduce){.gm-selected-wreath,.gm-reaction-badge,.gm-dialog-merchant img{animation:none}}
+/* v6.9 · Sold label belongs ONLY on each podium's lower STATS plaque.
+   Leave fighter artwork and pedestal clear, as requested. */
+.gm-screen .gm-stage .gm-vacant {
+  box-sizing:border-box;top:529px;height:196px;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  gap:9px;padding:9px 10px;
+  border:4px ridge #c69b5c;border-radius:4px;
+  background:linear-gradient(115deg,#1a100deF,#362216f7 50%,#160e0df8);
+  color:#f5d5a1;
+  box-shadow:inset 0 0 0 2px #584025,inset 0 0 15px #100705,0 2px 8px #12090570;
+  overflow:hidden;pointer-events:none;z-index:7;
+}
+.gm-screen .gm-stage .gm-vacant[data-i="0"] {left:491px;width:226px}
+.gm-screen .gm-stage .gm-vacant[data-i="1"] {left:838px;width:211px}
+.gm-screen .gm-stage .gm-vacant[data-i="2"] {left:1179px;width:274px}
+.gm-screen .gm-stage .gm-vacant:before,
+.gm-screen .gm-stage .gm-vacant:after {display:none!important;content:none!important}
+.gm-screen .gm-stage .gm-vacant .gm-vacant-badge {
+  padding:5px 9px;border:2px ridge #d6ad69;border-radius:4px;
+  background:#59341d;color:#ffe6b7;
+  font:900 21px/1.15 'Noto Sans KR',serif;white-space:nowrap;
+}
+.gm-screen .gm-stage .gm-vacant strong {
+  padding:0;border:0;background:none;box-shadow:none;
+  color:#f9dfa8;font:900 25px/1.2 'Noto Serif KR',serif;
+}
+.gm-screen .gm-stage .gm-vacant small {
+  max-width:100%;padding:1px 0;border:0;background:none;box-shadow:none;
+  color:#dab986;font:800 15px/1.15 'Noto Sans KR',serif;
+  white-space:normal;text-align:center;
+}
