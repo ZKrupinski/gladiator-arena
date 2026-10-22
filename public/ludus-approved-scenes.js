@@ -102,7 +102,9 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
    setCurrentGear:id=>{selectedGear=id;},
    setCategory:c=>{category=c;refresh();},
    sort:()=>{sortMode++;refresh();},
-   equip:mode=>changeItem(mode)
+   equip:mode=>changeItem(mode),
+    buy:id=>{toast(a.buy(id));refresh();},
+    sell:id=>{toast(a.sell(id));refresh();}
   });
   fit();return;
  }
@@ -154,10 +156,10 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
   let title=block('la-hero-title',531,149);title.innerHTML=h?'<strong>'+escapeHtml(h.name)+'</strong><small>'+escapeHtml(h.cls)+'</small><b>Lv. '+Number(h.level||1)+'</b>':'검투사를 영입하세요';
   let stats=block('la-armory-values',1115,148);stats.innerHTML=h?['str','agi','end','focus'].map(k=>'<div><span>'+Number(h.stats?.[k]||0)+'</span><em>+'+Number(h.stats?.[k]||0)+'</em></div>').join(''):'—';
   let details=block('la-detail-values',1502,153);details.innerHTML=h?[''+(Number(h.level||1)*80),'+'+Number(h.stats.str||0),''+Number(h.stats.end||0),'0%','150%','1.00'].map(x=>'<div>'+x+'</div>').join(''):'—';
-  let ct=block('la-inventory-count',1462,375);ct.textContent=(h?.inventory?.length||0)+'/120';
+  let ct=block('la-inventory-count',1462,375);ct.textContent=(s.armoryInventory?.length||0)+'개 / 공용 창고';
   let inv=document.createElement('div');inv.className='la-inventory-live';stage.appendChild(inv);
-  const groups=(a.catalog()||[]).filter(g=>category==='all'||g.slot===category);let sorted=[...groups];if(sortMode%3===1)sorted.sort((x,y)=>x.cost-y.cost);if(sortMode%3===2)sorted.sort((x,y)=>Number(!!h?.inventory.includes(y.id))-Number(!!h?.inventory.includes(x.id)));
-  sorted.forEach(g=>{const b=document.createElement('button');b.type='button';b.className='la-item'+(g.id===selectedGear?' selected':'');b.setAttribute('aria-label',g.name+' '+(h?.inventory?.includes(g.id)?'보유 중':g.cost+'D'));const pict=equips[g.id]||equips.iron;b.innerHTML='<span class="la-item-art" style="background-position:'+pict.x+'px '+pict.y+'px"></span><strong>'+escapeHtml(g.name)+'</strong>';b.addEventListener('click',()=>{selectedGear=g.id;render();});inv.appendChild(b);});for(let i=inv.childElementCount;i<15;i++){let d=document.createElement('div');d.className='la-item-empty';inv.appendChild(d);}
+  const groups=(a.catalog()||[]).filter(g=>category==='all'||g.slot===category);let sorted=[...groups];if(sortMode%3===1)sorted.sort((x,y)=>x.cost-y.cost);if(sortMode%3===2)sorted.sort((x,y)=>a.gearCount(y.id)-a.gearCount(x.id));
+  sorted.forEach(g=>{const b=document.createElement('button');b.type='button';b.className='la-item'+(g.id===selectedGear?' selected':'');b.setAttribute('aria-label',g.name+' '+(a.gearCount(g.id)?'창고 ×'+a.gearCount(g.id):a.shopUnlocked(g.id)?g.cost+'D':'획득 전용'));const pict=equips[g.id]||equips.iron;b.innerHTML='<span class="la-item-art" style="background-position:'+pict.x+'px '+pict.y+'px"></span><strong>'+escapeHtml(g.name)+'</strong>';b.addEventListener('click',()=>{selectedGear=g.id;render();});inv.appendChild(b);});for(let i=inv.childElementCount;i<15;i++){let d=document.createElement('div');d.className='la-item-empty';inv.appendChild(d);}
   [['all',986,110],['weapon',1108,118],['shield',1227,111],['armor',1344,116],['accessory',1463,121]].forEach(([c,x,w])=>hit('cat-'+c,'인벤토리 '+c,x,426,w,57,()=>{category=c;render();}));
   hit('equip','장비 장착 또는 구입',984,822,227,76,()=>changeItem('equip'));hit('remove','장비 해제',1228,820,179,76,()=>changeItem('remove'));hit('sort','인벤토리 정렬',1433,820,178,76,()=>{sortMode++;render();toast('인벤토리를 정렬했습니다.');});
   [['weapon',325,430,141,154],['shield',771,420,143,158],['armor',771,258,144,153]].forEach(([slot,x,y,w,height])=>hit('slot-'+slot,slot+' 장착',x,y,w,height,()=>{const g=(a.catalog()||[]).find(t=>t.slot===slot&&t.id===h?.equipment[slot])||(a.catalog()||[]).find(t=>t.slot===slot);if(g){selectedGear=g.id;render();toast(g.name+' 선택');}}));
