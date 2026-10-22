@@ -8,7 +8,7 @@ async function check(size,preview){
  try{
   await page.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>Boolean(window.__arenaQA),{timeout:20000});
-  await page.locator('#startBtn').click();
+  await page.evaluate(()=>document.getElementById('startBtn').click());
   await page.waitForFunction(()=>window.__arenaQA.state.phase==='fight',{timeout:20000});
   await page.evaluate(()=>{
    const s=window.__arenaQA.state;
@@ -105,6 +105,49 @@ async function check(size,preview){
   assert.ok(Math.abs(result.winnerCssScale-1.25)<.005,'winner enlargement comes from proportional uniform scaling');
   assert.ok(result.winnerAnchor.includes('100%')||result.winnerAnchor.endsWith('px'),'victory art has grounded origin');
   assert.equal(result.canvasObjectFit,'contain','sprite source must retain natural aspect inside portrait viewport');
+  // Career victory must visibly present ALL five items, with correct tiers
+  // and no earned item lost at a cramped mobile result viewport.
+  const inventory=await page.evaluate(()=>{
+   const S=window.__arenaQA.state;
+   S.careerMatch=true;S.careerRewardApplied=true;
+   S.matchGold=512;S.matchLoot=[
+    {id:'iron',rarity:'common',count:1},
+    {id:'trainer_blade',rarity:'rare',count:1},
+    {id:'venatio_blade',rarity:'rare',count:2},
+    {id:'blood_oath',rarity:'epic',count:1},
+    {id:'imperial_aquila',rarity:'relic',count:1}
+   ];
+   S.crowd={score:93,total:93,variety:7,counts:{clash:13,parry:3,reversal:1}};
+   S.resultWin=true;S.resultApplied=true;S.phase='result';
+   window.__arenaQA.showEnd();
+   const panel=document.querySelector('.stage-panel-ending');
+   const tray=document.getElementById('endLoot');
+   const rect=panel.getBoundingClientRect();
+   const cards=[...tray.querySelectorAll('.arena-loot-drop')];
+   const before=tray.innerText;
+   window.__arenaQA.showEnd();
+   const after=tray.innerText;
+   return {cards:cards.length,
+    ids:cards.map(x=>x.querySelector('img')?.getAttribute('src')),
+    labels:cards.map(x=>x.innerText),
+    visible:!tray.hidden,
+    score:tray.querySelector('.arena-loot-heading')?.innerText,
+    containsD:before.includes('512'),
+    idempotent:before===after,
+    panelWithin:rect.left>=0&&rect.top>=0&&rect.right<=innerWidth+1&&rect.bottom<=innerHeight+1,
+    overflow:getComputedStyle(panel).overflowY,
+    totalAccessible:panel.scrollHeight>=panel.clientHeight,
+    selectionCap:cards.length===5};
+  });
+  assert.equal(inventory.cards,5,'full crowd heat displays all five won items');
+  assert.equal(inventory.visible,true);
+  assert.equal(inventory.containsD,true);
+  assert.ok(inventory.score.includes('관중 광란'),JSON.stringify(inventory));
+  assert.equal(inventory.idempotent,true,'reopening results cannot duplicate reward cards');
+  assert.equal(inventory.panelWithin,true,'the loot window fits the viewport');
+  assert.equal(inventory.overflow,'auto','mobile loot results stay vertically scrollable');
+  assert.equal(inventory.ids.every(Boolean),true);
+  console.log('RESULT_FIVE_LOOT_QA_PASS '+JSON.stringify({viewport:size,inventory}));
   console.log('RESULT_RASTER_QA_PASS '+JSON.stringify({viewport:size,...result}));
   if(preview&&process.env.RESULT_PREVIEW==='1'){
    const buffer=await page.screenshot({type:'jpeg',quality:75});
