@@ -265,3 +265,51 @@
 @media(prefers-reduced-motion:reduce){
  .ll-scene .ll-roster .ll-portraits{scroll-behavior:auto}
 }
+
+/* Roster proportion refinement v6.2: show Domina legs again; only hide the
+   genuinely distorted bottom edge. Portraits use a fixed, undistorted canvas.
+   The 300px panel is almost square-card height rather than tall book cards. */
+.ll-scene .ll-bottom,
+.ll-scene.ll-has-art .ll-bottom {bottom:18px;}
+.ll-scene .ll-roster,
+.ll-scene.ll-has-art .ll-bottom .ll-roster {
+ height:300px;
+ padding:12px 16px 13px;
+}
+.ll-scene .ll-roster h3 {
+ flex-basis:34px;min-height:34px;
+ margin-bottom:8px;padding-bottom:5px;
+ font-size:25px;
+}
+.ll-scene .ll-roster .ll-portraits {
+ gap:12px;padding-top:3px;padding-bottom:8px;
+ align-items:stretch;
+}
+.ll-scene .ll-roster .ll-portraits button,
+.ll-scene .ll-roster .ll-portraits button.ll-fighter-card {
+ flex:0 0 190px;width:190px;
+ height:100%;aspect-ratio:auto;
+ padding:4px 6px 5px;
+}
+.ll-scene .ll-roster .ll-portraits canvas {
+ box-sizing:content-box;display:block;
+ flex:0 0 120px;width:172px;height:120px;
+ min-width:172px;max-width:172px;
+ min-height:120px;max-height:120px;
+ aspect-ratio:43/30;object-fit:contain;align-self:center;
+}
+.ll-scene .ll-roster .ll-portraits .ll-fighter-name {
+ margin-top:2px;font-size:19px;line-height:1.12;
+}
+.ll-scene .ll-roster .ll-portraits .ll-fighter-meta {
+ margin-top:1px;font-size:14px;line-height:1.14;
+}
+.ll-scene .ll-roster .ll-portraits .ll-fighter-condition {
+ margin-top:3px;padding:2px 4px;font-size:13px;line-height:1.14;
+}
+.ll-scene .ll-roster .ll-portraits button.ll-add {
+ font-size:58px;
+}
+.ll-scene .ll-roster .ll-portraits button.ll-add small{
+ margin-top:9px;font-size:16px;
+}

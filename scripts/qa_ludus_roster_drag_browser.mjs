@@ -28,6 +28,9 @@ try{
   return {count:strip.querySelectorAll('button.ll-fighter-card').length,
    panelWidth:roster.offsetWidth,panelHeight:roster.offsetHeight,
    cardWidth:strip.querySelector('button').offsetWidth,
+   cardHeight:strip.querySelector('button').offsetHeight,
+   canvasWidth:strip.querySelector('canvas').getBoundingClientRect().width/scale,
+   canvasHeight:strip.querySelector('canvas').getBoundingClientRect().height/scale,
    left:(rect.left-stageRect.left)/scale,right:(rect.right-stageRect.left)/scale,
    top:(rect.top-stageRect.top)/scale,bottom:(rect.bottom-stageRect.top)/scale,
    scrollRange:strip.scrollWidth-strip.clientWidth,
@@ -38,10 +41,14 @@ try{
    pager:root.querySelectorAll('[data-action="prev"],[data-action="next"]').length};
  });
  assert.equal(meta.count,10,'all fighters shown without paging');
- assert.ok(meta.panelHeight>=420&&meta.panelWidth>=770,JSON.stringify(meta));
- assert.ok(meta.cardWidth>=148,'larger portrait cards');
- assert.ok(meta.top<=655&&meta.bottom>=1050,'opaque pane covers lower Domina artwork');
- assert.ok(meta.scrollRange>650,'gallery is horizontally swipeable');
+ assert.ok(meta.panelHeight>=298&&meta.panelHeight<=305&&meta.panelWidth>=770,JSON.stringify(meta));
+ assert.ok(meta.cardWidth>=185,'landscape-like card shape and larger picture');
+ assert.ok(meta.top>=755&&meta.top<=780&&meta.bottom>=1050,'preserve Domina legs while covering distorted lower edge');
+ assert.ok(meta.cardWidth/meta.cardHeight>.84&&meta.cardWidth/meta.cardHeight<1.15,
+  'fighter card must not be a vertically stretched strip: '+JSON.stringify(meta));
+ assert.ok(Math.abs(meta.canvasWidth/meta.canvasHeight-172/120)<.025,
+  'portrait canvas must preserve its native pixel proportions: '+JSON.stringify(meta));
+ assert.ok(meta.scrollRange>800,'gallery is horizontally swipeable');
  assert.equal(meta.scrollTouch,'pan-x','allow native touch swipe');
  assert.equal(meta.blockedHitbox,false,'cannot overlap painted right-hand arena controls');
  assert.equal(meta.pager,0,'drag replaces pages');

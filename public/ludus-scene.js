@@ -135,7 +135,7 @@ s.roster.forEach(function(h,i){
  b.setAttribute("aria-pressed",String(i===s.active));
  b.title=h.name+" · "+(classes[h.cls]||h.cls)+" · Lv."+h.level;
  b.dataset.index=String(i);
- var canvas=document.createElement("canvas");canvas.width=148;canvas.height=212;
+ var canvas=document.createElement("canvas");canvas.width=172;canvas.height=120;
  canvas.setAttribute("aria-hidden","true");b.appendChild(canvas);
  var name=document.createElement("strong");name.className="ll-fighter-name";
  name.textContent=h.name;b.appendChild(name);
@@ -150,8 +150,8 @@ s.roster.forEach(function(h,i){
  b.appendChild(condition);host.appendChild(b);
  var src=a.portrait(i);
  if(src&&src.width&&src.height){
-  var k=Math.min(146/src.width,210/src.height),ctx=canvas.getContext("2d");
-  ctx.drawImage(src,(148-src.width*k)/2,212-src.height*k,src.width*k,src.height*k);
+  var k=Math.min(170/src.width,118/src.height),ctx=canvas.getContext("2d");
+  ctx.drawImage(src,(172-src.width*k)/2,120-src.height*k,src.width*k,src.height*k);
  }
  b.onclick=function(){a.select(i);refresh();notice(h.name+" · 출전 후보 선택");};
 });
