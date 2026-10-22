@@ -1,0 +1,218 @@
+/* SPARTACUS mobile readability pass v1.
+   Touch targets / DOM text only; battle gameplay and source art are untouched.
+   The classic rooms are designed on 1672x941 stages, so raise base fonts
+   on small landscape screens and give the armory an unscaled portrait view. */
+:root { font-synthesis: none; }
+@media(max-width:1150px) {
+  /* Armory: the right side is a purchasing decision, not decorative microcopy. */
+  .ra-collection .ra-col>h2 { font-size:34px; line-height:1.15 }
+  .ra-collection .ra-col>h2 small { font-size:22px; font-weight:900 }
+  .ra-collection .ra-cats button { font-size:26px; font-weight:900; min-height:61px; height:61px }
+  .ra-collection .ra-filters { flex-basis:55px }
+  .ra-collection .ra-filters button,.ra-collection .ra-filters select { font-size:23px; font-weight:900 }
+  .ra-collection .ra-list { grid-template-columns:minmax(0,1fr); grid-auto-rows:123px; gap:8px }
+  .ra-collection .ra-item { padding:8px 12px; border-width:3px }
+  .ra-collection .ra-art { width:100px; height:100px; flex:none }
+  .ra-collection .ra-item-copy .ra-tier { font-size:23px; font-weight:900 }
+  .ra-collection .ra-item-copy strong { font-size:29px; line-height:1.2; font-weight:950 }
+  .ra-collection .ra-item-copy>small:not(.ra-tier) { font-size:21px; font-weight:850 }
+  .ra-collection .ra-item-copy i { font-size:20px; font-weight:900 }
+  .ra-collection .ra-flag { right:7px; bottom:6px; font-size:26px!important; font-weight:950!important; padding:5px 11px!important; border-width:2px!important }
+  .ra-collection .ra-sort { font-size:26px; height:60px; font-weight:900 }
+  .ra-collection .ra-selected { min-height:280px; padding:13px 15px }
+  .ra-collection .ra-detail-image { width:154px; height:154px }
+  .ra-collection .ra-detail-title small { font-size:25px; font-weight:900 }
+  .ra-collection .ra-selected h3 { font-size:37px; line-height:1.16 }
+  .ra-collection .ra-detail-title strong { font-size:37px; font-weight:950; color:#fff5ac; text-shadow:0 1px 4px #000 }
+  .ra-collection .ra-detail-title>span { font-size:24px; font-weight:950 }
+  .ra-collection .ra-selected p { font-size:23px; font-weight:750 }
+  .ra-collection .ra-effects>* { font-size:23px; font-weight:900 }
+  .ra-collection .ra-comparison h3,.ra-collection .ra-set-detail h3 { font-size:27px }
+  .ra-collection .ra-stat-diff small { font-size:20px; font-weight:900 }
+  .ra-collection .ra-stat-diff b { font-size:31px }
+  .ra-collection .ra-stat-diff strong { font-size:24px; font-weight:950 }
+  .ra-collection .ra-set-detail p { font-size:21px; font-weight:850 }
+  .ra-collection .ra-equipped h3 { font-size:27px }
+  .ra-collection .ra-equipped .ra-eq-line { font-size:21px; font-weight:850 }
+  .ra-collection .ra-equipped .ra-eq-line strong { font-size:23px; color:#ffeab3 }
+  .ra-collection .ra-sets h3 { font-size:25px }
+  .ra-collection .ra-set-row { font-size:20px; font-weight:800 }
+  .ra-collection .ra-set-row b { font-size:23px }
+  .ra-collection .ra-buttons button { font-size:29px; font-weight:950; min-height:85px }
+  .ra-collection .ra-stats span { font-size:23px }
+  .ra-collection .ra-hero-info strong { font-size:30px }
+  .ra-collection .ra-hero-info small { font-size:23px }
+  .ra-collection .ra-portrait strong { font-size:21px }
+  .ra-collection .ra-portrait small { font-size:20px }
+  .ra-collection .ra-screen footer { font-size:21px }
+  .ra-collection .ra-gold { font-size:35px; font-weight:950 }
+  .ra-collection .ra-home { font-size:27px }
+  /* Keep a sufficient visible inventory area after increasing the typography. */
+  .ra-collection .ra-col { padding:12px }
+  .ra-collection .ra-detail-head { align-items:flex-start }
+  .ra-collection .ra-item-copy { padding-right:5px; padding-bottom:28px }
+}
+@media(orientation:landscape) and (max-width:1150px) {
+  /* Stage shrink factor is ~0.44-0.68 on real phones. Baseline text must compensate. */
+  .ll-scene .ll-menu button,.ll-scene.ll-has-art .ll-menu button { font-size:29px; font-weight:950 }
+  .ll-wallet,.ll-has-art .ll-wallet { font-size:30px; font-weight:900 }
+  .ll-wallet strong { font-size:32px; font-weight:950 }
+  .ll-roster h3 { font-size:30px }
+  .ll-portraits small,.ll-roster .ll-portraits small { font-size:22px; font-weight:900 }
+  .ll-toast { font-size:30px; font-weight:900 }
+  .gm-card-dynamic .gm-roman-name { font-size:32px; font-weight:900 }
+  .gm-card-dynamic .gm-class { font-size:26px; font-weight:850 }
+  .gm-card-dynamic .gm-lv { font-size:27px; font-weight:900 }
+  .gm-stat,.gm-stat-name,.gm-stat-name b { font-size:23px; font-weight:850 }
+  .gm-bottom-info h2 { font-size:32px; font-weight:950 }
+  .gm-bottom-info .gm-level,.gm-bottom-info .gm-level strong { font-size:27px; font-weight:900 }
+  .gm-bottom-info p { font-size:24px; font-weight:800 }
+  .gm-price-value,.gm-wallet-value { font-size:38px; font-weight:950; color:#fff1bb; text-shadow:0 2px 4px #120807 }
+  .gm-speech-new { font-size:29px; font-weight:850 }
+  .la-stage.training .lt-selected-unit small { font-size:23px }
+  .la-stage.training .lt-stat-list small { font-size:22px }
+  .la-stage.training .lt-stat-list>div span { font-size:24px }
+  .la-stage.training .lt-effect p { font-size:23px; line-height:1.32 }
+  .la-stage.training .lt-cost { font-size:25px; font-weight:900 }
+  .la-stage.training .lt-cost b { font-size:29px; font-weight:950 }
+  .la-stage.training .lt-guidance { font-size:21px }
+  .la-stage.training .lt-roster-items strong { font-size:23px; font-weight:950 }
+  .la-stage.training .lt-roster-items small { font-size:21px }
+  .la-stage.training .lt-roster-title span { font-size:22px }
+  .la-stage .la-notice { font-size:28px; font-weight:900 }
+}
+/* Portrait is supported as a real readable UI only for the armory.
+   The original fixed-size stage is still used for combat/animation scenes. */
+@media(orientation:portrait) and (max-width:700px) {
+  .la-screen:has(.la-stage.armory) .la-orient { display:none!important }
+  .la-screen:has(.la-stage.armory) .la-stage {
+    left:0!important;top:0!important;right:0!important;bottom:0!important;
+    width:100vw!important;height:100dvh!important;
+    transform:none!important;overflow:hidden!important;transform-origin:top left!important;
+    background:#170e0b!important;
+  }
+  .la-stage.armory .ra-screen {
+    position:absolute;inset:0;width:100%;height:100%;display:block;overflow-y:auto;
+    overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  }
+  .ra-collection header {
+    height:95px;padding:10px 11px;position:sticky;top:0;z-index:20;display:flex;
+    align-items:center;justify-content:center;
+  }
+  .ra-collection .ra-title { margin:0 }
+  .ra-collection .ra-title small { font-size:10px;letter-spacing:.13em }
+  .ra-collection .ra-title h1 { font-size:31px }
+  .ra-collection .ra-gold {
+    position:absolute;left:6px;top:7px;padding:4px 6px;
+    font-size:15px;line-height:1.15;border-width:2px;
+  }
+  .ra-collection .ra-home {
+    position:absolute;right:5px;top:5px;width:102px;height:33px;padding:2px;
+    border-width:2px;border-radius:5px;font-size:12px;line-height:1.1;font-weight:900;
+  }
+  .ra-collection main {
+    display:flex;flex-direction:column;gap:11px;height:auto;min-height:0;padding:12px 9px 18px;
+  }
+  .ra-collection .ra-col { flex:0 0 auto;min-height:0;width:100%;padding:11px;border-width:4px }
+  .ra-collection .ra-col>h2 { font-size:22px;margin-bottom:8px }
+  .ra-collection .ra-col>h2 small { font-size:13px;float:right }
+  .ra-collection .ra-fighters .ra-roster { max-height:94px;overflow:auto;gap:7px }
+  .ra-collection .ra-portrait { width:77px;height:90px;border-width:2px }
+  .ra-collection .ra-portrait canvas { display:block;width:74px;height:63px }
+  .ra-collection .ra-portrait strong,.ra-collection .ra-portrait small { font-size:12px;line-height:1.1 }
+  .ra-collection .ra-stage { flex:0 0 140px;max-height:140px;min-height:140px }
+  .ra-collection .ra-stage canvas { max-height:140px }
+  .ra-collection .ra-hero-info strong { font-size:20px }
+  .ra-collection .ra-hero-info small { font-size:14px }
+  .ra-collection .ra-stats span { font-size:13px;padding:6px 4px }
+  .ra-collection .ra-sets { margin-top:5px;max-height:85px;overflow:auto }
+  .ra-collection .ra-sets h3 { font-size:17px }
+  .ra-collection .ra-set-row { font-size:13px }
+  .ra-collection .ra-set-row b { font-size:14px }
+  .ra-collection .ra-cats button { height:43px;min-height:43px;font-size:15px }
+  .ra-collection .ra-filters { flex-basis:auto;min-height:40px;gap:4px }
+  .ra-collection .ra-filters button,.ra-collection .ra-filters select { min-height:40px;font-size:14px;padding:3px }
+  .ra-collection .ra-list {
+    display:grid;grid-template-columns:minmax(0,1fr);
+    grid-auto-rows:116px;gap:8px;max-height:420px;min-height:348px;
+    overflow-y:auto;
+  }
+  .ra-collection .ra-item { min-width:0;min-height:0;gap:8px;padding:6px 8px }
+  .ra-collection .ra-art { width:82px;height:82px }
+  .ra-collection .ra-item-copy .ra-tier { font-size:14px }
+  .ra-collection .ra-item-copy strong { font-size:18px;line-height:1.22 }
+  .ra-collection .ra-item-copy>small:not(.ra-tier) { font-size:14px }
+  .ra-collection .ra-item-copy i { font-size:13px }
+  .ra-collection .ra-flag {
+    font-size:16px!important;font-weight:950!important;
+    bottom:6px;right:6px;padding:5px 8px!important;
+    background:#180c0af5!important;
+  }
+  .ra-collection .ra-flag.worn { background:linear-gradient(#ffe5a4,#bf893b)!important }
+  .ra-collection .ra-flag.owned { background:linear-gradient(#3a7c62,#163d2f)!important }
+  .ra-collection .ra-item-copy { padding-bottom:28px }
+  .ra-collection .ra-sort { font-size:16px;height:44px }
+  .ra-collection .ra-selected { min-height:0;padding:10px }
+  .ra-collection .ra-detail-image { width:100px;height:100px }
+  .ra-collection .ra-detail-title small { font-size:16px }
+  .ra-collection .ra-selected h3 { font-size:23px;overflow-wrap:anywhere }
+  .ra-collection .ra-detail-title strong { font-size:25px }
+  .ra-collection .ra-detail-title>span { font-size:14px }
+  .ra-collection .ra-selected p { font-size:15px }
+  .ra-collection .ra-effects>* { font-size:14px }
+  .ra-collection .ra-comparison h3,.ra-collection .ra-set-detail h3 { font-size:18px }
+  .ra-collection .ra-stat-diff small { font-size:13px }
+  .ra-collection .ra-stat-diff b { font-size:21px }
+  .ra-collection .ra-stat-diff strong { font-size:16px }
+  .ra-collection .ra-set-detail p { font-size:14px }
+  .ra-collection .ra-equipped h3 { font-size:18px }
+  .ra-collection .ra-equipped .ra-eq-line,
+  .ra-collection .ra-equipped .ra-eq-line strong { font-size:15px }
+  .ra-collection .ra-buttons { gap:7px;margin-top:9px }
+  .ra-collection .ra-buttons button { min-height:55px;font-size:16px;padding:6px 3px }
+  .ra-collection footer { font-size:13px;line-height:1.4;padding:12px }
+}
+/* Native-size Ludus & arena panels: raise minimums without increasing their
+   containing panel / results screenshot geometry. */
+@media(max-width:900px) {
+  #careerHub:has(.lc-screen) .lc-section-head small {font-size:14px;white-space:normal}
+  .lc-card-class,.lc-card-meta,.lc-card-foot,.lc-rank {font-size:15px;font-weight:900}
+  .lc-card-title {font-size:clamp(19px,3.2vw,27px);font-weight:950}
+  .lc-stats small {font-size:13px}
+  .lc-xp>div,.lc-record,.lc-equipment>span,.lc-equipment strong {font-size:15px;font-weight:850}
+  .lc-buttons button {font-size:16px;font-weight:900}
+  .lc-hint {font-size:14px}
+  .lc-resources span {font-size:15px;font-weight:900}
+  .lc-match-top span {font-size:17px}
+  .lc-match-top strong {font-size:25px}
+  .beast-gallery-head small,.venatio-gladiator small,.venatio-beast small {font-size:14px}
+  .beast-gallery-head p,.beast-gallery-footer,.venatio-gladiator label,.venatio-beast label {font-size:15px;font-weight:800}
+  .venatio-hero-identity #beastHeroStats,#beastStats,#beastCaption {font-size:16px;font-weight:850}
+  .venatio-hero-preview span,.venatio-preview span {font-size:15px;font-weight:900}
+  .venatio-beast .beast-challenge {font-size:19px;font-weight:950}
+  .venatio-gladiator h3,.venatio-beast h3 {font-size:clamp(20px,3vw,31px)}
+  .beast-gallery .beast-back {font-size:15px;font-weight:900}
+  #endScreen .stage-panel-ending #endReason,
+  #endScreen .stage-panel-ending #endStats {font-size:clamp(11px,2.1vw,18px);font-weight:900}
+  #endScreen .stage-panel-ending .end-actions button {font-size:clamp(12px,2.1vw,18px);font-weight:950}
+  #endScreen .stage-panel-ending .result-pose-card>span {font-size:clamp(11px,2.2vw,17px);font-weight:950}
+  .hud-line {font-size:clamp(12px,2.1vw,16px);font-weight:900}
+  .hud-line strong,.hud-line b,.hud-line span {font-weight:950}
+  .match-info #roundLabel {font-size:clamp(12px,2.1vw,16px)!important;font-weight:950}
+  .lineup-hud:not([hidden]) {font-size:clamp(12px,1.9vw,16px);font-weight:900}
+  .control-label {font-size:clamp(10px,1.9vw,14px);font-weight:900}
+  .footrow,.footrow button {font-size:13px;font-weight:850}
+  .career-card .career-stat,.career-card .career-options button {font-size:15px}
+  .career-card .career-stat b,.career-card .career-gear .gear-status {font-size:17px;font-weight:950}
+}
+@media(max-width:450px) {
+  .lc-screen .lc-resources span {font-size:13px}
+  .lc-screen .lc-section-head small {font-size:13px}
+  .lc-screen .lc-card-meta {font-size:14px;flex-wrap:wrap}
+  .lc-screen .lc-card-title {font-size:20px}
+  .venatio-versus-layout {gap:6px}
+  .venatio-hero-identity #beastHeroStats {font-size:14px}
+  .hud-line {font-size:12px}
+  .controls .control-label {font-size:10px}
+  #endScreen .stage-panel-ending #endStats {font-size:11px}
+}
