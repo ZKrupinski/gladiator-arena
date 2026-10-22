@@ -27,14 +27,20 @@ const errors=[];page.on('pageerror',error=>errors.push(String(error)));
 try{
  await page.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>!!window.__arenaQA?.attack&&!!window.ArenaBalance,{timeout:22000});
- await page.locator('#startBtn').click();
- await page.waitForFunction(()=>window.__arenaQA.state.phase==='fight',{timeout:20000});
+ // Arcade mode is intentionally hidden by the Blood & Glory Ludus title.
+ // Use the supported QA hook to enter the actual fight phase, then exercise
+ // the real attack(), counter, FX and damage routines on real fighters.
+ await page.evaluate(()=>{
+  const state=window.__arenaQA.state;
+  state.phase='fight';state.time=110;state.paused=false;
+  state.autoplayEnabled=false;state.autoPlaying=false;
+ });
  const sample=await page.evaluate(()=>{
   const {state:s,attack}=window.__arenaQA;
   s.paused=false;s.autoplayEnabled=false;s.autoPlaying=false;s.beastHunt=false;s.gauntlet=null;
   const p=s.player,e=s.enemy;
   function ready(){
-   s.phase='fight';s.cinematic=null;s.focusFrame=null;s.parryBursts=[];s.sparks=[];
+   s.phase='fight';s.cinematic=null;s.focusFrame=null;s.cameraKick=null;s.parryBursts=[];s.sparks=[];
    p.x=455;e.x=650;p.face=1;e.face=-1;
    for(const f of [p,e])Object.assign(f,{hp:300,maxHp:300,st:100,stagger:0,
     dead:false,removedFromArena:false,dodge:0,guard:false,parry:0,
