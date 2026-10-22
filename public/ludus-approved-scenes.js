@@ -27,7 +27,7 @@ function speechData(){
  if(speechPhase==='selected')return {title:script.title,lines:script.lines};
  if(speechPhase==='success')return {title:'BENE FACTUM · 훌륭하다!',lines:script.success};
  if(speechPhase==='insufficient')return {title:'NVMMI · 훈련비 부족',lines:'기량을 갈고닦는 데에도 대가가 든다.\n먼저 투기장에서 상금을 벌어 와라.\n그때 다시 혹독하게 훈련시켜 주마!'};
- if(speechPhase==='maxed')return {title:'MAGISTER · 완숙',lines:'이 능력은 이미 한계까지 단련했다.\n다른 기술을 익혀라.\n강한 검투사는 약점을 남겨두지 않는다.'};
+ if(speechPhase==='mastery')return {title:'MAGISTER · 심화 훈련',lines:'한계라고 여겼던 지점을 넘어섰군!\n이제는 작은 진전에도 큰 노력이 필요하다.\n꾸준히 단련하면 더 강해질 수 있다.'};
  return {title:'DOCTORE · 교관',lines:'살아남고 싶다면 나를 똑바로 보아라!\n훈련 항목을 골라라.\n경기장에서는 약자에게 두 번째 기회가 없다.'};
 }
 function drawTrainingSpeech(){
@@ -59,8 +59,8 @@ function pose(index){window.LudusDoctoreAnim?.react?.(index);}
 function moveHero(step){let a=bridge(),s=a?.state();if(!s?.roster?.length){toast('검투사시장에서 먼저 영입하세요.');return;}let i=((s.active||0)+step+s.roster.length)%s.roster.length;a.select(i);refresh();}
 function changeRoom(next){room=next;bridge()?.section(next);screen.hidden=false;render();}
 function goHome(){window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();screen.hidden=true;clearTimeout(toastTimer);clearTimeout(poseTimer);pose(-1);bridge()?.returnHome();document.getElementById('careerHub').hidden=true;window.LudusScene?.open();}
-function actionTraining(){const s=bridge()?.state();if(!s?.roster?.length){toast('훈련할 검투사가 없습니다.');return;}const opt=tiles[selectedTraining],h=s.roster[s.active];const cost=bridge()?.trainingCost?.(s.active,opt.stat)||12;if(s.gold<cost){speechPhase='insufficient';drawTrainingSpeech();toast('훈련 비용 '+cost+'D가 부족합니다.');pose(2);return;}if(Number(h.stats[opt.stat])>=10){speechPhase='maxed';drawTrainingSpeech();toast('해당 능력치의 훈련이 완료되었습니다.');pose(2);return;}
- bridge().train(opt.stat);speechPhase='success';refresh();pose(3);toast(h.name+' · '+opt.name+' 완료!');}
+function actionTraining(){const s=bridge()?.state();if(!s?.roster?.length){toast('훈련할 검투사가 없습니다.');return;}const opt=tiles[selectedTraining],h=s.roster[s.active];const cost=bridge()?.trainingCost?.(s.active,opt.stat)||12;if(s.gold<cost){speechPhase='insufficient';drawTrainingSpeech();toast('훈련 비용 '+cost+'D가 부족합니다.');pose(2);return;}
+ bridge().train(opt.stat);speechPhase=Number(h.stats[opt.stat])>10?'mastery':'success';refresh();pose(3);toast(h.name+' · '+opt.name+' 완료!');}
 function changeItem(mode){const a=bridge(),list=a?.catalog()||[],gear=list.find(g=>g.id===selectedGear);if(!gear){toast('장비를 먼저 선택하세요.');return;}const outcome=a.equip(selectedGear,mode);toast(outcome||'장비 상태가 갱신되었습니다.');refresh();}
 function drawRoster(parent,isTraining){parent.replaceChildren();const a=bridge(),s=a?.state();if(!s)return;
  const from=Math.max(0,Math.min(s.active-1,Math.max(0,s.roster.length-(isTraining?6:3))));
@@ -144,7 +144,7 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
   stage.appendChild(instructor);window.LudusDoctoreAnim?.mount?.(instructor);
   const st=block('la-training-stats',1471,241);st.innerHTML=h?['str','agi','end','focus'].map(k=>'<div>'+Number(h.stats?.[k]||0)+'</div>').join(''):'—';
   let nm=block('la-training-name',1413,151);nm.innerHTML=h?'<strong>'+escapeHtml(h.name)+'</strong><small>'+escapeHtml(h.cls)+' · Lv.'+Number(h.level||1)+'</small>':'검투사 없음';
-  const eff=block('la-training-effect',1309,455);eff.textContent=tiles[selectedTraining].help+'\n훈련 비용 12 D\n훈련 성공 시 경험치 획득';
+  const eff=block('la-training-effect',1309,455);eff.textContent=tiles[selectedTraining].help+'\n훈련 비용 '+(h?a.trainingCost(s.active,tiles[selectedTraining].stat):'—')+' D\n훈련 성공 시 경험치 획득';
   block('la-training-selected',149+selectedTraining*211,608);
   [[153,603,195],[365,603,188],[573,603,198],[784,603,192],[994,603,196]].forEach(([x,y,w],i)=>hit('train'+i,tiles[i].name,x,y,w,158,()=>{selectedTraining=i;speechPhase='selected';render();pose(1);}));
   hit('start-training','훈련 시작',1243,721,393,154,actionTraining);
