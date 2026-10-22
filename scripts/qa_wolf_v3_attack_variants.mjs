@@ -122,7 +122,7 @@ assert.ok(trial.images.some(url=>url.includes('wolf-trial/idle.webp?v=')));
 console.log('WOLF_TRIAL_EXPLICIT_OPT_IN_LOW_RES_ATLAS_PASS');
 
 // During the FIRST beast encounter, no preloaded V3 atlas is available.
-// Only the clean individual idle source may draw (never legacy 40-frame art).
+// No old source is allowed to draw during the atomic V3 loading window.
 {
  class PendingImage {
   constructor(){this.naturalWidth=512;this.naturalHeight=512;}
@@ -139,9 +139,7 @@ console.log('WOLF_TRIAL_EXPLICIT_OPT_IN_LOW_RES_ATLAS_PASS');
   drawImage(...args){paints.push(args)}};
  const ok=beast.draw(ctx,{fighter:{beastType:'wolf',face:-1},pose:'walk',
    clock:1,x:0,y:0,w:348,h:348});
- assert.equal(ok,true,'show isolated wolf idle before V3 atlas is ready');
- assert.equal(paints.length,1);
- assert.match(paints[0][0].url,/individual\/wolf\/idle\/00\.png/,
-  'first fight must never sample the old rectangle-cut atlas');
+ assert.equal(ok,true,'V3 loading owns the fighter even before image availability');
+ assert.equal(paints.length,0,'no legacy wolf image may flash before the complete V3 pack is ready');
  console.log('WOLF_FIRST_SPAWN_NO_MIXED_FRAME_FALLBACK_PASS');
 }
