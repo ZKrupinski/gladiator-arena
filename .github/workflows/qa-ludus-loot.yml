@@ -1,0 +1,47 @@
+name: QA Ludus Loot and Spectator Heat
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - public/arena-loot.js
+      - public/arena-excitement.js
+      - public/arena-excitement.css
+      - public/ludus-approved-scenes.js
+      - public/ludus-armory-live.js
+      - public/ludus-armory-live.css
+      - tests/ludus-shared-loot.cjs
+      - .github/workflows/qa-ludus-loot.yml
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check JavaScript syntax and inline main script
+        run: |
+          set -euo pipefail
+          node --check public/arena-loot.js
+          node --check public/arena-excitement.js
+          node --check public/ludus-armory-live.js
+          node --check public/ludus-approved-scenes.js
+          node --check public/arena-gear-catalog.js
+          node - <<'NODE'
+          const fs=require('fs'),vm=require('vm');
+          const html=fs.readFileSync('public/index.html','utf8');
+          let inline=0;
+          for(const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)){
+            if(!match[1].trim())continue;
+            new vm.Script(match[1],{filename:'index.html inline '+(++inline)});
+          }
+          if(!inline)throw Error('No inline game script found');
+          console.log('Validated '+inline+' inline game scripts');
+          NODE
+      - name: Shared inventory and exciting five-drop reward regression
+        run: |
+          node --check tests/ludus-shared-loot.cjs
+          node tests/ludus-shared-loot.cjs
