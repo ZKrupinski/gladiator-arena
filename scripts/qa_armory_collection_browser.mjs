@@ -73,6 +73,17 @@ try{
  assert.equal(await page.evaluate(()=>LudusBridge.gearCount('trainer_blade')),0,'allocated copy removed from shared warehouse');
  assert.equal(await page.evaluate(()=>LudusBridge.gearAllocated('trainer_blade')),1);
  assert.equal(await page.evaluate(()=>LudusBridge.state().roster[LudusBridge.state().active].equipment.weapon),'trainer_blade');
+ // Already-worn equipment activates its real stats as soon as it is selected,
+ // without first requiring an unequip/re-equip transaction.
+ assert.equal(await page.locator('.ra-live-stat.equipped-active[data-stat="atk"]').count(),1);
+ assert.equal(await page.locator('.ra-live-stat.equipped-active[data-stat="hp"]').count(),1);
+ await page.locator('[data-item="iron"]').click();
+ assert.equal(await page.locator('.ra-live-stat.equipped-active').count(),0,'an un-equipped selection is only a preview');
+ await page.locator('[data-item="trainer_blade"]').click();
+ assert.equal(await page.locator('.ra-live-stat.equipped-active[data-stat="atk"]').count(),1,'re-selecting an already worn sword instantly highlights its ATK contribution');
+ assert.equal(await page.locator('.ra-live-stat.equipped-active[data-stat="hp"]').count(),1,'re-selecting an already worn sword instantly highlights its HP contribution');
+ assert.match(await page.locator('.ra-comparison h3').innerText(),/해제 시/,'worn equipment is compared against its removal');
+ assert.equal(await page.evaluate(()=>LudusBridge.combatStats(LudusBridge.state().active).atk),afterCombat.atk,'mere selection never alters equipment');
  await page.locator('#raRemove').click();
  const removedCombat=await page.evaluate(()=>LudusBridge.combatStats(LudusBridge.state().active));
  assert.equal(removedCombat.atk,beforeCombat.atk,'real ATK returns after removing equipment');
@@ -103,6 +114,25 @@ try{
  assert.ok(await page.locator('.ra-item').count()>=2);
  await page.locator('#raOwned').click();
  assert.ok(await page.locator('.ra-item').count()>=4);
+ // Selecting a fighter must NOT snap the horizontal roster back to the left.
+ await page.evaluate(()=>{
+  const state=LudusBridge.state();
+  for(let n=0;n<9;n++)state.roster.push(LudusRoster.create('murmillo',n+2));
+  LudusApprovedScenes.open('gear');
+ });
+ await page.waitForSelector('.ra-roster [data-fighter="8"]');
+ const rosterBefore=await page.evaluate(()=>{
+  const roster=document.querySelector('.ra-roster');
+  roster.scrollLeft=245;
+  return roster.scrollLeft;
+ });
+ assert.ok(rosterBefore>=200,'roster overflow provides horizontal scrolling');
+ await page.locator('.ra-roster [data-fighter="4"]').click();
+ const rosterAfter=await page.evaluate(()=>document.querySelector('.ra-roster').scrollLeft);
+ assert.ok(Math.abs(rosterAfter-rosterBefore)<2,'choosing a fighter keeps carousel scroll offset ('+rosterBefore+' → '+rosterAfter+')');
+ await page.locator('.ra-roster [data-fighter="5"]').click();
+ const rosterAgain=await page.evaluate(()=>document.querySelector('.ra-roster').scrollLeft);
+ assert.ok(Math.abs(rosterAgain-rosterBefore)<2,'multiple fighter choices continue at the same horizontal offset');
  // Portrait phone: armory must NOT be a tiny 1672px image scaled down.
  await page.setViewportSize({width:390,height:844});
  const portraitMetrics=await page.evaluate(()=>{
