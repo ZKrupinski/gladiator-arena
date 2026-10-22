@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const context={globalThis:{}};
 vm.runInNewContext(fs.readFileSync(new URL('../public/arena-motion.js',import.meta.url),'utf8'),context);
 const M=context.globalThis.ArenaMotion;
-assert.equal(M.version,'1.2.0');
+assert.equal(M.version,'1.3.0');
 const actor=(enemy=false)=>({
  enemy,dead:false,face:enemy?-1:1,
  x:enemy?700:480,vx:0,walkT:0,action:'idle',actionT:0,
