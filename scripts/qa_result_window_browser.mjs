@@ -120,9 +120,10 @@ async function check(size,preview){
    S.crowd={score:93,total:93,variety:7,counts:{clash:13,parry:3,reversal:1}};
    S.resultWin=true;S.resultApplied=true;S.phase='result';
    window.__arenaQA.showEnd();
+   const modal=document.getElementById('endScreen');
    const panel=document.querySelector('.stage-panel-ending');
    const tray=document.getElementById('endLoot');
-   const rect=panel.getBoundingClientRect();
+   const rect=panel.getBoundingClientRect(),trayRect=tray.getBoundingClientRect();
    const cards=[...tray.querySelectorAll('.arena-loot-drop')];
    const before=tray.innerText;
    window.__arenaQA.showEnd();
@@ -135,8 +136,10 @@ async function check(size,preview){
     containsD:before.includes('512'),
     idempotent:before===after,
     panelWithin:rect.left>=0&&rect.top>=0&&rect.right<=innerWidth+1&&rect.bottom<=innerHeight+1,
-    overflow:getComputedStyle(panel).overflowY,
-    totalAccessible:panel.scrollHeight>=panel.clientHeight,
+    trayWithin:trayRect.left>=0&&trayRect.top>=0&&trayRect.right<=innerWidth+1&&trayRect.bottom<=innerHeight+1,
+    overflow:getComputedStyle(modal).overflowY,
+    artAspect:rect.width/rect.height,
+    totalAccessible:modal.scrollHeight>=modal.clientHeight,
     selectionCap:cards.length===5};
   });
   assert.equal(inventory.cards,5,'full crowd heat displays all five won items');
@@ -144,8 +147,10 @@ async function check(size,preview){
   assert.equal(inventory.containsD,true);
   assert.ok(inventory.score.includes('관중 광란'),JSON.stringify(inventory));
   assert.equal(inventory.idempotent,true,'reopening results cannot duplicate reward cards');
-  assert.equal(inventory.panelWithin,true,'the loot window fits the viewport');
-  assert.equal(inventory.overflow,'auto','mobile loot results stay vertically scrollable');
+  assert.equal(inventory.panelWithin,true,'the approved 4:3 frame fits the viewport');
+  assert.ok(Math.abs(inventory.artAspect-4/3)<.015,'reward cards never distort approved artwork');
+  assert.equal(inventory.trayWithin,true,'all loot is placed below the frame within viewport');
+  assert.equal(inventory.overflow,'auto','the combined result overlay remains vertically scrollable');
   assert.equal(inventory.ids.every(Boolean),true);
   console.log('RESULT_FIVE_LOOT_QA_PASS '+JSON.stringify({viewport:size,inventory}));
   console.log('RESULT_RASTER_QA_PASS '+JSON.stringify({viewport:size,...result}));
