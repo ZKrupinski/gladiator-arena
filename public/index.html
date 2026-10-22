@@ -1094,7 +1094,7 @@ $('#careerExit').onclick=()=>{if(MINI)return;window.LudusScene?.close();$('#care
 $('#careerHit').onclick=completeTraining;
 $('#careerCancel').onclick=closeTraining;
 window.addEventListener('keydown',e=>{if(MINI&&!MINI.finished&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
-function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38,dodgeEcho:null};}
+function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38,dodgeEcho:null,attackLunge:null,specialLunge:null,specialRecoil:null};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 // Non-combat phase: walk from the gate, hold an original victory keypose,
 // then charge. Health, stamina, cooldowns and clock remain frozen.
@@ -1358,7 +1358,7 @@ function lineupEnemy(opponent){
 }
 function cleanDuelSurvivor(f,x,face){
  f.x=x;f.face=face;f.vx=0;f.guard=false;f.guardHold=0;f.parry=0;
- f.stagger=0;f.net=0;f.dodge=0;f.dodgeEcho=null;f.knockT=0;f.knockVX=0;
+ f.stagger=0;f.net=0;f.dodge=0;f.dodgeEcho=null;f.attackLunge=null;f.specialLunge=null;f.specialRecoil=null;f.knockT=0;f.knockVX=0;
  f.attackCD=0;f.actionT=0;f.action='idle';f.comboDash=null;
  f.chainHits=0;f.chainExpire=0;f.pressureT=0;f.invuln=.65;
  f.comebackUsed=false;
@@ -1754,23 +1754,16 @@ function attack(f,victim,special=false,dashImpact=false){
    f.st-=cost;f.attackCD=special?.65:.43;
    if(special){f.cd=f.specialCooldown||6;breakAttackChain(f);}else rollAttackVariant(f);
    f.face=Math.sign(victim.x-f.x)||f.face;
-   // Connect a short three-hit string without changing regular attack range.
-   // Each follow-up steps forward up to 55px, offsetting prior 26px hit pushback.
-   if(!special&&f.chainHits>0){
-     const oldGap=Math.abs(f.x-victim.x);
-     if(oldGap>f.cfg.reach-19&&oldGap<=f.cfg.reach+62){
-       const step=Math.min(55,oldGap-(f.cfg.reach-19));
-       f.x=clamp(f.x+f.face*step,110,1170);
-     }
-   }
-   if(special&&!f.beastType){
-    const startX=f.x;
-    // Advance forty-five world pixels; render interpolates the fighter over
-    // 0.12 real seconds so the forward punch is legible rather than teleporting.
-    f.x=clamp(f.x+f.face*46,115,1165);
-    f.specialLunge={fromX:startX,toX:f.x,t:.54,total:.54,travel:.12};
-   }
-   setAction(f,special?'special':'attack',special?.71:.35);
+   // Shared by regular duels and VENATIO: every normal hit lunges ~85px,
+   // every special drives ~150px. The approved full-resolution sprite
+   // interpolates over this path without stretching a single cell.
+   const fromX=f.x,step=special?150:85;
+   f.x=clamp(f.x+f.face*step,105,1175);
+   const lunge={fromX,toX:f.x,t:special?.82:.58,
+    total:special?.82:.58,travel:special?.19:.14};
+   if(special){f.specialLunge=lunge;f.attackLunge=null;}
+   else{f.attackLunge=lunge;f.specialLunge=null;}
+   setAction(f,special?'special':'attack',special?.77:.42);
    if(special&&!f.beastType&&S.fx){
     // Pre-impact illustrated charge: attached BEHIND the original fighter,
     // not a generated vector ring and not the same ordinary sword slash.
@@ -1930,11 +1923,8 @@ function attack(f,victim,special=false,dashImpact=false){
  window.ArenaMotion?.impact?.(victim,collisionStyle);
  window.ArenaMotion?.shake?.(S,collisionStyle,f.face);
  if(!dashImpact){
-  // The striker also absorbs a little recoil: bodies compress together,
-  // rebound apart, then land back on the established 200px spacing.
-  // Heavy technique commits to its 46px forward lunge instead of undoing
-  // nine pixels with the routine light-attack recoil.
-  f.x=clamp(f.x-f.face*(guarded?5:special?0:7),105,1175);
+  // Ordinary and special lunges remain 85/150px in world space:
+  // no 7px routine recoil that silently cancels their forward travel.
   if(!guarded&&!special){
    victim.knockVX=f.face*140;
    victim.knockT=Math.max(victim.knockT,.15);
@@ -1962,39 +1952,44 @@ function attack(f,victim,special=false,dashImpact=false){
   if(!guarded)triggerCinematic('dash',(f.x+victim.x)*.5,f.face);
   say('4 HIT · RUSH BREAK!',1.55);
  }else{
-  victim.x=clamp(victim.x+f.face*(special?0:26),125,1165);
+  victim.x=clamp(victim.x+f.face*(special?0:guarded?62:85),125,1165);
   S.shake=Math.max(S.shake,special?48:6);
   S.flash=Math.max(S.flash,special?.29:.09);
  }
  emitAttackFx(f,victim,special,guarded,false,f.attackVariant,dashImpact);
- if(special&&!dashImpact&&!guarded&&!f.beastType){
+ if(special&&!dashImpact&&!guarded){
   const contact=impactPoint(f,victim,true);
-  // Impact at the VICTIM, separate from the illustrated charge at the source.
-  addFx(3,contact.x+f.face*26,contact.y-16,{
-   sequence:'special',w:705,h:705,alpha:.95,
-   flip:f.face<0,duration:.73,delay:.05
-  });
-  // Directional painted trailing blade arc, readable after the first flash.
-  addFx(2,contact.x+f.face*54,contact.y-21,{
-   sequence:f.cls==='retiarius'?'thrust':f.cls==='thraex'?'sweep':'slash',
-   w:570,h:570,flip:f.face<0,alpha:.82,delay:.13,duration:.39
-  });
+  if(!f.beastType){
+   // Illustrated special art still appears only for sword-wielding fighters.
+   // Physical lunge/launch/ghost choreography is shared by arena beasts.
+   addFx(3,contact.x+f.face*26,contact.y-16,{
+    sequence:'special',w:705,h:705,alpha:.95,
+    flip:f.face<0,duration:.73,delay:.05
+   });
+   addFx(2,contact.x+f.face*54,contact.y-21,{
+    sequence:f.cls==='retiarius'?'thrust':f.cls==='thraex'?'sweep':'slash',
+    w:570,h:570,flip:f.face<0,alpha:.82,delay:.13,duration:.39
+   });
+  }
   window.ArenaMotion?.shake?.(S,'special',f.face,1.26);
   S.shake=Math.max(S.shake,54);
   S.flash=Math.max(S.flash,.34);
   if(victim.hp>0){
    const startX=victim.x,dir=f.face;
-   // Three beats in WORLD SPACE: heavy launch (~280px), held airborne
-   // knockback, then elastic return to ~105px beyond original position.
-   // No rubber-sized sprite or fake rectangular impact texture.
+   // Up to 400px backward, then return to 120px beyond original.
+   // 160px initial kick prevents 150px lunges from overlapping the victim.
+   // Arena edge clamps remain authoritative for both human and beast fights.
+   const initialX=clamp(startX+dir*160,115,1165);
    victim.specialRecoil={
-    startX,farX:clamp(startX+dir*285,115,1165),
-    restX:clamp(startX+dir*105,115,1165),
-    elapsed:0,total:1.08
+    startX,initialX,
+    farX:clamp(startX+dir*400,115,1165),
+    restX:clamp(startX+dir*120,115,1165),
+    elapsed:0,total:1.18
    };
+   victim.x=initialX;
    victim.knockVX=dir*1180;victim.knockT=0;
-   victim.stagger=Math.max(victim.stagger,1.2);
-   victim.attackCD=Math.max(victim.attackCD,1.1);
+   victim.stagger=Math.max(victim.stagger,1.37);
+   victim.attackCD=Math.max(victim.attackCD,1.25);
   }
   triggerCinematic('special',contact.x,f.face);
   if(S.cinematic?.kind==='special')S.cinematic.title=f.cfg.special;
@@ -2180,9 +2175,10 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
   f.dodgeEcho.t=Math.max(0,f.dodgeEcho.t-realDt);
   if(f.dodgeEcho.t<=0)f.dodgeEcho=null;
  }
- if(f.specialLunge){
-  f.specialLunge.t=Math.max(0,f.specialLunge.t-realDt);
-  if(f.specialLunge.t<=0)f.specialLunge=null;
+ for(const key of ['specialLunge','attackLunge']){
+  const g=f[key];if(!g)continue;
+  g.t=Math.max(0,g.t-realDt);
+  if(g.t<=0)f[key]=null;
  }
  f.invuln=Math.max(0,f.invuln-dt);f.net=Math.max(0,f.net-dt);
  f.parry=Math.max(0,f.parry-dt);f.guardHold=Math.max(0,f.guardHold-dt);
@@ -2290,7 +2286,7 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
    if(q<.34){
     const a=q/.34;
     const ease=1-Math.pow(1-a,3);
-    f.x=k.startX+(k.farX-k.startX)*ease;
+    f.x=k.initialX+(k.farX-k.initialX)*ease;
    }else{
     const a=clamp((q-.34)/.66,0,1);
     const ease=a*a*(3-2*a);
@@ -2595,7 +2591,7 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  let drawX=f.x-width/2,drawY=feet-height+bob;
  if(S.phase==='fight'){
   // Render-only position easing leaves combat hitboxes undisturbed.
-  const trail=f.dodgeEcho||f.specialLunge;
+  const trail=f.dodgeEcho||f.specialLunge||f.attackLunge;
   if(trail){
    const elapsed=trail.total-trail.t;
    const u=clamp(elapsed/(trail.travel||.15),0,1);
@@ -2698,7 +2694,7 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
    !drawGrowthPose(f,pose,x,y,width,height,f.face<0,alpha))
     atlasFrame(IMG[f.cls],frame,x,y,width,height,f.face<0,alpha);
  };
- if(S.phase==='fight'&&!f.beastType&&S.fx&&!reduceImpact){
+ if(S.phase==='fight'&&S.fx&&!reduceImpact){
   // Five full-resolution echoes, 0.94 seconds visible. Keep sprite scale,
   // armor silhouette and foot anchor IDENTICAL to the main character.
   if(f.dodgeEcho){
@@ -2707,17 +2703,24 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
    const visibility=clamp((g.t-.03)/.53,0,1);
    const fade=.14+.86*visibility;
    const gap=g.toX-g.fromX;
-   for(const [t,a] of [[0,.32],[.20,.39],[.4,.47],[.60,.54],[.8,.60]]){
+   for(const [t,a] of [[0,.38],[.20,.48],[.4,.57],[.60,.66],[.8,.70]]){
     ctx.save();ctx.filter='brightness(1.28) saturate(1.20)';
     renderActor(a*fade,g.fromX+gap*t-width/2,drawY+2);
     ctx.restore();
    }
   }
-  if(f.specialLunge){
-   const g=f.specialLunge,fade=clamp(g.t/.46,0,1);
+  const strike=f.specialLunge||f.attackLunge;
+  if(strike){
+   const strong=!!f.specialLunge,g=strike;
+   // Visible full-size ghosts spaced along 150px specials / 85px normals.
+   // Keep original sprite feet, equipment, head size, and beast silhouette.
+   const fade=.26+.74*clamp(g.t/(strong?.75:.50),0,1);
    const gap=g.toX-g.fromX;
-   for(const [t,a] of [[0,.45],[.36,.32],[.70,.20]]){
-    ctx.save();ctx.filter='brightness(1.30) saturate(1.18)';
+   const echoes=strong
+    ?[[0,.74],[.20,.67],[.40,.60],[.60,.50],[.80,.38]]
+    :[[0,.57],[.3,.48],[.60,.38],[.85,.27]];
+   for(const [t,a] of echoes){
+    ctx.save();ctx.filter='brightness(1.36) saturate(1.26)';
     renderActor(a*fade,g.fromX+gap*t-width/2,drawY+1);
     ctx.restore();
    }
