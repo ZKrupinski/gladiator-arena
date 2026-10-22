@@ -53,7 +53,16 @@ const bridge=()=>window.LudusBridge;
 const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;'}[c]));
 function hit(id,label,x,y,w,h,fn){let b=document.createElement('button');b.className='la-hit';b.type='button';b.dataset.hit=id;b.setAttribute('aria-label',label);b.title=label;b.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;b.addEventListener('click',fn);stage.appendChild(b);return b;}
 function block(cls,x,y){let d=document.createElement('div');d.className='la-v '+cls;d.style.left=x+'px';d.style.top=y+'px';stage.appendChild(d);return d;}
-function fit(){if(!stage)return;const z=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${z})`;}
+function fit(){
+ if(!stage)return;
+ const usableW=Math.max(320,innerWidth),usableH=Math.max(320,innerHeight);
+ const z=Math.min(usableW/W,usableH/H);
+ // Give the self-contained armory more vertical room on tall phones/tablets,
+ // without stretching its character art or altering the approved training room.
+ const armory=stage.classList.contains('armory');
+ stage.style.height=armory?Math.max(H,Math.min(1420,Math.floor(usableH/z)))+'px':'';
+ stage.style.transform=`translate(-50%,-50%) scale(${z})`;
+}
 function toast(msg){let n=$('.la-notice');if(!n)return;n.textContent=msg;n.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>n.hidden=true,2800);}
 function pose(index){window.LudusDoctoreAnim?.react?.(index);}
 function moveHero(step){let a=bridge(),s=a?.state();if(!s?.roster?.length){toast('검투사시장에서 먼저 영입하세요.');return;}let i=((s.active||0)+step+s.roster.length)%s.roster.length;a.select(i);refresh();}
