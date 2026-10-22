@@ -1,0 +1,32 @@
+name: QA Ludus Reset and First Market
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - scripts/qa_ludus_reset_onboarding_browser.mjs
+      - .github/workflows/qa-ludus-reset-onboarding.yml
+  workflow_dispatch:
+jobs:
+  first-market-and-reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium and Playwright
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Start local game server
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/ludus-reset-browser.log 2>&1 &
+          sleep 3
+      - name: Test first market, reset dialogue, cancel, confirm and reload
+        run: node scripts/qa_ludus_reset_onboarding_browser.mjs
+      - name: Check existing Ludus career regression tests
+        run: |
+          node tests/ludus-roster.cjs
+          node tests/unlimited-gladiator-training.cjs
