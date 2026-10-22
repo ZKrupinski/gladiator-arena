@@ -349,7 +349,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=whip-real-hit-v3"></script>
 <script src="champion-murmillo.js?v=3"></script>
-<script src="arena-gear-catalog.js?v=armory-v2"></script><script src="arena-balance.js?v=duel-pace-v3"></script>
+<script src="arena-gear-catalog.js?v=armory-v2"></script><script src="arena-balance.js?v=unlimited-growth-v1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
 <script src="arena-beasts.js?v=versus-v5"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
@@ -778,6 +778,10 @@ function equipmentBonus(h){
  normalizeEquipment(h);
  return window.ArenaGearCatalog.summary(h);
 }
+function careerTrainingCost(h,stat){
+ if(!h)return 0;
+ return Math.max(1,Math.round(ArenaBalance.trainingCost(h,stat)*(1-equipmentBonus(h).trainingDiscount)));
+}
 Object.defineProperty(CAREER,'hero',{get(){return this.roster[this.active]||null;}});
 function careerHealth(h){const max=ArenaBalance.heroStats(h,DATA[h.cls],equipmentBonus(h)).hp;return {max,current:Math.max(1,max-h.injury)};}
 function careerEligible(h){return ArenaLineup.condition(h).eligible;}
@@ -969,13 +973,14 @@ function renderCareer(){
   return;
  }
  const h=CAREER.hero;
- const summary='<div class="career-card"><h2>루두스 현황</h2><div class="career-stat"><span>데나리우스</span><b>'+CAREER.gold+' D</b></div><div class="career-stat"><span>명예</span><b>'+CAREER.glory+'</b></div><div class="career-stat"><span>시합 전적</span><b>'+CAREER.wins+'승 / '+CAREER.fights+'전</b></div><div class="career-stat"><span>소속 검투사</span><b>'+CAREER.roster.length+'명</b></div><p class="career-status">'+CAREER.message+'</p>'+(h?'<div class="career-avatar" style="background-image:url(&quot;'+(CLEANED_CHARACTER_URLS[h.cls]||ASSET[h.cls])+'&quot;)"></div><h3>'+h.name+' · '+DATA[h.cls].name+'</h3><div class="career-type"><label>외형 타입 <select id="careerGrowthType">'+Object.entries(GROWTH_TYPES).filter(([key])=>key.startsWith(h.cls==='murmillo'?'murmillo':h.cls==='thraex'?'thraex':'retiarius')).map(([key,name])=>'<option value="'+key+'" '+(growthType(h)===key?'selected':'')+'>'+name+'</option>').join('')+'</select></label></div><div class="career-level"><strong>'+careerProgressLabel(h)+'</strong><div class="career-xp-track"><i style="width:'+(careerLevel(h)===20?100:Math.round(100*h.xp/careerXpNeeded(careerLevel(h))))+'%"></i></div><small>Lv.1 / 5 / 10 / 15 / 20 성장 단계 · 훈련과 시합으로 경험치 획득</small></div><div class="career-stat"><span>체력 / 부상</span><b>'+careerHealth(h).current+' / 부상 '+h.injury+'</b></div>'+Object.entries(h.stats).map(([k,v])=>'<div class="career-stat"><span>'+({str:'근력',agi:'민첩',end:'체력',focus:'집중'}[k])+'</span><b>+'+v+'</b></div>').join('')+'<p>장착: '+['weapon','shield','armor'].map(slot=>({weapon:'무기',shield:'방패',armor:'방어구'}[slot])+': '+(GEAR.find(g=>g.id===h.equipment[slot])?.name||'없음')).join(' / ')+'</p><div class="career-stat"><span>최종 공격력</span><b>'+(DATA[h.cls].atk+h.stats.str*2+equipmentBonus(h).atk)+'</b></div><div class="career-stat"><span>최대 체력</span><b>'+(DATA[h.cls].hp+h.stats.end*13+equipmentBonus(h).hp)+'</b></div>':'<p>아직 소속 검투사가 없습니다.</p>')+'</div>';
- const hire=h?'<div class="career-card"><h2>훈련장 · EXERCITIUM</h2><p>훈련당 12D · 처음엔 느리고 넓게, 반복할수록 빠르고 좁게 · 최대 +10.</p><div class="career-options">'+[
+ const finalStats=h?ArenaBalance.heroStats(h,DATA[h.cls],equipmentBonus(h)):null;
+ const summary='<div class="career-card"><h2>루두스 현황</h2><div class="career-stat"><span>데나리우스</span><b>'+CAREER.gold+' D</b></div><div class="career-stat"><span>명예</span><b>'+CAREER.glory+'</b></div><div class="career-stat"><span>시합 전적</span><b>'+CAREER.wins+'승 / '+CAREER.fights+'전</b></div><div class="career-stat"><span>소속 검투사</span><b>'+CAREER.roster.length+'명</b></div><p class="career-status">'+CAREER.message+'</p>'+(h?'<div class="career-avatar" style="background-image:url(&quot;'+(CLEANED_CHARACTER_URLS[h.cls]||ASSET[h.cls])+'&quot;)"></div><h3>'+h.name+' · '+DATA[h.cls].name+'</h3><div class="career-type"><label>외형 타입 <select id="careerGrowthType">'+Object.entries(GROWTH_TYPES).filter(([key])=>key.startsWith(h.cls==='murmillo'?'murmillo':h.cls==='thraex'?'thraex':'retiarius')).map(([key,name])=>'<option value="'+key+'" '+(growthType(h)===key?'selected':'')+'>'+name+'</option>').join('')+'</select></label></div><div class="career-level"><strong>'+careerProgressLabel(h)+'</strong><div class="career-xp-track"><i style="width:'+(careerLevel(h)===20?100:Math.round(100*h.xp/careerXpNeeded(careerLevel(h))))+'%"></i></div><small>Lv.1 / 5 / 10 / 15 / 20 성장 단계 · 훈련과 시합으로 경험치 획득</small></div><div class="career-stat"><span>체력 / 부상</span><b>'+careerHealth(h).current+' / 부상 '+h.injury+'</b></div>'+Object.entries(h.stats).map(([k,v])=>'<div class="career-stat"><span>'+({str:'근력',agi:'민첩',end:'체력',focus:'집중'}[k])+'</span><b>+'+v+'</b></div>').join('')+'<p>장착: '+['weapon','shield','armor'].map(slot=>({weapon:'무기',shield:'방패',armor:'방어구'}[slot])+': '+(GEAR.find(g=>g.id===h.equipment[slot])?.name||'없음')).join(' / ')+'</p><div class="career-stat"><span>최종 공격력</span><b>'+finalStats.atk+'</b></div><div class="career-stat"><span>최대 체력</span><b>'+finalStats.hp+'</b></div>':'<p>아직 소속 검투사가 없습니다.</p>')+'</div>';
+ const hire=h?'<div class="career-card"><h2>훈련장 · EXERCITIUM</h2><p>훈련 비용은 능력치에 따라 증가 · +10 이후 심화 훈련 가능(효과 점진 감소).</p><div class="career-options">'+[
  ['str','근력 · 목검 타격','공격력 증가'],
  ['agi','민첩 · 회피 발놀림','이동 속도 증가'],
  ['end','체력 · 지구력 훈련','최대 체력 증가'],
  ['focus','집중 · 타격 집중','필살기 공격력 증가']
- ].map(([id,n,d])=>'<button class="career-option" data-train="'+id+'" '+(CAREER.gold<12||h.stats[id]>=10?'disabled':'')+'><strong>'+n+'</strong><small>'+d+'</small></button>').join('')+'</div><h3>장비 공방 · ARMAMENTARIUM</h3><div class="career-options">'+GEAR.filter(g=>g.id!=='wood').map(g=>'<button class="career-option career-gear '+(h.equipment[g.slot]===g.id?'is-equipped':'')+'" data-gear="'+g.id+'" aria-pressed="'+(h.equipment[g.slot]===g.id)+'" '+(CAREER.gold<g.cost&&!h.inventory.includes(g.id)?'disabled':'')+'><span class="gear-status">'+(h.equipment[g.slot]===g.id?'✓ 장착 중':h.inventory.includes(g.id)?'장착 가능':'미보유')+'</span><strong>'+g.name+'</strong><small>'+g.desc+' · '+(h.equipment[g.slot]===g.id?'장착 해제':h.inventory.includes(g.id)?'장착하기':g.cost+'D 구매·장착')+'</small></button>').join('')+'</div><div class="career-buttons"><button id="careerHeal" '+(h.injury<=0||CAREER.gold<Math.max(12,Math.ceil(h.injury*.6))?'disabled':'')+'>치료 · '+Math.max(12,Math.ceil(h.injury*.6))+'D</button><button id="careerFight" '+''+'>⚔ 출전 검투사 선택 · '+(CAREER.wins+1)+'회차</button></div></div>':'';
+ ].map(([id,n,d])=>'<button class="career-option" data-train="'+id+'" '+(CAREER.gold<careerTrainingCost(h,id)?'disabled':'')+'><strong>'+n+'</strong><small>'+d+' · '+careerTrainingCost(h,id).toLocaleString('ko-KR')+'D</small></button>').join('')+'</div><h3>장비 공방 · ARMAMENTARIUM</h3><div class="career-options">'+GEAR.filter(g=>g.id!=='wood').map(g=>'<button class="career-option career-gear '+(h.equipment[g.slot]===g.id?'is-equipped':'')+'" data-gear="'+g.id+'" aria-pressed="'+(h.equipment[g.slot]===g.id)+'" '+(CAREER.gold<g.cost&&!h.inventory.includes(g.id)?'disabled':'')+'><span class="gear-status">'+(h.equipment[g.slot]===g.id?'✓ 장착 중':h.inventory.includes(g.id)?'장착 가능':'미보유')+'</span><strong>'+g.name+'</strong><small>'+g.desc+' · '+(h.equipment[g.slot]===g.id?'장착 해제':h.inventory.includes(g.id)?'장착하기':g.cost+'D 구매·장착')+'</small></button>').join('')+'</div><div class="career-buttons"><button id="careerHeal" '+(h.injury<=0||CAREER.gold<Math.max(12,Math.ceil(h.injury*.6))?'disabled':'')+'>치료 · '+Math.max(12,Math.ceil(h.injury*.6))+'D</button><button id="careerFight" '+''+'>⚔ 출전 검투사 선택 · '+(CAREER.wins+1)+'회차</button></div></div>':'';
  const roster='<div class="career-card career-roster"><h2>소속 검투사 · '+CAREER.roster.length+'명</h2><p>검투사를 선택해 개별 훈련·장비·치료를 진행하세요. 매 5번째 도전은 챔피언 영입전입니다.</p><div class="roster-list">'+rosterCards()+'</div></div>';
  const statTiles=[['str','⚔','공격 훈련','공격력 상승'],['end','🛡','방어 훈련','최대 HP 상승'],['agi','👟','민첩 훈련','이동 속도 상승'],['focus','✦','기술 훈련','필살기 강화']];
  const workshopIsTraining=CAREER_TAB==='training';
@@ -984,7 +989,7 @@ function renderCareer(){
  const workshopLine=workshopIsTraining?'검투사의 자세를 살펴보겠습니다. 훈련을 선택하세요.':'시합에 맞는 무장으로 준비하십시오.';
  const cards=h?'<div class="ludus-stage"><div class="ludus-fighter-art"><div class="ludus-npc"><img src="'+workshopNpc+'" alt="'+workshopNpcName+'" loading="lazy"><div class="ludus-npc-name">'+workshopNpcName+'</div><div class="ludus-npc-dialogue">'+workshopLine+'</div></div><div class="ludus-active-fighter"><canvas class="ludus-portrait fighter-student" id="workshopFighter" width="240" height="240" aria-label="선택된 검투사"></canvas><strong>'+h.name+'</strong><small>Lv.'+careerLevel(h)+' · '+DATA[h.cls].name+'</small></div></div></div>':'<div class="career-card">검투사시장에서 검투사를 영입하세요.</div>';
  const nav=h?'<div class="ludus-fighter-picker"><h3>훈련 / 장비 대상 선택</h3><div class="roster-list">'+rosterCards()+'</div></div>':'';
- const trainingUI='<div class="ludus-workshop ludus-training"><div class="ludus-room-head"><h2>훈련소 · EXERCITIUM</h2><p>교관과 대치하여 훈련합니다. 항목을 누르면 자동으로 성공합니다 · 회당 12D</p></div>'+cards+'<div class="ludus-training-grid">'+statTiles.map(([k,ic,n,d])=>'<button class="ludus-stat-tile stat-'+k+'" data-autotrain="'+k+'" '+(!h||CAREER.gold<12||h.stats[k]>=10?'disabled':'')+'><span class="ludus-stat-icon">'+ic+'</span><strong>'+n+'</strong><small>'+d+'</small><em>현재 '+(h?.stats[k]??0)+' / 10</em></button>').join('')+'</div>'+nav+'</div>';
+ const trainingUI='<div class="ludus-workshop ludus-training"><div class="ludus-room-head"><h2>훈련소 · EXERCITIUM</h2><p>교관과 대치하여 훈련합니다. +10 이후에도 심화 훈련할 수 있습니다.</p></div>'+cards+'<div class="ludus-training-grid">'+statTiles.map(([k,ic,n,d])=>'<button class="ludus-stat-tile stat-'+k+'" data-autotrain="'+k+'" '+(!h||CAREER.gold<careerTrainingCost(h,k)?'disabled':'')+'><span class="ludus-stat-icon">'+ic+'</span><strong>'+n+'</strong><small>'+d+'</small><em>현재 '+(h?.stats[k]??0)+' · '+(h?careerTrainingCost(h,k).toLocaleString('ko-KR'):'—')+'D</em></button>').join('')+'</div>'+nav+'</div>';
  const gearUI='<div class="ludus-workshop ludus-equipment"><div class="ludus-room-head"><h2>장비실 · ARMAMENTARIUM</h2><p>무기 · 방패 · 방어구 장착 / 해제 및 구입</p></div>'+cards+'<div class="ludus-equipment-grid">'+(h?GEAR.filter(g=>g.id!=='wood').map(g=>'<button data-gear="'+g.id+'" class="ludus-equip-tile '+(h.equipment[g.slot]===g.id?'is-equipped':'')+'" '+(CAREER.gold<g.cost&&!h.inventory.includes(g.id)?'disabled':'')+'><span class="ludus-item-icon">'+({weapon:'⚔',shield:'🛡',armor:'♜'}[g.slot])+'</span><strong>'+g.name+'</strong><small>'+g.desc+'</small><em>'+(h.equipment[g.slot]===g.id?'✓ 장착 중':h.inventory.includes(g.id)?'장착 가능':g.cost+'D 구매')+'</em></button>').join(''):'검투사 없음')+'</div>'+nav+'</div>';
  $('#careerBody').innerHTML=CAREER_TAB==='training'?trainingUI:CAREER_TAB==='gear'?gearUI:roster+summary;
  $('#careerRosterTab').setAttribute('aria-pressed',String(CAREER_TAB==='roster'));
@@ -1023,12 +1028,12 @@ function renderCareer(){
 }
 function autoCareerTrain(stat){
  const h=CAREER.hero;
- if(!h||!['str','agi','end','focus'].includes(stat)||h.stats[stat]>=10)return;
- const cost=Math.max(1,Math.round(ArenaBalance.trainingCost(h,stat)*(1-equipmentBonus(h).trainingDiscount)));
+ if(!h||!['str','agi','end','focus'].includes(stat))return;
+ const cost=careerTrainingCost(h,stat);
  if(CAREER.gold<cost){careerMessage('훈련 비용 '+cost+'D가 부족합니다.');return;}
  const before=h.stats[stat],gained=grantCareerXp(h,Math.max(7,17-Math.floor(before/3)));
  CAREER.gold-=cost;
- h.stats[stat]=Math.min(10,before+(before<3?2:1));
+ h.stats[stat]=before+(before<3?2:1);
  h.trainingAttempts=h.trainingAttempts||{};
  h.trainingAttempts[stat]=(h.trainingAttempts[stat]||0)+1;
  const names={str:'공격',agi:'민첩',end:'체력',focus:'기술'};
@@ -1038,7 +1043,7 @@ function autoCareerTrain(stat){
  if(tile){tile.classList.add('ludus-training-success');setTimeout(()=>tile.classList.remove('ludus-training-success'),800);}
 }
 function startTraining(stat){
- if(!CAREER.hero||CAREER.gold<ArenaBalance.trainingCost(CAREER.hero,stat)||CAREER.hero.stats[stat]>=10)return;
+ if(!CAREER.hero||CAREER.gold<careerTrainingCost(CAREER.hero,stat))return;
  const d=trainingDifficulty(CAREER.hero,stat);
  MINI={stat,started:performance.now(),speed:d.speed*({str:1,agi:1.10,end:.90,focus:1.03}[stat]),lower:(100-d.width)/200,upper:(100+d.width)/200,perfect:d.perfect/200,level:d.name,attempts:d.attempts};
  const zone=$('#careerMini .career-hitzone');zone.style.left=MINI.lower*100+'%';zone.style.width=d.width+'%';
@@ -1069,9 +1074,9 @@ function completeTraining(){
  CAREER.hero.trainingAttempts=CAREER.hero.trainingAttempts||{};
  CAREER.hero.trainingAttempts[stat]=(CAREER.hero.trainingAttempts[stat]||0)+1;
  $('#careerNeedle').style.left='calc('+(v*100).toFixed(2)+'% - 2.5px)';
- CAREER.gold-=ArenaBalance.trainingCost(CAREER.hero,stat);
+ CAREER.gold-=careerTrainingCost(CAREER.hero,stat);
  const before=CAREER.hero.stats[stat];
- CAREER.hero.stats[stat]=Math.min(10,before+gain);
+ CAREER.hero.stats[stat]=before+gain;
  const applied=CAREER.hero.stats[stat]-before;
  const rank=gain===3?'perfect':gain===2?'success':'fail';
  const label=gain===3?'대성공!':gain===2?'성공!':'실패!';
@@ -3257,7 +3262,7 @@ $('#classSubtitle').textContent=DATA[$('#classChoice').value].eng;
 
 /* Visual Ludus adapter; the existing career state remains authoritative. */
 window.LudusBridge={
- trainingCost:(i,stat)=>{const h=CAREER.roster[i];return h?Math.max(1,Math.round(ArenaBalance.trainingCost(h,stat)*(1-equipmentBonus(h).trainingDiscount))):0;},
+ trainingCost:(i,stat)=>careerTrainingCost(CAREER.roster[i],stat),
  squadSprite:(hero,action='idle',tick=0)=>{
   if(!hero)return null;
   const index={idle:0,walk:1,attack:2,special:3,guard:6,hit:7,death:11,dodge:8}[action]??0;
@@ -3375,6 +3380,6 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=roster-proportions-v24"></script><script src="ludus-training-runtime.js?v=whip-real-hit-v3"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=whip-hit-sfx-v1"></script><script src="ludus-armory-live.js?v=armory-detail-scroll-v3"></script><script src="ludus-cards.js?v=10"></script>
+<script src="ludus-scene.js?v=roster-proportions-v24"></script><script src="ludus-training-runtime.js?v=whip-real-hit-v3"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=unlimited-growth-v1"></script><script src="ludus-armory-live.js?v=armory-detail-scroll-v3"></script><script src="ludus-cards.js?v=10"></script>
 
 </body></html>
