@@ -67,6 +67,19 @@ try{
      aboveCharacter:((rect.top-stage.top)/scale)<520};
    });
    assert.equal(soldBox.visible,true,'sold plaque displays for purchased first slot');
+   const emptyVisual=await page.evaluate(()=>[0,1,2].map(i=>{
+    const el=document.querySelector('#gmEmpty'+i),rect=el.getBoundingClientRect(),
+      root=document.querySelector('#gmStage').getBoundingClientRect(),scale=root.width/1672;
+    return {hidden:el.hidden,background:getComputedStyle(el).backgroundImage,
+     x:(rect.left-root.left)/scale,y:(rect.top-root.top)/scale,
+     w:rect.width/scale,h:rect.height/scale};
+   }));
+   assert.deepEqual(emptyVisual.map(v=>v.hidden),[false,true,true],
+    'only the purchased fighter must disappear');
+   assert.ok(emptyVisual[0].background.includes('market_keyvisual_no_merchant.webp'),
+    'reuse approved market hanging-banner texture');
+   assert.ok(emptyVisual[0].y<=260&&emptyVisual[0].h>=260,
+    'mask the actual character region, not only the stats: '+JSON.stringify(emptyVisual));
    assert.ok(soldBox.y>=525&&soldBox.y<=535&&soldBox.h<=205,
     'sold plaque must cover stats ONLY, not character: '+JSON.stringify(soldBox));
    assert.ok(soldBox.x>=490&&soldBox.x<=495&&soldBox.w<=230);
@@ -98,8 +111,18 @@ try{
    assert.ok(soldRegions.every(v=>v.visible&&v.y>=525&&v.y<535&&v.height<205),
     'all three sold plaques must stay inside stat area: '+JSON.stringify(soldRegions));
    assert.ok(soldRegions[1].x>=835&&soldRegions[2].x>=1175);
+   const allEmpty=await page.evaluate(()=>[0,1,2].map(i=>!document.querySelector('#gmEmpty'+i).hidden));
+   assert.deepEqual(allEmpty,[true,true,true],'all three sold fighters must be hidden');
+   await page.locator('#gmRestock').click();
+   const replenished=await page.evaluate(()=>({
+     hidden:[0,1,2].map(i=>document.querySelector('#gmEmpty'+i).hidden),
+     count:window.__marketBalanceQAState.marketInventory.filter(Boolean).length
+   }));
+   assert.deepEqual(replenished.hidden,[true,true,true],
+    'restocked gladiators must reappear');
+   assert.equal(replenished.count,3);
    assert.deepEqual(errors,[],'browser JS errors');
-   console.log('MARKET_BALANCE_CENTER_PASS '+JSON.stringify({viewport,metrics,bought,large,soldBox,soldRegions}));
+   console.log('MARKET_BALANCE_CENTER_PASS '+JSON.stringify({viewport,metrics,bought,large,soldBox,soldRegions,emptyVisual,allEmpty,replenished}));
   }finally{await page.close()}
  }
 }finally{await browser.close()}

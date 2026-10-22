@@ -72,6 +72,7 @@ function render(){if(!scene||scene.hidden)return;
   btn.disabled=!h;btn.setAttribute('aria-pressed',String(selected));
   btn.setAttribute('aria-label',h?h.name+' '+h.className+' Lv.0 선택':'판매 완료 · 비어 있는 단상');
   sold.hidden=!!h;
+  $('#gmEmpty'+i).hidden=!!h; // Clear painted gladiator art on sold podiums.
   const dynamic=!!h&&((Number(state.marketSeed)||0)!==0||h.name!==types[i].names[0]);
   overlayPanel(h,i,dynamic);
   $('#gmSelection'+i).hidden=!selected;
@@ -169,7 +170,7 @@ function setup(){if(scene)return;
   <img class="gm-merchant-full gm-pose-1" id="gmMerchantMain" src="assets/market/merchant_pose_1.webp" alt="" aria-hidden="true" draggable="false">
   <div class="gm-paper-foreground" aria-hidden="true"></div>
   <button type="button" class="gm-back-hit" id="gmBack" aria-label="루두스로 돌아가기" title="루두스로 돌아가기"></button>
-  ${types.map((t,i)=>`<button type="button" class="gm-card-hit" data-i="${i}" id="gmCard${i}" aria-label="${t.names[0]} ${t.className} 후보" aria-pressed="${i===0}"></button><div class="gm-selected-wreath" id="gmSelection${i}" data-i="${i}" aria-hidden="true" hidden><span>❧</span><b>선택</b><span>❧</span></div><div class="gm-vacant" id="gmVacant${i}" data-i="${i}" hidden><span class="gm-vacant-badge">✦ 판매 완료 ✦</span><strong>빈 단상</strong><small>신규 후보를 갱신하세요</small></div><div class="gm-card-dynamic" data-i="${i}" id="gmPanel${i}" hidden></div>`).join('')}
+  ${types.map((t,i)=>`<button type="button" class="gm-card-hit" data-i="${i}" id="gmCard${i}" aria-label="${t.names[0]} ${t.className} 후보" aria-pressed="${i===0}"></button><div class="gm-empty-podium" id="gmEmpty${i}" data-i="${i}" hidden aria-hidden="true"></div><div class="gm-selected-wreath" id="gmSelection${i}" data-i="${i}" aria-hidden="true" hidden><span>❧</span><b>선택</b><span>❧</span></div><div class="gm-vacant" id="gmVacant${i}" data-i="${i}" hidden><span class="gm-vacant-badge">✦ 판매 완료 ✦</span><strong>빈 단상</strong><small>신규 후보를 갱신하세요</small></div><div class="gm-card-dynamic" data-i="${i}" id="gmPanel${i}" hidden></div>`).join('')}
   <div class="gm-wallet-legacy-mask" aria-hidden="true"></div>
   <div class="gm-wallet-value" id="gmWallet" role="status" aria-label="남은 잔고">
    <span class="gm-wallet-label">◉ 남은 잔고</span>
