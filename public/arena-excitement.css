@@ -7,7 +7,9 @@
 .arena-crowd-hud[data-grade=rare] i{background:linear-gradient(90deg,#3c79b9,#9be4ff);box-shadow:0 0 12px #8ce2ff}
 .arena-crowd-hud[data-grade=epic] i{background:linear-gradient(90deg,#8b42c6,#ebb0ff);box-shadow:0 0 13px #d18dff}
 .arena-crowd-hud[data-grade=legend] i{background:linear-gradient(90deg,#e68d3e,#fff1b4);box-shadow:0 0 15px #fce5ac}
-.stage-panel-ending.has-loot{overflow-y:auto;overflow-x:hidden;justify-content:flex-start;overscroll-behavior:contain;scrollbar-width:thin;max-height:calc(100dvh - 12px)}
+#endScreen.overlay-ending:has(.stage-panel-ending.has-loot){display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;overflow-x:hidden;overflow-y:auto;padding:5px 7px;overscroll-behavior:contain;scrollbar-width:thin}
+#endScreen .stage-panel-ending.has-loot{display:block!important;flex:none;width:min(96vw,900px,90dvh)!important;max-height:none!important;overflow:visible!important;aspect-ratio:4/3}
+#endScreen > .arena-result-loot{flex:none;width:min(96vw,720px);max-height:min(29dvh,225px);overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
 .stage-panel-ending.has-loot .result-banner{max-height:min(13dvh,105px);margin:0 auto}
 .stage-panel-ending.has-loot .result-pose-art{width:min(100%,13dvh,116px)}
 .stage-panel-ending.has-loot .result-poses{margin:0 auto 1px}
@@ -32,3 +34,27 @@
 @media(max-height:390px) and (orientation:landscape){.stage-panel-ending.has-loot{display:flex;max-width:min(96vw,720px)}.stage-panel-ending.has-loot .result-pose-art{width:min(100%,9dvh,63px)}.stage-panel-ending.has-loot .result-banner{max-height:9dvh}.arena-result-loot{padding:3px 6px}.arena-loot-items{min-height:58px}.arena-loot-drop{min-height:55px}.arena-loot-drop img{height:40px}.arena-loot-notice{display:none}}
 @media(max-width:450px){.arena-crowd-hud{top:4px;max-width:50%;padding:4px 6px}.arena-loot-drop{flex-basis:110px}.arena-result-loot{padding:5px}.arena-loot-heading{gap:2px}}
 @media(prefers-reduced-motion:reduce){.arena-loot-drop,.arena-loot-drop:is(.rarity-rare,.rarity-epic,.rarity-legendary,.rarity-relic){animation:none}}
+
+
+/* The result illustration remains an undistorted 4:3 illustration.
+ * Reward cards live BELOW that frame as a sibling, never over the portrait. */
+#endScreen.overlay-ending:has(.stage-panel-ending.has-loot) .end-actions{z-index:5}
+@media(max-width:520px){
+ #endScreen > .arena-result-loot{max-height:min(33dvh,245px)}
+ #endScreen .arena-loot-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow-x:visible;gap:5px;max-width:100%}
+ #endScreen .arena-loot-drop{box-sizing:border-box;min-width:0;max-width:none;width:100%;min-height:71px;padding:4px 3px;gap:2px}
+ #endScreen .arena-loot-drop img{width:32px;height:45px;flex:0 0 32px}
+ #endScreen .arena-loot-drop strong{font-size:10px}
+ #endScreen .arena-loot-drop em{font-size:9px}
+ #endScreen .arena-loot-heading{margin-bottom:4px}
+}
+@media(max-height:420px) and (orientation:landscape){
+ #endScreen.overlay-ending:has(.stage-panel-ending.has-loot){gap:2px}
+ #endScreen .stage-panel-ending.has-loot{width:min(96vw,900px,87dvh)!important}
+ #endScreen > .arena-result-loot{max-height:calc(35dvh - 10px);padding:3px 6px}
+ #endScreen .arena-loot-heading{margin:0 0 2px}
+ #endScreen .arena-loot-items{min-height:44px;padding:0}
+ #endScreen .arena-loot-drop{min-height:45px}
+ #endScreen .arena-loot-drop img{height:38px}
+ #endScreen .arena-loot-notice{display:none}
+}
