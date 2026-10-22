@@ -165,3 +165,103 @@
  outline-offset:-7px;
  background:#ffda882a!important;
 }
+
+
+/* Fighter roster gallery v6.1 — occupies the lower Domina leg distortion
+   without obstructing the baked right-hand training/arena actions (x>=801). */
+.ll-scene .ll-bottom,
+.ll-scene.ll-has-art .ll-bottom {
+  left:13px;right:18px;bottom:15px;z-index:17;
+}
+.ll-scene .ll-roster,
+.ll-scene.ll-has-art .ll-bottom .ll-roster {
+  box-sizing:border-box;position:relative;transform:none;
+  flex:0 0 776px;width:776px;height:426px;
+  padding:15px 17px 18px;display:flex;flex-direction:column;
+  overflow:hidden;border:7px ridge #cda15b;border-radius:13px;
+  background:linear-gradient(125deg,#261710 0%,#160d0b 55%,#281710 100%);
+  box-shadow:inset 0 0 0 2px #73502e,inset 0 0 24px #100604,0 10px 20px #080402d9;
+  isolation:isolate;
+}
+.ll-scene .ll-roster:before {
+  content:"";position:absolute;inset:6px;
+  border:1px solid #e2bc765c;border-radius:4px;pointer-events:none;z-index:3;
+}
+.ll-scene .ll-roster h3 {
+  display:flex;align-items:center;gap:14px;
+  flex:0 0 38px;min-height:38px;margin:0 0 12px;padding:0 5px 7px;
+  border-bottom:2px solid #be915877;
+  font:900 27px/1.18 'Noto Serif KR','Noto Sans KR',serif;
+  color:#ffedbe;text-shadow:0 2px 5px #050201;
+}
+.ll-scene .ll-roster h3 [data-count] {
+  margin-left:0;font:900 23px/1.2 Georgia,'Noto Sans KR',serif;color:#ffdf8b;
+}
+.ll-scene .ll-roster .ll-swipe-hint {
+  margin-left:auto;white-space:nowrap;
+  font:800 16px/1.25 'Noto Sans KR',sans-serif;color:#edd0a1;
+}
+.ll-scene .ll-roster .ll-portraits {
+  display:flex;position:relative;flex:1 1 auto;align-items:stretch;
+  gap:12px;min-width:0;min-height:0;padding:4px 5px 10px;
+  overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;touch-action:pan-x;
+  scroll-snap-type:x proximity;scrollbar-width:thin;
+  scrollbar-color:#c29355 #241712;cursor:grab;
+}
+.ll-scene .ll-roster .ll-portraits.is-dragging {cursor:grabbing;scroll-snap-type:none}
+.ll-scene .ll-roster .ll-portraits::-webkit-scrollbar {height:9px}
+.ll-scene .ll-roster .ll-portraits::-webkit-scrollbar-thumb {background:#b88a4f;border-radius:9px}
+.ll-scene .ll-roster .ll-portraits button,
+.ll-scene .ll-roster .ll-portraits button.ll-fighter-card {
+  box-sizing:border-box;scroll-snap-align:start;
+  flex:0 0 154px;width:154px;height:100%;min-height:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:5px 4px 7px;border:3px ridge #aa8453;border-radius:8px;
+  background:radial-gradient(ellipse at 50% 34%,#7b57325b,#261610 70%);
+  box-shadow:inset 0 0 9px #150807,0 4px 9px #080402;
+  color:#fbe5bb;overflow:hidden;cursor:pointer;
+  touch-action:pan-x;user-select:none;-webkit-user-select:none;
+}
+.ll-scene .ll-roster .ll-portraits button.selected {
+  border-color:#ffe19c;
+  background:radial-gradient(ellipse at 50% 35%,#a87838a8,#392214 76%);
+  box-shadow:inset 0 0 0 1px #ffe3a380,0 0 13px #d6ad68b0;
+}
+.ll-scene .ll-roster .ll-portraits canvas {
+  display:block;width:146px;height:212px;max-height:70%;
+  flex:1 1 auto;min-height:0;object-fit:contain;pointer-events:none;
+  filter:drop-shadow(0 4px 5px #0c0605a9);
+}
+.ll-scene .ll-roster .ll-portraits .ll-fighter-name {
+  display:block;width:100%;margin-top:3px;overflow:hidden;
+  white-space:nowrap;text-overflow:ellipsis;
+  font:900 20px/1.18 'Noto Serif KR','Noto Sans KR',serif;color:#ffebbf;
+}
+.ll-scene .ll-roster .ll-portraits .ll-fighter-meta {
+  display:block;width:100%;margin-top:2px;overflow:hidden;
+  white-space:nowrap;text-overflow:ellipsis;
+  font:800 15px/1.22 'Noto Sans KR',sans-serif;color:#e4bb86;
+}
+.ll-scene .ll-roster .ll-portraits .ll-fighter-condition {
+  margin-top:4px;padding:3px 5px;width:100%;border-radius:4px;
+  background:#1b3c2f;border:1px solid #60987a;color:#b9ffcf;
+  font:800 13px/1.15 'Noto Sans KR',sans-serif;
+}
+.ll-scene .ll-roster .ll-portraits .ll-fighter-condition.is-unfit {
+  background:#4f201c;border-color:#be6b62;color:#ffcaab;
+}
+.ll-scene .ll-roster .ll-portraits button.ll-add {
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(#39281d,#1e130f);border-style:dashed;
+  font:900 75px/1 Georgia,serif;color:#f4cf88;touch-action:pan-x;
+}
+.ll-scene .ll-roster .ll-portraits button.ll-add small {
+  margin-top:14px;font:900 17px 'Noto Sans KR',sans-serif;
+}
+.ll-scene .ll-roster .ll-portraits button:focus-visible {
+  outline:3px solid #fff3be!important;outline-offset:-4px;
+}
+@media(prefers-reduced-motion:reduce){
+ .ll-scene .ll-roster .ll-portraits{scroll-behavior:auto}
+}
