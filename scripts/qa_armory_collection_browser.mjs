@@ -98,14 +98,14 @@ try{
  assert.equal(await page.locator('.ra-live-stat.equipped-active').count(),0,'an un-equipped selection is only a preview');
  await page.locator('[data-loadout-slot="weapon"]').click();
  assert.equal(await page.locator('.ra-item.selected[data-item="trainer_blade"]').count(),1,'worn icon focuses gear in inventory');
- assert.equal(await page.locator('.ra-detail-title').innerText(),'루두스 훈련검');
+ assert.equal(await page.locator('.ra-detail-title h3').innerText(),'루두스 훈련검');
  assert.equal(await page.locator('.ra-loadout-slot.is-selected[data-loadout-slot="weapon"]').count(),1);
  await page.locator('[data-cat="shield"]').click();
  assert.equal(await page.locator('[data-item="trainer_blade"]').count(),0,'weapon hidden while shield filter selected');
  await page.locator('[data-loadout-slot="weapon"]').click();
  assert.equal(await page.locator('.ra-item.selected[data-item="trainer_blade"]').count(),1,'worn icon restores hidden weapon card after different category');
  assert.equal(await page.locator('[data-cat="all"].selected').count(),1,'worn icon restores all category');
- assert.equal(await page.locator('.ra-detail-title').innerText(),'루두스 훈련검');
+ assert.equal(await page.locator('.ra-detail-title h3').innerText(),'루두스 훈련검');
  await page.locator('[data-item="trainer_blade"]').click();
  assert.equal(await page.locator('.ra-live-stat.equipped-active[data-stat="atk"]').count(),1,'re-selecting an already worn sword instantly highlights its ATK contribution');
  assert.equal(await page.locator('.ra-live-stat.equipped-active[data-stat="hp"]').count(),1,'re-selecting an already worn sword instantly highlights its HP contribution');
