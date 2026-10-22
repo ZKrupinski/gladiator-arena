@@ -2343,6 +2343,9 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
   f.vx=(c.toX-c.fromX)/c.travel*(1-u);
   if(c.elapsed>=c.travel&&!c.ended){
    c.ended=true;f.x=c.toX;f.vx=0;
+   // Record the world-space rush peak BEFORE minimum-distance separation
+   // naturally eases the fighter backward as the knocked rival returns.
+   c.peakX=f.x;
    setAction(f,'attack',.31);
    // The first damage tick was the instantaneous shield counter.
    // The fast chase concludes with a small REAL riposte against the
