@@ -1,0 +1,29 @@
+name: QA centered market balance
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/market-scene.css
+      - public/market-scene.js
+      - public/index.html
+      - scripts/qa_market_balance_center_browser.mjs
+      - .github/workflows/qa-market-balance-center.yml
+  workflow_dispatch:
+jobs:
+  market-balance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Host live market screen
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/market-balance-qa.log 2>&1 &
+          sleep 3
+      - name: Verify centered treasury and purchase in real browser
+        run: node scripts/qa_market_balance_center_browser.mjs
