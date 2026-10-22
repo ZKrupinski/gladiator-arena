@@ -915,10 +915,10 @@ function finishCareerMatch(){
  h.fatigue=Math.min(100,(Number(h.fatigue)||0)+Math.round(ArenaLineup.fatigueGain(S.careerStartingHp,S.player.hp,1)*(1-equipmentBonus(h).fatigueReduction)));
  h.fights++;if(win)h.wins++;
  const earned=Math.round(payout.xp*(1+(win?(equipmentBonus(h).xpBonus||0):0))),stageBefore=careerStage(h),gained=grantCareerXp(h,earned);
-  const loot=win?ArenaLoot.award(CAREER,h,{boss:!!S.careerOpponent?.boss}):null;
-  CAREER.lastLoot=loot;if(loot)CAREER.lastPrize.loot=loot;
+  const loot=win?ArenaLoot.awardBattle(CAREER,h,{boss:!!S.careerOpponent?.boss,excitement:S.crowd?.score||0}):[];
+  S.matchLoot=loot;CAREER.lastLoot=loot;CAREER.lastPrize.loot=loot;CAREER.lastPrize.excitement=ArenaCrowd.snapshot(S.crowd);
  CAREER.message=(win?'승리! ':'패배. ')+reward+'D · 경험치 +'+earned+(gained?' · LEVEL UP!':'')+(careerStage(h)>stageBefore?' · 성장 '+careerStage(h)+'단계!':'')+
-  ' · 잔액 '+CAREER.gold+'D'+(loot?' · 전리품 '+loot.name+' ['+ArenaGearCatalog.rarities[loot.rarity].name+'] 루두스 창고에 입고!':' · 장비 드롭 없음')+' · 루두스로 돌아가세요.';
+  ' · 잔액 '+CAREER.gold+'D'+(loot.length?' · 전리품 '+loot.length+'개 루두스 창고에 입고!':' · 장비 드롭 없음')+' · 루두스로 돌아가세요.';
  if(win){
   const joined=LudusRoster.recruitBoss(CAREER,S.careerOpponent);
   if(joined)CAREER.message+=' · '+joined.name+'이 루두스에 합류했습니다!';
@@ -1293,13 +1293,13 @@ function finishBeastMatch(){
   CAREER.gold+=prize;
   CAREER.lastPrize={mode:'beast_hunt',stage:run.stage.id,win:final,round:run.roundIndex+1,gold:prize,before,after:CAREER.gold,at:Date.now()};
   if(final)grantCareerXp(h,Math.round((18+run.stage.difficulty*8)*(1+(equipmentBonus(h).xpBonus||0))));
-  const loot=final?ArenaLoot.award(CAREER,h,{beast:true,boss:run.stage.difficulty>=3}):null;
-   CAREER.lastLoot=loot;if(loot)CAREER.lastPrize.loot=loot;
-   CAREER.message=(final?'맹수 토벌 성공!': '맹수 토벌 실패. ')+' '+run.stage.label+' · 보상 '+prize+'D'+(loot?' · 전리품 '+loot.name+' ['+ArenaGearCatalog.rarities[loot.rarity].name+'] 입고!':'')+' · 잔액 '+CAREER.gold+'D';
+  const loot=final?ArenaLoot.awardBattle(CAREER,h,{beast:true,boss:run.stage.difficulty>=3,excitement:S.crowd?.score||0}):[];
+   S.matchLoot=loot;CAREER.lastLoot=loot;CAREER.lastPrize.loot=loot;CAREER.lastPrize.excitement=ArenaCrowd.snapshot(S.crowd);
+   CAREER.message=(final?'맹수 토벌 성공!': '맹수 토벌 실패. ')+' '+run.stage.label+' · 보상 '+prize+'D'+(loot.length?' · 전리품 '+loot.length+'개 입고!':' · 장비 드롭 없음')+' · 잔액 '+CAREER.gold+'D';
  }else{
-  const loot=win?ArenaLoot.award(CAREER,h,{beast:true}):null;
-   CAREER.lastLoot=loot;
-   CAREER.message=run.stage.label+' '+(run.roundIndex+1)+'/'+run.stage.rounds+' 승리'+(loot?' · 전리품 '+loot.name+' 입고!':'')+' · 마지막 승리 시 데나리우스 보상 지급';
+  const loot=win?ArenaLoot.awardBattle(CAREER,h,{beast:true,excitement:S.crowd?.score||0}):[];
+   S.matchLoot=loot;CAREER.lastLoot=loot;
+   CAREER.message=run.stage.label+' '+(run.roundIndex+1)+'/'+run.stage.rounds+' 승리'+(loot.length?' · 전리품 '+loot.length+'개 입고!':' · 장비 드롭 없음')+' · 마지막 승리 시 데나리우스 보상 지급';
  }
  saveCareer();
 }
@@ -1573,10 +1573,10 @@ function finishLineupCareerMatch(){
   grantCareerXp(h,Math.max(5,Math.round(payout.xp*(q.allies.length>1?.78:1)*(1+(equipmentBonus(h).xpBonus||0)))));
  }
  const lootHero=CAREER.roster[Number(participants[0])]||CAREER.hero;
-  const loot=win&&lootHero?ArenaLoot.award(CAREER,lootHero,{lineup:true,boss:!!leader.boss}):null;
-  CAREER.lastLoot=loot;if(loot)CAREER.lastPrize.loot=loot;
+  const loot=win&&lootHero?ArenaLoot.awardBattle(CAREER,lootHero,{lineup:true,boss:!!leader.boss,excitement:S.crowd?.score||0}):[];
+  S.matchLoot=loot;CAREER.lastLoot=loot;CAREER.lastPrize.loot=loot;CAREER.lastPrize.excitement=ArenaCrowd.snapshot(S.crowd);
   CAREER.message=(win?'순차 대진 승리! ':'순차 대진 패배. ')+q.mode+
-  ' · '+payout.gold+'D'+(loot?' · 전리품 '+loot.name+' ['+ArenaGearCatalog.rarities[loot.rarity].name+'] 입고!':'')+' · 잔액 '+CAREER.gold+'D · 출전자 '+participants.length+'명 경험치/부상/피로 반영';
+  ' · '+payout.gold+'D'+(loot.length?' · 전리품 '+loot.length+'개 입고!':' · 장비 드롭 없음')+' · 잔액 '+CAREER.gold+'D · 출전자 '+participants.length+'명 경험치/부상/피로 반영';
  if(win){
   const recruit=LudusRoster.recruitBoss(CAREER,leader);
   if(recruit)CAREER.message+=' · '+recruit.name+' 영입!';
