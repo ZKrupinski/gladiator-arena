@@ -26,7 +26,7 @@ try{
  await page.waitForFunction(()=>window.LudusApprovedScenes?.open&&window.LudusBridge?.gearSummary,{timeout:25000});
  // Discovery-first economy: fresh Ludus does not expose all 56 items.
  const initial=await page.evaluate(()=>({visible:LudusBridge.catalog().length,total:LudusBridge.allGear().length}));
- assert.equal(initial.total,56);
+ assert.equal(initial.total,76);
  assert.ok(initial.visible<8,'undiscovered gear stays hidden');
  await page.evaluate(()=>{
   const s=LudusBridge.state();
@@ -55,7 +55,7 @@ try{
  assert(geometry.cols[0].width<geometry.cols[1].width&&geometry.cols[1].width<geometry.cols[2].width,'24/34/42 width hierarchy');
  assert(geometry.actions.every(x=>x.nowrap==='nowrap'&&!x.overflow&&x.title?.length<=2),'short, single-line armory controls: '+JSON.stringify(geometry.actions));
  assert.equal(await page.locator('.ra-combat-stats .ra-live-stat').count(),6,'actual stats visible in hero pane');
- // Three independent equipment slots appear directly between selected hero and stats.
+ // Five independent equipment slots appear directly between selected hero and stats.
  const slotLayout=await page.evaluate(()=>{
   const hero=document.querySelector('.ra-hero-info'),loadout=document.querySelector('.ra-loadout'),stats=document.querySelector('.ra-combat-stats');
   const elems=[...hero.parentElement.children];
@@ -65,11 +65,11 @@ try{
    empty:[...loadout.querySelectorAll('.ra-loadout-slot.is-empty')].map(e=>e.dataset.loadoutSlot),
    disabled:[...loadout.querySelectorAll('.ra-loadout-slot:disabled')].map(e=>e.dataset.loadoutSlot)};
  });
- assert.equal(slotLayout.count,3,'all three gear slots are always shown');
- assert.deepEqual(slotLayout.slots,['weapon','shield','armor']);
+ assert.equal(slotLayout.count,5,'all five gladiator gear slots are always shown');
+ assert.deepEqual(slotLayout.slots,['weapon','shield','armor','helmet','bracers']);
  assert(slotLayout.ordered,'gear slots are just below fighter name');
- assert(slotLayout.empty.includes('shield')&&slotLayout.empty.includes('armor'),'empty defense slots show placeholders');
- assert(slotLayout.disabled.includes('shield')&&slotLayout.disabled.includes('armor'),'empty slots do not navigate');
+ assert(['shield','armor','helmet','bracers'].every(slotLayout.empty.includes.bind(slotLayout.empty)),'empty defense and gladiator specialty slots show placeholders');
+ assert(['shield','armor','helmet','bracers'].every(slotLayout.disabled.includes.bind(slotLayout.disabled)),'empty slots do not navigate');
  assert.equal(await page.locator('[data-item="trainer_blade"]').count(),1);
  assert.equal(await page.locator('[data-item="imperial_aquila"]').count(),0,'undiscovered epic gear hidden');
  await page.locator('[data-item="trainer_blade"]').click();
