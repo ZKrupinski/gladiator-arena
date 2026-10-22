@@ -259,7 +259,7 @@
 
 /* Armory V7: preserve readable one-line buttons and item statuses on phones. */
 @media(orientation:landscape) and (max-width:1150px){
- .ra-collection .ra-item .ra-flag{font-size:25px!important;line-height:1.05!important;white-space:nowrap!important;padding:4px 8px!important}
+ .ra-collection .ra-item .ra-flag{font-size:26px!important;line-height:1.05!important;white-space:nowrap!important;padding:4px 8px!important}
  .ra-collection .ra-combat-stats h3{font-size:25px}
  .ra-collection .ra-combat-stats h3 small{font-size:19px}
  .ra-collection .ra-live-stat>span{font-size:20px}
