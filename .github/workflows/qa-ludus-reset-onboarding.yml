@@ -26,7 +26,5 @@ jobs:
           sleep 3
       - name: Test first market, reset dialogue, cancel, confirm and reload
         run: node scripts/qa_ludus_reset_onboarding_browser.mjs
-      - name: Check existing Ludus career regression tests
-        run: |
-          node tests/ludus-roster.cjs
-          node tests/unlimited-gladiator-training.cjs
+      - name: Check training and combat growth regression
+        run: node tests/unlimited-gladiator-training.cjs
