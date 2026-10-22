@@ -31,6 +31,7 @@ try{
      visualAmountPx:parseFloat(getComputedStyle(amount).fontSize)*scale,
      amountFits:amount.scrollWidth<=amount.clientWidth,
      overlaps:Object.fromEntries(hits.map(name=>[name,Math.round(overlap(rect,$(name).getBoundingClientRect()))])),
+     hitRects:Object.fromEntries(hits.map(name=>{const b=$(name).getBoundingClientRect();return [name,{x:(b.left-root.left)/scale,y:(b.top-root.top)/scale,w:b.width/scale,h:b.height/scale}]})),
      walletPointer:getComputedStyle(wallet).pointerEvents,
      maskPointer:getComputedStyle($('.gm-wallet-legacy-mask')).pointerEvents};
    });
