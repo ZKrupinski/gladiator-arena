@@ -800,7 +800,7 @@ function normalizeEquipment(h){
   const old=GEAR.find(g=>g.id===h.equipped);
   if(old&&!h.equipment[old.slot])h.equipment[old.slot]=old.id;
  }
- for(const slot of ['weapon','shield','armor']){
+ for(const slot of window.ArenaGearCatalog.slots){
   const id=h.equipment[slot],g=GEAR.find(g=>g.id===id);
   if(!g||g.slot!==slot)h.equipment[slot]=null;
  }
@@ -1029,7 +1029,7 @@ function renderCareer(){
  const cards=h?'<div class="ludus-stage"><div class="ludus-fighter-art"><div class="ludus-npc"><img src="'+workshopNpc+'" alt="'+workshopNpcName+'" loading="lazy"><div class="ludus-npc-name">'+workshopNpcName+'</div><div class="ludus-npc-dialogue">'+workshopLine+'</div></div><div class="ludus-active-fighter"><canvas class="ludus-portrait fighter-student" id="workshopFighter" width="240" height="240" aria-label="선택된 검투사"></canvas><strong>'+h.name+'</strong><small>Lv.'+careerLevel(h)+' · '+DATA[h.cls].name+'</small></div></div></div>':'<div class="career-card">검투사시장에서 검투사를 영입하세요.</div>';
  const nav=h?'<div class="ludus-fighter-picker"><h3>훈련 / 장비 대상 선택</h3><div class="roster-list">'+rosterCards()+'</div></div>':'';
  const trainingUI='<div class="ludus-workshop ludus-training"><div class="ludus-room-head"><h2>훈련소 · EXERCITIUM</h2><p>교관과 대치하여 훈련합니다. +10 이후에도 심화 훈련할 수 있습니다.</p></div>'+cards+'<div class="ludus-training-grid">'+statTiles.map(([k,ic,n,d])=>'<button class="ludus-stat-tile stat-'+k+'" data-autotrain="'+k+'" '+(!h||CAREER.gold<careerTrainingCost(h,k)?'disabled':'')+'><span class="ludus-stat-icon">'+ic+'</span><strong>'+n+'</strong><small>'+d+'</small><em>현재 '+(h?.stats[k]??0)+' · '+(h?careerTrainingCost(h,k).toLocaleString('ko-KR'):'—')+'D</em></button>').join('')+'</div>'+nav+'</div>';
- const gearUI='<div class="ludus-workshop ludus-equipment"><div class="ludus-room-head"><h2>장비실 · ARMAMENTARIUM</h2><p>무기 · 방패 · 방어구 장착 / 해제 및 구입</p></div>'+cards+'<div class="ludus-equipment-grid">'+(h?ArenaLoot.offer(CAREER,h).filter(g=>g.id!=='wood').map(g=>'<button data-gear="'+g.id+'" class="ludus-equip-tile '+(h.equipment[g.slot]===g.id?'is-equipped':'')+'" '+(CAREER.gold<g.cost&&!(ArenaLoot.quantity(CAREER,g.id)>0)?'disabled':'')+'><span class="ludus-item-icon">'+({weapon:'⚔',shield:'🛡',armor:'♜'}[g.slot])+'</span><strong>'+g.name+'</strong><small>'+g.desc+'</small><em>'+(h.equipment[g.slot]===g.id?'✓ 장착 중':(ArenaLoot.quantity(CAREER,g.id)>0)?'장착 가능':g.cost+'D 구매')+'</em></button>').join(''):'검투사 없음')+'</div>'+nav+'</div>';
+ const gearUI='<div class="ludus-workshop ludus-equipment"><div class="ludus-room-head"><h2>장비실 · ARMAMENTARIUM</h2><p>무기 · 방패 · 갑옷 · 투구 · 팔 보호대 장착 / 해제 및 구입</p></div>'+cards+'<div class="ludus-equipment-grid">'+(h?ArenaLoot.offer(CAREER,h).filter(g=>g.id!=='wood').map(g=>'<button data-gear="'+g.id+'" class="ludus-equip-tile '+(h.equipment[g.slot]===g.id?'is-equipped':'')+'" '+(CAREER.gold<g.cost&&!(ArenaLoot.quantity(CAREER,g.id)>0)?'disabled':'')+'><span class="ludus-item-icon">'+({weapon:'⚔',shield:'🛡',armor:'♜',helmet:'⛑',bracers:'✥'}[g.slot]||'◆')+'</span><strong>'+g.name+'</strong><small>'+g.desc+'</small><em>'+(h.equipment[g.slot]===g.id?'✓ 장착 중':(ArenaLoot.quantity(CAREER,g.id)>0)?'장착 가능':g.cost+'D 구매')+'</em></button>').join(''):'검투사 없음')+'</div>'+nav+'</div>';
  $('#careerBody').innerHTML=CAREER_TAB==='training'?trainingUI:CAREER_TAB==='gear'?gearUI:roster+summary;
  $('#careerRosterTab').setAttribute('aria-pressed',String(CAREER_TAB==='roster'));
  $('#careerTrainTab').setAttribute('aria-pressed',String(CAREER_TAB==='training'));
