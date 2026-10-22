@@ -1,0 +1,32 @@
+name: QA illustrated armory collection
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/arena-gear-catalog.js
+      - public/assets/gear-icons/**
+      - public/index.html
+      - public/arena-balance.js
+      - public/ludus-armory-live.js
+      - public/ludus-armory-live.css
+      - scripts/qa_armory_collection_browser.mjs
+      - .github/workflows/qa-armory-collection.yml
+  workflow_dispatch:
+jobs:
+  armory-collection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Start local game
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/armory.log 2>&1 &
+          sleep 3
+      - name: Verify real armory purchase, gear art and UI
+        run: node scripts/qa_armory_collection_browser.mjs
