@@ -76,8 +76,10 @@ try{
    }));
    assert.deepEqual(emptyVisual.map(v=>v.hidden),[false,true,true],
     'only the purchased fighter must disappear');
-   assert.ok(emptyVisual[0].background.includes('market_keyvisual_no_merchant.webp'),
-    'reuse approved market hanging-banner texture');
+   assert.ok(!emptyVisual[0].background.includes('market_keyvisual_no_merchant.webp'),
+    'sold backdrop must never sample or enlarge the original fighter-containing image');
+   assert.ok(emptyVisual[0].background.includes('gradient'),
+    'sold backdrop uses clean shaded Roman fabric, not a corrupted screenshot');
    assert.ok(emptyVisual[0].y<=260&&emptyVisual[0].h>=260,
     'mask the actual character region, not only the stats: '+JSON.stringify(emptyVisual));
    assert.ok(soldBox.y>=525&&soldBox.y<=535&&soldBox.h<=205,
