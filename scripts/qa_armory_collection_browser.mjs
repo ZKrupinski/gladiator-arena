@@ -24,7 +24,22 @@ const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 try{
  await page.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.LudusApprovedScenes?.open&&window.LudusBridge?.gearSummary,{timeout:25000});
- // Discovery-first economy: fresh Ludus does not expose all 56 items.
+ await page.waitForFunction(()=>window.ArenaGearBitmap?.status()==='ready',{timeout:30000});
+ const bitmap=await page.evaluate(()=>({
+  drawn:ArenaGearBitmap.renderedCount(),
+  mapped:Object.keys(ArenaGearBitmap.mapping).length,
+  total:LudusBridge.allGear().length,
+  bitmapIcons:LudusBridge.allGear().filter(x=>x.icon.startsWith('data:image/webp')).length,
+  atlasSources:Object.values(ArenaGearBitmap.atlases).map(x=>x.src),
+  invalid:LudusBridge.allGear().filter(x=>!x.atlasSheet||!Number.isInteger(x.atlasIndex)).map(x=>x.id)
+ }));
+ assert.equal(bitmap.total,76,'all five-slot catalogue items are available to the game');
+ assert.equal(bitmap.mapped,76,'each equipment entry has its own reviewed atlas tile');
+ assert.equal(bitmap.drawn,76,'all 76 distinct 192px bitmap crops decoded successfully');
+ assert.equal(bitmap.bitmapIcons,76,'no inventory icon still uses SVG once atlases load');
+ assert.deepEqual(bitmap.invalid,[],'all mapped items have stable sprite coordinates');
+ assert.equal(new Set(bitmap.atlasSources).size,2,'both reviewed atlases were loaded');
+ // Discovery-first economy: fresh Ludus does not expose all 76 items.
  const initial=await page.evaluate(()=>({visible:LudusBridge.catalog().length,total:LudusBridge.allGear().length}));
  assert.equal(initial.total,76);
  assert.ok(initial.visible<8,'undiscovered gear stays hidden');
