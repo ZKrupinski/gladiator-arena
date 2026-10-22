@@ -631,28 +631,31 @@ function updateCamera(dt){
  const rushing=activeFight&&[p,e].some(f=>!!f.comboDash);
  const parrying=activeFight&&S.parryBursts.length>0;
  // Stay wide at range; make approach, hits, parries and leap-rush feel cinematic.
- const emphasis=(striking?.036:0)+(rushing?.07:0)+(parrying?.065:0);
+ const emphasis=(striking?.047:0)+(rushing?.095:0)+(parrying?.082:0);
  const focus=S.focusFrame?.active?S.focusFrame:null;
- // Parry is a COMBAT event, not a camera cut. Both fighters must stay on
- // screen while the blow is cancelled; mobile 16:9 view is authoritative.
- const safeParry=focus?.kind==='parry'||focus?.kind==='reversal';
- const desiredZoom=clamp(1+pressure*.205+emphasis*(.35+.65*close)+
-  (safeParry?0:(focus?.zoom||0)),1,1.7);
- const pairWidth=distance+FIGHTER_DRAW_SIZE*.92;
- const fitZoom=(W-2*88)/Math.max(FIGHTER_DRAW_SIZE,pairWidth);
- const targetZoom=safeParry?Math.min(desiredZoom,1.22,fitZoom):
-  Math.min(desiredZoom,fitZoom);
- const targetX=clamp(safeParry?midX:(focus?midX*.35+focus.centerX*.65:midX),110,1170);
+ const kind=focus?.kind;
+ // Push in on impact, pull out for distant knockbacks and dodges.
+ // Clamp by the *whole* fighter pair before changing lens scale.
+ const impactZoom=kind==='special'?.20:kind==='dash'?.23:
+  kind==='reversal'?.15:kind==='parry'?.115:
+  kind==='strike'?.075:kind==='dodge'?-.14:0;
+ const recoilActive=[p,e].some(f=>!!f.specialRecoil);
+ const desiredZoom=clamp(1+pressure*.21+emphasis*(.42+.58*close)+
+  (focus?.zoom||0)+impactZoom*(recoilActive?.62:1),1,1.66);
+ const pairWidth=distance+FIGHTER_DRAW_SIZE*.89;
+ const fitZoom=(W-140)/Math.max(FIGHTER_DRAW_SIZE,pairWidth);
+ const targetZoom=clamp(Math.min(desiredZoom,fitZoom),.90,1.60);
+ const targetX=clamp(focus?midX*.72+focus.centerX*.28:midX,110,1170);
  if(!CAMERA.initialized){
   CAMERA.x=targetX;CAMERA.zoom=targetZoom;CAMERA.initialized=true;
  }else if(!S.paused){
-  const follow=1-Math.exp(-dt*(safeParry?4.4:focus?14:4.4));
-  const zSpeed=safeParry?9:focus?24:targetZoom>CAMERA.zoom?7.6:3.7;
+  const follow=1-Math.exp(-dt*(focus?12:4.4));
+  const zSpeed=focus?20:recoilActive?12:targetZoom>CAMERA.zoom?8.3:4.3;
   const blend=1-Math.exp(-dt*zSpeed);
   CAMERA.x+=(targetX-CAMERA.x)*follow;
   CAMERA.zoom+=(targetZoom-CAMERA.zoom)*blend;
  }
- CAMERA.zoom=clamp(CAMERA.zoom,1,1.7);
+ CAMERA.zoom=clamp(CAMERA.zoom,.90,1.60);
  // Keep feet aligned with the floor near screen y=617 during zoom-in.
  CAMERA.y=FLOOR-(FLOOR-H*.5)/CAMERA.zoom;
 }
@@ -2495,7 +2498,7 @@ function getArenaBackgroundLayout(image,camera=CAMERA){
  const pan=-(camera.x-W*.5)*.3;
  const baseX=(W-width)*.5+pan;
  const x=clamp(baseX,W-width+BG_OVERSCAN_X,-BG_OVERSCAN_X);
- const z=clamp(camera.zoom||1,1,1.28);
+ const z=clamp(camera.zoom||1,.9,1.38);
  // Close-ups reveal slightly more foreground sand instead of shifting its contact plane.
  const floorStart=BG_WALL_FLOOR_Y-(z-1)*50;
  const top=-168-(z-1)*18,bottom=850+(z-1)*30;
@@ -2945,20 +2948,21 @@ function drawCinematicFocus(){
  rim.addColorStop(.46,'rgba(12,8,9,0)');
  rim.addColorStop(1,'rgba(10,6,8,'+Math.min(.68,f.shade*1.55)+')');
  ctx.fillStyle=rim;ctx.fillRect(0,0,W,H);
- const bar=Math.max(0,Math.round(Math.min(f.cinemaBars,H*.235)));
- if(bar){
-  const veil=ctx.createLinearGradient(0,0,0,bar);
+ const topBar=Math.max(0,Math.round(Math.min(f.cinemaBars,H*.235)));
+ const bottomBar=Math.round(topBar*(f.kind==='special'?.20:1));
+ if(topBar){
+  const veil=ctx.createLinearGradient(0,0,0,topBar);
   veil.addColorStop(0,'rgba(5,3,3,.99)');veil.addColorStop(1,'rgba(9,5,5,.87)');
-  ctx.fillStyle=veil;ctx.fillRect(0,0,W,bar);
-  ctx.fillRect(0,H-bar,W,bar);
+  ctx.fillStyle=veil;ctx.fillRect(0,0,W,topBar);
+  ctx.fillRect(0,H-bottomBar,W,bottomBar);
   ctx.fillStyle='rgba(244,200,116,'+Math.min(.82,.32+f.shade*1.3)+')';
   const rimSize=f.kind==='special'?4:2;
-  ctx.fillRect(0,bar,W,rimSize);
-  ctx.fillRect(0,H-bar-rimSize,W,rimSize);
+  ctx.fillRect(0,topBar,W,rimSize);
+  ctx.fillRect(0,H-bottomBar-rimSize,W,rimSize);
   if(f.kind==='special'){
    ctx.fillStyle='rgba(255,228,173,'+Math.min(.34,f.bloom*.4)+')';
-   ctx.fillRect(0,bar+rimSize,W,5);
-   ctx.fillRect(0,H-bar-rimSize-5,W,5);
+   ctx.fillRect(0,topBar+rimSize,W,5);
+   ctx.fillRect(0,H-bottomBar-rimSize-5,W,5);
   }
  }
  const reveal=clamp((f.elapsed-.065)/.12,0,1);
@@ -2994,8 +2998,15 @@ function render(){
  const dy=(shake?.y||0)+legacy*Math.cos(clock*43)*.27;
  ctx.translate(dx,dy);
  if(shake?.angle){ctx.translate(W/2,H/2);ctx.rotate(shake.angle);ctx.translate(-W/2,-H/2);}
- // Background is a separately clamped screen-sized parallax layer.
+ // Entire frame shakes via parent canvas; the background participates in
+ // the SAME push-in/pull-out (62% lens scale) while fighters use full zoom.
+ ctx.save();
+ const bgZoom=1+(CAMERA.zoom-1)*.62;
+ ctx.translate(W*.5,H*.70);
+ ctx.scale(bgZoom,bgZoom);
+ ctx.translate(-W*.5,-H*.70);
  drawBackdrop();
+ ctx.restore();
  ctx.save();
  ctx.translate(W*.5,H*.5);
  ctx.scale(CAMERA.zoom,CAMERA.zoom);
