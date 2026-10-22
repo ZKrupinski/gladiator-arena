@@ -8,7 +8,7 @@ const root={};
 const focus=fs.readFileSync(new URL('../public/arena-focus.js',import.meta.url),'utf8');
 vm.runInNewContext(focus,{globalThis:root});
 const F=root.ArenaFocus;
-assert.equal(F.version,'2.0.0');
+assert.equal(F.version,'2.1.0');
 for(const name of ['dash','parry']){
  const s=F.start(name,575);
  assert.equal(s.kind,name);
@@ -37,8 +37,8 @@ for(const name of ['dash','parry']){
   assert.ok(F.PRESETS[name].zoom>=.30,'rush camera is cinematic');
   assert.ok(F.PRESETS[name].vignette>=.33,'rush focuses the edges');
  }else{
-  assert.ok(F.PRESETS[name].duration<.7,'parry cannot vanish into a one-second cut');
-  assert.ok(F.PRESETS[name].hitstop<=.08,'parry contact pause is brief');
+  assert.ok(F.PRESETS[name].duration<1,'parry remains a short response, not a cutscene');
+  assert.ok(F.PRESETS[name].hitstop<=.13,'parry contact pause keeps control responsive');
   assert.equal(F.PRESETS[name].zoom,0,'parry never forces close-up');
   assert.equal(F.PRESETS[name].vignette,0,'parry never dims combatants');
  }
@@ -48,7 +48,7 @@ for(const name of ['dash','parry']){
   assert.ok(peak.bloom>.08,'rush impact bloom visible');
  }else{
   assert.equal(peak.cinemaBars,0,'parry cannot letterbox fighter silhouettes');
-  assert.equal(peak.bloom,0,'parry cannot obscure fighters with screen bloom');
+  assert.ok(peak.bloom>0&&peak.bloom<.25,'parry contact glow is visible but restrained');
  }
  assert.equal(peak.duration,F.PRESETS[name].duration,'title fade must receive a finite duration');
  assert.ok(peak.duration-peak.elapsed>(name==='dash'?.5:.3),'active presentation still has recovery time');
@@ -57,7 +57,7 @@ for(const name of ['dash','parry']){
 }
 const html=fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
 const carnifex=fs.readFileSync(new URL('../public/arena-carnifex.js',import.meta.url),'utf8');
-assert.match(html,/arena-focus\.js\?v=2/,'focus v2 loaded before main game');
+assert.match(html,/arena-focus\.js\?v=duel-pace-v3/,'new combat focus loaded before main game');
 assert.match(html,/drawCinematicWorldAccent\(\)/,'illustrated dash and parry burst layered in real world');
 assert.match(html,/ArenaHerald\?\.drawCanvasCallout\?\.\(ctx,'CONTRA!'/,'defender Roman parry callout visible');
 assert.match(html,/ArenaHerald\?\.drawCanvasCallout\?\.\(ctx,'FRVSTRA!'/,'attacker Roman parry callout visible');
