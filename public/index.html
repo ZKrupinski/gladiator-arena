@@ -2527,8 +2527,9 @@ function renderBattleRewardTray(){
  tray.replaceChildren();tray.hidden=!isCareer;panel.classList.toggle('has-loot',isCareer);
  if(!isCareer)return;
  const summary=ArenaCrowd.snapshot(S.crowd),rewards=Array.isArray(S.matchLoot)?S.matchLoot.slice(0,5):[];
+ tray.classList.toggle('arena-loot-jackpot',rewards.length===5);
  const header=document.createElement('div');header.className='arena-loot-heading';
- const medal=document.createElement('strong');medal.textContent='SPECTACVLVM · '+summary.grade.name+' '+summary.score+'/100';medal.style.color=summary.grade.color;
+ const medal=document.createElement('strong');medal.textContent=(rewards.length===5?'✦ FELICITAS MAXIMA · 5개 전리품 잭팟!':'SPECTACVLVM · '+summary.grade.name+' '+summary.score+'/100');medal.style.color=rewards.length===5?'#ffe5a0':summary.grade.color;
  const earned=Math.max(0,Math.round(Number(S.matchGold)||0));
  const money=document.createElement('b');money.textContent='획득 +'+earned.toLocaleString('ko-KR')+' D · 장비 '+rewards.length+'/5';
  header.append(medal,money);tray.appendChild(header);
