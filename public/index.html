@@ -347,7 +347,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <div id="careerMini" hidden role="dialog" aria-modal="true" aria-label="훈련"><div class="career-mini-panel"><h2 id="careerMiniTitle"></h2><p id="careerMiniHelp"></p><div class="career-timing"><div class="career-hitzone"></div><div id="careerNeedle"></div></div><div id="careerTrainingResult" class="career-training-result" hidden aria-live="assertive"></div><div class="career-buttons" style="justify-content:center"><button id="careerHit">지금! (SPACE)</button><button id="careerCancel">취소</button></div></div></div>
 <script src="market-scene.js?v=sold-fighter-mask-v15"></script>
 <script src="growth-frames.js?v=2"></script>
-<script src="murmillo-motion-v2.js?v=6"></script>
+<script src="murmillo-motion-v2.js?v=whip-real-hit-v3"></script>
 <script src="champion-murmillo.js?v=3"></script>
 <script src="arena-gear-catalog.js?v=armory-v2"></script><script src="arena-balance.js?v=duel-pace-v3"></script>
 <script src="arena-lineup.js?v=1"></script>
@@ -3304,14 +3304,14 @@ window.LudusBridge={
   }
   if(h.appearance==='legacy'){
    const image=IMG[h.cls],frames=image&&INDEPENDENT_CHARACTER_FRAMES.get(image);
-   const id=kind==='idle'?0:kind==='heavy'?3:2;
+   const id=kind==='idle'?0:kind==='hit'?6:kind==='heavy'?3:2;
    const pose=frames?.[id]||frames?.[0];
    return pose?.canvas||pose||null;
   }
   // Growth atlas: 0 = idle, 2 = attack, 3 = special attack.
   // 4 and 5 are NOT approved attack keyposes: they caused death-like moves
   // and dramatic shifts of sprite extents in the training area.
-  const safePose=kind==='idle'?0:kind==='heavy'?3:2;
+  const safePose=kind==='idle'?0:kind==='hit'?7:kind==='heavy'?3:2;
   return growthImage(h)?.frames?.[safePose]?.canvas||null;
  },
  select:(i)=>{if(!CAREER.roster[i])return;CAREER.active=i;saveCareer();renderCareer();},
@@ -3375,6 +3375,6 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=roster-proportions-v24"></script><script src="ludus-training-runtime.js?v=whip-hit-sfx-v2"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=whip-hit-sfx-v1"></script><script src="ludus-armory-live.js?v=armory-detail-scroll-v3"></script><script src="ludus-cards.js?v=10"></script>
+<script src="ludus-scene.js?v=roster-proportions-v24"></script><script src="ludus-training-runtime.js?v=whip-real-hit-v3"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=whip-hit-sfx-v1"></script><script src="ludus-armory-live.js?v=armory-detail-scroll-v3"></script><script src="ludus-cards.js?v=10"></script>
 
 </body></html>

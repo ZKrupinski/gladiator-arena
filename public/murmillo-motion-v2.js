@@ -146,7 +146,8 @@ const TRAINING_FRAMES={
  slash:[9,2,2,19,19,2,2,9],
  sweep:[9,3,3,20,20,3,3,9],
  thrust:[9,4,4,4,4,4,4,9],
- heavy:[9,5,5,5,5,5,5,9]
+ heavy:[9,5,5,5,5,5,5,9],
+  hit:[9,7,7,7,7,7,9,0]
 };
 function trainingFrame(action='idle',index=0){
  const source=independentAtlas?.frames;

@@ -11,7 +11,7 @@ const training=fs.readFileSync(new URL('ludus-training-runtime.js',here),'utf8')
 const game=fs.readFileSync(new URL('index.html',here),'utf8');
 const motion=fs.readFileSync(new URL('murmillo-motion-v2.js',here),'utf8');
 const css=fs.readFileSync(new URL('ludus-training-runtime.css',here),'utf8');
-assert.match(game,/const safePose=kind==='idle'\?0:kind==='heavy'\?3:2/);
+assert.match(game,/const safePose=kind==='idle'\?0:kind==='hit'\?7:kind==='heavy'\?3:2/);
 assert.doesNotMatch(game,/const ids=\{idle:9,slash:2,sweep:3,thrust:4,heavy:5\}/);
 assert.doesNotMatch(motion,/thrust:\[9,8,/);
 assert.match(css,/width:560px;height:440px/);

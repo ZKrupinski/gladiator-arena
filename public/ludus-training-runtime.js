@@ -124,9 +124,9 @@ function animate(a,stage,selected){
   const elapsed=hitStart<0?HIT_MS:performance.now()-hitStart;
   const takingHit=elapsed<HIT_MS;
   const motion=takingHit?
-   {action:'hit',progress:Math.max(0,Math.min(1,elapsed/HIT_MS)),frame:0}:actionAt(tick);
+   {action:'hit',progress:Math.max(0,Math.min(1,elapsed/HIT_MS)),frame:Math.min(7,Math.floor(elapsed/HIT_MS*8))}:actionAt(tick);
   // Never substitute the growth atlas's dodge, defeat or death keyposes.
-  const src=a.trainingFrame?.(selected,takingHit?'idle':motion.action,motion.frame)||idle;
+  const src=a.trainingFrame?.(selected,motion.action,motion.frame)||idle;
   paintTrainingFighter(canvas,src,motion.action,motion.progress,profile);
   canvas.dataset.attack=motion.action;
   canvas.dataset.face='left';
@@ -212,5 +212,5 @@ function mount(stage,a,s,cbs){
  home.setAttribute('aria-label','메인 루두스 로비로 돌아가기');home.onclick=cbs.onHome;stage.appendChild(home);
  if(h)animate(a,stage,s.active);
 }
-window.LudusTrainingV2={version:'6.6.0',mount,stop};
+window.LudusTrainingV2={version:'6.8.0',mount,stop};
 })();
