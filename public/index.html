@@ -908,7 +908,7 @@ function finishCareerMatch(){
  const payout=ArenaBalance.rewards(win,S.careerOpponent?.round||1,'1v1');
  const reward=Math.round(payout.gold*(win?1+equipmentBonus(h).goldBonus:1));
  CAREER.fights++;if(win){CAREER.wins++;CAREER.glory+=payout.glory;}
- const beforeGold=CAREER.gold;CAREER.gold+=reward;
+ const beforeGold=CAREER.gold;CAREER.gold+=reward;S.matchGold=reward;
  CAREER.lastPrize={mode:'1v1',win,round:S.careerOpponent?.round||1,
   gold:reward,before:beforeGold,after:CAREER.gold,at:Date.now()};
  h.injury=Math.min(120,h.injury+Math.max(3,Math.round(Math.max(0,S.careerStartingHp-S.player.hp)*.62*(1-equipmentBonus(h).injuryReduction))));
@@ -1290,7 +1290,7 @@ function finishBeastMatch(){
   if(final){CAREER.wins++;h.wins=(h.wins||0)+1;CAREER.glory+=run.stage.difficulty*3;}
   const prize=final?Math.round(run.stage.reward*(1+equipmentBonus(h).goldBonus)):0;
   const before=CAREER.gold;
-  CAREER.gold+=prize;
+  CAREER.gold+=prize;S.matchGold=prize;
   CAREER.lastPrize={mode:'beast_hunt',stage:run.stage.id,win:final,round:run.roundIndex+1,gold:prize,before,after:CAREER.gold,at:Date.now()};
   if(final)grantCareerXp(h,Math.round((18+run.stage.difficulty*8)*(1+(equipmentBonus(h).xpBonus||0))));
   const loot=final?ArenaLoot.awardBattle(CAREER,h,{beast:true,boss:run.stage.difficulty>=3,excitement:S.crowd?.score||0}):[];
@@ -1336,7 +1336,7 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
  const opposition=['murmillo','thraex','retiarius'].filter(cls=>cls!==selected);
  const rival=careerMatch?S.careerOpponent.cls:$('#opponentChoice').value==='random'?opposition[(S.round-1)%2]:$('#opponentChoice').value;
  S.phase='fight';S.paused=false;S.time=110;S.score=0;S.combo=0;S.notice='PUGNA!';S.noticeT=1.5;S.events=[];S.sparks=[];S.parryBursts=[];S.keys.clear();S.shake=0;S.cameraKick=null;S.flash=0;S.slow=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
- S.autoPlaying=false;S.lastManualInput=clock;S.careerRewardApplied=false;S.crowd=ArenaCrowd.create();S.matchLoot=[];
+ S.autoPlaying=false;S.lastManualInput=clock;S.careerRewardApplied=false;S.crowd=ArenaCrowd.create();S.matchLoot=[];S.matchGold=0;
  S.player=fighter(selected,335,false);S.enemy=fighter(rival,940,true);CAMERA.initialized=false;
  if(careerMatch){
   if(isChampionMurmillo(CAREER.hero)){
@@ -1560,7 +1560,7 @@ function finishLineupCareerMatch(){
  const win=!!q.won,leader=q.encounterLeader;
  const payout=ArenaBalance.rewards(win,leader.round||1,q.mode);
  CAREER.fights++;if(win){CAREER.wins++;CAREER.glory+=payout.glory;}
- const beforeGold=CAREER.gold;CAREER.gold+=payout.gold;
+ const beforeGold=CAREER.gold;CAREER.gold+=payout.gold;S.matchGold=payout.gold;
  CAREER.lastPrize={mode:q.mode,win,round:leader.round||1,gold:payout.gold,
   before:beforeGold,after:CAREER.gold,at:Date.now()};
  const participants=Object.keys(q.records);
@@ -2521,6 +2521,33 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
     if(Math.abs(e.x-p.x)<MIN_FIGHTER_DISTANCE)e.x=clamp(e.x+dir*(MIN_FIGHTER_DISTANCE-Math.abs(e.x-p.x)),100,1180);}
  }
  updateHud();}
+function renderBattleRewardTray(){
+ const tray=$('#endLoot'),panel=tray.closest('.stage-panel-ending'),isCareer=!!S.careerMatch;
+ tray.replaceChildren();tray.hidden=!isCareer;panel.classList.toggle('has-loot',isCareer);
+ if(!isCareer)return;
+ const summary=ArenaCrowd.snapshot(S.crowd),rewards=Array.isArray(S.matchLoot)?S.matchLoot.slice(0,5):[];
+ const header=document.createElement('div');header.className='arena-loot-heading';
+ const medal=document.createElement('strong');medal.textContent='SPECTACVLVM · '+summary.grade.name+' '+summary.score+'/100';medal.style.color=summary.grade.color;
+ const money=document.createElement('b');money.textContent='획득 +'+Math.round(S.matchGold||0).toLocaleString('ko-KR')+' D · 장비 '+rewards.length+'/5';
+ header.append(medal,money);tray.appendChild(header);
+ const list=document.createElement('div');list.className='arena-loot-items';
+ if(!rewards.length){
+  const empty=document.createElement('p');empty.className='arena-loot-none';
+  empty.textContent=S.resultWin?'획득 장비 없음 · 다음 경기에서 더 멋진 공방을 펼쳐보세요!':'패배 · 전리품 없음';
+  list.appendChild(empty);
+ }else for(const drop of rewards){
+  const gear=GEAR.find(g=>g.id===drop.id),r=ArenaGearCatalog.rarities[drop.rarity];if(!gear||!r)continue;
+  const card=document.createElement('div');card.className='arena-loot-drop rarity-'+gear.rarity;card.style.setProperty('--loot-color',r.color);
+  const icon=document.createElement('img');icon.src=gear.icon;icon.alt=gear.name;icon.loading='lazy';icon.width=52;icon.height=52;
+  const copy=document.createElement('span'),tier=document.createElement('small'),name=document.createElement('strong'),qty=document.createElement('em');
+  tier.textContent='✦ '+r.name;name.textContent=gear.name;qty.textContent='공용 창고 +1 · 보유 ×'+drop.count;
+  copy.append(tier,name,qty);card.append(icon,copy);list.appendChild(card);
+ }
+ tray.appendChild(list);
+ const note=document.createElement('small');note.className='arena-loot-notice';
+ note.textContent='관중의 환호가 클수록 전리품 횟수(최대 5회)와 희귀 장비 등장 확률이 증가합니다.';
+ tray.appendChild(note);
+}
 function showEnd(){
  if(S.careerMatch&&CAREER.hero)finishCareerMatch();
  const win=S.resultApplied?S.resultWin:(S.player.hp>S.enemy.hp||(S.enemy.dead&&!S.player.dead));
@@ -2572,6 +2599,7 @@ function showEnd(){
   $('#continueBtn').classList.toggle('beast-next',more);
   $('#continueBtn').classList.toggle('ludus',!more&&win);
  }
+ renderBattleRewardTray();
 }
 // Result-only portrait sizing: measure visible art, not transparent sheet padding.
 // The victor is intentionally ~15% larger than the defeated fighter.
