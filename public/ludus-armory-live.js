@@ -2,7 +2,7 @@
 (function(){'use strict';
 const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Math.round(Number(n)||0).toLocaleString('ko-KR');
-const labels={weapon:'무기',shield:'방패',armor:'갑옷'};
+const labels=window.ArenaGearCatalog.slotNames,slots=window.ArenaGearCatalog.slots;
 const rk=['common','uncommon','rare','epic','legendary','relic'];
 let onlyOwned=false,onlySet=false,rarity='all',lastScroll=0,lastScreenScroll=0,lastDetailScroll=0,lastRosterScrollLeft=0,statFlash=null,jumpToGearId=null;
 function portrait(canvas,source){if(!canvas||!source?.width||!source?.height)return;const c=canvas.getContext('2d'),s=Math.min((canvas.width-12)/source.width,(canvas.height-12)/source.height);try{c.drawImage(source,(canvas.width-source.width*s)/2,canvas.height-source.height*s-3,source.width*s,source.height*s);}catch(_){}}
@@ -22,13 +22,13 @@ function render(stage,a,cb){
  const stockBadge=x=>'<em class="ra-flag '+(eq[x.slot]===x.id?'worn':count(x.id)?'owned':'price')+'">'+(eq[x.slot]===x.id?'✦ 장착':count(x.id)?'◆ 보관 ×'+count(x.id):assigned(x.id)?'⚔ 배정 ×'+assigned(x.id):shop(x.id)?'◉ '+fmt(x.cost)+'D':'✦ 전리품')+'</em>';
  const cards=visible.map(x=>'<button type="button" class="ra-item rarity-'+x.rarity+(g?.id===x.id?' selected':'')+(eq[x.slot]===x.id?' equipped':'')+'" data-item="'+esc(x.id)+'" aria-pressed="'+(g?.id===x.id)+'" style="--ra-tone:'+rar[x.rarity].color+'"><span class="ra-art">'+icon(x)+'<span class="ra-stock-count">×'+count(x.id)+'</span></span><span class="ra-item-copy"><small class="ra-tier">'+rar[x.rarity].name+' · '+labels[x.slot]+'</small><strong>'+esc(x.name)+'</strong><small>ATK +'+x.atk+' · HP +'+x.hp+'</small>'+(x.setId?'<i>◈ 세트</i>':'')+'</span>'+stockBadge(x)+'</button>').join('');
  const fighters=state.roster.map((f,i)=>'<button type="button" data-fighter="'+i+'" class="ra-portrait '+(i===state.active?'selected':'')+'"><canvas width="112" height="100" data-portrait="'+i+'"></canvas><strong>'+esc(f.name)+'</strong><small>Lv.'+(f.level||1)+'</small></button>').join('');
- const cats=[['all','전체'],['weapon','⚔ 무기'],['shield','🛡 방패'],['armor','♜ 갑옷']].map(([key,name])=>'<button type="button" data-cat="'+key+'" class="'+(cat===key?'selected':'')+'">'+name+'</button>').join('');
+ const cats=[['all','전체'],['weapon','⚔ 무기'],['shield','🛡 방패'],['armor','♜ 갑옷'],['helmet','⛑ 투구'],['bracers','✥ 완갑']].map(([key,name])=>'<button type="button" data-cat="'+key+'" class="'+(cat===key?'selected':'')+'">'+name+'</button>').join('');
  // Equipment worn by this fighter is visually allocated here, not removed from the Ludus vault.
  // Read the complete catalogue so old save equipment is visible even when the shop is filtered.
  const equippedCatalog=a.allGear();
  const wornGear=slot=>equippedCatalog.find(x=>x.id===eq[slot]&&x.slot===slot);
- const equippedSlots=['weapon','shield','armor'].map(slot=>'<div class="ra-eq-line"><span>'+labels[slot]+'</span><strong>'+esc(wornGear(slot)?.name||'미장착')+'</strong></div>').join('');
- const fighterLoadout=['weapon','shield','armor'].map(slot=>{
+ const equippedSlots=slots.map(slot=>'<div class="ra-eq-line"><span>'+labels[slot]+'</span><strong>'+esc(wornGear(slot)?.name||'미장착')+'</strong></div>').join('');
+ const fighterLoadout=slots.map(slot=>{
   const item=wornGear(slot),tier=item&&rar[item.rarity],highlight=!!item&&g?.id===item.id;
   return '<button type="button"'+(item?'':' disabled')+' class="ra-loadout-slot'+(item?' is-equipped rarity-'+item.rarity:' is-empty')+(highlight?' is-selected':'')+'" data-loadout-slot="'+slot+'" data-loadout-gear="'+esc(item?.id||'')+'" title="'+esc(labels[slot]+': '+(item?.name||'미장착'))+'" aria-label="'+esc(labels[slot]+': '+(item?.name||'미장착'))+'" aria-pressed="'+highlight+'" style="--ra-tone:'+(tier?.color||'#816c53')+'"><div class="ra-loadout-art">'+(item?icon(item):'<span class="ra-loadout-empty" aria-hidden="true">+</span>')+'</div><span class="ra-loadout-label">'+labels[slot]+'</span></button>';
  }).join('');
