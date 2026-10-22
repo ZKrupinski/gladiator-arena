@@ -184,3 +184,25 @@
   background:linear-gradient(180deg,#1b1010f3,#190e0cfb);
   box-shadow:0 -8px 17px #0a0405a3;
 }
+
+
+/* Loot V6: trophy glow, legible quantities, four responsive actions. */
+.ra-collection .ra-stock-count{position:absolute;right:2px;bottom:2px;z-index:3;display:block!important;min-width:27px;padding:2px 5px;border:1px solid #f3d797;border-radius:6px;background:#120c0be8;color:#fff5c6;font:900 14px/1.2 'Noto Sans KR',sans-serif;text-align:center;text-shadow:0 1px #000}
+.ra-collection .ra-art{isolation:isolate;overflow:visible}
+.ra-collection .ra-art:before{content:'';position:absolute;inset:4px;border-radius:7px;background:radial-gradient(circle at 50% 48%,color-mix(in srgb,var(--ra-tone),transparent 48%) 0%,transparent 68%);opacity:.5;pointer-events:none}
+.ra-collection .ra-item-img{position:relative;z-index:1;filter:drop-shadow(0 2px 7px #000d) drop-shadow(0 0 6px color-mix(in srgb,var(--ra-tone),transparent 45%))}
+.ra-collection .ra-item.rarity-rare,.ra-collection .ra-item.rarity-epic,.ra-collection .ra-item.rarity-legendary,.ra-collection .ra-item.rarity-relic{box-shadow:inset 0 0 17px color-mix(in srgb,var(--ra-tone),transparent 68%),0 0 13px color-mix(in srgb,var(--ra-tone),transparent 58%)}
+.ra-collection .ra-item:is(.rarity-rare,.rarity-epic,.rarity-legendary,.rarity-relic) .ra-art:after,.ra-collection .ra-detail-image:is(.rarity-rare,.rarity-epic,.rarity-legendary,.rarity-relic):after{content:'';position:absolute;inset:-20%;border-radius:50%;z-index:0;pointer-events:none;background:conic-gradient(from 12deg,transparent 0 30%,color-mix(in srgb,var(--ra-tone),transparent 54%) 45%,transparent 58% 80%,color-mix(in srgb,var(--ra-tone),transparent 40%) 95%,transparent 100%);animation:ra-loot-glow 3.7s ease-in-out infinite alternate;mix-blend-mode:screen}
+.ra-collection .ra-detail-image{position:relative;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at center,color-mix(in srgb,var(--ra-tone),#372218 60%),#130e0b 70%)}
+.ra-collection .ra-detail-image .ra-item-img{width:100%;height:100%;object-fit:contain;position:relative;z-index:2}
+.ra-collection .ra-item-copy .ra-tier{letter-spacing:.04em;text-shadow:0 0 9px color-mix(in srgb,var(--ra-tone),transparent 45%)}
+.ra-collection .ra-item:hover .ra-item-img{transform:scale(1.08);transition:transform .18s ease-out}
+.ra-collection .ra-item .ra-flag{white-space:normal;max-width:80px;line-height:1.3}
+.ra-collection .ra-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.ra-collection .ra-buttons button{min-width:0;min-height:50px;padding:6px 5px;font:900 14px/1.25 'Noto Sans KR',sans-serif}
+.ra-collection #raBuy{background:linear-gradient(135deg,#966e2e,#51351b);border-color:#e7be7a}
+.ra-collection #raSell{background:linear-gradient(135deg,#466452,#1b352e);border-color:#7da88a}
+.ra-collection #raSell:disabled,.ra-collection #raBuy:disabled{opacity:.4}
+.ra-collection .ra-empty-store{padding:25px 12px;text-align:center;font:750 16px/1.9 'Noto Sans KR',sans-serif;color:#e9c79a}
+@keyframes ra-loot-glow{0%{opacity:.17;transform:scale(.9) rotate(0deg)}100%{opacity:.8;transform:scale(1.12) rotate(34deg)}}
+@media(prefers-reduced-motion:reduce){.ra-collection .ra-item .ra-art:after,.ra-collection .ra-detail-image:after{animation:none;opacity:.36}}
