@@ -1,0 +1,45 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "ludus-crowd-excitement-5loot-20261022-v1",
+  "expectedMainSha": "ef56897f6ae7ba90ea83b09cc7859445cc9189a1",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/ef56897f6ae7ba90ea83b09cc7859445cc9189a1/public/index.html",
+      "sha256": "b98a47a105d1529d369d862979ec2607ca82586e1df1c20f411d8077b187d716"
+    },
+    {
+      "path": "public/arena-loot.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/ef56897f6ae7ba90ea83b09cc7859445cc9189a1/public/arena-loot.js",
+      "sha256": "893851a950206a3b159aa3242773e2f81044a80baac182d9a1809d257a66036b"
+    },
+    {
+      "path": "public/arena-excitement.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/ef56897f6ae7ba90ea83b09cc7859445cc9189a1/public/arena-excitement.js",
+      "sha256": "0f9710e8cd6a85f04fc0f581c9de92b7221db0f78705c78ae932bdec9a4f6356"
+    },
+    {
+      "path": "public/arena-excitement.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/ef56897f6ae7ba90ea83b09cc7859445cc9189a1/public/arena-excitement.css",
+      "sha256": "99bb2099ea9ad46bcd1ee894c5df67b76be886dcc3de45512343b8d023d7720d"
+    },
+    {
+      "path": "public/ludus-approved-scenes.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/ef56897f6ae7ba90ea83b09cc7859445cc9189a1/public/ludus-approved-scenes.js",
+      "sha256": "f8faacdeba275983869eb589bdac97b6bd4a3389bb007ba088846174e2d31108"
+    },
+    {
+      "path": "public/ludus-armory-live.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/ef56897f6ae7ba90ea83b09cc7859445cc9189a1/public/ludus-armory-live.js",
+      "sha256": "a8ed51bbd24131ddd6d880c636e29faa6efc82efb3c366d965f7aa9ae241bf0c"
+    },
+    {
+      "path": "public/ludus-armory-live.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/ef56897f6ae7ba90ea83b09cc7859445cc9189a1/public/ludus-armory-live.css",
+      "sha256": "649388cb2147bd52077b10440d5d0eca29589a9c5c2bff88bca235998d43396f"
+    }
+  ],
+  "instructions": "Deploy verified source of spectator excitement HUD, 0–5 winning loot, rarity scaling, fighter-assigned shared Ludus stock, individual gear sale and armory UI. Validate all seven Cloudflare live file hashes before marking complete."
+}
