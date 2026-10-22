@@ -277,6 +277,10 @@
  .ra-collection .ra-detail-title>span{white-space:nowrap}
 }
 @media(orientation:portrait) and (max-width:700px){
+ /* Portrait touch flow: fighter → choose from stock → inspect/act at page end. */
+ .ra-collection main>.ra-fighters{order:1}
+ .ra-collection main>.ra-items{order:2}
+ .ra-collection main>.ra-details{order:3}
  .ra-collection .ra-item .ra-flag{font-size:16px!important;line-height:1.1!important;white-space:nowrap!important;padding:4px 7px!important}
  .ra-collection .ra-buttons button strong{font-size:19px;white-space:nowrap}
  .ra-collection .ra-buttons button small{font-size:12px;white-space:nowrap}
