@@ -1,16 +1,14 @@
 {
   "assetSha256": {
-    "public/arena-excitement.css": "1f9e84d85159b2dd1fee79e4b21505d72efac0206188b05193eed687506a9895",
-    "public/arena-excitement.js": "0f9710e8cd6a85f04fc0f581c9de92b7221db0f78705c78ae932bdec9a4f6356",
-    "public/arena-loot.js": "893851a950206a3b159aa3242773e2f81044a80baac182d9a1809d257a66036b",
-    "public/index.html": "3c14b0a957f3df5fa822b76e1c60510f1495533f220b7e22da9b3e45dfdc9d09",
-    "public/ludus-approved-scenes.js": "f8faacdeba275983869eb589bdac97b6bd4a3389bb007ba088846174e2d31108",
-    "public/ludus-armory-live.css": "649388cb2147bd52077b10440d5d0eca29589a9c5c2bff88bca235998d43396f",
-    "public/ludus-armory-live.js": "a8ed51bbd24131ddd6d880c636e29faa6efc82efb3c366d965f7aa9ae241bf0c"
+    "public/index.html": "3ecbf6c23154096cdf08b94e64a5310dc77bbbd76a02a9f1f18cba54154a9230",
+    "public/ludus-approved-scenes.js": "78808996ee599c49e77efe9c3393116c90bf8526d5434509de81f257429918dc",
+    "public/ludus-armory-live.css": "f0bf8ddebe222b0815e6d5a14adbf6026954f292fc481287ab1371bde74e3733",
+    "public/ludus-armory-live.js": "1d89b9397b4142e64f8e6a73099a4674c2d016efc8d8d1a6c0f910f561ea2870",
+    "public/mobile-legibility.css": "8b2cec96ec36737e311237089efaacd52cdd1f0bf1f396c48a7925786b1eb05a"
   },
-  "baseCommit": "ab9dadbdb6856aa6f4367a833e8debdac417c033",
+  "baseCommit": "e0ca22cd78cdb2fb34e5aafad051fa8e37d8a0ce",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "ludus-crowd-excitement-5loot-20261022-v3",
+  "releaseId": "armory-layout-combat-stats-20261023-v1",
   "releaseProtocol": "spartacus-uploader-v1"
 }
