@@ -1,7 +1,7 @@
 (function(){
 "use strict";
 var scene,stage,toastTimer=0,dominaTimer=0,dominaReturnTimer=0,lastDominaPose=0;
-var W=1448,H=1086,rosterPage=0;
+var W=1448,H=1086;
 // The approved lobby art already contains all the distant gladiators.
  // Do not render smaller, semitransparent fighter sprites on top of them.
 var poses={domina:Array.from({length:6},(_,i)=>"assets/ludus/domina_"+i+".webp")};
@@ -42,15 +42,43 @@ function animateDomina(){
 }
 function action(id,button){
 var a=bridge();if(!a)return;
-if(id==="select"){var index=Number(button&&button.dataset.index);var hero=a.state().roster[index];if(hero){a.select(index);rosterPage=Math.floor(index/6);refresh();notice(hero.name+" · 출전 검투사 선택");}else notice("비어 있는 슬롯입니다. 검투사시장에서 영입하세요.");return;}
+if(id==="select"){var index=Number(button&&button.dataset.index);var hero=a.state().roster[index];if(hero){a.select(index);refresh();notice(hero.name+" · 출전 검투사 선택");}else notice("비어 있는 슬롯입니다. 검투사시장에서 영입하세요.");return;}
 if(id==="dismiss-orientation"){scene.classList.add("ll-allow-portrait");return;}
 if(id==="back"){close();a.exit();return;}
 if(id==="market"){close();a.market();return;}
-if(id==="prev"||id==="next"){var max=Math.max(0,Math.ceil(a.state().roster.length/6)-1);rosterPage=Math.max(0,Math.min(max,rosterPage+(id==="next"?1:-1)));refresh();return;}
 if(id==="armory"){close();a.section("gear");return;}
 if(id==="roster"||id==="training"||id==="basic"||id==="practice"){close();a.section(id==="roster"?"roster":"training");return;}
 if(id==="arena"){var team=a.state().roster;if(!team.length){notice("검투사시장에서 검투사를 먼저 고용하세요.");return;}if(!team.some(function(h){return Number(h.injury||0)<80&&Number(h.fatigue||0)<80;})){notice("출전 가능한 검투사가 없습니다. 치료 또는 휴식이 필요합니다.");return;}close();a.fight();return;}
 /* Lobby actions are intentionally limited to playable destinations. */
+}
+
+function setupRosterDrag(host){
+ var gesture=null,suppressClickUntil=0;
+ host.addEventListener('pointerdown',function(ev){
+  if(ev.pointerType==='touch'||ev.button!==0)return;
+  gesture={id:ev.pointerId,x:ev.clientX,left:host.scrollLeft,dragged:false};
+ });
+ window.addEventListener('pointermove',function(ev){
+  if(!gesture||ev.pointerId!==gesture.id)return;
+  var dx=ev.clientX-gesture.x;
+  if(!gesture.dragged&&Math.abs(dx)<7)return;
+  gesture.dragged=true;host.classList.add('is-dragging');
+  var scale=host.getBoundingClientRect().width/Math.max(1,host.clientWidth);
+  host.scrollLeft=gesture.left-dx/Math.max(.15,scale);
+  if(ev.cancelable)ev.preventDefault();
+ },{passive:false});
+ var finish=function(ev){
+  if(!gesture||ev.pointerId!==gesture.id)return;
+  if(gesture.dragged)suppressClickUntil=Date.now()+250;
+  gesture=null;host.classList.remove('is-dragging');
+ };
+ window.addEventListener('pointerup',finish);
+ window.addEventListener('pointercancel',finish);
+ host.addEventListener('click',function(ev){
+  if(Date.now()>suppressClickUntil)return;
+  ev.preventDefault();ev.stopImmediatePropagation();
+ },true);
+ host.addEventListener('dragstart',function(ev){ev.preventDefault()});
 }
 function setup(){
 if(scene)return;
@@ -70,14 +98,14 @@ var html=[
 '<button type="button" class="ll-hit-practice" data-action="practice" aria-label="실전 훈련 이동" title="실전 훈련"></button>',
 '<button type="button" class="ll-hit-arena" data-action="arena" aria-label="아레나 출전 - 검투사 선택 화면" title="아레나 출전"></button>',
 '</div>',
-'<div class="ll-bottom"><div class="ll-roster"><h3>검투사 훈련 현황 <span data-count>0명</span><span class="ll-pager"><button data-action="prev" aria-label="이전 검투사">◀</button><span data-roster-page>1/1</span><button data-action="next" aria-label="다음 검투사">▶</button></span></h3><div class="ll-portraits"></div></div>',
+'<div class="ll-bottom"><div class="ll-roster"><h3><span class="ll-roster-heading">♜ 검투사 현황</span><span data-count>0명</span><small class="ll-swipe-hint">◀ 좌우 드래그 ▶</small></h3><div class="ll-portraits" role="group" aria-label="모든 소속 검투사: 좌우로 스와이프해 선택"></div></div>',
 '<div class="ll-actions"><button data-action="basic"><span class="ll-thumb">⚔</span><strong>기초 훈련</strong><small>검투사의 기본을 다집니다.</small></button>',
 '<button data-action="practice"><span class="ll-thumb">✦</span><strong>실전 훈련</strong><small>경험치와 능력치를 향상시킵니다.</small></button>',
 '<button data-action="arena"><span class="ll-thumb">🏟</span><strong>아레나 출전</strong><small>가장 강한 자를 가립니다.</small></button></div></div>',
 '<div class="ll-live-counter" data-live-counter>소속 검투사 0명</div>',
 '</div><div class="ll-toast" hidden role="status"></div></div><div class="ll-orientation" role="dialog" aria-label="가로 화면 권장"><div class="ll-rotate-icon" aria-hidden="true">↻</div><strong>가로 화면에서 플레이해 주세요</strong><p>루두스는 가로형 게임 화면으로 제작되었습니다.<br>기기를 가로로 돌리면 버튼과 검투사가 크게 보입니다.</p><button data-action="dismiss-orientation">작은 화면으로 계속 보기</button></div>'
 ];
-scene.innerHTML=html.join("");document.body.appendChild(scene);stage=$(".ll-stage");
+scene.innerHTML=html.join("");document.body.appendChild(scene);stage=$(".ll-stage");setupRosterDrag($(".ll-portraits"));
 var art=$(".ll-key");art.addEventListener("load",function(){scene.classList.add("ll-has-art");});art.addEventListener("error",function(){scene.classList.remove("ll-has-art");});if(art.complete&&art.naturalWidth)scene.classList.add("ll-has-art");
 scene.addEventListener("click",function(ev){
  var b=ev.target.closest("button[data-action]");
@@ -96,23 +124,49 @@ $("[data-glory]").textContent=(Number(s.glory)||0).toLocaleString("ko-KR");
 $("[data-count]").textContent=s.roster.length+"명";
 $("[data-roster-count]").textContent=s.roster.length;
 $("[data-live-counter]").textContent="소속 검투사 "+s.roster.length+"명 · "+(s.message||"훈련을 시작하세요.");
-var host=$(".ll-portraits");host.replaceChildren();
-var maxPage=Math.max(0,Math.ceil(s.roster.length/6)-1);rosterPage=Math.max(0,Math.min(maxPage,rosterPage));
-$("[data-roster-page]").textContent=(rosterPage+1)+"/"+(maxPage+1);
-$(".ll-pager").hidden=maxPage===0;
-s.roster.slice(rosterPage*6,rosterPage*6+6).forEach(function(h,localIndex){var i=rosterPage*6+localIndex;
-var b=document.createElement("button");b.className=i===s.active?"selected":"";b.setAttribute("aria-label",h.name+" · Lv."+h.level+" 선택");b.setAttribute("title",h.name+" · "+h.cls+" · Lv."+h.level);b.dataset.index=String(i);
-var canvas=document.createElement("canvas");canvas.width=84;canvas.height=68;b.appendChild(canvas);
-var label=document.createElement("small");label.textContent="Lv."+h.level;b.appendChild(label);host.appendChild(b);
-var src=a.portrait(i);if(src&&src.width&&src.height){var k=Math.min(82/src.width,67/src.height),ctx=canvas.getContext("2d");ctx.drawImage(src,(84-src.width*k)/2,68-src.height*k,src.width*k,src.height*k);}
-b.onclick=function(){a.select(i);refresh();notice(h.name+" · 출전 후보 선택");};
+
+var host=$(".ll-portraits"),savedScroll=host.scrollLeft;
+host.replaceChildren();
+var classes={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};
+s.roster.forEach(function(h,i){
+ var b=document.createElement("button");b.type="button";
+ b.className="ll-fighter-card"+(i===s.active?" selected":"");
+ b.setAttribute("aria-label",h.name+" · "+(classes[h.cls]||h.cls)+" · Lv."+h.level+" 선택");
+ b.setAttribute("aria-pressed",String(i===s.active));
+ b.title=h.name+" · "+(classes[h.cls]||h.cls)+" · Lv."+h.level;
+ b.dataset.index=String(i);
+ var canvas=document.createElement("canvas");canvas.width=148;canvas.height=212;
+ canvas.setAttribute("aria-hidden","true");b.appendChild(canvas);
+ var name=document.createElement("strong");name.className="ll-fighter-name";
+ name.textContent=h.name;b.appendChild(name);
+ var meta=document.createElement("span");meta.className="ll-fighter-meta";
+ meta.textContent=(classes[h.cls]||h.cls)+" · Lv."+h.level;b.appendChild(meta);
+ var injury=Math.max(0,Math.round(Number(h.injury)||0));
+ var fatigue=Math.max(0,Math.round(Number(h.fatigue)||0));
+ var condition=document.createElement("small");condition.className="ll-fighter-condition";
+ condition.textContent=injury>=80?"부상 · 출전 불가":fatigue>=80?"피로 · 휴식 필요":
+  injury>0?"부상 "+injury:fatigue>0?"피로 "+fatigue:"출전 가능";
+ if(injury>=80||fatigue>=80)condition.classList.add("is-unfit");
+ b.appendChild(condition);host.appendChild(b);
+ var src=a.portrait(i);
+ if(src&&src.width&&src.height){
+  var k=Math.min(146/src.width,210/src.height),ctx=canvas.getContext("2d");
+  ctx.drawImage(src,(148-src.width*k)/2,212-src.height*k,src.width*k,src.height*k);
+ }
+ b.onclick=function(){a.select(i);refresh();notice(h.name+" · 출전 후보 선택");};
 });
-var add=document.createElement("button");add.setAttribute("aria-label","검투사시장으로 이동");add.textContent="＋";add.className="ll-add";add.onclick=function(){action("market");};host.appendChild(add);
+var add=document.createElement("button");add.type="button";
+add.setAttribute("aria-label","검투사시장으로 이동");
+add.textContent="＋";add.className="ll-add";
+var addNote=document.createElement("small");addNote.textContent="검투사 영입";add.appendChild(addNote);
+add.onclick=function(){action("market");};host.appendChild(add);
+host.scrollLeft=savedScroll;
 }
 function open(){
  setup();if(!bridge())return;
- rosterPage=Math.floor(Math.max(0,Number(bridge().state().active)||0)/6);
  scene.hidden=false;refresh();fit();
+ var strip=$(".ll-portraits"),chosen=strip&&strip.querySelector(".selected");
+ if(strip&&chosen)strip.scrollLeft=Math.max(0,chosen.offsetLeft-(strip.clientWidth-chosen.offsetWidth)/2);
  clearTimeout(dominaTimer);clearTimeout(dominaReturnTimer);
  dominaTimer=setTimeout(animateDomina,1700+Math.random()*1200);
  // No requestAnimationFrame loop: avoids unnecessary 60fps work on mobile.
