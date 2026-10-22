@@ -302,11 +302,15 @@ try{
   const s=window.__arenaQA.state,p=s.player,e=s.enemy;
   return {player:p.x,enemy:e.x,enemyHp:e.hp,
    enemyRecoil:e.specialRecoil?{...e.specialRecoil}:null,
+   rushPeak:p.parryChase?.peakX,
+   rushEnd:p.parryChase?.ended,
    trailing:p.parryChase?.t,haste:p.parryHasteT};
  });
- assert.ok(counterChase.player-950>=185,
-  'the actual player body must race forward, not a decorative teleport: '+
+ assert.ok(counterChase.rushPeak-950>=195,
+  'actual player body MUST sprint 205px before elastic spacing recovery: '+
   JSON.stringify(counterChase));
+ assert.ok(counterChase.player>=950,
+  'player must finish near the opponent and ready for a follow-up strike');
  assert.ok(counterChase.enemyHp<=edge.parry.enemyHp-10,
   'successful parry follow-up should connect a REAL additional strike: '+
   JSON.stringify({edge,counterChase}));
