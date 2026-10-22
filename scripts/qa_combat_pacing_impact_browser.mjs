@@ -74,6 +74,45 @@ try{
  assert.ok(sample.parry.fx.includes('parry')&&sample.parry.fx.includes('guard'));
  assert.ok(sample.parry.playerInPlay&&sample.parry.enemyInPlay);
  assert.ok(sample.parry.shake>=34);
+ // Exercise the ACTUAL configured keyboard inputs, not an artificial helper.
+ // Dodge displacement is immediate for fair hitboxes, while real approved
+ // sprite ghosts and low painted dash textures carry the visible action.
+ const enhanced=await page.evaluate(()=>{
+  const {state:s}=window.__arenaQA,p=s.player,e=s.enemy;
+  s.phase='fight';s.paused=false;s.fx=true;
+  s.autoplayEnabled=false;s.autoPlaying=false;s.sparks=[];s.cinematic=null;
+  for(const f of [p,e])Object.assign(f,{hp:300,maxHp:300,st:100,stagger:0,
+   invuln:0,dodge:0,dodgeEcho:null,dead:false,guard:false,parry:0,
+   attackCD:0,cd:0,chainHits:0,comboDash:null,knockVX:0,knockT:0});
+  p.x=550;p.face=1;e.x=815;e.face=-1;
+  window.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyL',bubbles:true}));
+  const dodge={from:p.dodgeEcho?.fromX,to:p.x,total:p.dodgeEcho?.total,
+   invulnerable:p.invuln,cost:100-p.st,frames:s.sparks.filter(v=>v.sequence==='dash'&&v.layer==='back').length};
+  // New fighter timing: do not allow a leftover dodge visual to interfere.
+  p.st=100;p.dodge=0;p.invuln=0;p.dodgeEcho=null;p.stagger=0;p.attackCD=0;p.cd=0;
+  p.x=500;e.x=729;p.face=1;e.face=-1;
+  e.hp=300;e.stagger=0;e.invuln=0;e.guard=false;
+  s.sparks=[];s.cinematic=null;s.cameraKick=null;
+  window.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyI',bubbles:true}));
+  const special={damage:300-e.hp,focus:s.cinematic?.kind,
+   duration:s.cinematic?.duration,title:s.cinematic?.title,
+   strikeFrames:s.sparks.filter(v=>v.sequence==='special').length,
+   directional:s.sparks.some(v=>['slash','sweep','thrust'].includes(v.sequence)),
+   backdrop:s.sparks.some(v=>v.layer==='back'&&v.sequence==='special'),
+   knock:e.knockVX,flash:s.flash,cooldown:p.cd,
+   note:s.notice};
+  return {dodge,special};
+ });
+ assert.ok(enhanced.dodge.from-enhanced.dodge.to>=105,JSON.stringify(enhanced));
+ assert.ok(enhanced.dodge.total>=.53&&enhanced.dodge.frames>=2,JSON.stringify(enhanced));
+ assert.equal(enhanced.dodge.invulnerable,.3,'existing fair dodge i-frames retained');
+ assert.equal(enhanced.dodge.cost,23);
+ assert.ok(enhanced.special.damage>0&&enhanced.special.cooldown>0,JSON.stringify(enhanced));
+ assert.equal(enhanced.special.focus,'special',JSON.stringify(enhanced));
+ assert.ok(enhanced.special.duration>=.75&&enhanced.special.strikeFrames>=2,JSON.stringify(enhanced));
+ assert.ok(enhanced.special.directional&&enhanced.special.backdrop,JSON.stringify(enhanced));
+ assert.ok(enhanced.special.knock>=200&&enhanced.special.flash>=.23,JSON.stringify(enhanced));
+ assert.ok(enhanced.special.title,'class special title must appear during cinematic');
  assert.deepEqual(errors,[],'no runtime errors in the actual combat pipeline');
- console.log('ARENA_COMBAT_PACING_V3_PASS '+JSON.stringify(sample));
+ console.log('ARENA_COMBAT_PACING_V4_PASS '+JSON.stringify({sample,enhanced}));
 }finally{await browser.close();}

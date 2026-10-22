@@ -8,7 +8,7 @@ const root={};
 const focus=fs.readFileSync(new URL('../public/arena-focus.js',import.meta.url),'utf8');
 vm.runInNewContext(focus,{globalThis:root});
 const F=root.ArenaFocus;
-assert.equal(F.version,'2.1.0');
+assert.equal(F.version,'2.2.0');
 for(const name of ['dash','parry']){
  const s=F.start(name,575);
  assert.equal(s.kind,name);
@@ -57,7 +57,7 @@ for(const name of ['dash','parry']){
 }
 const html=fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
 const carnifex=fs.readFileSync(new URL('../public/arena-carnifex.js',import.meta.url),'utf8');
-assert.match(html,/arena-focus\.js\?v=duel-pace-v3/,'new combat focus loaded before main game');
+assert.match(html,/arena-focus\.js\?v=dodge-special-v4/,'new combat focus loaded before main game');
 assert.match(html,/drawCinematicWorldAccent\(\)/,'illustrated dash and parry burst layered in real world');
 assert.match(html,/ArenaHerald\?\.drawCanvasCallout\?\.\(ctx,'CONTRA!'/,'defender Roman parry callout visible');
 assert.match(html,/ArenaHerald\?\.drawCanvasCallout\?\.\(ctx,'FRVSTRA!'/,'attacker Roman parry callout visible');
