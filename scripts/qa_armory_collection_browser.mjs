@@ -301,6 +301,44 @@ try{
  assert.ok(portraitScroll.height>=portraitScroll.clientHeight,'details have intrinsic height');
  assert.equal(portraitScroll.overflow,'visible');
  assert.ok(portraitScroll.controlsVisible,'portrait details and action buttons reachable');
+ // Regression: long titles / rarity labels / set bonuses were clipped above
+ // the selected rare item card on mobile because fixed grid rows were shorter
+ // than the text and the 28px bottom padding. Exercise all 76 equipment types.
+ await page.evaluate(()=>{
+  const state=LudusBridge.state(),all=LudusBridge.allGear();
+  state.armoryInventory.push(...all.map(item=>item.id));
+  LudusApprovedScenes.open('gear');
+ });
+ await page.waitForSelector('.ra-list .ra-item.rarity-rare');
+ for(const viewport of [{width:390,height:844},{width:844,height:390},{width:1030,height:850},{width:1672,height:941}]){
+  await page.setViewportSize(viewport);
+  const measured=await page.evaluate(()=>{
+   const list=document.querySelector('.ra-list');
+   const cards=[...list.querySelectorAll('.ra-item')],bad=[];
+   let previousRow={top:-Infinity,bottom:-Infinity};
+   for(const card of cards){
+    const box=card.getBoundingClientRect(),label=card.querySelector('.ra-item-copy strong');
+    const pieces=card.querySelectorAll('.ra-item-copy .ra-tier,.ra-item-copy strong,.ra-item-copy>small,.ra-item-copy i,.ra-flag');
+    for(const el of pieces){
+     const bounds=el.getBoundingClientRect(),name=el.className||el.tagName;
+     if(bounds.top<box.top+1.0||bounds.bottom>box.bottom-1.0||
+        bounds.left<box.left+1.0||bounds.right>box.right-1.0)
+      bad.push({id:card.dataset.item,tag:name,off:'out-of-card',box:[box.left,box.top,box.right,box.bottom],child:[bounds.left,bounds.top,bounds.right,bounds.bottom]});
+     if(el.scrollHeight>el.clientHeight+2 || el.scrollWidth>el.clientWidth+2)
+      bad.push({id:card.dataset.item,tag:name,off:'text-overflow',scroll:[el.scrollWidth,el.scrollHeight],client:[el.clientWidth,el.clientHeight]});
+    }
+    if(box.top>previousRow.top+1){
+     if(box.top<previousRow.bottom-1)bad.push({id:card.dataset.item,off:'overlapping-adjacent-row',top:box.top,previousBottom:previousRow.bottom});
+     previousRow={top:box.top,bottom:box.bottom};
+    }
+   }
+   return {count:cards.length,rare:cards.filter(card=>card.classList.contains('rarity-rare')).length,
+    bad:bad.slice(0,12),rows:getComputedStyle(list).gridAutoRows};
+  });
+  assert.equal(measured.count,76,'all equipped item types render in visual overflow regression '+JSON.stringify(viewport));
+  assert(measured.rare>0,'rare equipment available in stress test');
+  assert.deepEqual(measured.bad,[],'no rarity, name, stat, set or quantity clips in '+JSON.stringify(viewport)+': '+JSON.stringify(measured));
+ }
  assert.deepEqual(errors,[],'no browser runtime errors');
  console.log('ARMORY_COLLECTION_BROWSER_PASS');
 }finally{await browser.close();}
