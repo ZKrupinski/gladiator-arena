@@ -1,0 +1,57 @@
+name: QA Unlimited Gladiator Training
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/arena-balance.js
+      - public/index.html
+      - public/ludus-approved-scenes.js
+      - tests/unlimited-gladiator-training.cjs
+      - .github/workflows/qa-unlimited-training.yml
+  workflow_dispatch:
+jobs:
+  growth-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax validation
+        run: |
+          node --check public/arena-balance.js
+          node --check public/ludus-approved-scenes.js
+          node --check tests/unlimited-gladiator-training.cjs
+      - name: Training and combat growth regression checks
+        run: node tests/unlimited-gladiator-training.cjs
+      - name: Verify deployed soft cap and approved scene
+        shell: bash
+        run: |
+          python - <<'PY'
+          import urllib.request,time
+          origin='https://gladiator-arena-git.pages.dev'
+          headers={'Cache-Control':'no-cache','User-Agent':'ArenaGrowthQA'}
+          for attempt in range(20):
+              try:
+                  def get(p):
+                      with urllib.request.urlopen(urllib.request.Request(origin+p,headers=headers),timeout=20) as res:
+                          return res.read().decode('utf-8')
+                  h=get('/?unlimited-growth='+str(attempt))
+                  b=get('/arena-balance.js?unlimited-growth='+str(attempt))
+                  a=get('/ludus-approved-scenes.js?unlimited-growth='+str(attempt))
+                  if ('arena-balance.js?v=unlimited-growth-v1' in h and
+                      'ludus-approved-scenes.js?v=unlimited-growth-v1' in h and
+                      'TRAINING_SOFTCAP=10' in b and
+                      'function trainedStat(value)' in b and
+                      "speechPhase='mastery'" in a and
+                      ">=10){speechPhase='maxed'" not in a):
+                      print('LIVE_UNLIMITED_TRAINING_PASS')
+                      break
+                  print('Deployed version still behind',attempt,flush=True)
+              except Exception as exc:
+                  print('Live verification retry',attempt,str(exc),flush=True)
+              if attempt==19:
+                  raise AssertionError('Unlimited training version not yet active on Cloudflare')
+              time.sleep(12)
+          PY
