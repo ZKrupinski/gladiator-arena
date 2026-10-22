@@ -1,14 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "3ecbf6c23154096cdf08b94e64a5310dc77bbbd76a02a9f1f18cba54154a9230",
-    "public/ludus-approved-scenes.js": "78808996ee599c49e77efe9c3393116c90bf8526d5434509de81f257429918dc",
-    "public/ludus-armory-live.css": "f0bf8ddebe222b0815e6d5a14adbf6026954f292fc481287ab1371bde74e3733",
-    "public/ludus-armory-live.js": "1d89b9397b4142e64f8e6a73099a4674c2d016efc8d8d1a6c0f910f561ea2870",
-    "public/mobile-legibility.css": "8b2cec96ec36737e311237089efaacd52cdd1f0bf1f396c48a7925786b1eb05a"
+    "public/index.html": "c8e8409e217213bf7f31598d78a9f56b27f2f455fd83f13ebb84b2815c1c7e9a",
+    "public/ludus-armory-live.css": "18aad08cdc49fe6ac987958f560463c91276c72614750ca70e64cd93bf7f8fde",
+    "public/ludus-armory-live.js": "9ad955ab07afbb0f23d6cca68b643327ae90f1cd169ed2dd207cf7ef08b77e24"
   },
-  "baseCommit": "e0ca22cd78cdb2fb34e5aafad051fa8e37d8a0ce",
+  "baseCommit": "d03a7458c2b4e55c0d216055e63d2afa4550a4f6",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "armory-layout-combat-stats-20261023-v1",
+  "releaseId": "armory-roster-scroll-live-equipped-20261023-v1",
   "releaseProtocol": "spartacus-uploader-v1"
 }
