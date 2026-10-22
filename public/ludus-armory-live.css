@@ -405,3 +405,27 @@
  box-shadow:0 0 15px #edc574a6,inset 0 0 10px #dcb95e52;
 }
 .ra-collection .ra-loadout-slot:disabled{cursor:default;opacity:.75}
+
+
+/* Five fighting loadout parts: gladius, shield, cuirass, helm, forearm guard. */
+.ra-collection .ra-loadout{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.ra-collection .ra-loadout-slot{min-height:70px;padding:4px 1px 3px;gap:2px}
+.ra-collection .ra-loadout-art{height:46px;width:min(49px,96%)}
+.ra-collection .ra-loadout-label{font-size:10px;letter-spacing:-.04em}
+.ra-collection .ra-loadout-empty{font-size:19px}
+.ra-collection .ra-cats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}
+.ra-collection .ra-cats button{min-width:0;padding:3px 1px;font-size:13px;white-space:nowrap}
+@media(orientation:landscape) and (max-width:1150px){
+ .ra-collection .ra-loadout{gap:3px}
+ .ra-collection .ra-loadout-slot{min-height:90px;padding:3px 0}
+ .ra-collection .ra-loadout-art{height:62px;width:min(60px,98%)}
+ .ra-collection .ra-loadout-label{font-size:15px}
+ .ra-collection .ra-cats button{font-size:17px}
+}
+@media(orientation:portrait) and (max-width:700px){
+ .ra-collection .ra-loadout{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;max-width:500px}
+ .ra-collection .ra-loadout-slot{min-height:82px}
+ .ra-collection .ra-loadout-art{height:55px;width:min(58px,94%)}
+ .ra-collection .ra-loadout-label{font-size:12px}
+ .ra-collection .ra-cats button{font-size:15px}
+}
