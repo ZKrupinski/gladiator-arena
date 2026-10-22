@@ -90,6 +90,7 @@ function wolfActionFor(f,pose){
  // KO animation supersedes hit/intro/idle and always holds the final corpse.
  if(f?.dead||f?.hp<=0||pose==='defeat'||pose==='death')return 'death';
  if(pose==='hit')return 'hit';
+ if(pose==='roar')return 'roar';
  if(pose==='comboDash'||pose==='finisher')return 'attack4';
  // An actual special hit is ATTACK4; only the AI standoff gesture is ROAR.
  if(pose==='special')return f.action==='special'&&f.actionT>0?'attack4':'roar';
@@ -101,6 +102,7 @@ function wolfActionFor(f,pose){
 }
 function wolfFrameIndex(f,pose,clock){
  const act=wolfActionFor(f,pose);
+ if(act==='roar'&&Number.isFinite(f._beastRoarProgress))return Math.min(7,Math.max(0,Math.floor(f._beastRoarProgress*8)));
  if(act==='idle'||act==='walk'||act==='roar')
   return Math.floor((Number(clock)||0)*(act==='idle'?6:act==='walk'?7:8))%8;
  const duration=Math.max(.12,Number(f.actionDuration)||.5);
@@ -419,6 +421,18 @@ function cleanElephantFrame(ctx,w,h){
  ctx.putImageData(pixels,0,0);
 }
 function portrait(type,pose='idle'){
+ if(type==='wolf'){
+  ensure(type);
+  if(wolfV3.state!=='ready')return null;
+  const image=wolfV3.actions.get(pose==='defeat'?'death':'idle');
+  if(!image)return null;
+  const out=document.createElement('canvas');
+  out.width=image.naturalWidth/4;out.height=image.naturalHeight/2;
+  const frame=pose==='defeat'?7:0;
+  out.getContext('2d').drawImage(image,(frame%4)*out.width,Math.floor(frame/4)*out.height,
+   out.width,out.height,0,0,out.width,out.height);
+  return out;
+ }
  const entry=cache.get(type);
  const kind=pose==='defeat'?'defeat':'idle';
  const indy=entry?.individual?.get(kind+':'+(kind==='defeat'?7:0));

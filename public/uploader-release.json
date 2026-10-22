@@ -1,13 +1,16 @@
 {
   "assetSha256": {
-    "docs/qa-fun-combat-20261022.md": "d91e09d32d5ae5a90f2e78d238871c474cfe83b949adf1c4d7a7b4f3b132d335",
-    "public/index.html": "76d6bb5fe4cb31f858388c68bac0bf4ea2ef503f920c29329bd1ac9733ef8eeb",
-    "scripts/qa_combat_fairness.mjs": "b4ff30f41c07500f990b9497aefbe7193c14b00023c3b53acc4262c7ffda0db3",
-    "scripts/qa_sequential_lineup.mjs": "bb630f3eaa029f5a0d87b61e9a5f6fecb0f903a078e3610fa0d5e664c21974b8"
+    "public/arena-balance.js": "8b0b7aea93a4e8258597e248144a300cf95510b729403ea1bcedb898e8a714f3",
+    "public/arena-beast-stage-previews.js": "a309dd25834ad282ec20cf3b0c6d378edba4295574dbf50e08c0969386b96bbe",
+    "public/arena-beasts.js": "8ba1b791b64629db3020cfa262034d64b28fd1deda202745deae76780479ddc2",
+    "public/arena-entrance.js": "73ea600c4c2ae7c55a586c7c10614c51a4afb6fa44181101d84f6ee2d1dbbefb",
+    "public/index.html": "827df3311804eee91fe88b3cf26dfea0a036a7b8d743794100f04a3bb6e877c2",
+    "scripts/qa_arena_entrance.mjs": "dba7445f38d56702b17535a4373f246162dfa5e8cf229966ab5a761e42058fea",
+    "scripts/qa_wolf_surfaces_pacing.mjs": "54b1c64e110169c5e919ed67c5379b9e57d379f18650300c7ee4ed5049ea5505"
   },
-  "baseCommit": "292584f91c02282b11ef9877e5936790e66f4a71",
+  "baseCommit": "c7bf2107399920bdfe730741bbe7288b286e5f35",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "combat-fun-qa-20261022-v1",
+  "releaseId": "wolf-surfaces-pacing-20261022-v1",
   "releaseProtocol": "spartacus-uploader-v1"
 }

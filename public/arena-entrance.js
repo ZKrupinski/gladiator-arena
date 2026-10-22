@@ -12,7 +12,7 @@ const ease=t=>{const p=Math.max(0,Math.min(1,t));return p*p*(3-2*p);};
 const lerp=(a,b,t)=>a+(b-a)*t;
 function begin(actors,width=W){
  if(!Array.isArray(actors)||!actors.length)return null;
- const valid=actors.filter(f=>f&&!f.dead&&!f.beastType);
+ const valid=actors.filter(f=>f&&!f.dead&&(!f.beastType||f.beastType==='wolf'));
  if(!valid.length)return null;
  const entries=valid.map(actor=>{
   const side=actor.enemy?-1:1;
@@ -35,7 +35,7 @@ function stage(t){
 function pose(seq,actor){
  if(!seq)return 'idle';
  if(!seq.entries.some(e=>e.actor===actor))return 'idle';
- return stage(seq.t)==='pose'?'finisher':'walk';
+ return stage(seq.t)==='pose'?(actor.beastType?'roar':'finisher'):'walk';
 }
 function advance(seq,dt){
  if(!seq)return true;
@@ -57,13 +57,14 @@ function advance(seq,dt){
   f.vx=phase==='pose'?0:delta/Math.max(.001,step);
   f._entranceStepT=phase==='pose'?0:(f._entranceStepT||0)+step*(phase==='charge'?24:15);
   f.walkT=(f.walkT||0)+step*8;
-  f.action=phase==='pose'?'finisher':'walk';f.actionT=0;
+  f.action=phase==='pose'?(f.beastType?'idle':'finisher'):'walk';f.actionT=0;
+  if(f.beastType)f._beastRoarProgress=Math.max(0,Math.min(1,(seq.t-TIME.run)/TIME.pose));
  }
  if(seq.t>=TOTAL){
   for(const e of seq.entries){
    e.actor.x=e.target+e.charge;
    e.actor.vx=0;e.actor.action='idle';e.actor.actionT=0;
-   e.actor._entranceStepT=0;
+   e.actor._entranceStepT=0;delete e.actor._beastRoarProgress;
   }
   seq.finished=true;
  }

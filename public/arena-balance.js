@@ -152,7 +152,9 @@
    glory:win?Math.round((9+r*2)*mult):0
   };
  }
- root.ArenaBalance={version:'1.1.0',TRAITS,MODES,trainingCost,heroPower,
+ // Symmetric pacing: retain attack cadence, increase exchanges before KO.
+ function combatDamage(value){return Math.max(1,Math.round(Math.max(0,Number(value)||0)*.60));}
+ root.ArenaBalance={version:'1.2.0',combatDamage,TRAITS,MODES,trainingCost,heroPower,
   matchStrength,makeMatch,comebackParry,
   encounterLevel,duelEnemy,heroStats,enemyAi,damageReduction,
   playerParryDamage,rewards};

@@ -348,13 +348,13 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=6"></script>
 <script src="champion-murmillo.js?v=3"></script>
-<script src="arena-balance.js?v=1"></script>
+<script src="arena-balance.js?v=wolf-surfaces-pace-20261022"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
-<script src="arena-beasts.js?v=11-wolf-load-guard"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
-<script src="beast-stage-previews.js?v=2"></script>
+<script src="arena-beasts.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
+<script src="arena-beast-stage-previews.js?v=wolf-surfaces-pace-20261022"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
-<script src="arena-carnifex.js?v=7-complete-exit"></script><script src="arena-entrance.js?v=1-inrush"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=3-short-hit-glint"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
+<script src="arena-carnifex.js?v=7-complete-exit"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=3-short-hit-glint"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -1268,6 +1268,7 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
  }
  // First human duel (including 1v1) starts behind the gates, never at x=335/940.
  if(!beastMatch)beginArenaEntrance([S.player,S.enemy]);
+ else if(S.enemy.beastType==='wolf')beginArenaEntrance([S.player,S.enemy]);
  $('#startScreen').hidden=true;$('#endScreen').hidden=true;$('#pauseBtn').textContent='Ⅱ';updateHud();
  window.ArenaAudio?.enterArena?.();
  fxSound('start');
@@ -1759,7 +1760,7 @@ function attack(f,victim,special=false,dashImpact=false){
     Math.round(enemyCounter*(S.careerMatch?(victim.championBoss?1.45:1.18):1)):
     (careerCounter??playerCounter);
    const reversal=window.ArenaBalance?.comebackParry?.(victim,f,baseCounter,victim.comebackUsed);
-   const counterDamage=reversal?.damage??baseCounter;
+   const counterDamage=ArenaBalance.combatDamage(reversal?.damage??baseCounter);
    if(reversal?.critical)victim.comebackUsed=true;
    victim.parry=0;breakAttackChain(victim);victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
    victim.st=clamp(victim.st-(special?12:7),0,100);
@@ -1852,7 +1853,7 @@ function attack(f,victim,special=false,dashImpact=false){
  if(special&&!f.beastType&&f.cls==='murmillo'){victim.st=clamp(victim.st-21,0,100);say('SCUTUM IMPACT!');}
  if(special&&!f.beastType&&f.cls==='thraex'){
   victim.bleedT=Math.max(victim.bleedT||0,2.6);
-  victim.bleedDPS=Math.max(2,Math.round(f.cfg.atk*.18));
+  victim.bleedDPS=ArenaBalance.combatDamage(Math.max(2,Math.round(f.cfg.atk*.18)));
   say('SICA · BLEED!');
  }
  const guarded=wasGuarding;
@@ -1861,6 +1862,7 @@ function attack(f,victim,special=false,dashImpact=false){
   // Shields and endurance mitigate hits without a permanent invulnerability.
   dmg=Math.max(1,Math.round(dmg*(1-ArenaBalance.damageReduction(victim,false))));
  }
+ dmg=ArenaBalance.combatDamage(dmg);
  victim.hp=Math.max(0,victim.hp-dmg);
  // Short, foot-anchored compress/rebound envelopes make every actual clash
  // visibly connect without changing attack reach, frames, or damage amounts.
@@ -2263,9 +2265,27 @@ function drawSizedResultPortrait(element,source,isWinner){
  element.style.backgroundImage='none';
  element.appendChild(canvas);
 }
+const BEAST_RESULT_VIEWS=new Map();
+function paintBeastResults(){
+ for(const [id,v] of BEAST_RESULT_VIEWS){
+  if(!v.canvas.isConnected){BEAST_RESULT_VIEWS.delete(id);continue;}
+  const c=v.canvas.getContext('2d');c.clearRect(0,0,640,420);
+  window.ArenaBeasts?.draw?.(c,{fighter:v.fighter,pose:v.pose,clock,
+   x:40,y:20,w:560,h:380,flip:false,alpha:1});
+ }
+}
 function renderResultPortrait(id,f,index){
  const element=$('#'+id),isWinner=id==='winnerPose';
- if(f.beastType){element.replaceChildren();element.style.backgroundImage='none';const art=window.ArenaBeasts?.portrait?.(f.beastType, f.dead?'defeat':'idle');if(art){drawSizedResultPortrait(element,art,isWinner);return;}}
+ if(f.beastType){
+  element.replaceChildren();element.style.backgroundImage='none';
+  const canvas=document.createElement('canvas');canvas.width=640;canvas.height=420;
+  canvas.style.width='100%';canvas.style.height='100%';canvas.style.objectFit='contain';
+  element.appendChild(canvas);window.ArenaBeasts?.ensure?.(f.beastType);
+  BEAST_RESULT_VIEWS.set(id,{canvas,fighter:{...f,dead:!isWinner,hp:isWinner?1:0,
+   _beastDeathSince:clock,actionT:0,vx:0},pose:isWinner?'idle':'defeat'});
+  paintBeastResults();return;
+ }
+ BEAST_RESULT_VIEWS.delete(id);
  const atlas=f.championVariant===CHAMPION_MURMILLO_VARIANT?null:GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
  element.replaceChildren();
  if(f.championVariant===CHAMPION_MURMILLO_VARIANT){
@@ -2806,7 +2826,7 @@ function loop(t){
  // Both text systems remain intact; the routine notice returns immediately.
  const notice=document.getElementById('combatNotice');
  if(notice)notice.style.opacity=(S.focusFrame?.active&&!S.focusFrame.reduced&&S.fx)?'0':'';
- try{render();}
+ try{render();if(S.phase==='result')paintBeastResults();}
  catch(error){
   // Fail open for display-only effects: keep attack state and HP authoritative.
   if(!S._renderFaultReported){console.error('ARENA_RENDER_RECOVERED',error);S._renderFaultReported=true;}

@@ -58,7 +58,7 @@ for(const [side,x,target] of [[true,940,875],[false,335,400]]){
  assert.deepEqual({x:survivor.x,face:survivor.face,action:survivor.action},untouched,
   'living veteran is never moved, damaged or changed by reinforcement');
 }
-assert.match(html,/arena-entrance\.js\?v=1-inrush/);
+assert.match(html,/arena-entrance\.js\?v=[^"\s]+/);
 assert.match(html,/if\(!beastMatch\)beginArenaEntrance\(\[S\.player,S\.enemy\]\)/);
 assert.match(html,/S\.player\.x=335;\s*beginArenaEntrance\(\[S\.player,S\.enemy\]\)/,
  'rebind first gauntlet opponent without reusing the first entrance\'s offscreen X');
