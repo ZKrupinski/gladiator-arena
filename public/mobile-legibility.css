@@ -292,3 +292,61 @@
  .ra-collection .ra-sets summary{font-size:15px}
  .ra-collection .ra-buttons button{min-height:62px;height:62px}
 }
+
+
+/* Armory V14 mobile — keep full long rare/epic names and set bonuses visible.
+   Avoid the old fixed 123px cards and 28px copy padding that pushed rarity
+   text above the border whenever an item had a set bonus. */
+@media(max-width:1150px){
+ .ra-collection .ra-list{
+  grid-auto-rows:minmax(160px,max-content);
+  align-content:start;
+ }
+ .ra-collection .ra-list .ra-item{
+  grid-template-columns:100px minmax(0,1fr);
+  grid-template-rows:auto auto;
+  min-height:160px;height:auto;
+  padding:8px 10px;
+  column-gap:12px;row-gap:6px;
+ }
+ .ra-collection .ra-list .ra-art{
+  grid-column:1;grid-row:1 / span 2;
+  width:98px;height:98px;max-width:100%;align-self:center;
+ }
+ .ra-collection .ra-list .ra-item-copy{
+  padding:0!important;margin:0;align-self:start;
+ }
+ .ra-collection .ra-list .ra-item-copy .ra-tier{line-height:1.22}
+ .ra-collection .ra-list .ra-item-copy strong{
+  font-size:29px;line-height:1.22;
+  white-space:normal!important;overflow:visible!important;
+  text-overflow:clip!important;
+ }
+ .ra-collection .ra-list .ra-item-copy>small:not(.ra-tier),
+ .ra-collection .ra-list .ra-item-copy i{
+  line-height:1.2;white-space:normal;
+ }
+ .ra-collection .ra-list .ra-item .ra-flag{
+  position:static!important;
+  grid-column:2;grid-row:2;
+  font-size:26px!important;line-height:1.1!important;
+  padding:3px 7px!important;
+  max-width:100%!important;white-space:nowrap!important;
+ }
+}
+@media(orientation:portrait) and (max-width:700px){
+ .ra-collection .ra-list{grid-auto-rows:minmax(130px,max-content)}
+ .ra-collection .ra-list .ra-item{
+  grid-template-columns:82px minmax(0,1fr);
+  min-height:130px;padding:6px 8px;column-gap:9px;row-gap:4px;
+ }
+ .ra-collection .ra-list .ra-art{width:80px;height:80px}
+ .ra-collection .ra-list .ra-item-copy .ra-tier{font-size:14px}
+ .ra-collection .ra-list .ra-item-copy strong{font-size:18px;line-height:1.2}
+ .ra-collection .ra-list .ra-item-copy>small:not(.ra-tier){font-size:14px}
+ .ra-collection .ra-list .ra-item-copy i{font-size:13px}
+ .ra-collection .ra-list .ra-item .ra-flag{
+  font-size:16px!important;line-height:1.1!important;
+  padding:3px 6px!important;
+ }
+}
