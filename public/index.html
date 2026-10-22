@@ -287,12 +287,27 @@ body{min-height:100dvh;overscroll-behavior:none}
  text-align:center;pointer-events:none;white-space:normal}
 .lineup-hud[hidden]{display:none!important}
 @media(max-width:720px){.lineup-hud:not([hidden]){top:10%;font-size:10px;max-width:98%;padding:3px 6px}}
+
+/* Roman Ludus reset button and guarded confirmation; title only. */
+#startScreen .ludus-reset-trigger{position:absolute;right:max(12px,env(safe-area-inset-right,0px));top:max(10px,env(safe-area-inset-top,0px));z-index:3;min-height:36px;padding:6px 12px;border:1px solid #80654c;border-radius:7px;background:#201715db;color:#cdb699;font:700 11px/1.3 system-ui,-apple-system,"Noto Sans KR",sans-serif;box-shadow:0 2px 9px #0008;opacity:.85;white-space:nowrap}
+#startScreen .ludus-reset-trigger:hover,#startScreen .ludus-reset-trigger:focus-visible{opacity:1;border-color:#e3b978;color:#ffe0a9;background:#3b241c}
+#startScreen .ludus-reset-confirm[hidden]{display:none!important}
+#startScreen .ludus-reset-confirm{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:18px;background:#100909e8;backdrop-filter:blur(6px)}
+#startScreen .ludus-reset-panel{width:min(92vw,460px);max-height:calc(100dvh - 30px);overflow:auto;display:flex;flex-direction:column;align-items:center;gap:12px;padding:clamp(22px,4.5vw,35px);border:2px solid #d6ad70;border-radius:13px;background:linear-gradient(145deg,#493026,#1c1211 80%);box-shadow:inset 0 0 0 2px #fff0c618,0 18px 60px #000e;text-align:center}
+#startScreen .ludus-reset-crest{color:#deb77d;font:700 12px Georgia,serif;letter-spacing:.18em}
+#startScreen .ludus-reset-message{margin:4px 0 8px;color:#ffe6ba;font:800 clamp(17px,3.5vw,25px)/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;white-space:pre-wrap;word-break:keep-all;text-shadow:0 2px 6px #000}
+#startScreen .ludus-reset-actions{width:100%;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+#startScreen .ludus-reset-actions button{flex:1 1 140px;min-height:47px;padding:10px 14px;border-radius:8px;font:800 15px/1.3 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+#startScreen #ludusResetCancel{background:#a8763d;border:1px solid #f3d29c;color:#fff5df}
+#startScreen #ludusResetConfirm{background:#3b2523;border:1px solid #94635c;color:#f2cac4}
+@media(max-width:600px){#startScreen .ludus-reset-trigger{min-height:34px;padding:5px 9px;font-size:10px}}
 </style><link rel="stylesheet" href="market-scene.css?v=wallet-embedded-v9"><link rel="stylesheet" href="market-transactions.css?v=empty-curtain-v7"><link rel="stylesheet" href="ludus-scene.css?v=roster-proportions-v10"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=6"><link rel="stylesheet" href="ludus-armory-live.css?v=armory-detail-scroll-v3"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=whip-hit-v1"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=5"><link rel="stylesheet" href="beast-hunt.css?v=gladiator-arrows-v6"><link rel="stylesheet" href="spartacus-title.css?v=glory-v1"><link rel="stylesheet" href="mobile-legibility.css?v=readable-scroll-v2"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div><div id="lineupHud" class="lineup-hud" aria-live="polite" hidden></div>
 <section class="overlay overlay-title" id="startScreen">
+<button type="button" id="ludusResetOpen" class="ludus-reset-trigger" aria-haspopup="dialog" aria-controls="ludusResetDialog">루두스 초기화</button>
 <div class="stage-panel stage-panel-title spartacus-home">
  <div class="spartacus-crest" aria-hidden="true">✦ &nbsp; ⚔ &nbsp; ✦</div>
  <div class="spartacus-roman">ROMA · LUDUS MAGNUS · THE ARENA</div>
@@ -314,7 +329,18 @@ body{min-height:100dvh;overscroll-behavior:none}
    <button id="startBtn" type="button">아케이드 자유 대전</button><span id="classSubtitle">MURMILLO</span>
  </div>
  <p id="resourceStatus" class="resource-status" aria-live="polite"></p>
-</div></section>
+</div>
+<div id="ludusResetDialog" class="ludus-reset-confirm" role="dialog" aria-modal="true" aria-labelledby="ludusResetMessage" hidden>
+ <div class="ludus-reset-panel">
+  <span class="ludus-reset-crest" aria-hidden="true">❧ · LUDUS MAGNUS · ❧</span>
+  <p id="ludusResetMessage" class="ludus-reset-message">진짜  아가들 다 버리는 겁니까? ㅠㅠ</p>
+  <div class="ludus-reset-actions">
+   <button type="button" id="ludusResetCancel">헉! 취소</button>
+   <button type="button" id="ludusResetConfirm">응, 안녕~</button>
+  </div>
+ </div>
+</div>
+</section>
 
 <section class="overlay overlay-ending" id="endScreen" hidden>
  <div class="stage-panel stage-panel-ending">
@@ -753,9 +779,14 @@ const TRAIN_LEVELS=[['입문',42,18,.48],['초급',36,15,.60],['숙련',30,12,.7
 function trainingDifficulty(h,stat){h.trainingAttempts=h.trainingAttempts||{};const attempts=h.trainingAttempts[stat]||0;const [name,width,perfect,speed]=TRAIN_LEVELS[Math.min(attempts,6)];return {name,width,perfect,speed,attempts};}
 const CAREER_RIVALS=[['노예 검투사',0,0,0],['초급 투사',.07,.05,.02],['숙련 검투사',.15,.10,.04],['투기장 강자',.24,.16,.07],['정예 챔피언',.34,.23,.10],['전설의 검투사',.46,.30,.13]];
 function careerRival(fights){const [name,hp,atk,move]=CAREER_RIVALS[Math.min(Math.floor(fights/2),5)];return {name,hp,atk,move};}
+function freshCareerState(){
+ return {gold:3200,glory:0,fights:0,wins:0,roster:[],active:0,
+  message:'검투사시장에서 첫 검투사를 영입하세요.',lastPrize:null,
+  pendingOpponent:null,marketSeed:0,marketInventory:null};
+}
 function readCareer(){
  try{const v=JSON.parse(localStorage.getItem(CAREER_KEY));if(v&&typeof v.gold==='number'&&Array.isArray(v.roster))return v;}catch(err){}
- return {gold:3200,glory:0,fights:0,wins:0,roster:[],active:0,message:'검투사시장에서 첫 검투사를 영입하세요.'};
+ return freshCareerState();
 }
 let CAREER=readCareer(),MINI=null,CAREER_SELECTING=false,CAREER_TAB='roster';
 CAREER.active=Math.max(0,Math.min(CAREER.roster.length-1,Number(CAREER.active)||0));
@@ -799,7 +830,8 @@ function installAnimatedMurmilloStarter(){
  saveCareer();
  return true;
 }
-installAnimatedMurmilloStarter();
+// Existing saves retain all previously granted special fighters.
+ // Fresh and reset Ludus profiles do not receive an automatic starter.
 function installChampionMurmillo(){
  // Preserve all existing units, stages, selected participant, gold and records.
  if(CAREER.roster.some(isChampionMurmillo))return false;
@@ -810,7 +842,7 @@ function installChampionMurmillo(){
  });
  CAREER.roster.push(h);saveCareer();return true;
 }
-installChampionMurmillo();
+// Champion and animation starters already in an old save are preserved unchanged.
 function careerMessage(t){CAREER.message=t;saveCareer();renderCareer();}
 function openSlaveMarket(){
  if(S.phase==='fight'||S.phase==='finisher'||MINI)return;
@@ -853,7 +885,10 @@ function enterCareer(){
  window.ArenaAudio?.leave?.();
  if(MINI){MINI=null;$('#careerMini').hidden=true;}
  $('#endScreen').hidden=true;$('#startScreen').hidden=true;
- $('#careerHub').hidden=false;renderCareer();window.LudusScene?.open();
+ $('#careerHub').hidden=false;renderCareer();
+ // Without owned gladiators the very first screen must be the slave market.
+ if(CAREER.roster.length===0){openSlaveMarket();return;}
+ window.LudusScene?.open();
 }
 function returnToCareer(){
  S.careerMatch=false;S.gauntlet=null;S.cleanup=null;S.entrance=null;updateLineupHud();CAREER_SELECTING=false;MINI=null;$('#careerMini').hidden=true;
@@ -1097,6 +1132,49 @@ function closeTraining(){
  MINI=null;$('#careerMini').hidden=true;renderCareer();
  if(returnHome)window.LudusScene?.open();
 }
+function updateTitleEntry(){
+ const hint=$('#careerEnter small');
+ if(hint)hint.textContent=CAREER.roster.length===0?'▶ GAME START · 검투사시장':'▶ GAME START · 루두스 입장';
+}
+let ludusResetRestoreFocus=null;
+function closeLudusResetDialog(){
+ const dialog=$('#ludusResetDialog');
+ if(dialog.hidden)return;
+ dialog.hidden=true;
+ const restore=ludusResetRestoreFocus||$('#ludusResetOpen');
+ ludusResetRestoreFocus=null;restore?.focus?.();
+}
+function resetLudusProgress(){
+ // Mutate the existing CAREER object. LudusBridge and market callbacks keep
+ // referencing it, and the read-only 'hero' getter remains intact.
+ for(const key of Object.keys(CAREER))delete CAREER[key];
+ Object.assign(CAREER,freshCareerState());
+ CAREER_TAB='roster';CAREER_SELECTING=false;MINI=null;
+ saveCareer();updateTitleEntry();
+}
+$('#ludusResetOpen').onclick=()=>{
+ if($('#startScreen').hidden)return;
+ ludusResetRestoreFocus=document.activeElement;
+ $('#ludusResetDialog').hidden=false;
+ $('#ludusResetCancel').focus();
+};
+$('#ludusResetCancel').onclick=closeLudusResetDialog;
+$('#ludusResetConfirm').onclick=()=>{
+ if($('#ludusResetDialog').hidden)return;
+ resetLudusProgress();
+ closeLudusResetDialog();
+};
+document.addEventListener('keydown',e=>{
+ const modal=$('#ludusResetDialog');
+ if(modal.hidden||$('#startScreen').hidden)return;
+ if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();closeLudusResetDialog();}
+ else if(e.key==='Tab'){
+  const first=$('#ludusResetCancel'),last=$('#ludusResetConfirm');
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+ }
+},true);
+updateTitleEntry();
 $('#careerEnter').onclick=enterCareer;
 $('#careerExit').onclick=()=>{if(MINI)return;window.LudusScene?.close();$('#careerHub').hidden=true;returnToLudus();};
 $('#careerHit').onclick=completeTraining;
@@ -1539,7 +1617,7 @@ function returnToLudus(){
  window.ArenaAudio?.leave?.();
  S.phase='title';S.paused=false;S.gauntlet=null;S.cleanup=null;S.entrance=null;updateLineupHud();S.round=1;S.time=90;S.score=0;S.combo=0;S.totalScore=0;S.autoPlaying=false;S.lastManualInput=clock;S.keys.clear();S.sparks=[];S.parryBursts=[];S.notice='';S.noticeT=0;S.shake=0;S.cameraKick=null;S.flash=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
  const c=$('#classChoice').value;S.player=fighter(c,335,false);S.enemy=fighter('retiarius',940,true);CAMERA.initialized=false;
- $('#endScreen').hidden=true;$('#startScreen').hidden=false;$('#pauseBtn').textContent='Ⅱ';updateHud();
+ $('#endScreen').hidden=true;$('#startScreen').hidden=false;$('#pauseBtn').textContent='Ⅱ';updateTitleEntry();updateHud();
 }
 
 function say(t,dur=.82){S.notice=t;S.noticeT=dur;$('#combatNotice').textContent=t;}
