@@ -287,7 +287,7 @@ body{min-height:100dvh;overscroll-behavior:none}
  text-align:center;pointer-events:none;white-space:normal}
 .lineup-hud[hidden]{display:none!important}
 @media(max-width:720px){.lineup-hud:not([hidden]){top:10%;font-size:10px;max-width:98%;padding:3px 6px}}
-</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=6"><link rel="stylesheet" href="ludus-armory-live.css?v=3"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=5"><link rel="stylesheet" href="beast-hunt.css?v=versus-v5"><link rel="stylesheet" href="spartacus-title.css?v=glory-v1"></head><body>
+</style><link rel="stylesheet" href="market-scene.css?v=6"><link rel="stylesheet" href="market-transactions.css?v=2"><link rel="stylesheet" href="ludus-scene.css?v=8"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=6"><link rel="stylesheet" href="ludus-armory-live.css?v=3"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=4"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=5"><link rel="stylesheet" href="beast-hunt.css?v=gladiator-arrows-v6"><link rel="stylesheet" href="spartacus-title.css?v=glory-v1"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
@@ -1126,16 +1126,42 @@ function renderBeastHunt(){
  const options=CAREER.roster.map((h,i)=>({h,i})).filter(x=>careerEligible(x.h));
  const hero=options.some(x=>x.i===CAREER.active)?CAREER.active:(options[0]?.i??-1);
  const safe=v=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]||'&#39;'));
- const fighters=options.length?'<label for="beastHeroSelect">출전 검투사 선택</label><select id="beastHeroSelect">'+options.map(({h,i})=>'<option value="'+i+'" '+(i===hero?'selected':'')+'>'+safe(h.name)+' · Lv.'+careerLevel(h)+'</option>').join('')+'</select><p>훈련과 장비를 마친 검투사를 선택하세요.</p>':'<p>출전 가능한 검투사가 없습니다. 영입하거나 치료해 주세요.</p>';
  const selected=BEAST_STAGES.find(s=>s.id===BEAST_SELECTED)||BEAST_STAGES[0];
+ // Always show native roster artwork, not class tabs or a text-only selector.
+ const fighters='<div class="venatio-hero-slider" role="group" aria-label="출전 검투사 좌우 선택">'+
+ '<button id="beastHeroPrev" type="button" aria-label="이전 검투사" '+(options.length<2?'disabled':'')+'>❮</button>'+
+ '<div class="venatio-hero-preview"><canvas id="beastHeroPortrait" data-roster-art="'+hero+'" width="300" height="230" role="img" aria-label="출전 검투사 썸네일"></canvas><span id="beastHeroCounter"></span></div>'+
+ '<button id="beastHeroNext" type="button" aria-label="다음 검투사" '+(options.length<2?'disabled':'')+'>❯</button></div>'+
+ '<div class="venatio-hero-identity"><h4 id="beastHeroName"></h4><small id="beastHeroClass"></small><p id="beastHeroStats"></p></div>'+
+ '<select id="beastHeroSelect" hidden aria-hidden="true" tabindex="-1">'+options.map(({h,i})=>'<option value="'+i+'" '+(i===hero?'selected':'')+'>'+safe(h.name)+'</option>').join('')+'</select>'+
+ (options.length?'':'<p class="career-status">출전 가능한 검투사가 없습니다. 영입하거나 치료해 주세요.</p>');
  $('#careerBody').innerHTML='<section class="beast-gallery venatio-select career-card"><header class="beast-gallery-head"><div><small>VENATIO · ARENA BESTIARUM</small><h2>야수전</h2><p>왼쪽의 출전 검투사, 오른쪽의 야수를 골라 출전하세요.</p></div><button id="beastBackDraft" class="beast-back" type="button">◀ 전투 준비로</button></header>'+
- '<div class="venatio-versus-layout"><section class="venatio-gladiator"><small>I · GLADIATOR</small><h3>출전 검투사</h3><div class="venatio-symbol" aria-hidden="true">⚔</div>'+fighters+'</section><div class="venatio-vs" aria-hidden="true">VS</div>'+
+ '<div class="venatio-versus-layout"><section class="venatio-gladiator"><small>I · GLADIATOR</small><h3>출전 검투사</h3>'+fighters+'</section><div class="venatio-vs" aria-hidden="true">VS</div>'+
  '<section class="venatio-beast"><small>II · BESTIA</small><h3>등장 야수</h3><div class="venatio-slider"><button id="beastPrev" type="button" aria-label="이전 야수">❮</button><div class="venatio-preview"><canvas id="beastSpotlightPreview" data-beast-preview="'+selected.id+'" width="600" height="400" aria-label="움직이는 야수 미리보기"></canvas><span id="beastCounter"></span></div><button id="beastNext" type="button" aria-label="다음 야수">❯</button></div>'+
  '<div class="venatio-name"><small id="beastLatin"></small><h4 id="beastName"></h4><div id="beastStars"></div></div>'+
  '<label for="beastTypeSelect">야수 선택</label><select id="beastTypeSelect">'+BEAST_STAGES.map(s=>'<option value="'+s.id+'">'+s.label+'</option>').join('')+'</select>'+
  '<p id="beastCaption"></p><p id="beastStats"></p><button id="beastStart" class="beast-challenge" type="button" '+(options.length?'':'disabled')+'>⚔ 야수전 출전</button></section></div>'+
  '<footer class="beast-gallery-footer">연전 최종 승리 시에만 야수전 보상이 지급됩니다. 야수는 영입되지 않습니다.</footer></section>';
  ['careerRosterTab','careerTrainTab','careerGearTab'].forEach(id=>$('#'+id).setAttribute('aria-pressed','false'));
+ const chooseHero=idx=>{
+  const item=options.find(x=>x.i===Number(idx));if(!item)return;
+  const h=item.h,slot=options.indexOf(item);
+  $('#beastHeroSelect').value=String(item.i);
+  $('#beastHeroPortrait').dataset.rosterArt=String(item.i);
+  $('#beastHeroName').textContent=h.name;
+  $('#beastHeroClass').textContent=(DATA[h.cls]?.name||h.cls)+' · Lv.'+careerLevel(h);
+  $('#beastHeroStats').textContent='부상 '+(h.injury||0)+' · 피로 '+(h.fatigue||0)+' · 성장 '+careerStage(h)+'/5';
+  $('#beastHeroCounter').textContent=String(slot+1).padStart(2,'0')+' / '+String(options.length).padStart(2,'0');
+  paintRosterPreviews();
+ };
+ const cycleHero=delta=>{
+  if(options.length<2)return;
+  const current=options.findIndex(x=>String(x.i)===$('#beastHeroSelect').value);
+  chooseHero(options[(current+delta+options.length)%options.length].i);
+ };
+ $('#beastHeroPrev').onclick=()=>cycleHero(-1);
+ $('#beastHeroNext').onclick=()=>cycleHero(1);
+ $('#beastHeroSelect').onchange=e=>chooseHero(e.target.value);
  const choose=id=>{
   const s=BEAST_STAGES.find(x=>x.id===id);if(!s)return;
   BEAST_SELECTED=s.id;$('#beastTypeSelect').value=s.id;
@@ -1152,7 +1178,8 @@ function renderBeastHunt(){
  $('#beastTypeSelect').onchange=e=>choose(e.target.value);
  $('#beastStart').onclick=()=>beginBeastHunt(BEAST_SELECTED,Number($('#beastHeroSelect')?.value??hero));
  $('#beastBackDraft').onclick=openCareerDraft;
- window.LudusApprovedScenes?.close();window.BeastStagePreviews?.mount?.();choose(selected.id);
+ window.LudusApprovedScenes?.close();window.BeastStagePreviews?.mount?.();
+ chooseHero(hero);choose(selected.id);
 }
 function beginBeastHunt(id,rosterIndex){
  const stage=BEAST_STAGES.find(s=>s.id===id),h=CAREER.roster[rosterIndex];
@@ -2283,8 +2310,12 @@ function paintBeastResults(){
  for(const [id,v] of BEAST_RESULT_VIEWS){
   if(!v.canvas.isConnected){BEAST_RESULT_VIEWS.delete(id);continue;}
   const c=v.canvas.getContext('2d');c.clearRect(0,0,640,420);
+  // Result-window scale only. Full native wolf V3 pose, +45% uniform scale.
+  // Battle size, other beasts, victory title and result buttons are unchanged.
+  const wolf=v.fighter.beastType==='wolf';
   window.ArenaBeasts?.draw?.(c,{fighter:v.fighter,pose:v.pose,clock,
-   x:40,y:20,w:560,h:380,flip:false,alpha:1});
+   x:wolf?-95:40,y:wolf?-128:20,w:wolf?830:560,h:wolf?550:380,
+   flip:false,alpha:1});
  }
 }
 function renderResultPortrait(id,f,index){
