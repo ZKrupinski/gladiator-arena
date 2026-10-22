@@ -154,7 +154,11 @@ try{
  assert.equal(displaced.phase,'fight','special effect cannot unexpectedly end duel');
  assert.ok(displaced.enemy-enhanced.special.recoil.startX>305,
   'enemy must visibly fly far from the striker: '+JSON.stringify({enhanced,displaced}));
- await page.waitForTimeout(860);
+ // The browser may render slower under CI (game loop caps dt to 50ms).
+ // Inspect only AFTER the actual rebound is complete, not after a fixed
+ // wall-clock interval that can cut the 1.18s realtime choreography short.
+ await page.waitForFunction(()=>!window.__arenaQA.state.enemy.specialRecoil,
+   null,{timeout:8500,polling:'raf'});
  const returned=await page.evaluate(()=>({
    enemy:window.__arenaQA.state.enemy.x,
    recoil:window.__arenaQA.state.enemy.specialRecoil
