@@ -265,6 +265,35 @@ class TestSpartacusUploader(unittest.TestCase):
                 self.assertEqual(u.main(["process-request",str(filename)]),2)
                 pub.assert_not_called()
 
+    def test_inbox_ref_race_retries_after_clean_diff(self):
+        event="c"*40
+        future="d"*40
+        base="a"*40
+        class GH:
+            reads=0
+            def main_sha(self):
+                self.reads+=1
+                return event if self.reads<=2 else future
+            def request(self,method,path):
+                if "/git/commits/" in path:return {"parents":[{"sha":base}]}
+                if "/compare/" in path:return {"status":"ahead",
+                    "files":[{"filename":"docs/unrelated-release-qa.txt"}]}
+                raise AssertionError(path)
+        result={"state":"COMMITTED_DEPLOY_NOT_YET_VERIFIED",
+                "deployment":{"state":"DEPLOYED_VERIFIED"}}
+        race=u.UploadError('GITHUB_HTTP_422: {"message":"Update is not a fast forward"}')
+        with tempfile.TemporaryDirectory() as temp:
+            name=pathlib.Path(temp)/"request.json"
+            name.write_text(json.dumps({"releaseId":"race-check-v1"}))
+            with patch.dict(os.environ,{"GITHUB_SHA":event}), \
+                 patch.object(u,"GitHub",return_value=GH()), \
+                 patch.object(u,"stage_request",return_value={"public/index.html":b"ok"}), \
+                 patch.object(u,"publish_files",side_effect=[race,result]) as publish:
+                self.assertEqual(u.main(["process-request",str(name)]),0)
+                self.assertEqual(publish.call_count,2)
+                self.assertEqual([c.kwargs["expected_sha"] for c in publish.call_args_list],
+                                 [event,future])
+
     def test_marker_never_claims_live_deployment(self):
         obj=json.loads(u.marker("wolf-release-v5",{"public/index.html":"a"*64},"b"*40))
         self.assertEqual(obj["branch"],"main")
