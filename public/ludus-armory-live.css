@@ -344,3 +344,56 @@
  font-weight:900;
 }
 .ra-collection .ra-portrait.selected{border-color:#ffeb9f;box-shadow:0 0 12px #f6ca78a8}
+
+
+/* Armory V9 — fighter's three actual equipment slots (under their identity). */
+.ra-collection .ra-loadout{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));flex:none;gap:7px;
+ margin:3px 1px 9px;padding:0;min-width:0;
+}
+.ra-collection .ra-loadout-slot{
+ --ra-tone:#816c53;position:relative;min-width:0;min-height:85px;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+ box-sizing:border-box;padding:5px 4px 4px;border:2px ridge #856a48;border-radius:7px;
+ background:linear-gradient(145deg,#38241a,#170f0c);box-shadow:inset 0 0 14px #0009;
+}
+.ra-collection .ra-loadout-art{
+ position:relative;display:grid;place-items:center;width:min(65px,100%);height:58px;
+ overflow:hidden;border:1px solid #604a38;border-radius:6px;
+ background:radial-gradient(circle at 48% 48%,#523a27,#150e0c 75%);
+}
+.ra-collection .ra-loadout-slot .ra-item-img{
+ z-index:1;position:relative;display:block;object-fit:contain;width:100%;height:100%;
+ filter:drop-shadow(0 2px 5px #000d) drop-shadow(0 0 5px color-mix(in srgb,var(--ra-tone),transparent 45%));
+}
+.ra-collection .ra-loadout-slot.is-equipped{
+ border-color:var(--ra-tone);
+ box-shadow:inset 0 0 12px color-mix(in srgb,var(--ra-tone),transparent 78%),0 0 7px color-mix(in srgb,var(--ra-tone),transparent 70%);
+}
+.ra-collection .ra-loadout-slot.is-selected{
+ border-color:#ffde83;
+ background:linear-gradient(155deg,#54402a,#241713);
+ box-shadow:0 0 12px #f3d47e9c,inset 0 0 14px #f0c66433;
+}
+.ra-collection .ra-loadout-slot.is-empty .ra-loadout-art{
+ border:1px dashed #755a44;background:#190f0c;
+}
+.ra-collection .ra-loadout-empty{
+ color:#a18567;font:800 24px/1 'Noto Sans KR',sans-serif;opacity:.53;
+}
+.ra-collection .ra-loadout-label{
+ display:block;max-width:100%;color:#f8deb0;text-align:center;
+ font:850 12px/1.1 'Noto Sans KR',sans-serif;white-space:nowrap;
+}
+.ra-collection .ra-loadout-slot.is-empty .ra-loadout-label{color:#ad9279}
+@media(orientation:landscape) and (max-width:1150px){
+ .ra-collection .ra-loadout-slot{min-height:99px;padding:4px 2px}
+ .ra-collection .ra-loadout-art{height:68px;width:min(74px,100%)}
+ .ra-collection .ra-loadout-label{font-size:19px}
+}
+@media(orientation:portrait) and (max-width:700px){
+ .ra-collection .ra-loadout{max-width:390px;margin:6px auto 10px;gap:9px;width:100%}
+ .ra-collection .ra-loadout-slot{min-height:90px}
+ .ra-collection .ra-loadout-art{height:64px;width:min(73px,100%)}
+ .ra-collection .ra-loadout-label{font-size:14px}
+}
