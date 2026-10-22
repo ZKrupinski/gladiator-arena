@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - public/market-scene.css
+      - public/market-transactions.css
       - public/market-scene.js
       - public/index.html
       - scripts/qa_market_balance_center_browser.mjs
