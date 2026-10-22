@@ -1097,7 +1097,7 @@ $('#careerExit').onclick=()=>{if(MINI)return;window.LudusScene?.close();$('#care
 $('#careerHit').onclick=completeTraining;
 $('#careerCancel').onclick=closeTraining;
 window.addEventListener('keydown',e=>{if(MINI&&!MINI.finished&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
-function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38,dodgeEcho:null,attackLunge:null,specialLunge:null,specialRecoil:null,hitRumble:null};}
+function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38,dodgeEcho:null,attackLunge:null,specialLunge:null,specialRecoil:null,hitRumble:null,parryChase:null,parryHasteT:0};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 // Non-combat phase: walk from the gate, hold an original victory keypose,
 // then charge. Health, stamina, cooldowns and clock remain frozen.
@@ -1361,7 +1361,7 @@ function lineupEnemy(opponent){
 }
 function cleanDuelSurvivor(f,x,face){
  f.x=x;f.face=face;f.vx=0;f.guard=false;f.guardHold=0;f.parry=0;
- f.stagger=0;f.net=0;f.dodge=0;f.dodgeEcho=null;f.attackLunge=null;f.specialLunge=null;f.specialRecoil=null;f.hitRumble=null;f.knockT=0;f.knockVX=0;
+ f.stagger=0;f.net=0;f.dodge=0;f.dodgeEcho=null;f.attackLunge=null;f.specialLunge=null;f.specialRecoil=null;f.hitRumble=null;f.parryChase=null;f.parryHasteT=0;f.knockT=0;f.knockVX=0;
  f.attackCD=0;f.actionT=0;f.action='idle';f.comboDash=null;
  f.chainHits=0;f.chainExpire=0;f.pressureT=0;f.invuln=.65;
  f.comebackUsed=false;
@@ -1677,7 +1677,7 @@ function clearCombatAfterimages(...actors){
  for(const f of actors){
   if(!f)continue;
   f.dodgeEcho=null;f.attackLunge=null;f.specialLunge=null;
-  f.comboDash=null;f.specialRecoil=null;f.hitRumble=null;
+  f.comboDash=null;f.specialRecoil=null;f.hitRumble=null;f.parryChase=null;f.parryHasteT=0;
  }
  // Results render only the approved victory/defeat art. No stale charge,
  // slash, dash, attack-afterimage or special effect survives a match.
@@ -1766,11 +1766,11 @@ function launchCombatRecoil(target,dir,distance,kind){
  const initialX=clamp(startX+side*Math.min(190,distance*.47),-300,1580);
  const restX=clamp(startX+side*(kind==='parry'?125:120),110,1170);
  target.specialRecoil={kind,startX,initialX,farX,restX,
-  elapsed:0,total:kind==='parry'?.93:1.18};
+  elapsed:0,total:kind==='parry'?1.32:1.18};
  target.x=initialX;target.knockT=0;
  target.knockVX=side*(kind==='parry'?1050:1180);
- target.stagger=Math.max(target.stagger,kind==='parry'?1.08:1.37);
- target.attackCD=Math.max(target.attackCD,kind==='parry'?1.04:1.25);
+ target.stagger=Math.max(target.stagger,kind==='parry'?1.43:1.37);
+ target.attackCD=Math.max(target.attackCD,kind==='parry'?1.36:1.25);
  target.hitRumble={t:0,total:kind==='parry'?.68:.85,
   amp:kind==='parry'?15:20,dir:side};
  return target.specialRecoil;
@@ -1858,6 +1858,22 @@ function attack(f,victim,special=false,dashImpact=false){
    // Use the real-time launcher at both sides of the arena.
    launchCombatRecoil(f,away,reversal?.critical?360:
      special?330:285,'parry');
+   // True PARRY COUNTER: defeated striker flies BACK in visible slow-time.
+   // Successful defender simultaneously bursts FORWARD at ~1050px/s,
+   // tracing full-size sprite ghosts and leaving a fast follow-up opening.
+   const rushDir=away;
+   const rushStart=victim.x;
+   const rushEnd=clamp(rushStart+rushDir*(reversal?.critical?235:205),
+      105,1175);
+   victim.parryChase={fromX:rushStart,toX:rushEnd,elapsed:0,
+      travel:reversal?.critical?.19:.215,t:1.02,total:1.02,dir:rushDir};
+   victim.parryHasteT=1.28;
+   victim.face=rushDir;
+   victim.guard=false;victim.guardHold=0;victim.guardRecovery=0;
+   victim.attackCD=0;victim.parryTriumphT=.15;
+   victim.invuln=Math.max(victim.invuln,.38);
+   victim.vx=0;
+   setAction(victim,'walk',.24);
    S.shake=Math.max(S.shake,victim.enemy?(special?42:38):(special?54:49));
    S.flash=Math.max(S.flash,victim.enemy?(special?.43:.32):.48);
    window.ArenaMotion?.pulse?.(victim,'parry','source',victim.face);
@@ -2122,6 +2138,7 @@ function choosePose(f){
  // calculations are guaranteed finite by the explicit [0,1] clamps below.
  if(f.parryFailT>.18&&f.stagger>0)return 'hit';
  if(f.parryTriumphT>.19&&!['attack','special','comboDash'].includes(f.action))return 'guard';
+ if(f.parryChase?.elapsed<f.parryChase?.travel)return 'walk';
  if(f.actionT>0){
   const t=clamp(1-f.actionT/Math.max(.01,f.actionDuration),0,1);
   if(f.beastType&&f.action==='attack')return 'attack';
@@ -2168,6 +2185,7 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
  for(const f of [S.player,S.enemy])if(f){
   f.parryTriumphT=Math.max(0,(f.parryTriumphT||0)-realDt);
   f.parryFailT=Math.max(0,(f.parryFailT||0)-realDt);
+  f.parryHasteT=Math.max(0,(f.parryHasteT||0)-realDt);
   if(f.hitRumble){
    f.hitRumble.t=Math.min(f.hitRumble.total,f.hitRumble.t+realDt);
    if(f.hitRumble.t>=f.hitRumble.total)f.hitRumble=null;
@@ -2210,7 +2228,7 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
   f.dodgeEcho.t=Math.max(0,f.dodgeEcho.t-realDt);
   if(f.dodgeEcho.t<=0)f.dodgeEcho=null;
  }
- for(const key of ['specialLunge','attackLunge']){
+ for(const key of ['specialLunge','attackLunge','parryChase']){
   const g=f[key];if(!g)continue;
   g.t=Math.max(0,g.t-realDt);
   if(g.t<=0)f[key]=null;
@@ -2245,7 +2263,7 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
    if(wantsGuard){if(!p.guard)beginGuard(p,.3);p.guard=true;}
    else{p.guard=false;p.parry=0;p.guardHold=0;}
    if(p.guard)p.st=clamp(p.st-dt*9,0,100);
-   if(p.stagger<=0&&!p.guard&&!p.comboDash&&p.dodge<=0){const l=S.keys.has('left'),r=S.keys.has('right');p.vx=((r?1:0)-(l?1:0))*p.cfg.move*(p.net>0?.55:1);p.x+=p.vx*dt;
+   if(p.stagger<=0&&!p.guard&&!p.comboDash&&p.dodge<=0&&!p.parryChase){const l=S.keys.has('left'),r=S.keys.has('right');p.vx=((r?1:0)-(l?1:0))*p.cfg.move*(p.parryHasteT>0?1.65:1)*(p.net>0?.55:1);p.x+=p.vx*dt;
     // Before the first clash, a stationary player also tests distance.
     if(!l&&!r&&p.net<=0)preEngagementFootwork(p,e,dt,true);
    }
@@ -2259,13 +2277,13 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
  e.guard=e.pressureT<=0&&e.guardHold>0&&e.st>8&&e.stagger<=0;
  window.SpriteMotionRegistry?.triggerStandoffRoar?.(e,p,clock,dt);
  if(e._beastRoarUntil>clock){e.vx=0;e.guard=false;}
- else if(e.stagger<=0&&!e.comboDash&&e.dodge<=0&&!e.specialRecoil){
+ else if(e.stagger<=0&&!e.comboDash&&e.dodge<=0&&!e.specialRecoil&&!e.parryChase){
   const dist=Math.abs(e.x-p.x),dir=Math.sign(p.x-e.x)||-1;e.face=dir;
   const preferred=Math.max(MIN_FIGHTER_DISTANCE+AI_SPACING_BUFFER,e.cfg.reach-55);
   if(!e.guard){
    if(dist>preferred+22){
     if(!preEngagementFootwork(e,p,dt)){
-     e.vx=dir*e.cfg.move*(ai?.retaliate?.88:.68);e.x+=e.vx*dt;
+     e.vx=dir*e.cfg.move*(e.parryHasteT>0?1.55:1)*(ai?.retaliate?.88:.68);e.x+=e.vx*dt;
     }
    }else if(dist<preferred-22){e.vx=-dir*e.cfg.move*.32;e.x+=e.vx*dt;}
    const threat=(p.action==='attack'||p.action==='special')&&p.actionT>.06;
@@ -2311,6 +2329,20 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
    addFx(0,beast.x+beast.face*155,FLOOR-243,{
     beastFx:'roar',w:640,h:460,duration:.66,
     flip:beastFxFlip(beast),alpha:.93,layer:'front'});
+  }
+ }
+ // Independent realtime CHASE, not reduced by the parry cinematic timeScale.
+ // This makes the successful fighter faster while the struck rival is slow.
+ for(const f of [p,e])if(f.parryChase){
+  const c=f.parryChase;
+  c.elapsed=Math.min(c.travel,c.elapsed+realDt);
+  const u=clamp(c.elapsed/c.travel,0,1);
+  const ease=1-Math.pow(1-u,2.4);
+  f.x=c.fromX+(c.toX-c.fromX)*ease;
+  f.vx=(c.toX-c.fromX)/c.travel*(1-u);
+  if(c.elapsed>=c.travel){
+   f.x=c.toX;f.vx=0;
+   setAction(f,'attack',.23); // visual follow-through, no double damage
   }
  }
  for(const f of [p,e]){
@@ -2753,6 +2785,27 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
    for(const [t,a] of [[0,.08],[.20,.16],[.4,.28],[.60,.43],[.8,.59],[.92,.70]]){
     ctx.save();ctx.filter='brightness(1.28) saturate(1.20)';
     renderActor(a*fade,g.fromX+gap*t-width/2,drawY+2);
+    ctx.restore();
+   }
+  }
+  // Parry counter success: trail of the FAST chaser. Conversely, the
+  // repelled opponent leaves a LONG fading trail along its recoil path.
+  if(f.parryChase){
+   const c=f.parryChase,life=clamp(c.t/.80,0,1);
+   const xFrom=c.fromX,delta=f.x-c.fromX;
+   for(const [frac,opacity] of [[0,.09],[.2,.19],[.4,.32],[.6,.48],[.8,.62]]){
+    ctx.save();ctx.filter='brightness(1.40) saturate(1.24)';
+    renderActor(opacity*life,xFrom+delta*frac-width/2,drawY+1);
+    ctx.restore();
+   }
+  }
+  if(f.specialRecoil&&f.specialRecoil.kind==='parry'){
+   const k=f.specialRecoil,goingOut=k.elapsed<k.total*.34;
+   const from=goingOut?k.startX:k.farX,delta=f.x-from;
+   const life=clamp((k.total-k.elapsed)/.44,0,1);
+   for(const [frac,opacity] of [[0,.08],[.23,.17],[.45,.29],[.67,.46],[.86,.61]]){
+    ctx.save();ctx.filter='brightness(1.15) saturate(.85)';
+    renderActor(opacity*(.28+.72*life),from+delta*frac-width/2,drawY+1);
     ctx.restore();
    }
   }
