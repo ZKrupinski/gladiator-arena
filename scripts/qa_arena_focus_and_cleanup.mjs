@@ -56,7 +56,7 @@ for(const name of ['dash','parry']){
   assert.ok(peak.bloom>.08,'rush impact bloom visible');
  }else{
   assert.equal(peak.cinemaBars,0,'parry cannot letterbox fighter silhouettes');
-  assert.ok(peak.bloom>0&&peak.bloom<.25,'parry contact glow is visible but restrained');
+  assert.ok(peak.bloom>.1&&peak.bloom<.4,'parry contact now has a brighter but still bounded glow');
  }
  assert.equal(peak.duration,F.PRESETS[name].duration,'title fade must receive a finite duration');
  assert.ok(peak.duration-peak.elapsed>(name==='dash'?.5:.3),'active presentation still has recovery time');
