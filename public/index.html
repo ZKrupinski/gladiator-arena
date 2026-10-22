@@ -3470,6 +3470,12 @@ window.LudusBridge={
   buy:(id)=>{const result=ArenaLoot.buy(CAREER,id);if(result.ok)careerMessage(result.message);return result.message;},
   sell:(id)=>{const result=ArenaLoot.sell(CAREER,id);if(result.ok)careerMessage(result.message);return result.message;},
  gearSummary:(i,override)=>window.ArenaGearCatalog.summary(CAREER.roster[i],override),
+ combatStats:(i,override)=>{
+  const fighter=CAREER.roster[i];if(!fighter||!DATA[fighter.cls])return null;
+  const equipped=window.ArenaGearCatalog.summary(fighter,override);
+  const stats=ArenaBalance.heroStats(fighter,DATA[fighter.cls],equipped);
+  return {...stats,parrySeconds:PARRY_WINDOW+Math.min(.22,equipped.parryWindow||0)};
+ },
  gearSets:()=>window.ArenaGearCatalog.sets,
  gearRarities:()=>window.ArenaGearCatalog.rarities,
  train:(stat)=>{autoCareerTrain(stat);return CAREER.message;},
