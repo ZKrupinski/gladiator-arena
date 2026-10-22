@@ -6,30 +6,34 @@
 (function(root){
 'use strict';
 const PRESETS=Object.freeze({
+ strike:Object.freeze({
+  duration:.30,hitstop:.028,slowEnd:.14,minRate:.62,
+  zoom:0,vignette:.035,bloom:.19,letterbox:0
+ }),
  dodge:Object.freeze({
   // Visible full-body retreat; i-frames remain defined by combat state.
-  duration:.58,hitstop:.012,slowEnd:.25,minRate:.29,
-  zoom:0,vignette:.045,bloom:.045,letterbox:0
+  duration:.78,hitstop:.018,slowEnd:.39,minRate:.17,
+  zoom:0,vignette:.065,bloom:.08,letterbox:0
  }),
  special:Object.freeze({
   // Readable 3-beat technique: short impact stop, illustrated release and recovery.
   // Slight zoom only, keeping both duelists inside the arena as with parry.
-  duration:1.08,hitstop:.165,slowEnd:.67,minRate:.18,
-  zoom:.05,vignette:.14,bloom:.59,letterbox:0
+  duration:1.42,hitstop:.21,slowEnd:.94,minRate:.075,
+  zoom:.058,vignette:.28,bloom:.86,letterbox:160
  }),
  dash:Object.freeze({
-   duration:1.18,hitstop:.17,slowEnd:.80,minRate:.09,
-   zoom:.38,vignette:.41,bloom:.58,letterbox:32
+   duration:1.42,hitstop:.20,slowEnd:.96,minRate:.055,
+   zoom:.33,vignette:.44,bloom:.78,letterbox:40
  }),
  reversal:Object.freeze({
-  duration:1.28,hitstop:.16,slowEnd:.78,minRate:.18,zoom:.055,vignette:.12,bloom:.37,letterbox:12
+  duration:1.33,hitstop:.19,slowEnd:.87,minRate:.12,zoom:.045,vignette:.15,bloom:.63,letterbox:16
  }),
  parry:Object.freeze({
    // Counterstrike must NEVER cut both actors out of view. Keep a short
    // contact freeze, but no forced zoom, recentering, vignette or cinema bars.
    // Fighter bracing, attack cancellation and sound carry the parry triumph.
-   duration:.89,hitstop:.115,slowEnd:.55,minRate:.25,
-   zoom:0,vignette:0,bloom:.20,letterbox:0
+   duration:.96,hitstop:.125,slowEnd:.72,minRate:.17,
+   zoom:0,vignette:0,bloom:.32,letterbox:0
  })
 });
 const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
@@ -71,6 +75,6 @@ function advance(state,realDt,reducedMotion=false){
   centerX:state.centerX,dir:state.dir,reduced:!!reducedMotion
  };
 }
-root.ArenaFocus={version:'2.3.0',PRESETS,start,advance};
+root.ArenaFocus={version:'2.4.0',PRESETS,start,advance};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaFocus;
 })(globalThis);
