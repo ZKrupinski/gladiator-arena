@@ -72,3 +72,16 @@
   color:#dab986;font:800 15px/1.15 'Noto Sans KR',serif;
   white-space:normal;text-align:center;
 }
+
+
+/* v6.9.1: market key-art HOME icon is x1571..1660.
+   The previous click hitbox began at x1529, overlapping the newly widened
+   balance plaque by 36px. Align interaction strictly with the painted icon. */
+.gm-screen .gm-stage button#gmBack {
+ left:1571px!important;top:9px!important;
+ width:90px!important;height:68px!important;
+ z-index:21!important;
+ font-size:0!important;color:transparent!important;
+ background:transparent!important;
+ border:0!important;
+}
