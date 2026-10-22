@@ -69,7 +69,7 @@ function setupRosterDrag(host){
  },{passive:false});
  var finish=function(ev){
   if(!gesture||ev.pointerId!==gesture.id)return;
-  if(gesture.dragged)suppressClickUntil=Date.now()+250;
+  if(gesture.dragged)suppressClickUntil=Date.now()+55;
   gesture=null;host.classList.remove('is-dragging');
  };
  window.addEventListener('pointerup',finish);

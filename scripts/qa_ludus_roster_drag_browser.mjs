@@ -53,7 +53,7 @@ try{
  for(let i=1;i<=12;i++)
   await page.mouse.move(rect.x+rect.width*(.84-.63*i/12),rect.y+rect.height*.48,{steps:1});
  await page.mouse.up();
- await page.waitForTimeout(80);
+ await page.waitForTimeout(120);
  const drag=await page.evaluate(()=>({
   scrollLeft:document.querySelector('.ll-portraits').scrollLeft,
   active:LudusBridge.state().active
