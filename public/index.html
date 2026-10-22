@@ -3014,7 +3014,7 @@ function render(){
  drawEffects();
  ctx.restore();
  // Damage flashes stay screen-fixed; HUD and on-screen buttons are never zoomed.
- if(S.phase==='fight'&&S.flash>0){ctx.fillStyle=`rgba(255,235,204,${Math.min(.22,S.flash*.36)})`;ctx.fillRect(-45,-45,W+90,H+90);}
+ if(S.phase==='fight'&&S.flash>0&&S.fx&&!reducedShake){ctx.fillStyle=`rgba(255,235,204,${Math.min(.22,S.flash*.36)})`;ctx.fillRect(-45,-45,W+90,H+90);}
  drawCinematicFocus();
  ctx.restore();
  if(loaded<7){ctx.fillStyle='#f7d3a0';ctx.font='20px system-ui';ctx.fillText('Loading sprite atlases…',25,680);}
