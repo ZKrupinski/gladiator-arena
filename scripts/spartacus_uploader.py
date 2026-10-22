@@ -515,22 +515,36 @@ def main(argv=None):
             if not parents:raise UploadError("INBOX_COMMIT_HAS_NO_PARENT")
             original_head=parents[0]["sha"]
             items=stage_request(spec,main_sha=original_head)
-            if inbox_sha!=head:
-                cmp=gh.request("GET",f"/repos/{REPO}/compare/{inbox_sha}...{head}")
-                if cmp.get("status")!="ahead" or not isinstance(cmp.get("files"),list):
-                    raise UploadError("INBOX_EVENT_NO_LONGER_MAIN_ANCESTOR")
-                if len(cmp["files"])>=300:
-                    raise UploadError("INBOX_CHANGED_FILE_SET_TRUNCATED")
-                intervening={x["filename"] for x in cmp["files"]}
-                protected_targets=set(items)|{RELEASE_PROBE}
-                if intervening & protected_targets:
-                    raise UploadError("INBOX_TARGET_MODIFIED_BY_NEWER_COMMIT")
-            # Keep expected_sha=head, so an additional concurrent writer
-            # during upload still fails closed instead of overwriting them.
-            result=publish_files(items,confirm=True,git=gh,expected_sha=head,
-                                 release_id=spec["releaseId"],
-                                 verify=not args.no_verify,
-                                 message="deploy(spartacus): "+spec["releaseId"])
+            protected_targets=set(items)|{RELEASE_PROBE}
+            # Concurrent QA jobs occasionally write screenshot reports to main.
+            # Retry a fast-forward collision only after verifying every newer
+            # change is unrelated to this release's game assets.
+            for attempt in range(3):
+                head=gh.main_sha()
+                if inbox_sha!=head:
+                    cmp=gh.request("GET",f"/repos/{REPO}/compare/{inbox_sha}...{head}")
+                    if cmp.get("status")!="ahead" or not isinstance(cmp.get("files"),list):
+                        raise UploadError("INBOX_EVENT_NO_LONGER_MAIN_ANCESTOR")
+                    if len(cmp["files"])>=300:
+                        raise UploadError("INBOX_CHANGED_FILE_SET_TRUNCATED")
+                    intervening={x["filename"] for x in cmp["files"]}
+                    if intervening & protected_targets:
+                        raise UploadError("INBOX_TARGET_MODIFIED_BY_NEWER_COMMIT")
+                try:
+                    result=publish_files(items,confirm=True,git=gh,expected_sha=head,
+                                         release_id=spec["releaseId"],
+                                         verify=not args.no_verify,
+                                         message="deploy(spartacus): "+spec["releaseId"])
+                    break
+                except UploadError as error:
+                    issue=str(error)
+                    race=(issue=="MAIN_MOVED_REFRESH_VERSION_BEFORE_WRITE" or
+                          ("GITHUB_HTTP_422" in issue and
+                           "Update is not a fast forward" in issue))
+                    if not race or attempt==2:raise
+                    # Next iteration gets a fresh main head, validates the
+                    # diff against the immutable inbox, and builds a NEW
+                    # fast-forward commit; never force-push or overwrite.
         else:
             result=verify_live(args.release_id,attempts=args.attempts)
         print(json.dumps(result,ensure_ascii=False,indent=2))
