@@ -1,15 +1,12 @@
 {
   "assetSha256": {
-    "public/arena-gear-bitmap.js": "7bbdb1bf41170de01fefbcf2164d013edf070170730e96bc5199d689f5002f61",
-    "public/assets/gear-atlas/conquered_gladiators_atlas_v3_192.webp": "edbd9bb66df7e51c0f89157f973b469869c305004cbc8e8aac780cfdfe2aa261",
-    "public/assets/gear-atlas/gladiator_rarities_atlas_v3_192.webp": "217d6c5a02a2c637e660ea54535038f8ed5175f5608f3ecd89e4fe532ea406d5",
-    "public/index.html": "70358f5a8b3d331af01eba963279091721e0548bb4f814d536256977b06520ef",
-    "public/ludus-armory-live.css": "6f8a5617d2504337a55e42f38d85edd7b5ff79cd354744ec1225ab72f30893fe",
-    "public/ludus-armory-live.js": "1b3000ab188204af6f7c6f04729d8b5b83ada31fcafe8fd0e747897f19e01b75"
+    "public/index.html": "c11a2b99ee78296dc93f5ee79ef74eda69fd1e71cd7a39a663ef155f90278015",
+    "public/ludus-armory-live.css": "adb215f46dcdf54514010100cdd63b829a462c3a1005613aa911d26f0d9fc6dd",
+    "public/mobile-legibility.css": "6233e4ddb362ad50e66cb558d4cff5856daafceb132dc2e2359d0d602be1b193"
   },
-  "baseCommit": "a1f5b13d42aacfeda3d327eb1637848754faccc5",
+  "baseCommit": "920f1b308c26017c38f09b0bf9bb2b861c75b334",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "roman-gear-bitmap-icon-tabs-20261023-v13",
+  "releaseId": "armory-rare-text-fit-result-message-20261023-v14",
   "releaseProtocol": "spartacus-uploader-v1"
 }
