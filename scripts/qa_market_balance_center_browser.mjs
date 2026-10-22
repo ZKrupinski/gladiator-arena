@@ -39,6 +39,7 @@ try{
    assert.ok(metrics.width>=410&&metrics.height>=75&&metrics.amountSize>=45,JSON.stringify(metrics));
    assert.ok(metrics.visualAmountPx>=17,'mobile landscape number remains readable');
    assert.ok(metrics.amountFits,'balance must fit its plaque');
+   console.log('MARKET_GEOMETRY_DEBUG '+JSON.stringify(metrics));
    assert.deepEqual(Object.values(metrics.overlaps),[0,0,0,0,0,0],'wallet must not obscure any market button');
    assert.equal(metrics.walletPointer,'none');
    assert.equal(metrics.maskPointer,'none');
