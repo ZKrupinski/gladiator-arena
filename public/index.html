@@ -1866,7 +1866,8 @@ function attack(f,victim,special=false,dashImpact=false){
    const rushEnd=clamp(rushStart+rushDir*(reversal?.critical?235:205),
       105,1175);
    victim.parryChase={fromX:rushStart,toX:rushEnd,elapsed:0,
-      travel:reversal?.critical?.19:.215,t:1.02,total:1.02,dir:rushDir};
+      travel:reversal?.critical?.19:.215,t:1.02,total:1.02,dir:rushDir,
+      ended:false,riposteDamage:reversal?.critical?18:12};
    victim.parryHasteT=1.28;
    victim.face=rushDir;
    victim.guard=false;victim.guardHold=0;victim.guardRecovery=0;
@@ -2340,9 +2341,29 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
   const ease=1-Math.pow(1-u,2.4);
   f.x=c.fromX+(c.toX-c.fromX)*ease;
   f.vx=(c.toX-c.fromX)/c.travel*(1-u);
-  if(c.elapsed>=c.travel){
-   f.x=c.toX;f.vx=0;
-   setAction(f,'attack',.23); // visual follow-through, no double damage
+  if(c.elapsed>=c.travel&&!c.ended){
+   c.ended=true;f.x=c.toX;f.vx=0;
+   setAction(f,'attack',.31);
+   // The first damage tick was the instantaneous shield counter.
+   // The fast chase concludes with a small REAL riposte against the
+   // staggering attacker, not merely a pretend attack animation.
+   const enemy=f===p?e:p;
+   if(enemy&&!enemy.dead&&enemy.hp>0&&
+      Math.abs(enemy.x-f.x)<=Math.max(390,(f.cfg.reach||200)+140)){
+    const bonus=Math.min(enemy.hp,c.riposteDamage);
+    enemy.hp=Math.max(0,enemy.hp-bonus);
+    enemy.hitRumble={t:0,total:.31,amp:13,dir:c.dir};
+    S.flash=Math.max(S.flash,.28);
+    S.shake=Math.max(S.shake,29);
+    window.ArenaMotion?.impact?.(enemy,'strike');
+    addFx(2,(f.x+enemy.x)*.5,FLOOR-182,{
+      sequence:'slash',w:390,h:390,flip:c.dir<0,
+      alpha:.75,duration:.27,layer:'front'});
+    fxSound('heavy_hit');
+    if(!f.enemy){S.score+=bonus;S.combo++;}
+    else S.combo=0;
+    if(enemy.hp<=0)finishFight(f,enemy);
+   }
   }
  }
  for(const f of [p,e]){
