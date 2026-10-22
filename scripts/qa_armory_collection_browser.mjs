@@ -37,6 +37,7 @@ try{
  assert.equal(bitmap.mapped,76,'each equipment entry has its own reviewed atlas tile');
  assert.equal(bitmap.drawn,76,'all 76 distinct 192px bitmap crops decoded successfully');
  assert.equal(bitmap.bitmapIcons,76,'no inventory icon still uses SVG once atlases load');
+ assert.equal(await page.evaluate(()=>ArenaGearCatalog.items.some(g=>g.icon.startsWith('assets/gear-icons/'))),false,'legacy SVG is only a fallback, never the displayed catalogue at successful atlas load');
  assert.deepEqual(bitmap.invalid,[],'all mapped items have stable sprite coordinates');
  assert.equal(new Set(bitmap.atlasSources).size,2,'both reviewed atlases were loaded');
  // Discovery-first economy: fresh Ludus does not expose all 76 items.
