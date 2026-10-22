@@ -9,6 +9,8 @@ on:
       - public/arena-balance.js
       - public/ludus-armory-live.js
       - public/ludus-armory-live.css
+      - public/mobile-legibility.css
+      - public/ludus-approved-scenes.js
       - scripts/qa_armory_collection_browser.mjs
       - .github/workflows/qa-armory-collection.yml
   workflow_dispatch:
