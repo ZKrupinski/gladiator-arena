@@ -1,12 +1,13 @@
 /* Spartacus crowd excitement: earned through varied exchanges and cinematic feats. */
 (function(root){'use strict';
 const spec=Object.freeze({
- clash:{points:1.1,delay:.24},guard:{points:2.4,delay:.55},
- parry:{points:9,delay:1.25},reversal:{points:14,delay:1.25},
- special:{points:7.5,delay:1.35},rush:{points:7,delay:1.2},
- combo:{points:4,delay:1},guardBreak:{points:5,delay:1},
- dodge:{points:2.2,delay:.9},comeback:{points:9,delay:3},
- finisher:{points:10,delay:2},riposte:{points:6,delay:1.2}
+ // V7: normal exchanges build tension slowly, while spectacular feats still pop.
+ clash:{points:.65,delay:.35},guard:{points:1.45,delay:.72},
+ parry:{points:6.1,delay:1.5},reversal:{points:9.7,delay:1.55},
+ special:{points:5.2,delay:1.65},rush:{points:4.9,delay:1.5},
+ combo:{points:2.8,delay:1.15},guardBreak:{points:3.6,delay:1.3},
+ dodge:{points:1.2,delay:1},comeback:{points:7,delay:3.3},
+ finisher:{points:7.6,delay:2.6},riposte:{points:4.4,delay:1.45}
 });
 function create(){return {score:0,total:0,counts:{},last:{},variety:0,history:[]};}
 function record(state,kind,time=0){
@@ -16,8 +17,10 @@ function record(state,kind,time=0){
  const repeat=Number(state.counts[kind]||0);
  const fresh=repeat===0;
  // Repeating the same punch endlessly is less interesting than varied tactics.
- const multiplier=Math.max(.3,1-repeat*.065);
- const awarded=rule.points*multiplier+(fresh?1.75:0);
+ const multiplier=Math.max(.18,1-repeat*.09);
+ // The crowd is harder to impress as it heats up, preventing easy 88–100.
+ const saturation=state.total>=90?.42:state.total>=75?.58:state.total>=55?.73:state.total>=30?.87:1;
+ const awarded=(rule.points*multiplier+(fresh?.75:0))*saturation;
  state.counts[kind]=repeat+1;state.last[kind]=clock;
  state.total+=awarded;state.score=Math.min(100,Math.max(0,Math.round(state.total*10)/10));
  if(fresh)state.variety++;
