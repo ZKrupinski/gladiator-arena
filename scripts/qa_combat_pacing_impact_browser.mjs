@@ -48,11 +48,14 @@ try{
    p.x=455;e.x=650;p.face=1;e.face=-1;
    for(const f of [p,e])Object.assign(f,{hp:300,maxHp:300,st:100,stagger:0,
     dead:false,removedFromArena:false,dodge:0,guard:false,parry:0,
-    guardHold:0,invuln:0,attackCD:0,cd:0,comboDash:null,chainHits:0,knockVX:0,knockT:0});
+    guardHold:0,invuln:0,attackCD:0,cd:0,comboDash:null,chainHits:0,knockVX:0,knockT:0,
+    attackLunge:null,specialLunge:null,specialRecoil:null});
    p.cfg={...p.cfg,atk:30,reach:300};e.cfg={...e.cfg,atk:25,reach:300};
   }
   ready();attack(p,e,false,false);
-  const normal={damage:300-e.hp,phase:s.phase};
+  const normal={damage:300-e.hp,phase:s.phase,
+   attackerForward:p.x-455,victimKnock:e.x-650,
+   trail:p.attackLunge?{...p.attackLunge}:null};
   ready();attack(p,e,false,true);
   const rush={damage:300-e.hp,focus:s.cinematic?.kind,duration:s.cinematic?.duration,
    knock:e.knockVX,shake:s.cameraKick?.amplitude,
@@ -65,6 +68,12 @@ try{
   return {normal,rush,parry};
  });
  assert.ok(sample.normal.damage>0&&sample.normal.damage<=18,JSON.stringify(sample));
+ assert.ok(sample.normal.attackerForward>=80&&sample.normal.attackerForward<=90,
+  'every normal strike must lunge ~85px: '+JSON.stringify(sample));
+ assert.ok(sample.normal.trail?.total>=.55&&sample.normal.trail?.travel>=.13,
+  'normal strike leaves full-proportioned sprite echoes after motion');
+ assert.ok(sample.normal.victimKnock>=80,
+  'normal hit must maintain fighter spacing after forward body lunge');
  assert.equal(sample.normal.phase,'fight');
  assert.ok(sample.rush.damage>sample.normal.damage*2,JSON.stringify(sample));
  assert.equal(sample.rush.focus,'dash');assert.ok(sample.rush.duration>=1.15);
@@ -85,7 +94,8 @@ try{
   s.autoplayEnabled=false;s.autoPlaying=false;s.sparks=[];s.cinematic=null;
   for(const f of [p,e])Object.assign(f,{hp:300,maxHp:300,st:100,stagger:0,
    invuln:0,dodge:0,dodgeEcho:null,dead:false,guard:false,parry:0,
-   attackCD:0,cd:0,chainHits:0,comboDash:null,knockVX:0,knockT:0});
+   attackCD:0,cd:0,chainHits:0,comboDash:null,knockVX:0,knockT:0,
+   attackLunge:null,specialLunge:null,specialRecoil:null});
   p.x=550;p.face=1;e.x=815;e.face=-1;
   window.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyL',bubbles:true}));
   const dodge={from:p.dodgeEcho?.fromX,to:p.x,total:p.dodgeEcho?.total,
@@ -121,14 +131,15 @@ try{
  assert.equal(enhanced.special.focus,'special',JSON.stringify(enhanced));
  assert.ok(enhanced.special.duration>=.75&&enhanced.special.strikeFrames>=2,JSON.stringify(enhanced));
  assert.ok(enhanced.special.directional&&enhanced.special.backdrop,JSON.stringify(enhanced));
- assert.ok(enhanced.special.attackerForward>=40&&enhanced.special.attackerForward<=50,
-  'special must actually step ~46px forward: '+JSON.stringify(enhanced));
+ assert.ok(enhanced.special.attackerForward>=148&&enhanced.special.attackerForward<=151,
+  'special must actually step ~150px forward: '+JSON.stringify(enhanced));
  assert.ok(enhanced.special.lunge?.travel>=.1,'visibly interpolated special lunge');
- assert.ok(enhanced.special.recoil?.farX-enhanced.special.recoil?.startX>=250,
-  'special must launch enemy ~285px: '+JSON.stringify(enhanced));
- assert.ok(enhanced.special.recoil?.restX-enhanced.special.recoil?.startX>=90,
+ assert.ok(enhanced.special.recoil?.farX-enhanced.special.recoil?.startX>=395,
+  'special must launch enemy up to 400px: '+JSON.stringify(enhanced));
+ assert.ok(enhanced.special.recoil?.restX-enhanced.special.recoil?.startX>=115,
   'enemy must spring back toward its original fighting range');
- assert.ok(enhanced.special.recoil?.total>=1,'slow outgoing/recoil travel');
+ assert.ok(enhanced.special.recoil?.total>=1.15,'slow outgoing/recoil travel');
+ assert.ok(enhanced.special.lunge?.total>=.8,'visibly lingering special afterimages');
  assert.ok(enhanced.special.knock>=1000&&enhanced.special.flash>=.3,JSON.stringify(enhanced));
  assert.ok(enhanced.special.shake>=65,'huge camera shake on hit');
  assert.ok(enhanced.special.title,'class special title must appear during cinematic');
@@ -141,17 +152,48 @@ try{
    phase:window.__arenaQA.state.phase
  }));
  assert.equal(displaced.phase,'fight','special effect cannot unexpectedly end duel');
- assert.ok(displaced.enemy-enhanced.special.recoil.startX>210,
+ assert.ok(displaced.enemy-enhanced.special.recoil.startX>305,
   'enemy must visibly fly far from the striker: '+JSON.stringify({enhanced,displaced}));
  await page.waitForTimeout(860);
  const returned=await page.evaluate(()=>({
    enemy:window.__arenaQA.state.enemy.x,
    recoil:window.__arenaQA.state.enemy.specialRecoil
  }));
- assert.ok(returned.enemy<displaced.enemy-75,
+ assert.ok(returned.enemy<displaced.enemy-120,
   'enemy must visibly rebound after reaching the peak: '+JSON.stringify({displaced,returned}));
- assert.ok(Math.abs(returned.enemy-enhanced.special.recoil.restX)<60,
+ assert.ok(Math.abs(returned.enemy-enhanced.special.recoil.restX)<70,
   'settle near recoverable combat distance: '+JSON.stringify({displaced,returned}));
+ // Real VENATIO target: a beast opponent uses identical attack path
+ // (fighter lunges, beast flies back) instead of isolated arcade-only FX.
+ const beast=await page.evaluate(()=>{
+   const {state:s,attack}=window.__arenaQA,p=s.player,e=s.enemy;
+   s.phase='fight';s.paused=false;s.fx=true;s.autoplayEnabled=false;s.autoPlaying=false;
+   s.cinematic=null;s.focusFrame=null;s.sparks=[];
+   const restore={beastType:e.beastType,cfg:e.cfg,enemy:e.enemy};
+   Object.assign(p,{x:470,face:1,attackCD:0,stagger:0,st:100,cd:0,
+     hp:300,maxHp:300,dead:false,attackLunge:null,specialLunge:null,chainHits:0});
+   Object.assign(e,{x:720,face:-1,attackCD:0,stagger:0,st:100,
+     hp:300,maxHp:300,dead:false,invuln:0,dodge:0,
+     parry:0,guard:false,specialRecoil:null,beastType:'wolf'});
+   attack(p,e,false);
+   const normal={step:p.x-470,beastPush:e.x-720,ghost:p.attackLunge?.total};
+   p.x=470;p.attackCD=0;p.st=100;p.cd=0;p.chainHits=0;p.stagger=0;
+   p.attackLunge=null;p.specialLunge=null;
+   e.x=720;e.hp=300;e.stagger=0;e.attackCD=0;e.specialRecoil=null;
+   attack(p,e,true);
+   const special={step:p.x-470,beastLaunched:e.x-720,
+    beastRecoil:e.specialRecoil?{...e.specialRecoil}:null,
+    fighterGhost:p.specialLunge?.total,
+    cinematic:s.cinematic?.kind};
+   Object.assign(e,restore);return {normal,special};
+ });
+ assert.ok(beast.normal.step>=80&&beast.normal.beastPush>=75&&beast.normal.ghost>=.55,
+  'VENATIO normal attacks must share 85px entry: '+JSON.stringify(beast));
+ assert.ok(beast.special.step>=145&&beast.special.beastLaunched>=150,
+  'VENATIO special attacks must share 150px lunge and heavy beast knock: '+JSON.stringify(beast));
+ assert.ok(beast.special.beastRecoil?.farX-beast.special.beastRecoil?.startX>=395,
+  'beast must be thrown 400px when arena space permits: '+JSON.stringify(beast));
+ assert.ok(beast.special.fighterGhost>=.8&&beast.special.cinematic==='special');
  assert.deepEqual(errors,[],'no runtime errors in the actual combat pipeline');
- console.log('ARENA_COMBAT_PACING_V5_PASS '+JSON.stringify({sample,enhanced,displaced,returned}));
+ console.log('ARENA_COMBAT_PACING_V6_PASS '+JSON.stringify({sample,enhanced,displaced,returned,beast}));
 }finally{await browser.close();}
