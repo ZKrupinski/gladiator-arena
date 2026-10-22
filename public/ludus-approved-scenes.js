@@ -172,7 +172,10 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  home.title='메인 루두스 로비로 돌아가기';
  home.addEventListener('click',goHome);stage.appendChild(home);
  fit();}
-function open(name){setup();room=name==='gear'?'armory':'training';if(room==='training')speechPhase='welcome';screen.hidden=false;render();}
+function open(name){setup();room=name==='gear'?'armory':'training';if(room==='training'){
+ speechPhase='welcome';
+ window.ArenaAudio?.prepareTrainingImpact?.();
+}screen.hidden=false;render();}
 function close(){window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();if(screen)screen.hidden=true;}
 function refresh(){if(screen&&!screen.hidden)render();}
 window.LudusApprovedScenes={open,close,refresh,goHome};

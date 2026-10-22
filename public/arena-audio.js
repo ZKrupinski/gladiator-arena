@@ -35,6 +35,7 @@ const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,Number.isFinite(v)?v:a));
 let ctx=null,master=null,musicBus=null,crowdBus=null,sfxBus=null,compressor=null;
 let ready=false,loading=null,started=false,enabled=true,played=0;
 let arenaActive=false,lifecycleEpoch=0;
+let trainingImpactLoad=null;
 const oneShots=new Set();
 let crowdBoostUntil=0,lastCrowdReaction=-100,crowdReactionCount=0;
 const buffers=new Map(),voices=[],stemGains=[],stemTargets=[0,0,0,0,0];
@@ -79,6 +80,30 @@ async function preload(){
   return ready;
  })().catch(err=>{console.warn('[Rome preload]',err);return false});
  return loading;
+}
+// Load ONLY the two existing heavyweight body-impact recordings for the
+// training room. No drums, stadium crowd or fight lifecycle is started.
+function prepareTrainingImpact(){
+ if(visualQA)return Promise.resolve(false);
+ const c=context();if(!c)return Promise.resolve(false);
+ if(c.state==='suspended')c.resume().catch(()=>{});
+ if(SFX.heavy_hit.every(name=>buffers.has(name)))return Promise.resolve(true);
+ if(trainingImpactLoad)return trainingImpactLoad;
+ trainingImpactLoad=Promise.all(SFX.heavy_hit.map(async name=>{
+  if(buffers.has(name))return true;
+  try{
+   const response=await fetch(BASE+name+ASSET_VERSION,{cache:'force-cache'});
+   if(!response.ok)throw Error(response.status+' '+name);
+   const clip=await c.decodeAudioData(await response.arrayBuffer());
+   buffers.set(name,clip);return true;
+  }catch(error){console.warn('[Ludus training hit]',name,String(error));return false;}
+ })).then(()=>SFX.heavy_hit.every(name=>buffers.has(name)))
+ .finally(()=>{trainingImpactLoad=null});
+ return trainingImpactLoad;
+}
+function playTrainingImpact(options={}){
+ // A single sampled contact per whip strike; respect the global mute switch.
+ return play('heavy_hit',{...options,scene:'training'});
 }
 function beginMusic(){
  if(!arenaActive||!ctx||started||!ready||!enabled)return;
@@ -187,9 +212,13 @@ function crowdReact(reason='combo'){
 }
 function play(kind,opt={}){
  if(visualQA)return false;
- if(!arenaActive&&kind!=='victory'&&kind!=='defeat')return false;
+ const trainingOnly=opt.scene==='training'&&kind==='heavy_hit';
+ if(!arenaActive&&!trainingOnly&&kind!=='victory'&&kind!=='defeat')return false;
  if(!enabled)return true;
- if(!ctx||ctx.state!=='running'){unlock();return false;}
+ if(!ctx||ctx.state!=='running'){
+  if(trainingOnly)prepareTrainingImpact();else unlock();
+  return false;
+ }
  const options=SFX[kind];if(!options)return false;
  const available=options.filter(name=>buffers.has(name));
  if(!available.length)return false;
@@ -253,13 +282,15 @@ function update(state={}){
 }
 function status(){
  return {ready,started,enabled,arenaActive,oneShots:oneShots.size,playing:!!ctx&&ctx.state==='running',
+  trainingImpactReady:SFX.heavy_hit.every(name=>buffers.has(name)),
   stems:stemGains.length,loaded:buffers.size,variants:Object.keys(SFX).length,bpm:172,
   mix:stemTargets.slice(),master:master?.gain.value??0,
   musicBus:musicBus?.gain.value??0,crowdBus:crowdBus?.gain.value??0,
   sfxBus:sfxBus?.gain.value??0,priority:lastDuck,
   crowdReactions:crowdReactionCount};
 }
-root.ArenaAudio={version:'5.1.0',unlock,preload,play,update,setMuted,status,crowdReact,enterArena,endMatch,leave,SFX,STEMS};
+root.ArenaAudio={version:'5.2.0',unlock,preload,play,update,setMuted,status,crowdReact,
+ prepareTrainingImpact,playTrainingImpact,enterArena,endMatch,leave,SFX,STEMS};
 if(typeof document!=='undefined'){
  document.addEventListener('pointerdown',()=>{if(!ctx)unlock()},{once:true,passive:true});
  root.addEventListener?.('pagehide',leave);

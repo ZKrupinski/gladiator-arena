@@ -14,7 +14,7 @@ for(const [name,sha] of Object.entries(originals)){
  const b=fs.readFileSync(new URL('../public/assets/ludus/'+name,import.meta.url));
  assert.equal(crypto.createHash('sha256').update(b).digest('hex'),sha,name+' must remain unchanged');
 }
-const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+const browser=await chromium.launch({headless:true,args:['--no-sandbox','--autoplay-policy=no-user-gesture-required']});
 const page=await browser.newPage({viewport:{width:1600,height:900}});
 const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 try{
@@ -23,6 +23,9 @@ try{
  await page.evaluate(()=>LudusApprovedScenes.open('training'));
  const root='.la-stage.training .la-doctore-live';
  await page.waitForFunction(()=>window.LudusDoctoreAnim?.status()?.ready?.idle,{timeout:20000});
+ await page.waitForFunction(()=>window.ArenaAudio?.status()?.trainingImpactReady,{timeout:20000});
+ assert.equal((await page.evaluate(()=>ArenaAudio.status())).arenaActive,false,
+  'training impact prepares without starting arena ambience');
  const check=async(action,name)=>{
   await page.waitForFunction(({action,name})=>{
    const a=document.querySelector('.la-stage.training .la-doctore-live');
@@ -91,6 +94,11 @@ try{
  assert.equal(trainee.action,'hit','trainee must visibly react to lash contact');
  assert.equal(trainee.hitCount,1,'the two identical extended lash frames only trigger one impact');
  assert.ok(trainee.zoneHit,'trainee shows a short contact effect');
+ const audio=await page.evaluate(()=>window.ArenaAudio?.status());
+ assert.equal(audio.trainingImpactReady,true,'existing recorded heavy hit sound is decoded');
+ assert.equal(audio.arenaActive,false,'whip impact does not enter arena mode');
+ assert.equal(audio.stems,0,'whip impact does not trigger drums or crowd music');
+ assert.ok(audio.oneShots>=1,'one existing battle hit WAV plays at lash contact');
  assert.ok(Number(trainee.scale)>0,'fighter keeps its calibrated art scale');
  await page.waitForFunction(()=>{
   const c=document.querySelector('.la-stage.training .lt-fighter-canvas');

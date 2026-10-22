@@ -140,6 +140,9 @@ function animate(a,stage,selected){
  impactHandler=event=>{
   if(!canvas.isConnected||event.detail?.source!=='doctore')return;
   hitStart=performance.now();hitCount++;tick=0;
+  // Same sampled bass-heavy hit used in the arena, on the exact whip contact.
+  // The Ludus audio entry point stays isolated from arena music/crowd buses.
+  window.ArenaAudio?.playTrainingImpact?.({gain:.98,pan:.08});
   draw(); // No 88ms timing lag: begin the stagger on the impact frame.
  };
  impactStage=stage;

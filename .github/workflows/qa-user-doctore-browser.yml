@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - public/index.html
+      - public/arena-audio.js
       - public/ludus-training-runtime.js
       - public/ludus-training-runtime.css
       - public/ludus-doctore-anim.js
