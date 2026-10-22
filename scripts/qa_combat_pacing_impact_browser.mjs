@@ -76,7 +76,7 @@ try{
    for(const f of [p,e])Object.assign(f,{hp:300,maxHp:300,st:100,stagger:0,
     dead:false,removedFromArena:false,dodge:0,guard:false,parry:0,
     guardHold:0,invuln:0,attackCD:0,cd:0,comboDash:null,chainHits:0,knockVX:0,knockT:0,
-    attackLunge:null,specialLunge:null,specialRecoil:null});
+    attackLunge:null,specialLunge:null,specialRecoil:null,parryChase:null,parryHasteT:0});
    p.cfg={...p.cfg,atk:30,reach:300};e.cfg={...e.cfg,atk:25,reach:300};
   }
   ready();attack(p,e,false,false);
@@ -122,7 +122,7 @@ try{
   for(const f of [p,e])Object.assign(f,{hp:300,maxHp:300,st:100,stagger:0,
    invuln:0,dodge:0,dodgeEcho:null,dead:false,guard:false,parry:0,
    attackCD:0,cd:0,chainHits:0,comboDash:null,knockVX:0,knockT:0,
-   attackLunge:null,specialLunge:null,specialRecoil:null});
+   attackLunge:null,specialLunge:null,specialRecoil:null,parryChase:null,parryHasteT:0});
   p.x=550;p.face=1;e.x=815;e.face=-1;
   window.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyL',bubbles:true}));
   const dodge={from:p.dodgeEcho?.fromX,to:p.x,total:p.dodgeEcho?.total,
@@ -238,11 +238,11 @@ try{
    Object.assign(p,{x:x1,face:1,dead:false,removedFromArena:false,
     hp:300,maxHp:300,st:100,stagger:0,dodge:0,invuln:0,
     attackCD:0,cd:0,guard:false,parry:0,comboDash:null,
-    specialRecoil:null,hitRumble:null,chainHits:0});
+    specialRecoil:null,hitRumble:null,parryChase:null,parryHasteT:0,chainHits:0});
    Object.assign(e,{x:x2,face:-1,dead:false,removedFromArena:false,
     hp:300,maxHp:300,st:100,stagger:0,dodge:0,invuln:0,
     attackCD:0,cd:0,guard:false,parry:0,comboDash:null,
-    specialRecoil:null,hitRumble:null,chainHits:0,beastType:null});
+    specialRecoil:null,hitRumble:null,parryChase:null,parryHasteT:0,chainHits:0,beastType:null});
   };
   ready(870,1150);attack(p,e,true);
   const special={start:e.specialRecoil?.startX,
@@ -255,6 +255,8 @@ try{
    far:e.specialRecoil?.farX,initial:e.x,
    final:e.specialRecoil?.restX,
    rumble:e.hitRumble?.amp,defenderRumble:p.hitRumble?.amp,
+   rush:p.parryChase?{...p.parryChase}:null,
+   haste:p.parryHasteT,enemyHp:e.hp,
    focus:s.cinematic?.kind};
   // Ensure a high zoom camera is safe with the approved backdrop art;
   // the actual render executes both the shared backdrop and fighter lens.
@@ -275,6 +277,12 @@ try{
  assert.ok(edge.parry.initial-edge.parry.start>=120,'parry must throw attacker immediately');
  assert.ok(edge.parry.rumble>=14&&edge.parry.defenderRumble>=7);
  assert.equal(edge.parry.focus,'parry');
+ assert.ok(edge.parry.rush?.toX-edge.parry.rush?.fromX>=195,
+  'successful defender MUST sprint ~205px after parry: '+JSON.stringify(edge));
+ assert.ok(edge.parry.haste>=1.2,
+  'parrying fighter must get speed-up window for subsequent attacks');
+ assert.ok(edge.parry.rush?.travel<=.22,
+  'chase travels ~200px in under 0.22 real seconds');
  assert.ok(edge.scene.backgroundZoom>1.18,'backdrop must also move with close-up');
  assert.equal(edge.scene.phase,'fight');
  const renderSource=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
@@ -284,6 +292,28 @@ try{
   'background must be zoomed separately with scene camera');
  assert.match(renderSource,/const rumble=f\.hitRumble/,
   'fighter-only hit rumble must overlay global whole-scene shaking');
+ assert.match(renderSource,/if\(f\.specialRecoil&&f\.specialRecoil\.kind==='parry'\)/,
+  'parry victim emits slow receding full-body ghost silhouettes');
+ assert.match(renderSource,/if\(f\.parryChase\)/,
+  'parry winner has its own fast, bright follow-up sprite trail');
+ await page.waitForFunction(()=>window.__arenaQA.state.player.parryChase?.ended,
+   null,{timeout:8500,polling:'raf'});
+ const counterChase=await page.evaluate(()=>{
+  const s=window.__arenaQA.state,p=s.player,e=s.enemy;
+  return {player:p.x,enemy:e.x,enemyHp:e.hp,
+   enemyRecoil:e.specialRecoil?{...e.specialRecoil}:null,
+   trailing:p.parryChase?.t,haste:p.parryHasteT};
+ });
+ assert.ok(counterChase.player-950>=185,
+  'the actual player body must race forward, not a decorative teleport: '+
+  JSON.stringify(counterChase));
+ assert.ok(counterChase.enemyHp<=edge.parry.enemyHp-10,
+  'successful parry follow-up should connect a REAL additional strike: '+
+  JSON.stringify({edge,counterChase}));
+ assert.ok(counterChase.enemyRecoil?.elapsed>0,
+  'the struck rival should still be flying backwards in slow-motion');
+ assert.ok(counterChase.trailing>.15,
+  'visible full-res sprite ghosts remain after chase');
  // Real KO transition: a fighter may still have an active afterimage,
  // a fourth-hit combo dash and cinematic when the final lethal strike lands.
  // All those MUST be removed before the victory pose is painted.
@@ -313,6 +343,6 @@ try{
  assert.equal(winCleanup.lingering,0,'only the approved victory/finisher art may remain');
  assert.deepEqual(errors,[],'no runtime errors in the actual combat pipeline');
  console.log('ARENA_COMBAT_DRAMA_V7_PASS '+JSON.stringify({
-  sample,enhanced,displaced,returned,beast,edge,ghostCurves,winCleanup
+  sample,enhanced,displaced,returned,beast,edge,counterChase,ghostCurves,winCleanup
  }));
 }finally{await browser.close();}
