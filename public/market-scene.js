@@ -62,7 +62,8 @@ function overlayPanel(hero,i,visible){const el=$('#gmPanel'+i);el.hidden=!visibl
 }
 function render(){if(!scene||scene.hidden)return;
  const list=inventory(),state=opts.state;selection=pick(selection);
- const wallet=$('#gmWallet');wallet.hidden=Number(state.gold)===3200;wallet.textContent=Number(state.gold).toLocaleString('ko-KR');
+ const wallet=$('#gmWallet');wallet.hidden=false;
+ wallet.querySelector('.gm-wallet-amount').textContent=Math.max(0,Number(state.gold)||0).toLocaleString('ko-KR');
  for(let i=0;i<3;i++){
   const h=list[i],btn=$('#gmCard'+i),sold=$('#gmVacant'+i),selected=(i===selection&&!!h);
   btn.disabled=!h;btn.setAttribute('aria-pressed',String(selected));
@@ -166,7 +167,12 @@ function setup(){if(scene)return;
   <div class="gm-paper-foreground" aria-hidden="true"></div>
   <button type="button" class="gm-back-hit" id="gmBack" aria-label="루두스로 돌아가기" title="루두스로 돌아가기"></button>
   ${types.map((t,i)=>`<button type="button" class="gm-card-hit" data-i="${i}" id="gmCard${i}" aria-label="${t.names[0]} ${t.className} 후보" aria-pressed="${i===0}"></button><div class="gm-selected-wreath" id="gmSelection${i}" data-i="${i}" aria-hidden="true" hidden><span>❧</span><b>선택</b><span>❧</span></div><div class="gm-vacant" id="gmVacant${i}" data-i="${i}" hidden><span class="gm-vacant-badge">✦ 판매 완료 ✦</span><strong>빈 단상</strong><small>신규 후보를 갱신하세요</small></div><div class="gm-card-dynamic" data-i="${i}" id="gmPanel${i}" hidden></div>`).join('')}
-  <div class="gm-wallet-value" id="gmWallet" hidden></div>
+  <div class="gm-wallet-legacy-mask" aria-hidden="true"></div>
+  <div class="gm-wallet-value" id="gmWallet" role="status" aria-label="남은 잔고">
+   <span class="gm-wallet-label">◉ 남은 잔고</span>
+   <strong class="gm-wallet-amount">0</strong>
+   <span class="gm-wallet-unit">D</span>
+  </div>
   <div class="gm-bottom-avatar" id="gmPortraitWrap" hidden><canvas id="gmPortrait" width="120" height="123" aria-hidden="true"></canvas></div>
   <div class="gm-bottom-info" id="gmBottomInfo" hidden></div>
   <div class="gm-price-value" id="gmPrice" hidden></div>

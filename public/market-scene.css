@@ -77,3 +77,40 @@
 /* Gold inner edging for refreshed recruits, without replacing the approved podiums. */
 .gm-card-dynamic{border:2px ridge #bd8a45;border-radius:2px;background:linear-gradient(115deg,#261810,#211710 45%,#301d13);box-shadow:inset 0 0 0 2px #4a2c17,inset 0 0 16px #100906,0 0 4px #180905}
 .gm-card-dynamic:before,.gm-card-dynamic:after{content:'❧';position:absolute;top:5px;font:19px Georgia,serif;color:#cda45e;pointer-events:none}.gm-card-dynamic:before{left:9px}.gm-card-dynamic:after{right:9px;transform:scaleX(-1)}
+
+/* MERCATUS v6.8: centered, legible LIVE treasury plaque.
+   Keep the whole panel above the podiums (starting y=249) and away
+   from every clickable Back, Restock, Hire and fighter selection hitbox. */
+.gm-screen .gm-stage .gm-wallet-value {
+ left:746px;top:133px;width:460px;height:82px;
+ box-sizing:border-box;
+ display:flex;flex-direction:row;align-items:center;justify-content:center;
+ gap:15px;padding:8px 19px;
+ border:4px ridge #dab578;border-radius:9px;
+ background:linear-gradient(107deg,#24150ff6,#392516fc 43%,#21140df9);
+ box-shadow:inset 0 0 0 2px #714c29,inset 0 0 17px #0a0503,0 6px 18px #100704be;
+ z-index:18;pointer-events:none;white-space:nowrap;
+ text-shadow:0 3px 4px #120702;
+}
+.gm-screen .gm-stage .gm-wallet-label{
+ display:block;flex:none;color:#f2d39d;
+ font:900 22px/1.12 'Noto Serif KR','Noto Sans KR',serif;
+ letter-spacing:.01em;
+}
+.gm-screen .gm-stage .gm-wallet-amount{
+ display:block;flex:1 1 auto;min-width:0;
+ color:#fff1b5;text-align:right;
+ font:950 45px/1 Georgia,'Noto Sans KR',sans-serif;
+ font-variant-numeric:tabular-nums;
+ letter-spacing:-.015em;
+}
+.gm-screen .gm-stage .gm-wallet-unit{
+ display:block;flex:none;color:#efc274;
+ font:900 23px/1 Georgia,'Noto Sans KR',serif;
+}
+.gm-screen .gm-stage .gm-wallet-legacy-mask{
+ position:absolute;z-index:9;pointer-events:none;
+ left:1387px;top:22px;width:153px;height:34px;
+ background:linear-gradient(90deg,#201913,#18130e 40%,#1c1510 85%,#291b12);
+}
+/* Low-cost UI only: background key visual, merchant and all buttons stay unchanged. */
