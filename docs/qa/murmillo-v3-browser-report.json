@@ -1,20 +1,20 @@
 {
-  "testedAt": "2026-10-22T11:35:19.288Z",
+  "testedAt": "2026-10-22T12:41:27.704Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 42518,
-      "totalDifference": 2845546,
+      "changedChannels": 53038,
+      "totalDifference": 3681590,
       "retries": 0
     },
     "walk": {
-      "changedChannels": 119230,
-      "totalDifference": 10168377,
+      "changedChannels": 133968,
+      "totalDifference": 11471794,
       "retries": 0
     },
     "sweep": {
-      "changedChannels": 103526,
-      "totalDifference": 9296127,
+      "changedChannels": 101359,
+      "totalDifference": 8860038,
       "retries": 0
     },
     "defeat": {
@@ -23,58 +23,29 @@
       "retries": 0
     },
     "slash": {
-      "changedChannels": 113929,
-      "totalDifference": 9900184,
-      "retries": 0
+      "changedChannels": 105402,
+      "totalDifference": 9432023,
+      "retries": 2
     },
     "thrust": {
-      "changedChannels": 120502,
-      "totalDifference": 10197605,
+      "changedChannels": 103788,
+      "totalDifference": 9290300,
       "retries": 0
     },
     "victory": {
-      "changedChannels": 86952,
-      "totalDifference": 7488764,
+      "changedChannels": 41115,
+      "totalDifference": 2845415,
       "retries": 0
     },
     "guard": {
-      "changedChannels": 31606,
-      "totalDifference": 2063745,
+      "changedChannels": 44213,
+      "totalDifference": 3116984,
       "retries": 0
     }
   },
   "spritePack": "B ready · 24 transparent frames",
   "version": "4.0.0",
-  "tierSizes": {
-    "old": [
-      0.9,
-      0.82,
-      0.76,
-      0.7,
-      0.75
-    ],
-    "other": [
-      0.9,
-      0.85,
-      0.82,
-      0.76,
-      0.72
-    ]
-  },
-  "animatedMurmilloScale": 0.75,
-  "roster": {
-    "originalKept": true,
-    "addedOnce": true,
-    "activePreserved": true,
-    "levelPreserved": true,
-    "inventoryPreserved": true,
-    "championSeparate": true,
-    "flutterRemoved": true,
-    "originalTier5Scale": 0.75,
-    "newMotionBattleScale": 0.75,
-    "rosterAfterMigration": 4
-  },
   "status": "FAIL",
-  "error": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#titleCareerFight')\n    - locator resolved to <button type=\"button\" id=\"titleCareerFight\">내 검투사 출전</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    54 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n",
+  "error": "AssertionError [ERR_ASSERTION]: fresh save has exactly one motion fighter\n\n0 !== 1\n",
   "consoleErrors": []
 }
