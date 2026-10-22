@@ -6,6 +6,24 @@ import {chromium} from 'playwright';
 const model={globalThis:{}};
 vm.runInNewContext(readFileSync(new URL('../public/arena-balance.js',import.meta.url),'utf8'),model);
 const balance=model.globalThis.ArenaBalance;
+const combatSource=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
+const dodgeStops=combatSource.match(/for\(const \[t,a\] of (\[\[[^\n]+?\]\])\)\{/);
+const attackStops=combatSource.match(/const echoes=strong\s*\?\s*(\[\[[^\n]+\]\])\s*:\s*(\[\[[^\n]+\]\]);/);
+assert.ok(dodgeStops&&attackStops,'real sprite afterimage curves must exist');
+const ghostCurves={
+ dodge:JSON.parse(dodgeStops[1]),
+ special:JSON.parse(attackStops[1]),
+ normal:JSON.parse(attackStops[2])
+};
+for(const [kind,stops] of Object.entries(ghostCurves)){
+ assert.ok(stops.length>=5,'several physical afterimages for '+kind);
+ for(let i=1;i<stops.length;i++){
+  assert.ok(stops[i][0]>stops[i-1][0],'echo positions get closer to fighter '+kind);
+  assert.ok(stops[i][1]>stops[i-1][1],'farther echoes must be FAINTER '+kind);
+ }
+ assert.ok(stops[0][1]<=.11&&stops.at(-1)[1]>=.65,
+  'distant ghosts subtle while close ghosts visibly opaque '+kind);
+}
 assert.equal(balance.combatDamage(17),8,'more than 14 normal hits at 138 HP');
 assert.equal(Math.ceil(138/balance.combatDamage(17)),18);
 assert.equal(balance.combatDamage(50,'parry'),30,'timed parry keeps premium damage');
@@ -17,14 +35,21 @@ const focus=fx.globalThis.ArenaFocus;
 assert.ok(focus.PRESETS.parry.duration>.8);
 assert.equal(focus.PRESETS.parry.zoom,0,'no camera cut that hides fighters');
 assert.ok(focus.PRESETS.dash.hitstop>=.16);
-assert.ok(focus.PRESETS.special.hitstop>=.16);
+assert.ok(focus.PRESETS.special.hitstop>=.20);
+assert.ok(focus.PRESETS.special.letterbox>=160,
+  'five times bigger special scene crop');
+assert.ok(focus.PRESETS.special.minRate<=.08,
+  'special time practically stops on a major hit');
+assert.ok(focus.PRESETS.strike.duration>=.29,
+  'normal confirmed attacks have independent micro-slow');
 assert.ok(focus.PRESETS.dodge.duration>=.55&&focus.PRESETS.dodge.minRate<=.3);
 assert.ok(focus.PRESETS.special.zoom<.09,'specials must not crop opponents');
 const camera={globalThis:{}};
 vm.runInNewContext(readFileSync(new URL('../public/arena-motion.js',import.meta.url),'utf8'),camera);
 assert.ok(camera.globalThis.ArenaMotion.PRESETS.parry.amp>=34);
 assert.ok(camera.globalThis.ArenaMotion.PRESETS.dash.amp>=36);
-assert.ok(camera.globalThis.ArenaMotion.PRESETS.special.amp>=55);
+assert.ok(camera.globalThis.ArenaMotion.PRESETS.special.amp>=85);
+assert.ok(camera.globalThis.ArenaMotion.PRESETS.parry.amp>=55);
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 const page=await browser.newPage({viewport:{width:1280,height:820}});
 const errors=[];page.on('pageerror',error=>errors.push(String(error)));
@@ -198,6 +223,35 @@ try{
  assert.ok(beast.special.beastRecoil?.farX-beast.special.beastRecoil?.startX>=395,
   'beast must be thrown 400px when arena space permits: '+JSON.stringify(beast));
  assert.ok(beast.special.fighterGhost>=.8&&beast.special.cinematic==='special');
+ // Real KO transition: a fighter may still have an active afterimage,
+ // a fourth-hit combo dash and cinematic when the final lethal strike lands.
+ // All those MUST be removed before the victory pose is painted.
+ const winCleanup=await page.evaluate(()=>{
+  const {state:s,attack,render}=window.__arenaQA,p=s.player,e=s.enemy;
+  s.phase='fight';s.paused=false;s.fx=true;s.gauntlet=null;s.careerMatch=false;
+  s.autoplayEnabled=false;s.autoPlaying=false;s.cinematic=null;s.focusFrame=null;
+  p.x=480;p.face=1;p.hp=300;p.maxHp=300;p.st=100;p.cd=0;
+  p.attackCD=0;p.stagger=0;p.chainHits=0;p.comboDash=null;
+  p.attackLunge={fromX:380,toX:480,t:.5,total:.5,travel:.15};
+  p.dodgeEcho={fromX:500,toX:480,t:.6,total:.6,travel:.2};
+  p.specialLunge={fromX:390,toX:480,t:.7,total:.7,travel:.2};
+  e.x=700;e.face=-1;e.hp=4;e.maxHp=300;e.stagger=0;
+  e.guard=false;e.parry=0;e.dodge=0;e.invuln=0;e.dead=false;
+  e.comboDash={t:.25,victim:p,dir:-1,hit:false};
+  e.specialRecoil={startX:680,initialX:700,farX:900,restX:735,elapsed:.1,total:1.18};
+  attack(p,e,false);
+  const result={phase:s.phase,pEcho:p.dodgeEcho,pAttack:p.attackLunge,
+   pSpecial:p.specialLunge,pDash:p.comboDash,eDash:e.comboDash,
+   eRecoil:e.specialRecoil,focus:s.cinematic,frame:s.focusFrame,
+   lingering:s.sparks.filter(v=>['dash','slash','sweep','thrust','special','hit'].includes(v.sequence)).length};
+  render();return result;
+ });
+ assert.equal(winCleanup.phase,'finisher','the real attack should terminate the fight');
+ for(const key of ['pEcho','pAttack','pSpecial','pDash','eDash','eRecoil','focus','frame'])
+  assert.equal(winCleanup[key],null,'NO lingering ghosts in the victory pose: '+key);
+ assert.equal(winCleanup.lingering,0,'only the approved victory/finisher art may remain');
  assert.deepEqual(errors,[],'no runtime errors in the actual combat pipeline');
- console.log('ARENA_COMBAT_PACING_V6_PASS '+JSON.stringify({sample,enhanced,displaced,returned,beast}));
+ console.log('ARENA_COMBAT_DRAMA_V7_PASS '+JSON.stringify({
+  sample,enhanced,displaced,returned,beast,ghostCurves,winCleanup
+ }));
 }finally{await browser.close();}
