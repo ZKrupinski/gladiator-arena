@@ -22,7 +22,13 @@ function render(stage,a,cb){
  const stockBadge=x=>'<em class="ra-flag '+(eq[x.slot]===x.id?'worn':count(x.id)?'owned':'price')+'">'+(eq[x.slot]===x.id?'✦ 장착':count(x.id)?'◆ 보관 ×'+count(x.id):assigned(x.id)?'⚔ 배정 ×'+assigned(x.id):shop(x.id)?'◉ '+fmt(x.cost)+'D':'✦ 전리품')+'</em>';
  const cards=visible.map(x=>'<button type="button" class="ra-item rarity-'+x.rarity+(g?.id===x.id?' selected':'')+(eq[x.slot]===x.id?' equipped':'')+'" data-item="'+esc(x.id)+'" aria-pressed="'+(g?.id===x.id)+'" style="--ra-tone:'+rar[x.rarity].color+'"><span class="ra-art">'+icon(x)+'<span class="ra-stock-count">×'+count(x.id)+'</span></span><span class="ra-item-copy"><small class="ra-tier">'+rar[x.rarity].name+' · '+labels[x.slot]+'</small><strong>'+esc(x.name)+'</strong><small>ATK +'+x.atk+' · HP +'+x.hp+'</small>'+(x.setId?'<i>◈ 세트</i>':'')+'</span>'+stockBadge(x)+'</button>').join('');
  const fighters=state.roster.map((f,i)=>'<button type="button" data-fighter="'+i+'" class="ra-portrait '+(i===state.active?'selected':'')+'"><canvas width="112" height="100" data-portrait="'+i+'"></canvas><strong>'+esc(f.name)+'</strong><small>Lv.'+(f.level||1)+'</small></button>').join('');
- const cats=[['all','전체'],['weapon','⚔ 무기'],['shield','🛡 방패'],['armor','♜ 갑옷'],['helmet','⛑ 투구'],['bracers','✥ 완갑']].map(([key,name])=>'<button type="button" data-cat="'+key+'" class="'+(cat===key?'selected':'')+'">'+name+'</button>').join('');
+ const tabItems=a.allGear();
+ const tabGear={weapon:'iron',shield:'wooden_scutum',armor:'leather',helmet:'gaul_iron_cap',bracers:'pit_leather_guard'};
+ const cats=[['all','전체 장비'],['weapon','무기'],['shield','방패'],['armor','갑옷'],['helmet','투구'],['bracers','팔 보호대']].map(([key,name])=>{
+  const gear=key==='all'?null:tabItems.find(item=>item.id===tabGear[key]);
+  const art=gear?'<img class="ra-cat-icon" src="'+esc(gear.icon)+'" alt="" loading="lazy" width="40" height="40">':'<span class="ra-cat-all-icon" aria-hidden="true">▦</span>';
+  return '<button type="button" data-cat="'+key+'" class="ra-tab-btn'+(cat===key?' selected':'')+'" aria-label="'+name+'" title="'+name+'" aria-pressed="'+(cat===key)+'">'+art+'</button>';
+ }).join('');
  // Equipment worn by this fighter is visually allocated here, not removed from the Ludus vault.
  // Read the complete catalogue so old save equipment is visible even when the shop is filtered.
  const equippedCatalog=a.allGear();
