@@ -104,8 +104,11 @@ function sell(career,id){
 }
 function choose(career,hero,context={},rng=Math.random){
  ensure(career);
- const chance=Math.min(.82,(context.beast?.53:context.boss?.67:context.lineup?.43:.36)+Math.min(.16,(hero?.equipment&&catalog.summary(hero).lootLuck)||0)+Math.min(.10,career.lootDryStreak*.014));
- if(rng()>=chance){career.lootDryStreak++;career.lootRareStreak++;return null;}
+ const heat=Math.max(0,Math.min(100,Number(context.excitement)||0));
+ const bonus=(catalog.summary(hero).lootLuck||0);
+ const chance=Math.min(.96,Math.max(0,(context.beast?.42:context.boss?.55:context.lineup?.36:.29)+heat*.0052+Math.min(.16,bonus)+Math.min(.10,career.lootDryStreak*.013))*Math.max(0,Number(context.rollModifier??1)));
+ const guaranteed=context.guaranteed===true;
+ if(!guaranteed&&rng()>=chance){career.lootDryStreak++;return null;}
  career.lootDryStreak=0;
  const lv=Math.max(1,Number(hero?.level)||1);
  let weights={common:56,uncommon:28,rare:11,epic:3.6,legendary:1.2,relic:.2};
@@ -113,11 +116,16 @@ function choose(career,hero,context={},rng=Math.random){
  else if(lv<7){weights={common:60,uncommon:32,rare:8,epic:0,legendary:0,relic:0};}
  else if(lv<13){weights.legendary=0;weights.relic=0;weights.epic=3;}
  else if(lv<19){weights.relic=0;}
- if(context.boss||context.beast){weights.rare*=1.4;weights.epic*=1.3;}
+ if(context.boss||context.beast){weights.rare*=1.35;weights.epic*=1.25;}
+ // A spectacular fight increases the actual chance of rare+ gear, not merely item count.
+ weights.rare*=1+heat/80;
+ weights.epic*=1+heat/58;
+ weights.legendary*=1+heat/48;
+ weights.relic*=1+heat/40;
  if(career.lootRareStreak>=12&&lv>=3)weights.rare*=1.7;
  const bands=rank.map(r=>({r,items:catalog.items.filter(g=>g.id!=='wood'&&g.rarity===r&&level(g)<=lv),w:weights[r]})).filter(x=>x.items.length&&x.w>0);
- const total=bands.reduce((s,x)=>s+x.w,0);if(!total)return null;
- let pick=rng()*total,band=bands[bands.length-1];for(const x of bands){pick-=x.w;if(pick<0){band=x;break;}}
+ const weightTotal=bands.reduce((sum,x)=>sum+x.w,0);if(!weightTotal)return null;
+ let pick=rng()*weightTotal,band=bands[bands.length-1];for(const x of bands){pick-=x.w;if(pick<0){band=x;break;}}
  const variants=band.items.filter(g=>!total(career,g.id));
  const pool=variants.length&&rng()<.76?variants:band.items;
  const item=pool[Math.min(pool.length-1,Math.floor(rng()*pool.length))];
@@ -130,5 +138,17 @@ function award(career,hero,context={},rng=Math.random){
  if(isShopItem(item)&&!career.discoveredGear.includes(item.id))career.discoveredGear.push(item.id);
  return {id:item.id,name:item.name,rarity:item.rarity,level:level(item),count:quantity(career,item.id),unlocked:isShopItem(item),hero:hero.name};
 }
-root.ArenaLoot={rank,quantity,allocated,total,level,ensure,visible,offer,shopEnabled,buy,equip,remove,sell,choose,award,isShopItem};
+function awardBattle(career,hero,context={},rng=Math.random){
+ // Extra slots are EARNED by spectacular exchanges, not bought. A game
+ // with zero fighting still has at most one low-probability drop attempt.
+ const heat=Math.max(0,Math.min(100,Number(context.excitement)||0));
+ const slots=Math.min(5,1+(heat>=22?1:0)+(heat>=44?1:0)+(heat>=66?1:0)+(heat>=88?1:0));
+ const loot=[];
+ for(let i=0;i<slots;i++){
+  const item=award(career,hero,{...context,excitement:heat,guaranteed:i===0&&heat>=88,rollModifier:Math.max(.53,1-i*.105)},rng);
+  if(item)loot.push(item);
+ }
+ return loot;
+}
+root.ArenaLoot={rank,quantity,allocated,total,level,ensure,visible,offer,shopEnabled,buy,equip,remove,sell,choose,award,awardBattle,isShopItem};
 })(globalThis);
