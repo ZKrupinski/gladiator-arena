@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+ <defs><radialGradient id="bg" cx="44%" cy="30%" r="80%"><stop stop-color="#725442"/><stop offset=".57" stop-color="#321b1a"/><stop offset="1" stop-color="#140d10"/></radialGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5d371e"/><stop offset=".18" stop-color="#ffefa6"/><stop offset=".44" stop-color="#b47c40"/><stop offset=".77" stop-color="#f7d789"/><stop offset="1" stop-color="#53321b"/></linearGradient>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#354c5c"/><stop offset=".25" stop-color="#e2e9ec"/><stop offset=".48" stop-color="#79909b"/><stop offset=".75" stop-color="#f5ffff"/><stop offset="1" stop-color="#344452"/></linearGradient>
+ <linearGradient id="armor" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#26282c"/><stop offset=".27" stop-color="#c5a68a"/><stop offset=".52" stop-color="#5b3030"/><stop offset=".77" stop-color="#daa66c"/><stop offset="1" stop-color="#251c1d"/></linearGradient>
+ </defs><rect x="3" y="3" width="186" height="186" rx="18" fill="url(#bg)" stroke="#ff8577" stroke-width="6"/>
+ <rect x="11" y="11" width="170" height="170" rx="12" fill="none" stroke="#c99d65" stroke-width="2.7" opacity=".68"/>
+ <path d="M23 38Q96 -8 169 38M24 154Q96 195 168 154" fill="none" stroke="#bc8955" stroke-width="2" opacity=".5"/>
+ <path d="M22 24 l3 -6 3 6 6 2 -6 3 -3 7 -3 -7 -6 -3z" fill="#ff8577" opacity="0.45"/><path d="M35 24 l3 -6 3 6 6 2 -6 3 -3 7 -3 -7 -6 -3z" fill="#ff8577" opacity="0.52"/><path d="M48 24 l3 -6 3 6 6 2 -6 3 -3 7 -3 -7 -6 -3z" fill="#ff8577" opacity="0.5900000000000001"/><path d="M61 24 l3 -6 3 6 6 2 -6 3 -3 7 -3 -7 -6 -3z" fill="#ff8577" opacity="0.66"/><path d="M74 24 l3 -6 3 6 6 2 -6 3 -3 7 -3 -7 -6 -3z" fill="#ff8577" opacity="0.73"/><path d="M87 24 l3 -6 3 6 6 2 -6 3 -3 7 -3 -7 -6 -3z" fill="#ff8577" opacity="0.8"/>
+ <circle cx="96" cy="96" r="72" fill="#f0c08b" opacity=".043"/>
+ <g transform="translate(96 103) rotate(8)"><path d="M0 -65 C87 -65 87 61 0 84 C-87 61 -87 -65 0 -65Z" fill="url(#armor)" stroke="url(#gold)" stroke-width="11"/>
+ <path d="M-38 -58 Q0 -76 38 -58 L37 54 Q0 78 -37 54Z" fill="none" stroke="#ffe29a" stroke-width="3" opacity=".64"/>
+ <path d="M0 -66 V70 M-48 0 H48" stroke="#f3cd87" stroke-width="8" opacity=".63"/>
+ <circle cx="0" cy="0" r="28" fill="url(#gold)" stroke="#20100a" stroke-width="3"/><path d="M0 -20 L9 -5 24 0 9 7 0 23 -9 7 -24 0 -9 -5Z" fill="#ae5dde" stroke="#fff0b4" stroke-width="3"/>
+ </g>
+ <circle cx="158" cy="160" r="17" fill="#24150f" stroke="#ff8577" stroke-width="3"/><text x="158" y="166" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffe4ac">✦</text>
+ </svg>
