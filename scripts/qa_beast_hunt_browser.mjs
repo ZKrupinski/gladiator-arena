@@ -42,11 +42,56 @@ try{
  await page.locator('#beastNext').click();assert.equal(await page.locator('#beastTypeSelect').inputValue(),'leopard');
  await page.locator('#beastPrev').click();assert.equal(await page.locator('#beastTypeSelect').inputValue(),'wolf');
  assert.ok(await page.locator('#beastHeroSelect option').count()>0,'starter gladiator present');
+ assert.equal(await page.locator('#beastHeroSelect').isVisible(),false,'old selector must be hidden');
+ assert.equal(await page.locator('#beastHeroPortrait').count(),1);
+ assert.equal(await page.locator('#beastHeroPrev').count(),1);
+ assert.equal(await page.locator('#beastHeroNext').count(),1);
+ await page.waitForFunction(()=>{
+  const c=document.querySelector('#beastHeroPortrait');
+  if(!c)return false;
+  const rgba=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+  for(let i=3;i<rgba.length;i+=32)if(rgba[i]>64)return true;
+  return false;
+ },{timeout:45000});
+ // Second available gladiator tests real carousel selection and thumbnail swaps.
+ await page.evaluate(()=>{
+  const roster=LudusBridge.state().roster,base=roster[0];
+  roster.push({...base,name:'QA SECOND GLADIATOR',
+   stats:{...base.stats},inventory:[...base.inventory],
+   equipment:{...base.equipment},injury:0,fatigue:0});
+  LudusBridge.section('beasts');
+ });
+ assert.equal(await page.locator('#beastHeroSelect option').count(),2);
+ const firstHero=await page.locator('#beastHeroName').innerText();
+ await page.locator('#beastHeroNext').click();
+ assert.equal(await page.locator('#beastHeroSelect').inputValue(),'1');
+ assert.equal(await page.locator('#beastHeroPortrait').getAttribute('data-roster-art'),'1');
+ assert.match(await page.locator('#beastHeroName').innerText(),/QA SECOND GLADIATOR/);
+ await page.locator('#beastHeroPrev').click();
+ assert.equal(await page.locator('#beastHeroSelect').inputValue(),'0');
+ assert.equal(await page.locator('#beastHeroName').innerText(),firstHero);
+ await page.evaluate(()=>{LudusBridge.state().roster.pop();LudusBridge.section('beasts');});
+ assert.equal(await page.locator('#beastHeroSelect option').count(),1);
  const initial=await page.evaluate(()=>LudusBridge.state().gold);
  await page.locator('#beastTypeSelect').selectOption('wolf');
  await page.locator('#beastStart').click();
  await page.waitForFunction(()=>__arenaQA.state.phase==='fight',{timeout:12000});
  await win();
+ await page.waitForFunction(()=>{
+  const canvas=document.querySelector('#loserPose canvas');if(!canvas)return false;
+  const pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;
+  for(let i=3;i<pixels.length;i+=32)if(pixels[i]>60)return true;
+  return false;
+ },{timeout:15000});
+ const resultWolfBounds=await page.evaluate(()=>{
+  const c=document.querySelector('#loserPose canvas'),a=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+  let lo=c.width,hi=-1;
+  for(let y=0;y<c.height;y+=2)for(let x=0;x<c.width;x+=2){
+   if(a[(y*c.width+x)*4+3]>64){lo=Math.min(lo,x);hi=Math.max(hi,x);}
+  }
+  return {width:hi-lo+1};
+ });
+ assert.ok(resultWolfBounds.width>200,'result wolf must render visibly large');
  assert.equal(await page.locator('#againBtn').innerText(),'야수 선택으로 돌아가기');
  assert.equal(await page.locator('#continueBtn').innerText(),'다음 라운드 2/3');
  // Explicit back must NOT start another wolf fight.
