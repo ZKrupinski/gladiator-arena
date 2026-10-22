@@ -55,6 +55,21 @@ try{
  assert(geometry.cols[0].width<geometry.cols[1].width&&geometry.cols[1].width<geometry.cols[2].width,'24/34/42 width hierarchy');
  assert(geometry.actions.every(x=>x.nowrap==='nowrap'&&!x.overflow&&x.title?.length<=2),'short, single-line armory controls: '+JSON.stringify(geometry.actions));
  assert.equal(await page.locator('.ra-combat-stats .ra-live-stat').count(),6,'actual stats visible in hero pane');
+ // Three independent equipment slots appear directly between selected hero and stats.
+ const slotLayout=await page.evaluate(()=>{
+  const hero=document.querySelector('.ra-hero-info'),loadout=document.querySelector('.ra-loadout'),stats=document.querySelector('.ra-combat-stats');
+  const elems=[...hero.parentElement.children];
+  return {count:loadout.querySelectorAll('[data-loadout-slot]').length,
+   slots:[...loadout.querySelectorAll('[data-loadout-slot]')].map(e=>e.dataset.loadoutSlot),
+   ordered:elems.indexOf(hero)<elems.indexOf(loadout)&&elems.indexOf(loadout)<elems.indexOf(stats),
+   empty:[...loadout.querySelectorAll('.ra-loadout-slot.is-empty')].map(e=>e.dataset.loadoutSlot),
+   disabled:[...loadout.querySelectorAll('.ra-loadout-slot:disabled')].map(e=>e.dataset.loadoutSlot)};
+ });
+ assert.equal(slotLayout.count,3,'all three gear slots are always shown');
+ assert.deepEqual(slotLayout.slots,['weapon','shield','armor']);
+ assert(slotLayout.ordered,'gear slots are just below fighter name');
+ assert(slotLayout.empty.includes('shield')&&slotLayout.empty.includes('armor'),'empty defense slots show placeholders');
+ assert(slotLayout.disabled.includes('shield')&&slotLayout.disabled.includes('armor'),'empty slots do not navigate');
  assert.equal(await page.locator('[data-item="trainer_blade"]').count(),1);
  assert.equal(await page.locator('[data-item="imperial_aquila"]').count(),0,'undiscovered epic gear hidden');
  await page.locator('[data-item="trainer_blade"]').click();
@@ -73,12 +88,24 @@ try{
  assert.equal(await page.evaluate(()=>LudusBridge.gearCount('trainer_blade')),0,'allocated copy removed from shared warehouse');
  assert.equal(await page.evaluate(()=>LudusBridge.gearAllocated('trainer_blade')),1);
  assert.equal(await page.evaluate(()=>LudusBridge.state().roster[LudusBridge.state().active].equipment.weapon),'trainer_blade');
+ assert.equal(await page.locator('[data-loadout-slot="weapon"][data-loadout-gear="trainer_blade"] .ra-item-img').count(),1,'worn sword immediately visible in hero slot');
+ await page.waitForFunction(()=>document.querySelector('[data-loadout-slot="weapon"] .ra-item-img')?.naturalWidth>0);
  // Already-worn equipment activates its real stats as soon as it is selected,
  // without first requiring an unequip/re-equip transaction.
  assert.equal(await page.locator('.ra-live-stat.equipped-active[data-stat="atk"]').count(),1);
  assert.equal(await page.locator('.ra-live-stat.equipped-active[data-stat="hp"]').count(),1);
  await page.locator('[data-item="iron"]').click();
  assert.equal(await page.locator('.ra-live-stat.equipped-active').count(),0,'an un-equipped selection is only a preview');
+ await page.locator('[data-loadout-slot="weapon"]').click();
+ assert.equal(await page.locator('.ra-item.selected[data-item="trainer_blade"]').count(),1,'worn icon focuses gear in inventory');
+ assert.equal(await page.locator('.ra-detail-title').innerText(),'루두스 훈련검');
+ assert.equal(await page.locator('.ra-loadout-slot.is-selected[data-loadout-slot="weapon"]').count(),1);
+ await page.locator('[data-cat="shield"]').click();
+ assert.equal(await page.locator('[data-item="trainer_blade"]').count(),0,'weapon hidden while shield filter selected');
+ await page.locator('[data-loadout-slot="weapon"]').click();
+ assert.equal(await page.locator('.ra-item.selected[data-item="trainer_blade"]').count(),1,'worn icon restores hidden weapon card after different category');
+ assert.equal(await page.locator('[data-cat="all"].selected').count(),1,'worn icon restores all category');
+ assert.equal(await page.locator('.ra-detail-title').innerText(),'루두스 훈련검');
  await page.locator('[data-item="trainer_blade"]').click();
  assert.equal(await page.locator('.ra-live-stat.equipped-active[data-stat="atk"]').count(),1,'re-selecting an already worn sword instantly highlights its ATK contribution');
  assert.equal(await page.locator('.ra-live-stat.equipped-active[data-stat="hp"]').count(),1,'re-selecting an already worn sword instantly highlights its HP contribution');
@@ -90,6 +117,7 @@ try{
  assert.equal(removedCombat.hp,beforeCombat.hp,'real HP returns after removing equipment');
  assert(await page.locator('.ra-live-stat.changed.minus').count()>=2,'removed equipment reductions visibly glow');
  assert.equal(await page.evaluate(()=>LudusBridge.gearCount('trainer_blade')),1,'unequipped copy returns to warehouse');
+ assert.equal(await page.locator('.ra-loadout-slot.is-empty[data-loadout-slot="weapon"] .ra-loadout-empty').count(),1,'unequip instantly restores empty slot');
  assert.equal(await page.evaluate(()=>LudusBridge.state().gold),before);
  await page.locator('[data-item="iron"]').click();
  const ironCost=await page.evaluate(()=>ArenaGearCatalog.items.find(g=>g.id==='iron').cost);
@@ -99,6 +127,26 @@ try{
  assert.equal(await page.evaluate(()=>LudusBridge.gearCount('iron')),3);
  await page.locator('#raSell').click();
  assert.equal(await page.evaluate(()=>LudusBridge.gearCount('iron')),2);
+ // Shield and armor icons must update in their dedicated slots and point to the owned gear.
+ await page.evaluate(()=>{
+  const state=LudusBridge.state();
+  state.armoryInventory.push('leather');
+  state.discoveredGear.push('leather');
+ });
+ await page.locator('[data-item="iron"]').click();
+ await page.locator('#raEquip').click();
+ assert.equal(await page.locator('.ra-loadout-slot.is-equipped[data-loadout-gear="iron"]').count(),1);
+ await page.locator('[data-item="shield"]').click();
+ await page.locator('#raEquip').click();
+ assert.equal(await page.locator('[data-loadout-slot="shield"][data-loadout-gear="shield"] .ra-item-img').count(),1,'shield icon appears upon equipping');
+ await page.locator('[data-loadout-slot="shield"]').click();
+ assert.equal(await page.locator('.ra-item.selected[data-item="shield"]').count(),1);
+ await page.locator('[data-item="leather"]').click();
+ await page.locator('#raEquip').click();
+ assert.equal(await page.locator('[data-loadout-slot="armor"][data-loadout-gear="leather"] .ra-item-img').count(),1,'armor icon appears upon equipping');
+ await page.locator('[data-loadout-slot="armor"]').click();
+ assert.equal(await page.locator('.ra-item.selected[data-item="leather"]').count(),1,'armor slot goes to selected warehouse item');
+ await page.locator('[data-cat="all"]').click();
  assert.equal(await page.evaluate(()=>LudusBridge.state().gold),before-ironCost+Math.floor(ironCost*.42));
  await page.locator('[data-cat="shield"]').click();
  assert.equal(await page.locator('[data-item="shield"]').count(),1);
