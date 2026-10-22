@@ -97,6 +97,44 @@ try{
  assert.ok(landscapeMetrics.flag>=26,JSON.stringify(landscapeMetrics));
  assert.ok(landscapeMetrics.name>=29);
  assert.equal(landscapeMetrics.columns,1,'show full-width inventory rows on mobile landscape');
+
+ // In widescreen the whole detail panel must scroll — the equipment sublist
+ // must not steal scrolling or clip the purchase buttons below the viewport.
+ const landscapeScroll=await page.evaluate(()=>{
+   const panel=document.querySelector('.ra-details');
+   const equipment=panel.querySelector('.ra-equipped');
+   const controls=panel.querySelector('.ra-buttons');
+   const before=panel.scrollTop;
+   const max=panel.scrollHeight-panel.clientHeight;
+   panel.scrollTop=panel.scrollHeight;
+   const after=panel.scrollTop;
+   const a=panel.getBoundingClientRect(),b=controls.getBoundingClientRect();
+   return {max,before,after,overflow:getComputedStyle(panel).overflowY,
+     equipmentOverflow:getComputedStyle(equipment).overflowY,
+     controlsVisible:b.bottom<=a.bottom+2&&b.top>=a.top-2};
+ });
+ assert.ok(landscapeScroll.max>80,JSON.stringify(landscapeScroll));
+ assert.ok(landscapeScroll.after>80,'detail article reaches bottom');
+ assert.equal(landscapeScroll.overflow,'auto');
+ assert.notEqual(landscapeScroll.equipmentOverflow,'auto','equipment sublist must not swallow scroll');
+ assert.ok(landscapeScroll.controlsVisible,'equip buttons remain reachable');
+ // The portrait phone scrolls the entire armory through comparison, sets and
+ // purchase controls rather than truncating the details section.
+ await page.setViewportSize({width:390,height:844});
+ const portraitScroll=await page.evaluate(()=>{
+   const stage=document.querySelector('.la-stage.armory'),root=stage.querySelector('.ra-collection');
+   const panel=root.querySelector('.ra-details'),controls=panel.querySelector('.ra-buttons');
+   root.scrollTop=root.scrollHeight;
+   const view=root.getBoundingClientRect(),b=controls.getBoundingClientRect();
+   return {top:root.scrollTop,max:root.scrollHeight-root.clientHeight,
+     height:panel.scrollHeight,clientHeight:panel.clientHeight,
+     overflow:getComputedStyle(panel).overflowY,
+     controlsVisible:b.bottom<=view.bottom+3&&b.top>=view.top-3};
+ });
+ assert.ok(portraitScroll.top>100,JSON.stringify(portraitScroll));
+ assert.ok(portraitScroll.height>=portraitScroll.clientHeight,'details have intrinsic height');
+ assert.equal(portraitScroll.overflow,'visible');
+ assert.ok(portraitScroll.controlsVisible,'portrait details and action buttons reachable');
  assert.deepEqual(errors,[],'no browser runtime errors');
  console.log('ARMORY_COLLECTION_BROWSER_PASS');
 }finally{await browser.close();}

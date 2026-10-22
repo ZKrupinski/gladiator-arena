@@ -148,3 +148,39 @@
 .ra-collection .ra-set-row{display:grid;grid-template-columns:1fr auto;gap:1px 6px;color:#a9907b;border-bottom:1px solid #6e51354a;padding:4px;font:700 12px "Noto Sans KR",sans-serif}
 .ra-collection .ra-set-row b{color:#cc9d79}.ra-collection .ra-set-row small{grid-column:1/-1}
 .ra-collection .ra-set-row.active{color:#f5d597;background:#5d42245a}.ra-collection .ra-set-row.active b{color:#fdeaaf}
+
+/* Detail-panel scroll regression: the full article must remain reachable, not
+   only the short equipment list. This pane is an independent scroll container
+   in wide-screen Ludus layouts, while purchase controls remain visible. */
+.ra-collection .ra-details {
+  min-height:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior-y:contain;
+  touch-action:pan-y;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  scrollbar-color:#c4985d #22130e;
+  scrollbar-gutter:stable;
+}
+.ra-collection .ra-details .ra-selected,
+.ra-collection .ra-details .ra-comparison,
+.ra-collection .ra-details .ra-set-detail,
+.ra-collection .ra-details .ra-equipped,
+.ra-collection .ra-details .ra-buttons {
+  flex-shrink:0;
+}
+.ra-collection .ra-details .ra-equipped {
+  flex:0 0 auto;
+  min-height:max-content;
+  overflow:visible;
+}
+.ra-collection .ra-details .ra-buttons {
+  position:sticky;
+  z-index:6;
+  bottom:0;
+  margin-top:10px;
+  padding:9px 0 5px;
+  background:linear-gradient(180deg,#1b1010f3,#190e0cfb);
+  box-shadow:0 -8px 17px #0a0405a3;
+}

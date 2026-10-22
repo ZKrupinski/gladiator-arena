@@ -3,7 +3,7 @@
 const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Math.round(Number(n)||0).toLocaleString('ko-KR');
 const labels={weapon:'무기',shield:'방패',armor:'갑옷'};
-let onlyOwned=false,onlySet=false,rarity='all',lastScroll=0;
+let onlyOwned=false,onlySet=false,rarity='all',lastScroll=0,lastScreenScroll=0,lastDetailScroll=0;
 const rk=['common','uncommon','rare','epic','legendary','relic'];
 function portrait(canvas,source){if(!canvas||!source?.width||!source?.height)return;const c=canvas.getContext('2d'),s=Math.min((canvas.width-12)/source.width,(canvas.height-12)/source.height);try{c.drawImage(source,(canvas.width-source.width*s)/2,canvas.height-source.height*s-3,source.width*s,source.height*s);}catch(_){}}
 function render(stage,a,cb){
@@ -39,14 +39,22 @@ function render(stage,a,cb){
  portrait(root.querySelector('#raHero'),h&&a.portrait(s.active));
  root.querySelectorAll('[data-portrait]').forEach(c=>portrait(c,a.portrait(Number(c.dataset.portrait))));
  list.scrollTop=lastScroll;
- const keep=fn=>{lastScroll=list.scrollTop;fn();};
+ root.scrollTop=lastScreenScroll;
+ const details=root.querySelector('.ra-details');
+ if(details)details.scrollTop=lastDetailScroll;
+ const keep=(fn,resetDetail=false)=>{
+   lastScroll=list.scrollTop;
+   lastScreenScroll=root.scrollTop;
+   lastDetailScroll=resetDetail?0:(details?.scrollTop||0);
+   fn();
+ };
  root.querySelector('#raHome').onclick=cb.goHome;
  root.querySelectorAll('[data-fighter]').forEach(b=>b.onclick=()=>keep(()=>cb.selectHero(Number(b.dataset.fighter))));
- root.querySelectorAll('[data-item]').forEach(b=>b.onclick=()=>keep(()=>cb.setGear(b.dataset.item)));
- root.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{lastScroll=0;cb.setCategory(b.dataset.cat);});
- root.querySelector('#raOwned').onclick=()=>{onlyOwned=!onlyOwned;lastScroll=0;cb.setGear(g?.id||'wood');};
- root.querySelector('#raSet').onclick=()=>{onlySet=!onlySet;lastScroll=0;cb.setGear(g?.id||'wood');};
- root.querySelector('#raRarity').onchange=e=>{rarity=e.target.value;lastScroll=0;cb.setGear(g?.id||'wood');};
+ root.querySelectorAll('[data-item]').forEach(b=>b.onclick=()=>keep(()=>cb.setGear(b.dataset.item),true));
+ root.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{lastScroll=0;lastDetailScroll=0;lastScreenScroll=root.scrollTop;cb.setCategory(b.dataset.cat);});
+ root.querySelector('#raOwned').onclick=()=>{onlyOwned=!onlyOwned;lastScroll=0;lastScreenScroll=root.scrollTop;lastDetailScroll=0;cb.setGear(g?.id||'wood');};
+ root.querySelector('#raSet').onclick=()=>{onlySet=!onlySet;lastScroll=0;lastScreenScroll=root.scrollTop;lastDetailScroll=0;cb.setGear(g?.id||'wood');};
+ root.querySelector('#raRarity').onchange=e=>{rarity=e.target.value;lastScroll=0;lastScreenScroll=root.scrollTop;lastDetailScroll=0;cb.setGear(g?.id||'wood');};
  root.querySelector('#raSort').onclick=()=>keep(cb.sort);
  root.querySelector('#raEquip').onclick=()=>{if(g)keep(()=>{cb.setCurrentGear(g.id);cb.equip('equip');});};
  root.querySelector('#raRemove').onclick=()=>{if(g)keep(()=>{cb.setCurrentGear(g.id);cb.equip('remove');});};
