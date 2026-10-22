@@ -349,13 +349,13 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=6"></script>
 <script src="champion-murmillo.js?v=3"></script>
-<script src="arena-gear-catalog.js?v=armory-v2"></script><script src="arena-balance.js?v=armory-v2"></script>
+<script src="arena-gear-catalog.js?v=armory-v2"></script><script src="arena-balance.js?v=duel-pace-v3"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
 <script src="arena-beasts.js?v=versus-v5"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
 <script src="arena-beast-stage-previews.js?v=versus-v5"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
-<script src="arena-carnifex.js?v=7-complete-exit"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=2"></script><script src="arena-motion.js?v=3-short-hit-glint"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
+<script src="arena-carnifex.js?v=7-complete-exit"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=duel-pace-v3"></script><script src="arena-motion.js?v=duel-pace-v3"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=6-lifecycle"></script>
 <script src="ludus-roster.js?v=3"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -1244,7 +1244,7 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
  const selected=careerMatch?CAREER.hero.cls:$('#classChoice').value;
  const opposition=['murmillo','thraex','retiarius'].filter(cls=>cls!==selected);
  const rival=careerMatch?S.careerOpponent.cls:$('#opponentChoice').value==='random'?opposition[(S.round-1)%2]:$('#opponentChoice').value;
- S.phase='fight';S.paused=false;S.time=90;S.score=0;S.combo=0;S.notice='PUGNA!';S.noticeT=1.5;S.events=[];S.sparks=[];S.parryBursts=[];S.keys.clear();S.shake=0;S.cameraKick=null;S.flash=0;S.slow=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
+ S.phase='fight';S.paused=false;S.time=110;S.score=0;S.combo=0;S.notice='PUGNA!';S.noticeT=1.5;S.events=[];S.sparks=[];S.parryBursts=[];S.keys.clear();S.shake=0;S.cameraKick=null;S.flash=0;S.slow=0;S.cinematic=null;S.focusFrame=null;S.resultAnim=0;S.resultApplied=false;
  S.autoPlaying=false;S.lastManualInput=clock;S.careerRewardApplied=false;
  S.player=fighter(selected,335,false);S.enemy=fighter(rival,940,true);CAMERA.initialized=false;
  if(careerMatch){
@@ -1646,7 +1646,7 @@ function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,varia
  let offsetX=dir*42,offsetY=-12,rotation=0,frame=3;
  if(guarded){art=null;w=510;h=510;offsetX=victim.face*55;offsetY=-6;alpha=.91;duration=.32;frame=7;}
  if(special){art=null;w=735;h=735;offsetX=dir*15;offsetY=-12;duration=.59;alpha=.92;frame=3;}
- if(dash){art=null;w=1240;h=610;offsetX=dir*145;offsetY=-18;duration=.54;alpha=.97;frame=4;}
+ if(dash){art=null;w=1450;h=735;offsetX=dir*175;offsetY=-18;duration=.69;alpha=1;frame=4;}
  if(ko){
   // The finishing impact belongs to the DEFEATED fighter, never the victor.
   const hitOffsetX=-victim.face*18,hitOffsetY=-65;
@@ -1794,7 +1794,7 @@ function attack(f,victim,special=false,dashImpact=false){
     Math.round(enemyCounter*(S.careerMatch?(victim.championBoss?1.45:1.18):1)):
     (careerCounter??playerCounter);
    const reversal=window.ArenaBalance?.comebackParry?.(victim,f,baseCounter,victim.comebackUsed);
-   const counterDamage=ArenaBalance.combatDamage(reversal?.damage??baseCounter);
+   const counterDamage=ArenaBalance.combatDamage(reversal?.damage??baseCounter,'parry');
    if(reversal?.critical)victim.comebackUsed=true;
    victim.parry=0;breakAttackChain(victim);victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
    victim.st=clamp(victim.st-(special?12:7),0,100);
@@ -1802,17 +1802,17 @@ function attack(f,victim,special=false,dashImpact=false){
    // The incoming blade trail is CUT, not allowed to finish across the shield.
    S.sparks=S.sparks.filter(v=>v.owner!==f||
     !['slash','sweep','thrust','special','dash'].includes(v.sequence));
-   victim.parryTriumphT=.56;
-   f.parryFailT=.74;
+   victim.parryTriumphT=.72;
+   f.parryFailT=.88;
    f.hp=Math.max(0,f.hp-counterDamage);
    breakAttackChain(f);f.comboDash=null;
    const away=Math.sign(f.x-victim.x)||-f.face;
-   f.stagger=special?.76:.6;f.attackCD=Math.max(f.attackCD,special?.85:.72);
+   f.stagger=special?.89:.70;f.attackCD=Math.max(f.attackCD,special?.95:.83);
    setAction(f,'hit',f.stagger);
-   f.knockVX=away*(special?670:520);f.knockT=special?.48:.42;
-   f.x=clamp(f.x+away*(special?86:64),125,1165);
-   S.shake=Math.max(S.shake,victim.enemy?(special?22:17):(special?28:24));
-   S.flash=Math.max(S.flash,victim.enemy?(special?.19:.13):.19);
+   f.knockVX=away*(special?800:660);f.knockT=special?.61:.53;
+   f.x=clamp(f.x+away*(special?107:83),125,1165);
+   S.shake=Math.max(S.shake,victim.enemy?(special?27:23):(special?34:31));
+   S.flash=Math.max(S.flash,victim.enemy?(special?.22:.17):.23);
    window.ArenaMotion?.pulse?.(victim,'parry','source',victim.face);
    window.ArenaMotion?.pulse?.(f,'parry','target',victim.face);
    window.ArenaMotion?.impact?.(f,reversal?.critical?'reversal':'parry');
@@ -1825,22 +1825,22 @@ function attack(f,victim,special=false,dashImpact=false){
      hitX:f.x,hitY:FLOOR-278});
    // Beat 1: sharp silver interruption. The collision remains fixed in space.
    addFx(7,contact.x,contact.y,{
-    art:null,sequence:'parry',w:390,h:390,flip:victim.face<0,
-    duration:.29,alpha:.97
+    art:null,sequence:'parry',w:525,h:480,flip:victim.face<0,
+    duration:.43,alpha:1
    });
    // Beat 2: the shield drives its own golden/silver painted counter-crescent.
    // Attach to the winner, not to the attacker's trailing blow.
    addFx(7,victim.x+victim.face*70,FLOOR-157,{
-    art:null,sequence:'guard',w:495,h:445,flip:victim.face<0,
+    art:null,sequence:'guard',w:640,h:510,flip:victim.face<0,
     owner:victim,offsetX:victim.face*70,offsetY:28,track:'body',
-    delay:.055,duration:.285,alpha:.94
+    delay:.075,duration:.40,alpha:1
    });
    // Beat 3: red painted speed-smear is deliberately BEHIND the loser.
    // It says 'the strike was thrown away' rather than 'another hit landed'.
    addFx(4,f.x-f.face*85,FLOOR-193,{
-    art:null,sequence:'dash',w:575,h:270,flip:f.face<0,
+    art:null,sequence:'dash',w:690,h:305,flip:f.face<0,
     owner:f,offsetX:-f.face*85,offsetY:-12,track:'body',layer:'back',
-    delay:.11,duration:.255,alpha:.51
+    delay:.14,duration:.33,alpha:.62
    });
    if(reversal?.critical){
     // Directional isolated 8-frame PNGs; never invent a shared vector burst.
@@ -1859,7 +1859,10 @@ function attack(f,victim,special=false,dashImpact=false){
      reversal?.critical?'REVERSAL PARRY! BONUS +'+reversal.extra+' ENEMY -'+counterDamage:
      'PERFECT PARRY! ENEMY -'+counterDamage,reversal?.critical?1.65:1.2);
    fxSound('parry');
-   if(reversal?.critical)window.ArenaAudio?.play?.('finisher',{gain:.76});
+   if(sounds)window.ArenaAudio?.play?.('heavy_hit',{
+    gain:reversal?.critical?.78:.54,delay:.095,pan:(contact.x-640)/720
+   });
+   if(reversal?.critical)window.ArenaAudio?.play?.('finisher',{gain:.76,delay:.19});
    if(f.hp<=0)finishFight(victim,f);
    else updateHud();
    return;
@@ -1897,7 +1900,10 @@ function attack(f,victim,special=false,dashImpact=false){
   dmg=Math.max(1,Math.round(dmg*(1-ArenaBalance.damageReduction(victim,false))));
  }
  if(victim.beastType&&f.gearEffects?.beastDamage)dmg=Math.round(dmg*(1+f.gearEffects.beastDamage));
- dmg=ArenaBalance.combatDamage(dmg);
+ dmg=ArenaBalance.combatDamage(dmg,dashImpact?'rush':special?'special':'normal');
+ // Limit disproportionate one-shots from high-grade equipment.
+ const maxChunk=Math.max(12,Math.round(victim.maxHp*(dashImpact?.35:special?.27:.18)));
+ dmg=Math.min(dmg,maxChunk);
  victim.hp=Math.max(0,victim.hp-dmg);
  // Short, foot-anchored compress/rebound envelopes make every actual clash
  // visibly connect without changing attack reach, frames, or damage amounts.
@@ -1931,12 +1937,12 @@ function attack(f,victim,special=false,dashImpact=false){
  }
  if(dashImpact){
   const dir=Math.sign(victim.x-f.x)||f.face;
-  victim.x=clamp(victim.x+dir*130,125,1165);
-  victim.knockVX=dir*770;victim.knockT=.57;
-  victim.stagger=Math.max(victim.stagger,.68);
-  S.shake=Math.max(S.shake,24);S.flash=Math.max(S.flash,.29);
+  victim.x=clamp(victim.x+dir*165,125,1165);
+  victim.knockVX=dir*960;victim.knockT=.73;
+  victim.stagger=Math.max(victim.stagger,.86);
+  S.shake=Math.max(S.shake,35);S.flash=Math.max(S.flash,.33);
   if(!guarded)triggerCinematic('dash',(f.x+victim.x)*.5,f.face);
-  say('4 HIT · RUSH BREAK!',1.05);
+  say('4 HIT · RUSH BREAK!',1.55);
  }else{
   victim.x=clamp(victim.x+f.face*(special?69:26),125,1165);
   S.shake=Math.max(S.shake,special?14:6);S.flash=Math.max(S.flash,special?.18:.09);
@@ -1959,6 +1965,9 @@ function attack(f,victim,special=false,dashImpact=false){
   }else breakAttackChain(f);
  }else if(dashImpact)breakAttackChain(f);
  fxSound(guarded?'block':dashImpact?'dash_hit':special?'heavy_hit':'hit');
+ if(dashImpact&&!guarded&&sounds)window.ArenaAudio?.play?.('heavy_hit',{
+  gain:.82,delay:.11,pan:(victim.x-640)/720
+ });
  if(victim.hp<=0)finishFight(f,victim);else updateHud();
 }
 function dodge(f){if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;f.st-=23;f.dodge=.34;f.invuln=.3;setAction(f,'dodge',.34);

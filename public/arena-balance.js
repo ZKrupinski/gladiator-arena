@@ -152,9 +152,13 @@
    glory:win?Math.round((9+r*2)*mult):0
   };
  }
- // Symmetric pacing: retain attack cadence, increase exchanges before KO.
- function combatDamage(value){return Math.max(1,Math.round(Math.max(0,Number(value)||0)*.60));}
- root.ArenaBalance={version:'1.2.0',combatDamage,TRAITS,MODES,trainingCost,heroPower,
+ // More visible exchanges; a timed parry or fourth-hit rush remains decisive.
+ // Keep symmetric damage mitigation for player, enemy and beast.
+ const DAMAGE_RATES=Object.freeze({normal:.46,special:.54,parry:.60,rush:.60});
+ function combatDamage(value,kind='normal'){
+  return Math.max(1,Math.round(Math.max(0,Number(value)||0)*(DAMAGE_RATES[kind]??DAMAGE_RATES.normal)));
+ }
+ root.ArenaBalance={version:'1.3.0',combatDamage,DAMAGE_RATES,TRAITS,MODES,trainingCost,heroPower,
   matchStrength,makeMatch,comebackParry,
   encounterLevel,duelEnemy,heroStats,enemyAi,damageReduction,
   playerParryDamage,rewards};

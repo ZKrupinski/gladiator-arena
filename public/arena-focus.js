@@ -7,18 +7,18 @@
 'use strict';
 const PRESETS=Object.freeze({
  dash:Object.freeze({
-   duration:.96,hitstop:.125,slowEnd:.61,minRate:.12,
-   zoom:.32,vignette:.34,bloom:.47,letterbox:28
+   duration:1.18,hitstop:.17,slowEnd:.80,minRate:.09,
+   zoom:.38,vignette:.41,bloom:.58,letterbox:32
  }),
  reversal:Object.freeze({
-  duration:1.12,hitstop:.14,slowEnd:.70,minRate:.23,zoom:.055,vignette:.12,bloom:.30,letterbox:12
+  duration:1.28,hitstop:.16,slowEnd:.78,minRate:.18,zoom:.055,vignette:.12,bloom:.37,letterbox:12
  }),
  parry:Object.freeze({
    // Counterstrike must NEVER cut both actors out of view. Keep a short
    // contact freeze, but no forced zoom, recentering, vignette or cinema bars.
    // Fighter bracing, attack cancellation and sound carry the parry triumph.
-   duration:.62,hitstop:.075,slowEnd:.32,minRate:.36,
-   zoom:0,vignette:0,bloom:0,letterbox:0
+   duration:.89,hitstop:.115,slowEnd:.55,minRate:.25,
+   zoom:0,vignette:0,bloom:.20,letterbox:0
  })
 });
 const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
@@ -60,6 +60,6 @@ function advance(state,realDt,reducedMotion=false){
   centerX:state.centerX,dir:state.dir,reduced:!!reducedMotion
  };
 }
-root.ArenaFocus={version:'2.0.0',PRESETS,start,advance};
+root.ArenaFocus={version:'2.1.0',PRESETS,start,advance};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaFocus;
 })(globalThis);

@@ -28,7 +28,7 @@ root.ArenaEntrance.advance(seq,root.ArenaEntrance.TIME.run+.2);assert.equal(root
 root.ArenaEntrance.advance(seq,2);assert.equal(seq.finished,true);assert.equal(wolf._beastRoarProgress,undefined);
 vm.runInNewContext(read('arena-balance.js'),{globalThis:root});const D=root.ArenaBalance.combatDamage;
 for(const damage of [17,48,70,3]){assert.ok(D(damage)<damage);assert.ok(D(damage)>=1)}
-assert.equal(Math.ceil(138/D(17)),14);assert.equal(Math.ceil(138/17),9);
+assert.equal(Math.ceil(138/D(17)),18);assert.equal(Math.ceil(138/17),9);
 const html=read('index.html');assert.ok(html.includes('const counterDamage=ArenaBalance.combatDamage('));assert.ok(html.includes('victim.bleedDPS=ArenaBalance.combatDamage('));assert.ok(html.includes('dmg=ArenaBalance.combatDamage(dmg)'));
 for(const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g))new vm.Script(match[1]);
-console.log('PASS: V3 gallery idle/roar, native death frame 7, all render routes, wolf entrance, shared damage pacing; basic-hit KO 9 -> 14 hits at 138 HP.');
+console.log('PASS: V3 gallery idle/roar, native death frame 7, all render routes, wolf entrance, shared damage pacing; basic-hit KO 9 -> 18 hits at 138 HP.');

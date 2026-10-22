@@ -14,25 +14,25 @@ const PRESETS=Object.freeze({
  strike:Object.freeze({amp:14,time:.27,hz:31,axis:'diag',roll:.003}),
  guard:Object.freeze({amp:11,time:.26,hz:23,axis:'x',roll:.002}),
  special:Object.freeze({amp:23,time:.43,hz:21,axis:'y',roll:.006}),
- dash:Object.freeze({amp:29,time:.50,hz:24,axis:'diag',roll:.009}),
- parry:Object.freeze({amp:28,time:.49,hz:17,axis:'double',roll:.007}),
- reversal:Object.freeze({amp:34,time:.64,hz:17,axis:'double',roll:.009})
+ dash:Object.freeze({amp:37,time:.66,hz:22,axis:'diag',roll:.012}),
+ parry:Object.freeze({amp:35,time:.62,hz:16,axis:'double',roll:.009}),
+ reversal:Object.freeze({amp:40,time:.72,hz:16,axis:'double',roll:.011})
 });
 const RESPONSE=Object.freeze({
  strike:{duration:.29,compression:.065,slide:9},
  guard:{duration:.31,compression:.043,slide:6},
  special:{duration:.42,compression:.075,slide:18},
- dash:{duration:.46,compression:.085,slide:21},
- parry:{duration:.47,compression:.080,slide:17},
+ dash:{duration:.61,compression:.095,slide:30},
+ parry:{duration:.60,compression:.086,slide:23},
  contact:{duration:.26,compression:.047,slide:7}
 });
 const IMPACTS=Object.freeze({
  strike:Object.freeze({duration:.22,flash:.78,grow:1.055,shrink:.978}),
  guard:Object.freeze({duration:.18,flash:.38,grow:1.028,shrink:.986}),
  special:Object.freeze({duration:.32,flash:.92,grow:1.092,shrink:.961}),
- dash:Object.freeze({duration:.35,flash:1,grow:1.108,shrink:.953}),
- parry:Object.freeze({duration:.29,flash:.88,grow:1.083,shrink:.969}),
- reversal:Object.freeze({duration:.39,flash:1,grow:1.115,shrink:.950})
+ dash:Object.freeze({duration:.48,flash:1,grow:1.145,shrink:.950}),
+ parry:Object.freeze({duration:.43,flash:1,grow:1.117,shrink:.963}),
+ reversal:Object.freeze({duration:.49,flash:1,grow:1.145,shrink:.950})
 });
 const sin=Math.sin,cos=Math.cos,PI=Math.PI;
 // Global gladiator+beast hit cue. Never modifies hitboxes or source art.
@@ -67,7 +67,7 @@ function visual(f,reduced=false,fx=true){
  const first=t<.032?Math.max(0,1-t/.032):0;
  const second=t>=.047&&t<.091?Math.max(0,1-Math.abs(t-.067)/.024):0;
  const flash=p.flash*.29*Math.max(first,.72*second);
- return {scale:clamp(scale,.94,1.13),flash:clamp(flash,0,.29)};
+ return {scale:clamp(scale,.94,1.16),flash:clamp(flash,0,.29)};
 }
 function pulse(f,type,role,dir=1){
  if(!f||f.dead)return;
@@ -142,7 +142,7 @@ function pose(f,clock=0,reduced=false){
  motion.sx=1;
  motion.sy=1;
  motion.y=clamp(motion.y,-11,6);
- motion.x=clamp(motion.x,-28,28);
+ motion.x=clamp(motion.x,-36,36);
  motion.tilt=clamp(motion.tilt,-.10,.10);
  return motion;
 }
@@ -197,6 +197,6 @@ function contactPulse(a,b,minGap=MIN_GAP){
  pulse(b,'contact','target',dir);
  return true;
 }
-root.ArenaMotion={version:'1.2.0',PRESETS,RESPONSE,IMPACTS,pose,pulse,impact,visual,advance,shake,advanceShake,sampleShake,contactPulse};
+root.ArenaMotion={version:'1.3.0',PRESETS,RESPONSE,IMPACTS,pose,pulse,impact,visual,advance,shake,advanceShake,sampleShake,contactPulse};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaMotion;
 })(globalThis);
