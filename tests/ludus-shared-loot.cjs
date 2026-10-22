@@ -56,7 +56,23 @@ const champion=hero('Champion',[],null,20);const excited={roster:[champion],gold
 loot.ensure(excited);
 const high=loot.awardBattle(excited,champion,{excitement:100,boss:true},()=>0);
 assert(high.length>=1&&high.length<=5,'five maximum drops on spectacle');
-assert.equal(high.length,5,'extreme battle with deterministic successful rolls gets five drops');
+assert.equal(high.length,5,'only winning all independent rolls awards five pieces');
+const unlucky=loot.awardBattle({roster:[champion],gold:0,armoryInventory:[],gearStorageV2:true,discoveredGear:[]},champion,{excitement:100,boss:true},()=>.999);
+assert.equal(unlucky.length,0,'even a 100-point spectacular battle can receive no item due to RNG');
+// High heat creates opportunities, NOT a guaranteed haul. A full five-drop
+// jackpot must be rare under seeded uniform rolls, even for a champion.
+let seed=37521;
+const rnd=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+const tallies=[0,0,0,0,0,0];
+for(let attempt=0;attempt<3500;attempt++){
+ const h=hero('Sampler',[],null,20);
+ const c={roster:[h],gold:0,armoryInventory:[],gearStorageV2:true,discoveredGear:[],lootDryStreak:0,lootRareStreak:0};
+ const arr=loot.awardBattle(c,h,{excitement:100},rnd);
+ tallies[arr.length]++;
+}
+assert.equal(tallies.reduce((p,q)=>p+q,0),3500);
+assert(tallies[5]>0&&tallies[5]<90,'perfect five-drop jackpots remain below 2.6% at 100 excitement: '+tallies);
+assert(tallies[0]>0&&tallies[1]>0&&tallies[2]>0,'variable outcome exists at maximum heat: '+tallies);
 assert.equal(excited.armoryInventory.length,5);
 assert(high.every(item=>item.level<=20));
 const take=crowd.create();
@@ -65,8 +81,12 @@ assert(crowd.record(take,'clash',10)>0);
 assert.equal(crowd.record(take,'clash',10.1),0,'same frame exploit prevented');
 assert(crowd.record(take,'parry',11)>crowd.record(take,'clash',11.3),'parry is an impressive moment');
 for(let i=0;i<90;i++)crowd.record(take,['guard','parry','reversal','special','rush','combo','clash','finisher'][i%8],20+i*2);
-assert(take.score<=100&&take.score>=88);
-assert.equal(crowd.grade(take.score).key,'legend');
+assert(take.score<=100&&take.score>=58,'a lengthy varied fight eventually excites the crowd');
+const short=crowd.create();
+for(let i=0;i<12;i++)crowd.record(short,['clash','guard','clash','clash','guard','dodge'][i%6],10+i*.5);
+assert(short.score<22,'repeated ordinary exchanges must not easily reach crowd reward thresholds');
+assert.equal(crowd.grade(90).key,'legend');
+assert(crowd.grade(take.score).key!=='common','long varied combat still earns visible spectator rewards');
 const src=fs.readFileSync('public/index.html','utf8');
 for(const pattern of ['arena-excitement.js','arena-loot.js','id="endLoot"','renderBattleRewardTray()','ArenaLoot.awardBattle','ArenaCrowd.record','S.matchLoot=loot','S.matchGold='])assert(src.includes(pattern),'source integration: '+pattern);
 assert(!src.includes('ArenaLoot.award(CAREER'),'no leftover single-drop awarding');
