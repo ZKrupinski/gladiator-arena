@@ -56,6 +56,47 @@ try{
  assert.ok(await page.locator('.ra-item').count()>=2);
  await page.locator('#raOwned').click();
  assert.equal(await page.locator('.ra-item').count(),44);
+ // Portrait phone: armory must NOT be a tiny 1672px image scaled down.
+ await page.setViewportSize({width:390,height:844});
+ const portraitMetrics=await page.evaluate(()=>{
+  const stage=document.querySelector('.la-stage.armory');
+  const root=document.querySelector('.ra-collection');
+  const body=document.querySelector('.ra-list');
+  const flag=document.querySelector('.ra-flag');
+  const price=document.querySelector('.ra-detail-title strong');
+  const overlay=document.querySelector('.la-orient');
+  return {
+   stageW:stage.getBoundingClientRect().width,
+   stageH:stage.getBoundingClientRect().height,
+   rootW:root.getBoundingClientRect().width,
+   viewport:window.innerWidth,
+   scroll:root.scrollHeight>root.clientHeight,
+   textPx:parseFloat(getComputedStyle(flag).fontSize),
+   pricePx:parseFloat(getComputedStyle(price).fontSize),
+   orientationHidden:getComputedStyle(overlay).display==='none',
+   listingWidth:body.getBoundingClientRect().width,
+   itemWidth:body.querySelector('.ra-item').getBoundingClientRect().width
+  };
+ });
+ assert.ok(Math.abs(portraitMetrics.stageW-390)<1.5,JSON.stringify(portraitMetrics));
+ assert.ok(portraitMetrics.stageH>=840);
+ assert.ok(portraitMetrics.scroll,'portrait armory must scroll');
+ assert.ok(portraitMetrics.textPx>=16,'ownership and price stamps readable');
+ assert.ok(portraitMetrics.pricePx>=24,'important prices bold and large');
+ assert.equal(portraitMetrics.orientationHidden,true);
+ assert.ok(portraitMetrics.itemWidth<=portraitMetrics.listingWidth+1);
+ // Landscape phone: stay in familiar widescreen composition but with
+ // visibly enlarged text and stronger purchase / equip indicators.
+ await page.setViewportSize({width:844,height:390});
+ const landscapeMetrics=await page.evaluate(()=>{
+  const flag=document.querySelector('.ra-flag'),name=document.querySelector('.ra-item-copy strong');
+  return {flag:parseFloat(getComputedStyle(flag).fontSize),
+   name:parseFloat(getComputedStyle(name).fontSize),
+   columns:getComputedStyle(document.querySelector('.ra-list')).gridTemplateColumns.split(' ').length};
+ });
+ assert.ok(landscapeMetrics.flag>=26,JSON.stringify(landscapeMetrics));
+ assert.ok(landscapeMetrics.name>=29);
+ assert.equal(landscapeMetrics.columns,1,'show full-width inventory rows on mobile landscape');
  assert.deepEqual(errors,[],'no browser runtime errors');
  console.log('ARMORY_COLLECTION_BROWSER_PASS');
 }finally{await browser.close();}
