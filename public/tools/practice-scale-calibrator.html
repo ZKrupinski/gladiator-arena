@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>스파르타쿠스 | 검투사 크기 보정실</title>
+<style>
+:root{background:#170d09;color:#f7ddae;font:15px/1.5 system-ui,"Noto Sans KR",sans-serif;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;padding:17px max(8px,env(safe-area-inset-right)) 28px max(8px,env(safe-area-inset-left))}
+header,.guide,.tabs,.actions,.msg{max-width:1150px;margin:0 auto}h1{font:bold clamp(24px,4vw,36px) Georgia,serif;color:#ffe1a1;margin:3px 0}
+p{color:#dcc09b}a{color:#ffe2a5}
+button{font:700 13px system-ui;color:#ffe7bb;cursor:pointer;border:1px solid #c4a071;background:linear-gradient(#573b25,#302013);border-radius:7px;padding:9px 12px}
+button:hover{filter:brightness(1.2)}button:focus-visible,input:focus-visible{outline:3px solid #ffd67d;outline-offset:2px}
+.tabs{display:flex;flex-wrap:wrap;gap:7px;margin-top:19px;margin-bottom:11px}
+.tabs button[aria-pressed=true]{background:#a5673a}
+.msg{padding:10px;border:1px solid #906d43;background:#2b1b13;border-radius:6px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;max-width:1400px;margin:14px auto}
+.card{min-width:0;border:2px ridge #b48b57;border-radius:9px;overflow:hidden;background:#322016}
+.card h2{font-size:clamp(13px,1.5vw,18px);margin:0;padding:9px;text-align:center}
+.art{background:radial-gradient(ellipse at center bottom,#997550,#36251b 64%,#27180f);width:100%;aspect-ratio:1}
+.art canvas{width:100%;height:100%;display:block}
+.config{padding:8px;display:grid;gap:9px}
+.config label{font-size:12px;overflow-wrap:anywhere}.config input{width:100%;accent-color:#ebb876}
+.config .value{text-align:center;font:bold 20px Georgia;color:#ffdc8f}
+.adjust{display:flex;gap:3px}.adjust button{flex:1;padding:6px 3px;font-size:11px}
+.actions{margin-top:17px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.actions .primary{background:#955030;border-color:#f1c47f}
+input[type=file]{display:none}
+@media(max-width:810px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.grid{gap:5px}.config{padding:5px}.card h2{font-size:12px}.adjust button{font-size:10px}}
+</style></head><body>
+<header><small>SPARTACVS · LVDVS · SPRITE CALIBRATION</small><h1>검투사 크기 보정실</h1>
+<p>투구나 삼지창 길이 대신 <strong>실제 얼굴·몸통이 비슷해 보이도록</strong> 20개 외형의 크기를 직접 비교·조정합니다. 원본 아트는 그대로 두고 실전훈련에만 적용합니다.</p></header>
+<div class="guide"><p>동일한 외형 그룹에서 4종을 나란히 비교하세요. 슬라이더로 바로 미리보고, <strong>저장</strong> 후 게임 페이지를 새로 열면 반영됩니다. 각 그룹 1~5의 모든 설정을 보관합니다.</p></div>
+<nav class="tabs" id="tabs" aria-label="외형 세트"></nav>
+<div class="msg" id="status" role="status">이미지를 불러오는 중...</div>
+<main class="grid" id="grid" aria-label="검투사 4종 비교"></main>
+<footer class="actions">
+<button class="primary" id="save">20종 배율 저장 · 게임 반영</button>
+<button id="reset">기본 크기 복원</button>
+<button id="export">JSON 내보내기</button>
+<button id="import">JSON 불러오기</button>
+<input type="file" id="file" accept=".json,application/json">
+<a href="../">게임 돌아가기 ↗</a>
+</footer>
+<p class="guide">설정은 같은 브라우저에 보존됩니다. 다른 기기에서는 JSON을 내보내어 불러오세요. 표시된 크기는 미리보기이며, 게임 속 전경·원경 크기 배율은 별도로 유지합니다.</p>
+<script src="../growth-frames.js"></script>
+<script src="../practice-scale-profiles.js"></script>
+<script>
+(()=>{'use strict';
+const profile=window.PracticeScaleProfiles;
+const names={murmillo_a:'무르밀로',thraex_a:'트라엑스 A',thraex_b:'트라엑스 B',retiarius_a:'레티아리우스'};
+const state={...profile.DEFAULTS,...profile.read()},images=new Map();
+const $=selector=>document.querySelector(selector);let grade=3,cutsPromise=null;
+const tell=s=>$('#status').textContent=s;
+async function cuts(){
+ if(!cutsPromise)cutsPromise=fetch('../assets/ludus-growth/frame-cuts.json?v=2').then(r=>{
+  if(!r.ok)throw Error('프레임 커팅 정보 접근 실패');return r.json();});
+ return cutsPromise;
+}
+async function frameFor(key){
+ if(images.has(key))return images.get(key);
+ const p=(async()=>{
+  const ref=await cuts(),img=new Image();img.src='../assets/ludus-growth/'+key+'.png';
+  await img.decode();
+  return window.GrowthFrames.isolate(img,ref.sheets[key]).frames[0];
+ })();
+ images.set(key,p);return p;
+}
+function paint(canvas,frame,key){
+ const c=canvas.getContext('2d'),H=310;c.clearRect(0,0,310,H);
+ c.fillStyle='rgba(245,202,120,.12)';c.fillRect(0,262,310,48);
+ c.strokeStyle='#e0b57b';c.setLineDash([4,5]);c.beginPath();c.moveTo(4,262);c.lineTo(306,262);c.stroke();c.setLineDash([]);
+ // Exactly the game mode's static idle-height camera ratio and saved factor.
+ const pixels=202/(frame.canvas.height-8)*state[key]*.88;
+ c.drawImage(frame.canvas,155-frame.pivotX*pixels,262-frame.footY*pixels,frame.canvas.width*pixels,frame.canvas.height*pixels);
+}
+function drawPage(){
+ const root=$('#grid');root.replaceChildren();let done=0;
+ for(const type of profile.TYPES){
+  const key=type+'_L'+grade,card=document.createElement('section');
+  card.className='card';const title=document.createElement('h2');title.textContent=names[type]+' · '+grade;
+  const figure=document.createElement('div');figure.className='art';
+  const canvas=document.createElement('canvas');canvas.width=310;canvas.height=310;figure.appendChild(canvas);
+  const controls=document.createElement('div');controls.className='config';
+  const label=document.createElement('label');label.textContent=key;
+  const value=document.createElement('div');value.className='value';
+  const input=document.createElement('input');input.type='range';input.min='.65';input.max='1.85';input.step='.01';
+  const adjust=document.createElement('div');adjust.className='adjust';
+  const minus=document.createElement('button'),defaultButton=document.createElement('button'),plus=document.createElement('button');
+  minus.textContent='−5%';defaultButton.textContent='기본';plus.textContent='+5%';
+  adjust.append(minus,defaultButton,plus);
+  controls.append(label,value,input,adjust);card.append(title,figure,controls);root.appendChild(card);
+  const draw=()=>{input.value=String(state[key]);value.textContent='×'+Number(state[key]).toFixed(2);
+   frameFor(key).then(frame=>{if(card.isConnected)paint(canvas,frame,key);}).catch(error=>tell(key+': '+error.message));};
+  const set=v=>{state[key]=profile.clamp(v);draw();};
+  input.addEventListener('input',()=>set(input.value));
+  minus.addEventListener('click',()=>set(state[key]-.05));plus.addEventListener('click',()=>set(state[key]+.05));
+  defaultButton.addEventListener('click',()=>set(profile.DEFAULTS[key]));
+  draw();
+  frameFor(key).then(()=>{if(card.isConnected)tell('이 외형 그룹의 원본 이미지 '+(++done)+'/4종 준비됨');});
+ }
+}
+for(let n=1;n<=5;n++){
+ const button=document.createElement('button');button.textContent='그룹 '+n;button.setAttribute('aria-pressed',String(n===grade));
+ button.addEventListener('click',()=>{grade=n;$('#tabs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));drawPage();});
+ $('#tabs').appendChild(button);
+}
+$('#save').addEventListener('click',()=>tell(profile.write(state)?'저장 완료. 게임 페이지를 다시 열면 적용됩니다.':'저장에 실패했습니다. JSON으로 내보내세요.'));
+$('#reset').addEventListener('click',()=>{Object.assign(state,profile.DEFAULTS);profile.reset();drawPage();tell('20종 기본 배율을 복원했습니다.');});
+$('#export').addEventListener('click',()=>{
+ const blob=new Blob([JSON.stringify({version:32,overrides:state},null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='spartacus-20-appearance-scales.json';a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);tell('20종 설정을 JSON 파일로 내보냈습니다.');
+});
+$('#import').addEventListener('click',()=>$('#file').click());
+$('#file').addEventListener('change',async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{
+  const input=JSON.parse(await file.text()),values=input.overrides||input;
+  if(typeof values!=='object')throw Error('JSON 구조 오류');
+  for(const key of Object.keys(profile.DEFAULTS))
+   if(Object.hasOwn(values,key)&&Number.isFinite(Number(values[key])))state[key]=profile.clamp(values[key]);
+  profile.write(state);drawPage();tell('설정 불러오기 및 저장 완료.');
+ }catch(error){tell('불러오기 실패: '+error.message);}
+});
+drawPage();
+})();
+</script>
+</body></html>
