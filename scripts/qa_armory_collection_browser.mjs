@@ -348,18 +348,29 @@ try{
      previousRow={top:box.top,bottom:box.bottom};
     }
    }
+   // Rare cards include extra set text; their art must NOT sink lower than
+   // common cards when that copy makes the parent taller.
+   const rareAlignment=cards.filter(el=>el.classList.contains('rarity-rare')).map(card=>{
+    const shell=card.getBoundingClientRect(),frame=card.querySelector('.ra-art').getBoundingClientRect();
+    const bitmap=card.querySelector('.ra-item-img').getBoundingClientRect();
+    return {id:card.dataset.item,offset:frame.top-shell.top,
+     inside:bitmap.top>=frame.top-1&&bitmap.bottom<=frame.bottom+1,
+     ratio:frame.height/frame.width};
+   });
    const simple=cards.find(el=>el.classList.contains('rarity-common')&&!el.querySelector('.ra-item-copy i'));
    const image=simple?.querySelector('.ra-art')?.getBoundingClientRect();
    const shell=simple?.getBoundingClientRect();
    return {count:cards.length,rare:cards.filter(card=>card.classList.contains('rarity-rare')).length,
     bad:bad.slice(0,12),rows:getComputedStyle(list).gridAutoRows,
     iconFill:image&&shell?image.height/shell.height:0,
-    typicalCard:shell?.height,typicalIcon:image?.height};
+    typicalCard:shell?.height,typicalIcon:image?.height,
+    rareOffset:rareAlignment.filter(g=>g.offset>14||g.offset<0||!g.inside||Math.abs(g.ratio-1)>.08).slice(0,12)};
   });
   assert.equal(measured.count,76,'all equipped item types render in visual overflow regression '+JSON.stringify(viewport));
   assert(measured.rare>0,'rare equipment available in stress test');
   assert.deepEqual(measured.bad,[],'no rarity, name, stat, set or quantity clips in '+JSON.stringify(viewport)+': '+JSON.stringify(measured));
   assert(measured.iconFill>.64,'equipment image should occupy most of a typical card: '+JSON.stringify({viewport,fill:measured.iconFill,card:measured.typicalCard,art:measured.typicalIcon}));
+  assert.deepEqual(measured.rareOffset,[],'rare gear image frames must stay aligned to the card top: '+JSON.stringify({viewport,offsets:measured.rareOffset}));
  }
  assert.deepEqual(errors,[],'no browser runtime errors');
  console.log('ARMORY_COLLECTION_BROWSER_PASS');
