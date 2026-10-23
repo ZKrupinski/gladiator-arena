@@ -27,13 +27,13 @@ input[type=file]{display:none}
 @media(max-width:420px){.grid{gap:5px}.config{padding:5px}.card h2{font-size:12px}.adjust button{font-size:10px}}
 </style></head><body>
 <header><small>SPARTACVS · LVDVS · SPRITE CALIBRATION</small><h1>검투사 크기 보정실</h1>
-<p>투구나 삼지창 길이 대신 <strong>실제 얼굴·몸통이 비슷해 보이도록</strong> 20개 외형의 크기를 직접 비교·조정합니다. 원본 아트는 그대로 두고 실전훈련에만 적용합니다.</p></header>
-<div class="guide"><p>동일한 외형 그룹에서 4종을 나란히 비교하세요. 슬라이더로 바로 미리보고, <strong>저장</strong> 후 게임 페이지를 새로 열면 반영됩니다. 각 그룹 1~5의 모든 설정을 보관합니다.</p></div>
+<p>투구나 삼지창 길이 대신 <strong>실제 얼굴·몸통이 비슷해 보이도록</strong> 25개 외형의 크기를 직접 비교·조정합니다. 원본 아트는 그대로 두고 실전훈련에만 적용합니다.</p></header>
+<div class="guide"><p>동일한 외형 그룹에서 4종을 나란히 비교하세요. 슬라이더로 바로 미리보고, <strong>저장</strong> 후 게임 페이지를 새로 열면 반영됩니다. 그룹 1~5와 특수·클래식 5종의 설정을 모두 보관합니다.</p></div>
 <nav class="tabs" id="tabs" aria-label="외형 세트"></nav>
 <div class="msg" id="status" role="status">이미지를 불러오는 중...</div>
 <main class="grid" id="grid" aria-label="검투사 4종 비교"></main>
 <footer class="actions">
-<button class="primary" id="save">20종 배율 저장 · 게임 반영</button>
+<button class="primary" id="save">25종 배율 저장 · 게임 반영</button>
 <button id="reset">기본 크기 복원</button>
 <button id="export">JSON 내보내기</button>
 <button id="import">JSON 불러오기</button>
@@ -46,7 +46,9 @@ input[type=file]{display:none}
 <script>
 (()=>{'use strict';
 const profile=window.PracticeScaleProfiles;
-const names={murmillo_a:'무르밀로',thraex_a:'트라엑스 A',thraex_b:'트라엑스 B',retiarius_a:'레티아리우스'};
+const names={murmillo_a:'무르밀로',thraex_a:'트라엑스 A',thraex_b:'트라엑스 B',retiarius_a:'레티아리우스',
+murmillo_champion_red:'붉은 투구 챔피언',murmillo_motion_v3:'모션 무르밀로',
+legacy_murmillo:'클래식 무르밀로',legacy_thraex:'클래식 트라엑스',legacy_retiarius:'클래식 레티아리우스'};
 const state={...profile.DEFAULTS,...profile.read()},images=new Map();
 const $=selector=>document.querySelector(selector);let grade=3,cutsPromise=null;
 const tell=s=>$('#status').textContent=s;
@@ -55,9 +57,37 @@ async function cuts(){
   if(!r.ok)throw Error('프레임 커팅 정보 접근 실패');return r.json();});
  return cutsPromise;
 }
+async function extraFrame(key){
+ const base='../assets/combat/';
+ async function image(src){const im=new Image();im.src=src;await im.decode();return im}
+ async function json(src){const res=await fetch(src);if(!res.ok)throw Error('리소스 '+res.status);return res.json()}
+ if(key==='murmillo_champion_red'){
+  const m=await json(base+'champion-murmillo/manifest.json?v=2'),f=m.actions?.idle?.[0];
+  if(!f?.file)throw Error('챔피언 이미지 없음');
+  const canvas=await image(base+'champion-murmillo/'+f.file+'?v=2');
+  return {canvas,pivotX:f.pivotX??canvas.width/2,footY:f.footY??canvas.height};
+ }
+ if(key==='murmillo_motion_v3'){
+  let m,folder='murmillo-b',version=4;
+  try{m=await json(base+folder+'/manifest.json?v=4')}
+  catch(_){folder='murmillo-v2';version=3;m=await json(base+folder+'/manifest.json?v=3')}
+  const f=m.frames?.[0];if(!f?.file)throw Error('모션 이미지 없음');
+  const canvas=await image(base+folder+'/'+f.file+'?v='+version);
+  return {canvas,pivotX:f.pivotX??canvas.width/2,footY:f.footY??canvas.height};
+ }
+ const atlas={legacy_murmillo:'retiarius_atlas.png',legacy_thraex:'thraex_atlas.png',
+  legacy_retiarius:'murmillo_atlas.png'}[key];
+ if(!atlas)throw Error('미지원 외형 '+key);
+ const sheet=await image('../assets/new-era/'+atlas+'?v=4');
+ const w=Math.floor(sheet.naturalWidth/5),h=Math.floor(sheet.naturalHeight/2);
+ const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+ canvas.getContext('2d').drawImage(sheet,0,0,w,h,0,0,w,h);
+ return {canvas,pivotX:w/2,footY:h};
+}
 async function frameFor(key){
  if(images.has(key))return images.get(key);
  const p=(async()=>{
+  if(profile.EXTRAS.includes(key))return extraFrame(key);
   const ref=await cuts(),img=new Image();img.src='../assets/ludus-growth/'+key+'.png';
   await img.decode();
   return window.GrowthFrames.isolate(img,ref.sheets[key]).frames[0];
@@ -74,9 +104,11 @@ function paint(canvas,frame,key){
 }
 function drawPage(){
  const root=$('#grid');root.replaceChildren();let done=0;
- for(const type of profile.TYPES){
-  const key=type+'_L'+grade,card=document.createElement('section');
-  card.className='card';const title=document.createElement('h2');title.textContent=names[type]+' · '+grade;
+ const keys=grade==='special'?profile.EXTRAS:profile.TYPES.map(type=>type+'_L'+grade);
+ for(const key of keys){
+  const type=key.replace(/_L[1-5]$/,'');
+  const card=document.createElement('section');card.className='card';
+  const title=document.createElement('h2');title.textContent=names[type]+(grade==='special'?'':' · '+grade);
   const figure=document.createElement('div');figure.className='art';
   const canvas=document.createElement('canvas');canvas.width=310;canvas.height=310;figure.appendChild(canvas);
   const controls=document.createElement('div');controls.className='config';
@@ -95,7 +127,8 @@ function drawPage(){
   minus.addEventListener('click',()=>set(state[key]-.05));plus.addEventListener('click',()=>set(state[key]+.05));
   defaultButton.addEventListener('click',()=>set(profile.DEFAULTS[key]));
   draw();
-  frameFor(key).then(()=>{if(card.isConnected)tell('이 외형 그룹의 원본 이미지 '+(++done)+'/4종 준비됨');});
+  frameFor(key).then(()=>{if(card.isConnected)tell('이 외형 그룹 '+(++done)+'/'+keys.length+'종 준비됨');})
+   .catch(error=>{if(card.isConnected)tell(key+' 그림 오류: '+error.message);});
  }
 }
 for(let n=1;n<=5;n++){
@@ -103,13 +136,21 @@ for(let n=1;n<=5;n++){
  button.addEventListener('click',()=>{grade=n;$('#tabs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));drawPage();});
  $('#tabs').appendChild(button);
 }
+const specials=document.createElement('button');
+specials.textContent='챔피언 · 모션 · 클래식 (5종)';
+specials.setAttribute('aria-pressed','false');
+specials.addEventListener('click',()=>{
+ grade='special';$('#tabs').querySelectorAll('button').forEach(b=>
+  b.setAttribute('aria-pressed',String(b===specials)));drawPage();
+});
+$('#tabs').appendChild(specials);
 $('#save').addEventListener('click',()=>tell(profile.write(state)?'저장 완료. 게임 페이지를 다시 열면 적용됩니다.':'저장에 실패했습니다. JSON으로 내보내세요.'));
-$('#reset').addEventListener('click',()=>{Object.assign(state,profile.DEFAULTS);profile.reset();drawPage();tell('20종 기본 배율을 복원했습니다.');});
+$('#reset').addEventListener('click',()=>{Object.assign(state,profile.DEFAULTS);profile.reset();drawPage();tell('25종 기본 배율을 복원했습니다.');});
 $('#export').addEventListener('click',()=>{
  const blob=new Blob([JSON.stringify({version:32,overrides:state},null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');
  a.href=url;a.download='spartacus-20-appearance-scales.json';a.click();
- setTimeout(()=>URL.revokeObjectURL(url),1000);tell('20종 설정을 JSON 파일로 내보냈습니다.');
+ setTimeout(()=>URL.revokeObjectURL(url),1000);tell('25종 설정을 JSON 파일로 내보냈습니다.');
 });
 $('#import').addEventListener('click',()=>$('#file').click());
 $('#file').addEventListener('change',async e=>{
