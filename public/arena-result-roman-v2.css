@@ -116,3 +116,100 @@
  #endScreen .stage-panel-ending .result-pose-art,
  #endScreen .stage-panel-ending .result-banner{animation:none!important}
 }
+
+
+/* Roman outcome v7: the picture ends at its own golden border.
+   The two actions now occupy a separate decorative bar below the artwork.
+   This eliminates buttons straddling the lower painted border. */
+#endScreen.overlay-ending{
+ flex-direction:column;justify-content:center;align-items:center;
+ gap:clamp(5px,.85dvh,10px);
+ padding:6px;overflow-y:auto;overflow-x:hidden;
+ overscroll-behavior:contain;
+}
+#endScreen.overlay-ending .stage-panel-ending:not(.has-loot){
+ width:min(96vw,1020px,116dvh);
+ max-height:calc(100dvh - 62px);
+}
+#endScreen > .end-actions{
+ position:relative!important;
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));
+ align-items:stretch;justify-content:center;flex:0 0 auto;
+ box-sizing:border-box;width:min(78vw,640px);
+ height:clamp(38px,4.6dvh,54px);min-height:0;
+ gap:clamp(8px,1.25vw,17px);
+ margin:0 auto!important;padding:0;
+ z-index:8;
+}
+#endScreen > .end-actions button{
+ position:relative;display:flex;align-items:center;justify-content:center;
+ box-sizing:border-box;flex:initial;min-width:0;width:100%;height:100%;
+ padding:0 clamp(17px,2vw,25px)!important;margin:0!important;
+ overflow:hidden;white-space:nowrap!important;
+ border:3px double #ffdda0!important;
+ border-radius:7px!important;
+ background:linear-gradient(180deg,#c67d49 0%,#75331b 17%,#551d15 62%,#2e130e 100%)!important;
+ box-shadow:inset 0 0 0 2px #4d2016,inset 0 3px 5px #ffe3a039,
+  0 0 0 1px #946b3f,0 4px 10px #160706c9!important;
+ color:#ffeaca!important;
+ font-family:'Noto Sans KR',system-ui,sans-serif!important;
+ font-size:clamp(11px,1.42vw,17px)!important;
+ font-weight:800!important;line-height:1.15!important;
+ letter-spacing:0!important;text-shadow:0 2px 2px #240b08;
+ text-align:center;word-break:keep-all;cursor:pointer;
+}
+#endScreen > .end-actions .secondary{
+ background:linear-gradient(180deg,#b48a57,#554028 25%,#33251c 75%,#26140f)!important;
+}
+#endScreen > .end-actions .secondary.ludus{
+ background:linear-gradient(180deg,#8f9882,#46564c 27%,#29332b 80%)!important;
+}
+#endScreen > .end-actions button::before,
+#endScreen > .end-actions button::after{
+ content:'✦';position:absolute;pointer-events:none;
+ top:50%;transform:translateY(-50%);
+ color:#ffde99;font:900 clamp(8px,1vw,13px)/1 Georgia,serif;
+ opacity:.85;text-shadow:0 0 3px #f7cd7e;
+}
+#endScreen > .end-actions button::before{left:clamp(3px,.7vw,10px)}
+#endScreen > .end-actions button::after{right:clamp(3px,.7vw,10px)}
+#endScreen > .end-actions button:hover{filter:brightness(1.13)}
+#endScreen > .end-actions button:focus-visible{outline:3px solid #fff1b4;outline-offset:3px}
+/* Small, restrained captions beneath combat poses; keep the Colosseum art open. */
+#endScreen .stage-panel-ending #endReason,
+#endScreen .stage-panel-ending #endStats{
+ width:76%;left:12%;
+ color:#ffeed7;text-shadow:0 1px 3px #180805,0 0 5px #230f09;
+ font-family:'Noto Sans KR',system-ui,sans-serif!important;
+ font-size:clamp(10px,1.38vw,15px)!important;
+ font-weight:650!important;
+ line-height:1.24!important;
+ letter-spacing:0!important;
+ overflow-wrap:break-word;
+}
+#endScreen .stage-panel-ending #endReason{
+ top:74.4%;max-height:5.5%;overflow:hidden;
+}
+#endScreen .stage-panel-ending #endStats{
+ top:80%;max-height:9%;overflow-y:auto;
+}
+@media(max-width:600px){
+ #endScreen > .end-actions{width:min(88vw,420px);gap:8px}
+ #endScreen > .end-actions button{
+  padding:0 16px!important;
+  font-size:clamp(10px,2.5vw,13px)!important;
+ }
+ #endScreen .stage-panel-ending #endReason,
+ #endScreen .stage-panel-ending #endStats{
+  font-size:clamp(9px,2.2vw,11px)!important;
+  line-height:1.18!important;
+ }
+}
+@media(max-height:420px) and (orientation:landscape){
+ #endScreen.overlay-ending{gap:3px;padding:2px 5px;justify-content:flex-start}
+ #endScreen .stage-panel-ending.has-loot{width:min(96vw,900px,68dvh)!important}
+ #endScreen > .end-actions{height:32px;width:min(68vw,485px)}
+ #endScreen > .end-actions button{font-size:11px!important}
+ #endScreen .stage-panel-ending #endReason,
+ #endScreen .stage-panel-ending #endStats{font-size:9px!important}
+}
