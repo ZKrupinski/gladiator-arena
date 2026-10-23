@@ -306,7 +306,7 @@
   grid-template-columns:114px minmax(0,1fr);
   grid-template-rows:auto auto;
   min-height:138px;height:auto;
-  padding:6px 9px;
+  padding:6px 9px 19px;
   column-gap:10px;row-gap:4px;
  }
  .ra-collection .ra-list .ra-art{
