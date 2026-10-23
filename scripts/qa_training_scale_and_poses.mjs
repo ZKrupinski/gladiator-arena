@@ -40,7 +40,7 @@ class FakeCanvas {
  }
 }
 const fakeDocument={createElement:()=>new FakeCanvas(120,120)},window={};
-const source=training.replace('window.LudusTrainingV2={mount,stop};',
+const source=training.replace(/window\.LudusTrainingV2=\{[^;]+\};/,
  'window.LudusTrainingV2={mount,stop};window.__TRAINING_QA__={profileFor,paintTrainingFighter,actionAt};');
 vm.runInNewContext(source,{document:fakeDocument,window},{filename:'ludus-training-runtime.js'});
 const {profileFor,paintTrainingFighter,actionAt}=window.__TRAINING_QA__;

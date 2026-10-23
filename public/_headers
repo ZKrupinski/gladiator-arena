@@ -2,3 +2,15 @@
   Cache-Control: no-cache, must-revalidate
 /
   Cache-Control: no-cache, must-revalidate
+
+/practice-scale-published.js
+  Cache-Control: no-cache, must-revalidate
+/practice-scale-profiles.js
+  Cache-Control: no-cache, must-revalidate
+/tools/practice-scale-calibrator.html
+  Cache-Control: no-cache, must-revalidate
+/tools/practice-scale-publish.js
+  Cache-Control: no-cache, must-revalidate
+
+/tools/practice-scale-calibrator
+  Cache-Control: no-cache, must-revalidate

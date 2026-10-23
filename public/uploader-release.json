@@ -1,11 +1,11 @@
 {
   "assetSha256": {
-    "public/index.html": "93e7f0b9a804faab6d191481e0c1c560b2efa54324cf0e914a9d202998fda8e7",
-    "tests/endless-practice-v26.js": "b5f3f8ff4c2554a02186a4bbb3f308e29de5f1bd8f33310c05c719df75555608"
+    "public/practice-scale-profiles.js": "f6cbabe04b7bab7f1fa15565354845c544c1c8d78a9e7fb156ca35c170f67e91",
+    "public/tools/practice-scale-calibrator.html": "3e386504f19e6c4780ec4a931a0f5168e86aa1cf8cd428222e3db69f969cf272"
   },
-  "baseCommit": "9bb882eeba1139dc6b2933dbdbefaf3544c18238",
+  "baseCommit": "524a2d4afcfe33470379914f6ab26623a87b7a6a",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "studio-title-github-canonical-publishing-20261024-v37",
+  "releaseId": "scale-studio-qa-baseline-refresh-20261024-v38",
   "releaseProtocol": "spartacus-uploader-v1"
 }

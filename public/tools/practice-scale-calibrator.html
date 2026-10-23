@@ -294,7 +294,8 @@ function build(){
   });
   const set=v=>{
    state[key]=p.clamp(v);redraw();
-   if(selection.has(key))origin.set(key,Number(state[key]));
+   updateBulkState();
+   if(['large','small'].includes($('#sort').value))sortCards();
   };
   slider.addEventListener('input',()=>set(slider.value));
   minus.addEventListener('click',()=>set(Number(state[key])*.95));

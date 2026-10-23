@@ -20,10 +20,15 @@ for(const key of Object.keys(BASE))if(Object.prototype.hasOwnProperty.call(sourc
  Number.isFinite(Number(source[key]))&&Number(source[key])>=.65&&Number(source[key])<=1.85)
  published[key]=Number(source[key]);
 const DEFAULTS=Object.freeze({...BASE,...published});
+const baseline=JSON.stringify(DEFAULTS);
 const clamp=v=>Math.max(.65,Math.min(1.85,Number(v)));
 function read(){
  try{
   const stored=JSON.parse(root.localStorage?.getItem(KEY)||'{}');
+  // A preview belongs to the published baseline it was made against.
+  // Never let an old device draft mask a newer GitHub release.
+  if(stored?.baseline!==baseline&&
+   (stored?.baseline!==undefined||Object.keys(published).length))return {};
   const input=stored?.overrides||stored;
   const out={};
   for(const key of Object.keys(DEFAULTS))
@@ -37,7 +42,7 @@ function write(input){
  for(const key of Object.keys(DEFAULTS))
   if(input&&Number.isFinite(Number(input[key])))overrides[key]=clamp(input[key]);
  try{
-  root.localStorage?.setItem(KEY,JSON.stringify({version:32,overrides}));
+  root.localStorage?.setItem(KEY,JSON.stringify({version:38,baseline,overrides}));
   return true;
  }catch(_){return false;}
 }
