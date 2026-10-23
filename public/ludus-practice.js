@@ -178,7 +178,7 @@ function findOpenCourt(heroes,enemies,cursor=0){
   const seat=(cursor+n)%MAX;
   const h=heroes.find(u=>u.seat===seat&&!u.dead);
   if(h&&!enemies.some(e=>!e.dead&&e.seat===seat)&&
-    !battle?.exits?.some(exit=>exit.unit.seat===seat&&exit.age<1.75))return h;
+    !battle?.exits?.some(exit=>exit.unit.seat===seat))return h;
  }
  return null;
 }
@@ -246,25 +246,48 @@ function beginRemoval(unit){
  }
  battle.exits.push({unit,seq,age:0,scale,court:c,viewport});
 }
+const FALL_DURATION=.72;
+function selectedDeathArt(unit){
+ // Prioritize the dedicated approved defeat frame; special art falls back
+ // to a hit/idle sprite but is tilted into a clearly prone orientation.
+ return api()?.practiceFrame?.(unit,'death')?.canvas||
+  rawSprite(unit,'death')||rawSprite(unit,'hit')||null;
+}
+function drawProne(unit,zoom,angle){
+ const art=selectedDeathArt(unit);if(!art)return;
+ const metric=calibration(unit,art);if(!metric)return;
+ const k=metric.pixels*zoom,meta=api()?.practiceFrame?.(unit,'death');
+ ctx.save();ctx.rotate(angle);
+ if(unit.side==='enemy')ctx.scale(-1,1);
+ try{
+  if(meta?.canvas===art&&Number.isFinite(meta.pivotX)&&Number.isFinite(meta.footY))
+   ctx.drawImage(art,-meta.pivotX*k,-meta.footY*k,art.width*k,art.height*k);
+  else{const b=alphaBounds(art);if(b)ctx.drawImage(art,b.x,b.y,b.w,b.h,-b.w*k/2,-b.h*k,b.w*k,b.h*k);}
+ }catch(_){}
+ ctx.restore();
+}
+function drawFalling(removal){
+ const p=clamp(removal.age/FALL_DURATION,0,1),unit=removal.unit;
+ const tilt=(unit.side==='enemy'?1:-1)*1.43*(1-Math.pow(1-p,3));
+ ctx.save();ctx.translate(unit.x,removal.court.y-4);
+ drawProne(unit,removal.court.scale,tilt);
+ ctx.restore();
+}
 function drawDeparture(removal){
  const engine=root.ArenaCarnifex,{unit,seq,court,scale}=removal;
- if(!seq||!engine?.draw)return;
- ctx.save();
- ctx.translate(court.x-640*scale,court.y-617*scale);
+ // First show a definite falling action before the executor enters.
+ if(removal.age<FALL_DURATION){drawFalling(removal);return;}
+ if(!seq||!engine?.draw){
+  ctx.save();ctx.translate(unit.x,court.y);
+  drawProne(unit,court.scale,unit.side==='enemy'?1.43:-1.43);
+  ctx.restore();return;
+ }
+ ctx.save();ctx.translate(court.x-640*scale,court.y-617*scale);
  ctx.scale(scale,scale);
  engine.draw(ctx,seq,corpse=>{
-  const art=rawSprite(unit,'death');
-  if(!art)return;
-  const bounds=alphaBounds(art),metric=calibration(unit,art);
-  if(!bounds||!metric)return;
-  // Identical character size as the living model, transformed to
-  // Carnifex-local space. Use the same fixed visual scale, same foot pivot.
-  const factor=metric.pixels*court.scale/scale;
-  const w=bounds.w*factor,h=bounds.h*factor;
-  ctx.save();
-  ctx.translate(corpse.x,617);
-  if(unit.side==='enemy')ctx.scale(-1,1);
-  try{ctx.drawImage(art,bounds.x,bounds.y,bounds.w,bounds.h,-w/2,-h,w,h);}catch(_){}
+  ctx.save();ctx.translate(corpse.x,617);
+  // Lay the character down regardless of the fallback 'death' source.
+  drawProne(unit,court.scale/scale,unit.side==='enemy'?1.43:-1.43);
   ctx.restore();
  },617);
  ctx.restore();
@@ -275,7 +298,7 @@ function updateDepartures(dt){
  for(const exit of battle.exits){
   exit.age+=dt;
   if(exit.seq&&engine?.advance){
-   engine.advance(exit.seq,dt,exit.viewport);
+   if(exit.age>=FALL_DURATION)engine.advance(exit.seq,Math.min(dt,exit.age-FALL_DURATION),exit.viewport);
   }
  }
  battle.exits=battle.exits.filter(exit=>
@@ -400,7 +423,9 @@ function simulate(dt){
  battle.fx=battle.fx.filter(v=>v.age<v.duration);
  updateDepartures(dt);
  if(battle.heroes.every(u=>u.dead)){
-  battle.knockout+=dt;if(battle.knockout>.85)finish(false);
+  // Final defeat must not interrupt dragging any still-visible corpses.
+  if(battle.exits.length){battle.knockout=0;return;}
+  battle.knockout+=dt;if(battle.knockout>.65)finish(false);
   return;
  }
  if(!battle.left&&!battle.queued.length&&!battle.enemies.some(u=>!u.dead)&&
@@ -425,6 +450,36 @@ function alphaBounds(art){
  if(!art)return null;
  return root.ArenaPortraitFit?.bounds?.(art)||
   {x:0,y:0,w:art.width||art.naturalWidth||0,h:art.height||art.naturalHeight||0};
+}
+function torsoCompensation(projectedTorso){
+ if(!Number.isFinite(projectedTorso)||projectedTorso<=0)return 1;
+ return clamp(Math.pow(53/projectedTorso,.66),.78,1.22);
+}
+function measureTorso(art,b,pivot){
+ if(typeof document==='undefined'||!document.createElement)return null;
+ try{
+  const cv=document.createElement('canvas');cv.width=cv.height=128;
+  const c=cv.getContext('2d',{willReadFrequently:true});
+  if(!c)return null;
+  c.drawImage(art,b.x,b.y,b.w,b.h,0,0,128,128);
+  const d=c.getImageData(0,0,128,128).data,spans=[];
+  const axis=clamp(Math.round(((pivot??(b.x+b.w/2))-b.x)/b.w*128),9,118);
+  // Median connected width crossing torso axis from chest to waist.
+  // Helmet height and weapon width cannot enter this measurement.
+  for(let y=59;y<=93;y+=3){
+   let x=axis;
+   while(x>=0&&d[(y*128+x)*4+3]<50)x--;
+   if(x<axis-12)continue;
+   let a=x,z=x;
+   while(a>0&&d[(y*128+a-1)*4+3]>=50)a--;
+   while(z<127&&d[(y*128+z+1)*4+3]>=50)z++;
+   const w=(z-a+1)*b.w/128;
+   if(w>=b.h*.10&&w<=b.h*.45)spans.push(w);
+  }
+  if(spans.length<4)return null;
+  spans.sort((a,b)=>a-b);
+  return spans[Math.floor(spans.length/2)];
+ }catch(_){return null;}
 }
 function measureFace(art,b){
  if(typeof document==='undefined'||!document.createElement)return b.w*.26;
@@ -458,12 +513,13 @@ function calibration(unit,frame){
  const b=alphaBounds(idle);
  if(!b?.w||!b?.h)return null;
  const base=202/b.h;
- const head=b.h*.22;
- // Artist original pose height controls consistent head-to-body proportions;
- // do not enlarge short Thraex or shrink wide-trident Retiarius.
- const correction=1;
+ const reference=api()?.practiceFrame?.(unit,'idle');
+ const torsoWidth=measureTorso(idle,b,reference?.pivotX);
+ // Correct similar ANATOMY, not same overall hat/trident height.
+ // Intentional silhouette variation preserved by moderate clamps.
+ const correction=torsoCompensation(torsoWidth?torsoWidth*base:0);
  return unit._bodyScale={pixels:base*correction,
-  headPixels:head,refW:b.w,refH:b.h,correction};
+  torsoPixels:torsoWidth||0,refW:b.w,refH:b.h,correction};
 }
 function sprite(unit){
  const kind=unit.dead?'death':unit.entry>0?'walk':unit.hit>0?'hit':unit.guard>0?'guard':
@@ -472,8 +528,8 @@ function sprite(unit){
  return rawSprite(unit,kind);
 }
 function drawUnit(unit){
- const scale=COURTS[unit.seat]?.scale||.78,height=202*scale;
- ctx.save();ctx.translate(unit.x,unit.y);
+ const scale=(COURTS[unit.seat]?.scale||.78)*(unit.side==='enemy'?.96:1),height=202*scale;
+ ctx.save();ctx.translate(unit.x,unit.y-(unit.side==='enemy'?12:0));
  // Approved backdrop already has baked floor lighting: NO vector shadow.
  if(unit.dead)ctx.globalAlpha=1;
  const art=sprite(unit);
@@ -519,11 +575,18 @@ function paint(){
  // All court floor overlays removed: gladiators stand on the original sand.
  // The original arena's approved Carnifex walks on behind its fallen target.
  // Sort stage actors/departures by real foot depth, not by sprite image size.
- const stageActors=battle.heroes.concat(battle.enemies)
-  .filter(u=>!u.retiring&&(!u.dead||u.fade>0))
+ // Explicit depth groups: opponents and their exits BEHIND our fighters.
+ // This prevents the enemy from covering allied characters in any court.
+ const enemies=battle.enemies.filter(u=>!u.retiring&&(!u.dead||u.fade>0))
   .map(unit=>({y:unit.y,draw:()=>drawUnit(unit)}));
- const exits=battle.exits.map(exit=>({y:exit.court.y-.5,draw:()=>drawDeparture(exit)}));
- stageActors.concat(exits).sort((a,b)=>a.y-b.y).forEach(item=>item.draw());
+ const enemyExits=battle.exits.filter(exit=>exit.unit.side==='enemy')
+  .map(exit=>({y:exit.court.y,draw:()=>drawDeparture(exit)}));
+ const ownExits=battle.exits.filter(exit=>exit.unit.side==='ally')
+  .map(exit=>({y:exit.court.y,draw:()=>drawDeparture(exit)}));
+ const allies=battle.heroes.filter(u=>!u.retiring&&(!u.dead||u.fade>0))
+  .map(unit=>({y:unit.y,draw:()=>drawUnit(unit)}));
+ enemies.concat(enemyExits).sort((a,b)=>a.y-b.y).forEach(a=>a.draw());
+ ownExits.concat(allies).sort((a,b)=>a.y-b.y).forEach(a=>a.draw());
  paintVfx();
  for(const p of battle.particles){ctx.globalAlpha=clamp(p.life/.75,0,.9);ctx.fillStyle=p.critical?'#ffe9a3':'#fbb071';ctx.beginPath();ctx.arc(p.x,p.y,p.critical?3.3:2.1,0,Math.PI*2);ctx.fill();}
  ctx.restore();
