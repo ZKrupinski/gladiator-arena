@@ -79,9 +79,10 @@ async function check(size,preview){
     buttonsBelow:actions.top>=rect.bottom+2,
     buttonsWithin:actions.left>=0&&actions.right<=innerWidth+1&&actions.bottom<=innerHeight+1,
     controls:[...modal.querySelectorAll('.end-actions button')].map(btn=>{
-     const box=btn.getBoundingClientRect(),style=getComputedStyle(btn);
+     const box=btn.getBoundingClientRect(),row=btn.parentElement.getBoundingClientRect(),style=getComputedStyle(btn);
      return {text:btn.textContent,oneLine:style.whiteSpace==='nowrap',notCut:btn.scrollWidth<=btn.clientWidth+2,
-      textSize:parseFloat(style.fontSize),height:box.height,decorate:getComputedStyle(btn,'::before').content!=='none'};
+      textSize:parseFloat(style.fontSize),height:box.height,insideBar:box.top>=row.top-1&&box.bottom<=row.bottom+1,
+      decorate:getComputedStyle(btn,'::before').content!=='none'};
     }),
     originalLoserStillGone:window.__arenaQA.state.enemy.removedFromArena,
     winnerScale,winnerCssScale:winnerMatrix.a,winnerAnchor:winnerCSS.transformOrigin,
@@ -108,7 +109,7 @@ async function check(size,preview){
   assert.equal(result.withinViewport,true,'no cropped gold frame');
   assert.equal(result.buttonsBelow,true,'decorative action controls must be BELOW the Roman artwork border');
   assert.equal(result.buttonsWithin,true,'actions must stay within visible viewport for non-loot result');
-  assert(result.controls.every(b=>b.oneLine&&b.notCut&&b.decorate&&b.textSize<=18),'buttons stay legible, ornamented and on one line: '+JSON.stringify(result.controls));
+  assert(result.controls.every(b=>b.oneLine&&b.notCut&&b.decorate&&b.insideBar&&b.textSize<=18),'buttons stay inside bar, ornamented and on one line: '+JSON.stringify(result.controls));
   assert.ok(result.winnerScale>=1.23&&result.winnerScale<=1.27,'winner is 25% larger than last result layout');
   assert.ok(Math.abs(result.winnerCssScale-1.25)<.005,'winner enlargement comes from proportional uniform scaling');
   assert.ok(result.winnerAnchor.includes('100%')||result.winnerAnchor.endsWith('px'),'victory art has grounded origin');
