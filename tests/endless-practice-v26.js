@@ -151,4 +151,36 @@ for(const group of layouts)
 assert(practice.includes('COURTS=courtsForParty(picks.length)'),'runtime must adapt layout to team count');
 assert(practice.includes('const c=COURTS[k]'),'hero uses corresponding foot anchor');
 assert(practice.includes('const c=COURTS[h.seat]'),'matched enemy uses same foot anchor');
+
+// Published sizes are GitHub repo source-of-truth; browser storage is only
+// an explicit draft override. Verify precedence, title access and auth flow.
+const publishedJs=fs.readFileSync(path.join(__dirname,'../public/practice-scale-published.js'),'utf8');
+const scaleLib=fs.readFileSync(path.join(__dirname,'../public/practice-scale-profiles.js'),'utf8');
+const publisher=fs.readFileSync(path.join(__dirname,'../public/tools/practice-scale-publish.js'),'utf8');
+assert(html.includes('id="scaleStudioTitleLink"'),'title offers a studio button');
+assert(html.indexOf('id="ludusResetOpen"')<html.indexOf('id="scaleStudioTitleLink"'),'studio link underneath reset button');
+assert(html.includes('#startScreen .size-calibration-link'),'compact title link style');
+assert(html.indexOf('practice-scale-published.js?v=git-defaults-v37')<
+ html.indexOf('practice-scale-profiles.js?v=github-canonical-v37'),'game loads published defaults before scale engine');
+assert(studio.indexOf('practice-scale-published.js?v=git-defaults-v37')<
+ studio.indexOf('practice-scale-profiles.js?v=github-canonical-v37'),'studio loads published defaults before scale engine');
+assert(studio.includes('id="publishOpen"')&&studio.includes('id="publishConfirm"'),'authenticated GitHub publish controls');
+assert(studio.includes('id="githubEdit"'),'GitHub native signed-in editor alternative');
+assert(studio.includes('이 기기 임시저장'),'no claim local-only save commits to GitHub');
+assert(studio.includes('practice-scale-publish.js?v=github-source-v37'),'real source publisher loaded');
+assert(publisher.includes("method:'PUT'"),'GitHub commit uses Contents API');
+assert(publisher.includes("branch:'main'")&&publisher.includes('sha:old.sha'),'conflict-safe, version-pinned commit');
+assert(publisher.includes("apiScale.clamp(n)"),'only safe number values committed');
+assert(publisher.includes("token.value=''"),'authentication secret cleared on completion');
+assert(!publisher.includes('localStorage'),'the GitHub token is not persisted');
+assert(!publishedJs.includes('ghp_'),'canonical file never embeds GitHub auth credentials');
+const mockPublished={SpartacusPublishedScales:{beast_wolf:1.21,
+ npc_carnifex:.91,murmillo_a_L2:1.04},localStorage:{getItem(){return null;}}};
+const mockModule={exports:{}};
+new Function('window','module',scaleLib)(mockPublished,mockModule);
+assert.equal(mockModule.exports.DEFAULTS.beast_wolf,1.21,'new device inherits published wolf size');
+assert.equal(mockModule.exports.DEFAULTS.npc_carnifex,.91,'new device inherits published executioner size');
+assert.equal(mockModule.exports.DEFAULTS.murmillo_a_L2,1.04,'new device inherits published gladiator size');
+assert.equal(Object.keys(mockModule.exports.DEFAULTS).length,31);
+
 console.log('PASS: grounded 1–4 party perspective with near-first and solo-centered arrangement');
