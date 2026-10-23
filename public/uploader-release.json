@@ -1,12 +1,11 @@
 {
   "assetSha256": {
-    "public/index.html": "833d5105d69624f54279dc794aec4d8c229ee4fbe3c1ef994779332fbe88b037",
-    "public/ludus-practice.js": "5bbd2a5609c6c95926ee2322d3b6aa31b0cbc6e4e689514fb7b82b5a68a73adf",
-    "tests/endless-practice-v26.js": "a820918f7ac6a3fb77f090431c1cf659442019750e28063ad361a5b4a6f3427b"
+    "public/index.html": "9046ff875eda3b54c86030734884594c2d504378b8f7b980cf6124f5fd66d125",
+    "tests/endless-practice-v26.js": "101a2492c65969a71d17416b5cd41b66ae30e04cc154af86d6ead72799c92d16"
   },
-  "baseCommit": "70601c4be00a7301220954c508e3efdf33febfe5",
+  "baseCommit": "f9bce7f39b67dd630da7b8872804415b4f79d3f8",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-artist-look-profiles-and-world-depth-20261023-v32",
+  "releaseId": "practice-calibrator-25-live-integration-20261023-v33b",
   "releaseProtocol": "spartacus-uploader-v1"
 }

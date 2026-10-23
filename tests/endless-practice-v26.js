@@ -37,7 +37,19 @@ assert(!practice.includes('measureTorso('),'unreliable automatic measurement rem
 assert(practice.includes('units.concat(bodies).sort((a,b)=>a.depth-b.depth||a.front-b.front)'),'all fighters and bodies depth sorted globally');
 assert(html.includes('practice-scale-profiles.js?v=per-look-v32'),'shared scale profiles loaded before game');
 const profiles=require('../public/practice-scale-profiles.js');
-assert.equal(Object.keys(profiles.DEFAULTS).length,20);
+assert.equal(Object.keys(profiles.DEFAULTS).length,25);
+assert.equal(profiles.EXTRAS.length,5);
+assert.equal(profiles.look({side:'ally',index:0},[{appearance:'murmillo_champion_red',cls:'murmillo',visualId:'murmillo_a_L5'}]),'murmillo_champion_red');
+assert.equal(profiles.look({side:'ally',index:0},[{appearance:'murmillo_motion_v3',cls:'murmillo',visualId:'murmillo_a_L5'}]),'murmillo_motion_v3');
+for(const cls of ['murmillo','thraex','retiarius'])
+ assert.equal(profiles.look({side:'ally',index:0},[{appearance:'legacy',cls}]),'legacy_'+cls);
+const studio=fs.readFileSync(path.join(__dirname,'../public/tools/practice-scale-calibrator.html'),'utf8');
+assert(studio.includes("grade==='special'"));
+assert(studio.includes('champion-murmillo/manifest.json'));
+assert(studio.includes('murmillo-b'));
+assert(studio.includes('legacy_retiarius'));
+assert(studio.includes('25종 배율 저장'));
+assert(html.includes('practice-scale-profiles.js?v=all-25-v33'));
 assert(profiles.DEFAULTS.retiarius_a_L5>profiles.DEFAULTS.murmillo_a_L5*1.5);
 assert.equal(profiles.look({side:'enemy',look:'retiarius_a_L3'},[]),'retiarius_a_L3');
 assert(practice.includes('FALL_DURATION=.72'),'dedicated death fall');
