@@ -6,6 +6,13 @@ const browser=await chromium.launch({headless:true,...(process.env.BROWSER_CHANN
 const page=await browser.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:1});
 const base=process.env.ARENA_URL||'http://127.0.0.1:8765';
 const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+// The arcade arena is intentionally hidden on the Blood & Glory Ludus title.
+// Export rendered canvas pixels directly instead of asking Playwright to
+// screenshot a hidden DOM element.
+async function captureBattle(filename){
+ const png=await page.evaluate(()=>document.querySelector('#battle').toDataURL('image/png').split(',')[1]);
+ fs.writeFileSync('docs/vfx-v4/'+filename,Buffer.from(png,'base64'));
+}
 fs.mkdirSync('docs/vfx-v4',{recursive:true});
 try{
  await page.goto(base+'/vfx-gallery.html?__arena_qa=1');
@@ -102,10 +109,10 @@ try{
   if(action!=='finisher')assert.ok(event.kick&&event.shake>0,JSON.stringify(event));
   assert.ok(event.sounds.includes(({ordinary:'hit',guard:'block',parry:'parry',special:'heavy_hit',dash:'dash_hit',finisher:'finisher'})[action]),JSON.stringify(event));
   events.push(event);
-  if(direction===1)await page.locator('#battle').screenshot({path:'docs/vfx-v4/game-'+action+'.png'});
+  if(direction===1)await captureBattle('game-'+action+'.png');
  }
  await page.evaluate(()=>{const s=__arenaQA.state;s.sparks=[];s.resultAnim=.9;__arenaQA.render();});
- await page.locator('#battle').screenshot({path:'docs/vfx-v4/game-victory.png'});
+ await captureBattle('game-victory.png');
  // Focus slows only simulation; the independent presentation clock can advance.
  const timing=await page.evaluate(()=>['parry','dash'].map(kind=>{
   const state=ArenaFocus.start(kind,640,1),first=ArenaFocus.advance(state,.02);
