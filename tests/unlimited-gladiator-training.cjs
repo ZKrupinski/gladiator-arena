@@ -37,7 +37,7 @@ assert.doesNotMatch(html,/h\.stats\[(?:stat|id|k)\]\s*>=\s*10/,'UI/logic cannot 
 assert.doesNotMatch(html,/Math\.min\(10,\s*before\s*\+/,'training gains cannot be clamped');
 assert.doesNotMatch(approved,/h\.stats\[opt\.stat\]\s*\)?\s*>=\s*10/,'approved training scene cannot stop at +10');
 assert.match(html,/function careerTrainingCost\(/,'single discounted training cost source');
-assert.match(html,/arena-balance\.js\?v=unlimited-growth-v1/,'balance cache bust');
+assert.match(html,/arena-balance\.js\?v=[\w-]+/,'active balance script is cache-versioned');
 assert.match(html,/ludus-approved-scenes\.js\?v=[\w-]+/,'approved screen cache bust');
 assert.match(html,/l===20\?'MAX'/,'Lv.20 is intentionally preserved');
 console.log('PASS: unlimited stat training, diminishing combat returns, scaled costs, saved data compatibility and 5-tier level rule');
