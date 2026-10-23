@@ -1,12 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "561566fde879318140bb591c970720a6ea26c529aa103d16c52538556a806724",
-    "public/ludus-practice.js": "0daa09dfc025d142fb3bcb074855227319a0ef7527ce2ea19eea4d6d5ebd31ee",
-    "tests/endless-practice-v26.js": "bbaab6b09fab292b1e30c48f7d9cafa7fb446f7392d4130d12382027ccb441bb"
+    "public/index.html": "abe9e5c408a1f907fdd083f7123306093ccc42226c584e36cbf258840f37175d",
+    "public/ludus-practice.js": "2c2c9725d95f98561da12c07752a041de3e437570d726de215b076f3b2a023f6",
+    "tests/endless-practice-v26.js": "9649a3deca342f75037054f92dba23902e75f331e846026843f039eba0f892b6"
   },
-  "baseCommit": "8039bf13e9ec738711343ff19f08241923f4a331",
+  "baseCommit": "04ea328a161fd43fa030bce0bffc3cf72d629ac6",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-station-duels-20261023-v27",
+  "releaseId": "practice-immediate-reassignment-20261023-v27a",
   "releaseProtocol": "spartacus-uploader-v1"
 }

@@ -272,8 +272,9 @@ function simulate(dt){
   if(battle.delay<=0&&spawnMatched())
    battle.delay=clamp(1.22-battle.wave*.009,.48,1.22);
  }
- // If a station's defender falls, transfer its surviving foe into the
- // dispatch queue until a free living station exists.
+ battle.heroes.forEach(u=>act(u,dt));battle.enemies.forEach(u=>act(u,dt));
+ // Dispatch orphaned enemies IMMEDIATELY after an ally falls this tick.
+ // No frame is rendered with an unmatched live enemy in an abandoned court.
  for(const e of battle.enemies){
   if(!e.dead&&!battle.heroes.some(h=>!h.dead&&h.seat===e.seat)){
    e.waiting=true;e.seat=-1;e.x=-999;e.y=-999;e.windup=0;
@@ -281,7 +282,6 @@ function simulate(dt){
   }
  }
  battle.enemies=battle.enemies.filter(e=>!e.waiting);
- battle.heroes.forEach(u=>act(u,dt));battle.enemies.forEach(u=>act(u,dt));
  battle.enemies=battle.enemies.filter(u=>!u.dead||u.fade>0);
  for(const p of battle.particles){p.life-=dt;p.x+=p.dx*dt;p.y+=p.dy*dt;p.dy+=180*dt;}
  battle.particles=battle.particles.filter(p=>p.life>0).slice(-70);

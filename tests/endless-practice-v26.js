@@ -20,7 +20,7 @@ assert(scene.includes('if(id==="practice")'));
 assert(scene.includes('if(id==="roster"||id==="training"||id==="basic")'));
 assert(html.includes('practiceReward:(awards,wave,kills,retired)=>'));
 assert(html.includes('practiceEnemySprite:(visualId,kind='));
-assert(html.includes('ludus-practice.js?v=station-duels-v27'));
+assert(html.includes('ludus-practice.js?v=station-duels-v27a'));
 assert(html.includes('ludus-practice.css?v=exercitium-infinitum-v26'));
 assert(practice.includes('battle.heroes.every(u=>u.dead)'));
 assert(practice.includes('battle.heroes.filter(h=>!h.dead)'));
@@ -30,6 +30,7 @@ assert(practice.includes('function findOpenCourt(heroes,enemies,cursor=0)'),'mat
 assert(practice.includes('!enemies.some(e=>!e.dead&&e.seat===seat)'),'no stacked live foes at station');
 assert(practice.includes('function spawnMatched()'),'sequential assigned spawns');
 assert(practice.includes('battle.queued.push(e)'),'reassign surviving opponent after teammate dies');
+assert(practice.indexOf('battle.heroes.forEach(u=>act(u,dt))')<practice.indexOf('battle.queued.push(e)'),'orphan relocation must happen immediately after contact');
 assert(practice.includes('u.homeX-u.x'),'return fighters to station');
 assert(practice.includes('root.ArenaBalance?.combatDamage?.(raw,style)'),'original combat damage reused');
 assert(practice.includes("api()?.squadSprite?.(owner,kind"),'original fighter attack/guard sprites reused');
