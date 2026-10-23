@@ -1,12 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "291bf426e3c5a537e04f4cee3a34a45ccf495038431211f2bbe872288428261a",
-    "public/ludus-practice.js": "880a1ec2348ed8e6f77979c5abfd90aeac1fb75ae770d9a2d976f7713303aef6",
-    "tests/endless-practice-v26.js": "fbdcaf3ace842cd6cff47a52c2f9843cd0cc167df3a9c297cdbb00468f9f2dcc"
+    "public/index.html": "cb43ca6a086046eb8918c2895298e05b6a7a517c45517ca4efed20a26f26bed9",
+    "public/ludus-practice.js": "4d80156704a059773c1fbaeae4a3a03224ed64be8f56089bad3a7e139a4ba257",
+    "tests/endless-practice-v26.js": "7a73044f866e4b7e2335cb813ca2395444951ab404f2a89863cb42d25d787931"
   },
-  "baseCommit": "a6388ffd8be8906e5305f59eafb3ca099d9dc0fc",
+  "baseCommit": "d7c99096743b4b698256a55e730e7597f73a4c88",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-visual-unification-arena-fx-carnifex-20261023-v29",
+  "releaseId": "practice-fighter-scale-and-edge-transitions-20261023-v30",
   "releaseProtocol": "spartacus-uploader-v1"
 }

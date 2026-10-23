@@ -3553,6 +3553,13 @@ window.LudusBridge={
   saveCareer();renderCareer();
   return {awards:summary,best:CAREER.practiceBest,totalXp:total};
  },
+ practiceFrame:(unit,kind='idle')=>{
+  const h=unit?.side==='ally'?CAREER.roster[unit.index]:null;
+  if(h&&(h.appearance==='legacy'||isChampionMurmillo(h)||isAnimatedMurmillo(h)))return null;
+  const atlas=h?growthImage(h):GROWTH_IMAGES.get(unit?.look||'murmillo_a_L1');
+  const frame={idle:0,walk:1,attack:2,guard:6,dodge:8,hit:7,death:11}[kind]??0;
+  return atlas?.frames?.[frame]||atlas?.frames?.[0]||null;
+ },
  practiceEnemySprite:(visualId,kind='idle')=>{
   const valid=/^(murmillo_a|thraex_a|thraex_b|retiarius_a)_L[1-5]$/.test(String(visualId||''));
   const atlas=GROWTH_IMAGES.get(valid?visualId:'murmillo_a_L1');
@@ -3620,6 +3627,6 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=practice-route-v26"></script><script src="ludus-practice.js?v=normalized-raster-carnifex-v29"></script><script src="ludus-training-runtime.js?v=whip-real-hit-v3"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=portrait-fullteam-v17"></script><script src="ludus-armory-live.js?v=portrait-fullteam-v17"></script><script src="ludus-cards.js?v=independent-looks-v25"></script>
+<script src="ludus-scene.js?v=practice-route-v26"></script><script src="ludus-practice.js?v=normalized-idle-screen-exit-v30"></script><script src="ludus-training-runtime.js?v=whip-real-hit-v3"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=portrait-fullteam-v17"></script><script src="ludus-armory-live.js?v=portrait-fullteam-v17"></script><script src="ludus-cards.js?v=independent-looks-v25"></script>
 
 </body></html>

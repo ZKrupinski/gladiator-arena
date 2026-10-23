@@ -186,8 +186,10 @@ function parkEnemy(e,h){
  const c=COURTS[h.seat];e.seat=h.seat;e.lane=h.seat;e.y=c.y;
  // Original arena entrance rhythm: run on from the right, briefly plant
  // the feet, then begin combat. Each new rival comes in separately.
- e.homeX=c.x+87;e.fromX=Math.min(W-34,c.x+LEASH+90);
- e.x=e.fromX;e.entry=.85;e.arrival=.18;e.waiting=false;e.cooldown=.35;
+ e.homeX=c.x+87;
+ e.fromX=W+250*c.scale; // fully outside visible arena
+ e.entryTotal=Math.max(1.25,(e.fromX-e.homeX)/580);
+ e.x=e.fromX;e.entry=e.entryTotal;e.arrival=.18;e.waiting=false;e.cooldown=.35;
 }
 function spawnMatched(){
  if(!battle||battle.enemies.some(e=>!e.dead&&e.entry>0))return false;
@@ -230,17 +232,19 @@ function beginRemoval(unit){
  if(!battle||unit.retiring||unit.seat<0)return;
  unit.retiring=true;
  const c=COURTS[unit.seat],engine=root.ArenaCarnifex;
- const scale=c.scale*.44;
+ const scale=c.scale*.58;
+ const offset=c.x-640*scale;
+ const viewport={left:-offset/scale,right:(W-offset)/scale};
  let seq=null;
  if(engine?.begin){
   try{
-   const body={x:640+(unit.x-c.x)/scale,enemy:unit.side==='enemy',
+   const body={x:(unit.x-offset)/scale,enemy:unit.side==='enemy',
     cfg:{name:unit.name},cls:unit.cls,dead:true,hp:0};
-   seq=engine.begin(body,unit.side==='enemy',0,{left:0,right:W});
+   seq=engine.begin(body,unit.side==='enemy',0,viewport);
    engine.preload?.();
   }catch(_){seq=null;}
  }
- battle.exits.push({unit,seq,age:0,scale,court:c});
+ battle.exits.push({unit,seq,age:0,scale,court:c,viewport});
 }
 function drawDeparture(removal){
  const engine=root.ArenaCarnifex,{unit,seq,court,scale}=removal;
@@ -271,11 +275,11 @@ function updateDepartures(dt){
  for(const exit of battle.exits){
   exit.age+=dt;
   if(exit.seq&&engine?.advance){
-   engine.advance(exit.seq,dt*1.6,{left:0,right:W});
+   engine.advance(exit.seq,dt,exit.viewport);
   }
  }
  battle.exits=battle.exits.filter(exit=>
-  exit.seq?!exit.seq.finished&&exit.age<8:exit.age<2.7);
+  exit.seq?!exit.seq.finished:exit.age<3.6);
 }
 function paintVfx(){
  if(!battle)return;
@@ -344,7 +348,7 @@ function act(u,dt){
  const target=matched(u),ring=COURTS[u.seat];
  if(u.side==='enemy'&&u.entry>0){
   u.entry=Math.max(0,u.entry-dt);
-  const t=1-u.entry/.85;
+  const t=1-u.entry/u.entryTotal;
   const eased=1-Math.pow(1-t,2);
   u.x=u.fromX+(u.homeX-u.fromX)*eased;
   if(!u.entry){u.x=u.homeX;u.cooldown=Math.max(u.cooldown,u.arrival);}
@@ -453,12 +457,11 @@ function calibration(unit,frame){
  if(!idle)return null;
  const b=alphaBounds(idle);
  if(!b?.w||!b?.h)return null;
- const base=Math.min(163/b.w,202/b.h);
- const head=measureFace(idle,b);
- const desiredFace=39;
- const actualFace=Math.max(1,head*base);
- // Preserve class identity while narrowing cross-grade head-size differences.
- const correction=clamp(desiredFace/actualFace,.82,1.17);
+ const base=202/b.h;
+ const head=b.h*.22;
+ // Artist original pose height controls consistent head-to-body proportions;
+ // do not enlarge short Thraex or shrink wide-trident Retiarius.
+ const correction=1;
  return unit._bodyScale={pixels:base*correction,
   headPixels:head,refW:b.w,refH:b.h,correction};
 }
@@ -478,9 +481,17 @@ function drawUnit(unit){
   const bounds=alphaBounds(art),metric=calibration(unit,art);
   if(bounds?.w&&bounds?.h&&metric){
    const k=metric.pixels*scale,w=bounds.w*k,h=bounds.h*k;
-   ctx.save(); // Only the enemy SPRITE flips, not name/HP/effect overlays.
+   const pose=unit.dead?'death':unit.entry>0?'walk':unit.hit>0?'hit':unit.guard>0?'guard':
+    unit.dodge>0?'dodge':unit.windup>0||unit.swing>0?'attack':
+    Math.abs(unit.x-unit.homeX)>13?'walk':'idle';
+   const atlasFrame=api()?.practiceFrame?.(unit,pose);
+   ctx.save(); // Only artwork flips. Original frame pivots stabilize the torso.
    if(unit.side==='enemy')ctx.scale(-1,1);
-   try{ctx.drawImage(art,bounds.x,bounds.y,bounds.w,bounds.h,-w/2,-h,w,h);}catch(_){}
+   try{
+    if(atlasFrame?.canvas===art&&Number.isFinite(atlasFrame.pivotX)&&Number.isFinite(atlasFrame.footY))
+     ctx.drawImage(art,-atlasFrame.pivotX*k,-atlasFrame.footY*k,art.width*k,art.height*k);
+    else ctx.drawImage(art,bounds.x,bounds.y,bounds.w,bounds.h,-w/2,-h,w,h);
+   }catch(_){}
    ctx.restore();
   }
  }else{
