@@ -6,7 +6,8 @@ const page=await browser.newPage({viewport:{width:1280,height:900},deviceScaleFa
 try{
  await page.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>!!window.__arenaQA&&!!window.ArenaFocus,{timeout:16000});
- await page.locator('#startBtn').click();
+ // Title now enters Ludus directly; use the supported QA hook rather than a hidden arcade button.
+ await page.evaluate(()=>{const s=window.__arenaQA.state;s.phase='fight';s.time=110;s.paused=false;s.gauntlet=null;s.autoplayEnabled=false;s.autoPlaying=false;});
  await page.waitForFunction(()=>window.__arenaQA.state.phase==='fight',{timeout:16000});
  async function trigger(kind){
   return page.evaluate(type=>{
