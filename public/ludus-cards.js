@@ -35,6 +35,7 @@ function drawArt(root){
  var a=bridge();if(!a)return;
  root.querySelectorAll('canvas[data-card-art]').forEach(function(canvas){
   var img=a.portrait(Number(canvas.dataset.cardArt));if(!img||!img.width||!img.height)return;
+  if(window.ArenaPortraitFit?.draw?.(canvas,img,{inset:.045}))return;
   var ctx=canvas.getContext('2d');if(!ctx)return;
   ctx.clearRect(0,0,canvas.width,canvas.height);
   var scale=Math.min(213/img.width,224/img.height);
@@ -45,10 +46,12 @@ function drawArt(root){
  if(heroCanvas){
   var st=state(),src=a.portrait(st.active);
   if(src&&src.width&&src.height){
-   var ctx=heroCanvas.getContext('2d'),scale=Math.min(330/src.width,335/src.height);
-   var w=src.width*scale,h=src.height*scale;
-   ctx.clearRect(0,0,heroCanvas.width,heroCanvas.height);
-   try{ctx.drawImage(src,(heroCanvas.width-w)/2,heroCanvas.height-h-5,w,h);}catch(e){}
+   if(!window.ArenaPortraitFit?.draw?.(heroCanvas,src,{inset:.055})){
+    var ctx=heroCanvas.getContext('2d'),scale=Math.min(330/src.width,335/src.height);
+    var w=src.width*scale,h=src.height*scale;
+    ctx.clearRect(0,0,heroCanvas.width,heroCanvas.height);
+    try{ctx.drawImage(src,(heroCanvas.width-w)/2,heroCanvas.height-h-5,w,h);}catch(e){}
+   }
   }
  }
 }
