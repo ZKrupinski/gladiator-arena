@@ -1,10 +1,11 @@
 {
   "assetSha256": {
-    "tests/endless-practice-v26.js": "0b8a8db6ae4d9a51fda77893ba5ab439c9a7033afc4fda35ad440521579eb119"
+    "public/index.html": "ab205b62b27da06f057f30f168723244ff7fc26e5bb21434ce3d6c256606275e",
+    "tests/endless-practice-v26.js": "54f3d78eb59bacdf85bf2e10bcbec40d8051368f664fb284d71476700de9abdd"
   },
-  "baseCommit": "06ed21ad6999006840383afb20aec84dc4ffbc28",
+  "baseCommit": "4cc74e113cd12643a0a557f38355439859a8cdac",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-fx-depth-and-duel-visuals-20261024-v34",
+  "releaseId": "practice-ko-impact-simultaneous-sfx-20261024-v35",
   "releaseProtocol": "spartacus-uploader-v1"
 }
