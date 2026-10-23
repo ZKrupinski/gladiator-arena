@@ -35,7 +35,7 @@ assert(practice.includes('202/bound.h*scaleFactor'),'artist size multiplier neve
 assert(practice.includes('profiles?.scale?.(appearance)'),'saved per-appearance scale connected');
 assert(!practice.includes('measureTorso('),'unreliable automatic measurement removed');
 assert(practice.includes('units.concat(bodies,effects,sparks)'),'fighter and VFX/corpse depth unified');
-assert(html.includes('practice-scale-profiles.js?v=31-look-shuffle-bulk-v36'),'shared scale profiles load in both modes');
+assert(html.includes('practice-scale-profiles.js?v=github-canonical-v37'),'shared scale profiles load in both modes');
 const profiles=require('../public/practice-scale-profiles.js');
 assert.equal(Object.keys(profiles.DEFAULTS).length,31,'20 growth, 5 special, 5 beasts, 1 executioner');
 assert.deepEqual([...profiles.BEASTS],['beast_wolf','beast_leopard','beast_tiger','beast_lion','beast_elephant']);
@@ -63,7 +63,7 @@ const beastArt=fs.readFileSync(path.join(__dirname,'../public/arena-beasts.js'),
 assert(beastArt.includes("root.PracticeScaleProfiles?.scale?.('beast_'+type)"),'beast render consumes shared artist scale');
 const executorArt=fs.readFileSync(path.join(__dirname,'../public/arena-carnifex.js'),'utf8');
 assert(executorArt.includes("root.PracticeScaleProfiles?.scale?.('npc_carnifex')"),'Carnifex render consumes shared artist scale');
-assert(html.includes('practice-scale-profiles.js?v=31-look-shuffle-bulk-v36'));
+assert(html.includes('practice-scale-profiles.js?v=github-canonical-v37'));
 assert(profiles.DEFAULTS.retiarius_a_L5>profiles.DEFAULTS.murmillo_a_L5*1.5);
 assert.equal(profiles.look({side:'enemy',look:'retiarius_a_L3'},[]),'retiarius_a_L3');
 assert(practice.includes('FALL_DURATION=.72'),'dedicated death fall');
