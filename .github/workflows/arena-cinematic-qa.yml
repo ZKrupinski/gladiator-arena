@@ -10,6 +10,7 @@ on:
       - public/arena-animated-vfx.js
       - public/vfx-gallery.html
       - scripts/qa_arena_vfx_browser.mjs
+      - scripts/qa_directional_vfx.mjs
       - scripts/qa_arena_motion.mjs
       - scripts/qa_arena_motion_browser.mjs
       - scripts/qa_fighter_proportions_browser.mjs
