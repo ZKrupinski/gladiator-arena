@@ -1217,6 +1217,11 @@ function renderBeastHunt(){
  '<div class="venatio-hero-preview"><canvas id="beastHeroPortrait" data-roster-art="'+hero+'" width="300" height="230" role="img" aria-label="출전 검투사 썸네일"></canvas><span id="beastHeroCounter"></span></div>'+
  '<button id="beastHeroNext" type="button" aria-label="다음 검투사" '+(options.length<2?'disabled':'')+'>❯</button></div>'+
  '<div class="venatio-hero-identity"><h4 id="beastHeroName"></h4><small id="beastHeroClass"></small><p id="beastHeroStats"></p></div>'+
+ '<div class="venatio-roster-strip" role="group" aria-label="출전 가능한 검투사 썸네일 선택">'+options.map(({h,i})=>
+  '<button type="button" class="venatio-roster-thumb '+(i===hero?'is-selected':'')+'" data-beast-hero="'+i+'" aria-label="'+safe(h.name+' · Lv.'+careerLevel(h))+'" aria-pressed="'+(i===hero)+'">'+
+  '<canvas width="108" height="116" data-roster-art="'+i+'" aria-hidden="true"></canvas>'+
+  '<small>Lv.'+careerLevel(h)+'</small></button>'
+ ).join('')+'</div>'+
  '<select id="beastHeroSelect" hidden aria-hidden="true" tabindex="-1">'+options.map(({h,i})=>'<option value="'+i+'" '+(i===hero?'selected':'')+'>'+safe(h.name)+'</option>').join('')+'</select>'+
  (options.length?'':'<p class="career-status">출전 가능한 검투사가 없습니다. 영입하거나 치료해 주세요.</p>');
  $('#careerBody').innerHTML='<section class="beast-gallery venatio-select career-card"><header class="beast-gallery-head"><div><small>VENATIO · ARENA BESTIARUM</small><h2>야수전</h2><p>왼쪽의 출전 검투사, 오른쪽의 야수를 골라 출전하세요.</p></div><button id="beastBackDraft" class="beast-back" type="button">◀ 전투 준비로</button></header>'+
@@ -1236,6 +1241,17 @@ function renderBeastHunt(){
   $('#beastHeroClass').textContent=(DATA[h.cls]?.name||h.cls)+' · Lv.'+careerLevel(h);
   $('#beastHeroStats').textContent='부상 '+(h.injury||0)+' · 피로 '+(h.fatigue||0)+' · 성장 '+careerStage(h)+'/5';
   $('#beastHeroCounter').textContent=String(slot+1).padStart(2,'0')+' / '+String(options.length).padStart(2,'0');
+  for(const button of document.querySelectorAll('.venatio-roster-thumb')){
+   const active=Number(button.dataset.beastHero)===item.i;
+   button.classList.toggle('is-selected',active);
+   button.setAttribute('aria-pressed',String(active));
+  }
+  const track=document.querySelector('.venatio-roster-strip'),selected=track?.querySelector('.is-selected');
+  if(track&&selected){
+   const l=selected.offsetLeft-track.offsetLeft, r=l+selected.offsetWidth;
+   if(l<track.scrollLeft)track.scrollLeft=l-5;
+   else if(r>track.scrollLeft+track.clientWidth)track.scrollLeft=r-track.clientWidth+5;
+  }
   paintRosterPreviews();
  };
  const cycleHero=delta=>{
@@ -1246,6 +1262,9 @@ function renderBeastHunt(){
  $('#beastHeroPrev').onclick=()=>cycleHero(-1);
  $('#beastHeroNext').onclick=()=>cycleHero(1);
  $('#beastHeroSelect').onchange=e=>chooseHero(e.target.value);
+ document.querySelectorAll('.venatio-roster-thumb').forEach(button=>{
+  button.onclick=()=>chooseHero(button.dataset.beastHero);
+ });
  const choose=id=>{
   const s=BEAST_STAGES.find(x=>x.id===id);if(!s)return;
   BEAST_SELECTED=s.id;$('#beastTypeSelect').value=s.id;
