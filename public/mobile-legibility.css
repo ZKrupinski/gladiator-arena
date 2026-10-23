@@ -381,3 +381,35 @@
   font-size:12px;padding:1px 4px;
  }
 }
+
+
+/* Armory V15.1: stock badges are anchored *inside* the compact card.
+   On small landscape screens a grid-row badge could protrude beneath the
+   border even when auto rows were used; reserve space in the copy itself. */
+@media(max-width:1150px){
+ .ra-collection .ra-list .ra-item{
+  position:relative;
+  grid-template-rows:auto;
+ }
+ .ra-collection .ra-list .ra-art{
+  grid-column:1;grid-row:1;align-self:center;
+ }
+ .ra-collection .ra-list .ra-item-copy{
+  grid-column:2;grid-row:1;
+  padding:0 0 38px!important;
+ }
+ .ra-collection .ra-list .ra-item .ra-flag{
+  position:absolute!important;
+  grid-column:auto;grid-row:auto;
+  right:9px;bottom:7px;
+  max-width:calc(100% - 18px)!important;
+ }
+}
+@media(orientation:portrait) and (max-width:700px){
+ .ra-collection .ra-list .ra-item-copy{
+  padding-bottom:25px!important;
+ }
+ .ra-collection .ra-list .ra-item .ra-flag{
+  right:7px;bottom:5px;
+ }
+}
