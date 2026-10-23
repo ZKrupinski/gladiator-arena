@@ -72,3 +72,88 @@
 .venatio-hero-identity #beastHeroStats{margin:8px 0;font-size:12px;color:#e5c399}
 .venatio-hero-identity + select[hidden]{display:none!important}
 @media(max-width:700px){.venatio-hero-slider{grid-template-columns:28px minmax(0,1fr) 28px;gap:2px}.venatio-hero-slider button{width:28px;height:50px;font-size:16px}.venatio-hero-identity h4{font-size:20px}}
+
+
+/* VENATIO V17: matched-height versus panels and a HORIZONTAL fighter picker.
+ * No hero should stretch into a tall column merely because the beast panel
+ * contains more text or selector controls. */
+.beast-gallery.venatio-select{
+ box-sizing:border-box;width:min(100%,1120px);margin:0 auto;min-width:0;
+}
+.venatio-versus-layout{
+ display:grid;grid-template-columns:minmax(0,1fr) 46px minmax(0,1fr);
+ align-items:start;gap:9px;
+}
+.venatio-gladiator,.venatio-beast{
+ box-sizing:border-box;align-self:start;min-height:0;height:auto;
+ padding:12px;overflow:hidden;
+}
+.venatio-gladiator h3,.venatio-beast h3{margin:5px 0 10px}
+.venatio-hero-slider,.venatio-slider{
+ grid-template-columns:32px minmax(0,1fr) 32px;gap:5px;
+ align-items:center;
+}
+.venatio-hero-slider button,.venatio-slider button{
+ box-sizing:border-box;width:32px;height:48px;padding:0;
+}
+.venatio-hero-preview,.venatio-preview{
+ box-sizing:border-box;aspect-ratio:4/3;
+ height:auto;max-height:230px;
+ width:100%;margin:auto;
+}
+.venatio-hero-preview canvas{
+ display:block;width:100%;height:100%;
+ object-fit:contain;object-position:center bottom;
+}
+.venatio-hero-identity{margin:6px auto 7px}
+.venatio-hero-identity h4{font-size:clamp(18px,2.2vw,26px);line-height:1.2}
+.venatio-hero-identity #beastHeroStats{margin:4px 0;font-size:12px}
+.venatio-roster-strip{
+ display:flex;gap:6px;width:100%;min-width:0;
+ margin:5px 0 1px;padding:4px 2px 7px;
+ align-items:stretch;overflow-x:auto;overflow-y:hidden;
+ scroll-snap-type:x proximity;overscroll-behavior-x:contain;
+ scrollbar-width:thin;scrollbar-color:#ae7d46 #271710;
+}
+.venatio-roster-thumb{
+ position:relative;flex:0 0 clamp(65px,7vw,84px);
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ box-sizing:border-box;height:101px;min-width:0;
+ padding:3px 3px 17px;border:2px ridge #a07847;border-radius:7px;
+ background:radial-gradient(ellipse at 50% 38%,#765037,#291910 86%);
+ box-shadow:inset 0 0 7px #0008;
+ cursor:pointer;scroll-snap-align:start;overflow:hidden;
+}
+.venatio-roster-thumb canvas{
+ width:100%;height:100%;max-height:78px;display:block;object-fit:contain;
+ pointer-events:none;
+}
+.venatio-roster-thumb small{
+ position:absolute;right:2px;bottom:2px;left:2px;
+ padding:2px;border-radius:3px;
+ color:#ffe6b4;background:#23160dcc;
+ font:800 10px/1 'Noto Sans KR',sans-serif;text-align:center;letter-spacing:0;
+}
+.venatio-roster-thumb.is-selected{
+ border-color:#ffe29a;outline:1px solid #d9a764;
+ box-shadow:0 0 11px #f6c66a8c,inset 0 0 9px #fff1af32;
+}
+.venatio-roster-thumb:focus-visible{outline:3px solid #ffe19c;outline-offset:2px}
+.venatio-beast label{margin:5px 0}
+.venatio-beast select{min-height:37px;padding:5px}
+.venatio-beast .beast-challenge{margin-top:8px}
+@media(max-width:700px){
+ .venatio-versus-layout{grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr);gap:3px}
+ .venatio-gladiator,.venatio-beast{padding:7px}
+ .venatio-gladiator h3,.venatio-beast h3{font-size:18px;margin:3px 0 6px}
+ .venatio-hero-slider,.venatio-slider{
+  grid-template-columns:24px minmax(0,1fr) 24px;gap:2px;
+ }
+ .venatio-hero-slider button,.venatio-slider button{width:24px;height:44px}
+ .venatio-roster-strip{gap:4px}
+ .venatio-roster-thumb{flex-basis:64px;height:88px}
+ .venatio-roster-thumb canvas{max-height:65px}
+ .venatio-hero-identity h4{font-size:17px}
+ .venatio-hero-identity #beastHeroStats{font-size:10px}
+ .venatio-hero-preview,.venatio-preview{max-height:155px}
+}
