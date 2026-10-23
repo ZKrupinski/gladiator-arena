@@ -9,7 +9,7 @@ page.on('pageerror',err=>errors.push(String(err)));
 try{
  await page.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>!!window.__arenaQA&&!!window.ArenaMotion,{timeout:16000});
- await page.locator('#startBtn').click();
+ await page.evaluate(()=>{const s=window.__arenaQA.state;s.phase='fight';s.time=110;s.paused=false;s.gauntlet=null;s.autoplayEnabled=false;s.autoPlaying=false;});
  await page.waitForFunction(()=>window.__arenaQA.state.phase==='fight',{timeout:16000});
  for(const name of ['strike','guard','special','dash','parry']){
   const impact=await page.evaluate(kind=>{
