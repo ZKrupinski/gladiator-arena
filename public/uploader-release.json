@@ -1,13 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "fe808a64255ded4c3ad5745697d92b14e326b196923b9e1d721a97dbcb5478a4",
-    "public/ludus-armory-live.css": "24d611b703b88eecf848f0dad50f1e01ecd5b1a0288a588a206e3301a023a75e",
-    "public/ludus-armory-live.js": "921f26ca9fd9b6a1b2c7c1733838129cd6b629396649ad12799c5038b9178618",
-    "public/mobile-legibility.css": "c8a0ca4da291c835bd95a363da1d8c270a4767610ab29f0a2cc68bb563580b04"
+    "public/arena-result-roman-v2.css": "3b3917aaf6d22fe37001b2f036a89e278fce0349f840d331062444f2be0f0a01",
+    "public/index.html": "cafe98ec1d7d8325652dd18a475a9a5aa147b2ae78f548db15ba1a7cc35d87dd",
+    "public/ludus-armory-live.css": "fb9d4a036a044514a31f8f0a5c2e30b1d71c78d7b97dff830fcf667e4ae75d24"
   },
-  "baseCommit": "58b0ff18a46140038c6bbe18ce32d8e3c25d4ced",
+  "baseCommit": "3e99c70f8d4bdcfcbbf6cf78ad352d447e076654",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "armory-compact-portraits-v15-20261023",
+  "releaseId": "roman-results-below-frame-icon-align-v17-20261023",
   "releaseProtocol": "spartacus-uploader-v1"
 }
