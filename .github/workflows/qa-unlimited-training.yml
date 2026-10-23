@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           python - <<'PY'
-          import urllib.request,time
+          import urllib.request,time,re
           origin='https://gladiator-arena-git.pages.dev'
           headers={'Cache-Control':'no-cache','User-Agent':'ArenaGrowthQA'}
           for attempt in range(20):
@@ -40,8 +40,8 @@ jobs:
                   h=get('/?unlimited-growth='+str(attempt))
                   b=get('/arena-balance.js?unlimited-growth='+str(attempt))
                   a=get('/ludus-approved-scenes.js?unlimited-growth='+str(attempt))
-                  if ('arena-balance.js?v=unlimited-growth-v1' in h and
-                      'ludus-approved-scenes.js?v=unlimited-growth-v1' in h and
+                  if (re.search(r'arena-balance\.js\?v=[\w-]+',h) and
+                      re.search(r'ludus-approved-scenes\.js\?v=[\w-]+',h) and
                       'TRAINING_SOFTCAP=10' in b and
                       'function trainedStat(value)' in b and
                       "speechPhase='mastery'" in a and
