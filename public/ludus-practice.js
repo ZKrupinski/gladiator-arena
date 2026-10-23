@@ -151,13 +151,20 @@ function announce(text){
 }
 function nextWave(){
  if(!battle)return;
- battle.wave++;battle.left=waveSize(battle.wave);battle.serial=0;battle.delay=.65;battle.breakTime=0;battle.cleared=false;
+ const alive=battle.heroes.filter(h=>!h.dead).length;
+ battle.wave++;battle.left=Math.max(waveSize(battle.wave),alive);
+ battle.serial=0;battle.delay=.65;battle.breakTime=0;battle.cleared=false;
  for(const h of battle.heroes)if(!h.dead){
   h.hp=Math.min(h.maxHp,h.hp+Math.round(h.maxHp*.045));
   h.x=h.homeX;h.windup=0;h.guard=0;h.parry=0;h.stun=0;h.dodge=0;h.cooldown=.15;
  }
  battle.enemies=[];battle.queued=[];
- announce('WAVE '+battle.wave+' · '+battle.left+'명의 적');status();
+ // All available allies get matched opponents at the SAME wave start.
+ // Reinforcements still arrive individually once a combatant wins.
+ for(let n=0;n<alive;n++)if(!spawnMatched(true))break;
+ battle.delay=clamp(1.22-battle.wave*.009,.48,1.22);
+ playCombatSound('start',null,.48);
+ announce('WAVE '+battle.wave+' · '+Math.max(waveSize(battle.wave),alive)+'명의 적');status();
 }
 function start(){
  if(battle||!chosen.length)return;
@@ -170,7 +177,8 @@ function start(){
  $('.ep-selection').hidden=true;$('.ep-combat').hidden=false;$('.ep-result').hidden=true;
  battle={heroes:picks.map(heroFor),enemies:[],queued:[],wave:0,clearedWave:0,kills:0,left:0,serial:0,delay:0,nextSeat:0,
   cleared:false,breakTime:0,knockout:0,finished:false,paused:false,speed:1,shakes:0,
-  particles:[],fx:[],exits:[],clock:0};
+  particles:[],fx:[],exits:[],clock:0,audioTimes:{}};
+ root.ArenaAudio?.enterArena?.();
  prev=0;nextWave();updateButtons();frameId=requestAnimationFrame(loop);
 }
 function findOpenCourt(heroes,enemies,cursor=0){
@@ -191,15 +199,18 @@ function parkEnemy(e,h){
  e.entryTotal=Math.max(1.25,(e.fromX-e.homeX)/580);
  e.x=e.fromX;e.entry=e.entryTotal;e.arrival=.18;e.waiting=false;e.cooldown=.35;
 }
-function spawnMatched(){
- if(!battle||battle.enemies.some(e=>!e.dead&&e.entry>0))return false;
+function spawnMatched(opening=false){
+ if(!battle||(!opening&&battle.enemies.some(e=>!e.dead&&e.entry>0)))return false;
  const h=findOpenCourt(battle.heroes,battle.enemies,battle.nextSeat);
  if(!h)return false;
  const e=battle.queued.length?battle.queued.shift():battle.left>0
   ?enemyFor(battle.wave,battle.serial++,Math.random):null;
  if(!e)return false;
- parkEnemy(e,h);battle.enemies.push(e);
+ parkEnemy(e,h);
+ if(opening)e.entryTotal=e.entry=1.70; // All stations start their first duel in sync.
+ battle.enemies.push(e);
  if(!e.wasSpawned){battle.left--;e.wasSpawned=true;}
+ playCombatSound('dash',e,.30);
  battle.nextSeat=(h.seat+1)%MAX;
  return true;
 }
@@ -207,6 +218,21 @@ function matched(u){
  return u.side==='ally'
   ?battle.enemies.find(e=>!e.dead&&e.seat===u.seat)||null
   :battle.heroes.find(h=>!h.dead&&h.seat===u.seat)||null;
+}
+// Reuse the existing Roman arena audio engine and its independently mixed
+// swing, shield, parry, impact, evasion, entrance and end-match recordings.
+// Per-seat throttling keeps simultaneous 1–4 duels audible without audio spam.
+function playCombatSound(kind,unit,gain=.75,delay=0){
+ if(!battle||battle.finished)return false;
+ const seat=unit?.seat??-1;
+ const key=seat+':'+kind,now=battle.clock;
+ battle.audioTimes??={};
+ if(now-(battle.audioTimes[key]??-999)<.095)return false;
+ battle.audioTimes[key]=now;
+ const active=Math.max(1,battle.heroes.filter(h=>!h.dead).length);
+ const mix=1/Math.sqrt(1+.16*(active-1));
+ return root.ArenaAudio?.play?.(kind,{gain:gain*mix,
+  pan:clamp(((unit?.x??640)-640)/700,-.78,.78),delay})??false;
 }
 function sparks(target,force=false){
  battle.shakes=Math.max(battle.shakes,force?8:3);
@@ -225,8 +251,9 @@ function sparks(target,force=false){
 function emitVfx(kind,unit,other,emphasis=false){
  if(!battle||unit.seat<0||!COURTS[unit.seat])return;
  const c=COURTS[unit.seat],duration=root.ArenaRasterFX?.FAMILIES?.[kind]?.duration||.34;
- const face=unit.side==='ally'?1:-1;
- battle.fx.push({kind,x:unit.x+face*52*c.scale,
+ const face=(kind==='hit'&&other)?(other.side==='ally'?1:-1):
+  (unit.side==='ally'?1:-1);
+ battle.fx.push({kind,x:unit.x+(kind==='hit'?0:face*52*c.scale),
   y:unit.y-113*c.scale,scale:c.scale,face,age:0,duration,
   depth:c.y-(unit.side==='enemy'?12:0)+.6,
   front:unit.side==='ally'?1:0,alpha:emphasis?1:.87});
@@ -335,12 +362,16 @@ function deal(attacker,target,multiplier=1,style='normal'){
   ?? Math.round(raw*(style==='parry'?.60:style==='special'?.54:.46));
  const damage=Math.max(1,Math.round(base*(1-target.armor)));
  target.hp=Math.max(0,target.hp-damage);target.hit=.25;
+ const isKO=target.hp<=0;
  sparks(target,crit||style==='parry'||style==='special');
- emitVfx(crit?'sweep':attacker.swings%3===0?'thrust':'slash',attacker,target,crit);
+ // KO uses a short body impact, NEVER a fresh attack/finisher graphic.
+ // Normal surviving targets still show the directional weapon stroke.
+ if(isKO)emitVfx('hit',target,attacker,true);
+ else emitVfx(crit?'sweep':attacker.swings%3===0?'thrust':'slash',attacker,target,crit);
+ playCombatSound(isKO||crit?'heavy_hit':'hit',target,isKO?.98:crit?.87:.70);
  const c=COURTS[target.seat],sign=attacker.side==='ally'?1:-1;
  target.x=clamp(target.x+sign*13,c.x-LEASH,c.x+LEASH);
- if(!target.hp){
-  emitVfx('finisher',target,attacker,true);
+ if(isKO){
   target.dead=true;target.fade=1.6;target.windup=0;target.guard=0;
   beginRemoval(target);
   if(attacker.side==='ally'&&target.side==='enemy'){
@@ -350,6 +381,8 @@ function deal(attacker,target,multiplier=1,style='normal'){
 }
 function prepareStrike(u,target){
  u.swings++;u.special=false; // Practice deliberately omits dash/special attack.
+ playCombatSound(u.swings%3===0?'heavy_swing':'swing',u,
+  u.swings%3===0?.65:.53);
  u.windup=u.special?.34:.24;u.target=target;u.swing=u.special?.59:.46;
  u.cooldown=(u.side==='ally'?.81:.94)+(u.special?.24:0)+Math.random()*.17;
  // Original duel-inspired timing: guard can parry during a brief window,
@@ -365,14 +398,19 @@ function prepareStrike(u,target){
 }
 function contact(u,target){
  if(u.dead||!target||target.dead||Math.abs(u.x-target.x)>165)return;
- if(target.dodge>0){sparks(target);return;}
+ if(target.dodge>0){
+  sparks(target);playCombatSound('dodge',target,.67);return;
+ }
  if(target.guard>0){
   if(target.parry>0){
    // Practice retains the parry clang/flash, not the arena's counterattack.
    u.stun=.20;u.cooldown=Math.max(u.cooldown,.48);
-   target.swing=.22;emitVfx('parry',target,u,true);return;
+   target.swing=.22;emitVfx('parry',target,u,true);
+   playCombatSound('parry',target,.89);
+   return;
   }
   emitVfx('guard',target,u,false);
+  playCombatSound('block',target,.74);
   deal(u,target,.33,'normal');return;
  }
  deal(u,target,u.special?1.55:1,u.special?'special':'normal');
@@ -579,6 +617,9 @@ function loop(timestamp){
  const dt=prev?clamp((timestamp-prev)/1000,0,.05)*battle.speed:0;
  prev=timestamp;if(!battle.paused)simulate(dt);
  if(battle&&!battle.finished){
+  root.ArenaAudio?.update?.({phase:'fight',paused:battle.paused,
+   health:battle.heroes.reduce((hp,u)=>hp+Math.max(0,u.hp/u.maxHp),0)/Math.max(1,battle.heroes.length),
+   distance:360});
   if(timestamp-drawTick>140){drawTick=timestamp;status();}
   paint();frameId=requestAnimationFrame(loop);
  }else frameId=0;
@@ -586,6 +627,8 @@ function loop(timestamp){
 function finish(quit){
  if(!battle||battle.finished)return;
  battle.finished=true;cancelAnimationFrame(frameId);frameId=0;
+ root.ArenaAudio?.endMatch?.();
+ if(!quit)root.ArenaAudio?.play?.('defeat',{gain:.72});
  const snap=battle,payout={};
  for(const h of snap.heroes)payout[h.index]=h.exp;
  const results=api()?.practiceReward?.(payout,snap.wave,snap.kills,quit)||{awards:[],best:0,totalXp:0};
@@ -602,6 +645,7 @@ function close(){
  if(battle&&!battle.finished)finish(true);
  cancelAnimationFrame(frameId);frameId=0;prev=0;battle=null;
  if(screen)screen.hidden=true;
+ root.ArenaAudio?.leave?.();
  root.LudusScene?.open();
 }
 if(typeof document!=='undefined')document.addEventListener('visibilitychange',()=>{
