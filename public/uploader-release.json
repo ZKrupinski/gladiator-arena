@@ -1,12 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "b046afa1c3351e4b5187dd1a44a9b35892adb1148a4a79bc01642f70abe9ccb8",
-    "public/ludus-practice.js": "a221bad8b3ea8ab06d56c61aecf8fb7c0ed7448b501bd0ce6208c7e1def6d16a",
-    "tests/endless-practice-v26.js": "8e39f1dd2a6acb99e6cafffaf4ffc39a2ce7105a2e429195b8fddf95a78bbba9"
+    "public/index.html": "833d5105d69624f54279dc794aec4d8c229ee4fbe3c1ef994779332fbe88b037",
+    "public/ludus-practice.js": "5bbd2a5609c6c95926ee2322d3b6aa31b0cbc6e4e689514fb7b82b5a68a73adf",
+    "tests/endless-practice-v26.js": "a820918f7ac6a3fb77f090431c1cf659442019750e28063ad361a5b4a6f3427b"
   },
-  "baseCommit": "3cac02ebc6d42eaa7eac6fccfc728d728c98476e",
+  "baseCommit": "70601c4be00a7301220954c508e3efdf33febfe5",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-torso-front-layer-defeat-20261023-v31",
+  "releaseId": "practice-artist-look-profiles-and-world-depth-20261023-v32",
   "releaseProtocol": "spartacus-uploader-v1"
 }

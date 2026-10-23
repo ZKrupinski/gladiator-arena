@@ -451,75 +451,21 @@ function alphaBounds(art){
  return root.ArenaPortraitFit?.bounds?.(art)||
   {x:0,y:0,w:art.width||art.naturalWidth||0,h:art.height||art.naturalHeight||0};
 }
-function torsoCompensation(projectedTorso){
- if(!Number.isFinite(projectedTorso)||projectedTorso<=0)return 1;
- return clamp(Math.pow(53/projectedTorso,.66),.78,1.22);
-}
-function measureTorso(art,b,pivot){
- if(typeof document==='undefined'||!document.createElement)return null;
- try{
-  const cv=document.createElement('canvas');cv.width=cv.height=128;
-  const c=cv.getContext('2d',{willReadFrequently:true});
-  if(!c)return null;
-  c.drawImage(art,b.x,b.y,b.w,b.h,0,0,128,128);
-  const d=c.getImageData(0,0,128,128).data,spans=[];
-  const axis=clamp(Math.round(((pivot??(b.x+b.w/2))-b.x)/b.w*128),9,118);
-  // Median connected width crossing torso axis from chest to waist.
-  // Helmet height and weapon width cannot enter this measurement.
-  for(let y=59;y<=93;y+=3){
-   let x=axis;
-   while(x>=0&&d[(y*128+x)*4+3]<50)x--;
-   if(x<axis-12)continue;
-   let a=x,z=x;
-   while(a>0&&d[(y*128+a-1)*4+3]>=50)a--;
-   while(z<127&&d[(y*128+z+1)*4+3]>=50)z++;
-   const w=(z-a+1)*b.w/128;
-   if(w>=b.h*.10&&w<=b.h*.45)spans.push(w);
-  }
-  if(spans.length<4)return null;
-  spans.sort((a,b)=>a-b);
-  return spans[Math.floor(spans.length/2)];
- }catch(_){return null;}
-}
-function measureFace(art,b){
- if(typeof document==='undefined'||!document.createElement)return b.w*.26;
- try{
-  const cv=document.createElement('canvas');cv.width=cv.height=96;
-  const c=cv.getContext('2d',{willReadFrequently:true});
-  if(!c)return b.w*.26;
-  c.drawImage(art,b.x,b.y,b.w,b.h,0,0,96,96);
-  const data=c.getImageData(0,0,96,96).data,widths=[];
-  // Locate the largest connected alpha segment near head height. Daggers,
-  // tridents and extended shields are not considered body/face width.
-  for(let y=15;y<=38;y+=2){
-   let best=0,current=0;
-   for(let x=3;x<93;x++){
-    if(data[(y*96+x)*4+3]>35){current++;best=Math.max(best,current)}
-    else current=0;
-   }
-   if(best>=7&&best<=68)widths.push(best*b.w/96);
-  }
-  if(widths.length>=3){
-   widths.sort((a,b)=>a-b);
-   return Math.max(b.w*.13,Math.min(b.w*.45,widths[Math.floor(widths.length*.55)]));
-  }
- }catch(_){}
- return b.w*.26;
+// Artist-adjustable stable scale per costume; no torso/helmet heuristic.
+function alphaBounds(art){
+ if(!art)return null;
+ return root.ArenaPortraitFit?.bounds?.(art)||
+  {x:0,y:0,w:art.width||art.naturalWidth||0,h:art.height||art.naturalHeight||0};
 }
 function calibration(unit,frame){
- if(unit._bodyScale)return unit._bodyScale;
- const idle=rawSprite(unit,'idle')||frame;
- if(!idle)return null;
- const b=alphaBounds(idle);
- if(!b?.w||!b?.h)return null;
- const base=202/b.h;
- const reference=api()?.practiceFrame?.(unit,'idle');
- const torsoWidth=measureTorso(idle,b,reference?.pivotX);
- // Correct similar ANATOMY, not same overall hat/trident height.
- // Intentional silhouette variation preserved by moderate clamps.
- const correction=torsoCompensation(torsoWidth?torsoWidth*base:0);
- return unit._bodyScale={pixels:base*correction,
-  torsoPixels:torsoWidth||0,refW:b.w,refH:b.h,correction};
+ const profiles=root.PracticeScaleProfiles;
+ const appearance=profiles?.look?.(unit,api()?.state()?.roster);
+ const scaleFactor=profiles?.scale?.(appearance)||1;
+ if(unit._bodyScale&&unit._bodyScale.relative===scaleFactor)return unit._bodyScale;
+ const idle=api()?.practiceFrame?.(unit,'idle')?.canvas||rawSprite(unit,'idle')||frame;
+ const bound=alphaBounds(idle);if(!bound?.h)return null;
+ return unit._bodyScale={pixels:202/bound.h*scaleFactor,relative:scaleFactor,
+  appearance:appearance||'special',refH:bound.h};
 }
 function sprite(unit){
  const kind=unit.dead?'death':unit.entry>0?'walk':unit.hit>0?'hit':unit.guard>0?'guard':
@@ -577,16 +523,17 @@ function paint(){
  // Sort stage actors/departures by real foot depth, not by sprite image size.
  // Explicit depth groups: opponents and their exits BEHIND our fighters.
  // This prevents the enemy from covering allied characters in any court.
- const enemies=battle.enemies.filter(u=>!u.retiring&&(!u.dead||u.fade>0))
-  .map(unit=>({y:unit.y,draw:()=>drawUnit(unit)}));
- const enemyExits=battle.exits.filter(exit=>exit.unit.side==='enemy')
-  .map(exit=>({y:exit.court.y,draw:()=>drawDeparture(exit)}));
- const ownExits=battle.exits.filter(exit=>exit.unit.side==='ally')
-  .map(exit=>({y:exit.court.y,draw:()=>drawDeparture(exit)}));
- const allies=battle.heroes.filter(u=>!u.retiring&&(!u.dead||u.fade>0))
-  .map(unit=>({y:unit.y,draw:()=>drawUnit(unit)}));
- enemies.concat(enemyExits).sort((a,b)=>a.y-b.y).forEach(a=>a.draw());
- ownExits.concat(allies).sort((a,b)=>a.y-b.y).forEach(a=>a.draw());
+ // Distant characters BEFORE nearer characters, regardless of affiliation.
+ // At the SAME depth: enemy behind our assigned gladiator.
+ const units=battle.heroes.concat(battle.enemies)
+  .filter(u=>!u.retiring&&(!u.dead||u.fade>0))
+  .map(unit=>({depth:unit.y-(unit.side==='enemy'?12:0),
+   front:unit.side==='ally'?1:0,paint:()=>drawUnit(unit)}));
+ const bodies=battle.exits.map(exit=>({depth:exit.court.y-
+  (exit.unit.side==='enemy'?12:0),front:exit.unit.side==='ally'?1:0,
+  paint:()=>drawDeparture(exit)}));
+ units.concat(bodies).sort((a,b)=>a.depth-b.depth||a.front-b.front)
+  .forEach(item=>item.paint());
  paintVfx();
  for(const p of battle.particles){ctx.globalAlpha=clamp(p.life/.75,0,.9);ctx.fillStyle=p.critical?'#ffe9a3':'#fbb071';ctx.beginPath();ctx.arc(p.x,p.y,p.critical?3.3:2.1,0,Math.PI*2);ctx.fill();}
  ctx.restore();
