@@ -116,7 +116,7 @@ assert(practice.includes('battle.queued.push(e)'),'reassign surviving opponent a
 assert(practice.indexOf('battle.heroes.forEach(u=>act(u,dt))')<practice.indexOf('battle.queued.push(e)'),'orphan relocation must happen immediately after contact');
 assert(practice.includes('u.homeX-u.x'),'return fighters to station');
 assert(practice.includes('root.ArenaBalance?.combatDamage?.(raw,style)'),'original combat damage reused');
-assert(practice.includes("api()?.squadSprite?.(owner,kind"),'original fighter attack/guard sprites reused');
+assert(practice.includes("api()?.squadSprite?.(hero,kind"),'original fighter attack/guard sprites reused');
 assert(practice.includes('target.parry>0')&&practice.includes('target.dodge>0'),'parry and dodge exchanges');
 assert(!practice.includes('function closest(unit,opponents)'),'no global chasing');
 assert(practice.includes('ctx.save(); // Only the enemy SPRITE flips'),'health labels stay readable');
