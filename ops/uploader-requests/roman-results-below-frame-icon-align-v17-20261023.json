@@ -1,0 +1,24 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "roman-results-below-frame-icon-align-v17-20261023",
+  "expectedMainSha": "5bb5ba0e352931ba122263459d33b8120558d3db",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/5bb5ba0e352931ba122263459d33b8120558d3db/public/index.html",
+      "sha256": "cafe98ec1d7d8325652dd18a475a9a5aa147b2ae78f548db15ba1a7cc35d87dd"
+    },
+    {
+      "path": "public/arena-result-roman-v2.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/5bb5ba0e352931ba122263459d33b8120558d3db/public/arena-result-roman-v2.css",
+      "sha256": "3b3917aaf6d22fe37001b2f036a89e278fce0349f840d331062444f2be0f0a01"
+    },
+    {
+      "path": "public/ludus-armory-live.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/5bb5ba0e352931ba122263459d33b8120558d3db/public/ludus-armory-live.css",
+      "sha256": "fb9d4a036a044514a31f8f0a5c2e30b1d71c78d7b97dff830fcf667e4ae75d24"
+    }
+  ]
+}
