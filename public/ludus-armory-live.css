@@ -554,3 +554,28 @@
  border-color:#ffe2a1;background:radial-gradient(ellipse at 50% 28%,#a05d36,#2e1811 82%);
  box-shadow:0 0 12px #f4c7739b,inset 0 0 8px #ffd88630;
 }
+
+
+/* Armory V16: anchor every raster equipment tile at the same top line.
+   Previously the frame vertically centered against variable-height rarity
+   copy/set labels, making rare equipment appear to sink into the card. */
+.ra-collection .ra-list .ra-item{align-items:start}
+.ra-collection .ra-list .ra-art{
+ grid-column:1;grid-row:1 / span 2;
+ align-self:start!important;justify-self:center;
+ flex:none;margin-top:2px;margin-bottom:0;
+ aspect-ratio:1 / 1;
+}
+.ra-collection .ra-list .ra-item-img{
+ width:100%;height:100%;display:block;object-fit:contain;
+ object-position:50% 50%;
+}
+.ra-collection .ra-list .ra-item-copy{
+ align-self:start;min-width:0;
+}
+@media(max-width:1150px){
+ .ra-collection .ra-list .ra-art{
+  grid-row:1!important;align-self:start!important;
+  margin-top:2px;
+ }
+}
