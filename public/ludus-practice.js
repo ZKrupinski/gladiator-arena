@@ -389,8 +389,14 @@ function prepareStrike(u,target){
  // otherwise absorbs part of the hit. Foes can also evade.
  if(target.guardCD<=0&&target.stun<=0){
   const chance=target.side==='ally'?target.parryChance:.18+Math.min(.12,battle.wave*.003);
-  if(Math.random()<chance){
-   target.guard=u.windup+.30;target.parry=u.windup+.10;target.guardCD=1.3+Math.random()*.8;
+  // A guard stance does not imply an automatic perfect parry. Preserve
+  // roughly the original parry frequency but allow real shield blocks.
+  const guardChance=Math.min(.78,chance+.21);
+  if(Math.random()<guardChance){
+   target.guard=u.windup+.30;
+   target.parry=Math.random()<chance/guardChance?u.windup+.10:0;
+   target.guardCD=1.3+Math.random()*.8;
+   playCombatSound('guard',target,.42);
   }else if(Math.random()<(target.side==='ally'?.08:.06)){
    target.dodge=u.windup+.15;target.guardCD=1.25;
   }
