@@ -35,7 +35,7 @@ try{
     const {state:s,camera}=window.__arenaQA;
     const f=s.focusFrame;
     return {active:f?.active,kind:f?.kind,timeScale:f?.timeScale,
-     zoom:camera.zoom,focusZoom:f?.zoom,bloom:f?.bloom,
+     zoom:camera.zoom,actorScreenXs:[s.player,s.enemy].map(a=>640+(a.x-camera.x)*camera.zoom),focusZoom:f?.zoom,bloom:f?.bloom,
      letterbox:f?.cinemaBars,shake:s.shake,noticeOpacity:document.querySelector('#combatNotice')?.style.opacity,hasDrawnVfx:!!document.querySelector('#battle')};
   });
   assert.equal(sample.active,true,kind+' must keep its effect across frames');
@@ -48,7 +48,7 @@ try{
   }else{
    assert.ok(sample.timeScale<.60,'parry still briefly checks the attack');
    assert.equal(sample.focusZoom,0,'parry never forces a camera cut');
-   assert.ok(sample.zoom<=1.26,'parry keeps both fighters on screen');
+   assert.ok(sample.actorScreenXs.every(x=>x>135&&x<1145),'parry keeps both fighter centers fully framed despite active camera zoom');
    assert.equal(sample.letterbox,0,'parry never conceals fighters with cinema bars');
   }
   assert.equal(sample.noticeOpacity,'0','routine notice must not overlap Latin impact title');
