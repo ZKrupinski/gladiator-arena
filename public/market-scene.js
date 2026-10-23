@@ -46,6 +46,22 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
  // It is NOT any boss-only gladiator; all sprites use regular growth art.
  const quality=roll<.006?'rare':roll<.096?'veteran':roll<.35?'promising':'common';
  const q=qualities[quality],trait=traits[randIndex(rng,traits.length)];
+ // Human gladiator visuals: 4 growth silhouettes x 5 grades, historical
+ // legacy boss looks, motion Murmillo and red-plume champion; NEVER beasts.
+ const families={murmillo:['murmillo_a'],thraex:['thraex_a','thraex_b'],retiarius:['retiarius_a']};
+ const options=families[t.id]||[t.id+'_a'];
+ const stageSet=quality==='common'?[1,2,3]:quality==='promising'?[1,2,3,4]:[3,4,5];
+ let growthType=options[randIndex(rng,options.length)];
+ let marketStage=stageSet[randIndex(rng,stageSet.length)];
+ let appearance=null,visualLabel='성장 '+marketStage+'단계';
+ const kind=rng();
+ if(quality==='rare'&&t.id==='murmillo'&&kind<.64){
+  appearance=kind<.32?'murmillo_champion_red':'murmillo_motion_v3';
+  marketStage=5;
+  visualLabel=appearance==='murmillo_champion_red'?'붉은 투구 챔피언':'모션 정예';
+ }else if((quality==='rare'&&kind<.86)||(quality==='veteran'&&kind<.13)){
+  appearance='legacy';marketStage=5;visualLabel='클래식 챔피언';
+ }
  const primary=randIndex(rng,4);
  const weakness=(primary+1+randIndex(rng,3))%4;
  const statKeys=['str','agi','end','focus'],statNames=['근력','민첩','체력','집중'];
@@ -63,11 +79,13 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
   return Math.max(1,Math.min(9,base+variance+improved));
  });
  const cost=Math.round((q.min+randIndex(rng,q.range+1))/10)*10;
- const growthType=t.id==='thraex'&&rng()<.48?'thraex_b':t.id+'_a';
- return {id:t.id,className:t.className,name,vals,cost,aptitudes,innateSummary,
-  desc:t.desc+' '+(quality==='rare'?'매우 드물게 유통되는 특수 재능의 검투사. ':quality==='veteran'?'실전 경험이 풍부한 숙련자. ':'')+
+ const premium=(marketStage-1)*(quality==='rare'?180:140)+
+  (appearance==='legacy'?850:appearance==='murmillo_motion_v3'?2600:
+   appearance==='murmillo_champion_red'?3600:0);
+ return {id:t.id,className:t.className,name,vals,cost:cost+premium,aptitudes,innateSummary,
+  desc:t.desc+' '+(quality==='rare'?'매우 드문 고급 검투사. ':quality==='veteran'?'실전 경험이 풍부한 숙련자. ':'')+
    '특기: '+trait+'.',
-  face:t.face,quality,trait,growthType,
+  face:t.face,quality,trait,growthType,marketStage,appearance,visualLabel,
   marketOrigin:'mercatus',marketLot:Math.trunc(numberFrom(seed))};
 }
 function makeStock(state,rng=Math.random,existing=[]){
@@ -89,7 +107,7 @@ function inventory(){return ensureInventory();}
 function available(){return inventory().map((o,i)=>o?i:-1).filter(i=>i>=0);}
 function pick(preferred){const live=available();return live.includes(preferred)?preferred:live[0]??-1;}
 function fit(){if(!stage)return;const z=Math.min(innerWidth/WIDTH,innerHeight/HEIGHT);stage.style.transform=`translate(-50%,-50%) scale(${z})`;}
-function getHeroArtwork(h){if(!h)return null;const art=opts?.getSprite?.(h.id);return art&&art.width&&art.height?art:null;}
+function getHeroArtwork(h){if(!h)return null;const art=opts?.getSprite?.(h.id,h);return art&&art.width&&art.height?art:null;}
 function drawPortrait(h){
  const c=$('#gmPortrait');if(!c||c.parentElement.hidden||!h)return;
  const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);
@@ -117,10 +135,23 @@ function drawPortrait(h){
   const [x,y,w,ht]=h.face;ctx.drawImage(keyImg,x,y,w,ht,0,0,c.width,c.height);
  }
 }
+function drawMarketFigure(i,hero){
+ const canvas=$('#gmVisual'+i),soft=$('#gmSoft'+i);
+ if(!canvas||!soft)return;
+ const art=hero&&getHeroArtwork(hero);
+ canvas.hidden=soft.hidden=!art;
+ if(!art)return;
+ const ctx=canvas.getContext('2d');if(!ctx)return;
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ const inset=17,scale=Math.min((canvas.width-2*inset)/art.width,(canvas.height-2*inset)/art.height);
+ if(!(scale>0))return;
+ const w=art.width*scale,h=art.height*scale;
+ try{ctx.drawImage(art,(canvas.width-w)/2,canvas.height-h-inset,w,h);}catch(_){}
+}
 function overlayPanel(hero,i,visible){const el=$('#gmPanel'+i);el.hidden=!visible;if(!visible)return;
  const q=qualities[hero.quality]||qualities.common;
  el.classList.toggle('gm-rare-panel',hero.quality==='rare');
- el.innerHTML=`<div class="gm-roman-name">${clean(hero.name)}</div><div class="gm-class">${clean(hero.className)} · ${q.label}</div><div class="gm-innate">${clean(hero.innateSummary||'성장 적성 · 보통')}</div><div class="gm-lv">Lv.0</div>`+
+ el.innerHTML=`<div class="gm-roman-name">${clean(hero.name)}</div><div class="gm-class">${clean(hero.className)} · ${q.label} · ${clean(hero.visualLabel||'성장형')}</div><div class="gm-innate">${clean(hero.innateSummary||'성장 적성 · 보통')}</div><div class="gm-lv">Lv.0</div>`+
  hero.vals.map((n,j)=>`<div class="gm-stat"><span class="gm-stat-name"><b style="color:${labels[j][1]}">${labels[j][3]}</b>${labels[j][0]}</span><span class="gm-stat-track"><i style="--value:${Math.min(100,n*12)}%;--color:${labels[j][1]};--shade:${labels[j][2]}"></i></span></div>`).join('');
 }
 function render(){if(!scene||scene.hidden)return;
@@ -139,6 +170,7 @@ function render(){if(!scene||scene.hidden)return;
   // The curtain only covers already-sold painted fighters on empty podiums.
   // The selected offer's accurate class/appearance is shown in the detail portrait.
   $('#gmEmpty'+i).hidden=!!h;
+  drawMarketFigure(i,h);
   const qualityFlag=$('#gmRare'+i);qualityFlag.hidden=!h||h.quality!=='rare';
   overlayPanel(h,i,!!h);
   $('#gmSelection'+i).hidden=!selected;
@@ -149,7 +181,7 @@ function render(){if(!scene||scene.hidden)return;
  detail.hidden=avatar.hidden=!hero;
  if(hero){
   const quality=qualities[hero.quality]||qualities.common;
-  detail.innerHTML=`<h2>${clean(hero.name)} <span class="gm-divider">·</span> ${clean(hero.className)}</h2><div class="gm-level"><strong>Lv.0 · ${quality.label}</strong><span>◉ ${Number(hero.cost).toLocaleString('ko-KR')} D</span></div><p>${clean(hero.innateSummary||hero.desc)} · ${clean(hero.trait||'고유 적성')}</p>`;
+  detail.innerHTML=`<h2>${clean(hero.name)} <span class="gm-divider">·</span> ${clean(hero.className)} · ${clean(hero.visualLabel||'성장형')}</h2><div class="gm-level"><strong>Lv.0 · ${quality.label}</strong><span>◉ ${Number(hero.cost).toLocaleString('ko-KR')} D</span></div><p>${clean(hero.innateSummary||hero.desc)} · ${clean(hero.trait||'고유 적성')}</p>`;
   drawPortrait(hero);
  }
  const hire=$('#gmHire'),price=$('#gmPrice');hire.disabled=!hero||Number(state.gold)<hero.cost;
@@ -243,7 +275,7 @@ function setup(){if(scene)return;
   <img class="gm-merchant-full gm-pose-1" id="gmMerchantMain" src="assets/market/merchant_pose_1.webp" alt="" aria-hidden="true" draggable="false">
   <div class="gm-paper-foreground" aria-hidden="true"></div>
   <button type="button" class="gm-back-hit" id="gmBack" aria-label="루두스로 돌아가기" title="루두스로 돌아가기"></button>
-  ${types.map((t,i)=>`<button type="button" class="gm-card-hit" data-i="${i}" id="gmCard${i}" aria-label="매물 ${i+1} 선택" aria-pressed="${i===0}"></button><div class="gm-empty-podium" id="gmEmpty${i}" data-i="${i}" aria-hidden="true"></div><span class="gm-rare-marker" id="gmRare${i}" data-i="${i}" hidden aria-hidden="true">✦ RARVS · 희귀 특수 ✦</span><div class="gm-selected-wreath" id="gmSelection${i}" data-i="${i}" aria-hidden="true" hidden><span>❧</span><b>선택</b><span>❧</span></div><div class="gm-vacant" id="gmVacant${i}" data-i="${i}" hidden><span class="gm-vacant-badge">✦ 판매 완료 ✦</span><strong>빈 단상</strong><small>신규 후보를 갱신하세요</small></div><div class="gm-card-dynamic" data-i="${i}" id="gmPanel${i}" hidden></div>`).join('')}
+  ${types.map((t,i)=>`<button type="button" class="gm-card-hit" data-i="${i}" id="gmCard${i}" aria-label="매물 ${i+1} 선택" aria-pressed="${i===0}"></button><div class="gm-empty-podium" id="gmEmpty${i}" data-i="${i}" aria-hidden="true"></div><div class="gm-visual-softener" id="gmSoft${i}" data-i="${i}" hidden aria-hidden="true"></div><canvas class="gm-visual-character" id="gmVisual${i}" data-i="${i}" width="340" height="290" hidden aria-hidden="true"></canvas><span class="gm-rare-marker" id="gmRare${i}" data-i="${i}" hidden aria-hidden="true">✦ RARVS · 희귀 특수 ✦</span><div class="gm-selected-wreath" id="gmSelection${i}" data-i="${i}" aria-hidden="true" hidden><span>❧</span><b>선택</b><span>❧</span></div><div class="gm-vacant" id="gmVacant${i}" data-i="${i}" hidden><span class="gm-vacant-badge">✦ 판매 완료 ✦</span><strong>빈 단상</strong><small>신규 후보를 갱신하세요</small></div><div class="gm-card-dynamic" data-i="${i}" id="gmPanel${i}" hidden></div>`).join('')}
   <div class="gm-wallet-legacy-mask" aria-hidden="true"></div>
   <div class="gm-wallet-value" id="gmWallet" role="status" aria-label="남은 잔고">
    <span class="gm-wallet-label">◉ 남은 잔고</span>

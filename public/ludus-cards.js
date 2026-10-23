@@ -166,7 +166,7 @@ function draft(enemy,painter){
  '<div class="lc-screen-body lc-draft-body"><div class="lc-gallery"><div class="lc-section-head"><h2>♜ 나의 검투사</h2><small>출전 선수 '+config.allies+'명 선택</small></div>'+
  '<div class="lc-ally-order"><strong>아군 출전 순서 · 승자는 다음 상대와 연전</strong><div>'+ourSequence+'</div></div>'+
  '<div class="lc-card-grid">'+s.roster.map((h,i)=>card(h,i,squadPicks.includes(i),true)).join('')+'</div></div>'+
- '<div class="lc-opponent"><div class="lc-section-head"><h2>⚔ 이번 경기의 상대</h2><small>'+(enemy.boss?'보스 · 승리 시 영입':'일반 경기')+'</small></div>'+
+ '<div class="lc-opponent"><div class="lc-section-head"><h2>⚔ 이번 경기의 상대</h2><small>'+(enemy.boss?'챔피언 보스전':'일반 경기')+'</small></div>'+
  '<div class="lc-enemy-lineup lc-team-lineup"><strong>상대팀 전원 · '+config.enemies+'명 '+(ready?' · 매칭 완료':' · 출전자 선택 대기')+'</strong>'+
  '<div class="lc-enemy-team lc-team-count-'+config.enemies+'">'+theirSequence+'</div></div>'+
  '<div class="lc-matchup"><div><small>아군 전력</small><strong>'+safe(pick?pick.name:'선택 필요')+' · '+strength+'</strong></div><span>VS</span><div><small>상대 전술 · '+safe(rivalRole)+'</small><strong>'+safe(ready?enemy.name:'선택 완료 시 공개')+'</strong></div></div>'+

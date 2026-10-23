@@ -255,3 +255,26 @@
 /* Filled booths show only the original approved market key art, with no
    opaque plate or second pasted-on gladiator. Sold slots keep their curtain. */
 .gm-screen .gm-stage .gm-empty-podium[hidden]{display:none!important}
+/* v24 dynamic human art: soft, edge-free defocus under the actual figure,
+   not the opaque rectangular background board rejected in v21. */
+.gm-screen .gm-stage .gm-visual-softener[hidden],
+.gm-screen .gm-stage .gm-visual-character[hidden]{display:none!important}
+.gm-screen .gm-stage .gm-visual-softener{
+ position:absolute;z-index:3;top:259px;height:263px;pointer-events:none;
+ backdrop-filter:blur(26px) brightness(.69) saturate(.78);
+ -webkit-backdrop-filter:blur(26px) brightness(.69) saturate(.78);
+ background:rgba(23,13,10,.09);
+ mask-image:radial-gradient(ellipse 49% 48% at 50% 50%,#000 42%,#0009 65%,transparent 99%);
+ -webkit-mask-image:radial-gradient(ellipse 49% 48% at 50% 50%,#000 42%,#0009 65%,transparent 99%);
+}
+.gm-screen .gm-stage .gm-visual-softener[data-i="0"]{left:466px;width:290px}
+.gm-screen .gm-stage .gm-visual-softener[data-i="1"]{left:803px;width:285px}
+.gm-screen .gm-stage .gm-visual-softener[data-i="2"]{left:1138px;width:346px}
+.gm-screen .gm-stage .gm-visual-character{
+ position:absolute;z-index:4;top:242px;height:290px;pointer-events:none;
+ object-fit:contain;object-position:center bottom;filter:drop-shadow(0 8px 5px #0c0703a8)
+}
+.gm-screen .gm-stage .gm-visual-character[data-i="0"]{left:454px;width:305px}
+.gm-screen .gm-stage .gm-visual-character[data-i="1"]{left:792px;width:305px}
+.gm-screen .gm-stage .gm-visual-character[data-i="2"]{left:1126px;width:362px}
+.gm-screen .gm-stage .gm-card-dynamic .gm-class{font-size:15px!important;line-height:1.15;white-space:normal!important}

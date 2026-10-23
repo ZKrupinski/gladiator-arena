@@ -1,14 +1,16 @@
 {
   "assetSha256": {
-    "public/index.html": "fef7c9f4d6a7e35ba442f35ae4a991027899ff2dd2f8bffa93048e1105fbb37f",
-    "public/market-scene.css": "5e7b32200aa2c3b89b6dd821169067d05fb7390e61925555a6e435a02ed46724",
-    "public/market-scene.js": "539e13f65cdd8ae779befb05b0951f8dd991d2a231be3ff57c691066613f1a48",
-    "public/market-transactions.css": "b0419fbf721635b57ee7de2de76589e7a9fdd63f54f20aa6fa775bd908fe1e2b",
-    "tests/market-original-background-qa.js": "4a252228a6adc9d62f1f7da33bb7757ab9faa1430459789d3913ee6c2111ed95"
+    "public/index.html": "d8c00ea922d4c6d2543e782cda38ffae395beb85dcfd30a67084e8168737ab77",
+    "public/ludus-cards.js": "3dc674b7de41b39cc642c9887f1902ff3b64d92f74c5af03e94491c2ae09c75f",
+    "public/ludus-roster.js": "fcdc34e20a767ecef2da34ab9c33b868e9da27773e71f21f7af353bd1df4b0be",
+    "public/market-scene.js": "44b1b2a19c1fdef574bc06d9ed528b8c38c571860a4c3e847cdfe2f80d0e3273",
+    "public/market-transactions.css": "9f5678ebc7b7ae5f46af08c26bd5fc458936ff1e9d10879cfadaf0b04741e8f8",
+    "tests/market-all-fighters-v24.js": "3ef7cae856c5aca5668612dd3fd7a3f5605a3dfeb640641284ada577f944902a",
+    "tests/roman-roster-names.js": "a5b85c74c85d227c10fac7cddc20d7435d5aad11c85b3140686bec459e778cc6"
   },
-  "baseCommit": "927c876f590d50895861f38a0efcb6fd64254726",
+  "baseCommit": "9266b1e79af1bccdb3daf271485c504ab21bc500",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "mercatus-original-background-no-hover-boxes-20261023-v23",
+  "releaseId": "mercatus-all-gladiators-real-visuals-20261023-v24",
   "releaseProtocol": "spartacus-uploader-v1"
 }

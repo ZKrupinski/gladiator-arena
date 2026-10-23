@@ -75,13 +75,8 @@
    name:romanName({cls,appearance:special?'murmillo_champion_red':boss?'legacy':null},
     round,new Set((state.roster||[]).map(h=>String(h.name||'').toLowerCase())))};
  }
- function recruitBoss(state,enemy){
-  if(!enemy?.boss||state.roster.some(h=>h.bossId===enemy.bossId))return null;
-  const h=create(enemy.cls,state.roster.length+1,{name:enemy.name,bossId:enemy.bossId,
-   appearance:enemy.appearance==='murmillo_champion_red'?'murmillo_champion_red':'legacy',
-   level:enemy.level,stats:enemy.appearance==='murmillo_champion_red'?{str:4,agi:2,end:4,focus:3}:enemy.cls==='thraex'?{str:4,agi:4,end:2,focus:3}:enemy.cls==='retiarius'?{str:3,agi:3,end:2,focus:5}:{str:3,agi:2,end:5,focus:2}});
-  state.roster.push(h);return h;
- }
+ // Backwards-compatible entrypoint. Defeating bosses does not auto-hire them.
+ function recruitBoss(){return null;}
  // Face-based adjustment; increasingly large high-tier illustrations need a
  // stronger reduction, consistently for allies and enemies. Feet stay anchored.
  function scale(type,level){const s=clamp(Number(level)||1,1,5);return ({murmillo_a:[.90,.82,.76,.70,.75],retiarius_a:[.90,.85,.82,.76,.72],thraex_a:[.94,.86,.84,.80,.78],thraex_b:[.86,.84,.78,.73,.70]}[type]||[.86,.82,.78,.74,.70])[s-1];}
