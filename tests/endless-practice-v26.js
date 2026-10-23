@@ -55,7 +55,7 @@ assert(studio.includes('IntersectionObserver'),'load sprites as scrolled into vi
 assert(studio.includes('champion-murmillo/manifest.json'));
 assert(studio.includes('murmillo-b'));
 assert(studio.includes('legacy_retiarius'));
-assert(studio.includes('31종 크기 저장'));
+assert(studio.includes('GitHub 원본에 크기 저장')&&studio.includes('이 기기 임시저장'),'source commit and local draft must be clearly distinct');
 assert(studio.includes('carnifex-walk-ink-v1.webp'),'authored executioner preview');
 assert(studio.includes('assets/beasts/individual/'),'authored beast still previews');
 assert(studio.includes('spartacus-31-character-scales.json'),'31 entries import/export');
