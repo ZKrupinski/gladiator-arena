@@ -301,7 +301,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 #startScreen #ludusResetCancel{background:#a8763d;border:1px solid #f3d29c;color:#fff5df}
 #startScreen #ludusResetConfirm{background:#3b2523;border:1px solid #94635c;color:#f2cac4}
 @media(max-width:600px){#startScreen .ludus-reset-trigger{min-height:34px;padding:5px 9px;font-size:10px}}
-</style><link rel="stylesheet" href="market-scene.css?v=wallet-embedded-v9"><link rel="stylesheet" href="market-transactions.css?v=empty-curtain-v7"><link rel="stylesheet" href="ludus-scene.css?v=roster-proportions-v10"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=6"><link rel="stylesheet" href="ludus-armory-live.css?v=armory-compact-portraits-v15"><link rel="stylesheet" href="arena-excitement.css?v=rare-jackpot-six-rewards-v7"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=whip-hit-v1"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=lower-buttons-v6"><link rel="stylesheet" href="beast-hunt.css?v=gladiator-arrows-v6"><link rel="stylesheet" href="spartacus-title.css?v=glory-v1"><link rel="stylesheet" href="mobile-legibility.css?v=armory-compact-portraits-v15-1"></head><body>
+</style><link rel="stylesheet" href="market-scene.css?v=wallet-embedded-v9"><link rel="stylesheet" href="market-transactions.css?v=empty-curtain-v7"><link rel="stylesheet" href="ludus-scene.css?v=roster-proportions-v10"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=6"><link rel="stylesheet" href="ludus-armory-live.css?v=armory-icon-centered-v16"><link rel="stylesheet" href="arena-excitement.css?v=rare-jackpot-six-rewards-v7"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=whip-hit-v1"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=buttons-below-frame-v7"><link rel="stylesheet" href="beast-hunt.css?v=gladiator-arrows-v6"><link rel="stylesheet" href="spartacus-title.css?v=glory-v1"><link rel="stylesheet" href="mobile-legibility.css?v=result-readable-frame-v7"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
@@ -353,8 +353,8 @@ body{min-height:100dvh;overscroll-behavior:none}
    <div class="result-pose-card defeated"><div class="result-pose-art" id="loserPose" role="img" aria-label="패배한 검투사 포즈"></div><span id="loserName">DEFEATED</span><small>DEFEAT · FRAME 10</small></div>
   </div>
   <p id="endReason"></p><p id="endStats"></p>
-  <div class="end-actions"><button id="againBtn" class="start">다시 하기</button><button id="continueBtn" class="start secondary">계속 하기</button></div>
  </div>
+ <div class="end-actions" role="group" aria-label="경기 결과 다음 행동"><button id="againBtn" class="start">다시 하기</button><button id="continueBtn" class="start secondary">계속 하기</button></div>
  <div id="endLoot" class="arena-result-loot" role="region" aria-label="경기 보상 및 획득 장비" hidden></div>
 </section>
 <div class="controls" id="battleControls" role="group" aria-label="모바일 전투 조작">
@@ -2599,15 +2599,16 @@ function showEnd(){
  $('#againBtn').classList.remove('beast-back-selection');
  $('#continueBtn').classList.remove('beast-next');
  $('#againBtn').textContent=S.careerMatch?'출전자 선택':'다시 하기';
- $('#continueBtn').textContent=S.careerMatch?'루두스로 돌아가기':win?'계속 하기':'Ludus로 돌아가기';
+ $('#continueBtn').textContent=S.careerMatch?'루두스 복귀':win?'계속 하기':'루두스 복귀';
  $('#continueBtn').classList.toggle('ludus',!win);
  if(S.beastHunt&&BEAST_RUN){
   const run=BEAST_RUN,more=win&&run.roundIndex+1<run.stage.rounds;
   $('#endReason').textContent=win?(more?'연전 승리! 다음 야수가 대기 중입니다.':'맹수 토벌 성공!'): '맹수 토벌 실패. 루두스에서 정비 후 다시 도전하세요.';
   $('#endStats').textContent=CAREER.message;
-  $('#againBtn').textContent='야수 선택으로 돌아가기';
+  $('#againBtn').textContent='야수 선택';
+  $('#againBtn').title='야수 선택으로 돌아가기';
   $('#continueBtn').textContent=more?'다음 라운드 '+(run.roundIndex+2)+'/'+run.stage.rounds:
-    win?'전투 준비로 돌아가기':'같은 야수 재도전';
+    win?'전투 준비':'같은 야수 재도전';
   $('#againBtn').classList.add('beast-back-selection');
   $('#continueBtn').classList.toggle('beast-next',more);
   $('#continueBtn').classList.toggle('ludus',!more&&win);
