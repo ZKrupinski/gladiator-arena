@@ -1,0 +1,41 @@
+name: QA unified portraits and full-team match draft
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/arena-portrait-fit.js
+      - public/ludus-cards.js
+      - public/ludus-cards.css
+      - public/beast-hunt.css
+      - public/ludus-armory-live.js
+      - public/ludus-scene.js
+      - public/ludus-approved-scenes.js
+      - public/index.html
+      - scripts/qa_gladiator_portraits_matchdraft_browser.mjs
+      - .github/workflows/qa-gladiator-portraits-matchdraft.yml
+  workflow_dispatch:
+jobs:
+  portraits-and-matchdraft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify JS syntax
+        run: |
+          node --check public/arena-portrait-fit.js
+          node --check public/ludus-cards.js
+          node --check public/ludus-armory-live.js
+          node --check public/ludus-scene.js
+          node --check public/ludus-approved-scenes.js
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Start arena web app
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/portraits-qa.log 2>&1 &
+          sleep 3
+      - name: Verify portraits, full-team preview, draft rematching, Venatio
+        run: node scripts/qa_gladiator_portraits_matchdraft_browser.mjs
