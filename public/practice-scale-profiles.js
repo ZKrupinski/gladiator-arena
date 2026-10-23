@@ -10,8 +10,8 @@ const values={
  thraex_b:[1.04,1.03,1.02,1.01,1.00],
  retiarius_a:[1.45,1.44,1.43,1.41,1.40]
 };
-const DEFAULTS=Object.freeze(Object.fromEntries(
- TYPES.flatMap(type=>values[type].map((v,i)=>[type+'_L'+(i+1),v]))));
+const EXTRAS=Object.freeze(['murmillo_champion_red','murmillo_motion_v3','legacy_murmillo','legacy_thraex','legacy_retiarius']);
+const DEFAULTS=Object.freeze({...Object.fromEntries(TYPES.flatMap(type=>values[type].map((v,i)=>[type+'_L'+(i+1),v]))),...Object.fromEntries(EXTRAS.map(key=>[key,1]))});
 const clamp=v=>Math.max(.65,Math.min(1.85,Number(v)));
 function read(){
  try{
@@ -38,13 +38,15 @@ function look(unit,roster){
  if(unit?.side==='enemy')return DEFAULTS[unit.look]?unit.look:null;
  if(unit?.side!=='ally')return null;
  const hero=roster?.[unit.index];if(!hero)return null;
+ if(hero.appearance==='murmillo_champion_red')return 'murmillo_champion_red';
+ if(hero.appearance==='murmillo_motion_v3')return 'murmillo_motion_v3';
+ if(hero.appearance==='legacy')return DEFAULTS['legacy_'+hero.cls]?'legacy_'+hero.cls:null;
  if(DEFAULTS[hero.visualId])return hero.visualId;
- if(hero.appearance==='legacy'||/murmillo_motion|murmillo_champion/.test(hero.appearance||''))return null;
  const type=hero.growthType||(hero.cls==='thraex'?'thraex_a':hero.cls+'_a');
  const key=type+'_L'+Math.max(1,Math.min(5,Math.floor(Number(hero.stage)||1)));
  return DEFAULTS[key]?key:null;
 }
 function scale(key){return key?(read()[key]??DEFAULTS[key]??1):1;}
-root.PracticeScaleProfiles={KEY,TYPES,DEFAULTS,clamp,read,write,reset,look,scale};
+root.PracticeScaleProfiles={KEY,TYPES,EXTRAS,DEFAULTS,clamp,read,write,reset,look,scale};
 if(typeof module!=='undefined')module.exports=root.PracticeScaleProfiles;
 })(typeof window!=='undefined'?window:globalThis);
