@@ -48,16 +48,16 @@ try{
  assert.equal(fit.ok,true);
  assert(fit.bottom-fit.top>136 && fit.top>=0&&fit.left>=0&&fit.right<140&&fit.bottom<170,
    'portrait nearly fills target without cutting character '+JSON.stringify(fit));
- await page.locator('#careerEnter').click();
- await page.locator('#ludusScene .ll-menu [data-action="arena"]').click();
- await draft();
  await page.evaluate(()=>{
   const roster=LudusBridge.state().roster;
   const types=['murmillo','thraex','retiarius','murmillo'];
   while(roster.length<4)roster.push(LudusRoster.create(types[roster.length%4],roster.length+1));
   roster.forEach((h,i)=>{h.level=i===0?2:i===1?11:i===2?6:15;
    h.stats={str:i*2,agi:i*2,end:i*2,focus:i*2};h.injury=0;h.fatigue=0;});
+  // Direct adapter entry bypasses title onboarding to the slave market on new saves.
+  LudusBridge.fight();
  });
+ await draft();
  // Single fighter: immediately matched against the chosen performance.
  await page.locator('[data-battle-mode="1v1"]').click();
  let one=await enemyCards(1,true);
