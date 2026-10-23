@@ -3556,7 +3556,7 @@ window.LudusBridge={
  practiceEnemySprite:(visualId,kind='idle')=>{
   const valid=/^(murmillo_a|thraex_a|thraex_b|retiarius_a)_L[1-5]$/.test(String(visualId||''));
   const atlas=GROWTH_IMAGES.get(valid?visualId:'murmillo_a_L1');
-  const index={idle:0,walk:1,attack:2,hit:7,death:11}[kind]??0;
+  const index={idle:0,walk:1,attack:2,special:3,guard:6,dodge:8,hit:7,death:11}[kind]??0;
   return atlas?.frames?.[index]?.canvas||atlas?.frames?.[0]?.canvas||null;
  },
  catalog:()=>ArenaLoot.offer(CAREER,CAREER.hero).map(g=>({...g})),
@@ -3620,6 +3620,6 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=practice-route-v26"></script><script src="ludus-practice.js?v=exercitium-depthfix-v26a"></script><script src="ludus-training-runtime.js?v=whip-real-hit-v3"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=portrait-fullteam-v17"></script><script src="ludus-armory-live.js?v=portrait-fullteam-v17"></script><script src="ludus-cards.js?v=independent-looks-v25"></script>
+<script src="ludus-scene.js?v=practice-route-v26"></script><script src="ludus-practice.js?v=station-duels-v27"></script><script src="ludus-training-runtime.js?v=whip-real-hit-v3"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=portrait-fullteam-v17"></script><script src="ludus-armory-live.js?v=portrait-fullteam-v17"></script><script src="ludus-cards.js?v=independent-looks-v25"></script>
 
 </body></html>
