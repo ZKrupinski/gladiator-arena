@@ -16,7 +16,8 @@ try{
  assert.equal(await page.locator('#beastQuickAccess').count(),0);
  assert.ok((await page.locator('#careerEnter').innerText()).includes('BLOOD'));
  assert.equal(await page.locator('#startBtn').isVisible(),false);
- await page.locator('#careerEnter').click();
+ // Clicking BLOOD & GLORY on a new save correctly opens the slave market.
+ // This dedicated Venatio combat test calls the legitimate arena draft directly.
  assert.equal(await page.locator('#ludusScene .ll-beast-quick').count(),0);
  // Fresh saves start in the slave market; enter the production arena-draft
  // adapter after provisioning a fighter rather than expecting an old lobby DOM.
