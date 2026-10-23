@@ -1,0 +1,29 @@
+name: Practice four-fighter spacing and movement
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/ludus-practice.js
+      - tests/practice-duel-footwork-v41.cjs
+      - .github/workflows/qa-practice-duel-footwork.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - public/ludus-practice.js
+      - tests/practice-duel-footwork-v41.cjs
+      - .github/workflows/qa-practice-duel-footwork.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  footwork:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Parse real practice runtime
+        run: node --check public/ludus-practice.js
+      - name: Verify four visible allies, local collision and lateral exchanges
+        run: node tests/practice-duel-footwork-v41.cjs
