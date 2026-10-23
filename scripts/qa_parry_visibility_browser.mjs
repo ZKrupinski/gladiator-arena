@@ -10,7 +10,7 @@ page.on('pageerror',e=>errors.push(String(e)));
 try{
  await page.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>!!window.__arenaQA?.render&&!!window.ArenaFocus,{timeout:20000});
- await page.locator('#startBtn').click();
+ await page.evaluate(()=>{const s=window.__arenaQA.state;s.phase='fight';s.time=110;s.paused=false;s.gauntlet=null;s.autoplayEnabled=false;s.autoPlaying=false;});
  await page.waitForFunction(()=>window.__arenaQA.state.phase==='fight',{timeout:16000});
  await page.waitForFunction(()=>window.__arenaQA.assetsReady(),{timeout:60000});
  await page.waitForTimeout(250); // Decode and render complete before testing parry visibility
