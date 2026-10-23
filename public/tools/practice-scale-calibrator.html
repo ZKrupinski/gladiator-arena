@@ -155,13 +155,22 @@ function paint(canvas,frame,key){
  c.strokeStyle='#e0b57b';c.setLineDash([4,5]);c.beginPath();
  c.moveTo(7,262);c.lineTo(303,262);c.stroke();c.setLineDash([]);
  const img=frame.canvas;
- // Same fixed reference-pose scale philosophy as the game. The image
- // is never re-fitted based on the helmet, weapon or current animation.
- const unit=key.startsWith('beast_')?.83:key.startsWith('npc_')?.91:.88;
- const pixelScale=202/(img.naturalHeight||img.height)*Number(state[key])*unit;
- c.drawImage(img,155-frame.pivotX*pixelScale,
-  262-frame.footY*pixelScale,(img.naturalWidth||img.width)*pixelScale,
-  (img.naturalHeight||img.height)*pixelScale);
+ // Previews keep the same ARTIST-DEFINED relative size logic as the game,
+ // not an independent helmet/weapon tight-bounds fit.
+ if(key==='npc_carnifex'){
+  // The actual Carnifex draws its 270×342 ink sprite as a 436×466
+  // animation. Match THAT ratio, grounded at his boots (not 270×342).
+  const z=.56*Number(state[key]);
+  c.drawImage(img,0,0,270,342,155-218*z,262-468*z,436*z,466*z);
+  return;
+ }
+ const beastBase={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,
+  beast_lion:1.18,beast_elephant:1.38};
+ const visualUnit=key.startsWith('beast_')?.83*beastBase[key]:.88;
+ const pixels=202/(img.naturalHeight||img.height)*Number(state[key])*visualUnit;
+ c.drawImage(img,155-frame.pivotX*pixels,
+  262-frame.footY*pixels,(img.naturalWidth||img.width)*pixels,
+  (img.naturalHeight||img.height)*pixels);
 }
 function updateBulkState(){
  const count=selection.size;
