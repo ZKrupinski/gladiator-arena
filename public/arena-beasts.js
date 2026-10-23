@@ -490,7 +490,7 @@ function frameFor(f,pose,clock){
   Math.min(7,Math.floor(progress*8));
  return {row,index:row===1&&!walking?0:index};
 }
-function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
+function paintBeast(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
  if(!fighter?.beastType)return false;
  if(drawWolfV3(ctx,{fighter,pose,clock,x,y,w,h,flip,alpha}))return true;
  // The old wolf 8x5 cutter is not a permitted transient or ready fallback:
@@ -547,6 +547,22 @@ function draw(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}){
  ctx.drawImage(frame.canvas,x0,y0,ww,hh);
  ctx.restore();
  return true;
+}
+// Apply calibrated visual-only size to every beast (including wolf V3, 512px
+// standalone poses, roar and fallback), around the real ground-contact pivot.
+// Collision, physics, HP and attack ranges retain their original rules.
+function draw(ctx,args){
+ const type=args?.fighter?.beastType;
+ if(!type)return false;
+ const raw=root.PracticeScaleProfiles?.scale?.('beast_'+type)??1;
+ const factor=Number.isFinite(raw)?Math.max(.65,Math.min(1.85,raw)):1;
+ if(!ctx||factor===1)return paintBeast(ctx,args);
+ const cx=args.x+args.w*.5,ground=args.y+args.h;
+ ctx.save();
+ ctx.translate(cx,ground);
+ ctx.scale(factor,factor);
+ ctx.translate(-cx,-ground);
+ try{return paintBeast(ctx,args)}finally{ctx.restore();}
 }
 root.ArenaBeasts={version:'2.1.0',types:SPEC,rows:ROWS_BY_POSE,
  pick,apply,ensure,frameFor,draw,portrait,wolfActionFor,wolfFrameIndex,installWolfPreviewAtlasPack,
