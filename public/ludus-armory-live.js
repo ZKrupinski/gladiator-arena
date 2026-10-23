@@ -5,7 +5,7 @@ const fmt=n=>Math.round(Number(n)||0).toLocaleString('ko-KR');
 const labels=window.ArenaGearCatalog.slotNames,slots=window.ArenaGearCatalog.slots;
 const rk=['common','uncommon','rare','epic','legendary','relic'];
 let onlyOwned=false,onlySet=false,rarity='all',lastScroll=0,lastScreenScroll=0,lastDetailScroll=0,lastRosterScrollLeft=0,statFlash=null,jumpToGearId=null;
-function portrait(canvas,source){if(!canvas||!source?.width||!source?.height)return;const c=canvas.getContext('2d'),s=Math.min((canvas.width-12)/source.width,(canvas.height-12)/source.height);try{c.drawImage(source,(canvas.width-source.width*s)/2,canvas.height-source.height*s-3,source.width*s,source.height*s);}catch(_){}}
+function portrait(canvas,source){if(!canvas||!source)return;const fit=window.ArenaPortraitFit;if(fit?.draw)return fit.draw(canvas,source,{inset:.045});const ctx=canvas.getContext('2d');if(!ctx)return;ctx.clearRect(0,0,canvas.width,canvas.height);const scale=Math.min((canvas.width-8)/source.width,(canvas.height-8)/source.height);try{ctx.drawImage(source,(canvas.width-source.width*scale)/2,canvas.height-source.height*scale-4,source.width*scale,source.height*scale)}catch(_){}}
 function render(stage,a,cb){
  const state=a.state(),hero=state.roster[state.active],stock=a.catalog(),eq=hero?.equipment||{},rar=a.gearRarities(),sets=a.gearSets();
  const count=id=>a.gearCount(id),assigned=id=>a.gearAllocated(id),shop=id=>a.shopUnlocked(id);
