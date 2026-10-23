@@ -40,6 +40,21 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .actions .primary{background:#955030;border-color:#f1c47f}
 .guide{margin-top:12px;font-size:13px}
 input[type=file]{display:none}
+.source-panel{max-width:1290px;margin:17px auto;padding:13px;border:2px solid #b78d56;border-radius:10px;background:#2c1d15}
+.source-panel h2{color:#ffe3aa;font-size:19px;margin:0 0 7px}
+.source-panel p{margin:5px 0 10px;line-height:1.55}
+.source-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.source-actions .primary{background:#955030;border-color:#f1c47f}
+.auth-line{margin:12px 0 0;padding:9px;border:1px solid #715c41;border-radius:7px;background:#1b130f}
+.auth-line[hidden]{display:none!important}
+.auth-line label{display:block;font-size:13px;margin-bottom:7px}
+.auth-line input{display:block;width:min(100%,560px);min-height:38px;background:#100d0b;border:1px solid #a78357;border-radius:6px;padding:8px 11px;color:#fff1d4;font:14px system-ui}
+.auth-line .source-actions{margin-top:9px}
+.source-note{font-size:12px;color:#cdb69a}
+#publishStatus{display:block;margin-top:7px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+#publishStatus.error{color:#ffad9f}
+#publishStatus.success{color:#bcebbd}
+
 @media(max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:650px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.card-head{padding:5px}.card-head label{font-size:12px;gap:4px}.card-head input{width:17px;height:17px}.category{font-size:9px}.config{padding:6px}.adjust button{font-size:10px}}
 @media(max-width:480px){.tools{padding:7px;gap:6px;top:0}.toolbar,.batch{gap:5px}.toolbar button,.batch button{padding:7px 8px;font-size:11px}#bulkSlider{min-width:95px}.grid{gap:6px}.card-head{min-height:55px}.card-head label{font-size:11px}}
@@ -73,16 +88,35 @@ input[type=file]{display:none}
 </section>
 <div id="status" class="status" role="status">원본 캐릭터 그림을 준비하고 있습니다.</div>
 <main class="grid" id="grid" aria-label="검투사, 야수, 집행인 전체 31종 크기 미리보기"></main>
+<section class="source-panel" aria-labelledby="gitTitle">
+<h2 id="gitTitle">GitHub 원본에 크기 저장</h2>
+<p>여기에 게시한 31종 배율이 모든 기기에 적용되는 <strong>게임 기본값</strong>입니다. 브라우저 임시저장만으로는 GitHub 원본이 바뀌지 않습니다.</p>
+<div class="source-actions">
+ <button id="publishOpen" class="primary" type="button">GitHub 원본 게시</button>
+ <button id="githubEdit" type="button">GitHub 편집기에서 저장</button>
+ <a href="https://github.com/ZKrupinski/gladiator-arena/blob/main/public/practice-scale-published.js" target="_blank" rel="noopener noreferrer">현재 GitHub 기준값 확인 ↗</a>
+</div>
+<div id="gitAuth" class="auth-line" hidden>
+ <label for="githubToken">GitHub 인증 토큰 (저장소 <code>ZKrupinski/gladiator-arena</code>의 Contents 쓰기 권한)</label>
+ <input id="githubToken" type="password" autocomplete="off" spellcheck="false" placeholder="게시할 때만 입력 · 기기에 저장하지 않음">
+ <div class="source-actions">
+  <button id="publishConfirm" class="primary" type="button">GitHub main에 31종 커밋</button>
+  <button id="publishCancel" type="button">취소</button>
+ </div>
+ <p class="source-note">입력한 인증 토큰은 이 페이지에서 저장·기록하지 않고 GitHub API 요청에만 사용합니다. GitHub 사이트에서 직접 저장하려면 위 ‘GitHub 편집기에서 저장’을 사용하세요.</p>
+</div>
+<output id="publishStatus" role="status" aria-live="polite">GitHub 기준 파일이 모든 기기의 공통 기본값입니다. 수정값을 게시하지 않으면 다른 기기에 전달되지 않습니다.</output>
+</section>
 <footer class="actions">
-<button id="save" class="primary">31종 크기 저장 · 게임에 적용</button>
+<button id="save" class="primary">이 기기 임시저장 · 미리보기 적용</button>
 <button id="reset">전체 기본값 복원</button>
 <button id="export">JSON 내보내기</button>
 <button id="import">JSON 불러오기</button><input id="file" type="file" accept=".json,application/json">
 <a href="../">게임으로 돌아가기 ↗</a>
 </footer>
-<p class="guide">체크한 여러 외형에 ±5%를 적용하거나 위 일괄 슬라이더로 함께 조절하세요. 셔플하면 위치만 바뀌고 선택·배율은 유지됩니다. 저장값은 같은 브라우저의 실제 게임에 적용됩니다. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
+<p class="guide">체크한 여러 외형에 ±5%를 적용하거나 위 일괄 슬라이더로 함께 조절하세요. 셔플하면 위치만 바뀌고 선택·배율은 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
 <script src="../growth-frames.js"></script>
-<script src="../practice-scale-profiles.js?v=31-look-studio-v36"></script>
+<script src="../practice-scale-published.js?v=git-defaults-v37"></script><script src="../practice-scale-profiles.js?v=github-canonical-v37"></script>
 <script>
 (()=>{'use strict';
 const p=window.PracticeScaleProfiles;
@@ -295,7 +329,7 @@ $('#bulkSlider').addEventListener('change',()=>{
  if(['large','small'].includes($('#sort').value))sortCards();
 });
 $('#save').addEventListener('click',()=>{
- announce(p.write(state)?'31종 배율 저장 완료. 게임을 새로 열면 적용됩니다.':'브라우저 저장 실패: JSON 내보내기를 사용하세요.');
+ announce(p.write(state)?'이 기기에 임시 저장했습니다. 모든 기기에 반영하려면 GitHub 원본에 게시하세요.':'브라우저 저장 실패: JSON 내보내기를 사용하세요.');
 });
 $('#reset').addEventListener('click',()=>{
  Object.assign(state,p.DEFAULTS);for(const key of keys)refresh(key);
@@ -321,7 +355,12 @@ $('#file').addEventListener('change',async e=>{
  }catch(error){announce('불러오기 실패: '+error.message);}
  e.target.value='';
 });
+window.SpartacusScaleStudio={
+ values:()=>Object.fromEntries(keys.map(key=>[key,Number(state[key])])),
+ saveDraft:()=>p.write(state)
+};
 build();
 })();
 </script>
+<script src="practice-scale-publish.js?v=github-source-v37"></script>
 </body></html>
