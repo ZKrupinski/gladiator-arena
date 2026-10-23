@@ -11,8 +11,10 @@ const COURT_LAYOUTS=Object.freeze({
  2:Object.freeze([{x:325,y:689,scale:1.29},{x:955,y:689,scale:1.29}]),
  3:Object.freeze([{x:325,y:689,scale:1.29},{x:955,y:689,scale:1.29},
    {x:640,y:606,scale:1.06}]),
- 4:Object.freeze([{x:325,y:689,scale:1.29},{x:955,y:689,scale:1.29},
-   {x:422,y:606,scale:1.06},{x:858,y:606,scale:1.06}])
+ // Keep all four ALLIED silhouettes in their own horizontal columns.
+ // Enemies may cross columns, but foreground allies cannot occlude rear allies.
+ 4:Object.freeze([{x:260,y:689,scale:1.29},{x:1120,y:689,scale:1.29},
+   {x:552,y:606,scale:1.06},{x:836,y:606,scale:1.06}])
 });
 function courtsForParty(count){
  // Does not depend on later-initialized variables; works at script load.
@@ -20,7 +22,7 @@ function courtsForParty(count){
  return COURT_LAYOUTS[n].map(c=>({...c}));
 }
 let COURTS=courtsForParty(4);
-const LEASH=168;
+const LEASH=168,MIN_PAIR_GAP=172,ATTACK_START_RANGE=188,CONTACT_REACH=214;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const number=(x,d=0)=>Number.isFinite(Number(x))?Number(x):d;
 const eligible=h=>!!h&&number(h.injury)<80&&number(h.fatigue)<80;
@@ -403,7 +405,7 @@ function prepareStrike(u,target){
  }
 }
 function contact(u,target){
- if(u.dead||!target||target.dead||Math.abs(u.x-target.x)>165)return;
+ if(u.dead||!target||target.dead||Math.abs(u.x-target.x)>CONTACT_REACH)return;
  if(target.dodge>0){
   sparks(target);playCombatSound('dodge',target,.67);return;
  }
@@ -449,11 +451,35 @@ function act(u,dt){
   u.x=clamp(u.x+clamp(dx,-u.speed*dt,u.speed*dt),ring.x-LEASH,ring.x+LEASH);
   return;
  }
- const dx=target.x-u.x;
- if(Math.abs(dx)>140)
-  u.x=clamp(u.x+Math.sign(dx)*Math.min(Math.abs(dx)-136,u.speed*dt),
-   ring.x-LEASH,ring.x+LEASH);
- else if(u.cooldown<=0)prepareStrike(u,target);
+ // Fighters circle forward and back even between attacks, instead of
+ // standing immobile at the edge of their weapon's reach.
+ const dx=target.x-u.x,dist=Math.abs(dx);
+ const side=u.side==='ally'?-1:1;
+ const wave=Math.sin(battle.clock*(1.95+u.seat*.09)+u.seat*.91);
+ const neutral=ring.x+side*(91+wave*16);
+ let goal=neutral;
+ if(dist>ATTACK_START_RANGE)
+  goal=u.x+Math.sign(dx)*(dist-ATTACK_START_RANGE+8);
+ else if(dist<MIN_PAIR_GAP+5)
+  goal=u.x+side*(MIN_PAIR_GAP+5-dist)*.55;
+ const step=Math.max(0,u.speed*dt)*(dist>ATTACK_START_RANGE?1:.72);
+ u.x=clamp(u.x+clamp(goal-u.x,-step,step),ring.x-LEASH,ring.x+LEASH);
+ if(Math.abs(target.x-u.x)<=ATTACK_START_RANGE&&u.cooldown<=0)
+  prepareStrike(u,target);
+}
+// Resolve pair overlap in *world coordinates* after both sides act.
+// Preserve hero-left/opponent-right ordering and enforce minimum visible gap.
+function keepCourtSpacing(){
+ for(const h of battle.heroes){
+  if(h.dead||h.retiring)continue;
+  const e=battle.enemies.find(u=>!u.dead&&!u.retiring&&u.seat===h.seat&&u.entry<=0);
+  if(!e||e.x-h.x>=MIN_PAIR_GAP)continue;
+  const ring=COURTS[h.seat];
+  const middle=clamp((h.x+e.x)*.5,
+   ring.x-LEASH+MIN_PAIR_GAP/2,ring.x+LEASH-MIN_PAIR_GAP/2);
+  h.x=middle-MIN_PAIR_GAP/2;
+  e.x=middle+MIN_PAIR_GAP/2;
+ }
 }
 function simulate(dt){
  if(!battle||battle.paused||battle.finished)return;
@@ -466,6 +492,7 @@ function simulate(dt){
    battle.delay=clamp(1.22-battle.wave*.009,.48,1.22);
  }
  battle.heroes.forEach(u=>act(u,dt));battle.enemies.forEach(u=>act(u,dt));
+ keepCourtSpacing();
  // Dispatch orphaned enemies IMMEDIATELY after an ally falls this tick.
  // No frame is rendered with an unmatched live enemy in an abandoned court.
  for(const e of battle.enemies){
