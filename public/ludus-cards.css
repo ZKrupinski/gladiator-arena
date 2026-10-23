@@ -232,3 +232,97 @@
 .lc-mode-picker button small{font-size:clamp(8px,.78vw,11px);overflow:hidden;text-overflow:ellipsis}
 .lc-mode-picker .lc-beast-mode{border:2px ridge #e6b568;color:#ffe6ad;background:linear-gradient(140deg,#864527,#4f281b);box-shadow:inset 0 0 9px #f2c86d45}
 @media(max-width:680px){.lc-mode-picker{gap:3px;padding-inline:4px}.lc-mode-picker button{font-size:11px;min-height:44px;border-width:1px;padding:4px 1px}.lc-mode-picker button small{font-size:7px;letter-spacing:-.05em}}
+
+
+/* LUDUS V17: one uniform full-silhouette scale for every class / tier.
+   The shared alpha-fitting painter handles odd transparent sprite padding. */
+.lc-portrait{overflow:hidden}
+.lc-portrait canvas,.lc-highlight canvas{display:block;object-fit:contain;object-position:center bottom}
+.lc-draft-screen .lc-card-grid{
+ display:grid;grid-template-columns:repeat(auto-fill,minmax(126px,1fr));
+ grid-auto-rows:minmax(226px,max-content);align-content:start;gap:9px;
+}
+.lc-draft-screen .lc-fighter-card{
+ box-sizing:border-box;min-width:0;min-height:226px;height:auto;padding:5px 3px 5px;
+}
+.lc-draft-screen .lc-portrait{height:135px;max-height:none;flex:none}
+.lc-draft-screen .lc-rank{margin:1px 0 2px;padding:3px 6px;font-size:10px}
+.lc-draft-screen .lc-card-title{font-size:clamp(12px,1.3vw,17px);margin-top:4px}
+.lc-draft-screen .lc-card-class{font-size:clamp(10px,1.05vw,12px)}
+.lc-draft-screen .lc-card-meta{padding:4px 2px;font-size:10px;flex-wrap:wrap}
+.lc-draft-screen .lc-card-foot{padding:4px 2px;font-size:11px}
+
+/* Team members stand together, not as a vertically stretched text list. */
+.lc-draft-screen .lc-team-lineup{
+ flex:0 0 auto;min-height:0;max-height:none;padding:8px;
+ overflow:visible;margin-top:2px;
+}
+.lc-draft-screen .lc-team-lineup>strong{
+ display:block;margin:0 0 8px;color:#f3d28d;font:800 14px/1.25 'Noto Sans KR',sans-serif;
+}
+.lc-draft-screen .lc-enemy-team{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;
+ gap:7px;width:100%;min-width:0;
+}
+.lc-draft-screen .lc-team-count-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.lc-draft-screen .lc-team-count-1{
+ grid-template-columns:minmax(0,min(100%,230px));justify-content:center;
+}
+.lc-draft-screen .lc-enemy-portrait-card{
+ box-sizing:border-box;min-width:0;display:flex;flex-direction:column;
+ align-items:center;justify-content:flex-start;gap:3px;padding:5px;
+ border:2px ridge #906f4b;border-radius:6px;
+ background:radial-gradient(ellipse at 50% 28%,#5d3725,#1c100d 82%);
+ overflow:hidden;
+}
+.lc-draft-screen .lc-enemy-portrait-card.is-boss{
+ border-color:#e7bc72;box-shadow:0 0 12px #e6b96c75;
+}
+.lc-draft-screen .lc-enemy-portrait-card>em{
+ align-self:start;font:900 11px/1 'Noto Sans KR',sans-serif;
+ width:auto;height:auto;min-height:0;padding:3px 7px;
+ color:#2c1209;background:#e6bc79;
+}
+.lc-draft-screen .lc-rival-art{
+ flex:none;display:flex;align-items:end;justify-content:center;
+ width:100%;height:clamp(120px,20vh,195px);
+ min-width:0;overflow:hidden;
+}
+.lc-draft-screen .lc-rival-art canvas{
+ display:block;width:100%;height:100%;object-fit:contain;
+ filter:drop-shadow(0 4px 5px #0b0404bd);
+}
+.lc-draft-screen .lc-rival-placeholder{
+ align-self:center;color:#b58c60;font:800 55px/1 Georgia,serif;opacity:.75;
+}
+.lc-draft-screen .lc-rival-caption{
+ display:grid;justify-content:stretch;gap:3px;
+ width:100%;min-width:0;margin-top:auto;text-align:center;
+}
+.lc-draft-screen .lc-rival-caption strong{
+ font:850 clamp(11px,1.15vw,14px)/1.2 'Noto Sans KR',sans-serif;
+ max-width:100%;white-space:normal;overflow-wrap:anywhere;word-break:keep-all;
+}
+.lc-draft-screen .lc-rival-caption small{
+ font:700 clamp(9px,.85vw,11px)/1.2 'Noto Sans KR',sans-serif;
+ white-space:normal;letter-spacing:0;color:#d5b38b;
+}
+.lc-draft-screen .lc-opponent{overflow-y:auto}
+.lc-draft-screen .lc-matchup{flex:none}
+@media(max-width:1050px){
+ .lc-draft-screen .lc-card-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(220px,max-content)}
+ .lc-draft-screen .lc-rival-art{height:clamp(105px,18vh,165px)}
+}
+@media(max-width:680px){
+ .lc-draft-screen .lc-card-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+ .lc-draft-screen .lc-fighter-card{min-height:190px;border-width:3px}
+ .lc-draft-screen .lc-portrait{height:108px}
+ .lc-draft-screen .lc-card-class{font-size:9px}
+ .lc-draft-screen .lc-card-meta{display:none}
+ .lc-draft-screen .lc-card-foot{font-size:9px}
+ .lc-draft-screen .lc-rival-art{height:clamp(110px,22vw,170px)}
+ .lc-draft-screen .lc-enemy-team{gap:4px}
+ .lc-draft-screen .lc-team-lineup{padding:5px}
+ .lc-draft-screen .lc-rival-caption strong{font-size:10px}
+ .lc-draft-screen .lc-rival-caption small{font-size:9px}
+}
