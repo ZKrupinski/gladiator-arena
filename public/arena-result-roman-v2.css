@@ -213,3 +213,37 @@
  #endScreen .stage-panel-ending #endReason,
  #endScreen .stage-panel-ending #endStats{font-size:9px!important}
 }
+
+/* Result action row v19: visually attach actions to the result frame, away from loot.
+   The legacy global .end-actions button max-width:210px left empty grid space;
+   explicitly release that cap so both buttons occupy equal, centered columns.
+   Artwork and reward contents remain untouched. */
+#endScreen.overlay-ending > .end-actions {
+  width:min(74vw,600px)!important;
+  max-width:calc(100vw - 20px);
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  justify-items:stretch;
+  gap:clamp(8px,1.4vw,16px);
+  margin:-clamp(14px,2.5dvh,27px) auto clamp(12px,2dvh,20px)!important;
+}
+#endScreen.overlay-ending > .end-actions > button {
+  max-width:none!important;
+  min-width:0!important;
+  width:100%!important;
+  justify-self:stretch;
+}
+@media(max-width:600px) {
+  #endScreen.overlay-ending > .end-actions {
+    width:min(90vw,420px)!important;
+    gap:8px;
+    margin-top:-clamp(12px,2.3dvh,22px)!important;
+    margin-bottom:clamp(12px,2dvh,20px)!important;
+  }
+}
+@media(max-height:420px) and (orientation:landscape) {
+  #endScreen.overlay-ending > .end-actions {
+    width:min(68vw,485px)!important;
+    margin-top:0!important;
+    margin-bottom:6px!important;
+  }
+}

@@ -1,14 +1,11 @@
 {
   "assetSha256": {
-    "docs/qa-responsive-20261023.md": "383b6669e86a0ca32c76ee9102fc55e07b78e2b7f5983d0b4fd1c35493cd0221",
-    "public/arena-responsive.css": "c3fab3e35751ff4ae807d734e35903890b93c7a47ddd94ad6ea02b30ab0811fa",
-    "public/index.html": "18013f0ae833acc83b82c10f7b87eb8fa5f5d27a3bab70f99e3361b03dab7272",
-    "public/mobile-legibility.css": "29e6e985d0e23ee5324a36d190b0585c167ec85c1e7d9577833353d716437cab",
-    "tests/responsive-qa.html": "0b0b99c7ce1a755772ac99929e314536a2786daf628f4afed5eef2cfd19fcd66"
+    "public/arena-result-roman-v2.css": "39bae71bca470629fb3dbf6cfe2def4c2903bd294dcd4a38705122474b73e767",
+    "public/index.html": "21d5b8937b6db7f532475d0043dbec6175cc1de6f25650af4fe19db251c2100c"
   },
-  "baseCommit": "75b0cbf022687f74dd6cd782fa1a77a7df0ea875",
+  "baseCommit": "ac51f8a9b44a539690e623822d6d871f34dba743",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "responsive-ui-qa-20261023-v18",
+  "releaseId": "result-actions-centered-20261023-v19",
   "releaseProtocol": "spartacus-uploader-v1"
 }
