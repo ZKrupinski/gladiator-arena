@@ -66,9 +66,9 @@ assert.equal(valid.state.status,'ready');
 assert.equal(valid.state.actions.length,9);
 assert.equal(valid.state.normalized,true);
 // Real renderer geometry verification, independent of image resolution:
-// every action keeps identical 6%-smaller scale and 16px lifted paws.
-const expectedScale=348*.82/315*.94;
-const expectedGround=348-16;
+// every action keeps the approved shared world scale and planted paw baseline.
+const expectedScale=348*.83/512;
+const expectedGround=348;
 const motions=[
  {pose:'idle'}, {pose:'walk'}, {pose:'attack',attackVariant:0},
  {pose:'attack',attackVariant:1},{pose:'attack',attackVariant:2},
