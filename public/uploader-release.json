@@ -1,14 +1,14 @@
 {
   "assetSha256": {
-    "public/arena-responsive.css": "199666c6ea1f4e2f55d46e1fca653d2cfe98b77b5eaeca1e0c2a3744d5bc7a07",
-    "public/index.html": "6507d1ff16896e46138cb30f9a9830a505aebc43c766f4c4bdcd01ac71cb5e3f",
-    "public/ludus-cards.js": "d6c6c6ac56f7dbd2433f792ac5e7f72acd7759254d46e0ff331020d9841b8c76",
-    "public/ludus-roster.js": "00c73fa4ba960bf2bf9006b8a3ba87ebbe358cbf2a083139d6c9d9008e230464",
-    "tests/roman-roster-names.js": "0fd585ba0c16d19393af2847dafd85144e5bda6abc8441f9ec295d131eaa1b24"
+    "public/index.html": "fd00abff09697eeb28a391e1ed64d368e532dbddc62e30cabd70570c26fc65c2",
+    "public/ludus-cards.js": "9a99fecb9463ae4a07108235f2b7b9629e8937a118176b95bfdd4f284e7aca01",
+    "public/market-scene.js": "b811badf5ee682912425c4004aa976d1e61021a7a2305f1d0d40422bc3fdfa5b",
+    "public/market-transactions.css": "f7e588eabba93c0253ac1ceb55eea00d5e4bbae05473fa0342fa17ee98ec7295",
+    "tests/market-dynamic-stock.js": "8fa8b4b7d53a06007d847a003c99785a068accad52b4748fd7a6bf91107dc7b6"
   },
-  "baseCommit": "c30d935d998cd3eb1efd20e898f1029e9508a273",
+  "baseCommit": "de29151c87cb986f924363df76e31a2ad4f2ff57",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "roman-fighter-names-card-fit-20261023-v20b",
+  "releaseId": "mercatus-rotating-stock-rare-specials-20261023-v21b",
   "releaseProtocol": "spartacus-uploader-v1"
 }
