@@ -1,0 +1,54 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "uniform-gladiator-portraits-team-matchdraft-20261023-v17",
+  "expectedMainSha": "38828e11f169680c368e0dc61a564e70524158d7",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/38828e11f169680c368e0dc61a564e70524158d7/public/index.html",
+      "sha256": "4ba0f2b27f04eb4c12dccd590b5090cca3656e88a2e34039b4b816f1e178c3bf"
+    },
+    {
+      "path": "public/arena-portrait-fit.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/38828e11f169680c368e0dc61a564e70524158d7/public/arena-portrait-fit.js",
+      "sha256": "c964f71c604ec6f253a18ea548c6c02e3051618d8f7c03a044072330fec2346f"
+    },
+    {
+      "path": "public/ludus-armory-live.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/38828e11f169680c368e0dc61a564e70524158d7/public/ludus-armory-live.js",
+      "sha256": "b29db59e2771eb670605879af36201b1f1ee373a2547788459d33152a09ba2c1"
+    },
+    {
+      "path": "public/ludus-cards.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/38828e11f169680c368e0dc61a564e70524158d7/public/ludus-cards.js",
+      "sha256": "c8ea127259bd30fe48ffe3d46d2005ac4d66378df34cf1d774f9dd288ed7c35e"
+    },
+    {
+      "path": "public/ludus-cards.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/38828e11f169680c368e0dc61a564e70524158d7/public/ludus-cards.css",
+      "sha256": "533d44336f53fd99e3d49b15f45ae31775cd8a512b2c73b119b3b6a6fa888e21"
+    },
+    {
+      "path": "public/ludus-scene.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/38828e11f169680c368e0dc61a564e70524158d7/public/ludus-scene.js",
+      "sha256": "3f37ba7b4baf4813e15837ab5b0f9d255742937526a0eb6440a621435b9591e6"
+    },
+    {
+      "path": "public/ludus-approved-scenes.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/38828e11f169680c368e0dc61a564e70524158d7/public/ludus-approved-scenes.js",
+      "sha256": "9a0afd6d8a1b52b7d4cedbe161343d0bde27be093f538db3bd76c453982afb7e"
+    },
+    {
+      "path": "public/beast-hunt.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/38828e11f169680c368e0dc61a564e70524158d7/public/beast-hunt.css",
+      "sha256": "1a1ac7601a6f5d19c4b09b5edb09e1661ee75514799e90ba877f4e9c7f224f78"
+    },
+    {
+      "path": "public/arena-result-roman-v2.css",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/38828e11f169680c368e0dc61a564e70524158d7/public/arena-result-roman-v2.css",
+      "sha256": "3b3917aaf6d22fe37001b2f036a89e278fce0349f840d331062444f2be0f0a01"
+    }
+  ]
+}
