@@ -11,8 +11,9 @@ try{
  await page.evaluate(()=>document.getElementById('startBtn').click());
  await page.waitForFunction(()=>window.__arenaQA?.state.phase==='fight'&&window.__arenaQA.assetsReady(),{timeout:60000});
  const matched=await page.evaluate(()=>{
-  const bridge=LudusBridge,roster=bridge.state().roster,hero=roster[0];
-  const low=bridge.matchOpponent([0]);
+  const bridge=LudusBridge,roster=bridge.state().roster;
+  if(!roster.length)roster.push(LudusRoster.create('murmillo',1));
+  const hero=roster[0],low=bridge.matchOpponent([0]);
   hero.stats={str:8,agi:7,end:8,focus:7};
   hero.equipment={weapon:'iron',shield:'shield',armor:'elite'};
   const high=bridge.matchOpponent([0]);
