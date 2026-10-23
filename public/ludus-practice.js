@@ -177,9 +177,15 @@ function act(unit,dt){
  unit.swing=Math.max(0,unit.swing-dt);
  unit.hit=Math.max(0,unit.hit-dt);
  const enemy=closest(unit,unit.side==='ally'?battle.enemies:battle.heroes);if(!enemy)return;
- const dx=enemy.x-unit.x;
+ const dx=enemy.x-unit.x,dy=enemy.y-unit.y;
+ // 2.5D depth physics: never strike another lane across empty floor.
+ // Fighters step between foreground/background rows to meet the target.
+ if(Math.abs(dy)>28){
+  unit.y+=Math.sign(dy)*Math.min(Math.abs(dy)-28,unit.speed*dt*.60);
+  unit.lane=clamp(Math.round((unit.y-LANES[0])/(LANES[1]-LANES[0])),0,2);
+ }
  if(Math.abs(dx)>82)unit.x=clamp(unit.x+Math.sign(dx)*Math.min(Math.abs(dx)-82,unit.speed*dt),65,1220);
- else if(!unit.cooldown){
+ else if(Math.abs(enemy.y-unit.y)<=34&&!unit.cooldown){
   unit.cooldown=unit.side==='ally'?.80+Math.random()*.18:.99+Math.random()*.27;
   unit.swing=.22;hit(unit,enemy);
  }
@@ -224,8 +230,10 @@ function drawUnit(unit){
   const bounds=root.ArenaPortraitFit?.bounds?.(art)||{x:0,y:0,w:art.width||art.naturalWidth,h:art.height||art.naturalHeight};
   if(bounds.w&&bounds.h){
    const k=Math.min(size/bounds.w,height/bounds.h),w=bounds.w*k,h=bounds.h*k;
+   ctx.save(); // Only the enemy SPRITE flips, not name/HP/effect overlays.
    if(unit.side==='enemy')ctx.scale(-1,1);
    try{ctx.drawImage(art,bounds.x,bounds.y,bounds.w,bounds.h,-w/2,-h,w,h);}catch(_){}
+   ctx.restore();
   }
  }else{
   ctx.fillStyle=unit.side==='ally'?'#bb915e':'#8b3e2a';ctx.beginPath();

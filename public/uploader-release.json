@@ -1,14 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "a19c825fc2d5a89e5286ac13b0bce8059dcdb0230e0917303bd1678aef949dd7",
-    "public/ludus-practice.css": "bf01842030b22fb93125a3a81f117a95165d86c8e39fccc7f272851558ee1c43",
-    "public/ludus-practice.js": "4aa97b8baf9a382e6287c001ac8f47e221f80f7dfb77fae3b7333bc5a97c0cfd",
-    "public/ludus-scene.js": "3b3e0eec0a1e932f35063104d0e66f68db5862deba5d437d1f6011e11e8f9e7d",
-    "tests/endless-practice-v26.js": "d5d97feb69b0db2900b8d8372d0ef9d52b79495145a8630f6cd062fec513fc52"
+    "public/index.html": "5abb62da0db75be8892deeb4e176f38f74c10265c6713f0b3402485d6531e2e7",
+    "public/ludus-practice.js": "95d7a086316b9a03c22dd9fcdff038067e53906383cf2551b241d817a2a93759",
+    "tests/endless-practice-v26.js": "60d9d6b515a7f9929e0cb39cf99ef90c662997ef8ba77644c69dd6434e990f39"
   },
-  "baseCommit": "3edb28e502265790c88cc831afe787aa98eb1f2c",
+  "baseCommit": "b4e9a64dac78698323244f41bb8982b583b48a61",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "exercitium-infinitum-squad-training-20261023-v26",
+  "releaseId": "exercitium-depth-collision-ui-polish-20261023-v26a",
   "releaseProtocol": "spartacus-uploader-v1"
 }
