@@ -1,12 +1,18 @@
 {
   "assetSha256": {
+    "public/arena-portrait-fit.js": "c964f71c604ec6f253a18ea548c6c02e3051618d8f7c03a044072330fec2346f",
     "public/arena-result-roman-v2.css": "3b3917aaf6d22fe37001b2f036a89e278fce0349f840d331062444f2be0f0a01",
-    "public/index.html": "cafe98ec1d7d8325652dd18a475a9a5aa147b2ae78f548db15ba1a7cc35d87dd",
-    "public/ludus-armory-live.css": "fb9d4a036a044514a31f8f0a5c2e30b1d71c78d7b97dff830fcf667e4ae75d24"
+    "public/beast-hunt.css": "1a1ac7601a6f5d19c4b09b5edb09e1661ee75514799e90ba877f4e9c7f224f78",
+    "public/index.html": "4ba0f2b27f04eb4c12dccd590b5090cca3656e88a2e34039b4b816f1e178c3bf",
+    "public/ludus-approved-scenes.js": "9a0afd6d8a1b52b7d4cedbe161343d0bde27be093f538db3bd76c453982afb7e",
+    "public/ludus-armory-live.js": "b29db59e2771eb670605879af36201b1f1ee373a2547788459d33152a09ba2c1",
+    "public/ludus-cards.css": "533d44336f53fd99e3d49b15f45ae31775cd8a512b2c73b119b3b6a6fa888e21",
+    "public/ludus-cards.js": "c8ea127259bd30fe48ffe3d46d2005ac4d66378df34cf1d774f9dd288ed7c35e",
+    "public/ludus-scene.js": "3f37ba7b4baf4813e15837ab5b0f9d255742937526a0eb6440a621435b9591e6"
   },
-  "baseCommit": "3e99c70f8d4bdcfcbbf6cf78ad352d447e076654",
+  "baseCommit": "4e39be2b1fd099894051577b8ba84c1082f0cec6",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "roman-results-below-frame-icon-align-v17-20261023",
+  "releaseId": "uniform-gladiator-portraits-team-matchdraft-20261023-v17",
   "releaseProtocol": "spartacus-uploader-v1"
 }
