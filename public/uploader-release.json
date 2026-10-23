@@ -1,11 +1,14 @@
 {
   "assetSha256": {
-    "public/arena-result-roman-v2.css": "39bae71bca470629fb3dbf6cfe2def4c2903bd294dcd4a38705122474b73e767",
-    "public/index.html": "21d5b8937b6db7f532475d0043dbec6175cc1de6f25650af4fe19db251c2100c"
+    "public/arena-responsive.css": "199666c6ea1f4e2f55d46e1fca653d2cfe98b77b5eaeca1e0c2a3744d5bc7a07",
+    "public/index.html": "6507d1ff16896e46138cb30f9a9830a505aebc43c766f4c4bdcd01ac71cb5e3f",
+    "public/ludus-cards.js": "d6c6c6ac56f7dbd2433f792ac5e7f72acd7759254d46e0ff331020d9841b8c76",
+    "public/ludus-roster.js": "00c73fa4ba960bf2bf9006b8a3ba87ebbe358cbf2a083139d6c9d9008e230464",
+    "tests/roman-roster-names.js": "0fd585ba0c16d19393af2847dafd85144e5bda6abc8441f9ec295d131eaa1b24"
   },
-  "baseCommit": "ac51f8a9b44a539690e623822d6d871f34dba743",
+  "baseCommit": "c30d935d998cd3eb1efd20e898f1029e9508a273",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "result-actions-centered-20261023-v19",
+  "releaseId": "roman-fighter-names-card-fit-20261023-v20b",
   "releaseProtocol": "spartacus-uploader-v1"
 }

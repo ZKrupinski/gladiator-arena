@@ -107,3 +107,46 @@ html{scrollbar-gutter:auto;-webkit-text-size-adjust:100%;text-size-adjust:100%}
  .ra-collection .ra-title{min-width:0;max-width:100%}
  .ra-collection .ra-title h1{font-size:clamp(20px,5.8vw,30px);white-space:normal;overflow-wrap:anywhere;letter-spacing:.025em;line-height:1.15}
 }
+
+/* V20: fit Roman names within narrow roster and draft cards.
+   Older mobile font rules forced 20px + one line, clipping long names.
+   Content-sized scrolling rows preserve text, stats, full sprite and foot controls. */
+#careerHub .lc-screen .lc-fighter-card > :not(.lc-card-corner) {flex-shrink:0}
+#careerHub .lc-screen .lc-card-title {
+ display:block;box-sizing:border-box;width:100%;min-width:0;max-width:100%;
+ margin:6px auto 2px;padding:0 2px;
+ text-align:center;font-size:clamp(14px,3.35vw,20px);line-height:1.15;
+ white-space:normal!important;overflow-wrap:anywhere;word-break:break-word;
+ overflow:visible!important;text-overflow:clip!important;
+}
+#careerHub .lc-screen .lc-card-class {
+ box-sizing:border-box;width:100%;min-width:0;max-width:100%;
+ text-align:center;font-size:clamp(11px,2.65vw,14px);line-height:1.25;
+ white-space:normal!important;overflow-wrap:anywhere;word-break:keep-all;
+}
+#careerHub .lc-screen .lc-card-meta {
+ flex-wrap:wrap;justify-content:space-around;align-items:center;
+ font-size:clamp(10px,2.4vw,12px);line-height:1.18;
+ gap:3px 6px;padding:6px 2px 5px;
+}
+#careerHub .lc-screen .lc-card-meta b {white-space:normal!important;overflow-wrap:anywhere}
+#careerHub .lc-screen .lc-card-foot {
+ max-width:100%;white-space:normal;line-height:1.2;overflow-wrap:anywhere;
+}
+#careerHub .lc-roster-screen .lc-card-grid {
+ grid-auto-rows:minmax(276px,max-content);align-content:start;
+}
+#careerHub .lc-roster-screen .lc-fighter-card {height:auto;min-height:276px}
+#careerHub .lc-roster-screen .lc-portrait {
+ flex:0 0 auto;height:clamp(122px,19vh,168px);max-height:none;
+}
+#careerHub .lc-roster-screen .lc-nameplate h2 {
+ max-width:100%;overflow-wrap:anywhere;font-size:clamp(21px,3vw,30px);
+}
+@media(max-width:450px){
+ #careerHub .lc-roster-screen .lc-card-grid{
+  gap:7px;grid-auto-rows:minmax(260px,max-content);
+ }
+ #careerHub .lc-roster-screen .lc-portrait{height:clamp(110px,31vw,135px)}
+ #careerHub .lc-screen .lc-card-meta{font-size:11px}
+}

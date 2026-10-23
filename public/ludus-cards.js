@@ -9,7 +9,7 @@ function bridge(){return window.LudusBridge;}
 function state(){return bridge()&&bridge().state();}
 function level(h){return Math.max(1,Math.min(20,Number(h.level)||1));}
 function rank(h){if(h.appearance==='murmillo_champion_red')return 'CHAMPION';if(h.appearance==='murmillo_motion_v3')return 'MOTION';if(h.appearance==='legacy')return 'CHAMPION';var lv=level(h);return 'GRADE '+(lv>=20?5:lv>=15?4:lv>=10?3:lv>=5?2:1);}
-function className(h){var n={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};return h.appearance==='murmillo_champion_red'?'신규 챔피언 무르밀로':h.appearance==='murmillo_motion_v3'?'무르밀로 · 애니메이션':(n[h.cls]||h.cls||'검투사');}
+function className(h){var n={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};return h.appearance==='murmillo_champion_red'?'무르밀로 · 챔피언':h.appearance==='murmillo_motion_v3'?'무르밀로 · 정예':(n[h.cls]||h.cls||'검투사');}
 function injury(h){return Math.max(0,Number(h.injury)||0);}
 function fatigue(h){return Math.max(0,Math.min(100,Number(h?.fatigue)||0));}
 function wounded(h){return injury(h)>=80||fatigue(h)>=80;}
