@@ -55,7 +55,7 @@ assert.ok(html.includes("flip:beastFxFlip(beast),layer:'back',alpha:.7"));
   assert.equal(runtime.beastFxFlip(lion),dir>0);
   const floor=runtime.beastGroundFx(wolf,400,550,400,172);
   assert.equal(floor.x,400);
-  assert.equal(floor.y,534);
+  assert.equal(floor.y,550,'wolf ground effect aligns to shared arena floor');
   assert.equal(floor.w,360);
   assert.ok(Math.abs(floor.h-154.8)<1e-9);
   const unchanged=runtime.beastGroundFx(lion,400,550,400,172);
