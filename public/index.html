@@ -377,6 +377,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="murmillo-motion-v2.js?v=whip-real-hit-v3"></script>
 <script src="champion-murmillo.js?v=3"></script>
 <script src="arena-gear-catalog.js?v=roman-five-slots-v12"></script><script src="arena-loot.js?v=roman-helm-bracers-v12"></script><script src="arena-gear-bitmap.js?v=roman-square-atlas-v12"></script><script src="arena-excitement.js?v=harder-spectacle-v7"></script><script src="arena-balance.js?v=unlimited-growth-v1"></script>
+<script src="arena-portrait-fit.js?v=portrait-uniform-v1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
 <script src="arena-beasts.js?v=versus-v5"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
@@ -933,24 +934,27 @@ function rosterCards(deploy=false){
 }
 function paintRosterPreviews(){
  for(const canvas of document.querySelectorAll('[data-roster-art]')){
-  const h=CAREER.roster[Number(canvas.dataset.rosterArt)];if(!h)continue;
-  const context=canvas.getContext('2d');context.clearRect(0,0,canvas.width,canvas.height);
-  if(isChampionMurmillo(h)){
-   const art=window.ChampionMurmillo?.portrait();
-   if(art){const scale=Math.min(280/art.width,220/art.height);
-    context.drawImage(art,(300-art.width*scale)/2,230-art.height*scale,art.width*scale,art.height*scale);
-   }
-   continue;
-  }
-  const growth=growthImage(h);
-  if(growth){const f=growth.frames[9].canvas,scale=Math.min(280/f.width,220/f.height);context.drawImage(f,(300-f.width*scale)/2,230-f.height*scale,f.width*scale,f.height*scale);}
-  else{
-   const img=IMG[h.cls];if(!img?.complete)continue;
-   const frame=INDEPENDENT_CHARACTER_FRAMES.get(img)?.[0];
-   if(frame)context.drawImage(frame,35,0,230,230);
-   else context.drawImage(getCharacterAtlasImage(img),0,0,img.naturalWidth/5,img.naturalHeight/2,35,0,230,230);
+  const index=Number(canvas.dataset.rosterArt);
+  const source=window.LudusBridge?.portrait?.(index);
+  if(source&&window.ArenaPortraitFit?.draw?.(canvas,source,{inset:.045}))continue;
+  const ctx=canvas.getContext('2d');ctx?.clearRect(0,0,canvas.width,canvas.height);
+  if(source){
+   const scale=Math.min((canvas.width-12)/source.width,(canvas.height-12)/source.height);
+   try{ctx.drawImage(source,(canvas.width-source.width*scale)/2,canvas.height-source.height*scale-6,source.width*scale,source.height*scale)}catch(_){}
   }
  }
+}
+// Shared approved artwork for all opponent team portraits.
+function arenaOpponentPortrait(enemy){
+ if(!enemy)return null;
+ if(enemy.appearance===CHAMPION_MURMILLO_VARIANT||enemy.bossId===CHAMPION_MURMILLO_VARIANT)
+  return window.ChampionMurmillo?.portrait()||null;
+ if(!enemy.boss){
+  const atlas=GROWTH_IMAGES.get((enemy.growthType||enemy.cls+'_a')+'_L'+(enemy.stage||careerStage(enemy)));
+  if(atlas?.frames?.[9]?.canvas)return atlas.frames[9].canvas;
+ }
+ const img=IMG[enemy.cls];
+ return (img&&INDEPENDENT_CHARACTER_FRAMES.get(img)?.[0])||null;
 }
 function paintDraftOpponent(){
  const canvas=document.getElementById('ludusOpponentArt');if(!canvas)return;
@@ -3415,6 +3419,7 @@ $('#classSubtitle').textContent=DATA[$('#classChoice').value].eng;
 /* Visual Ludus adapter; the existing career state remains authoritative. */
 window.LudusBridge={
  trainingCost:(i,stat)=>careerTrainingCost(CAREER.roster[i],stat),
+ enemyPortrait:(enemy)=>arenaOpponentPortrait(enemy),
  squadSprite:(hero,action='idle',tick=0)=>{
   if(!hero)return null;
   const index={idle:0,walk:1,attack:2,special:3,guard:6,hit:7,death:11,dodge:8}[action]??0;
