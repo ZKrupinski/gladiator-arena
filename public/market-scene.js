@@ -117,21 +117,6 @@ function drawPortrait(h){
   const [x,y,w,ht]=h.face;ctx.drawImage(keyImg,x,y,w,ht,0,0,c.width,c.height);
  }
 }
-function drawStallArt(i,hero){
- const canvas=$('#gmArt'+i);if(!canvas)return;
- canvas.hidden=!hero;if(!hero)return;
- const context=canvas.getContext('2d');
- if(!context)return;
- context.clearRect(0,0,canvas.width,canvas.height);
- const sprite=getHeroArtwork(hero);
- // Never leave a screenshot-baked gladiator of the wrong class visible.
- // The original game-art podium is masked by its approved Roman stall curtain.
- if(!sprite)return;
- if(root.ArenaPortraitFit?.draw?.(canvas,sprite,{inset:.045}))return;
- const scale=Math.min((canvas.width-16)/sprite.width,(canvas.height-12)/sprite.height);
- if(scale>0)try{context.drawImage(sprite,(canvas.width-sprite.width*scale)/2,
-  canvas.height-sprite.height*scale-5,sprite.width*scale,sprite.height*scale);}catch(_){}
-}
 function overlayPanel(hero,i,visible){const el=$('#gmPanel'+i);el.hidden=!visible;if(!visible)return;
  const q=qualities[hero.quality]||qualities.common;
  el.classList.toggle('gm-rare-panel',hero.quality==='rare');
@@ -150,11 +135,10 @@ function render(){if(!scene||scene.hidden)return;
   btn.disabled=!h;btn.setAttribute('aria-pressed',String(selected));
   btn.setAttribute('aria-label',h?h.name+' '+h.className+' Lv.0 선택':'판매 완료 · 비어 있는 단상');
   sold.hidden=!!h;
-  // The immutable key-art contains three painted class-specific fighters.
-  // Curtain + actual class portrait keep the visible art truthful each visit.
-  $('#gmEmpty'+i).hidden=false;
-  $('#gmEmpty'+i).classList.toggle('is-occupied',!!h);
-  drawStallArt(i,h);
+  // Keep the approved background painting untouched while a lot is occupied.
+  // The curtain only covers already-sold painted fighters on empty podiums.
+  // The selected offer's accurate class/appearance is shown in the detail portrait.
+  $('#gmEmpty'+i).hidden=!!h;
   const qualityFlag=$('#gmRare'+i);qualityFlag.hidden=!h||h.quality!=='rare';
   overlayPanel(h,i,!!h);
   $('#gmSelection'+i).hidden=!selected;
@@ -259,7 +243,7 @@ function setup(){if(scene)return;
   <img class="gm-merchant-full gm-pose-1" id="gmMerchantMain" src="assets/market/merchant_pose_1.webp" alt="" aria-hidden="true" draggable="false">
   <div class="gm-paper-foreground" aria-hidden="true"></div>
   <button type="button" class="gm-back-hit" id="gmBack" aria-label="루두스로 돌아가기" title="루두스로 돌아가기"></button>
-  ${types.map((t,i)=>`<button type="button" class="gm-card-hit" data-i="${i}" id="gmCard${i}" aria-label="매물 ${i+1} 선택" aria-pressed="${i===0}"></button><div class="gm-empty-podium" id="gmEmpty${i}" data-i="${i}" aria-hidden="true"></div><canvas class="gm-offer-art" id="gmArt${i}" data-i="${i}" width="330" height="265" aria-hidden="true"></canvas><span class="gm-rare-marker" id="gmRare${i}" data-i="${i}" hidden aria-hidden="true">✦ RARVS · 희귀 특수 ✦</span><div class="gm-selected-wreath" id="gmSelection${i}" data-i="${i}" aria-hidden="true" hidden><span>❧</span><b>선택</b><span>❧</span></div><div class="gm-vacant" id="gmVacant${i}" data-i="${i}" hidden><span class="gm-vacant-badge">✦ 판매 완료 ✦</span><strong>빈 단상</strong><small>신규 후보를 갱신하세요</small></div><div class="gm-card-dynamic" data-i="${i}" id="gmPanel${i}" hidden></div>`).join('')}
+  ${types.map((t,i)=>`<button type="button" class="gm-card-hit" data-i="${i}" id="gmCard${i}" aria-label="매물 ${i+1} 선택" aria-pressed="${i===0}"></button><div class="gm-empty-podium" id="gmEmpty${i}" data-i="${i}" aria-hidden="true"></div><span class="gm-rare-marker" id="gmRare${i}" data-i="${i}" hidden aria-hidden="true">✦ RARVS · 희귀 특수 ✦</span><div class="gm-selected-wreath" id="gmSelection${i}" data-i="${i}" aria-hidden="true" hidden><span>❧</span><b>선택</b><span>❧</span></div><div class="gm-vacant" id="gmVacant${i}" data-i="${i}" hidden><span class="gm-vacant-badge">✦ 판매 완료 ✦</span><strong>빈 단상</strong><small>신규 후보를 갱신하세요</small></div><div class="gm-card-dynamic" data-i="${i}" id="gmPanel${i}" hidden></div>`).join('')}
   <div class="gm-wallet-legacy-mask" aria-hidden="true"></div>
   <div class="gm-wallet-value" id="gmWallet" role="status" aria-label="남은 잔고">
    <span class="gm-wallet-label">◉ 남은 잔고</span>

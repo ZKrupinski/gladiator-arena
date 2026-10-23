@@ -233,3 +233,25 @@
  font-size:clamp(18px,1.75vw,24px);white-space:normal;line-height:1.17;
 }
 .gm-screen .gm-stage .gm-bottom-info p{font-size:15px;line-height:1.22}
+
+/* V23 / Market original-art restoration:
+   Keep the decorative "선택" tag but remove the faux vector selection rectangle.
+   The click target and accessible pressed state remain unchanged. */
+.gm-screen .gm-stage .gm-selected-wreath{
+ border:0!important;
+ box-shadow:none!important;
+ background:none!important;
+ animation:none!important;
+}
+.gm-screen .gm-stage .gm-selected-wreath::before,
+.gm-screen .gm-stage .gm-selected-wreath::after{
+ content:none!important;display:none!important;
+}
+.gm-screen .gm-stage .gm-selected-wreath>span{display:none!important}
+.gm-screen .gm-stage .gm-selected-wreath>b{
+ top:-23px;
+ box-shadow:0 2px 9px #160907!important;
+}
+/* Filled booths show only the original approved market key art, with no
+   opaque plate or second pasted-on gladiator. Sold slots keep their curtain. */
+.gm-screen .gm-stage .gm-empty-podium[hidden]{display:none!important}

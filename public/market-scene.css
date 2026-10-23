@@ -9,8 +9,14 @@
 .gm-card-hit[data-i="0"]{left:465px;width:279px}
 .gm-card-hit[data-i="1"]{left:807px;width:268px}
 .gm-card-hit[data-i="2"]{left:1144px;width:333px}
-.gm-card-hit:hover:after,.gm-card-hit:focus-visible:after{content:'';position:absolute;inset:4px 1px 4px;border:2px solid #efc575;border-radius:5px;box-shadow:inset 0 0 20px #edaa4d44,0 0 18px #ffcf6755;pointer-events:none}
-.gm-card-hit[aria-pressed="true"]:not([data-i="0"]):after{content:'';position:absolute;inset:4px 2px;border:2px solid #fcd48c;box-shadow:inset 0 0 12px #dcb15d55,0 0 13px #eec46d55;pointer-events:none}
+/* No box outlines on desktop hover/selected state: keep selection badge instead. */
+.gm-screen .gm-stage .gm-card-hit:hover::after,
+.gm-screen .gm-stage .gm-card-hit:focus-visible::after,
+.gm-screen .gm-stage .gm-card-hit[aria-pressed="true"]::after,
+.gm-screen .gm-stage .gm-card-hit::before{
+  content:none!important;display:none!important;border:0!important;box-shadow:none!important;
+}
+.gm-screen .gm-stage .gm-card-hit:focus-visible{outline:0!important}
 .gm-back-hit{left:20px;top:833px;width:214px;height:69px;border-radius:13px}
 .gm-back-hit:hover,.gm-hire-hit:hover{filter:drop-shadow(0 0 9px #f1c66c) brightness(1.12)}
 .gm-hire-hit{left:1119px;top:745px;width:421px;height:151px;border-radius:12px}
