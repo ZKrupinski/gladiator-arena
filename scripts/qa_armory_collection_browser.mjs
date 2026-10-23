@@ -201,6 +201,17 @@ try{
   LudusApprovedScenes.open('gear');
  });
  await page.waitForSelector('.ra-roster [data-fighter="8"]');
+ const portraits=await page.evaluate(()=>{
+  const cards=[...document.querySelectorAll('.ra-roster .ra-portrait')],thumb=cards[0];
+  const pic=thumb.querySelector('canvas').getBoundingClientRect(),box=thumb.getBoundingClientRect();
+  return {count:cards.length,nameTags:document.querySelectorAll('.ra-portrait strong').length,
+   labels:cards.every(el=>el.getAttribute('aria-label')?.includes('Lv.')),
+   levels:cards.every(el=>!!el.querySelector('.ra-thumb-level')),
+   fillRatio:pic.height/box.height};
+ });
+ assert.equal(portraits.nameTags,0,'fighter names removed from compact portrait cards');
+ assert(portraits.count>=9&&portraits.labels&&portraits.levels,'fighter identity retained as accessible label and short level badge');
+ assert(portraits.fillRatio>=.82,'fighter illustration fills enlarged portrait tile: '+JSON.stringify(portraits));
  const rosterBefore=await page.evaluate(()=>{
   const roster=document.querySelector('.ra-roster');
   roster.scrollLeft=245;
@@ -332,12 +343,18 @@ try{
      previousRow={top:box.top,bottom:box.bottom};
     }
    }
+   const simple=cards.find(el=>el.classList.contains('rarity-common')&&!el.querySelector('.ra-item-copy i'));
+   const image=simple?.querySelector('.ra-art')?.getBoundingClientRect();
+   const shell=simple?.getBoundingClientRect();
    return {count:cards.length,rare:cards.filter(card=>card.classList.contains('rarity-rare')).length,
-    bad:bad.slice(0,12),rows:getComputedStyle(list).gridAutoRows};
+    bad:bad.slice(0,12),rows:getComputedStyle(list).gridAutoRows,
+    iconFill:image&&shell?image.height/shell.height:0,
+    typicalCard:shell?.height,typicalIcon:image?.height};
   });
   assert.equal(measured.count,76,'all equipped item types render in visual overflow regression '+JSON.stringify(viewport));
   assert(measured.rare>0,'rare equipment available in stress test');
   assert.deepEqual(measured.bad,[],'no rarity, name, stat, set or quantity clips in '+JSON.stringify(viewport)+': '+JSON.stringify(measured));
+  assert(measured.iconFill>.64,'equipment image should occupy most of a typical card: '+JSON.stringify({viewport,fill:measured.iconFill,card:measured.typicalCard,art:measured.typicalIcon}));
  }
  assert.deepEqual(errors,[],'no browser runtime errors');
  console.log('ARMORY_COLLECTION_BROWSER_PASS');
