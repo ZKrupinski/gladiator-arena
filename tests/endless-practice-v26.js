@@ -167,7 +167,7 @@ assert(studio.indexOf('practice-scale-published.js?v=git-defaults-v37')<
 assert(studio.includes('id="publishOpen"')&&studio.includes('id="publishConfirm"'),'authenticated GitHub publish controls');
 assert(studio.includes('id="githubEdit"'),'GitHub native signed-in editor alternative');
 assert(studio.includes('이 기기 임시저장'),'no claim local-only save commits to GitHub');
-assert(studio.includes('practice-scale-publish.js?v=github-source-v37'),'real source publisher loaded');
+assert(studio.includes('practice-scale-publish.js?v=verified-status-v40'),'real source publisher loaded');
 assert(publisher.includes("method:'PUT'"),'GitHub commit uses Contents API');
 assert(publisher.includes("branch:'main'")&&publisher.includes('sha:old.sha'),'conflict-safe, version-pinned commit');
 assert(publisher.includes("apiScale.clamp(n)"),'only safe number values committed');

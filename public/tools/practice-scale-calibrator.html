@@ -58,6 +58,10 @@ input[type=file]{display:none}
 @media(max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:650px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.card-head{padding:5px}.card-head label{font-size:12px;gap:4px}.card-head input{width:17px;height:17px}.category{font-size:9px}.config{padding:6px}.adjust button{font-size:10px}}
 @media(max-width:480px){.tools{padding:7px;gap:6px;top:0}.toolbar,.batch{gap:5px}.toolbar button,.batch button{padding:7px 8px;font-size:11px}#bulkSlider{min-width:95px}.grid{gap:6px}.card-head{min-height:55px}.card-head label{font-size:11px}}
+.save-health{display:grid;gap:5px;border-top:1px solid #80613f;padding-top:8px;font-size:12px}
+.save-health [data-state="ok"]{color:#bcebbd}.save-health [data-state="warn"]{color:#ffd688}.save-health [data-state="error"]{color:#ffad9f}
+.save-health button{justify-self:start;padding:6px 10px}
+.token-help{line-height:1.7;font-size:13px}.token-help ol{padding-left:22px}
 </style></head>
 <body>
 <header><small>SPARTACVS · LVDVS · SPRITE CALIBRATION</small>
@@ -85,6 +89,12 @@ input[type=file]{display:none}
   <button id="bulkPlus" disabled>모두 +5%</button>
   <button id="bulkReset" disabled>선택 기본값</button>
  </div>
+<div class="save-health" aria-label="현재 배율 저장 상태" aria-live="polite">
+ <span id="draftHealth">기기 임시저장: 확인 중</span>
+ <span id="repoHealth">GitHub 원본: 확인 중</span>
+ <span id="liveHealth">게임 배포: 확인 중</span>
+ <button id="verifySaved" type="button">저장·배포 상태 다시 확인</button>
+</div>
 </section>
 <div id="status" class="status" role="status">원본 캐릭터 그림을 준비하고 있습니다.</div>
 <main class="grid" id="grid" aria-label="검투사, 야수, 집행인 전체 31종 크기 미리보기"></main>
@@ -96,6 +106,14 @@ input[type=file]{display:none}
  <button id="githubEdit" type="button">GitHub 편집기에서 저장</button>
  <a href="https://github.com/ZKrupinski/gladiator-arena/blob/main/public/practice-scale-published.js" target="_blank" rel="noopener noreferrer">현재 GitHub 기준값 확인 ↗</a>
 </div>
+<details class="token-help"><summary>GitHub 토큰은 무엇이며 어디서 받나요?</summary>
+<p>직접 정하는 암호가 아니라 GitHub가 발급하는 접근 키입니다. 토큰 이름만 알아보기 쉽게 정하고, 실제 토큰 문자열은 GitHub에서 복사합니다.</p>
+<ol><li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">GitHub 토큰 발급 페이지 열기</a> → GitHub 로그인</li>
+<li>이름과 만료일 설정 → Resource owner: ZKrupinski</li>
+<li>Only select repositories → gladiator-arena만 선택</li>
+<li>Repository permissions → Contents → Read and write</li>
+<li>Generate token으로 발급한 문자열을 아래 칸에 붙여넣기</li></ol>
+<p>토큰은 채팅에 보내지 마세요. 토큰 없이 저장하려면 ‘GitHub 편집기에서 저장’을 이용한 뒤 이 페이지에서 ‘저장·배포 상태 다시 확인’을 누르세요.</p></details>
 <div id="gitAuth" class="auth-line" hidden>
  <label for="githubToken">GitHub 인증 토큰 (저장소 <code>ZKrupinski/gladiator-arena</code>의 Contents 쓰기 권한)</label>
  <input id="githubToken" type="password" autocomplete="off" spellcheck="false" placeholder="게시할 때만 입력 · 기기에 저장하지 않음">
@@ -363,5 +381,5 @@ window.SpartacusScaleStudio={
 build();
 })();
 </script>
-<script src="practice-scale-publish.js?v=github-source-v37"></script>
+<script src="practice-scale-publish.js?v=verified-status-v40"></script>
 </body></html>
