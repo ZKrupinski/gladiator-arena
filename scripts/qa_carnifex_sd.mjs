@@ -33,7 +33,7 @@ assert.equal(manifest.imageHeight,780);
 assert.equal(manifest.frameWidth,320);
 assert.equal(manifest.frameHeight,390);
 assert.equal(manifest.baselineY,352,'new atlas must lift boots clear of ground and corpse');
-assert.match(html,/arena-carnifex\.js\?v=7-complete-exit/);
+assert.match(html,/arena-carnifex\.js\?v=[^"']+/,'versioned current executioner renderer loaded');
 const source=fs.readFileSync(new URL('../public/arena-carnifex.js',import.meta.url),'utf8');
 let requested=[];
 class Sprite {
@@ -116,13 +116,13 @@ C.draw(ctx,{...s,t:C.TIME.arrive+C.TIME.grip+C.TIME.haul*.5},f=>{
  actualBodies++;assert.equal(f.cfg,enemy.cfg);assert.equal(f.action,'defeat');
 });
 assert.equal(actualBodies,1,'must draw the original fallen gladiator behind the next bout');
-assert.deepEqual(verticalPlanes,[-24,-14],'executioner stands higher upstage than the corpse');
+assert.deepEqual(verticalPlanes,[-14],'executioner boots use shared arena floor; corpse keeps the existing depth offset');
 assert.equal(draws.length,1,'draw just the executioner from the clean SD sprite sheet');
 assert.equal(draws[0].length,9);
 assert.equal(draws[0][2],342,'dragging frame from haul atlas row two');
 assert.equal(draws[0][3],270);
 assert.equal(draws[0][4],342);
-assert.equal(draws[0][6],-468,'consistent character toe anchor');
+assert.ok(Math.abs(draws[0][6]+326/342*466)<1e-8,'ink toe anchor remains planted at shared floor');
 for(const [phase,t,name] of [
  ['walk',C.TIME.arrive*.4,'carnifex-walk-ink-v1.webp'],
  ['grab',C.TIME.arrive+C.TIME.grip*.5,'carnifex-haul-ink-v1.webp'],
