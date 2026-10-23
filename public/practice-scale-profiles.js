@@ -13,7 +13,13 @@ const values={
 const EXTRAS=Object.freeze(['murmillo_champion_red','murmillo_motion_v3','legacy_murmillo','legacy_thraex','legacy_retiarius']);
 const BEASTS=Object.freeze(['beast_wolf','beast_leopard','beast_tiger','beast_lion','beast_elephant']);
 const NPCS=Object.freeze(['npc_carnifex']);
-const DEFAULTS=Object.freeze({...Object.fromEntries(TYPES.flatMap(type=>values[type].map((v,i)=>[type+'_L'+(i+1),v]))),...Object.fromEntries(EXTRAS.concat(BEASTS,NPCS).map(key=>[key,1]))});
+const BASE=Object.freeze({...Object.fromEntries(TYPES.flatMap(type=>values[type].map((v,i)=>[type+'_L'+(i+1),v]))),...Object.fromEntries(EXTRAS.concat(BEASTS,NPCS).map(key=>[key,1]))});
+const source=root.SpartacusPublishedScales||{};
+const published={};
+for(const key of Object.keys(BASE))if(Object.prototype.hasOwnProperty.call(source,key)&&
+ Number.isFinite(Number(source[key]))&&Number(source[key])>=.65&&Number(source[key])<=1.85)
+ published[key]=Number(source[key]);
+const DEFAULTS=Object.freeze({...BASE,...published});
 const clamp=v=>Math.max(.65,Math.min(1.85,Number(v)));
 function read(){
  try{
@@ -49,6 +55,6 @@ function look(unit,roster){
  return DEFAULTS[key]?key:null;
 }
 function scale(key){return key?(read()[key]??DEFAULTS[key]??1):1;}
-root.PracticeScaleProfiles={KEY,TYPES,EXTRAS,BEASTS,NPCS,DEFAULTS,clamp,read,write,reset,look,scale};
+root.PracticeScaleProfiles={KEY,TYPES,EXTRAS,BEASTS,NPCS,BASE,DEFAULTS,clamp,read,write,reset,look,scale};
 if(typeof module!=='undefined')module.exports=root.PracticeScaleProfiles;
 })(typeof window!=='undefined'?window:globalThis);
