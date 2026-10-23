@@ -47,7 +47,12 @@ if(id==="dismiss-orientation"){scene.classList.add("ll-allow-portrait");return;}
 if(id==="back"){close();a.exit();return;}
 if(id==="market"){close();a.market();return;}
 if(id==="armory"){close();a.section("gear");return;}
-if(id==="roster"||id==="training"||id==="basic"||id==="practice"){close();a.section(id==="roster"?"roster":"training");return;}
+if(id==="practice"){
+ const canTrain=a.state().roster.some(function(h){return Number(h.injury||0)<80&&Number(h.fatigue||0)<80;});
+ if(!canTrain){notice("실전훈련 가능한 검투사가 없습니다. 영입하거나 치료·휴식하세요.");return;}
+ close();a.practice();return;
+}
+if(id==="roster"||id==="training"||id==="basic"){close();a.section(id==="roster"?"roster":"training");return;}
 if(id==="arena"){var team=a.state().roster;if(!team.length){notice("검투사시장에서 검투사를 먼저 고용하세요.");return;}if(!team.some(function(h){return Number(h.injury||0)<80&&Number(h.fatigue||0)<80;})){notice("출전 가능한 검투사가 없습니다. 치료 또는 휴식이 필요합니다.");return;}close();a.fight();return;}
 /* Lobby actions are intentionally limited to playable destinations. */
 }
@@ -100,7 +105,7 @@ var html=[
 '</div>',
 '<div class="ll-bottom"><div class="ll-roster"><h3><span class="ll-roster-heading">♜ 검투사 현황</span><span data-count>0명</span><small class="ll-swipe-hint">◀ 좌우 드래그 ▶</small></h3><div class="ll-portraits" role="group" aria-label="모든 소속 검투사: 좌우로 스와이프해 선택"></div></div>',
 '<div class="ll-actions"><button data-action="basic"><span class="ll-thumb">⚔</span><strong>기초 훈련</strong><small>검투사의 기본을 다집니다.</small></button>',
-'<button data-action="practice"><span class="ll-thumb">✦</span><strong>실전 훈련</strong><small>경험치와 능력치를 향상시킵니다.</small></button>',
+'<button data-action="practice"><span class="ll-thumb">✦</span><strong>실전 훈련</strong><small>최대 4명 · 무한 생존 · 경험치 전용</small></button>',
 '<button data-action="arena"><span class="ll-thumb">🏟</span><strong>아레나 출전</strong><small>가장 강한 자를 가립니다.</small></button></div></div>',
 '<div class="ll-live-counter" data-live-counter>소속 검투사 0명</div>',
 '</div><div class="ll-toast" hidden role="status"></div></div><div class="ll-orientation" role="dialog" aria-label="가로 화면 권장"><div class="ll-rotate-icon" aria-hidden="true">↻</div><strong>가로 화면에서 플레이해 주세요</strong><p>루두스는 가로형 게임 화면으로 제작되었습니다.<br>기기를 가로로 돌리면 버튼과 검투사가 크게 보입니다.</p><button data-action="dismiss-orientation">작은 화면으로 계속 보기</button></div>'

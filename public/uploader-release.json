@@ -1,14 +1,14 @@
 {
   "assetSha256": {
-    "public/index.html": "e6431f796176102a0a2e1b65437bd586d83bd2367d88cc6b243748919a9068bb",
-    "public/ludus-cards.js": "ae4178f6ab565a3d6d07a23a6aaac4df8a607b0e4989345ce30cf95f04421953",
-    "public/market-scene.js": "d94aeefe18f4c322500ccf829afec51e3cb7b2fe54f073c3c50c5b838b37b546",
-    "tests/independent-costume-qa-v25.js": "3b07bcd8bc9dc91fb259024c33ddbe307a57a24b759c051c6c538e51cb42e8d9",
-    "tests/market-all-fighters-v24.js": "5fd5744a2471fd7ade727b18ffbcdac980e948bbf682eb0f0ec45fea654737ee"
+    "public/index.html": "a19c825fc2d5a89e5286ac13b0bce8059dcdb0230e0917303bd1678aef949dd7",
+    "public/ludus-practice.css": "bf01842030b22fb93125a3a81f117a95165d86c8e39fccc7f272851558ee1c43",
+    "public/ludus-practice.js": "4aa97b8baf9a382e6287c001ac8f47e221f80f7dfb77fae3b7333bc5a97c0cfd",
+    "public/ludus-scene.js": "3b3e0eec0a1e932f35063104d0e66f68db5862deba5d437d1f6011e11e8f9e7d",
+    "tests/endless-practice-v26.js": "d5d97feb69b0db2900b8d8372d0ef9d52b79495145a8630f6cd062fec513fc52"
   },
-  "baseCommit": "7186820a57143dbb762a9df0733cba40db9805a9",
+  "baseCommit": "3edb28e502265790c88cc831afe787aa98eb1f2c",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "fixed-owned-gladiator-visuals-20261023-v25",
+  "releaseId": "exercitium-infinitum-squad-training-20261023-v26",
   "releaseProtocol": "spartacus-uploader-v1"
 }

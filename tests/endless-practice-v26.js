@@ -1,0 +1,31 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const rules=require('../public/ludus-practice.js');
+assert.equal(rules.waveSize(1),2);assert.equal(rules.waveSize(3),3);
+assert(rules.waveSize(10000)<=12);assert(rules.enemyHP(15)>rules.enemyHP(1));
+assert(rules.enemyAttack(15)>rules.enemyAttack(1));assert(rules.waveXP(10)>rules.waveXP(1));
+assert(rules.killXP(10)>rules.killXP(1));
+assert(rules.eligible({injury:0,fatigue:0}));
+assert(!rules.eligible({injury:80,fatigue:0}));
+assert(!rules.eligible({injury:0,fatigue:80}));
+for(let wave=1;wave<=100;wave++){
+ const e=rules.enemyFor(wave,wave,()=>.45);
+ assert(['murmillo','thraex','retiarius'].includes(e.cls));
+ assert(/^(murmillo_a|thraex_a|thraex_b|retiarius_a)_L[1-5]$/.test(e.look));
+ assert(e.maxHp>0&&e.atk>0);
+}
+const html=fs.readFileSync(path.join(__dirname,'../public/index.html'),'utf8');
+const scene=fs.readFileSync(path.join(__dirname,'../public/ludus-scene.js'),'utf8');
+const practice=fs.readFileSync(path.join(__dirname,'../public/ludus-practice.js'),'utf8');
+assert(scene.includes('if(id==="practice")'));
+assert(scene.includes('if(id==="roster"||id==="training"||id==="basic")'));
+assert(html.includes('practiceReward:(awards,wave,kills,retired)=>'));
+assert(html.includes('practiceEnemySprite:(visualId,kind='));
+assert(html.includes('ludus-practice.js?v=exercitium-infinitum-v26'));
+assert(html.includes('ludus-practice.css?v=exercitium-infinitum-v26'));
+assert(practice.includes('battle.heroes.every(u=>u.dead)'));
+assert(practice.includes('battle.heroes.filter(h=>!h.dead)'));
+assert(practice.includes('battle.left--'));
+assert(practice.includes('battle.finished=true'));
+const reward=html.slice(html.indexOf('practiceReward:(awards'),html.indexOf('practiceEnemySprite:(visualId'));
+assert(!/CAREER\.(gold|glory|lastLoot|lastPrize|wins|fights|armoryInventory)\s*(?:=|\+\+|--)/.test(reward));
+console.log('PASS: separate practical training, multi-party infinite waves, enemies & XP-only save');
