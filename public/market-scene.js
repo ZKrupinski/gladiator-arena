@@ -50,17 +50,19 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
  // legacy boss looks, motion Murmillo and red-plume champion; NEVER beasts.
  const families={murmillo:['murmillo_a'],thraex:['thraex_a','thraex_b'],retiarius:['retiarius_a']};
  const options=families[t.id]||[t.id+'_a'];
- const stageSet=quality==='common'?[1,2,3]:quality==='promising'?[1,2,3,4]:[3,4,5];
  let growthType=options[randIndex(rng,options.length)];
- let marketStage=stageSet[randIndex(rng,stageSet.length)];
- let appearance=null,visualLabel='성장 '+marketStage+'단계';
+ const usedVisuals=usedNames.usedVisuals||(usedNames.usedVisuals=new Set());
+ const picks=[1,2,3,4,5].map(n=>growthType+'_L'+n).filter(id=>!usedVisuals.has(id));
+ let visualId=picks.length?picks[randIndex(rng,picks.length)]:growthType+'_L'+(1+randIndex(rng,5));
+ usedVisuals.add(visualId);
+ let appearance=null,visualLabel='외형 '+(growthType.endsWith('_b')?'B-':'A-')+visualId.slice(-1);
  const kind=rng();
  if(quality==='rare'&&t.id==='murmillo'&&kind<.64){
   appearance=kind<.32?'murmillo_champion_red':'murmillo_motion_v3';
-  marketStage=5;
+  visualId=appearance;
   visualLabel=appearance==='murmillo_champion_red'?'붉은 투구 챔피언':'모션 정예';
  }else if((quality==='rare'&&kind<.86)||(quality==='veteran'&&kind<.13)){
-  appearance='legacy';marketStage=5;visualLabel='클래식 챔피언';
+  appearance='legacy';visualId='legacy_'+t.id;visualLabel='클래식 챔피언';
  }
  const primary=randIndex(rng,4);
  const weakness=(primary+1+randIndex(rng,3))%4;
@@ -79,13 +81,13 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
   return Math.max(1,Math.min(9,base+variance+improved));
  });
  const cost=Math.round((q.min+randIndex(rng,q.range+1))/10)*10;
- const premium=(marketStage-1)*(quality==='rare'?180:140)+
+ const premium=
   (appearance==='legacy'?850:appearance==='murmillo_motion_v3'?2600:
    appearance==='murmillo_champion_red'?3600:0);
  return {id:t.id,className:t.className,name,vals,cost:cost+premium,aptitudes,innateSummary,
   desc:t.desc+' '+(quality==='rare'?'매우 드문 고급 검투사. ':quality==='veteran'?'실전 경험이 풍부한 숙련자. ':'')+
    '특기: '+trait+'.',
-  face:t.face,quality,trait,growthType,marketStage,appearance,visualLabel,
+  face:t.face,quality,trait,growthType,visualId,appearance,visualLabel,
   marketOrigin:'mercatus',marketLot:Math.trunc(numberFrom(seed))};
 }
 function makeStock(state,rng=Math.random,existing=[]){
@@ -93,6 +95,7 @@ function makeStock(state,rng=Math.random,existing=[]){
  const usedNames=new Set((state.roster||[]).concat(live)
   .map(h=>String(h.name||'').toLowerCase()).filter(Boolean));
  const usedClasses=live.map(h=>h.id);
+ usedNames.usedVisuals=new Set(live.map(h=>h.visualId).filter(Boolean));
  const seed=Math.max(0,Math.trunc(numberFrom(state.marketSeed)));
  return Array.from({length:3-live.length},(_,i)=>newOffer(i,seed,usedNames,usedClasses,rng));
 }
@@ -100,6 +103,20 @@ function ensureInventory(){
  const state=opts.state;
  if(!Array.isArray(state.marketInventory)||state.marketInventory.length!==3){
   state.marketInventory=makeStock(state);opts.save?.();
+ }else{
+  let converted=false;
+  // Existing unsold market offers are not replaced for free.
+  for(const h of state.marketInventory){
+   if(!h||h.visualId)continue;
+   h.visualId=h.appearance==='legacy'?'legacy_'+h.id:
+    h.appearance||((h.growthType||h.id+'_a')+'_L'+Math.max(1,Math.min(5,Number(h.marketStage)||1)));
+   h.visualLabel=h.appearance==='legacy'?'클래식 챔피언':
+    h.appearance==='murmillo_champion_red'?'붉은 투구 챔피언':
+    h.appearance==='murmillo_motion_v3'?'모션 정예':
+    '외형 '+(h.growthType?.endsWith('_b')?'B-':'A-')+h.visualId.slice(-1);
+   converted=true;
+  }
+  if(converted)opts.save?.();
  }
  return state.marketInventory;
 }
