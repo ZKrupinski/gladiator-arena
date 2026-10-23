@@ -1,0 +1,101 @@
+/* EXERCITIVM INFINITVM: independent, mobile-safe squad survival. */
+.ep-scene[hidden],.ep-scene [hidden]{display:none!important}
+.ep-scene{position:fixed;inset:0;z-index:91000;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;
+ background:radial-gradient(ellipse at 50% 12%,#68381f,#1a0d09 70%);color:#f7e4bd;
+ font-family:Georgia,'Noto Sans KR',serif;
+ padding:env(safe-area-inset-top) max(10px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(10px,env(safe-area-inset-left))}
+.ep-scene *{box-sizing:border-box}
+.ep-scene button{cursor:pointer;touch-action:manipulation;color:#ffe6bb;font:800 14px/1.3 'Noto Sans KR',system-ui,sans-serif}
+.ep-scene button:disabled{opacity:.44;cursor:not-allowed}
+.ep-scene button:focus-visible{outline:3px solid #ffda85;outline-offset:3px}
+.ep-scene button:not(.ep-fighter){border:2px ridge #bf9461;border-radius:7px;padding:11px 15px;
+ background:linear-gradient(#684023,#27160f);box-shadow:0 3px 12px #0006}
+.ep-scene button:not(:disabled):hover{filter:brightness(1.15)}
+.ep-scene button.ep-primary{background:linear-gradient(#ac5734,#75281c);border-color:#f3c483;font-size:18px}
+.ep-scene button.ep-stop{background:linear-gradient(#71332b,#431710)}
+.ep-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;
+ background:#1a0b08c4;border-bottom:2px solid #c29a60;padding:12px clamp(7px,2.5vw,25px)}
+.ep-head small{color:#f0bd72;font:800 11px Georgia,serif;letter-spacing:.16em}
+.ep-head h1{font:bold clamp(21px,3.6vw,39px)/1.15 Georgia,'Noto Sans KR',serif;color:#ffe7b0;margin:4px 0;text-shadow:0 3px 9px #000}
+.ep-right{display:flex;align-items:center;justify-content:flex-end;gap:13px;flex-wrap:wrap}
+.ep-right span{color:#d7b582;font:700 12px 'Noto Sans KR',sans-serif}
+.ep-main{flex:1;width:min(1360px,100%);margin:0 auto;padding:14px 4px 28px}
+.ep-intro{background:linear-gradient(90deg,#2d160eef,#26150ecc),url('assets/new-era/arena.webp') center/cover;
+ border:3px ridge #c29b60;border-radius:9px;padding:20px clamp(14px,2.5vw,27px)}
+.ep-intro h2{margin:0 0 9px;color:#ffdf9e;font-size:clamp(23px,3.5vw,36px)}
+.ep-intro p{margin:0;max-width:1100px;font:500 clamp(13px,1.45vw,17px)/1.65 'Noto Sans KR',sans-serif}
+.ep-tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+.ep-tags span{font:800 12px 'Noto Sans KR',sans-serif;padding:7px 12px;border-radius:22px;
+ border:1px solid #c79d68;background:#150a08b9;color:#ffe4ae}
+.ep-selection-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:17px 0 11px}
+.ep-selection-title h3{font-size:clamp(19px,2vw,25px);margin:0}
+.ep-selection-title strong{color:#ffd67c;font-size:18px}
+.ep-roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px;padding:4px;
+ max-height:min(53dvh,480px);overflow-y:auto;scrollbar-color:#9c784c #25130e}
+.ep-fighter{display:flex;position:relative;align-items:center;gap:6px;text-align:left;min-width:0;
+ min-height:140px;border:2px ridge #99754e;border-radius:8px;padding:6px!important;
+ background:linear-gradient(#533323,#25150f);overflow:hidden}
+.ep-fighter.selected{border-color:#ffe1a1!important;box-shadow:inset 0 0 14px #e8ba5a77,0 0 11px #e3a95b6e}
+.ep-fighter canvas{width:93px;height:120px;flex:none;object-fit:contain}
+.ep-unit-info{display:grid;gap:5px;min-width:0;flex:1;padding:1px 0 15px}
+.ep-unit-info strong{font:bold clamp(15px,1.5vw,20px)/1.17 Georgia,'Noto Sans KR',serif;overflow-wrap:anywhere}
+.ep-unit-info small{font:700 13px/1.3 'Noto Sans KR',sans-serif;color:#e9cda6}
+.ep-unit-info em{font:400 11px/1.3 'Noto Sans KR',sans-serif;color:#cba881;font-style:normal}
+.ep-fighter b{position:absolute;right:7px;bottom:6px;color:#ffdb8e;font-size:11px}
+.ep-start{margin:17px 0;display:flex;justify-content:space-between;align-items:center;gap:15px}
+.ep-start span{color:#e7c38d;font-size:14px}
+.ep-combat{display:grid;gap:10px}
+.ep-hud{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;
+ border:2px ridge #bd925e;border-radius:7px;background:#29160ee8;padding:10px clamp(9px,1.7vw,17px)}
+.ep-hud strong{color:#ffdc8c;font-size:clamp(23px,3.2vw,39px);text-shadow:0 0 13px #d9a15290}
+.ep-hud span{font:bold clamp(13px,1.6vw,18px) Georgia,'Noto Sans KR',serif}
+.ep-arena{width:min(100%,1280px);margin:0 auto;aspect-ratio:16/9;position:relative;overflow:hidden;
+ border:6px ridge #bb965e;background:#27140d;box-shadow:0 13px 26px #000a}
+.ep-arena canvas{width:100%;height:100%;display:block;object-fit:contain}
+.ep-announcement{position:absolute;top:11%;left:0;right:0;pointer-events:none;text-align:center;
+ font:bold clamp(15px,2.6vw,33px) Georgia,'Noto Sans KR',serif;color:#ffdf91;
+ text-shadow:0 3px 7px #120804,0 0 15px #f9c564}
+.ep-announcement.ep-pop{animation:ep-flash .9s ease-out both}
+@keyframes ep-flash{0%{opacity:0;transform:translateY(-14px) scale(1.06)}40%{opacity:1;transform:none}100%{opacity:.7;transform:none}}
+.ep-health{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:7px}
+.ep-hp-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 8px;border:1px solid #a0784c;
+ background:#24140edb;border-radius:6px;padding:8px 10px}
+.ep-hp-card strong{font-size:14px;overflow-wrap:anywhere}
+.ep-hp-card small{color:#d2b17a}
+.ep-hp-card .ep-bar{grid-column:1/-1;height:6px;background:#140a08;overflow:hidden;border-radius:6px}
+.ep-hp-card .ep-bar i{display:block;background:linear-gradient(90deg,#417d54,#bbeb99);height:100%;transition:width .14s}
+.ep-hp-card>span{grid-column:1/-1;font:600 11px 'Noto Sans KR',sans-serif;color:#e2bc86}
+.ep-hp-card.dead{opacity:.42}
+.ep-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.ep-actions p{margin:0 auto 0 0;color:#d9b98b;font:500 12px/1.5 'Noto Sans KR',sans-serif}
+.ep-result{max-width:920px;margin:clamp(20px,5vh,75px) auto;padding:clamp(20px,4vw,45px);
+ text-align:center;border:7px ridge #c39a5c;border-radius:10px;
+ background:radial-gradient(ellipse at 50% 0%,#623723,#21130f 70%)}
+.ep-result>small{font-size:12px;letter-spacing:.14em;color:#e9ba7d}
+.ep-result h2{font-size:clamp(26px,4.4vw,48px);margin:12px 0;color:#ffde98}
+.ep-result p{font-size:clamp(14px,1.55vw,18px);line-height:1.65}
+.ep-rewards{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin:26px 0}
+.ep-reward{display:grid;gap:7px;border:2px ridge #a67e50;border-radius:8px;padding:16px;
+ background:linear-gradient(#3e2619,#24150f);overflow-wrap:anywhere}
+.ep-reward strong{font-size:18px}.ep-reward span{font:bold 25px Georgia;color:#ffcf83}
+.ep-reward small{color:#dabb8c}
+.ep-exp-note{font-size:13px!important;color:#deb98b}
+.ep-final-buttons{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:24px}
+@media(max-width:680px){
+ .ep-scene{padding-left:6px;padding-right:6px}
+ .ep-head{gap:7px;padding:8px 5px}.ep-head h1{font-size:20px}
+ .ep-head button{padding:8px!important;font-size:11px!important}
+ .ep-right{gap:5px}.ep-right span{font-size:10px}
+ .ep-main{padding:7px 1px}.ep-intro{padding:12px}
+ .ep-roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .ep-fighter{min-height:117px;gap:2px;padding:3px!important}
+ .ep-fighter canvas{width:52px;height:85px}
+ .ep-unit-info{gap:3px}.ep-unit-info strong{font-size:13px}.ep-unit-info small{font-size:11px}.ep-unit-info em{font-size:9px}
+ .ep-fighter b{font-size:10px}.ep-start{flex-wrap:wrap}.ep-start button{width:100%}
+ .ep-hud{padding:7px}.ep-hud span{font-size:12px}
+ .ep-arena{border-width:3px}.ep-actions p{flex:1 1 100%}
+ .ep-health{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ep-hp-card{padding:6px}.ep-hp-card strong{font-size:12px}.ep-hp-card small{font-size:10px}
+}
+@media(max-width:380px){.ep-roster{grid-template-columns:1fr}.ep-fighter canvas{width:77px;height:103px}}
+@media(prefers-reduced-motion:reduce){.ep-announcement.ep-pop{animation:none}}
