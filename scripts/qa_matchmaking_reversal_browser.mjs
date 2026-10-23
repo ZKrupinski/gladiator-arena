@@ -6,7 +6,9 @@ const errors=[];page.on('pageerror',err=>errors.push(String(err)));
 try{
  await page.goto('http://127.0.0.1:8765/?__arena_qa=1');
  await page.waitForFunction(()=>!!window.__arenaQA?.attack&&!!window.LudusBridge?.matchOpponent,{timeout:20000});
- await page.locator('#startBtn').click();
+ // The classic arcade button is deliberately hidden in the new title.
+ // Trigger its real handler for parry-engine QA without toggling production UI.
+ await page.evaluate(()=>document.getElementById('startBtn').click());
  await page.waitForFunction(()=>window.__arenaQA?.state.phase==='fight'&&window.__arenaQA.assetsReady(),{timeout:60000});
  const matched=await page.evaluate(()=>{
   const bridge=LudusBridge,roster=bridge.state().roster,hero=roster[0];
