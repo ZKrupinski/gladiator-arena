@@ -1,12 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "abe9e5c408a1f907fdd083f7123306093ccc42226c584e36cbf258840f37175d",
-    "public/ludus-practice.js": "2c2c9725d95f98561da12c07752a041de3e437570d726de215b076f3b2a023f6",
-    "tests/endless-practice-v26.js": "9649a3deca342f75037054f92dba23902e75f331e846026843f039eba0f892b6"
+    "public/index.html": "d7e36b87846eedcdf609c359397dd31f1456144fd0a01d38b9b567936dfc692e",
+    "public/ludus-practice.js": "6347442ec1dca58c539bbd8fc395ea5bd719a9a5c4300b8aee74e46f43f4a518",
+    "tests/endless-practice-v26.js": "04733417a03f9f9e8be2aece7eb32b3d7e07459a529c7663679c8069b56c06d1"
   },
-  "baseCommit": "04ea328a161fd43fa030bce0bffc3cf72d629ac6",
+  "baseCommit": "986ba378954c384b2da595348a80cfda588e4bc2",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-immediate-reassignment-20261023-v27a",
+  "releaseId": "practice-grounded-perspective-layout-20261023-v28",
   "releaseProtocol": "spartacus-uploader-v1"
 }

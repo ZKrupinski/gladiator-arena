@@ -4,8 +4,22 @@
 */
 (function(root){'use strict';
 const W=1280,H=720,MAX=4,TYPES=['murmillo','thraex','retiarius'];
-const COURTS=Object.freeze([{x:335,y:383,scale:.76},{x:945,y:383,scale:.76},
- {x:335,y:608,scale:.98},{x:945,y:608,scale:.98}]);
+// Background sand begins near y=520. Anchors are feet on the ground,
+// not floating on the stone walls. Presets are NEAR/FORWARD FIRST.
+const COURT_LAYOUTS=Object.freeze({
+ 1:Object.freeze([{x:640,y:661,scale:1.23}]),
+ 2:Object.freeze([{x:325,y:680,scale:1.28},{x:955,y:680,scale:1.28}]),
+ 3:Object.freeze([{x:325,y:680,scale:1.28},{x:955,y:680,scale:1.28},
+   {x:640,y:557,scale:1.03}]),
+ 4:Object.freeze([{x:325,y:680,scale:1.28},{x:955,y:680,scale:1.28},
+   {x:422,y:557,scale:1.03},{x:858,y:557,scale:1.03}])
+});
+function courtsForParty(count){
+ // Does not depend on later-initialized variables; works at script load.
+ const n=Math.max(1,Math.min(MAX,Math.floor(Number(count)||1)));
+ return COURT_LAYOUTS[n].map(c=>({...c}));
+}
+let COURTS=courtsForParty(4);
 const LEASH=168;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const number=(x,d=0)=>Number.isFinite(Number(x))?Number(x):d;
@@ -150,6 +164,8 @@ function start(){
  const picks=[...new Set(chosen)].filter(i=>eligible(roster[i])).slice(0,MAX);
  if(!picks.length)return;
  chosen=picks;
+ // 1 = solo centered, 2 = FRONT pair, 3/4 add distant opponents.
+ COURTS=courtsForParty(picks.length);
  $('.ep-selection').hidden=true;$('.ep-combat').hidden=false;$('.ep-result').hidden=true;
  battle={heroes:picks.map(heroFor),enemies:[],queued:[],wave:0,clearedWave:0,kills:0,left:0,serial:0,delay:0,nextSeat:0,
   cleared:false,breakTime:0,knockout:0,finished:false,paused:false,speed:1,shakes:0,particles:[],clock:0};
@@ -402,6 +418,6 @@ function close(){
 if(typeof document!=='undefined')document.addEventListener('visibilitychange',()=>{
  if(document.hidden&&battle&&!battle.paused){battle.paused=true;prev=0;updateButtons();}
 });
-root.LudusPractice={open,close,isOpen:display,rules:{eligible,waveSize,enemyHP,enemyAttack,waveXP,killXP,enemyFor}};
+root.LudusPractice={open,close,isOpen:display,rules:{eligible,waveSize,enemyHP,enemyAttack,waveXP,killXP,enemyFor,courtsForParty}};
 if(typeof module!=='undefined')module.exports=root.LudusPractice.rules;
 })(typeof window!=='undefined'?window:globalThis);
