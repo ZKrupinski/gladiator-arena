@@ -62,7 +62,10 @@ try{
   s.player.pressureT=3;s.enemy.pressureT=3;
   s.keys.clear();s.autoplayEnabled=false;s.autoPlaying=false;
  });
- await page.waitForTimeout(1900);
+ await page.waitForFunction(()=>{
+  const s=window.__arenaQA.state;
+  return s.phase==='fight'&&!s.player.bodySpring&&!s.enemy.bodySpring;
+ },{},{timeout:7000,polling:50});
  const motion=await page.evaluate(()=>{
   const s=window.__arenaQA.state;
   const m=window.ArenaMotion;
