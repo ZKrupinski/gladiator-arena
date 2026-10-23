@@ -18,7 +18,13 @@ try{
  assert.equal(await page.locator('#startBtn').isVisible(),false);
  await page.locator('#careerEnter').click();
  assert.equal(await page.locator('#ludusScene .ll-beast-quick').count(),0);
- await page.locator('#ludusScene .ll-menu [data-action="arena"]').click();
+ // Fresh saves start in the slave market; enter the production arena-draft
+ // adapter after provisioning a fighter rather than expecting an old lobby DOM.
+ await page.evaluate(()=>{
+  const roster=LudusBridge.state().roster;
+  if(!roster.length)roster.push(LudusRoster.create('murmillo',1));
+  LudusBridge.fight();
+ });
  await page.waitForSelector('#careerHub:not([hidden]) .lc-mode-picker');
  assert.equal(await page.locator('.lc-mode-picker button').count(),6);
  const buttons=await page.locator('.lc-mode-picker button').allTextContents();
