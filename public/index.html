@@ -291,6 +291,14 @@ body{min-height:100dvh;overscroll-behavior:none}
 /* Roman Ludus reset button and guarded confirmation; title only. */
 #startScreen .ludus-reset-trigger{position:absolute;right:max(12px,env(safe-area-inset-right,0px));top:max(10px,env(safe-area-inset-top,0px));z-index:3;min-height:36px;padding:6px 12px;border:1px solid #80654c;border-radius:7px;background:#201715db;color:#cdb699;font:700 11px/1.3 system-ui,-apple-system,"Noto Sans KR",sans-serif;box-shadow:0 2px 9px #0008;opacity:.85;white-space:nowrap}
 #startScreen .ludus-reset-trigger:hover,#startScreen .ludus-reset-trigger:focus-visible{opacity:1;border-color:#e3b978;color:#ffe0a9;background:#3b241c}
+#startScreen .size-calibration-link{position:absolute;right:max(12px,env(safe-area-inset-right,0px));
+ top:calc(max(10px,env(safe-area-inset-top,0px)) + 43px);z-index:3;
+ min-height:27px;display:flex;align-items:center;justify-content:center;
+ padding:5px 8px;border:1px solid #6f523c;border-radius:7px;
+ background:#201715d9;color:#d2b894;font:700 10px/1.25 system-ui,-apple-system,"Noto Sans KR",sans-serif;
+ box-shadow:0 2px 9px #0007;opacity:.86;text-decoration:none;white-space:nowrap}
+#startScreen .size-calibration-link:hover,#startScreen .size-calibration-link:focus-visible{border-color:#f1c78b;color:#ffe9bd;background:#3b241c;opacity:1}
+@media(max-width:600px){#startScreen .size-calibration-link{top:calc(max(10px,env(safe-area-inset-top,0px)) + 39px);font-size:9px;min-height:25px}}
 #startScreen .ludus-reset-confirm[hidden]{display:none!important}
 #startScreen .ludus-reset-confirm{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:18px;background:#100909e8;backdrop-filter:blur(6px)}
 #startScreen .ludus-reset-panel{width:min(92vw,460px);max-height:calc(100dvh - 30px);overflow:auto;display:flex;flex-direction:column;align-items:center;gap:12px;padding:clamp(22px,4.5vw,35px);border:2px solid #d6ad70;border-radius:13px;background:linear-gradient(145deg,#493026,#1c1211 80%);box-shadow:inset 0 0 0 2px #fff0c618,0 18px 60px #000e;text-align:center}
@@ -308,6 +316,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div><div id="crowdHeat" class="arena-crowd-hud" aria-label="관중 흥미도" hidden><span id="crowdHeatLabel">관중 흥미도 · 관심 0</span><div class="arena-crowd-track"><i id="crowdHeatFill"></i></div></div><div id="lineupHud" class="lineup-hud" aria-live="polite" hidden></div>
 <section class="overlay overlay-title" id="startScreen">
 <button type="button" id="ludusResetOpen" class="ludus-reset-trigger" aria-haspopup="dialog" aria-controls="ludusResetDialog">루두스 초기화</button>
+<a id="scaleStudioTitleLink" class="size-calibration-link" href="tools/practice-scale-calibrator.html" aria-label="31종 검투사와 야수 크기 보정실 열기">⚙ 크기 보정실</a>
 <div class="stage-panel stage-panel-title spartacus-home">
  <div class="spartacus-crest" aria-hidden="true">✦ &nbsp; ⚔ &nbsp; ✦</div>
  <div class="spartacus-roman">ROMA · LUDUS MAGNUS · THE ARENA</div>
@@ -3643,6 +3652,6 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=practice-route-v26"></script><script src="practice-scale-profiles.js?v=31-look-shuffle-bulk-v36"></script><script src="ludus-practice.js?v=ko-impact-squad-sfx-v35"></script><script src="ludus-training-runtime.js?v=whip-real-hit-v3"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=portrait-fullteam-v17"></script><script src="ludus-armory-live.js?v=portrait-fullteam-v17"></script><script src="ludus-cards.js?v=independent-looks-v25"></script>
+<script src="ludus-scene.js?v=practice-route-v26"></script><script src="practice-scale-published.js?v=git-defaults-v37"></script><script src="practice-scale-profiles.js?v=github-canonical-v37"></script><script src="ludus-practice.js?v=ko-impact-squad-sfx-v35"></script><script src="ludus-training-runtime.js?v=whip-real-hit-v3"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=portrait-fullteam-v17"></script><script src="ludus-armory-live.js?v=portrait-fullteam-v17"></script><script src="ludus-cards.js?v=independent-looks-v25"></script>
 
 </body></html>
