@@ -76,7 +76,13 @@ async function check(size,preview){
     loserVisible:(pixelCount>20)||getComputedStyle(loser).backgroundImage.includes('url('),
     ratio:rect.width/rect.height,
     withinViewport:rect.left>=0&&rect.top>=0&&rect.right<=innerWidth+1&&rect.bottom<=innerHeight+1,
-    buttonsInside:actions.left>=rect.left&&actions.right<=rect.right&&actions.bottom<=rect.bottom,
+    buttonsBelow:actions.top>=rect.bottom+2,
+    buttonsWithin:actions.left>=0&&actions.right<=innerWidth+1&&actions.bottom<=innerHeight+1,
+    controls:[...modal.querySelectorAll('.end-actions button')].map(btn=>{
+     const box=btn.getBoundingClientRect(),style=getComputedStyle(btn);
+     return {text:btn.textContent,oneLine:style.whiteSpace==='nowrap',notCut:btn.scrollWidth<=btn.clientWidth+2,
+      textSize:parseFloat(style.fontSize),height:box.height,decorate:getComputedStyle(btn,'::before').content!=='none'};
+    }),
     originalLoserStillGone:window.__arenaQA.state.enemy.removedFromArena,
     winnerScale,winnerCssScale:winnerMatrix.a,winnerAnchor:winnerCSS.transformOrigin,
     winnerLayoutBottom:winnerArt.offsetTop+winnerArt.offsetHeight,
@@ -100,7 +106,9 @@ async function check(size,preview){
   assert.equal(result.originalLoserStillGone,true,'never restore the body in the real arena');
   assert.ok(Math.abs(result.ratio-4/3)<.015,'the approved artwork cannot be distorted');
   assert.equal(result.withinViewport,true,'no cropped gold frame');
-  assert.equal(result.buttonsInside,true,'native buttons are interactive within frame');
+  assert.equal(result.buttonsBelow,true,'decorative action controls must be BELOW the Roman artwork border');
+  assert.equal(result.buttonsWithin,true,'actions must stay within visible viewport for non-loot result');
+  assert(result.controls.every(b=>b.oneLine&&b.notCut&&b.decorate&&b.textSize<=18),'buttons stay legible, ornamented and on one line: '+JSON.stringify(result.controls));
   assert.ok(result.winnerScale>=1.23&&result.winnerScale<=1.27,'winner is 25% larger than last result layout');
   assert.ok(Math.abs(result.winnerCssScale-1.25)<.005,'winner enlargement comes from proportional uniform scaling');
   assert.ok(result.winnerAnchor.includes('100%')||result.winnerAnchor.endsWith('px'),'victory art has grounded origin');
@@ -128,15 +136,33 @@ async function check(size,preview){
    const cardBoxes=cards.map(x=>x.getBoundingClientRect());
    const row=tray.querySelector('.arena-loot-items').getBoundingClientRect();
    const stats=panel.querySelector('#endStats').getBoundingClientRect();
-   const buttons=panel.querySelector('.end-actions').getBoundingClientRect();
+   const buttons=modal.querySelector('.end-actions').getBoundingClientRect();
+   const actionLabels=[...modal.querySelectorAll('.end-actions button')].map(el=>({
+    text:el.textContent,size:parseFloat(getComputedStyle(el).fontSize),
+    overflow:el.scrollWidth>el.clientWidth+2,
+    whiteSpace:getComputedStyle(el).whiteSpace
+   }));
+   const reason=panel.querySelector('#endReason'),reasonCss=getComputedStyle(reason);
+   const statsCss=getComputedStyle(panel.querySelector('#endStats'));
    const coin=tray.querySelector('.arena-loot-coin');
    const isCentered=boxes=>boxes.length&&Math.abs((boxes[0].left+boxes.at(-1).right)/2-(row.left+row.right)/2)<3;
    const oneRow=boxes=>boxes.every(rect=>Math.abs(rect.top-boxes[0].top)<2);
    const equalWidths=boxes=>boxes.every(rect=>Math.abs(rect.width-boxes[0].width)<2);
    const wide={oneRow:oneRow(cardBoxes),sameWidth:equalWidths(cardBoxes),centered:isCentered(cardBoxes),
-     textNotOverlapped:buttons.top>=stats.bottom-2,coinText:coin?.innerText,coinIcon:!!coin?.querySelector('.arena-loot-coin-icon'),
+     textNotOverlapped:buttons.top>=rect.bottom+2&&buttons.top>=stats.bottom-2,
+     actionNotOverLoot:buttons.bottom<=trayRect.top-2,
+     compactCopy:parseFloat(reasonCss.fontSize)<=15&&parseFloat(statsCss.fontSize)<=15&&Number(reasonCss.fontWeight)<800,
+     actionLabels,
+     coinText:coin?.innerText,coinIcon:!!coin?.querySelector('.arena-loot-coin-icon'),
      noOverflow:cardBoxes.every(box=>box.left>=row.left-2&&box.right<=row.right+2)};
 
+   // Test the longest actual beast-hunt label without changing a fighter,
+   // then restore the text before verifying idempotent reward rendering.
+   const again=modal.querySelector('#againBtn');
+   const previous=again.textContent;
+   again.textContent='야수 선택';
+   const beastSafe=again.scrollWidth<=again.clientWidth+2&&getComputedStyle(again).whiteSpace==='nowrap';
+   again.textContent=previous;
    const before=tray.innerText;
    window.__arenaQA.showEnd();
    const after=tray.innerText;
@@ -151,7 +177,7 @@ async function check(size,preview){
    }
    S.matchLoot=completeDrops;
    window.__arenaQA.showEnd();
-   return {cards:cards.length,wide,counts,
+   return {cards:cards.length,wide,counts,beastSafe,
     ids:cards.slice(1).map(x=>x.querySelector('img')?.getAttribute('src')),
     labels:cards.map(x=>x.innerText),
     visible:!tray.hidden,
@@ -166,6 +192,7 @@ async function check(size,preview){
     selectionCap:cards.length===6};
   });
   assert.equal(inventory.cards,6,'one denarius icon plus five won items occupy six cards');
+  assert.equal(inventory.beastSafe,true,'beast selection button must fit on one line');
   assert.equal(inventory.selectionCap,true);
   assert.equal(inventory.wide.oneRow,true,'the six reward slots stay on one row');
   assert.equal(inventory.wide.sameWidth,true,'all six reward slots have identical width');
@@ -173,7 +200,11 @@ async function check(size,preview){
   assert.equal(inventory.wide.noOverflow,true,'all six cards fit within reward container');
   assert.equal(inventory.wide.coinIcon,true,'denarii card has a visible coin icon');
   assert.match(inventory.wide.coinText,/512/,'the coin card displays earned denarii');
-  assert.equal(inventory.wide.textNotOverlapped,true,'lowered actions must not overlap result text');
+  assert.equal(inventory.wide.textNotOverlapped,true,'buttons clear the result text and bottom painted frame');
+  assert.equal(inventory.wide.actionNotOverLoot,true,'buttons fit in their own gap above the loot tray');
+  assert.equal(inventory.wide.compactCopy,true,'result reason and statistics use restrained non-bold typography');
+  assert(inventory.wide.actionLabels.every(x=>!x.overflow&&x.whiteSpace==='nowrap'&&x.size<=18),
+   'career buttons cannot clip or wrap: '+JSON.stringify(inventory.wide.actionLabels));
   for(const test of inventory.counts){
    assert.equal(test.cardCount,test.n+1,'one coin + '+test.n+' earned gear icons');
    assert(test.oneRow&&test.sameWidth&&test.centered&&test.coin,
