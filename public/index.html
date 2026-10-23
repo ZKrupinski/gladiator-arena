@@ -384,15 +384,15 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="market-scene.js?v=independent-looks-v25"></script>
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=approved-defeat-v34"></script>
-<script src="champion-murmillo.js?v=3"></script>
+<script src="champion-murmillo.js?v=grounded-v39"></script>
 <script src="arena-gear-catalog.js?v=roman-five-slots-v12"></script><script src="arena-loot.js?v=roman-helm-bracers-v12"></script><script src="arena-gear-bitmap.js?v=roman-square-atlas-v12"></script><script src="arena-excitement.js?v=harder-spectacle-v7"></script><script src="arena-balance.js?v=aptitudes-v22"></script>
 <script src="arena-portrait-fit.js?v=portrait-uniform-v1"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
-<script src="arena-beasts.js?v=shared-beast-size-v36"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
+<script src="arena-beasts.js?v=grounded-v39"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
 <script src="arena-beast-stage-previews.js?v=versus-v5"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
-<script src="arena-carnifex.js?v=shared-executioner-size-v36"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=combat-drama-v6"></script><script src="arena-motion.js?v=combat-drama-v6"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=training-hit-v1"></script>
+<script src="arena-carnifex.js?v=grounded-v39"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=combat-drama-v6"></script><script src="arena-motion.js?v=combat-drama-v6"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=training-hit-v1"></script>
 <script src="ludus-roster.js?v=market-only-heroes-v24"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -1746,10 +1746,10 @@ function beastFxFlip(f){
  const face=f?.face||1;
  return f?.beastType==='wolf'?face<0:face>0;
 }
-// Adjust only grounded wolf effects to its 6%-smaller, 16px-raised paws.
+// Ground effects use the same arena floor as the calibrated paws.
 function beastGroundFx(f,x,y,w,h){
  return f?.beastType==='wolf'
-  ?{x,y:y-16,w:w*.90,h:h*.90}
+  ?{x,y,w:w*.90,h:h*.90}
   :{x,y,w,h};
 }
 function emitAttackFx(attacker,victim,special=false,guarded=false,ko=false,variant=0,dash=false){
@@ -2835,7 +2835,8 @@ function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
  ctx.save();ctx.globalAlpha=alpha;
  if(flip){ctx.translate(x+w/2,0);ctx.scale(-1,1);ctx.translate(-(x+w/2),0);}
  if(independent&&independent[index]){
-  ctx.drawImage(independent[index],x,y,w,h);
+  const art=independent[index],toe=window.PracticeScaleProfiles?.footY(art,art.height)??art.height;
+  ctx.drawImage(art,x,y+h-toe*h/art.height,w,h);
  }else{
    // Fallback for FX atlases, with a strict half-pixel inset against edge bleed.
    const inset=.5;

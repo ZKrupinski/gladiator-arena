@@ -147,7 +147,7 @@ async function frameSource(key){
  }
  if(key.startsWith('beast_')){
   const type=key.slice(6),canvas=await image('../assets/beasts/individual/'+type+'/idle/00.png?v=3');
-  return {canvas,pivotX:canvas.naturalWidth/2,footY:canvas.naturalHeight*.88};
+  return {canvas,pivotX:canvas.naturalWidth/2,footY:p.footY(canvas,canvas.naturalHeight*.88)};
  }
  if(key==='murmillo_champion_red'){
   const m=await json(combat+'champion-murmillo/manifest.json?v=2'),frame=m.actions?.idle?.[0];
@@ -171,7 +171,7 @@ async function frameSource(key){
   const w=Math.floor(sheet.naturalWidth/5),h=Math.floor(sheet.naturalHeight/2);
   const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
   canvas.getContext('2d').drawImage(sheet,0,0,w,h,0,0,w,h);
-  return {canvas,pivotX:w/2,footY:h};
+  return {canvas,pivotX:w/2,footY:p.footY(canvas,h)};
  }
  const ref=await cuts();
  if(!ref.sheets[key])throw Error('성장형 외형 없음');
@@ -195,7 +195,7 @@ function paint(canvas,frame,key){
   // The actual Carnifex draws its 270×342 ink sprite as a 436×466
   // animation. Match THAT ratio, grounded at his boots (not 270×342).
   const z=.56*Number(state[key]);
-  c.drawImage(img,0,0,270,342,155-218*z,262-468*z,436*z,466*z);
+  c.drawImage(img,0,0,270,342,155-218*z,262-326/342*466*z,436*z,466*z);
   return;
  }
  const beastBase={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,

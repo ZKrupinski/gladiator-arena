@@ -59,7 +59,25 @@ function look(unit,roster){
  const key=type+'_L'+Math.max(1,Math.min(5,Math.floor(Number(hero.stage)||1)));
  return DEFAULTS[key]?key:null;
 }
+// Cache the last substantial opaque row; transparent padding is not a foot.
+const feetCache=new WeakMap();
+function footY(image,fallback){
+ if(!image)return fallback;
+ if(feetCache.has(image))return feetCache.get(image);
+ const w=image.naturalWidth||image.width,h=image.naturalHeight||image.height;
+ if(!w||!h)return fallback;
+ try{
+  const canvas=root.document.createElement('canvas');canvas.width=w;canvas.height=h;
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0);
+  const bytes=ctx.getImageData(0,0,w,h).data,minimum=Math.max(2,Math.floor(w*.004));
+  for(let y=h-1;y>=0;y--){let count=0;
+   for(let x=0;x<w;x++)if(bytes[(y*w+x)*4+3]>=56)count++;
+   if(count>=minimum){feetCache.set(image,y+1);return y+1;}
+  }
+ }catch(_){}
+ return fallback;
+}
 function scale(key){return key?(read()[key]??DEFAULTS[key]??1):1;}
-root.PracticeScaleProfiles={KEY,TYPES,EXTRAS,BEASTS,NPCS,BASE,DEFAULTS,clamp,read,write,reset,look,scale};
+root.PracticeScaleProfiles={KEY,TYPES,EXTRAS,BEASTS,NPCS,BASE,DEFAULTS,footY,clamp,read,write,reset,look,scale};
 if(typeof module!=='undefined')module.exports=root.PracticeScaleProfiles;
 })(typeof window!=='undefined'?window:globalThis);

@@ -33,8 +33,8 @@ const wolfV3={state:'unrequested',actions:new Map(),metrics:new Map(),
  normalized:false,error:null,loadingStill:null};
 // Small, unified gameplay presentation adjustment. Keep the same world-space
 // center and shared paw reference across every V3 motion (including death).
-const WOLF_DISPLAY_SCALE=.94; // 6% smaller than the previously approved wolf
-const WOLF_PAW_RAISE=16;      // lift paws by 16 logical arena pixels
+const WOLF_DISPLAY_SCALE=1; // species size comes from the shared calibration only
+const WOLF_PAW_RAISE=0;      // all paws use the common ground line
 // Read visible alpha extents once per atlas, never trim geometry frame by frame.
 // Neighbor-strip pixels thinner than 1.5% of a cell do not define the foot pivot.
 function wolfAtlasMetrics(img){
@@ -235,7 +235,7 @@ function drawWolfPending(ctx,{x,y,w,h,flip=false,alpha=1}){
  if(flip){ctx.translate(2*center,0);ctx.scale(-1,1);}
  if(approved){
   const cw=approved.naturalWidth/4,ch=approved.naturalHeight/2;
-  const scale=h*.82/315*WOLF_DISPLAY_SCALE;
+  const scale=h*.83/512*WOLF_DISPLAY_SCALE;
   ctx.drawImage(approved,0,0,cw,ch,
     center-272*scale,ground-470*scale,cw*scale,ch*scale);
  }else{
@@ -268,13 +268,13 @@ function drawWolfV3(ctx,args){
  // ground-line (x=272,y=470) for all 72 frames. Re-running adaptive
  // bounding-box scale on those frames reintroduces apparent size popping.
  if(wolfV3.normalized){
-  const scale=h*.82/315*WOLF_DISPLAY_SCALE; // one uniform scale for every V3 action
+  const scale=h*.83/512*WOLF_DISPLAY_SCALE; // one uniform scale for every V3 action
   const center=x+w*.5,ground=y+h-WOLF_PAW_RAISE;
   const walkBox=action==='walk'?actionMetrics?.[index]:null;
   // Recenter only the WALK torso, align planted paws to the same world floor.
   // Never rescale each frame; preserve native-resolution pixel detail.
   const anchorX=272-(walkBox?.walkOffset||0);
-  const footAdjust=walkBox?Math.max(-34,Math.min(34,470-walkBox.bottom)):0;
+  const footAdjust=actionMetrics?.[index]?470-actionMetrics[index].bottom:0;
   ctx.save();ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
   if(flip){ctx.translate(2*center,0);ctx.scale(-1,1);}
   ctx.drawImage(img,(index%4)*cellW,Math.floor(index/4)*cellH,
@@ -283,7 +283,7 @@ function drawWolfV3(ctx,args){
   ctx.restore();return true;
  }
  const box=actionMetrics?.[index];
- const baseScale=h*1.21/cellH*WOLF_DISPLAY_SCALE;
+ const baseScale=h*.83/512*WOLF_DISPLAY_SCALE;
  // Small source-art silhouette variations may be normalized slightly,
  // but the pounce, roar and death must keep their authentic changing pose.
  const correction=box&&action!=='death'&&action!=='roar'?
@@ -511,29 +511,29 @@ function paintBeast(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}
   const idx=Math.min(7,Math.max(0,Math.floor((clock-since)*8)));
   const im=extra[idx];
   if(im?.naturalWidth){
-   const scale=Math.min(w*1.2/im.naturalWidth,h*1.15/im.naturalHeight);
+   const scale=h*.83*info.scale/im.naturalHeight;
    const dw=im.naturalWidth*scale,dh=im.naturalHeight*scale;
    const centre=x+w*.5;
    ctx.save();ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
    if(flip){ctx.translate(centre*2,0);ctx.scale(-1,1);}
-   ctx.drawImage(im,centre-dw*.5,y+h-dh,dw,dh);ctx.restore();return true;
+   ctx.drawImage(im,centre-dw*.5,y+h-(root.PracticeScaleProfiles?.footY(im,im.naturalHeight)??im.naturalHeight)*scale,dw,dh);ctx.restore();return true;
   }
  }
  const indy=entry.individual?.get(key+':'+n.index);
  if(indy?.naturalWidth){
   // Every independent PNG is exactly 512×512. Feet and body share one
   // constant canvas origin across all 8 frames (no flicker or stretch).
-  const factor=info.scale*1.28,ww=w*factor,hh=h*factor;
+  const factor=info.scale*.83,ww=h*factor,hh=h*factor;
   const centre=x+w*.5,floor=y+h;
   ctx.save();ctx.globalAlpha*=Math.max(0,Math.min(1,alpha));
   if(flip){ctx.translate(centre*2,0);ctx.scale(-1,1);}
-  ctx.drawImage(indy,centre-ww*.5,floor-hh*.88,ww,hh);
+  ctx.drawImage(indy,centre-ww*.5,floor-(root.PracticeScaleProfiles?.footY(indy,512*.88)??512*.88)*hh/512,ww,hh);
   ctx.restore();return true;
  }
  const frame=entry.frames?.[n.row]?.[n.index];
  if(!frame?.ink)return false;
- const scale=info.scale;
- const ww=w*scale,hh=h*scale;
+ const scale=h*.83*info.scale/frame.canvas.height;
+ const ww=frame.canvas.width*scale,hh=frame.canvas.height*scale;
  const drawCentre=x+w*.5;
  const px=ww/frame.canvas.width;
  const x0=drawCentre-((frame.bounds.left+frame.bounds.right)*.5)*px;

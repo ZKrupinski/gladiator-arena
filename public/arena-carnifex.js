@@ -109,7 +109,7 @@ function drawExecutioner(ctx,seq,pose,floorY){
    pose.exiting?Math.sin(seq.t*14)*2.0:0;
  const tilt=pose.phase==='walk'?Math.sin(seq.t*9)*.010:pose.exiting?Math.sin(seq.t*8)*.008:0;
  ctx.save();
- ctx.translate(pose.executionerX,floorY+gait);
+ ctx.translate(pose.executionerX,floorY);
  // Scale only the executioner about his boot contact point. Do not scale
  // the victim, his drag motion, or any physics/exit viewport coordinates.
  const visualScale=root.PracticeScaleProfiles?.scale?.('npc_carnifex')??1;
@@ -122,7 +122,7 @@ function drawExecutioner(ctx,seq,pose,floorY){
   const frame=Math.max(0,Math.min(7,pose.frame));
   // Two individually owned 4x2 sheets, a fixed 326px toe anchor in both.
   ctx.drawImage(sheet,(frame%INK_COLS)*INK_W,Math.floor(frame/INK_COLS)*INK_H,
-    INK_W,INK_H,-218,-468,436,466);
+    INK_W,INK_H,-218,-326/INK_H*466,436,466);
  }else if(art){
   // Old complete atlas only during initial loading/error, never a half-loaded pack.
   const row=pose.phase==='walk'?0:1;
@@ -138,9 +138,8 @@ function draw(ctx,seq,drawBody,floorY=FLOOR){
  const pose=positions(seq);
  // Subtly recessed depth, while feet and the collected corpse remain on the sand.
  ctx.save();
- // Place the bulky executioner 10px farther upstage than the corpse;
- // the new painted atlas also gives the boots a raised, uncropped baseline.
- ctx.save();ctx.translate(0,-24);
+ // Back-layer ordering must not add a second vertical foot offset.
+ ctx.save();
  drawExecutioner(ctx,seq,pose,floorY);
  ctx.restore();
  if(pose.bodyVisible){

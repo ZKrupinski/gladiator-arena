@@ -121,7 +121,7 @@ const ATTACK_LEAN={
  heavy:[0,.02,.06,.1,.115,.065,.025,0]
 };
 function paint(ctx,frame,x,y,w,h,flip,alpha,scaleFactor=1,lean=0){
- const scale=Math.min(w/430,h/430)*scaleFactor;
+ const scale=Math.min(w/540,h/540)*scaleFactor;
  const image=frame?.canvas;
  if(!image)return false;
  ctx.save();ctx.globalAlpha*=alpha;
@@ -146,7 +146,7 @@ function draw(ctx,options){
  const fallback=frames||actionFrames('idle');
  if(!fallback)return false;
  return paint(ctx,fallback[frames?state.index:0],o.x,o.y,o.w,o.h,o.flip,o.alpha??1,
-              f.championBoss?1.07:1,
+              1,
               frames?(ATTACK_LEAN[state.action]?.[state.index]||0):0);
 }
 function frame(action='idle',tick=0){

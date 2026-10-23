@@ -1,11 +1,15 @@
 {
   "assetSha256": {
-    "public/practice-scale-profiles.js": "f6cbabe04b7bab7f1fa15565354845c544c1c8d78a9e7fb156ca35c170f67e91",
-    "public/tools/practice-scale-calibrator.html": "3e386504f19e6c4780ec4a931a0f5168e86aa1cf8cd428222e3db69f969cf272"
+    "public/index.html": "5e1e10e4c40a46e0a3ccc22cf5da54bb99cb8f484709f32a1bfd11b1e2f5284f",
+    "public/arena-beasts.js": "1ec8d37fb856a50ce591ba75925ce9095a495e6f8f1ba3c36ead5d19283f7cb2",
+    "public/arena-carnifex.js": "06767c378a02738d04298098e50162b07fe0b727e8ca906e78f4d27de7df7203",
+    "public/champion-murmillo.js": "5da2e0385882c7c75eda73bf194126d16518d6e4872a6ce648963487270061d4",
+    "public/practice-scale-profiles.js": "4189a66c2375f01e17d5a536f7a27e79cda49664c4f7ba0211a358b3d865f9a6",
+    "public/tools/practice-scale-calibrator.html": "89e9a2195079ca86f57934d8e7ed64b1cd5285d74bbad84b9f5c906b7c3948f4"
   },
-  "baseCommit": "524a2d4afcfe33470379914f6ab26623a87b7a6a",
+  "baseCommit": "abb7177393442efbe0d83421d772930d01dcaaf6",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "scale-studio-qa-baseline-refresh-20261024-v38",
+  "releaseId": "shared-foot-contact-champion-beasts-20261024-v39",
   "releaseProtocol": "spartacus-uploader-v1"
 }
