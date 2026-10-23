@@ -141,8 +141,10 @@ function draw(ctx,o){
 // Training-room-only key-frame access. This uses the actual independent
 // Murmillo-B attack artwork rather than the older static growth sheet.
 const TRAINING_FRAMES={
- // Never sample dodge (8), stagger (21-22), or defeat (11/23) in training.
+ // Training never samples dodge/stagger. Practice KO is explicitly allowed
+ // to use the source artist's real defeated pose instead of standing idle.
  idle:[0,12,0,13,0,12,0,13],
+ death:[23,23,23,23,23,23,23,23],
  slash:[9,2,2,19,19,2,2,9],
  sweep:[9,3,3,20,20,3,3,9],
  thrust:[9,4,4,4,4,4,4,9],
@@ -153,7 +155,8 @@ function trainingFrame(action='idle',index=0){
  const source=independentAtlas?.frames;
  if(!source?.length)return null;
  const sequence=TRAINING_FRAMES[action]||TRAINING_FRAMES.idle;
- const selected=sequence[Math.max(0,Math.min(7,Math.floor(index)))];
+ const selected=action==='death'?(source[23]?23:11):
+  sequence[Math.max(0,Math.min(7,Math.floor(index)))];
  const legacy={idle:0,slash:2,sweep:3,thrust:4,heavy:5};
  return (source[selected]||source[legacy[action]??0]||source[0])?.canvas||null;
 }
