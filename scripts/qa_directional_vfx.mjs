@@ -42,7 +42,7 @@ try{
  await page.screenshot({path:'docs/vfx-v4/gallery-left.png',fullPage:true});
  await page.goto(base+'/?__arena_qa=1');
  await page.waitForFunction(()=>window.__arenaQA&&Object.values(ArenaRasterFX.status().ready).every(Boolean));
- await page.locator('#startBtn').click();
+ await page.evaluate(()=>{const s=window.__arenaQA.state;s.phase='fight';s.time=110;s.paused=false;s.gauntlet=null;s.autoplayEnabled=false;s.autoPlaying=false;});
  await page.waitForFunction(()=>window.__arenaQA?.state.phase==='fight'&&window.__arenaQA.assetsReady());
  const events=[];
  for(const direction of [1,-1])for(const action of ['ordinary','guard','parry','special','dash','finisher']){
