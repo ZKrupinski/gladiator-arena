@@ -1,11 +1,11 @@
 {
   "assetSha256": {
-    "public/index.html": "7ec5196af22072ed7cb3126ea820d0c36385ec235db1183e7269c8c3d8971226",
-    "tests/endless-practice-v26.js": "1abcd80db6460bcc8ebecc8c9ea974476bfc72fc7930354a952593f85182d466"
+    "public/index.html": "93e7f0b9a804faab6d191481e0c1c560b2efa54324cf0e914a9d202998fda8e7",
+    "tests/endless-practice-v26.js": "b5f3f8ff4c2554a02186a4bbb3f308e29de5f1bd8f33310c05c719df75555608"
   },
-  "baseCommit": "11e5afac2af95b2bb88a4e78d555c89fc35236bf",
+  "baseCommit": "9bb882eeba1139dc6b2933dbdbefaf3544c18238",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "size-calibration-scroll-shuffle-batch-beasts-carnifex-20261024-v36",
+  "releaseId": "studio-title-github-canonical-publishing-20261024-v37",
   "releaseProtocol": "spartacus-uploader-v1"
 }
