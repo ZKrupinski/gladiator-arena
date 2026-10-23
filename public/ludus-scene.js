@@ -150,8 +150,10 @@ s.roster.forEach(function(h,i){
  b.appendChild(condition);host.appendChild(b);
  var src=a.portrait(i);
  if(src&&src.width&&src.height){
-  var k=Math.min(170/src.width,118/src.height),ctx=canvas.getContext("2d");
-  ctx.drawImage(src,(172-src.width*k)/2,120-src.height*k,src.width*k,src.height*k);
+  if(!window.ArenaPortraitFit?.draw?.(canvas,src,{inset:.045})){
+   var k=Math.min(170/src.width,118/src.height),ctx=canvas.getContext("2d");
+   ctx.drawImage(src,(172-src.width*k)/2,120-src.height*k,src.width*k,src.height*k);
+  }
  }
  b.onclick=function(){a.select(i);refresh();notice(h.name+" · 출전 후보 선택");};
 });
