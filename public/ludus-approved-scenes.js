@@ -73,7 +73,7 @@ function actionTraining(){const s=bridge()?.state();if(!s?.roster?.length){toast
 function changeItem(mode){const a=bridge(),list=a?.catalog()||[],gear=list.find(g=>g.id===selectedGear);if(!gear){toast('장비를 먼저 선택하세요.');return;}const outcome=a.equip(selectedGear,mode);toast(outcome||'장비 상태가 갱신되었습니다.');refresh();}
 function drawRoster(parent,isTraining){parent.replaceChildren();const a=bridge(),s=a?.state();if(!s)return;
  const from=Math.max(0,Math.min(s.active-1,Math.max(0,s.roster.length-(isTraining?6:3))));
- s.roster.slice(from,from+(isTraining?6:3)).forEach((hero,n)=>{const i=from+n,b=document.createElement('button');b.type='button';b.className=i===s.active?'selected':'';b.title=hero.name+' · Lv.'+hero.level;b.setAttribute('aria-label',hero.name+' · 검투사 선택');const c=document.createElement('canvas');c.width=104;c.height=87;b.appendChild(c);let t=document.createElement('strong');t.textContent=hero.name+' Lv.'+hero.level;b.appendChild(t);parent.appendChild(b);const im=a.portrait(i);if(im?.width&&im?.height){const ctx=c.getContext('2d'),k=Math.min(100/im.width,80/im.height);try{ctx.drawImage(im,(104-im.width*k)/2,86-im.height*k,im.width*k,im.height*k);}catch(e){}}b.addEventListener('click',()=>{a.select(i);refresh();});});}
+ s.roster.slice(from,from+(isTraining?6:3)).forEach((hero,n)=>{const i=from+n,b=document.createElement('button');b.type='button';b.className=i===s.active?'selected':'';b.title=hero.name+' · Lv.'+hero.level;b.setAttribute('aria-label',hero.name+' · 검투사 선택');const c=document.createElement('canvas');c.width=104;c.height=87;b.appendChild(c);let t=document.createElement('strong');t.textContent=hero.name+' Lv.'+hero.level;b.appendChild(t);parent.appendChild(b);const im=a.portrait(i);if(im?.width&&im?.height){if(!window.ArenaPortraitFit?.draw?.(c,im,{inset:.045})){const ctx=c.getContext('2d'),k=Math.min(100/im.width,80/im.height);try{ctx.drawImage(im,(104-im.width*k)/2,86-im.height*k,im.width*k,im.height*k);}catch(e){}}}b.addEventListener('click',()=>{a.select(i);refresh();});});}
 
 // Keep the approved architecture but replace the baked sample fighter
 // with the real, currently selected Ludus roster fighter.
@@ -89,9 +89,11 @@ function liveFighter(a,s,isTraining){
  canvas.setAttribute('role','img');canvas.setAttribute('aria-label',s.roster[s.active].name+' · 출전 대기');
  const ctx=canvas.getContext('2d');
  if(ctx){
-  const scale=Math.min((canvas.width-12)/source.width,(canvas.height-12)/source.height);
-  const w=source.width*scale,h=source.height*scale;
-  try{ctx.drawImage(source,(canvas.width-w)/2,canvas.height-h-5,w,h);}catch(_){}
+  if(!window.ArenaPortraitFit?.draw?.(canvas,source,{inset:.045})){
+   const scale=Math.min((canvas.width-12)/source.width,(canvas.height-12)/source.height);
+   const w=source.width*scale,h=source.height*scale;
+   try{ctx.drawImage(source,(canvas.width-w)/2,canvas.height-h-5,w,h);}catch(_){}
+  }
  }
  stage.appendChild(canvas);
 }
