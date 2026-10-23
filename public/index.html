@@ -374,7 +374,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <div id="careerMini" hidden role="dialog" aria-modal="true" aria-label="훈련"><div class="career-mini-panel"><h2 id="careerMiniTitle"></h2><p id="careerMiniHelp"></p><div class="career-timing"><div class="career-hitzone"></div><div id="careerNeedle"></div></div><div id="careerTrainingResult" class="career-training-result" hidden aria-live="assertive"></div><div class="career-buttons" style="justify-content:center"><button id="careerHit">지금! (SPACE)</button><button id="careerCancel">취소</button></div></div></div>
 <script src="market-scene.js?v=independent-looks-v25"></script>
 <script src="growth-frames.js?v=2"></script>
-<script src="murmillo-motion-v2.js?v=whip-real-hit-v3"></script>
+<script src="murmillo-motion-v2.js?v=approved-defeat-v34"></script>
 <script src="champion-murmillo.js?v=3"></script>
 <script src="arena-gear-catalog.js?v=roman-five-slots-v12"></script><script src="arena-loot.js?v=roman-helm-bracers-v12"></script><script src="arena-gear-bitmap.js?v=roman-square-atlas-v12"></script><script src="arena-excitement.js?v=harder-spectacle-v7"></script><script src="arena-balance.js?v=aptitudes-v22"></script>
 <script src="arena-portrait-fit.js?v=portrait-uniform-v1"></script>
@@ -786,9 +786,17 @@ window.MurmilloMotion?.loadAssets?.()?.then?.(()=>window.SlaveMarket?.refresh())
 const CAREER_KEY='gladiator.ludus.v1';
 const ANIMATED_MURMILLO_VARIANT='murmillo_motion_v3';
 const CHAMPION_MURMILLO_VARIANT='murmillo_champion_red';
-const CHAMPION_MURMILLO_SCALE=.86;
+// A common visual baseline for normal duels and per-look art calibration.
+const DUEL_BASE_VISUAL_SCALE=.82;
+const CHAMPION_MURMILLO_SCALE=DUEL_BASE_VISUAL_SCALE;
 function isChampionMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===CHAMPION_MURMILLO_VARIANT;}
-const ANIMATED_MURMILLO_SCALE=.75; // Face-size match; original growth classes retain their own tier scales.
+const ANIMATED_MURMILLO_SCALE=DUEL_BASE_VISUAL_SCALE;
+function duelVisualScale(f){
+ const look=f?.championVariant||f?.motionVariant||f?.legacyVisualId||
+  (f?.growthType&&f?.growthLevel?f.growthType+'_L'+f.growthLevel:null)||
+  (f?.cls?'legacy_'+f.cls:null);
+ return DUEL_BASE_VISUAL_SCALE*(window.PracticeScaleProfiles?.scale?.(look)??1);
+}
 function isAnimatedMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===ANIMATED_MURMILLO_VARIANT;}
 function careerXpNeeded(l){return 36+l*19;}
 function careerLevel(h){return Math.max(1,Math.min(20,Number(h.level)||1));}
@@ -1476,7 +1484,8 @@ function lineupHero(index){
  const h=CAREER.roster[index],f=fighter(h.cls,335,false);
  if(isChampionMurmillo(h)){f.championVariant=CHAMPION_MURMILLO_VARIANT;f.growthType='murmillo_a';f.growthLevel=5;}
  else if(isAnimatedMurmillo(h)){f.motionVariant=ANIMATED_MURMILLO_VARIANT;f.growthType='murmillo_a';f.growthLevel=5;}
- else if(h.appearance!=='legacy'){f.growthType=growthType(h);f.growthLevel=visualCareerStage(h);}
+ else if(h.appearance==='legacy'){f.legacyVisualId='legacy_'+h.cls;}
+ else {f.growthType=growthType(h);f.growthLevel=visualCareerStage(h);}
  const cfg=ArenaBalance.heroStats(h,f.cfg,equipmentBonus(h));
  f.cfg={...f.cfg,name:h.name+' · Lv.'+careerLevel(h),atk:cfg.atk,move:cfg.move,sp:cfg.sp};
  f.maxHp=cfg.hp;f.hp=Math.max(1,cfg.hp-(Number(h.injury)||0));
@@ -1491,6 +1500,8 @@ function lineupEnemy(opponent){
  const f=fighter(opponent.cls,940,true),profile=ArenaBalance.duelEnemy(f.cfg,opponent,S.round);
  if(opponent.appearance===CHAMPION_MURMILLO_VARIANT){
   f.championVariant=CHAMPION_MURMILLO_VARIANT;f.growthType='murmillo_a';f.growthLevel=5;
+ }else if(opponent.appearance==='legacy'){
+  f.legacyVisualId='legacy_'+opponent.cls;
  }else if(!opponent.boss){
   f.growthType=opponent.growthType;f.growthLevel=opponent.stage;
  }
@@ -2827,7 +2838,7 @@ function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
 }
 function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
  if(f.championVariant===CHAMPION_MURMILLO_VARIANT){
-  const scale=f.championBoss?CHAMPION_MURMILLO_SCALE*1.08:CHAMPION_MURMILLO_SCALE;
+  const scale=duelVisualScale(f);
   const x0=x+w*(1-scale)/2,y0=y+h*(1-scale),w0=w*scale,h0=h*scale;
   // A slow or failed champion asset load must never reveal the old Murmillo.
   window.ChampionMurmillo?.draw(ctx,{fighter:f,scene:S,clock,x:x0,y:y0,w:w0,h:h0,flip,alpha});
@@ -2841,7 +2852,7 @@ function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
  // original L5 head height, not drawn full-size.
  // B-version fighter: match neighboring gladiators' face size while
  // anchoring each full-action sprite to the same ground point.
- const scale=animated?ANIMATED_MURMILLO_SCALE:LudusRoster.scale(f.growthType,f.growthLevel);
+ const scale=duelVisualScale(f);
  const x0=x+w*(1-scale)/2,y0=y+h*(1-scale),w0=w*scale,h0=h*scale;
  if(animated){
   if(window.MurmilloMotion?.draw(ctx,{atlas,fighter:f,scene:S,clock,x:x0,y:y0,w:w0,h:h0,flip,alpha}))return true;
@@ -3002,13 +3013,18 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   if(!drawGrowthPose(f,pose,drawX-f.face*38,drawY+6,width,height,f.face<0,.19))atlasFrame(IMG[f.cls],frame,drawX-f.face*38,drawY+6,width,height,f.face<0,.19);
   if(!drawGrowthPose(f,pose,drawX-f.face*73,drawY+12,width,height,f.face<0,.09))atlasFrame(IMG[f.cls],frame,drawX-f.face*73,drawY+12,width,height,f.face<0,.09);
  }
+ const renderClassic=(alpha,x,y)=>{
+  const factor=f.beastType?1:duelVisualScale(f);
+  const nx=x+width*(1-factor)/2,ny=y+height*(1-factor);
+  atlasFrame(IMG[f.cls],frame,nx,ny,width*factor,height*factor,f.face<0,alpha);
+ };
  const renderActor=(alpha,x=drawX,y=drawY)=>{
   const animal=!!f.beastType&&!!window.ArenaBeasts?.draw?.(ctx,{
    fighter:f,pose,clock,x,y,w:width,h:height,flip:f.face>0,alpha
   });
   if(!animal&&
    !drawGrowthPose(f,pose,x,y,width,height,f.face<0,alpha))
-    atlasFrame(IMG[f.cls],frame,x,y,width,height,f.face<0,alpha);
+    renderClassic(alpha,x,y);
  };
  if(S.phase==='fight'&&!f.dead&&f.hp>0&&S.fx&&!reduceImpact){
   // Five full-resolution echoes, 0.94 seconds visible. Keep sprite scale,
@@ -3475,7 +3491,7 @@ window.LudusBridge={
   if(isChampionMurmillo(hero))
    return window.ChampionMurmillo?.frame(({attack:'slash',special:'heavy',death:'death',hit:'hit',guard:'guard',walk:'walk'}[action]||action),tick)||null;
   if(isAnimatedMurmillo(hero))
-   return window.MurmilloMotion?.trainingFrame(({attack:'slash',special:'heavy',death:'idle',hit:'idle'}[action]||action),tick)||null;
+   return window.MurmilloMotion?.trainingFrame(({attack:'slash',special:'heavy',death:'death',hit:'idle'}[action]||action),tick)||null;
   if(hero.appearance==='legacy'){
    const image=IMG[hero.cls],legacy=image&&INDEPENDENT_CHARACTER_FRAMES.get(image);
    return legacy?.[index]||legacy?.[0]||null;
@@ -3496,8 +3512,8 @@ window.LudusBridge={
  previewMatch:(mode,opponent)=>ArenaLineup.preview(mode,opponent),
  availability:(i)=>ArenaLineup.condition(CAREER.roster[i]),
  squadStart:(mode,indices)=>startLineupMatch(mode,indices),
- motionScale:()=>ANIMATED_MURMILLO_SCALE,
- championScale:()=>CHAMPION_MURMILLO_SCALE,
+ motionScale:()=>duelVisualScale({motionVariant:ANIMATED_MURMILLO_VARIANT}),
+ championScale:()=>duelVisualScale({championVariant:CHAMPION_MURMILLO_VARIANT}),
  state:()=>{ArenaLoot.ensure(CAREER);return {gold:CAREER.gold,glory:CAREER.glory,roster:CAREER.roster,active:CAREER.active,message:CAREER.message,lastLoot:CAREER.lastLoot,practiceBest:CAREER.practiceBest||0,practiceRuns:CAREER.practiceRuns||0,practiceTotalXp:CAREER.practiceTotalXp||0,armoryInventory:CAREER.armoryInventory,discoveredGear:CAREER.discoveredGear};},
  portrait:(i)=>{
   const h=CAREER.roster[i];if(!h)return null;
@@ -3627,6 +3643,6 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=practice-route-v26"></script><script src="practice-scale-profiles.js?v=all-25-v33"></script><script src="ludus-practice.js?v=depth-sort-v32"></script><script src="ludus-training-runtime.js?v=whip-real-hit-v3"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=portrait-fullteam-v17"></script><script src="ludus-armory-live.js?v=portrait-fullteam-v17"></script><script src="ludus-cards.js?v=independent-looks-v25"></script>
+<script src="ludus-scene.js?v=practice-route-v26"></script><script src="practice-scale-profiles.js?v=shared-duel-practice-v34"></script><script src="ludus-practice.js?v=fullsize-zsorted-fx-v34"></script><script src="ludus-training-runtime.js?v=whip-real-hit-v3"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=portrait-fullteam-v17"></script><script src="ludus-armory-live.js?v=portrait-fullteam-v17"></script><script src="ludus-cards.js?v=independent-looks-v25"></script>
 
 </body></html>
