@@ -7,12 +7,12 @@ const W=1280,H=720,MAX=4,TYPES=['murmillo','thraex','retiarius'];
 // Background sand begins near y=520. Anchors are feet on the ground,
 // not floating on the stone walls. Presets are NEAR/FORWARD FIRST.
 const COURT_LAYOUTS=Object.freeze({
- 1:Object.freeze([{x:640,y:661,scale:1.23}]),
- 2:Object.freeze([{x:325,y:680,scale:1.28},{x:955,y:680,scale:1.28}]),
- 3:Object.freeze([{x:325,y:680,scale:1.28},{x:955,y:680,scale:1.28},
-   {x:640,y:557,scale:1.03}]),
- 4:Object.freeze([{x:325,y:680,scale:1.28},{x:955,y:680,scale:1.28},
-   {x:422,y:557,scale:1.03},{x:858,y:557,scale:1.03}])
+ 1:Object.freeze([{x:640,y:676,scale:1.24}]),
+ 2:Object.freeze([{x:325,y:689,scale:1.29},{x:955,y:689,scale:1.29}]),
+ 3:Object.freeze([{x:325,y:689,scale:1.29},{x:955,y:689,scale:1.29},
+   {x:640,y:606,scale:1.06}]),
+ 4:Object.freeze([{x:325,y:689,scale:1.29},{x:955,y:689,scale:1.29},
+   {x:422,y:606,scale:1.06},{x:858,y:606,scale:1.06}])
 });
 function courtsForParty(count){
  // Does not depend on later-initialized variables; works at script load.
@@ -39,7 +39,8 @@ function enemyFor(wave,index,rng=Math.random){
   cls,look,seat:-1,lane:-1,x:0,y:0,hp,maxHp:hp,atk:enemyAttack(wave),
   speed:62+Math.min(42,wave*2.2),armor:Math.min(.25,(wave-1)*.008),
   cooldown:.5+index*.13,swing:0,hit:0,dead:false,fade:1.8,
-  windup:0,target:null,guard:0,parry:0,guardCD:0,dodge:0,stun:0,swings:0,special:false,waiting:false};
+  windup:0,target:null,guard:0,parry:0,guardCD:0,dodge:0,stun:0,swings:0,special:false,waiting:false,
+  entry:0,arrival:0};
 }
 let screen,canvas,ctx,back,chosen=[],battle=null,frameId=0,prev=0,drawTick=0;
 const $=selector=>screen?.querySelector(selector);
@@ -168,23 +169,28 @@ function start(){
  COURTS=courtsForParty(picks.length);
  $('.ep-selection').hidden=true;$('.ep-combat').hidden=false;$('.ep-result').hidden=true;
  battle={heroes:picks.map(heroFor),enemies:[],queued:[],wave:0,clearedWave:0,kills:0,left:0,serial:0,delay:0,nextSeat:0,
-  cleared:false,breakTime:0,knockout:0,finished:false,paused:false,speed:1,shakes:0,particles:[],clock:0};
+  cleared:false,breakTime:0,knockout:0,finished:false,paused:false,speed:1,shakes:0,
+  particles:[],fx:[],exits:[],clock:0};
  prev=0;nextWave();updateButtons();frameId=requestAnimationFrame(loop);
 }
 function findOpenCourt(heroes,enemies,cursor=0){
  for(let n=0;n<MAX;n++){
   const seat=(cursor+n)%MAX;
   const h=heroes.find(u=>u.seat===seat&&!u.dead);
-  if(h&&!enemies.some(e=>!e.dead&&e.seat===seat))return h;
+  if(h&&!enemies.some(e=>!e.dead&&e.seat===seat)&&
+    !battle?.exits?.some(exit=>exit.unit.seat===seat&&exit.age<1.75))return h;
  }
  return null;
 }
 function parkEnemy(e,h){
  const c=COURTS[h.seat];e.seat=h.seat;e.lane=h.seat;e.y=c.y;
- e.homeX=c.x+87;e.x=c.x+LEASH;e.waiting=false;e.cooldown=.3;
+ // Original arena entrance rhythm: run on from the right, briefly plant
+ // the feet, then begin combat. Each new rival comes in separately.
+ e.homeX=c.x+87;e.fromX=Math.min(W-34,c.x+LEASH+90);
+ e.x=e.fromX;e.entry=.85;e.arrival=.18;e.waiting=false;e.cooldown=.35;
 }
 function spawnMatched(){
- if(!battle)return false;
+ if(!battle||battle.enemies.some(e=>!e.dead&&e.entry>0))return false;
  const h=findOpenCourt(battle.heroes,battle.enemies,battle.nextSeat);
  if(!h)return false;
  const e=battle.queued.length?battle.queued.shift():battle.left>0
@@ -210,6 +216,76 @@ function sparks(target,force=false){
    life:.4+Math.random()*.3,critical:force});
  }
 }
+// Use the approved 8-frame directional RGBA effects from normal arena fights.
+// No fake geometry arcs or newly drawn vector attack effects.
+function emitVfx(kind,unit,other,emphasis=false){
+ if(!battle||unit.seat<0||!COURTS[unit.seat])return;
+ const c=COURTS[unit.seat],duration=root.ArenaRasterFX?.FAMILIES?.[kind]?.duration||.34;
+ const face=unit.side==='ally'?1:-1;
+ battle.fx.push({kind,x:unit.x+face*43*c.scale,
+  y:unit.y-108*c.scale,scale:c.scale,face,age:0,duration,
+  alpha:emphasis?1:.87});
+}
+function beginRemoval(unit){
+ if(!battle||unit.retiring||unit.seat<0)return;
+ unit.retiring=true;
+ const c=COURTS[unit.seat],engine=root.ArenaCarnifex;
+ const scale=c.scale*.44;
+ let seq=null;
+ if(engine?.begin){
+  try{
+   const body={x:640+(unit.x-c.x)/scale,enemy:unit.side==='enemy',
+    cfg:{name:unit.name},cls:unit.cls,dead:true,hp:0};
+   seq=engine.begin(body,unit.side==='enemy',0,{left:0,right:W});
+   engine.preload?.();
+  }catch(_){seq=null;}
+ }
+ battle.exits.push({unit,seq,age:0,scale,court:c});
+}
+function drawDeparture(removal){
+ const engine=root.ArenaCarnifex,{unit,seq,court,scale}=removal;
+ if(!seq||!engine?.draw)return;
+ ctx.save();
+ ctx.translate(court.x-640*scale,court.y-617*scale);
+ ctx.scale(scale,scale);
+ engine.draw(ctx,seq,corpse=>{
+  const art=rawSprite(unit,'death');
+  if(!art)return;
+  const bounds=alphaBounds(art),metric=calibration(unit,art);
+  if(!bounds||!metric)return;
+  // Identical character size as the living model, transformed to
+  // Carnifex-local space. Use the same fixed visual scale, same foot pivot.
+  const factor=metric.pixels*court.scale/scale;
+  const w=bounds.w*factor,h=bounds.h*factor;
+  ctx.save();
+  ctx.translate(corpse.x,617);
+  if(unit.side==='enemy')ctx.scale(-1,1);
+  try{ctx.drawImage(art,bounds.x,bounds.y,bounds.w,bounds.h,-w/2,-h,w,h);}catch(_){}
+  ctx.restore();
+ },617);
+ ctx.restore();
+}
+function updateDepartures(dt){
+ if(!battle)return;
+ const engine=root.ArenaCarnifex;
+ for(const exit of battle.exits){
+  exit.age+=dt;
+  if(exit.seq&&engine?.advance){
+   engine.advance(exit.seq,dt*1.6,{left:0,right:W});
+  }
+ }
+ battle.exits=battle.exits.filter(exit=>
+  exit.seq?!exit.seq.finished&&exit.age<8:exit.age<2.7);
+}
+function paintVfx(){
+ if(!battle)return;
+ const fx=root.ArenaRasterFX;
+ for(const v of battle.fx){
+  const p=clamp(v.age/v.duration,0,.9999);
+  fx?.draw?.(ctx,v.kind,v.x,v.y,275*v.scale,270*v.scale,p,
+    v.alpha*Math.min(1,(1-p)*2.7),v.face,0);
+ }
+}
 function deal(attacker,target,multiplier=1,style='normal'){
  if(attacker.dead||target.dead)return;
  const crit=Math.random()<(attacker.side==='ally'?.17:.09);
@@ -217,18 +293,21 @@ function deal(attacker,target,multiplier=1,style='normal'){
  const base=root.ArenaBalance?.combatDamage?.(raw,style)
   ?? Math.round(raw*(style==='parry'?.60:style==='special'?.54:.46));
  const damage=Math.max(1,Math.round(base*(1-target.armor)));
- target.hp=Math.max(0,target.hp-damage);target.hit=.25;sparks(target,crit||style==='parry'||style==='special');
+ target.hp=Math.max(0,target.hp-damage);target.hit=.25;
+ sparks(target,crit||style==='parry'||style==='special');
+ emitVfx(crit?'sweep':attacker.swings%3===0?'thrust':'slash',attacker,target,crit);
  const c=COURTS[target.seat],sign=attacker.side==='ally'?1:-1;
  target.x=clamp(target.x+sign*13,c.x-LEASH,c.x+LEASH);
  if(!target.hp){
   target.dead=true;target.fade=1.6;target.windup=0;target.guard=0;
+  beginRemoval(target);
   if(attacker.side==='ally'&&target.side==='enemy'){
    attacker.exp+=killXP(battle.wave);attacker.kills++;battle.kills++;
   }
  }
 }
 function prepareStrike(u,target){
- u.swings++;u.special=u.swings%4===0||(u.side==='ally'&&Math.random()<.07);
+ u.swings++;u.special=false; // Practice deliberately omits dash/special attack.
  u.windup=u.special?.34:.24;u.target=target;u.swing=u.special?.59:.46;
  u.cooldown=(u.side==='ally'?.81:.94)+(u.special?.24:0)+Math.random()*.17;
  // Original duel-inspired timing: guard can parry during a brief window,
@@ -247,9 +326,11 @@ function contact(u,target){
  if(target.dodge>0){sparks(target);return;}
  if(target.guard>0){
   if(target.parry>0){
-   u.stun=.56;u.cooldown=Math.max(u.cooldown,.68);
-   target.swing=.35;deal(target,u,1.16,'parry');return;
+   // Practice retains the parry clang/flash, not the arena's counterattack.
+   u.stun=.20;u.cooldown=Math.max(u.cooldown,.48);
+   target.swing=.22;emitVfx('parry',target,u,true);return;
   }
+  emitVfx('guard',target,u,false);
   deal(u,target,.33,'normal');return;
  }
  deal(u,target,u.special?1.55:1,u.special?'special':'normal');
@@ -261,6 +342,16 @@ function act(u,dt){
  u.guard=Math.max(0,u.guard-dt);u.parry=Math.max(0,u.parry-dt);
  u.dodge=Math.max(0,u.dodge-dt);u.guardCD=Math.max(0,u.guardCD-dt);
  const target=matched(u),ring=COURTS[u.seat];
+ if(u.side==='enemy'&&u.entry>0){
+  u.entry=Math.max(0,u.entry-dt);
+  const t=1-u.entry/.85;
+  const eased=1-Math.pow(1-t,2);
+  u.x=u.fromX+(u.homeX-u.fromX)*eased;
+  if(!u.entry){u.x=u.homeX;u.cooldown=Math.max(u.cooldown,u.arrival);}
+  return;
+ }
+ // A combatant waits for the arriving enemy instead of lunging mid-entrance.
+ if(u.side==='ally'&&target?.entry>0){u.x=u.homeX;return;}
  if(u.windup>0){
   u.windup-=dt;
   if(u.windup<=0){u.windup=0;contact(u,u.target);}
@@ -301,38 +392,92 @@ function simulate(dt){
  battle.enemies=battle.enemies.filter(u=>!u.dead||u.fade>0);
  for(const p of battle.particles){p.life-=dt;p.x+=p.dx*dt;p.y+=p.dy*dt;p.dy+=180*dt;}
  battle.particles=battle.particles.filter(p=>p.life>0).slice(-70);
+ for(const v of battle.fx)v.age+=dt;
+ battle.fx=battle.fx.filter(v=>v.age<v.duration);
+ updateDepartures(dt);
  if(battle.heroes.every(u=>u.dead)){
   battle.knockout+=dt;if(battle.knockout>.85)finish(false);
   return;
  }
- if(!battle.left&&!battle.queued.length&&!battle.enemies.some(u=>!u.dead)&&!battle.cleared){
+ if(!battle.left&&!battle.queued.length&&!battle.enemies.some(u=>!u.dead)&&
+    !battle.exits.length&&!battle.cleared){
   battle.cleared=true;battle.clearedWave=battle.wave;battle.breakTime=1.6;
   battle.heroes.filter(h=>!h.dead).forEach(h=>h.exp+=waveXP(battle.wave));
   announce('WAVE '+battle.wave+' 돌파 · 생존 '+battle.heroes.filter(h=>!h.dead).length+'명');
  }
  if(battle.cleared&&((battle.breakTime-=dt)<=0))nextWave();
 }
-function sprite(unit){
- const kind=unit.dead?'death':unit.hit>0?'hit':unit.guard>0?'guard':
-  unit.dodge>0?'dodge':unit.windup>0||unit.swing>0?(unit.special?'special':'attack'):
-  Math.abs(unit.x-unit.homeX)>13?'walk':'idle';
- if(unit.side==='ally'){
-  const owner=api()?.state()?.roster?.[unit.index];
-  return api()?.squadSprite?.(owner,kind,Math.floor((battle?.clock||0)*11))||
-   api()?.trainingFrame?.(unit.index,kind,battle?.clock||0);
+// Stable model-space pixel scale: measure the idle pose ONCE, including an
+// approximate head width from alpha runs. Never fit action frames individually.
+function rawSprite(u,kind){
+ if(u.side==='ally'){
+  const hero=api()?.state()?.roster?.[u.index];
+  return api()?.squadSprite?.(hero,kind,Math.floor((battle?.clock||0)*10))||
+   api()?.trainingFrame?.(u.index,kind,battle?.clock||0);
  }
- return api()?.practiceEnemySprite?.(unit.look,kind);
+ return api()?.practiceEnemySprite?.(u.look,kind);
+}
+function alphaBounds(art){
+ if(!art)return null;
+ return root.ArenaPortraitFit?.bounds?.(art)||
+  {x:0,y:0,w:art.width||art.naturalWidth||0,h:art.height||art.naturalHeight||0};
+}
+function measureFace(art,b){
+ if(typeof document==='undefined'||!document.createElement)return b.w*.26;
+ try{
+  const cv=document.createElement('canvas');cv.width=cv.height=96;
+  const c=cv.getContext('2d',{willReadFrequently:true});
+  if(!c)return b.w*.26;
+  c.drawImage(art,b.x,b.y,b.w,b.h,0,0,96,96);
+  const data=c.getImageData(0,0,96,96).data,widths=[];
+  // Locate the largest connected alpha segment near head height. Daggers,
+  // tridents and extended shields are not considered body/face width.
+  for(let y=15;y<=38;y+=2){
+   let best=0,current=0;
+   for(let x=3;x<93;x++){
+    if(data[(y*96+x)*4+3]>35){current++;best=Math.max(best,current)}
+    else current=0;
+   }
+   if(best>=7&&best<=68)widths.push(best*b.w/96);
+  }
+  if(widths.length>=3){
+   widths.sort((a,b)=>a-b);
+   return Math.max(b.w*.13,Math.min(b.w*.45,widths[Math.floor(widths.length*.55)]));
+  }
+ }catch(_){}
+ return b.w*.26;
+}
+function calibration(unit,frame){
+ if(unit._bodyScale)return unit._bodyScale;
+ const idle=rawSprite(unit,'idle')||frame;
+ if(!idle)return null;
+ const b=alphaBounds(idle);
+ if(!b?.w||!b?.h)return null;
+ const base=Math.min(163/b.w,202/b.h);
+ const head=measureFace(idle,b);
+ const desiredFace=39;
+ const actualFace=Math.max(1,head*base);
+ // Preserve class identity while narrowing cross-grade head-size differences.
+ const correction=clamp(desiredFace/actualFace,.82,1.17);
+ return unit._bodyScale={pixels:base*correction,
+  headPixels:head,refW:b.w,refH:b.h,correction};
+}
+function sprite(unit){
+ const kind=unit.dead?'death':unit.entry>0?'walk':unit.hit>0?'hit':unit.guard>0?'guard':
+  unit.dodge>0?'dodge':unit.windup>0||unit.swing>0?'attack':
+  Math.abs(unit.x-unit.homeX)>13?'walk':'idle';
+ return rawSprite(unit,kind);
 }
 function drawUnit(unit){
- const scale=COURTS[unit.seat]?.scale||.78,size=162*scale,height=202*scale;
+ const scale=COURTS[unit.seat]?.scale||.78,height=202*scale;
  ctx.save();ctx.translate(unit.x,unit.y);
- ctx.fillStyle='#10080677';ctx.beginPath();ctx.ellipse(0,0,46*scale,10*scale,0,0,Math.PI*2);ctx.fill();
- if(unit.dead)ctx.globalAlpha=clamp(unit.fade/1.6,.12,.66);
+ // Approved backdrop already has baked floor lighting: NO vector shadow.
+ if(unit.dead)ctx.globalAlpha=1;
  const art=sprite(unit);
  if(art&&(art.width||art.naturalWidth)){
-  const bounds=root.ArenaPortraitFit?.bounds?.(art)||{x:0,y:0,w:art.width||art.naturalWidth,h:art.height||art.naturalHeight};
-  if(bounds.w&&bounds.h){
-   const k=Math.min(size/bounds.w,height/bounds.h),w=bounds.w*k,h=bounds.h*k;
+  const bounds=alphaBounds(art),metric=calibration(unit,art);
+  if(bounds?.w&&bounds?.h&&metric){
+   const k=metric.pixels*scale,w=bounds.w*k,h=bounds.h*k;
    ctx.save(); // Only the enemy SPRITE flips, not name/HP/effect overlays.
    if(unit.side==='enemy')ctx.scale(-1,1);
    try{ctx.drawImage(art,bounds.x,bounds.y,bounds.w,bounds.h,-w/2,-h,w,h);}catch(_){}
@@ -342,10 +487,7 @@ function drawUnit(unit){
   ctx.fillStyle=unit.side==='ally'?'#bb915e':'#8b3e2a';ctx.beginPath();
   ctx.ellipse(0,-60*scale,22*scale,60*scale,0,0,Math.PI*2);ctx.fill();
  }
- if(unit.swing>0&&!unit.dead){
-  ctx.strokeStyle=unit.side==='ally'?'#ffdda8':'#f58b70';ctx.lineWidth=3.5*scale;
-  ctx.beginPath();ctx.arc((unit.side==='ally'?1:-1)*23*scale,-90*scale,38*scale,-.9,1.12);ctx.stroke();
- }
+ // Authored slash/thrust/sweep PNG sequences are rendered separately.
  ctx.globalAlpha=1;
  const bar=78*scale,percent=clamp(unit.hp/Math.max(1,unit.maxHp),0,1);
  ctx.fillStyle='#160b08';ctx.fillRect(-bar/2,-height-26*scale,bar,8*scale);
@@ -363,11 +505,15 @@ function paint(){
  if(back.complete&&back.naturalWidth)ctx.drawImage(back,0,0,W,H);
  else{const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#24120e');grad.addColorStop(1,'#754328');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);}
  ctx.fillStyle='#160a0929';ctx.fillRect(0,0,W,H);
- COURTS.forEach(c=>{
-  ctx.fillStyle='rgba(15,8,5,.13)';ctx.beginPath();
-  ctx.ellipse(c.x,c.y+9,190*c.scale,20*c.scale,0,0,Math.PI*2);ctx.fill();
- });
- battle.heroes.concat(battle.enemies).filter(u=>!u.dead||u.fade>0).sort((a,b)=>a.y-b.y||a.x-b.x).forEach(drawUnit);
+ // All court floor overlays removed: gladiators stand on the original sand.
+ // The original arena's approved Carnifex walks on behind its fallen target.
+ // Sort stage actors/departures by real foot depth, not by sprite image size.
+ const stageActors=battle.heroes.concat(battle.enemies)
+  .filter(u=>!u.retiring&&(!u.dead||u.fade>0))
+  .map(unit=>({y:unit.y,draw:()=>drawUnit(unit)}));
+ const exits=battle.exits.map(exit=>({y:exit.court.y-.5,draw:()=>drawDeparture(exit)}));
+ stageActors.concat(exits).sort((a,b)=>a.y-b.y).forEach(item=>item.draw());
+ paintVfx();
  for(const p of battle.particles){ctx.globalAlpha=clamp(p.life/.75,0,.9);ctx.fillStyle=p.critical?'#ffe9a3':'#fbb071';ctx.beginPath();ctx.arc(p.x,p.y,p.critical?3.3:2.1,0,Math.PI*2);ctx.fill();}
  ctx.restore();
 }

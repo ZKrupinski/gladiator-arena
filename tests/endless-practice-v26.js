@@ -20,9 +20,21 @@ assert(scene.includes('if(id==="practice")'));
 assert(scene.includes('if(id==="roster"||id==="training"||id==="basic")'));
 assert(html.includes('practiceReward:(awards,wave,kills,retired)=>'));
 assert(html.includes('practiceEnemySprite:(visualId,kind='));
-assert(html.includes('ludus-practice.js?v=grounded-perspective-v28'));
+assert(html.includes('ludus-practice.js?v=normalized-raster-carnifex-v29'));
 assert(html.includes('ludus-practice.css?v=exercitium-infinitum-v26'));
 assert(practice.includes('battle.heroes.every(u=>u.dead)'));
+assert(practice.includes('calibration(unit,art)'),'one model-space scale across action frames');
+assert(practice.includes('const k=metric.pixels*scale'),'current frame cannot redefine actor size');
+assert(practice.includes('measureFace(idle,b)'),'calibrated to idle head proportions');
+assert(!practice.includes("ctx.ellipse(0,0,46*scale"),'vector fighter shadow removed');
+assert(!practice.includes('COURTS.forEach(c=>{'),'vector floor pads removed');
+assert(practice.includes('drawDeparture(exit)'),'real Carnifex must retrieve loser');
+assert(practice.includes('root.ArenaCarnifex'),'actual executioner module reused');
+assert(practice.includes('root.ArenaRasterFX'),'original PNG fight effects reused');
+assert(practice.includes('if(u.side===\'enemy\'&&u.entry>0)'),'enemy entrance');
+assert(!practice.includes("deal(target,u,1.16,'parry')"),'no arena parry counter in practice');
+assert(!practice.includes("unit.special?'special':'attack'"),'no dash/special finisher');
+
 assert(practice.includes('battle.heroes.filter(h=>!h.dead)'));
 assert(practice.includes('battle.left--'));
 assert(practice.includes('battle.finished=true'));
@@ -43,17 +55,17 @@ assert(!/CAREER\.(gold|glory|lastLoot|lastPrize|wins|fights|armoryInventory)\s*(
 const layouts=[1,2,3,4].map(count=>rules.courtsForParty(count));
 assert(layouts.every((c,i)=>c.length===i+1),'one duel space per fighter');
 assert.equal(layouts[0][0].x,640,'solo gladiator and foe centered');
-assert(layouts[0][0].y>=640&&layouts[0][0].scale>1.15,'solo pair grounded and close');
+assert(layouts[0][0].y>=665&&layouts[0][0].scale>1.15,'solo pair grounded and close');
 for(const size of [2,3,4]){
  const list=layouts[size-1];
- assert(list[0].y>=660&&list[1].y>=660,'front courts are filled before rear courts');
+ assert(list[0].y>=680&&list[1].y>=680,'front courts are filled before rear courts');
  assert(list[0].scale>=1.24&&list[1].scale>=1.24,'near fighters enlarged toward camera');
  assert(list[0].x<640&&list[1].x>640,'near pairs share opposite halves');
 }
 for(const size of [3,4]){
  const list=layouts[size-1];
  for(const far of list.slice(2)){
-  assert(far.y>=540&&far.y<=575,'rear feet actually on sand, not colosseum walls');
+  assert(far.y>=590&&far.y<=625,'rear feet move off horizon onto sand');
   assert(far.scale>=.98&&far.scale<=1.10,'rear units match previous lower-row scale');
   assert(list[0].scale>=far.scale+.18,'foreground larger than background');
  }
@@ -62,7 +74,7 @@ assert.equal(layouts[2][2].x,640,'three-person rear fighter centered');
 for(const group of layouts)
  for(const court of group){
   assert(court.x-87>60&&court.x+87<1220,'the fight pair remains on screen');
-  assert(court.y>=540&&court.y<702,'feet are visibly grounded and inside canvas');
+  assert(court.y>=590&&court.y<702,'feet are visibly grounded and inside canvas');
   assert(court.y-202*court.scale>275,'silhouettes fit frame');
  }
 assert(practice.includes('COURTS=courtsForParty(picks.length)'),'runtime must adapt layout to team count');
