@@ -214,7 +214,12 @@ try{
  assert(portraits.fillRatio>=.82,'fighter illustration fills enlarged portrait tile: '+JSON.stringify(portraits));
  const rosterBefore=await page.evaluate(()=>{
   const roster=document.querySelector('.ra-roster');
-  roster.scrollLeft=245;
+  const fourth=roster.querySelector('[data-fighter="4"]');
+  const fifth=roster.querySelector('[data-fighter="5"]');
+  // Scroll until both target thumbnails are fully visible. This isolates
+  // unintended carousel resets from the browser's ordinary focus-to-view.
+  const center=(fourth.offsetLeft+fifth.offsetLeft+fifth.offsetWidth)/2;
+  roster.scrollLeft=Math.round(center-roster.clientWidth/2);
   return roster.scrollLeft;
  });
  assert.ok(rosterBefore>=200,'roster overflow provides horizontal scrolling');
