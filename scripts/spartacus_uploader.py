@@ -29,7 +29,7 @@ RELEASE_PROBE = "public/uploader-release.json"
 DEST_WOLF = "public/assets/beasts/wolf-v3/"
 API_ROOT = "https://api.github.com/repos/" + REPO
 ALLOWED_PREFIXES = (
-    "public/assets/", "public/arena-", "public/index.html",
+    "public/assets/", "public/arena-", "public/market-", "public/index.html",
     "public/growth-frames.js", "public/ludus-", "public/beast-hunt.css", "public/mobile-legibility.css", "public/sprite-", "public/wolf-",
     "public/uploader-release.json", "scripts/", "config/",
     "docs/", "tests/"
