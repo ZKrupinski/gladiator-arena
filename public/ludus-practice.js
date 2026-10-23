@@ -215,6 +215,8 @@ function sparks(target,force=false){
   const rad=Math.random()*Math.PI*2,velocity=30+Math.random()*85;
   battle.particles.push({x:target.x,y:target.y-77*s.scale,
    dx:Math.cos(rad)*velocity,dy:Math.sin(rad)*velocity-40,
+   depth:s.y-(target.side==='enemy'?12:0)+.55,
+   front:target.side==='ally'?1:0,
    life:.4+Math.random()*.3,critical:force});
  }
 }
@@ -224,9 +226,10 @@ function emitVfx(kind,unit,other,emphasis=false){
  if(!battle||unit.seat<0||!COURTS[unit.seat])return;
  const c=COURTS[unit.seat],duration=root.ArenaRasterFX?.FAMILIES?.[kind]?.duration||.34;
  const face=unit.side==='ally'?1:-1;
- battle.fx.push({kind,x:unit.x+face*43*c.scale,
-  y:unit.y-108*c.scale,scale:c.scale,face,age:0,duration,
-  alpha:emphasis?1:.87});
+ battle.fx.push({kind,x:unit.x+face*52*c.scale,
+  y:unit.y-113*c.scale,scale:c.scale,face,age:0,duration,
+  depth:c.y-(unit.side==='enemy'?12:0)+.6,
+  front:unit.side==='ally'?1:0,alpha:emphasis?1:.87});
 }
 function beginRemoval(unit){
  if(!battle||unit.retiring||unit.seat<0)return;
@@ -253,41 +256,42 @@ function selectedDeathArt(unit){
  return api()?.practiceFrame?.(unit,'death')?.canvas||
   rawSprite(unit,'death')||rawSprite(unit,'hit')||null;
 }
-function drawProne(unit,zoom,angle){
+function drawDefeatPose(unit,zoom){
  const art=selectedDeathArt(unit);if(!art)return;
  const metric=calibration(unit,art);if(!metric)return;
  const k=metric.pixels*zoom,meta=api()?.practiceFrame?.(unit,'death');
- ctx.save();ctx.rotate(angle);
+ // Display the exact approved loss pose, no extraneous 90-degree rotation.
+ ctx.save();
  if(unit.side==='enemy')ctx.scale(-1,1);
  try{
   if(meta?.canvas===art&&Number.isFinite(meta.pivotX)&&Number.isFinite(meta.footY))
    ctx.drawImage(art,-meta.pivotX*k,-meta.footY*k,art.width*k,art.height*k);
-  else{const b=alphaBounds(art);if(b)ctx.drawImage(art,b.x,b.y,b.w,b.h,-b.w*k/2,-b.h*k,b.w*k,b.h*k);}
+  else{
+   const b=alphaBounds(art);
+   if(b)ctx.drawImage(art,b.x,b.y,b.w,b.h,-b.w*k/2,-b.h*k,b.w*k,b.h*k);
+  }
  }catch(_){}
  ctx.restore();
 }
 function drawFalling(removal){
- const p=clamp(removal.age/FALL_DURATION,0,1),unit=removal.unit;
- const tilt=(unit.side==='enemy'?1:-1)*1.43*(1-Math.pow(1-p,3));
- ctx.save();ctx.translate(unit.x,removal.court.y-4);
- drawProne(unit,removal.court.scale,tilt);
+ ctx.save();ctx.translate(removal.unit.x,removal.court.y-4);
+ drawDefeatPose(removal.unit,removal.court.scale);
  ctx.restore();
 }
 function drawDeparture(removal){
  const engine=root.ArenaCarnifex,{unit,seq,court,scale}=removal;
- // First show a definite falling action before the executor enters.
  if(removal.age<FALL_DURATION){drawFalling(removal);return;}
  if(!seq||!engine?.draw){
   ctx.save();ctx.translate(unit.x,court.y);
-  drawProne(unit,court.scale,unit.side==='enemy'?1.43:-1.43);
+  drawDefeatPose(unit,court.scale);
   ctx.restore();return;
  }
  ctx.save();ctx.translate(court.x-640*scale,court.y-617*scale);
  ctx.scale(scale,scale);
  engine.draw(ctx,seq,corpse=>{
   ctx.save();ctx.translate(corpse.x,617);
-  // Lay the character down regardless of the fallback 'death' source.
-  drawProne(unit,court.scale/scale,unit.side==='enemy'?1.43:-1.43);
+  // Preserve identical source defeat pose from KO until full offscreen exit.
+  drawDefeatPose(unit,court.scale/scale);
   ctx.restore();
  },617);
  ctx.restore();
@@ -304,14 +308,24 @@ function updateDepartures(dt){
  battle.exits=battle.exits.filter(exit=>
   exit.seq?!exit.seq.finished:exit.age<3.6);
 }
-function paintVfx(){
- if(!battle)return;
- const fx=root.ArenaRasterFX;
- for(const v of battle.fx){
-  const p=clamp(v.age/v.duration,0,.9999);
-  fx?.draw?.(ctx,v.kind,v.x,v.y,275*v.scale,270*v.scale,p,
-    v.alpha*Math.min(1,(1-p)*2.7),v.face,0);
- }
+// Match actual full-screen authored 8-frame arena effects relative to
+// character size instead of the former microscopic 275x270 world pixels.
+const PRACTICE_FX_SIZE=Object.freeze({
+ slash:[600,570],sweep:[655,605],thrust:[710,570],
+ hit:[480,450],guard:[440,430],parry:[510,495],
+ finisher:[690,650],special:[660,620],dash:[790,510]
+});
+function drawVfx(v){
+ const fx=root.ArenaRasterFX,size=PRACTICE_FX_SIZE[v.kind]||[600,560];
+ const p=clamp(v.age/v.duration,0,.9999);
+ fx?.draw?.(ctx,v.kind,v.x,v.y,size[0]*v.scale,size[1]*v.scale,p,
+  v.alpha*Math.min(1,(1-p)*2.7),v.face,0);
+}
+function drawSpark(p){
+ ctx.save();ctx.globalAlpha=clamp(p.life/.75,0,.9);
+ ctx.fillStyle=p.critical?'#ffe9a3':'#fbb071';
+ ctx.beginPath();ctx.arc(p.x,p.y,p.critical?3.3:2.1,0,Math.PI*2);
+ ctx.fill();ctx.restore();
 }
 function deal(attacker,target,multiplier=1,style='normal'){
  if(attacker.dead||target.dead)return;
@@ -326,6 +340,7 @@ function deal(attacker,target,multiplier=1,style='normal'){
  const c=COURTS[target.seat],sign=attacker.side==='ally'?1:-1;
  target.x=clamp(target.x+sign*13,c.x-LEASH,c.x+LEASH);
  if(!target.hp){
+  emitVfx('finisher',target,attacker,true);
   target.dead=true;target.fade=1.6;target.windup=0;target.guard=0;
   beginRemoval(target);
   if(attacker.side==='ally'&&target.side==='enemy'){
@@ -532,10 +547,17 @@ function paint(){
  const bodies=battle.exits.map(exit=>({depth:exit.court.y-
   (exit.unit.side==='enemy'?12:0),front:exit.unit.side==='ally'?1:0,
   paint:()=>drawDeparture(exit)}));
- units.concat(bodies).sort((a,b)=>a.depth-b.depth||a.front-b.front)
+ const effects=battle.fx.map(effect=>({
+  depth:effect.depth,front:effect.front,paint:()=>drawVfx(effect)
+ }));
+ const sparks=battle.particles.map(p=>({
+  depth:p.depth,front:p.front,paint:()=>drawSpark(p)
+ }));
+ // Render all actor/corpse/effect/particle layers in ONE world-depth pass.
+ // Distant strikes can never obscure closer fighters.
+ units.concat(bodies,effects,sparks)
+  .sort((a,b)=>a.depth-b.depth||a.front-b.front)
   .forEach(item=>item.paint());
- paintVfx();
- for(const p of battle.particles){ctx.globalAlpha=clamp(p.life/.75,0,.9);ctx.fillStyle=p.critical?'#ffe9a3':'#fbb071';ctx.beginPath();ctx.arc(p.x,p.y,p.critical?3.3:2.1,0,Math.PI*2);ctx.fill();}
  ctx.restore();
 }
 function status(){
