@@ -119,7 +119,7 @@ assert(practice.includes('root.ArenaBalance?.combatDamage?.(raw,style)'),'origin
 assert(practice.includes("api()?.squadSprite?.(hero,kind"),'original fighter attack/guard sprites reused');
 assert(practice.includes('target.parry>0')&&practice.includes('target.dodge>0'),'parry and dodge exchanges');
 assert(!practice.includes('function closest(unit,opponents)'),'no global chasing');
-assert(practice.includes('ctx.save(); // Only the enemy SPRITE flips'),'health labels stay readable');
+assert(practice.includes('ctx.save(); // Only artwork flips. Original frame pivots stabilize the torso.'),'health labels remain separate from sprite flip');
 const reward=html.slice(html.indexOf('practiceReward:(awards'),html.indexOf('practiceEnemySprite:(visualId'));
 assert(!/CAREER\.(gold|glory|lastLoot|lastPrize|wins|fights|armoryInventory)\s*(?:=|\+\+|--)/.test(reward));
 
