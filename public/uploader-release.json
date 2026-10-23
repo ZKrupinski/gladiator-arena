@@ -1,11 +1,10 @@
 {
   "assetSha256": {
-    "public/index.html": "9046ff875eda3b54c86030734884594c2d504378b8f7b980cf6124f5fd66d125",
-    "tests/endless-practice-v26.js": "101a2492c65969a71d17416b5cd41b66ae30e04cc154af86d6ead72799c92d16"
+    "tests/endless-practice-v26.js": "0b8a8db6ae4d9a51fda77893ba5ab439c9a7033afc4fda35ad440521579eb119"
   },
-  "baseCommit": "f9bce7f39b67dd630da7b8872804415b4f79d3f8",
+  "baseCommit": "06ed21ad6999006840383afb20aec84dc4ffbc28",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-calibrator-25-live-integration-20261023-v33b",
+  "releaseId": "practice-fx-depth-and-duel-visuals-20261024-v34",
   "releaseProtocol": "spartacus-uploader-v1"
 }
