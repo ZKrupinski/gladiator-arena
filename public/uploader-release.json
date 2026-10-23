@@ -1,11 +1,11 @@
 {
   "assetSha256": {
-    "public/index.html": "ab205b62b27da06f057f30f168723244ff7fc26e5bb21434ce3d6c256606275e",
-    "tests/endless-practice-v26.js": "54f3d78eb59bacdf85bf2e10bcbec40d8051368f664fb284d71476700de9abdd"
+    "public/index.html": "7ec5196af22072ed7cb3126ea820d0c36385ec235db1183e7269c8c3d8971226",
+    "tests/endless-practice-v26.js": "1abcd80db6460bcc8ebecc8c9ea974476bfc72fc7930354a952593f85182d466"
   },
-  "baseCommit": "4cc74e113cd12643a0a557f38355439859a8cdac",
+  "baseCommit": "11e5afac2af95b2bb88a4e78d555c89fc35236bf",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-ko-impact-simultaneous-sfx-20261024-v35",
+  "releaseId": "size-calibration-scroll-shuffle-batch-beasts-carnifex-20261024-v36",
   "releaseProtocol": "spartacus-uploader-v1"
 }
