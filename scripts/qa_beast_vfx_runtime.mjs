@@ -103,7 +103,7 @@ assert.ok(html.includes("const gaitFrame=Math.floor(clock*7)%8"));
 assert.ok(html.includes("gaitFrame===1||gaitFrame===5"));
 assert.ok(html.includes("beastFx:'step',w:step.w,h:step.h"));
 assert.ok(html.includes("flip:beastFxFlip(beast),layer:'back'"));
-assert.ok(html.includes("const dodgeStep=beastGroundFx(f,f.x+f.face*75,FLOOR-46,560,250)"));
+assert.ok(html.includes("const p=beastGroundFx(f,f.x+f.face*75,FLOOR-46,560,250)"),'beast dodge keeps its world-grounded step effect');
 assert.ok(html.includes("flip:beastFxFlip(f),alpha:.76"));
 assert.ok(beast.includes("if(wolfV3.normalized){"),'clean sheet must avoid adaptive size hopping');
 assert.ok(beast.includes("return drawWolfPending(ctx,{x,y,w,h,flip,alpha})"),
