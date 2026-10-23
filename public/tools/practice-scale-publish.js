@@ -72,6 +72,9 @@ save.addEventListener('click',async()=>{
 });
 $('#githubEdit')?.addEventListener('click',async()=>{
  const text=source();
+ // Open synchronously from the click gesture; browsers can block windows
+ // opened only after an awaited clipboard permission dialog.
+ root.open(editor,'_blank','noopener,noreferrer');
  try{
   await navigator.clipboard.writeText(text);
   describe('GitHub 원본 파일을 복사했습니다. 열린 GitHub 편집기에서 전체 내용을 붙여넣고 Commit changes를 누르세요.');
@@ -81,7 +84,6 @@ $('#githubEdit')?.addEventListener('click',async()=>{
   setTimeout(()=>URL.revokeObjectURL(url),1200);
   describe('원본 설정 JS 파일을 저장했습니다. GitHub 편집기를 열어 파일 내용을 붙여넣고 Commit changes를 누르세요.');
  }
- root.open(editor,'_blank','noopener,noreferrer');
 });
 root.SpartacusScalePublisher={source,commit};
 })(typeof window!=='undefined'?window:globalThis);
