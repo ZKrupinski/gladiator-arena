@@ -83,7 +83,7 @@
 }
 /* Portrait is supported as a real readable UI only for the armory.
    The original fixed-size stage is still used for combat/animation scenes. */
-@media(orientation:portrait) and (max-width:700px) {
+@media(orientation:portrait) and (max-width:900px) {
   .la-screen:has(.la-stage.armory) .la-orient { display:none!important }
   .la-screen:has(.la-stage.armory) .la-stage {
     left:0!important;top:0!important;right:0!important;bottom:0!important;
@@ -219,7 +219,7 @@
 
 /* Portrait armory scrolls as one whole page, including the details column.
    Do not create nested bottom-truncated equip lists. */
-@media(orientation:portrait) and (max-width:700px) {
+@media(orientation:portrait) and (max-width:900px) {
   .la-stage.armory .ra-screen {
     overflow-x:hidden!important;
     overflow-y:auto!important;
@@ -276,7 +276,7 @@
  .ra-collection .ra-buttons button small{font-size:21px;white-space:nowrap}
  .ra-collection .ra-detail-title>span{white-space:nowrap}
 }
-@media(orientation:portrait) and (max-width:700px){
+@media(orientation:portrait) and (max-width:900px){
  /* Portrait touch flow: fighter → choose from stock → inspect/act at page end. */
  .ra-collection main>.ra-fighters{order:1}
  .ra-collection main>.ra-items{order:2}
@@ -334,7 +334,7 @@
   max-width:100%!important;white-space:nowrap!important;
  }
 }
-@media(orientation:portrait) and (max-width:700px){
+@media(orientation:portrait) and (max-width:900px){
  .ra-collection .ra-list{grid-auto-rows:minmax(110px,max-content)}
  .ra-collection .ra-list .ra-item{
   grid-template-columns:92px minmax(0,1fr);
@@ -368,7 +368,7 @@
   padding:2px 5px;
  }
 }
-@media(orientation:portrait) and (max-width:700px){
+@media(orientation:portrait) and (max-width:900px){
  .ra-collection .ra-fighters .ra-roster{max-height:132px}
  .ra-collection .ra-portrait{
   flex:0 0 99px;width:99px;height:120px;min-width:99px;
@@ -405,7 +405,7 @@
   max-width:calc(100% - 18px)!important;
  }
 }
-@media(orientation:portrait) and (max-width:700px){
+@media(orientation:portrait) and (max-width:900px){
  .ra-collection .ra-list .ra-item-copy{
   padding-bottom:25px!important;
  }

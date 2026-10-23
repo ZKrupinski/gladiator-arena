@@ -1,18 +1,14 @@
 {
   "assetSha256": {
-    "public/arena-portrait-fit.js": "c964f71c604ec6f253a18ea548c6c02e3051618d8f7c03a044072330fec2346f",
-    "public/arena-result-roman-v2.css": "3b3917aaf6d22fe37001b2f036a89e278fce0349f840d331062444f2be0f0a01",
-    "public/beast-hunt.css": "1a1ac7601a6f5d19c4b09b5edb09e1661ee75514799e90ba877f4e9c7f224f78",
-    "public/index.html": "4ba0f2b27f04eb4c12dccd590b5090cca3656e88a2e34039b4b816f1e178c3bf",
-    "public/ludus-approved-scenes.js": "9a0afd6d8a1b52b7d4cedbe161343d0bde27be093f538db3bd76c453982afb7e",
-    "public/ludus-armory-live.js": "b29db59e2771eb670605879af36201b1f1ee373a2547788459d33152a09ba2c1",
-    "public/ludus-cards.css": "533d44336f53fd99e3d49b15f45ae31775cd8a512b2c73b119b3b6a6fa888e21",
-    "public/ludus-cards.js": "c8ea127259bd30fe48ffe3d46d2005ac4d66378df34cf1d774f9dd288ed7c35e",
-    "public/ludus-scene.js": "3f37ba7b4baf4813e15837ab5b0f9d255742937526a0eb6440a621435b9591e6"
+    "docs/qa-responsive-20261023.md": "383b6669e86a0ca32c76ee9102fc55e07b78e2b7f5983d0b4fd1c35493cd0221",
+    "public/arena-responsive.css": "c3fab3e35751ff4ae807d734e35903890b93c7a47ddd94ad6ea02b30ab0811fa",
+    "public/index.html": "18013f0ae833acc83b82c10f7b87eb8fa5f5d27a3bab70f99e3361b03dab7272",
+    "public/mobile-legibility.css": "29e6e985d0e23ee5324a36d190b0585c167ec85c1e7d9577833353d716437cab",
+    "tests/responsive-qa.html": "0b0b99c7ce1a755772ac99929e314536a2786daf628f4afed5eef2cfd19fcd66"
   },
-  "baseCommit": "4e39be2b1fd099894051577b8ba84c1082f0cec6",
+  "baseCommit": "75b0cbf022687f74dd6cd782fa1a77a7df0ea875",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "uniform-gladiator-portraits-team-matchdraft-20261023-v17",
+  "releaseId": "responsive-ui-qa-20261023-v18",
   "releaseProtocol": "spartacus-uploader-v1"
 }

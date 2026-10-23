@@ -1,0 +1,109 @@
+/* Viewport QA v18: final layout rules, after legacy scene and typography sheets.
+ * Illustrated stage coordinates stay intact; data panels reflow and scroll. */
+html{scrollbar-gutter:auto;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+#careerHub:has(.lc-screen){padding:0;overflow-x:hidden}
+#careerHub:has(.lc-screen) .career-shell{padding:0;max-width:none;box-sizing:border-box}
+#careerHub:has(.lc-screen) #careerBody{margin:0;padding:0;min-width:0}
+.lc-screen{min-height:0;height:100dvh}
+.lc-screen :is(.lc-banner,.lc-section-head,.lc-buttons,.lc-card-class){min-width:0}
+.lc-screen .lc-card-class{max-width:100%;white-space:normal;text-align:center;overflow-wrap:anywhere}
+.lc-screen .lc-section-head{flex-wrap:wrap;gap:4px 10px}
+.lc-screen .lc-section-head small{white-space:normal}
+.lc-screen .lc-buttons button{padding:8px;overflow-wrap:anywhere;line-height:1.3}
+.lc-draft-screen .lc-mode-picker button{flex-shrink:0;min-width:86px;padding:5px 6px}
+.lc-draft-screen .lc-draft-actions{grid-template-columns:minmax(86px,.55fr) minmax(0,1.45fr)}
+.lc-screen .lc-card-grid{scroll-padding:8px;overscroll-behavior:auto}
+.lc-screen .lc-opponent,.lc-screen .lc-detail{overscroll-behavior:auto}
+/* The old market shell otherwise adds 44px to every full-height screen. */
+@media(max-width:680px),(max-height:540px){
+ #careerHub:has(.lc-screen){overflow-y:auto}
+ .lc-screen{height:auto;min-height:100dvh;overflow:visible}
+ .lc-screen-body{flex:none}
+ .lc-screen .lc-gallery{min-height:300px;height:clamp(300px,54dvh,460px);max-height:none}
+ .lc-screen .lc-detail,.lc-screen .lc-opponent{min-height:0;height:auto;overflow:visible}
+ .lc-screen .lc-hint{white-space:normal;overflow:visible}
+ .lc-screen .lc-top{min-height:76px;padding:8px 150px 8px 10px}
+ .lc-screen .lc-banner{gap:4px}
+ .lc-screen .lc-banner h1{font-size:clamp(20px,3.5vw,30px);overflow-wrap:anywhere}
+ .lc-screen .lc-laurel{display:none}
+ .lc-screen .lc-resources{display:none}
+ .lc-draft-screen .lc-mode-note{font-size:11px;line-height:1.35}
+ .lc-screen .lc-buttons{position:sticky;bottom:0;z-index:6;background:#23120ff5;padding:6px 0}
+}
+@media(max-width:680px){
+ .lc-screen .lc-screen-body{padding:8px;gap:10px}
+ .lc-draft-screen .lc-card-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(200px,max-content)}
+ .lc-screen .lc-card-title{font-size:clamp(14px,3.8vw,18px)}
+ .lc-draft-screen .lc-card-class{font-size:11px;line-height:1.25}
+ .lc-draft-screen .lc-card-foot{font-size:11px;line-height:1.3;white-space:normal}
+ .lc-draft-screen .lc-rival-caption strong{font-size:12px;white-space:normal;overflow-wrap:anywhere}
+ .lc-draft-screen .lc-rival-caption small{font-size:11px;white-space:normal}
+ .lc-draft-screen .lc-rival-art{height:clamp(100px,29vw,165px)}
+ .lc-draft-screen .lc-match-top strong{white-space:normal}
+}
+/* Beast selection has its own heading/back action; don't repeat the old menu. */
+#careerHub:has(.venatio-select){padding:0;overflow-x:hidden}
+#careerHub:has(.venatio-select) .career-shell{padding:0;max-width:none}
+#careerHub:has(.venatio-select) :is(.career-head,#growthImport){display:none!important}
+#careerHub:has(.venatio-select) #careerBody{display:block;margin:0;padding:0;min-width:0}
+#careerHub .beast-gallery.venatio-select{border-radius:0;min-height:100dvh;padding:18px!important}
+.venatio-select :is(select,button){touch-action:manipulation;max-width:100%;box-sizing:border-box}
+.venatio-select .beast-gallery-head{padding-right:180px;min-height:64px}
+.venatio-select .beast-gallery-head p{overflow-wrap:anywhere}
+.venatio-select :is(.venatio-gladiator,.venatio-beast){overflow-wrap:anywhere}
+.venatio-roster-strip{overscroll-behavior-x:contain;touch-action:pan-x pan-y}
+.ra-collection :is(.ra-detail-title,.ra-item-copy){overflow-wrap:anywhere}
+.ra-collection .ra-home{white-space:normal;line-height:1.2;padding:5px;font-size:22px}
+@media(max-width:700px){
+ #careerHub .beast-gallery.venatio-select{padding:10px!important}
+ .venatio-select .beast-gallery-head{padding-right:130px;min-height:62px;margin-bottom:10px;align-items:start}
+ .venatio-select .beast-gallery-head h2{font-size:26px!important}
+ .venatio-select .beast-gallery-head p{font-size:12px;line-height:1.4}
+ .venatio-select .venatio-versus-layout{grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr);gap:3px}
+ .venatio-select :is(.venatio-gladiator,.venatio-beast){padding:6px}
+ .venatio-select :is(.venatio-gladiator,.venatio-beast) h3{font-size:17px;line-height:1.25}
+ .venatio-select :is(.venatio-hero-slider,.venatio-slider){grid-template-columns:36px minmax(0,1fr) 36px;gap:4px}
+ .venatio-select :is(.venatio-hero-preview,.venatio-preview){grid-column:1/-1;grid-row:1;width:100%;aspect-ratio:1;max-height:180px}
+ .venatio-select :is(.venatio-hero-slider,.venatio-slider)>button{grid-row:2;width:36px;height:36px;font-size:20px}
+ .venatio-select :is(.venatio-hero-slider,.venatio-slider)>button:first-child{grid-column:1}
+ .venatio-select :is(.venatio-hero-slider,.venatio-slider)>button:last-child{grid-column:3}
+ .venatio-select :is(.venatio-hero-preview,.venatio-preview)>span{font-size:11px;top:3px;right:3px;padding:2px}
+ .venatio-select :is(#beastHeroStats,#beastStats,#beastCaption){font-size:12px;line-height:1.45}
+ .venatio-select .venatio-beast select{font-size:12px;padding:4px;min-height:40px;min-width:0}
+ .venatio-select .beast-challenge{font-size:15px;line-height:1.3;padding:7px 4px;min-height:44px;white-space:normal}
+ .venatio-select .venatio-roster-thumb{min-width:64px}
+ .ra-collection .ra-home{font-size:12px;min-height:36px}
+}
+/* Safe-area padding only on viewport layouts (never on scaled art coordinates). */
+#careerHub:has(.lc-screen),#careerHub:has(.venatio-select){
+ padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);
+ padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box;
+}
+#endScreen.overlay-ending{padding-bottom:max(6px,env(safe-area-inset-bottom,0px));justify-content:safe center}
+#endScreen>.end-actions button{font-size:clamp(12px,2vw,18px)!important;line-height:1.2!important}
+@media(max-width:360px){
+ #endScreen>.end-actions{width:94vw}
+ #endScreen>.end-actions button{padding-inline:14px!important;font-size:12px!important}
+ .ra-collection .ra-detail-head{gap:7px;flex-wrap:wrap}
+ .ra-collection .ra-detail-title{flex-basis:140px}
+ .ra-collection .ra-hero-info{flex-wrap:wrap;gap:3px 7px}
+}
+/* The beast page already supplies its own return button. */
+.venatio-select .beast-gallery-head{padding-right:0;min-height:0}
+#careerHub .beast-gallery.venatio-select{border:2px ridge #b58d55!important;border-image:none!important}
+.lc-draft-screen .lc-fighter-card>*{flex-shrink:0}
+.lc-draft-screen .lc-card-grid{grid-auto-rows:minmax(228px,max-content)}
+@media(max-width:700px){
+ .venatio-select .beast-gallery-head{flex-direction:row;align-items:center;gap:8px}
+ .venatio-select .beast-gallery-head>div{flex:1 1 160px;min-width:0}
+ .venatio-select .beast-gallery-head .beast-back{flex:none;min-height:44px;padding:7px;font-size:13px;white-space:nowrap}
+ .venatio-select :is(.venatio-gladiator,.venatio-beast)>small{font-size:9px;letter-spacing:.04em;white-space:nowrap}
+ .venatio-select .beast-gallery-head small{font-size:10px;letter-spacing:.06em}
+}
+@media(max-width:680px){
+ .lc-draft-screen .lc-mode-picker{justify-content:flex-start}
+}
+@media(orientation:portrait) and (max-width:900px){
+ .ra-collection .ra-title{min-width:0;max-width:100%}
+ .ra-collection .ra-title h1{font-size:clamp(20px,5.8vw,30px);white-space:normal;overflow-wrap:anywhere;letter-spacing:.025em;line-height:1.15}
+}

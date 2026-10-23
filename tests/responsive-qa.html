@@ -1,0 +1,47 @@
+<!doctype html><meta charset="utf-8"><title>Responsive QA</title>
+<style>body{margin:0;background:#ddd;font:14px system-ui}nav{padding:8px;display:flex;gap:6px;position:sticky;top:0;background:white;z-index:3}iframe{border:0;display:block;transform-origin:top left}pre{white-space:pre-wrap;max-height:150px;overflow:auto}button,select{padding:8px}</style>
+<nav><select id="size"><option>390x844</option><option>320x568</option><option>568x320</option><option>844x390</option><option>768x1024</option><option>1024x768</option><option>1920x1080</option><option>2560x1440</option></select><select id="scene"><option>draft</option><option>beasts</option><option>gear</option><option>roster</option><option>training</option><option>result</option></select><button id="show">Show</button><button id="audit">Audit all</button><button id="verify">Verify flow</button></nav><pre id="report"></pre><iframe id="game" src="/?__arena_qa=1"></iframe>
+<script>
+const f=document.getElementById('game'),report=document.getElementById('report');
+const wait=ms=>new Promise(r=>setTimeout(r,ms));let ready=false;
+f.onload=async()=>{for(let i=0;i<120&&!f.contentWindow.LudusBridge;i++)await wait(100);const w=f.contentWindow,s=w.LudusBridge.state();while(s.roster.length<6)s.roster.push(w.LudusRoster.create(['murmillo','thraex','retiarius'][s.roster.length%3],s.roster.length+1));s.roster.forEach((h,i)=>{h.level=i*3+2;h.injury=0;h.fatigue=0;});ready=true;await show();};
+function measure(){const d=f.contentDocument,w=f.contentWindow;const visible=e=>{const r=e.getBoundingClientRect(),c=w.getComputedStyle(e);return r.width>0&&r.height>0&&c.visibility!=='hidden'&&c.display!=='none'&&!e.closest('[hidden]');};const roots=[...d.querySelectorAll('.lc-screen,.venatio-select,.ra-screen,#endScreen,.lt-info')].filter(visible);return {size:document.getElementById('size').value,scene:document.getElementById('scene').value,panels:roots.map(e=>{let r=e.getBoundingClientRect();return {name:e.className,x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height),scroll:e.scrollHeight,client:e.clientHeight}}),overflow:[...d.querySelectorAll('button,select,h1,h2,h3')].filter(visible).filter(e=>roots.some(root=>root.contains(e))).filter(e=>e.scrollWidth>e.clientWidth+3).map(e=>({name:e.className,text:e.textContent.trim().slice(0,40),width:e.clientWidth,scroll:e.scrollWidth})).slice(0,25)};}
+async function show(){if(!ready)return;const [width,height]=document.getElementById('size').value.split('x').map(Number);f.width=width;f.height=height;f.style.transform=`scale(${Math.min(1,1100/width)})`;const w=f.contentWindow;w.LudusApprovedScenes.close();w.LudusScene?.close?.();w.document.getElementById('startScreen').hidden=true;w.document.getElementById('endScreen').hidden=true;let scene=document.getElementById('scene').value;if(scene==='draft')w.LudusBridge.fight();else if(scene==='result'){w.document.getElementById('careerHub').hidden=true;w.document.getElementById('startBtn').click();await wait(500);const s=w.__arenaQA.state;s.careerMatch=false;s.gauntlet={round:30,inCleanup:false};s.player.dead=false;s.player.hp=s.player.maxHp;s.enemy.dead=true;s.enemy.hp=0;s.resultApplied=true;s.resultWin=true;s.phase='result';w.__arenaQA.showEnd();}else w.LudusBridge.section(scene);await wait(600);report.textContent=JSON.stringify(measure(),null,2);}
+document.getElementById('show').onclick=show;
+document.getElementById('audit').onclick=async()=>{document.getElementById('audit').disabled=true;report.dataset.complete='false';const results=[];for(const size of ['320x568','390x844','568x320','844x390','768x1024','1024x768','1920x1080','2560x1440'])for(const scene of ['draft','beasts','gear','roster']){document.getElementById('size').value=size;document.getElementById('scene').value=scene;await show();results.push(measure());}report.textContent=JSON.stringify(results,null,2);report.dataset.complete='true';document.getElementById('audit').disabled=false;};
+
+document.getElementById('verify').onclick=async()=>{
+ const w=f.contentWindow,d=f.contentDocument,checks=[];
+ const check=(ok,name)=>{checks.push({name,pass:!!ok});};
+ const click=async(sel)=>{d.querySelector(sel).click();await wait(100);};
+ try{
+  w.LudusApprovedScenes.close();w.LudusBridge.fight();await wait(200);
+  await click('[data-battle-mode="1v1"]');
+  const key=w.LudusBridge.matchOpponent([0]).matchKey;
+  await click('[data-candidate="1"]');
+  check(w.LudusBridge.matchOpponent([1]).matchKey!==key,'single fighter changes match');
+  await click('[data-battle-mode="2v2"]');
+  check(d.querySelectorAll('.lc-enemy-team .is-pending').length===2,'2v2 waits for complete team');
+  await click('[data-candidate="2"]');
+  check(d.querySelectorAll('canvas[data-enemy-art]').length===2,'2v2 displays both opponents');
+  const team=w.LudusBridge.matchOpponent([1,2]);
+  await click('[data-candidate="3"]');
+  check(w.LudusBridge.matchOpponent([2,3]).matchKey!==team.matchKey,'changing full team rematches');
+  await click('[data-battle-mode="3v3"]');
+  check(d.querySelectorAll('.lc-enemy-team .is-pending').length===3,'3v3 waits for complete team');
+  await click('[data-candidate="1"]');
+  check(d.querySelectorAll('canvas[data-enemy-art]').length===3,'3v3 displays all three opponents');
+  const boxes=[...d.querySelectorAll('.lc-enemy-portrait-card')].map(e=>e.getBoundingClientRect());
+  check(boxes.every(r=>Math.abs(r.y-boxes[0].y)<2),'opponents on same row');
+  await click('[data-beast-hunt]');
+  const thumb=[...d.querySelectorAll('.venatio-roster-thumb')];
+  check(thumb.length===6&&thumb.every(e=>Math.abs(e.getBoundingClientRect().y-thumb[0].getBoundingClientRect().y)<2),'beast roster horizontal');
+  await click('#beastHeroNext');check(d.querySelectorAll('.venatio-roster-thumb.is-selected').length===1,'one selected beast fighter');
+  let src=d.createElement('canvas');src.width=220;src.height=220;src.getContext('2d').fillRect(96,32,28,177);let target=d.createElement('canvas');target.width=140;target.height=170;
+  check(w.ArenaPortraitFit.draw(target,src),'alpha portrait fit renders');
+  const data=target.getContext('2d').getImageData(0,0,140,170).data;let min=170,max=-1;for(let y=0;y<170;y++)for(let x=0;x<140;x++)if(data[(y*140+x)*4+3]>30){min=Math.min(y,min);max=Math.max(y,max);}
+  check(max-min>136&&min>0&&max<169,'portrait fills without edge clipping');
+ }catch(e){checks.push({name:String(e),pass:false});}
+ report.textContent=JSON.stringify(checks,null,2);
+};
+</script>
