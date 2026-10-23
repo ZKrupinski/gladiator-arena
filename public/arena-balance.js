@@ -24,9 +24,23 @@
   '2v2':{allies:2,enemies:2,label:'복식 대결',reward:1.4},
   '3v3':{allies:3,enemies:3,label:'군단전',reward:1.75}
  };
+ function trainingAptitude(h,stat){
+  const n=Number(h?.aptitudes?.[stat]);
+  return Number.isFinite(n)?clamp(n,.60,1.60):1;
+ }
  function trainingCost(h,stat){
   const level=Math.max(0,Number(h?.stats?.[stat])||0);
-  return Math.round(18+11*Math.pow(level,1.6));
+  return Math.round((18+11*Math.pow(level,1.6))*(1+(1-trainingAptitude(h,stat))*.50));
+ }
+ function trainingGain(h,stat,base){
+  const n=Math.max(0,Math.floor(Number(base)||0));
+  if(!n)return 0;
+  if(!h?.aptitudes||!Object.prototype.hasOwnProperty.call(h.aptitudes,stat))return n;
+  h.growthRemainder=h.growthRemainder||{};
+  const earned=n*trainingAptitude(h,stat)+(Number(h.growthRemainder[stat])||0);
+  const gain=Math.max(1,Math.floor(earned+1e-8));
+  h.growthRemainder[stat]=Math.max(0,Math.min(.999999,earned-gain));
+  return gain;
  }
  function heroPower(h){
   if(!h)return 0;
@@ -167,7 +181,7 @@
  function combatDamage(value,kind='normal'){
   return Math.max(1,Math.round(Math.max(0,Number(value)||0)*(DAMAGE_RATES[kind]??DAMAGE_RATES.normal)));
  }
- root.ArenaBalance={version:'1.4.0',TRAINING_SOFTCAP,trainedStat,combatDamage,DAMAGE_RATES,TRAITS,MODES,trainingCost,heroPower,
+ root.ArenaBalance={version:'1.4.0',TRAINING_SOFTCAP,trainedStat,trainingAptitude,trainingGain,combatDamage,DAMAGE_RATES,TRAITS,MODES,trainingCost,heroPower,
   matchStrength,makeMatch,comebackParry,
   encounterLevel,duelEnemy,heroStats,enemyAi,damageReduction,
   playerParryDamage,rewards};

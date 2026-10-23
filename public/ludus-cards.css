@@ -326,3 +326,10 @@
  .lc-draft-screen .lc-rival-caption strong{font-size:10px}
  .lc-draft-screen .lc-rival-caption small{font-size:9px}
 }
+/* v22: lifelong aptitude, compact and scroll-friendly under main stats */
+#careerHub .lc-roster-screen .lc-aptitude{display:grid;gap:5px;padding:8px 4px;margin:6px 0;border:1px solid #a07b49;border-radius:5px;background:#22130edb;text-align:center;font-family:'Noto Sans KR',sans-serif}
+#careerHub .lc-roster-screen .lc-aptitude>strong{color:#e9cb9c;font-size:12px}
+#careerHub .lc-roster-screen .lc-aptitude>span{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
+#careerHub .lc-roster-screen .lc-aptitude em{min-width:0;font:800 clamp(10px,1.1vw,13px)/1.15 'Noto Sans KR',sans-serif;font-style:normal;overflow-wrap:anywhere;color:#edddb6}
+#careerHub .lc-roster-screen .lc-aptitude em.apt-strong{color:#b0efba}
+#careerHub .lc-roster-screen .lc-aptitude em.apt-weak{color:#f3a6a0}

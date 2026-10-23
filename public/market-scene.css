@@ -141,3 +141,11 @@
 }
 .gm-screen .gm-stage .gm-wallet-unit {font:900 21px Georgia,serif}
 .gm-screen .gm-stage .gm-wallet-legacy-mask {display:none!important}
+/* v22: intrinsic aptitude summary in each sale plaque */
+.gm-screen .gm-stage .gm-card-dynamic .gm-class{font-size:16px;line-height:1.12}
+.gm-screen .gm-stage .gm-card-dynamic .gm-innate{
+ font:800 14px/1.16 'Noto Sans KR',sans-serif;color:#eac68d;
+ white-space:nowrap;letter-spacing:-.04em;overflow:hidden;text-overflow:ellipsis;
+}
+.gm-screen .gm-stage .gm-card-dynamic .gm-lv{font-size:18px;line-height:1.12}
+.gm-screen .gm-stage .gm-card-dynamic .gm-stat{margin:2px auto}

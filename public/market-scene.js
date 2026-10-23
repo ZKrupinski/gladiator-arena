@@ -47,6 +47,16 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
  const quality=roll<.006?'rare':roll<.096?'veteran':roll<.35?'promising':'common';
  const q=qualities[quality],trait=traits[randIndex(rng,traits.length)];
  const primary=randIndex(rng,4);
+ const weakness=(primary+1+randIndex(rng,3))%4;
+ const statKeys=['str','agi','end','focus'],statNames=['근력','민첩','체력','집중'];
+ const aptitudes={};
+ for(let i=0;i<4;i++){
+  const value=i===primary?1.30+randIndex(rng,6)*.04:
+   i===weakness?.67+randIndex(rng,5)*.04:.90+randIndex(rng,7)*.04;
+  aptitudes[statKeys[i]]=+value.toFixed(2);
+ }
+ const innateSummary=statNames[primary]+' ×'+aptitudes[statKeys[primary]].toFixed(2)+
+  ' / '+statNames[weakness]+' ×'+aptitudes[statKeys[weakness]].toFixed(2);
  const vals=t.base.map((base,i)=>{
   const variance=randIndex(rng,3)-1;
   const improved=q.bonus+(i===primary?(quality==='rare'?2:quality==='veteran'?1:0):0);
@@ -54,7 +64,7 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
  });
  const cost=Math.round((q.min+randIndex(rng,q.range+1))/10)*10;
  const growthType=t.id==='thraex'&&rng()<.48?'thraex_b':t.id+'_a';
- return {id:t.id,className:t.className,name,vals,cost,
+ return {id:t.id,className:t.className,name,vals,cost,aptitudes,innateSummary,
   desc:t.desc+' '+(quality==='rare'?'매우 드물게 유통되는 특수 재능의 검투사. ':quality==='veteran'?'실전 경험이 풍부한 숙련자. ':'')+
    '특기: '+trait+'.',
   face:t.face,quality,trait,growthType,
@@ -67,15 +77,6 @@ function makeStock(state,rng=Math.random,existing=[]){
  const usedClasses=live.map(h=>h.id);
  const seed=Math.max(0,Math.trunc(numberFrom(state.marketSeed)));
  return Array.from({length:3-live.length},(_,i)=>newOffer(i,seed,usedNames,usedClasses,rng));
-}
-function newVisit(){
- const state=opts.state;
- state.marketSeed=Math.max(0,Math.trunc(numberFrom(state.marketSeed)))+1;
- // Every distinct entrance is a free refresh; purchases remain a snapshot
- // until the player exits (sold podiums are not re-filled mid-visit).
- state.marketInventory=makeStock(state);
- opts.save?.();
- return state.marketInventory;
 }
 function ensureInventory(){
  const state=opts.state;
@@ -134,7 +135,7 @@ function drawStallArt(i,hero){
 function overlayPanel(hero,i,visible){const el=$('#gmPanel'+i);el.hidden=!visible;if(!visible)return;
  const q=qualities[hero.quality]||qualities.common;
  el.classList.toggle('gm-rare-panel',hero.quality==='rare');
- el.innerHTML=`<div class="gm-roman-name">${clean(hero.name)}</div><div class="gm-class">${clean(hero.className)} · ${q.label}</div><div class="gm-lv">Lv.0</div>`+
+ el.innerHTML=`<div class="gm-roman-name">${clean(hero.name)}</div><div class="gm-class">${clean(hero.className)} · ${q.label}</div><div class="gm-innate">${clean(hero.innateSummary||'성장 적성 · 보통')}</div><div class="gm-lv">Lv.0</div>`+
  hero.vals.map((n,j)=>`<div class="gm-stat"><span class="gm-stat-name"><b style="color:${labels[j][1]}">${labels[j][3]}</b>${labels[j][0]}</span><span class="gm-stat-track"><i style="--value:${Math.min(100,n*12)}%;--color:${labels[j][1]};--shade:${labels[j][2]}"></i></span></div>`).join('');
 }
 function render(){if(!scene||scene.hidden)return;
@@ -164,16 +165,16 @@ function render(){if(!scene||scene.hidden)return;
  detail.hidden=avatar.hidden=!hero;
  if(hero){
   const quality=qualities[hero.quality]||qualities.common;
-  detail.innerHTML=`<h2>${clean(hero.name)} <span class="gm-divider">·</span> ${clean(hero.className)}</h2><div class="gm-level"><strong>Lv.0 · ${quality.label}</strong><span>◉ ${Number(hero.cost).toLocaleString('ko-KR')} D</span></div><p>${clean(hero.desc)}</p>`;
+  detail.innerHTML=`<h2>${clean(hero.name)} <span class="gm-divider">·</span> ${clean(hero.className)}</h2><div class="gm-level"><strong>Lv.0 · ${quality.label}</strong><span>◉ ${Number(hero.cost).toLocaleString('ko-KR')} D</span></div><p>${clean(hero.innateSummary||hero.desc)} · ${clean(hero.trait||'고유 적성')}</p>`;
   drawPortrait(hero);
  }
  const hire=$('#gmHire'),price=$('#gmPrice');hire.disabled=!hero||Number(state.gold)<hero.cost;
  hire.setAttribute('aria-label',hero?hero.name+' 구매 확인, '+hero.cost+' 데나리우스':'구매 가능한 검투사가 없습니다');
  price.hidden=!hero||hero.cost===500;price.textContent=hero?Number(hero.cost).toLocaleString('ko-KR'):'';
  $('#gmNoCandidates').hidden=!!hero;
- const restock=$('#gmRestock');restock.disabled=!list.includes(null)||Number(state.gold)<RESTOCK_COST;
- restock.setAttribute('aria-label','빈 단상을 새 검투사로 갱신. 비용 '+RESTOCK_COST+' 데나리우스');
- $('#gmRestockCount').textContent=list.filter(h=>h===null).length+'자리';
+ const restock=$('#gmRestock');restock.disabled=Number(state.gold)<RESTOCK_COST;
+ restock.setAttribute('aria-label','검투사 매대 3명 전체 갱신. 비용 '+RESTOCK_COST+' 데나리우스');
+ $('#gmRestockCount').textContent='3명 전체';
 }
 function face(pose){
  if(pose===2)pose=1;
@@ -223,20 +224,21 @@ function confirm(){if(mode==='success'){close();return;}if(mode!=='confirm'||!di
  render();mode='success';dialogOffer=null;
  $('#gmDialog').dataset.mode='success';$('#gmDialogHeading').textContent='영입 성공!';
  $('#gmDialogBody').textContent=hero.name+' · '+hero.className+'이(가) LUDUS에 합류했습니다!';
- $('#gmDialogDetail').textContent='구매한 단상은 비어 있습니다. 갱신 버튼으로 빈 자리를 채우거나, 루두스에 복귀 후 다시 방문하면 전체 매물이 바뀝니다.';
+ $('#gmDialogDetail').textContent='구매한 단상은 비어 있습니다. 다시 방문해도 매물은 유지되며, 60D를 지불하면 세 자리 모두 새 매물로 교체됩니다.';
  $('#gmConfirm').textContent='LUDUS로 이동';$('#gmCancel').textContent='시장 계속 보기';
  reaction(merchantLines.success,'success',8800);$('#gmConfirm').focus();
 }
-function restock(){if(mode!=='idle')return;const state=opts.state,stock=inventory();if(!stock.includes(null)){reaction('아직 단상에 후보가 있습니다. 비어 있는 자리가 생기면 갱신할 수 있습니다.','select');return;}
- if(Number(state.gold)<RESTOCK_COST){reaction('후보를 새로 데려올 '+RESTOCK_COST+' 데나리우스가 부족하군요.','poor');return;}
+function restock(){
+ if(mode!=='idle')return;
+ const state=opts.state;
+ if(Number(state.gold)<RESTOCK_COST){
+  reaction('매물 3명을 교체할 '+RESTOCK_COST+' 데나리우스가 부족합니다.','poor');return;
+ }
+ // A single paid click replaces all three slots, regardless of purchase status.
  state.gold-=RESTOCK_COST;
  state.marketSeed=Math.max(0,Math.trunc(numberFrom(state.marketSeed)))+1;
- const usedNames=new Set((state.roster||[]).concat(stock.filter(Boolean)).map(h=>String(h.name||'').toLowerCase()));
- const usedClasses=stock.filter(Boolean).map(h=>h.id);
- for(let i=0;i<stock.length;i++){
-  if(stock[i]===null)stock[i]=newOffer(i,state.marketSeed,usedNames,usedClasses);
- }
- selection=pick(selection);opts.save?.();render();reaction(merchantLines.refresh,'refresh');
+ state.marketInventory=makeStock(state);
+ selection=pick(0);opts.save?.();render();reaction(merchantLines.refresh,'refresh');
 }
 function close(){if(!scene)return;if(mode==='confirm')cancel();if(mode==='success')hideDialog();scene.hidden=true;clearTimeout(speechReset);clearTimeout(moodTimer);clearInterval(animateTimer);face(1);opts?.onExit?.();}
 function keydown(e){if(!scene||scene.hidden)return;
@@ -271,7 +273,7 @@ function setup(){if(scene)return;
   <div class="gm-speech-new" id="gmSpeech" hidden role="status" aria-live="polite"></div>
   <div class="gm-merchant-talk" id="gmTalking" aria-hidden="true"></div>
   <button type="button" class="gm-hire-hit" id="gmHire" aria-label="선택한 검투사 구매 확인"></button>
-  <button type="button" class="gm-restock" id="gmRestock">✥ 후보 갱신 <span id="gmRestockCount">0자리</span><small>◉ ${RESTOCK_COST} D</small></button>
+  <button type="button" class="gm-restock" id="gmRestock">✥ 전체 갱신 <span id="gmRestockCount">3명 전체</span><small>◉ ${RESTOCK_COST} D</small></button>
   <div class="gm-dialog" id="gmDialog" data-mode="confirm" hidden role="dialog" aria-modal="true" aria-label="검투사 구매 계약 확인">
    <div class="gm-dialog-content"><div class="gm-dialog-eyebrow">MERCATUS · 계약 확인</div><h2 id="gmDialogHeading">검투사 고용 계약</h2><p id="gmDialogBody"></p><small id="gmDialogDetail"></small><div class="gm-dialog-buttons"><button id="gmCancel" type="button">취소하기</button><button id="gmConfirm" type="button">고용 확정</button></div></div>
   </div>
@@ -289,7 +291,7 @@ function open(options){opts=options;setup();
  // Preserve prior careers; an untouched new Ludus begins with the concept-art starting wallet.
  if((!opts.state.roster||opts.state.roster.length===0)&&(Number(opts.state.fights)||0)===0&&Number(opts.state.gold)<500){opts.state.gold=3200;opts.save?.();}
  if(scene&&!scene.hidden)return;
- newVisit();selection=pick(0);mode='idle';$('#gmDialog').hidden=true;
+ ensureInventory();selection=pick(0);mode='idle';$('#gmDialog').hidden=true;
  scene.hidden=false;fit();render();reaction(available().length?merchantLines.hello:merchantLines.empty,available().length?'hello':'empty',5400);
 }
 root.SlaveMarket={open,close,refresh:render};
