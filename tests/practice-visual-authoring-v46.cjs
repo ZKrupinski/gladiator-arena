@@ -13,7 +13,8 @@ function load(published={}){
  return window.PracticeVisualProfiles;
 }
 let profile=load();
-assert.equal(profile.ACTIONS.length,11);
+assert.equal(profile.ACTIONS.length,15);
+assert.deepEqual(Array.from(profile.ACTIONS.slice(3,7)),['slash','sweep','thrust','heavy']);
 assert.equal(profile.EFFECTS.length,12);
 assert.equal(profile.resolve('murmillo_champion_red','attack').scale,1);
 assert.equal(profile.resolve('murmillo_champion_red','attack').effect.kind,'auto');
@@ -23,6 +24,10 @@ assert.deepEqual(JSON.parse(JSON.stringify(profile.clean({x:999,y:-999,scale:99,
  {x:180,y:-180,scale:1.8,effect:{kind:'auto',x:300,y:0,scale:.2}});
 assert(profile.write({murmillo_champion_red:{attack:edit}}));
 profile=load();assert.equal(profile.resolve('murmillo_champion_red','attack').x,27);
+assert.equal(profile.resolve('murmillo_champion_red','slash').x,27,'new slash inherits generic attack X');
+assert.equal(profile.resolve('murmillo_champion_red','sweep').scale,1.22,'new sweep inherits generic attack size');
+assert.equal(profile.resolve('murmillo_champion_red','thrust').effect.kind,'sweep','thrust uses generic attack FX until edited');
+assert.equal(profile.fallbackAction('heavy'),'special');
 assert.equal(profile.resolve('murmillo_champion_red','attack').effect.kind,'sweep');
 assert.equal(profile.resolve('murmillo_champion_red','idle').scale,1);
 profile=load({murmillo_champion_red:{attack:{x:8,scale:1.1,effect:{kind:'thrust'}}}});
@@ -54,9 +59,9 @@ new vm.Script(publisher,{filename:'practice-scale-publish.js'});
 assert.match(publisher,/SpartacusPublishedActions=Object\.freeze/,'GitHub source includes all action corrections');
 assert.match(publisher,/actions:root\.PracticeVisualProfiles\?\.sanitize/,'saved versions parse action values');
 const deployed=fs.readFileSync('public/index.html','utf8');
-assert(deployed.includes('practice-visual-profiles.js?v=action-authoring-v46'));
-const indexProfile=deployed.indexOf('practice-visual-profiles.js?v=action-authoring-v46');
-const indexRuntime=deployed.indexOf('ludus-practice.js?v=unified-stage-scale-v47');
+assert(deployed.includes('practice-visual-profiles.js?v=unified-action-v51'));
+const indexProfile=deployed.indexOf('practice-visual-profiles.js?v=unified-action-v51');
+const indexRuntime=deployed.indexOf('ludus-practice.js?v=unified-action-v51');
 assert(indexProfile>=0&&indexRuntime>indexProfile,'action profiles load before live runtime');
 const rules=require('../public/ludus-practice.js');
 for(let n=1;n<=4;n++){
@@ -68,4 +73,5 @@ assert.doesNotMatch(game,/scale:1\.29|scale:1\.06|scale:1\.24/,
  'remove ALL old staggered front/rear scales');
 assert(html.includes('const courtProjection=202/(348*.82)'),'studio executioner preview equals current arena camera');
 assert(html.includes("stage=1,zoom=.8"),'action preview uses actual single stage scale');
+assert(html.includes("slash:'slash',sweep:'sweep',thrust:'thrust'"),'studio previews exact attack FX variants');
 console.log('PASS: edits preserved, defaults isolated, true action bitmap rendering, artist FX selection, UI and GitHub source publish');
