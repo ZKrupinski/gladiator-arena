@@ -35,6 +35,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .compare-panel p{font-size:12px;margin:4px 0 10px}
 .compare-options{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:9px}
 .compare-options label{font-size:13px;font-weight:750}
+.compare-adjust{display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:9px 0;border-top:1px solid #856445}
+.compare-adjust label{font-size:12px;font-weight:750}
+.compare-adjust input[type=range]{width:min(210px,29vw);min-width:112px;accent-color:#efbd75}
+.compare-adjust output{font-weight:800;color:#ffe5a4;font-variant-numeric:tabular-nums}
+#compareKey{max-width:210px}
+
 .compare-scroll{overflow-x:auto;border-radius:7px;border:1px solid #856445;background:#493025}
 .compare-scroll canvas{display:block;width:100%;min-width:850px;height:auto}
 #compareStatus{color:#eace9e;font-size:12px}
@@ -140,6 +146,13 @@ input[type=file]{display:none}
 <select id="scaleScene"><option value="duel" selected>일반전투 1:1</option><option value="practice">실전훈련</option></select>
 <button id="compareDefaults" type="button">대표 4명 비교</button>
 <output id="compareStatus" role="status">원본 준비 중</output></div>
+<div class="compare-adjust" aria-label="실제 게임 화면을 보면서 크기와 발높이 조정">
+<label for="compareKey">바로 조정</label><select id="compareKey"></select>
+<label for="compareScale">크기 <output id="compareScaleValue">×1.00</output></label>
+<input id="compareScale" type="range" min=".65" max="1.85" step=".01" value="1">
+<label for="compareFeet">발높이 <output id="compareFeetValue">0px</output></label>
+<input id="compareFeet" type="range" min="-70" max="40" step="1" value="0">
+</div>
 <div class="compare-scroll"><canvas id="compareCanvas" width="1280" height="480" aria-label="동일 경기장 바닥선에 나란히 선 검투사 크기 비교"></canvas></div>
 </section>
 <section id="actionEditor" class="action-editor" aria-label="캐릭터 동작별 프레임 및 이펙트 편집">
@@ -653,7 +666,12 @@ async function renderComparison(){
  const serial=++comparisonSerial,canvas=$('#compareCanvas');
  if(!canvas)return;
  const selected=[...selection].slice(0,4);
- const looks=selected.length?selected:compareDefaultLooks;
+ const looks=selected.length?selected:compareDefaultLooks.slice();
+ const focus=$('#compareKey')?.value;
+ if(focus&&!looks.includes(focus)){
+  if(looks.length>=4)looks.pop();
+  looks.unshift(focus);
+ }
  const items=await Promise.all(looks.map(key=>frameFor(key)
   .then(frame=>({key,frame})).catch(error=>({key,error}))));
  if(serial!==comparisonSerial)return;
@@ -801,7 +819,7 @@ function build(){
   minus.addEventListener('click',()=>set(Number(state[key])*.95));
   plus.addEventListener('click',()=>set(Number(state[key])*1.05));
   original.addEventListener('click',()=>set(p.DEFAULTS[key]));
-  const setFoot=v=>{feet[key]=p.clampFoot(v);redraw();persistScaleEdit();};
+  const setFoot=v=>{feet[key]=p.clampFoot(v);redraw();persistScaleEdit();renderComparison();};
   footSlider.addEventListener('input',()=>setFoot(footSlider.value));
   up.addEventListener('click',()=>setFoot(Number(feet[key])-5));
   down.addEventListener('click',()=>setFoot(Number(feet[key])+5));
@@ -813,6 +831,36 @@ function build(){
  }
  sortCards();updateBulkState();renderComparison();
  announce('31종 표시 완료. 위에서 실제 같은 카메라의 크기를 비교하세요.');
+}
+function setupCompareEditor(){
+ const picker=$('#compareKey');
+ picker.replaceChildren();
+ for(const key of keys){
+  const option=document.createElement('option');
+  option.value=key;option.textContent=nameFor(key);picker.appendChild(option);
+ }
+ picker.value='murmillo_champion_red';
+ const sync=()=>{
+  const key=picker.value;
+  $('#compareScale').value=String(state[key]);
+  $('#compareFeet').value=String(feet[key]);
+  $('#compareScaleValue').textContent='×'+Number(state[key]).toFixed(2);
+  $('#compareFeetValue').textContent=String(feet[key])+'px';
+  renderComparison();
+ };
+ picker.addEventListener('change',sync);
+ $('#compareScale').addEventListener('input',()=>{
+  const key=picker.value;state[key]=p.clamp($('#compareScale').value);
+  $('#compareScaleValue').textContent='×'+Number(state[key]).toFixed(2);
+  refresh(key);persistScaleEdit();
+  if(['large','small'].includes($('#sort').value))sortCards();
+ });
+ $('#compareFeet').addEventListener('input',()=>{
+  const key=picker.value;feet[key]=p.clampFoot($('#compareFeet').value);
+  $('#compareFeetValue').textContent=String(feet[key])+'px';
+  refresh(key);persistScaleEdit();
+ });
+ sync();
 }
 $('#scaleScene').addEventListener('change',()=>{
  for(const redraw of drawers.values())redraw();
@@ -901,7 +949,7 @@ window.SpartacusScaleStudio={
  actions:()=>v.sanitize(actions),
  saveDraft:()=>p.write(state)&&p.writeFeet(feet)&&v.write(actions)
 };
-initActionEditor();build();
+setupCompareEditor();initActionEditor();build();
 })();
 </script>
 <script src="practice-scale-publish.js?v=fx-autosave-v52"></script>
