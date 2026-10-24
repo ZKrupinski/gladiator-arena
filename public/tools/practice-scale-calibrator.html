@@ -123,6 +123,10 @@ input[type=file]{display:none}
 <div class="action-top">
 <label for="actionKey">캐릭터</label><select id="actionKey"></select>
 <label for="actionPose">동작</label><select id="actionPose"></select>
+<label for="actionScene">씬별 미리보기</label><select id="actionScene">
+<option value="practice">실전훈련</option>
+<option value="duel">일반전투</option>
+</select>
 <button id="actionReset" type="button">이 동작 기준값 복원</button>
 <button id="actionPreviewRefresh" type="button">그림 새로고침</button>
 </div>
@@ -181,7 +185,7 @@ input[type=file]{display:none}
 <p class="guide">체크한 여러 외형에 크기 ±5% 또는 발높이 ↑↓5px을 일괄 적용할 수 있습니다. 발높이는 음수일수록 위로, 양수일수록 아래로 이동하며 바닥 안내선은 움직이지 않습니다. 셔플하면 위치만 바뀌고 선택·크기·발높이는 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
 <script src="../growth-frames.js"></script>
 <script src="../practice-scale-published.js?v=action-authoring-v46"></script><script src="../practice-scale-profiles.js?v=action-authoring-v46"></script>
-<script src="../practice-visual-profiles.js?v=unified-action-v51"></script>
+<script src="../practice-visual-profiles.js?v=fx-geometry-v52"></script>
 <script>
 (()=>{'use strict';
 const p=window.PracticeScaleProfiles;
@@ -329,57 +333,64 @@ let actionPaintSerial=0;
 async function previewAction(){
  const key=$('#actionKey').value,pose=$('#actionPose').value,serial=++actionPaintSerial;
  if(!key||!pose)return;
- const canvas=$('#actionCanvas'),c=canvas.getContext('2d'),anchorX=260,anchorY=448;
+ const canvas=$('#actionCanvas'),c=canvas.getContext('2d');
+ const anchorX=260,anchorY=345,scene=$('#actionScene').value;
+ const previewScale=.52,sceneProjection=scene==='duel'?348*.82/202:1,z=previewScale*sceneProjection;
  const val=currentAction();
  c.clearRect(0,0,520,520);
  c.fillStyle='rgba(254,202,130,.09)';c.fillRect(0,anchorY,520,520-anchorY);
- c.strokeStyle='#ead09b';c.setLineDash([6,6]);c.beginPath();c.moveTo(8,anchorY);c.lineTo(512,anchorY);c.stroke();c.setLineDash([]);
- $('#actionFrameStatus').textContent='그림 불러오는 중 · '+nameFor(key)+' / '+pose;
+ c.strokeStyle='#ead09b';c.setLineDash([6,6]);c.beginPath();
+ c.moveTo(8,anchorY);c.lineTo(512,anchorY);c.stroke();c.setLineDash([]);
+ $('#actionFrameStatus').textContent='프레임 불러오는 중 · '+nameFor(key)+' / '+pose;
  try{
-  const [id,frame]=await Promise.all([frameFor(key),actionFrame(key,pose)]);
-  if(serial!==actionPaintSerial||key!==$('#actionKey').value||pose!==$('#actionPose').value)return;
-  const img=frame.canvas,base=id.canvas,basH=base.naturalHeight||base.height,stage=1,zoom=.8;
-  const size=Number(state[key]),offsetY=Number(feet[key]),z=stage*zoom;
+  const [idle,frame]=await Promise.all([frameFor(key),actionFrame(key,pose)]);
+  if(serial!==actionPaintSerial||key!==$('#actionKey').value||
+   pose!==$('#actionPose').value||scene!==$('#actionScene').value)return;
+  const img=frame.canvas,base=idle.canvas,baseH=base.naturalHeight||base.height;
+  const size=Number(state[key]),offsetY=Number(feet[key]);
   if(key==='npc_carnifex'){
-   const k=436/270*z*size*val.scale;
-   c.drawImage(img,anchorX-135*k+val.x*z,anchorY-(326*k)+
+   const p=202/(348*.82),k=436/270*z*p*size*val.scale;
+   c.drawImage(img,anchorX-135*k+val.x*z,
+    anchorY-(326/342)*466*z*p*size*val.scale+
     (offsetY+val.y)*z,img.width*k,img.height*k);
   }else if(key.startsWith('beast_')){
-   // Beast sprite has its own authored species anatomy, no frame auto-fit.
-   const baseFactor={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,beast_lion:1.18,beast_elephant:1.38}[key]||1;
-   const k=202/basH*.83*baseFactor*z*size*val.scale;
+   const factor={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,
+    beast_lion:1.18,beast_elephant:1.38}[key]||1;
+   const k=202/baseH*.83*factor*z*size*val.scale;
    c.drawImage(img,anchorX-(frame.pivotX??img.width/2)*k+val.x*z,
-    anchorY-(frame.footY??img.height)*k+(offsetY+val.y)*z,img.width*k,img.height*k);
+    anchorY-(frame.footY??img.height)*k+(offsetY+val.y)*z,
+    img.width*k,img.height*k);
   }else{
-   const k=202/basH*z*size*val.scale;
+   const k=202/baseH*z*size*val.scale;
    c.drawImage(img,anchorX-(frame.pivotX??img.width/2)*k+val.x*z,
     anchorY-(frame.footY??img.height)*k+(offsetY+val.y)*z,
     (img.naturalWidth||img.width)*k,(img.naturalHeight||img.height)*k);
   }
-  const candidate=val.effect.kind==='auto'?
-   ({attack:'slash',slash:'slash',sweep:'sweep',thrust:'thrust',heavy:'special',special:'special',guard:'guard',parry:'parry',dodge:'dash',hit:'hit',death:'hit',finisher:'finisher',victory:'victory'}[pose]||'none'):
-   val.effect.kind;
-  if(candidate!=='none'){
-   const fx=await effectPreviewFrame(candidate);
+  const auto={attack:'slash',slash:'slash',sweep:'sweep',thrust:'thrust',
+   heavy:'special',special:'special',guard:'guard',parry:'parry',
+   dodge:'dash',hit:'hit',death:'hit',finisher:'finisher',victory:'victory'};
+  const kind=val.effect.kind==='auto'?(auto[pose]||'none'):val.effect.kind;
+  if(kind!=='none'){
+   const fx=await effectPreviewFrame(kind);
    if(serial!==actionPaintSerial)return;
    if(fx){
-    // Exactly the same placement/size helper as the live 1v1 and
-    // 1–4 fighter modes. The 80% zoom is applied ONCE here.
-    const g=v.effectGeometry({
-     kind:candidate,baseX:anchorX+52*z,baseY:anchorY-113*z+offsetY*z,
-     face:1,zoom:z,pose:val
+    // Shared geometry with actual combat emitVfx/drawEffects, not a
+    // second editor-specific width/height and offset algorithm.
+    const box=v.effectGeometry({
+     kind,baseX:anchorX+(kind==='hit'?0:52*z),
+     baseY:anchorY-113*z+offsetY*z,zoom:z,face:1,pose:val
     });
-    c.save();c.globalAlpha=.85;
-    c.drawImage(fx,g.x-g.width/2,g.y-g.height/2,g.width,g.height);
+    c.save();c.globalAlpha=.87;
+    c.drawImage(fx,box.x-box.width/2,box.y-box.height/2,box.width,box.height);
     c.restore();
    }
   }
   $('#actionFrameStatus').textContent=nameFor(key)+' · '+pose+
-   ' · 프레임 '+(img.naturalWidth||img.width)+'×'+(img.naturalHeight||img.height)+
-   ' (실전훈련 공통 배율 80% 미리보기)';
+   (scene==='duel'?' · 일반전투':' · 실전훈련')+
+   ' · 같은 위치·크기 공식, 52% 축소 미리보기';
  }catch(error){
   if(serial!==actionPaintSerial)return;
-  $('#actionFrameStatus').textContent='해당 동작 미리보기 로딩 실패: '+error.message;
+  $('#actionFrameStatus').textContent='동작 프레임 로딩 실패: '+error.message;
  }
 }
 function persistActionEdit(){
@@ -409,6 +420,7 @@ function initActionEditor(){
  }));
  $('#actionKey').onchange=updateActionControls;
  $('#actionPose').onchange=updateActionControls;
+ $('#actionScene').onchange=previewAction;
  for(const field of ['frameX','frameY','frameScale','fxX','fxY','fxScale','fxKind'])
   $('#'+field).addEventListener(field==='fxKind'?'change':'input',()=>{
    const key=$('#actionKey').value,pose=$('#actionPose').value;
