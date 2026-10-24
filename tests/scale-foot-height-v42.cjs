@@ -51,7 +51,7 @@ assert.match(publisher,/저장 발높이가 올바르지 않습니다/);
 const runtime=fs.readFileSync('public/ludus-practice.js','utf8');
 assert.match(runtime,/profilesFoot\(unit\)\+t\.y/);
 const beast=fs.readFileSync('public/arena-beasts.js','utf8');
-assert.match(beast,/ctx\.translate\(cx,ground\+foot\)/);
+assert.match(beast,/ctx\.translate\(cx\+dx,ground\+dy\)/);
 const carnifex=fs.readFileSync('public/arena-carnifex.js','utf8');
 assert.match(carnifex,/floorY\+bootOffset/);
 const saved=fs.readFileSync('public/practice-scale-published.js','utf8');
