@@ -1,12 +1,11 @@
 {
   "assetSha256": {
-    "public/arena-carnifex.js": "553dbbdec1783effa6cf30f5ffde18470dd273a5eea9b4b07e6c57713e7441f6",
-    "public/index.html": "96d742c2cb271eb173205890c6befc441d1169bfa149f91db211cd78d2f39128",
-    "public/ludus-practice.js": "583e056988187cd1a5116d7560b4fcb7196ac63cbbe3db01df460f87af3ba45e"
+    "public/index.html": "f97a9846996273c5eceba8fa973da41fbab369eb47bddce538a8b2e491b3dfc6",
+    "public/ludus-practice.js": "ce8aecefb023ce4e287f03c1c0ced05c0a6617e0ac11e05210b5b0974ee8c8c9"
   },
-  "baseCommit": "4d81b905dabe446c8a96c9a162a65759ccd68d4f",
+  "baseCommit": "7546e2c49ce4175a7a7bd43aa72ee5b15b2c489e",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-carnifex-unified-size-20261024-v44",
+  "releaseId": "practice-native-frame-proportions-20261024-v45",
   "releaseProtocol": "spartacus-uploader-v1"
 }
