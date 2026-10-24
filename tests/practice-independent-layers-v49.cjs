@@ -10,9 +10,9 @@ assert.notEqual(injected,source);
 const win={};vm.runInNewContext(injected,{window:win,console});
 const qa=win.__layerQA;
 function flat(xs){return Array.from(xs);}
-for(const [count,expect] of [[1,[0]],[2,[0,1]],[3,[2,0,1]],[4,[2,3,0,1]]]){
+for(const [count,expect] of [[1,[0]],[2,[1,0]],[3,[2,1,0]],[4,[3,2,1,0]]]){
  assert.deepEqual(flat(qa.courtPaintOrder(count)),expect,
-  'rear row must paint before front row; left court then right court');
+  'rear row before front row; within each row left court paints last');
 }
 const scene={heroes:[],enemies:[],exits:[],fx:[],particles:[]};
 for(let seat=0;seat<4;seat++){
@@ -36,7 +36,7 @@ const items=flat(qa.courtPaintQueue(scene));
 assert.equal(items.length,32,'all fighters, VFX, impacts, corpses and executioners retained');
 const seatPath=items.map(x=>x.seat);
 const blocks=seatPath.filter((seat,i)=>i===0||seat!==seatPath[i-1]);
-assert.deepEqual(blocks,[2,3,0,1],'one full court at a time without leakage');
+assert.deepEqual(blocks,[3,2,1,0],'seat 3 enemy should render above seat 4 fighter, no court leakage');
 for(const seat of [0,1,2,3]){
  const own=items.filter(x=>x.seat===seat);
  assert.equal(own.length,8,'a court owns two fighters, two executors, two FX and two impacts');
@@ -60,4 +60,4 @@ assert.match(source,/battle\.fx\.push\(\{seat:unit\.seat/,'attack FX bound to or
 assert.match(source,/courtPaintQueue\(battle\)\.forEach\(item=>item\.paint\(\)\)/);
 assert.doesNotMatch(source,/units\.concat\(bodies,effects,sparks\)/,
  'global depth sort removed');
-console.log('PASS: 3/4 behind 1/2, independent court atomic painter groups including fighters/FX/sparks/executors in 1-4 fighter modes');
+console.log('PASS: 4→3 rear and 2→1 front; left court wins overlapping character/FX/exec pixels in 1-4 fighter modes');
