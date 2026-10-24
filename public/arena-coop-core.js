@@ -9,7 +9,7 @@
  const finite=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
  const distance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.45);
  const footDistance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.6);
- const SOLID_GAP=102; // One constant for standing AND corpses, preventing a new overlap on death.
+ const SOLID_GAP=102; // Solid spacing applies only to living fighters. Corpses remain visual, nonblocking.
  function rng(seed){let n=seed>>>0;return ()=>{n=(Math.imul(1664525,n)+1013904223)>>>0;return n/4294967296;};}
  function makeUnit(h,side,seat){
   const stats=h.combat||{},maxHp=Math.max(40,finite(stats.hp,160));
@@ -38,7 +38,7 @@
  }
  function free(s,u,x,y){
   return x>=85&&x<=1195&&y>=395&&y<=675&&
-    s.units.every(v=>v===u||footDistance({x,y},v)>=SOLID_GAP-.01);
+    s.units.every(v=>v===u||v.dead||footDistance({x,y},v)>=SOLID_GAP-.01);
  }
  function travel(s,u,tx,ty,step){
   const dx=tx-u.x,dy=ty-u.y,len=Math.hypot(dx,dy);
@@ -306,7 +306,7 @@
     u.cooldown=1.25+s.random()*.5;if(special)u.specialReady=s.time+8;
    }
   }
-  // The shared collision field is never disabled for a corpse or during a dash.
+  // Only living fighters block movement, including dash and knockback. Fallen bodies persist visually.
   s.links=s.links.filter(l=>{
    const a=s.units.find(u=>u.id===l.actor),b=s.units.find(u=>u.id===l.target);
    if(!a||!b||a.dead||b.dead||s.time>l.expires)return false;
