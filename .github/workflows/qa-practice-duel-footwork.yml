@@ -4,12 +4,16 @@ on:
     branches: [main]
     paths:
       - public/ludus-practice.js
+      - public/arena-carnifex.js
+      - tests/practice-carnifex-scale-v44.cjs
       - tests/practice-duel-footwork-v41.cjs
       - .github/workflows/qa-practice-duel-footwork.yml
   pull_request:
     branches: [main]
     paths:
       - public/ludus-practice.js
+      - public/arena-carnifex.js
+      - tests/practice-carnifex-scale-v44.cjs
       - tests/practice-duel-footwork-v41.cjs
       - .github/workflows/qa-practice-duel-footwork.yml
   workflow_dispatch:
@@ -27,3 +31,5 @@ jobs:
         run: node --check public/ludus-practice.js
       - name: Verify four visible allies, local collision and lateral exchanges
         run: node tests/practice-duel-footwork-v41.cjs
+      - name: Prevent hidden Carnifex scaling or foot offset drift in practice
+        run: node tests/practice-carnifex-scale-v44.cjs
