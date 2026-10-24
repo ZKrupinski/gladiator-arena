@@ -262,8 +262,18 @@ function emitVfx(kind,unit,other,emphasis=false){
  const c=COURTS[unit.seat],duration=root.ArenaRasterFX?.FAMILIES?.[kind]?.duration||.34;
  const face=(kind==='hit'&&other)?(other.side==='ally'?1:-1):
   (unit.side==='ally'?1:-1);
- battle.fx.push({kind,x:unit.x+(kind==='hit'?0:face*52*c.scale),
-  y:unit.y-113*c.scale,scale:c.scale,face,age:0,duration,
+ const action=kind==='hit'?'hit':kind==='guard'||kind==='parry'?'guard':
+  kind==='dash'?'dodge':kind==='special'?'special':kind==='finisher'?'finisher':'attack';
+ const key=visualLook(unit),v=root.PracticeVisualProfiles?.resolve?.(key,action);
+ const effect=v?.effect||{kind:'auto',x:0,y:0,scale:1};
+ const chosen=effect.kind==='auto'?kind:effect.kind;
+ if(chosen==='none')return;
+ if(!root.ArenaRasterFX?.FAMILIES?.[chosen])return;
+ const fxDuration=root.ArenaRasterFX.FAMILIES[chosen].duration||duration;
+ battle.fx.push({kind:chosen,x:unit.x+(kind==='hit'?0:face*52*c.scale)+
+    (v?.x||0)*c.scale*face+(effect.x||0)*c.scale*face,
+  y:unit.y-113*c.scale+(v?.y||0)*c.scale+(effect.y||0)*c.scale,
+  scale:c.scale*(effect.scale||1),face,age:0,duration:fxDuration,
   depth:c.y-(unit.side==='enemy'?12:0)+.6,
   front:unit.side==='ally'?1:0,alpha:emphasis?1:.87});
 }
@@ -298,16 +308,14 @@ function drawDefeatPose(unit,zoom){
  const k=metric.pixels*zoom,meta=api()?.practiceFrame?.(unit,'death');
  // Display the exact approved loss pose, no extraneous 90-degree rotation.
  ctx.save();
- ctx.translate(0,profilesFoot(unit)*zoom); // same calibrated feet as live fighter
- if(unit.side==='enemy')ctx.scale(-1,1);
- try{
-  if(meta?.canvas===art&&Number.isFinite(meta.pivotX)&&Number.isFinite(meta.footY))
-   ctx.drawImage(art,-meta.pivotX*k,-meta.footY*k,art.width*k,art.height*k);
-  else{
-   const b=alphaBounds(art);
-   if(b)ctx.drawImage(art,b.x,b.y,b.w,b.h,-b.w*k/2,-b.h*k,b.w*k,b.h*k);
-  }
- }catch(_){}
+ const action=visualAction(unit,'death'),face=unit.side==='enemy'?-1:1;
+ ctx.translate(action.x*zoom*face,(profilesFoot(unit)+action.y)*zoom);
+ if(face<0)ctx.scale(-1,1);
+ const px=meta?.canvas===art&&Number.isFinite(meta.pivotX)?meta.pivotX:(art.width||art.naturalWidth)/2;
+ const py=meta?.canvas===art&&Number.isFinite(meta.footY)?meta.footY:(art.height||art.naturalHeight);
+ const kk=k*action.scale;
+ try{ctx.drawImage(art,-px*kk,-py*kk,
+   (art.width||art.naturalWidth)*kk,(art.height||art.naturalHeight)*kk);}catch(_){}
  ctx.restore();
 }
 function drawFalling(removal){
@@ -345,15 +353,10 @@ function updateDepartures(dt){
  battle.exits=battle.exits.filter(exit=>
   exit.seq?!exit.seq.finished:exit.age<3.6);
 }
-// Match actual full-screen authored 8-frame arena effects relative to
-// character size instead of the former microscopic 275x270 world pixels.
-const PRACTICE_FX_SIZE=Object.freeze({
- slash:[600,570],sweep:[655,605],thrust:[710,570],
- hit:[480,450],guard:[440,430],parry:[510,495],
- finisher:[690,650],special:[660,620],dash:[790,510]
-});
+// Authored FX size library lives in PracticeVisualProfiles and is exposed
+// to the same editor that controls each action's sprite transform.
 function drawVfx(v){
- const fx=root.ArenaRasterFX,size=PRACTICE_FX_SIZE[v.kind]||[600,560];
+ const fx=root.ArenaRasterFX,size=root.PracticeVisualProfiles?.size?.(v.kind)||[600,560];
  const p=clamp(v.age/v.duration,0,.9999);
  fx?.draw?.(ctx,v.kind,v.x,v.y,size[0]*v.scale,size[1]*v.scale,p,
   v.alpha*Math.min(1,(1-p)*2.7),v.face,0);
@@ -547,9 +550,21 @@ function alphaBounds(art){
  return root.ArenaPortraitFit?.bounds?.(art)||
   {x:0,y:0,w:art.width||art.naturalWidth||0,h:art.height||art.naturalHeight||0};
 }
+function visualLook(unit){
+ return root.PracticeScaleProfiles?.look?.(unit,api()?.state()?.roster)||null;
+}
+function visualAction(unit,pose){
+ return root.PracticeVisualProfiles?.resolve?.(visualLook(unit),pose)||
+  {x:0,y:0,scale:1,effect:{kind:'auto',x:0,y:0,scale:1}};
+}
+function actorPose(unit){
+ return unit.dead?'death':unit.entry>0?'walk':unit.hit>0?'hit':unit.guard>0?'guard':
+   unit.dodge>0?'dodge':unit.windup>0||unit.swing>0?'attack':
+   Math.abs(unit.x-unit.homeX)>13?'walk':'idle';
+}
 function calibration(unit,frame){
  const profiles=root.PracticeScaleProfiles;
- const appearance=profiles?.look?.(unit,api()?.state()?.roster);
+ const appearance=visualLook(unit);
  const scaleFactor=profiles?.scale?.(appearance)||1;
  const idle=api()?.practiceFrame?.(unit,'idle')?.canvas||rawSprite(unit,'idle')||frame;
  const referenceH=idle?.height||idle?.naturalHeight||0;
@@ -564,12 +579,7 @@ function calibration(unit,frame){
   appearance:appearance||'special',refH:visible?.h||referenceH,
   reference:idle,frameH:referenceH};
 }
-function sprite(unit){
- const kind=unit.dead?'death':unit.entry>0?'walk':unit.hit>0?'hit':unit.guard>0?'guard':
-  unit.dodge>0?'dodge':unit.windup>0||unit.swing>0?'attack':
-  Math.abs(unit.x-unit.homeX)>13?'walk':'idle';
- return rawSprite(unit,kind);
-}
+function sprite(unit){return rawSprite(unit,actorPose(unit));}
 function profilesFoot(unit){
  const p=root.PracticeScaleProfiles;
  return p?.foot?.(p?.look?.(unit,api()?.state()?.roster))||0;
@@ -585,23 +595,23 @@ function drawUnit(unit){
  if(art&&(art.width||art.naturalWidth)){
   const bounds=alphaBounds(art),metric=calibration(unit,art);
   if(bounds?.w&&bounds?.h&&metric){
-   const k=metric.pixels*scale,w=bounds.w*k,h=bounds.h*k;
-   // Place labels near the stable IDLE silhouette, not the transparent padding.
-   // Never derive a different combat scale from an attack/guard/KO pose.
-   labelHeight=Math.min(height,Math.max(72*scale,metric.refH*k));
-   const pose=unit.dead?'death':unit.entry>0?'walk':unit.hit>0?'hit':unit.guard>0?'guard':
-    unit.dodge>0?'dodge':unit.windup>0||unit.swing>0?'attack':
-    Math.abs(unit.x-unit.homeX)>13?'walk':'idle';
+   const pose=actorPose(unit),t=visualAction(unit,pose);
+   const k=metric.pixels*scale*t.scale;
+   // One FULL authored frame, one global artist size, one optional action edit.
+   // No alpha-crop, class/squad modifier, or automatic per-pose resizing.
+   labelHeight=Math.min(height*1.6,Math.max(72*scale,metric.refH*k));
    const atlasFrame=api()?.practiceFrame?.(unit,pose);
-   ctx.save(); // Only artwork flips. Original frame pivots stabilize the torso.
-    // Move visible boots, not fight hitboxes, base floor, or physics.
-    ctx.translate(0,profilesFoot(unit)*scale);
-   if(unit.side==='enemy')ctx.scale(-1,1);
-   try{
-    if(atlasFrame?.canvas===art&&Number.isFinite(atlasFrame.pivotX)&&Number.isFinite(atlasFrame.footY))
-     ctx.drawImage(art,-atlasFrame.pivotX*k,-atlasFrame.footY*k,art.width*k,art.height*k);
-    else ctx.drawImage(art,bounds.x,bounds.y,bounds.w,bounds.h,-w/2,-h,w,h);
-   }catch(_){}
+   const pivotX=atlasFrame?.canvas===art&&Number.isFinite(atlasFrame.pivotX)?
+     atlasFrame.pivotX:(art.width||art.naturalWidth)/2;
+   const pivotY=atlasFrame?.canvas===art&&Number.isFinite(atlasFrame.footY)?
+     atlasFrame.footY:(art.height||art.naturalHeight);
+   const face=unit.side==='enemy'?-1:1;
+   ctx.save();
+   ctx.translate(t.x*scale*face,(profilesFoot(unit)+t.y)*scale);
+   if(face<0)ctx.scale(-1,1);
+   try{ctx.drawImage(art,-pivotX*k,-pivotY*k,
+    (art.width||art.naturalWidth)*k,(art.height||art.naturalHeight)*k);}
+   catch(_){}
    ctx.restore();
   }
  }else{
