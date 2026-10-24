@@ -555,11 +555,12 @@ function draw(ctx,args){
  const type=args?.fighter?.beastType;
  if(!type)return false;
  const raw=root.PracticeScaleProfiles?.scale?.('beast_'+type)??1;
+  const foot=root.PracticeScaleProfiles?.foot?.('beast_'+type)??0;
  const factor=Number.isFinite(raw)?Math.max(.65,Math.min(1.85,raw)):1;
- if(!ctx||factor===1)return paintBeast(ctx,args);
+ if(!ctx||(factor===1&&!foot))return paintBeast(ctx,args);
  const cx=args.x+args.w*.5,ground=args.y+args.h;
  ctx.save();
- ctx.translate(cx,ground);
+ ctx.translate(cx,ground+foot);
  ctx.scale(factor,factor);
  ctx.translate(-cx,-ground);
  try{return paintBeast(ctx,args)}finally{ctx.restore();}
