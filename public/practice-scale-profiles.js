@@ -3,6 +3,9 @@
  */
 (function(root){'use strict';
 const KEY='spartacus.practice.scale.v32';
+const FEET_KEY='spartacus.practice.feet.v42';
+const FOOT_MIN=-70,FOOT_MAX=40;
+const clampFoot=v=>Math.max(FOOT_MIN,Math.min(FOOT_MAX,Math.round(Number(v)||0)));
 const TYPES=['murmillo_a','thraex_a','thraex_b','retiarius_a'];
 const values={
  murmillo_a:[.92,.90,.88,.86,.85],
@@ -20,6 +23,14 @@ for(const key of Object.keys(BASE))if(Object.prototype.hasOwnProperty.call(sourc
  Number.isFinite(Number(source[key]))&&Number(source[key])>=.65&&Number(source[key])<=1.85)
  published[key]=Number(source[key]);
 const DEFAULTS=Object.freeze({...BASE,...published});
+// A foot adjustment is a visual Y displacement in arena pixels; positive = down.
+// Missing keys remain exactly zero, preserving approved ground contacts.
+const footSource=root.SpartacusPublishedFeet||{};
+const PUBLISHED_FEET=Object.freeze(Object.fromEntries(Object.keys(BASE).map(key=>[
+ key,Number.isFinite(Number(footSource[key]))?clampFoot(footSource[key]):0
+])));
+const FOOT_DEFAULTS=Object.freeze({...PUBLISHED_FEET});
+const feetBaseline=JSON.stringify({sizes:DEFAULTS,feet:FOOT_DEFAULTS});
 const baseline=JSON.stringify(DEFAULTS);
 const clamp=v=>Math.max(.65,Math.min(1.85,Number(v)));
 function read(){
@@ -47,6 +58,25 @@ function write(input){
  }catch(_){return false;}
 }
 function reset(){try{root.localStorage?.removeItem(KEY);return true;}catch(_){return false;}}
+function readFeet(){
+ try{
+  const stored=JSON.parse(root.localStorage?.getItem(FEET_KEY)||'{}');
+  if(stored?.baseline!==feetBaseline)return {};
+  const input=stored?.overrides||{};
+  return Object.fromEntries(Object.keys(FOOT_DEFAULTS).filter(key=>
+   Object.hasOwn(input,key)&&Number.isFinite(Number(input[key])))
+   .map(key=>[key,clampFoot(input[key])]));
+ }catch(_){return {};}
+}
+function writeFeet(input){
+ const overrides={};
+ for(const key of Object.keys(FOOT_DEFAULTS))
+  if(input&&Number.isFinite(Number(input[key])))overrides[key]=clampFoot(input[key]);
+ try{root.localStorage?.setItem(FEET_KEY,JSON.stringify({version:42,baseline:feetBaseline,overrides}));return true;}
+ catch(_){return false;}
+}
+function resetFeet(){try{root.localStorage?.removeItem(FEET_KEY);return true;}catch(_){return false;}}
+function foot(key){return key?(readFeet()[key]??FOOT_DEFAULTS[key]??0):0;}
 function look(unit,roster){
  if(unit?.side==='enemy')return DEFAULTS[unit.look]?unit.look:null;
  if(unit?.side!=='ally')return null;
@@ -78,6 +108,6 @@ function footY(image,fallback){
  return fallback;
 }
 function scale(key){return key?(read()[key]??DEFAULTS[key]??1):1;}
-root.PracticeScaleProfiles={KEY,TYPES,EXTRAS,BEASTS,NPCS,BASE,DEFAULTS,footY,clamp,read,write,reset,look,scale};
+root.PracticeScaleProfiles={KEY,FEET_KEY,TYPES,EXTRAS,BEASTS,NPCS,BASE,DEFAULTS,FOOT_DEFAULTS,FOOT_MIN,FOOT_MAX,footY,clamp,clampFoot,read,write,reset,readFeet,writeFeet,resetFeet,foot,look,scale};
 if(typeof module!=='undefined')module.exports=root.PracticeScaleProfiles;
 })(typeof window!=='undefined'?window:globalThis);
