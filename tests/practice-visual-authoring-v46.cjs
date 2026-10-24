@@ -40,7 +40,7 @@ assert.equal(load({murmillo_champion_red:{attack:{x:8,scale:1.1,effect:{kind:'th
 const game=fs.readFileSync('public/ludus-practice.js','utf8');
 assert.match(game,/t=visualAction\(unit,pose\)/,'sprite render consumes live authoring transform');
 assert.match(game,/metric\.pixels\*scale\*t\.scale/,'one explicit action multiplier');
-assert.match(game,/ctx\.translate\(t\.x\*scale\*face,\(profilesFoot\(unit\)\+t\.y\)\*scale\)/,'action X/Y controls visible feet');
+assert.match(game,/ctx\.translate\(\(t\.x\+motion\.x\)\*scale\*face,\(profilesFoot\(unit\)\+t\.y\+motion\.y\)\*scale\)/,'action and 0/50/100 XY keys control visible feet');
 assert.match(game,/ctx\.drawImage\(art,-pivotX\*k,-pivotY\*k/,'render original complete bitmap, no alpha crop');
 assert.doesNotMatch(game,/ctx\.drawImage\(art,bounds\.x,bounds\.y,bounds\.w,bounds\.h/);
 assert.match(game,/settings\?\.resolve\?\.\(visualLook\(unit\),action\)/,'hit/guard/attack events lookup same editor FX');
