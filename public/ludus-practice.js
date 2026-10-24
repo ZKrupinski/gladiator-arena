@@ -4,17 +4,19 @@
 */
 (function(root){'use strict';
 const W=1280,H=720,MAX=4,TYPES=['murmillo','thraex','retiarius'];
-// Background sand begins near y=520. Anchors are feet on the ground,
-// not floating on the stone walls. Presets are NEAR/FORWARD FIRST.
+// Background sand begins near y=520. Anchors are feet on the ground.
+// Court placement changes X/Y depth ONLY. All 1-4 fighters and opponents use
+// ONE global practice stage scale=1: character size is studio-authored, never
+// secretly enlarged in a front seat or shrunk in a rear seat.
 const COURT_LAYOUTS=Object.freeze({
- 1:Object.freeze([{x:640,y:676,scale:1.24}]),
- 2:Object.freeze([{x:325,y:689,scale:1.29},{x:955,y:689,scale:1.29}]),
+ 1:Object.freeze([{x:640,y:676,scale:1}]),
+ 2:Object.freeze([{x:325,y:689,scale:1},{x:955,y:689,scale:1}]),
  3:Object.freeze([{x:325,y:689,scale:1.29},{x:955,y:689,scale:1.29},
-   {x:640,y:606,scale:1.06}]),
+   {x:640,y:606,scale:1}]),
  // Keep all four ALLIED silhouettes in their own horizontal columns.
  // Enemies may cross columns, but foreground allies cannot occlude rear allies.
- 4:Object.freeze([{x:260,y:689,scale:1.29},{x:1120,y:689,scale:1.29},
-   {x:552,y:606,scale:1.06},{x:836,y:606,scale:1.06}])
+ 4:Object.freeze([{x:260,y:689,scale:1},{x:1120,y:689,scale:1},
+   {x:552,y:606,scale:1},{x:836,y:606,scale:1}])
 });
 function courtsForParty(count){
  // Does not depend on later-initialized variables; works at script load.
