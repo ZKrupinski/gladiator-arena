@@ -362,68 +362,94 @@ function formatAction(){
  }
  $('#fxKind').value=val.effect.kind;
 }
-let actionPaintSerial=0;
+let actionPaintSerial=0,actionProgress=0,actionPlaying=true;
+let actionLastTick=0,actionLoopStarted=false,actionPreviousFrame=-1;
+function updateTimelineLabel(){
+ const pct=Math.round(actionProgress*100);
+ $('#actionTime').value=String(pct);
+ $('#actionTimeValue').textContent=pct+'%';
+}
+function animateStudioPreview(now){
+ if(!actionLoopStarted)return;
+ const dt=actionLastTick?Math.min(150,Math.max(0,now-actionLastTick)):0;
+ actionLastTick=now;
+ if(actionPlaying&&!document.hidden){
+  const speed=Number($('#actionSpeed').value)||1;
+  actionProgress=(actionProgress+dt*speed/1200)%1;
+  updateTimelineLabel();
+  const frame=Math.min(7,Math.floor(actionProgress*8));
+  if(frame!==actionPreviousFrame){actionPreviousFrame=frame;previewAction();}
+ }
+ requestAnimationFrame(animateStudioPreview);
+}
+function showMotionKey(){
+ const cfg=currentAction(),key=$('#motionKey').value;
+ const point=cfg.motion?.[key]||{x:0,y:0};
+ for(const axis of ['X','Y']){
+  $('#motion'+axis).value=String(point[axis.toLowerCase()]);
+  $('#motion'+axis+'Value').textContent=String(point[axis.toLowerCase()])+'px';
+ }
+}
 async function previewAction(){
  const key=$('#actionKey').value,pose=$('#actionPose').value,serial=++actionPaintSerial;
  if(!key||!pose)return;
  const canvas=$('#actionCanvas'),c=canvas.getContext('2d');
  const anchorX=260,anchorY=345,scene=$('#actionScene').value;
  const previewScale=.52,sceneProjection=scene==='duel'?348*.82/202:1,z=previewScale*sceneProjection;
- const val=currentAction();
- c.clearRect(0,0,520,520);
- c.fillStyle='rgba(254,202,130,.09)';c.fillRect(0,anchorY,520,520-anchorY);
- c.strokeStyle='#ead09b';c.setLineDash([6,6]);c.beginPath();
- c.moveTo(8,anchorY);c.lineTo(512,anchorY);c.stroke();c.setLineDash([]);
- $('#actionFrameStatus').textContent='프레임 불러오는 중 · '+nameFor(key)+' / '+pose;
+ const val=currentAction(),progress=Math.max(0,Math.min(1,actionProgress));
+ const frameNo=Math.min(7,Math.floor(Math.min(progress,.9999)*8));
+ const movement=v.sampleMotion?.(val,progress)||{x:0,y:0};
+ const auto={attack:'slash',slash:'slash',sweep:'sweep',thrust:'thrust',
+  heavy:'special',special:'special',guard:'guard',parry:'parry',
+  dodge:'dash',hit:'hit',death:'hit',finisher:'finisher',victory:'victory'};
+ const kind=val.effect.kind==='auto'?(auto[pose]||'none'):val.effect.kind;
  try{
-  const [idle,frame]=await Promise.all([frameFor(key),actionFrame(key,pose)]);
+  const [idle,frame,fx]=await Promise.all([
+   frameFor(key),actionFrame(key,pose,frameNo).catch(()=>actionFrame(key,pose,0)),
+   kind==='none'?Promise.resolve(null):effectPreviewFrame(kind,frameNo)
+  ]);
   if(serial!==actionPaintSerial||key!==$('#actionKey').value||
-   pose!==$('#actionPose').value||scene!==$('#actionScene').value)return;
+     pose!==$('#actionPose').value||scene!==$('#actionScene').value)return;
+  c.clearRect(0,0,520,520);
+  c.fillStyle='rgba(254,202,130,.09)';c.fillRect(0,anchorY,520,520-anchorY);
+  c.strokeStyle='#ead09b';c.setLineDash([6,6]);c.beginPath();
+  c.moveTo(8,anchorY);c.lineTo(512,anchorY);c.stroke();c.setLineDash([]);
   const img=frame.canvas,base=idle.canvas,baseH=base.naturalHeight||base.height;
   const size=Number(state[key]),offsetY=Number(feet[key]);
+  const x=anchorX+(val.x+movement.x)*z;
+  const y=(offsetY+val.y+movement.y)*z;
   if(key==='npc_carnifex'){
    const p=202/(348*.82),k=436/270*z*p*size*val.scale;
-   c.drawImage(img,anchorX-135*k+val.x*z,
-    anchorY-(326/342)*466*z*p*size*val.scale+
-    (offsetY+val.y)*z,img.width*k,img.height*k);
+   c.drawImage(img,x-135*k,
+    anchorY-(326/342)*466*z*p*size*val.scale+y,img.width*k,img.height*k);
   }else if(key.startsWith('beast_')){
    const factor={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,
     beast_lion:1.18,beast_elephant:1.38}[key]||1;
    const k=202/baseH*.83*factor*z*size*val.scale;
-   c.drawImage(img,anchorX-(frame.pivotX??img.width/2)*k+val.x*z,
-    anchorY-(frame.footY??img.height)*k+(offsetY+val.y)*z,
-    img.width*k,img.height*k);
+   c.drawImage(img,x-(frame.pivotX??img.width/2)*k,
+    anchorY-(frame.footY??img.height)*k+y,img.width*k,img.height*k);
   }else{
    const k=202/baseH*z*size*val.scale;
-   c.drawImage(img,anchorX-(frame.pivotX??img.width/2)*k+val.x*z,
-    anchorY-(frame.footY??img.height)*k+(offsetY+val.y)*z,
+   c.drawImage(img,x-(frame.pivotX??img.width/2)*k,
+    anchorY-(frame.footY??img.height)*k+y,
     (img.naturalWidth||img.width)*k,(img.naturalHeight||img.height)*k);
   }
-  const auto={attack:'slash',slash:'slash',sweep:'sweep',thrust:'thrust',
-   heavy:'special',special:'special',guard:'guard',parry:'parry',
-   dodge:'dash',hit:'hit',death:'hit',finisher:'finisher',victory:'victory'};
-  const kind=val.effect.kind==='auto'?(auto[pose]||'none'):val.effect.kind;
-  if(kind!=='none'){
-   const fx=await effectPreviewFrame(kind);
-   if(serial!==actionPaintSerial)return;
-   if(fx){
-    // Shared geometry with actual combat emitVfx/drawEffects, not a
-    // second editor-specific width/height and offset algorithm.
-    const box=v.effectGeometry({
-     kind,baseX:anchorX+((auto[pose]==='hit')?0:52*z),
-     baseY:anchorY-113*z+offsetY*z,zoom:z,face:1,pose:val
-    });
-    c.save();c.globalAlpha=.87;
-    c.drawImage(fx,box.x-box.width/2,box.y-box.height/2,box.width,box.height);
-    c.restore();
-   }
+  if(fx){
+   const box=v.effectGeometry({
+    kind,baseX:anchorX+(kind==='hit'?0:52*z),
+    baseY:anchorY-113*z+offsetY*z,zoom:z,face:1,pose:val,progress
+   });
+   c.save();c.globalAlpha=.87;
+   c.drawImage(fx,box.x-box.width/2,box.y-box.height/2,box.width,box.height);
+   c.restore();
   }
   $('#actionFrameStatus').textContent=nameFor(key)+' · '+pose+
-   (scene==='duel'?' · 일반전투':' · 실전훈련')+
-   ' · 같은 위치·크기 공식, 52% 축소 미리보기';
+   ' · '+(scene==='duel'?'일반전투':'실전훈련')+
+   ' · '+Math.round(progress*100)+'% · 원본/이펙트 '+(frameNo+1)+'/8 프레임 · 이동('+
+   movement.x+', '+movement.y+')px';
  }catch(error){
   if(serial!==actionPaintSerial)return;
-  $('#actionFrameStatus').textContent='동작 프레임 로딩 실패: '+error.message;
+  $('#actionFrameStatus').textContent='애니메이션 미리보기 로딩 실패: '+error.message;
  }
 }
 function persistActionEdit(){
