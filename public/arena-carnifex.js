@@ -92,7 +92,7 @@ function advance(seq,dt,viewport){
  seq.finished=seq.t>=TIME.total-.000001&&outsideViewport(seq,positions(seq),view);
  return seq.finished;
 }
-function drawExecutioner(ctx,seq,pose,floorY){
+function drawExecutioner(ctx,seq,pose,floorY,footOffsetFactor=1){
  const inkReady=walkArt?.complete&&haulArt?.complete&&
   walkArt.naturalWidth===INK_COLS*INK_W&&walkArt.naturalHeight===2*INK_H&&
   haulArt.naturalWidth===INK_COLS*INK_W&&haulArt.naturalHeight===2*INK_H;
@@ -109,7 +109,7 @@ function drawExecutioner(ctx,seq,pose,floorY){
    pose.exiting?Math.sin(seq.t*14)*2.0:0;
  const tilt=pose.phase==='walk'?Math.sin(seq.t*9)*.010:pose.exiting?Math.sin(seq.t*8)*.008:0;
  ctx.save();
- const bootOffset=root.PracticeScaleProfiles?.foot?.('npc_carnifex')??0;
+ const bootOffset=(root.PracticeScaleProfiles?.foot?.('npc_carnifex')??0)*footOffsetFactor;
   ctx.translate(pose.executionerX,floorY+bootOffset);
  // Scale only the executioner about his boot contact point. Do not scale
  // the victim, his drag motion, or any physics/exit viewport coordinates.
@@ -134,14 +134,17 @@ function drawExecutioner(ctx,seq,pose,floorY){
  }
  ctx.restore();
 }
-function draw(ctx,seq,drawBody,floorY=FLOOR){
+function draw(ctx,seq,drawBody,floorY=FLOOR,options={}){
  if(!ctx||!seq||typeof drawBody!=='function')return;
  const pose=positions(seq);
  // Subtly recessed depth, while feet and the collected corpse remain on the sand.
  ctx.save();
  // Back-layer ordering must not add a second vertical foot offset.
  ctx.save();
- drawExecutioner(ctx,seq,pose,floorY);
+ // Parent scene projection affects both art size and position; feet stay in
+ // court pixels just like other gladiators, without a separate art multiplier.
+ const footFactor=Number.isFinite(options.footOffsetFactor)&&options.footOffsetFactor>0?options.footOffsetFactor:1;
+ drawExecutioner(ctx,seq,pose,floorY,footFactor);
  ctx.restore();
  if(pose.bodyVisible){
   const corpse={...seq.body,x:pose.bodyX,dead:true,hp:0,
