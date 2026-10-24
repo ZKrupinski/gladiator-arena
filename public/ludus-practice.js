@@ -23,6 +23,13 @@ function courtsForParty(count){
 }
 let COURTS=courtsForParty(4);
 const LEASH=168,MIN_PAIR_GAP=172,ATTACK_START_RANGE=188,CONTACT_REACH=214;
+// Reference on-screen size of the same gladiator in standard duels (348 * .82)
+// and in practice (202). Carnifex shares the gladiator's COURT perspective;
+// the studio's npc_carnifex scale is then applied ONCE by ArenaCarnifex.
+const DUEL_GLADIATOR_REFERENCE=348*.82,PRACTICE_GLADIATOR_REFERENCE=202;
+function executionerCourtScale(court){
+ return court.scale*PRACTICE_GLADIATOR_REFERENCE/DUEL_GLADIATOR_REFERENCE;
+}
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const number=(x,d=0)=>Number.isFinite(Number(x))?Number(x):d;
 const eligible=h=>!!h&&number(h.injury)<80&&number(h.fatigue)<80;
@@ -264,7 +271,7 @@ function beginRemoval(unit){
  if(!battle||unit.retiring||unit.seat<0)return;
  unit.retiring=true;
  const c=COURTS[unit.seat],engine=root.ArenaCarnifex;
- const scale=c.scale*.58;
+ const scale=executionerCourtScale(c);
  const offset=c.x-640*scale;
  const viewport={left:-offset/scale,right:(W-offset)/scale};
  let seq=null;
@@ -291,6 +298,7 @@ function drawDefeatPose(unit,zoom){
  const k=metric.pixels*zoom,meta=api()?.practiceFrame?.(unit,'death');
  // Display the exact approved loss pose, no extraneous 90-degree rotation.
  ctx.save();
+ ctx.translate(0,profilesFoot(unit)*zoom); // same calibrated feet as live fighter
  if(unit.side==='enemy')ctx.scale(-1,1);
  try{
   if(meta?.canvas===art&&Number.isFinite(meta.pivotX)&&Number.isFinite(meta.footY))
@@ -322,7 +330,7 @@ function drawDeparture(removal){
   // Preserve identical source defeat pose from KO until full offscreen exit.
   drawDefeatPose(unit,court.scale/scale);
   ctx.restore();
- },617);
+ },617,{footOffsetFactor:court.scale/scale});
  ctx.restore();
 }
 function updateDepartures(dt){
