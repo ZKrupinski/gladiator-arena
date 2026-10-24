@@ -51,5 +51,5 @@ assert.match(npc,/footOffsetFactor=1/);
 assert.match(npc,/bootOffset=\(root\.PracticeScaleProfiles\?\.foot/);
 assert.match(npc,/ctx\.scale\(\(flip\?-1:1\)\*size,size\)/);
 assert.match(npc,/drawExecutioner\(ctx,seq,pose,floorY,footFactor\)/);
-assert.match(source,/ctx\.translate\(0,profilesFoot\(unit\)\*zoom\)/);
+assert.match(source,/profilesFoot\(unit\)\+action\.y/);
 console.log('PASS: all four training courts share duel Carnifex/gladiator ratio, one artist scale and correct floor offsets');
