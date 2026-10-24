@@ -77,6 +77,13 @@ input[type=file]{display:none}
 .action-field{display:grid;gap:3px;min-width:0}.action-field label{font-size:12px;color:#f9dcab}.action-field output{color:#ffe4a4;font-weight:800;font-variant-numeric:tabular-nums}.action-field input{width:100%;accent-color:#efbb77}
 .action-field select{max-width:100%}.action-separator{grid-column:1/-1;margin-top:6px;border-top:1px solid #745438;padding-top:8px;color:#ffdf9c;font-weight:800}
 .action-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:11px}
+.motion-toolbar,.motion-bulk{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:9px 0}
+.motion-toolbar input[type=range]{flex:1;min-width:100px;accent-color:#efbb77}
+.motion-toolbar button,.motion-bulk button{padding:7px 11px;font-weight:700}
+.motion-bulk output{color:#f8d79b;font-size:12px}
+.motion-hint{font-size:11px;color:#ebcc96}
+.motion-toolbar label{font-size:12px}
+.motion-toolbar select{min-width:74px}
 .action-open{margin:3px 0;padding:8px 6px!important;font-size:11px!important}
 @media(max-width:720px){.action-body{grid-template-columns:1fr}.action-preview{margin:auto;max-width:420px}.action-sliders{gap:8px}.action-editor{padding:10px}}
 </style></head>
@@ -131,13 +138,25 @@ input[type=file]{display:none}
 <button id="actionPreviewRefresh" type="button">그림 새로고침</button>
 </div>
 <div class="action-body">
-<div><div class="action-preview"><canvas id="actionCanvas" width="520" height="520" aria-label="프레임 및 이펙트 위치 미리보기"></canvas></div>
+<div><div class="action-preview"><canvas id="actionCanvas" width="520" height="520" aria-label="동작과 이펙트의 프레임별 합성 애니메이션 미리보기"></canvas></div>
+<div class="motion-toolbar">
+<button id="actionPlay" type="button" aria-pressed="true">Ⅱ 일시정지</button>
+<label for="actionTime">진행</label><input id="actionTime" type="range" min="0" max="100" step="1" value="0" aria-label="동작 시간 0~100% 직접 이동">
+<output id="actionTimeValue">0%</output>
+<label for="actionSpeed">속도</label><select id="actionSpeed"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
+</div>
+<p class="motion-hint">그림에 여러 원본 프레임이 있으면 실제 프레임을 순서대로 재생합니다. 한 장뿐인 동작도 아래 위치 키로 움직일 수 있습니다. 이펙트 역시 8프레임으로 함께 재생합니다.</p>
 <p id="actionFrameStatus" role="status">선택한 동작 프레임을 준비합니다.</p></div>
 <div class="action-sliders">
 <div class="action-separator">캐릭터 프레임 — 원본 그림을 건드리지 않는 화면 보정</div>
 <div class="action-field"><label for="frameX">동작 X <output id="frameXValue"></output></label><input type="range" id="frameX" min="-180" max="180" step="1"></div>
 <div class="action-field"><label for="frameY">동작 Y <output id="frameYValue"></output></label><input type="range" id="frameY" min="-180" max="180" step="1"></div>
 <div class="action-field"><label for="frameScale">동작 배율 <output id="frameScaleValue"></output></label><input type="range" id="frameScale" min=".45" max="1.8" step=".01"></div>
+<div class="action-separator">동작 이동 애니메이션 — 시작 / 중간 / 끝 X·Y (기본 0px)</div>
+<div class="action-field"><label for="motionKey">편집할 위치 키</label><select id="motionKey">
+<option value="start">시작 0%</option><option value="middle">중간 50%</option><option value="end">끝 100%</option></select></div>
+<div class="action-field"><label for="motionX">이동 X <output id="motionXValue">0px</output></label><input type="range" id="motionX" min="-150" max="150" step="1" value="0"></div>
+<div class="action-field"><label for="motionY">이동 Y <output id="motionYValue">0px</output></label><input type="range" id="motionY" min="-150" max="150" step="1" value="0"></div>
 <div class="action-separator">이펙트 — 종류 / 위치 / 크기 (기본: 자동)</div>
 <div class="action-field"><label for="fxKind">이펙트 종류</label><select id="fxKind"></select></div>
 <div class="action-field"><label for="fxScale">이펙트 배율 <output id="fxScaleValue"></output></label><input type="range" id="fxScale" min=".2" max="2.5" step=".01"></div>
@@ -145,6 +164,11 @@ input[type=file]{display:none}
 <div class="action-field"><label for="fxY">이펙트 Y <output id="fxYValue"></output></label><input type="range" id="fxY" min="-300" max="300" step="1"></div>
 <div class="action-separator">동작별 X·Y·크기는 모든 게임 씬에서 같은 원본 설정을 사용합니다. 이펙트 선택도 동작별 설정이 우선입니다.</div>
 </div></div>
+<div class="motion-bulk" aria-label="선택한 캐릭터에 동작별 이펙트 및 이동 키 일괄 적용">
+<button id="bulkCopyFx" type="button">체크 캐릭터들에 이 동작 이펙트 복사</button>
+<button id="bulkCopyMotion" type="button">체크 캐릭터들에 이 동작 이동 키 복사</button>
+<output id="batchActionStatus" role="status">위 캐릭터/동작의 설정을 아래 목록에서 체크한 다른 캐릭터에게만 적용합니다.</output>
+</div>
 <div class="action-actions"><button id="actionShowIdle">기본 동작 보기</button><output id="actionAutosave" role="status">동작·이펙트 변경값은 이 기기에 자동 임시저장됩니다.</output><span class="source-note">프리뷰는 전열 기준이며 투명영역 자동 확대를 사용하지 않습니다. 변경 후 기기 임시저장 또는 GitHub 원본 게시를 누르세요.</span></div>
 </section>
 <main class="grid" id="grid" aria-label="검투사, 야수, 집행인 전체 31종 크기 미리보기"></main>
