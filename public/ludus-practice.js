@@ -307,7 +307,8 @@ function selectedDeathArt(unit){
 function drawDefeatPose(unit,zoom){
  const art=selectedDeathArt(unit);if(!art)return;
  const metric=calibration(unit,art);if(!metric)return;
- const k=metric.pixels*zoom,meta=api()?.practiceFrame?.(unit,'death');
+ const poseEdit=visualAction(unit,'death');
+ const k=metric.pixels*zoom*poseEdit.scale,meta=api()?.practiceFrame?.(unit,'death');
  // Display the exact approved loss pose, no extraneous 90-degree rotation.
  ctx.save();
  const action=visualAction(unit,'death'),face=unit.side==='enemy'?-1:1;
