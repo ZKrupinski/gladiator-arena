@@ -411,26 +411,29 @@ function initActionEditor(){
 }
 function paint(canvas,frame,key){
  const c=canvas.getContext('2d');
- c.clearRect(0,0,310,310);
- c.fillStyle='rgba(245,202,120,.12)';c.fillRect(0,262,310,48);
+ c.clearRect(0,0,460,460);
+ const floor=404,center=230,previewZoom=.75;
+ c.fillStyle='rgba(245,202,120,.12)';c.fillRect(0,floor,460,56);
  c.strokeStyle='#e0b57b';c.setLineDash([4,5]);c.beginPath();
- c.moveTo(7,262);c.lineTo(303,262);c.stroke();c.setLineDash([]);
+ c.moveTo(7,floor);c.lineTo(453,floor);c.stroke();c.setLineDash([]);
  const img=frame.canvas;
  // Preview uses the SAME full-source-frame baseline and the foreground court
  // camera, not the previous arbitrary .88 factor applied to gladiators.
  if(key==='npc_carnifex'){
   // The actual Carnifex draws its 270×342 ink sprite as a 436×466
   // animation. Match THAT ratio, grounded at his boots (not 270×342).
-  const z=.56*Number(state[key]);
-  c.drawImage(img,0,0,270,342,155-218*z,262+Number(feet[key])-326/342*466*z,436*z,466*z);
+  const courtProjection=1.29*202/(348*.82);
+  const z=courtProjection*previewZoom*Number(state[key]);
+  c.drawImage(img,0,0,270,342,center-218*z,
+    floor+Number(feet[key])*previewZoom-326/342*466*z,436*z,466*z);
   return;
  }
  const beastBase={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,
   beast_lion:1.18,beast_elephant:1.38};
- const visualUnit=key.startsWith('beast_')?.83*beastBase[key]:1.29;
- const pixels=202/(img.naturalHeight||img.height)*Number(state[key])*visualUnit;
- c.drawImage(img,155-frame.pivotX*pixels,
-  262+Number(feet[key])-frame.footY*pixels,(img.naturalWidth||img.width)*pixels,
+ const baseHeight=key.startsWith('beast_')?348*.83*beastBase[key]:202*1.29;
+ const pixels=baseHeight/(img.naturalHeight||img.height)*Number(state[key])*previewZoom;
+ c.drawImage(img,center-frame.pivotX*pixels,
+  floor+Number(feet[key])*previewZoom-frame.footY*pixels,(img.naturalWidth||img.width)*pixels,
   (img.naturalHeight||img.height)*pixels);
 }
 function updateBulkState(){
@@ -493,7 +496,7 @@ function build(){
   kind.className='category';kind.textContent=category(key);head.append(label,kind);
   if(check.checked)card.classList.add('chosen');
   const art=document.createElement('div');art.className='art';
-  const canvas=document.createElement('canvas');canvas.width=310;canvas.height=310;
+  const canvas=document.createElement('canvas');canvas.width=460;canvas.height=460;
   const note=document.createElement('div');note.className='loading';note.textContent='그림 준비';art.append(canvas,note);
   const controls=document.createElement('div');controls.className='config';
   const code=document.createElement('label');code.textContent=key;
