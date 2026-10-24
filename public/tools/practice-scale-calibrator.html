@@ -77,7 +77,7 @@ input[type=file]{display:none}
 @media(max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:650px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.card-head{padding:5px}.card-head label{font-size:12px;gap:4px}.card-head input{width:17px;height:17px}.category{font-size:9px}.config{padding:6px}.adjust button{font-size:10px}}
 @media(max-width:480px){.tools{padding:7px;gap:6px;top:0}.toolbar,.batch{gap:5px}.toolbar button,.batch button{padding:7px 8px;font-size:11px}#bulkSlider{min-width:95px}.grid{gap:6px}.card-head{min-height:55px}.card-head label{font-size:11px}}
-.save-health{display:grid;gap:5px;border-top:1px solid #80613f;padding-top:8px;font-size:12px}
+.save-health{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;border-top:1px solid #80613f;padding-top:8px;font-size:12px}
 .save-health [data-state="ok"]{color:#bcebbd}.save-health [data-state="warn"]{color:#ffd688}.save-health [data-state="error"]{color:#ffad9f}
 .save-health button{justify-self:start;padding:6px 10px}
 .token-help{line-height:1.7;font-size:13px}.token-help ol{padding-left:22px}
@@ -87,8 +87,8 @@ input[type=file]{display:none}
 .action-top label{font-size:12px;font-weight:700}.action-top select{min-width:135px;max-width:240px}
 .action-body{display:grid;grid-template-columns:minmax(270px,490px) minmax(290px,1fr);gap:17px;align-items:start}
 .action-preview{width:100%;max-width:490px;background:radial-gradient(ellipse at center bottom,#92724e,#291b14 75%);border:1px solid #ae8456;border-radius:8px;overflow:hidden}
-.action-editor{scroll-margin-top:220px}.numeric-edit{width:85px!important;min-height:36px;background:#20160f;color:#ffe5aa;border:1px solid #a78357;border-radius:5px;padding:5px;font:700 14px system-ui}.quick-links{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}.tools .quick-links a{padding:4px}
-@media(max-width:650px){.tools{position:relative}.action-editor{scroll-margin-top:12px}.compare-scroll canvas{min-width:0}}
+.action-editor{scroll-margin-top:220px}#motionKeyTime{min-height:36px;padding:5px;font:700 14px system-ui;background:#20160f;color:#ffe5aa;border:1px solid #a78357;border-radius:5px}.numeric-edit{width:85px!important;min-height:36px;background:#20160f;color:#ffe5aa;border:1px solid #a78357;border-radius:5px;padding:5px;font:700 14px system-ui}.quick-links{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}.tools .quick-links a{padding:4px}
+@media(max-width:650px){.save-health{grid-template-columns:1fr}.tools{position:relative}.action-editor{scroll-margin-top:12px}.compare-scroll canvas{min-width:0}}
 .action-preview canvas{touch-action:none;cursor:grab;display:block;width:100%;aspect-ratio:1}
 .action-sliders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
 .action-field{display:grid;gap:3px;min-width:0}.action-field label{font-size:12px;color:#f9dcab}.action-field output{color:#ffe4a4;font-weight:800;font-variant-numeric:tabular-nums}.action-field input{width:100%;accent-color:#efbb77}
@@ -1048,7 +1048,7 @@ function restoreHistory(value){
   for(const key of Object.keys(target))delete target[key];Object.assign(target,source);
  }
  for(const key of keys)refresh(key);
- updateBulkState();sortCards();updateActionControls();
+ updateBulkState();sortCards();updateActionControls();pauseAtKey(selectedKeyIndex());
  const ok=saveAllDraft();historyButtons();syncNumbers();document.dispatchEvent(new Event('input'));
  announce(ok?'변경 이력을 복원하고 이 기기에 저장했습니다.':'변경은 복원됐지만 기기 저장에 실패했습니다. JSON으로 백업하세요.');
 }

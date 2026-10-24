@@ -12,7 +12,7 @@ const html=fs.readFileSync('public/tools/practice-scale-calibrator.html','utf8')
 const code=html.slice(html.indexOf('function saveAllDraft(){'),html.indexOf('function setupNumbers(){'));
 const nodes=new Map();const $=id=>{if(!nodes.has(id))nodes.set(id,{disabled:false,addEventListener(){}});return nodes.get(id)};
 let saves=0;const ctx={state:{red:1},feet:{red:0},actions:{},keys:['red'],p:{write:()=>{saves++;return false},writeFeet:()=>{saves++;return true}},v:{write:()=>{saves++;return true}},$,JSON,console,Event,
- document:{addEventListener(){},dispatchEvent(){},activeElement:null},refresh(){},updateBulkState(){},sortCards(){},updateActionControls(){},announce(){}};
+ document:{addEventListener(){},dispatchEvent(){},activeElement:null},refresh(){},updateBulkState(){},sortCards(){},updateActionControls(){},pauseAtKey(){},selectedKeyIndex:()=>0,announce(){}};
 vm.runInNewContext(code+';this.api={recordHistory,undo,redo,saveAllDraft};',ctx);
 ctx.api.recordHistory();ctx.state.red=1.25;ctx.api.recordHistory();ctx.feet.red=-8;ctx.api.recordHistory();ctx.actions.red={slash:{x:20}};ctx.api.recordHistory();
 ctx.api.undo();assert.equal(ctx.actions.red,undefined);assert.equal(ctx.feet.red,-8);
