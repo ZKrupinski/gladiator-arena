@@ -2920,7 +2920,10 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  const editorAction=f.action==='attack'&&f.actionT>0?variant:baseAction;
  const authored=window.PracticeVisualProfiles?.resolve?.(duelAppearanceKey(f),editorAction)||
   {x:0,y:0,scale:1};
- const editedX=(f.face||1)*authored.x,editedY=authored.y;
+ // Authoring coordinates are expressed in a 202px practice-body reference.
+ // In normal duel, body and VFX coordinates share this single scene projection.
+ const poseZoom=(FIGHTER_DRAW_SIZE*DUEL_BASE_VISUAL_SCALE)/202;
+ const editedX=(f.face||1)*authored.x*poseZoom,editedY=authored.y*poseZoom;
  // Keep a fixed feet pivot for every class, image pose and character.
  const height=FIGHTER_DRAW_SIZE,width=FIGHTER_DRAW_SIZE,feet=FLOOR-1;
  // Retire all scene-coded per-pose X/Y and scale changes. The sprite uses
@@ -3184,15 +3187,27 @@ function drawEffects(backOnly=false){
   if(authored?.effect?.kind==='none')continue;
   if(authored?.effect?.kind&&authored.effect.kind!=='auto')
    mapped=authored.effect.kind;
-  // Normal and practice use the exact same 31-look action+FX geometry.
-  // Scene projection scales art and effects together, never per FX family.
+  // Exact same reference-point and rectangle as the calibration studio:
+  // +52px in facing direction, -113px above boot contact, full 31-look FX
+  // dimensions. This is scaled by the 202→duel body projection exactly once.
+  // Old per-scene 1.31, 1.20 and 1.6–2.0 extra VFX boosts are gone.
   const sceneZoom=FIGHTER_DRAW_SIZE*DUEL_BASE_VISUAL_SCALE/202;
-  const tracked=v.track==='body'&&!!v.owner?._fxRender;
+  const isGladiatorFX=!!v.owner&&!v.owner.beastType;
+  const dir=v.owner?.face<0?-1:1;
+  const foot=v.owner?duelFootOffset(v.owner):0;
+  const baseX=isGladiatorFX?v.owner.x+dir*52*sceneZoom:cx;
+  const baseY=isGladiatorFX?FLOOR-1+(-113+foot)*sceneZoom:cy;
   const geom=tool?.effectGeometry?.({
-   kind:mapped,baseX:cx,baseY:cy,face:v.owner?.face||1,
-   zoom:sceneZoom,pose:authored,applyPoseOffset:!tracked
+   kind:mapped,baseX,baseY,face:dir,zoom:isGladiatorFX?sceneZoom:1,
+   pose:authored,applyPoseOffset:true
   });
   if(geom){cx=geom.x;cy=geom.y;}
+  if(isGladiatorFX&&v.track==='body'&&v.owner?._fxRender){
+   // Follow actual attack lunges, excluding offsets already represented by
+   // authoring geometry. A pose edit is never added twice.
+   cx+=(v.owner._fxRender.dx||0)-dir*(authored?.x||0)*sceneZoom;
+   cy+=(v.owner._fxRender.dy||0)-(authored?.y||0)*sceneZoom-foot;
+  }
   const fw=geom?.width??v.w,fh=geom?.height??v.h;
   if(S.fx&&mapped&&window.ArenaRasterFX?.FAMILIES?.[mapped]){
    window.ArenaRasterFX.draw?.(ctx,mapped,cx,cy,fw,fh,
