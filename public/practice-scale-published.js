@@ -65,4 +65,4 @@
   "beast_lion": -5,
   "beast_elephant": -5,
   "npc_carnifex": -10
-});})(typeof window!=="undefined"?window:globalThis);
+});root.SpartacusPublishedActions=Object.freeze({});})(typeof window!=="undefined"?window:globalThis);
