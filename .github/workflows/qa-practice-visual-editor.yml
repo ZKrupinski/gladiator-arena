@@ -9,6 +9,8 @@ on:
       - public/tools/practice-scale-calibrator.html
       - public/tools/practice-scale-publish.js
       - public/ludus-practice.js
+      - public/ludus-training-runtime.js
+      - tests/unified-action-scenes-v51.cjs
       - public/index.html
       - tests/practice-visual-authoring-v46.cjs
       - tests/scale-foot-height-v42.cjs
@@ -34,8 +36,13 @@ jobs:
           node --check public/practice-scale-published.js
           node --check public/tools/practice-scale-publish.js
           node --check public/ludus-practice.js
+          node --check public/ludus-training-runtime.js
       - name: Real authoring and effects integration
         run: node tests/practice-visual-authoring-v46.cjs
+      - name: Verify unified cross-scene action profiles and no hidden pose adjustments
+        run: node tests/unified-action-scenes-v51.cjs
+      - name: Original Ludus training sprite pose regression
+        run: node scripts/qa_training_scale_and_poses.mjs
       - name: Existing persisted foot offset regression
         run: node tests/scale-foot-height-v42.cjs
       - name: GitHub and live deployment-status parser regression
