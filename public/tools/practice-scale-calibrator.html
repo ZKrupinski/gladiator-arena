@@ -181,7 +181,7 @@ input[type=file]{display:none}
 <p class="guide">체크한 여러 외형에 크기 ±5% 또는 발높이 ↑↓5px을 일괄 적용할 수 있습니다. 발높이는 음수일수록 위로, 양수일수록 아래로 이동하며 바닥 안내선은 움직이지 않습니다. 셔플하면 위치만 바뀌고 선택·크기·발높이는 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
 <script src="../growth-frames.js"></script>
 <script src="../practice-scale-published.js?v=action-authoring-v46"></script><script src="../practice-scale-profiles.js?v=action-authoring-v46"></script>
-<script src="../practice-visual-profiles.js?v=action-authoring-v46"></script><script src="../arena-raster-vfx.js?v=4-isolated"></script>
+<script src="../practice-visual-profiles.js?v=action-authoring-v46"></script>
 <script>
 (()=>{'use strict';
 const p=window.PracticeScaleProfiles;
@@ -193,7 +193,7 @@ const names={murmillo_a:'무르밀로',thraex_a:'트라엑스 A',thraex_b:'트�
 const v=window.PracticeVisualProfiles;
 const state={...p.DEFAULTS,...p.read()},feet={...p.FOOT_DEFAULTS,...p.readFeet()},actions=v.all(),selection=new Set(),keys=Object.keys(p.DEFAULTS);
 let order=keys.slice(),origin=new Map(),observer=null,cutsPromise=null;
-const cache=new Map(),actionCache=new Map(),drawers=new Map(),$=selector=>document.querySelector(selector);
+const cache=new Map(),actionCache=new Map(),effectCache=new Map(),drawers=new Map(),$=selector=>document.querySelector(selector);
 const announce=s=>$('#status').textContent=s;
 const category=key=>key.startsWith('beast_')?'야수':key.startsWith('npc_')?'NPC':p.EXTRAS.includes(key)?'특수/클래식':'검투사';
 function nameFor(key){const type=key.replace(/_L[1-5]$/,'');return (names[type]||key)+(type!==key?' · '+key.slice(-1)+'형':'');}
@@ -305,6 +305,12 @@ function actionFrame(key,pose){
  if(!actionCache.has(id))actionCache.set(id,Promise.resolve().then(()=>poseSource(key,pose)));
  return actionCache.get(id);
 }
+async function effectPreviewFrame(kind){
+ if(!kind||kind==='none')return null;
+ if(!effectCache.has(kind))effectCache.set(kind,
+  image('../assets/new-era/directional-v4/'+kind+'-03.png?v=4').catch(()=>null));
+ return effectCache.get(kind);
+}
 function currentAction(){
  const key=$('#actionKey').value,pose=$('#actionPose').value;
  return v.clean(actions[key]?.[pose]);
@@ -353,10 +359,14 @@ async function previewAction(){
    ({attack:'slash',special:'special',guard:'guard',parry:'parry',dodge:'dash',hit:'hit',death:'hit',finisher:'finisher',victory:'victory'}[pose]||'none'):
    val.effect.kind;
   if(candidate!=='none'){
-   const width=v.size(candidate),face=1,fx=window.ArenaRasterFX;
-   fx?.draw?.(c,candidate,anchorX+52*z+val.x*z+val.effect.x*z,
-    anchorY-113*z+offsetY*z+val.y*z+val.effect.y*z,
-    width[0]*z*val.effect.scale,width[1]*z*val.effect.scale,.38,.85,face);
+   const fx=await effectPreviewFrame(candidate);
+   if(serial!==actionPaintSerial)return;
+   if(fx){
+    const width=v.size(candidate),w=width[0]*z*val.effect.scale,h=width[1]*z*val.effect.scale;
+    const x=anchorX+52*z+val.x*z+val.effect.x*z,y=anchorY-113*z+
+      offsetY*z+val.y*z+val.effect.y*z;
+    c.save();c.globalAlpha=.85;c.drawImage(fx,x-w/2,y-h/2,w,h);c.restore();
+   }
   }
   $('#actionFrameStatus').textContent=nameFor(key)+' · '+pose+
    ' · 프레임 '+(img.naturalWidth||img.width)+'×'+(img.naturalHeight||img.height)+
@@ -595,8 +605,9 @@ $('#save').addEventListener('click',()=>{
 });
 $('#reset').addEventListener('click',()=>{
  Object.assign(state,p.DEFAULTS);Object.assign(feet,p.FOOT_DEFAULTS);for(const key of keys)refresh(key);
+ p.reset();p.resetFeet();v.reset();
  for(const key of Object.keys(actions))delete actions[key];
- Object.assign(actions,v.all());updateBulkState();sortCards();p.reset();p.resetFeet();v.reset();
+ Object.assign(actions,v.all());updateBulkState();sortCards();
  updateActionControls();announce('31종 크기·발높이·동작·이펙트 수정값을 기본값으로 복원했습니다.');
 });
 $('#export').addEventListener('click',()=>{
