@@ -68,7 +68,7 @@ assert.match(studio,/slash:'종베기',sweep:'횡베기',thrust:'찌르기',heav
 assert.match(studio,/\['frameX','frameY','frameScale','fxX','fxY','fxScale','fxKind'\]/);
 assert.match(studio,/const fallback=v\.fallbackAction\?\.\(pose\)/);
 assert.match(studio,/const special=\{parry:'guard',finisher:'attack',victory:'idle'\}/);
-assert.match(main,/ludus-training-runtime\.js\?v=unified-action-v51/);
-assert.match(main,/ludus-practice\.js\?v=fx-geometry-v52/);
-assert.match(main,/practice-visual-profiles\.js\?v=fx-geometry-v52/);
+assert.match(main,/ludus-training-runtime\.js\?v=motion-timeline-v53/);
+assert.match(main,/ludus-practice\.js\?v=motion-timeline-v53/);
+assert.match(main,/practice-visual-profiles\.js\?v=motion-timeline-v53/);
 console.log('PASS: one artist action/profile for normal duel, practice and training; 15 poses, no scene-specific offsets or hidden body scaling');
