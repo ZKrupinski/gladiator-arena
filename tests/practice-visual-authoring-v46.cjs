@@ -32,7 +32,7 @@ profile.write({murmillo_champion_red:{attack:edit}});
 assert.equal(load({murmillo_champion_red:{attack:{x:8,scale:1.1,effect:{kind:'thrust'}}}})
  .resolve('murmillo_champion_red','attack').x,27);
 const game=fs.readFileSync('public/ludus-practice.js','utf8');
-assert.match(game,/const t=visualAction\(unit,pose\)/,'sprite render consumes live authoring transform');
+assert.match(game,/t=visualAction\(unit,pose\)/,'sprite render consumes live authoring transform');
 assert.match(game,/metric\.pixels\*scale\*t\.scale/,'one explicit action multiplier');
 assert.match(game,/ctx\.translate\(t\.x\*scale\*face,\(profilesFoot\(unit\)\+t\.y\)\*scale\)/,'action X/Y controls visible feet');
 assert.match(game,/ctx\.drawImage\(art,-pivotX\*k,-pivotY\*k/,'render original complete bitmap, no alpha crop');
