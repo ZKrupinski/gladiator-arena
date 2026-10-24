@@ -12,7 +12,7 @@ const api=ctx.window.__practiceQA,rules=ctx.window.LudusPractice.rules;
 const layout=rules.courtsForParty(4);
 const alliedHome=layout.map(c=>c.x-87).sort((a,b)=>a-b);
 for(let i=1;i<alliedHome.length;i++)
- assert.ok(alliedHome[i]-alliedHome[i-1]>=250,'four allied silhouettes need separate X columns');
+ assert.ok(alliedHome[i]-alliedHome[i-1] >=215,'allied foreground/rear silhouette columns must remain distinct');
 function actor(side,k,c){
  return {side,seat:k,x:c.x+(side==='ally'?-87:87),homeX:c.x+(side==='ally'?-87:87),y:c.y,
   speed:120,dead:false,retiring:false,entry:0,cooldown:200,swing:0,hit:0,
@@ -34,9 +34,19 @@ for(let frame=0;frame<220;frame++){
   trail[i].push(heroes[i].x);
  }
  const xs=heroes.map(h=>h.x).sort((a,b)=>a-b);
- for(let j=1;j<xs.length;j++)assert.ok(xs[j]-xs[j-1]>235,'all four allies remain unobscured');
+ for(let j=1;j<xs.length;j++)assert.ok(xs[j]-xs[j-1] >=215,'all four allies remain unobscured with split-depth columns');
 }
 for(const t of trail)assert.ok(Math.max(...t)-Math.min(...t)>12,'combatants shift horizontally instead of freezing');
+// Adjacent REAR courts must never put seat 3's enemy body under seat 4's ally.
+// The corridor applies even when attacks/parries displace the combatants.
+const rearBoundary=(layout[2].x+layout[3].x)/2;
+assert.ok(layout[3].x-layout[2].x>=400,'rear station anchors spread out');
+assert.ok(enemies[2].x<=rearBoundary-110,'3 rival cannot occupy the 4 ally's artwork');
+assert.ok(heroes[3].x>=rearBoundary+110,'4 ally retains his own artwork corridor');
+enemies[2].x=rearBoundary+35;heroes[3].x=rearBoundary-35;
+api.keepCourtSpacing();
+assert.ok(enemies[2].x<=rearBoundary-110,'knockback cannot drag 3 enemy across shared corridor');
+assert.ok(heroes[3].x>=rearBoundary+110,'4 ally cannot enter 3 rival's 220px art corridor');
 for(let i=0;i<4;i++){
  heroes[i].x=layout[i].x+10;enemies[i].x=layout[i].x-10;
 }
