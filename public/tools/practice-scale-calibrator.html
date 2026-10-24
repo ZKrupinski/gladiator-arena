@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>스파르타쿠스 · 31종 크기·동작·이펙트 보정실</title>
+<title>스파르타쿠스 · 전 씬 통합 크기·동작·이펙트 보정실</title>
 <style>
 :root{background:#170d09;color:#f7ddae;color-scheme:dark;font:15px/1.48 system-ui,"Noto Sans KR",sans-serif}
 *{box-sizing:border-box}body{margin:0;padding:18px max(10px,env(safe-area-inset-right)) 32px max(10px,env(safe-area-inset-left))}
@@ -119,7 +119,7 @@ input[type=file]{display:none}
 <div id="status" class="status" role="status">원본 캐릭터 그림을 준비하고 있습니다.</div>
 <section id="actionEditor" class="action-editor" aria-label="캐릭터 동작별 프레임 및 이펙트 편집">
 <h2>⚔ 동작별 프레임·이펙트 편집실</h2>
-<p>선택한 외형의 <strong>각 동작을 개별로</strong> 설정합니다. X는 캐릭터가 바라보는 방향 기준, Y는 아래가 양수입니다. 기존 크기·발높이 설정과 합쳐져 실제 실전훈련에 반영됩니다.</p>
+<p>선택한 외형의 <strong>각 동작을 개별로</strong> 설정합니다. 종베기·횡베기·찌르기·강베기도 독립 지정할 수 있고, 미지정 상태는 공격·필살기의 기본값을 따릅니다. 일반전투·실전훈련·훈련소에서 같은 값이 사용됩니다. X는 캐릭터가 바라보는 방향 기준, Y는 아래가 양수입니다. 기존 크기·발높이 설정과 합쳐져 실제 실전훈련에 반영됩니다.</p>
 <div class="action-top">
 <label for="actionKey">캐릭터</label><select id="actionKey"></select>
 <label for="actionPose">동작</label><select id="actionPose"></select>
@@ -139,7 +139,7 @@ input[type=file]{display:none}
 <div class="action-field"><label for="fxScale">이펙트 배율 <output id="fxScaleValue"></output></label><input type="range" id="fxScale" min=".2" max="2.5" step=".01"></div>
 <div class="action-field"><label for="fxX">이펙트 X <output id="fxXValue"></output></label><input type="range" id="fxX" min="-300" max="300" step="1"></div>
 <div class="action-field"><label for="fxY">이펙트 Y <output id="fxYValue"></output></label><input type="range" id="fxY" min="-300" max="300" step="1"></div>
-<div class="action-separator">실제 게임에서는 동작 선택과 효과 발생 이벤트에 따라 출력됩니다.</div>
+<div class="action-separator">동작별 X·Y·크기는 모든 게임 씬에서 같은 원본 설정을 사용합니다. 이펙트 선택도 동작별 설정이 우선입니다.</div>
 </div></div>
 <div class="action-actions"><button id="actionShowIdle">기본 동작 보기</button><span class="source-note">프리뷰는 전열 기준이며 투명영역 자동 확대를 사용하지 않습니다. 변경 후 기기 임시저장 또는 GitHub 원본 게시를 누르세요.</span></div>
 </section>
@@ -181,7 +181,7 @@ input[type=file]{display:none}
 <p class="guide">체크한 여러 외형에 크기 ±5% 또는 발높이 ↑↓5px을 일괄 적용할 수 있습니다. 발높이는 음수일수록 위로, 양수일수록 아래로 이동하며 바닥 안내선은 움직이지 않습니다. 셔플하면 위치만 바뀌고 선택·크기·발높이는 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
 <script src="../growth-frames.js"></script>
 <script src="../practice-scale-published.js?v=action-authoring-v46"></script><script src="../practice-scale-profiles.js?v=action-authoring-v46"></script>
-<script src="../practice-visual-profiles.js?v=action-authoring-v46"></script>
+<script src="../practice-visual-profiles.js?v=unified-action-v51"></script>
 <script>
 (()=>{'use strict';
 const p=window.PracticeScaleProfiles;
@@ -252,7 +252,7 @@ function frameFor(key){
 // full-frame anchor logic used by the live training renderer.
 function poseSource(key,pose){
  if(pose==='idle')return frameFor(key);
- const special={parry:'guard',finisher:'attack',victory:'idle'};
+ const special={parry:'guard',finisher:'attack',victory:'idle',slash:'attack',sweep:'attack',thrust:'attack',heavy:'special'};
  const action=special[pose]||pose;
  if(key==='npc_carnifex'){
   const file=action==='walk'?'carnifex-walk-ink-v1.webp':'carnifex-haul-ink-v1.webp';
@@ -313,7 +313,8 @@ async function effectPreviewFrame(kind){
 }
 function currentAction(){
  const key=$('#actionKey').value,pose=$('#actionPose').value;
- return v.clean(actions[key]?.[pose]);
+ const fallback=v.fallbackAction?.(pose);
+ return v.clean(actions[key]?.[pose]||(fallback?actions[key]?.[fallback]:null));
 }
 function formatAction(){
  const val=currentAction();
@@ -378,7 +379,7 @@ async function previewAction(){
 }
 function updateActionControls(){formatAction();previewAction();}
 function initActionEditor(){
- const labels={idle:'기본',walk:'걷기',attack:'공격',special:'필살기',guard:'방어',parry:'패링',
+ const labels={idle:'기본',walk:'걷기',attack:'일반공격 공통',slash:'종베기',sweep:'횡베기',thrust:'찌르기',heavy:'강베기',special:'필살기',guard:'방어',parry:'패링',
   dodge:'회피',hit:'피격',death:'패배',finisher:'피니시',victory:'승리'};
  $('#actionKey').replaceChildren(...keys.map(key=>{
   const op=document.createElement('option');op.value=key;op.textContent=nameFor(key);return op;
@@ -409,7 +410,10 @@ function initActionEditor(){
  $('#actionReset').onclick=()=>{
   const key=$('#actionKey').value,pose=$('#actionPose').value;
   if(!actions[key])actions[key]={};
-  actions[key][pose]=v.clean(window.SpartacusPublishedActions?.[key]?.[pose]);
+  // Reset an individual subtype to its inherited attack/special transform.
+  const published=window.SpartacusPublishedActions?.[key]?.[pose];
+  if(published)actions[key][pose]=v.clean(published);
+  else delete actions[key][pose];
   updateActionControls();
  };
  $('#actionPreviewRefresh').onclick=()=>{
@@ -646,5 +650,5 @@ window.SpartacusScaleStudio={
 initActionEditor();build();
 })();
 </script>
-<script src="practice-scale-publish.js?v=action-authoring-v46"></script>
+<script src="practice-scale-publish.js?v=unified-action-v51"></script>
 </body></html>
