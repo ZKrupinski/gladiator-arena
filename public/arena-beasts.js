@@ -554,13 +554,18 @@ function paintBeast(ctx,{fighter,pose='idle',clock=0,x,y,w,h,flip=false,alpha=1}
 function draw(ctx,args){
  const type=args?.fighter?.beastType;
  if(!type)return false;
- const raw=root.PracticeScaleProfiles?.scale?.('beast_'+type)??1;
-  const foot=root.PracticeScaleProfiles?.foot?.('beast_'+type)??0;
- const factor=Number.isFinite(raw)?Math.max(.65,Math.min(1.85,raw)):1;
- if(!ctx||(factor===1&&!foot))return paintBeast(ctx,args);
+ const key='beast_'+type,base=root.PracticeScaleProfiles;
+ const raw=base?.scale?.(key)??1,foot=base?.foot?.(key)??0;
+ const pose={defeat:'death',dead:'death',swing:'attack',heavy:'special'}[args.pose]||
+  (root.PracticeVisualProfiles?.ACTIONS?.includes(args.pose)?args.pose:'idle');
+ const action=root.PracticeVisualProfiles?.resolve?.(key,pose)||
+  {x:0,y:0,scale:1};
+ const factor=(Number.isFinite(raw)?Math.max(.65,Math.min(1.85,raw)):1)*action.scale;
+ const dx=(args.flip?-1:1)*action.x,dy=foot+action.y;
+ if(!ctx||(factor===1&&!dx&&!dy))return paintBeast(ctx,args);
  const cx=args.x+args.w*.5,ground=args.y+args.h;
  ctx.save();
- ctx.translate(cx,ground+foot);
+ ctx.translate(cx+dx,ground+dy);
  ctx.scale(factor,factor);
  ctx.translate(-cx,-ground);
  try{return paintBeast(ctx,args)}finally{ctx.restore();}
