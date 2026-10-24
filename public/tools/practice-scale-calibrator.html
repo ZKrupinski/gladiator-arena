@@ -252,7 +252,7 @@ function frameFor(key){
 // full-frame anchor logic used by the live training renderer.
 function poseSource(key,pose){
  if(pose==='idle')return frameFor(key);
- const special={parry:'guard',finisher:'attack',victory:'idle',slash:'attack',sweep:'attack',thrust:'attack',heavy:'special'};
+ const special={parry:'guard',finisher:'attack',victory:'idle'};
  const action=special[pose]||pose;
  if(key==='npc_carnifex'){
   const file=action==='walk'?'carnifex-walk-ink-v1.webp':'carnifex-haul-ink-v1.webp';
@@ -263,7 +263,7 @@ function poseSource(key,pose){
   });
  }
  if(key.startsWith('beast_')){
-  const folder={attack:'attack',special:'attack',guard:'hit',dodge:'walk',hit:'hit',death:'defeat'}[action]||'walk';
+  const folder={attack:'attack',slash:'attack',sweep:'attack',thrust:'attack',heavy:'attack',special:'attack',guard:'hit',dodge:'walk',hit:'hit',death:'defeat'}[action]||'walk';
   return image('../assets/beasts/individual/'+key.slice(6)+'/'+folder+'/00.png?v=3').then(canvas=>
    ({canvas,pivotX:canvas.naturalWidth/2,footY:p.footY(canvas,canvas.naturalHeight*.88)}));
  }
@@ -287,7 +287,7 @@ function poseSource(key,pose){
  if(key.startsWith('legacy_')){
   const atlas={legacy_murmillo:'retiarius_atlas.png',legacy_thraex:'thraex_atlas.png',
    legacy_retiarius:'murmillo_atlas.png'}[key];
-  const i={walk:1,attack:2,special:3,guard:4,dodge:5,hit:6,death:9}[action]??0;
+  const i={walk:1,attack:2,slash:2,sweep:2,thrust:2,heavy:3,special:3,guard:4,dodge:5,hit:6,death:9}[action]??0;
   return image('../assets/new-era/'+atlas+'?v=4').then(sheet=>{
    const w=Math.floor(sheet.naturalWidth/5),h=Math.floor(sheet.naturalHeight/2),
     canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
@@ -296,7 +296,7 @@ function poseSource(key,pose){
   });
  }
  return Promise.all([cuts(),image('../assets/ludus-growth/'+key+'.png')]).then(([m,sheet])=>{
-  const index={walk:1,attack:2,special:3,guard:6,dodge:8,hit:7,death:11}[action]??0;
+  const index={walk:1,attack:2,slash:2,sweep:2,thrust:2,heavy:3,special:3,guard:6,dodge:8,hit:7,death:11}[action]??0;
   return window.GrowthFrames.isolate(sheet,m.sheets[key]).frames[index];
  });
 }
@@ -357,7 +357,7 @@ async function previewAction(){
     (img.naturalWidth||img.width)*k,(img.naturalHeight||img.height)*k);
   }
   const candidate=val.effect.kind==='auto'?
-   ({attack:'slash',special:'special',guard:'guard',parry:'parry',dodge:'dash',hit:'hit',death:'hit',finisher:'finisher',victory:'victory'}[pose]||'none'):
+   ({attack:'slash',slash:'slash',sweep:'sweep',thrust:'thrust',heavy:'special',special:'special',guard:'guard',parry:'parry',dodge:'dash',hit:'hit',death:'hit',finisher:'finisher',victory:'victory'}[pose]||'none'):
    val.effect.kind;
   if(candidate!=='none'){
    const fx=await effectPreviewFrame(candidate);
