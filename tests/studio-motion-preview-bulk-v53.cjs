@@ -55,11 +55,11 @@ assert.match(inline,/String\(frameNumber\)\.padStart\(2,'0'\)/,'beast action act
 assert.match(inline,/m\.actions\?\.\[name\]/,'champion action manifest clips');
 assert.match(inline,/v\.sampleMotion\?\.\(val,progress\)/,'studio animates user XY keys');
 assert.match(inline,/pose:val,progress/,'studio effect and body use same curve time');
-assert.match(inline,/targets=\[\.\.\.selection\]\.filter\(target=>target!==key\)/,
+assert.match(inline,/const selected=\[\.\.\.selection\]\.filter\(key=>key!==source\)/,
  'bulk excludes the source actor');
-assert.match(inline,/if\(which==='effect'\)dest\.effect=/,
+assert.match(inline,/if\(mode==='effect'\)to\.effect=\{\.\.\.from\.effect\}/,
  'copy FX without changing destination sprite transforms');
-assert.match(inline,/else dest\.motion=v\.cleanMotion\(source\.motion\)/,
+assert.match(inline,/else if\(mode==='motion'\)to\.motion=\{/,
  'copy only 0,50,100% key positions, not FX or body scale');
 assert.match(inline,/persistActionEdit\(\)/,'bulk keys saved immediately');
 const practice=fs.readFileSync('public/ludus-practice.js','utf8');
