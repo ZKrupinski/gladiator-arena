@@ -30,6 +30,15 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .category{font-size:10px;color:#edc890;background:#533b29;border-radius:4px;padding:3px;max-width:68px;text-align:center}
 .art{background:radial-gradient(ellipse at center bottom,#94704e,#36251b 64%,#27180f);aspect-ratio:1;position:relative}
 .art canvas{width:100%;height:100%;display:block}
+.compare-panel{max-width:1290px;margin:14px auto;border:2px solid #c89d61;border-radius:12px;padding:12px;background:#302017}
+.compare-panel h2{font-size:20px;margin:0 0 5px;color:#ffe5a6}
+.compare-panel p{font-size:12px;margin:4px 0 10px}
+.compare-options{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:9px}
+.compare-options label{font-size:13px;font-weight:750}
+.compare-scroll{overflow-x:auto;border-radius:7px;border:1px solid #856445;background:#493025}
+.compare-scroll canvas{display:block;width:100%;min-width:850px;height:auto}
+#compareStatus{color:#eace9e;font-size:12px}
+@media(max-width:650px){.compare-panel{padding:9px}.compare-scroll canvas{min-width:760px}}
 .loading{position:absolute;left:0;right:0;top:45%;text-align:center;font-size:12px;pointer-events:none;color:#d6ad79}
 .config{padding:8px;display:grid;gap:9px}
 .config label{font-size:11px;color:#d6b187;overflow-wrap:anywhere}
@@ -124,6 +133,15 @@ input[type=file]{display:none}
 </div>
 </section>
 <div id="status" class="status" role="status">원본 캐릭터 그림을 준비하고 있습니다.</div>
+<section class="compare-panel" aria-label="실제 전투 크기 비교">
+<h2>⚔ 실제 전투 크기 비교</h2>
+<p>아래에서 체크한 검투사 최대 4명을 <strong>같은 카메라·같은 바닥선·같은 배율</strong>로 표시합니다. 체크하지 않으면 대표 4명을 표시합니다. 개별 크기 슬라이더를 움직이면 즉시 비교됩니다.</p>
+<div class="compare-options"><label for="scaleScene">비교 씬</label>
+<select id="scaleScene"><option value="duel" selected>일반전투 1:1</option><option value="practice">실전훈련</option></select>
+<button id="compareDefaults" type="button">대표 4명 비교</button>
+<output id="compareStatus" role="status">원본 준비 중</output></div>
+<div class="compare-scroll"><canvas id="compareCanvas" width="1280" height="480" aria-label="동일 경기장 바닥선에 나란히 선 검투사 크기 비교"></canvas></div>
+</section>
 <section id="actionEditor" class="action-editor" aria-label="캐릭터 동작별 프레임 및 이펙트 편집">
 <h2>⚔ 동작별 프레임·이펙트 편집실</h2>
 <p>선택한 외형의 <strong>각 동작을 개별로</strong> 설정합니다. 종베기·횡베기·찌르기·강베기도 독립 지정할 수 있고, 미지정 상태는 공격·필살기의 기본값을 따릅니다. 일반전투·실전훈련·훈련소에서 같은 값이 사용됩니다. X는 캐릭터가 바라보는 방향 기준, Y는 아래가 양수입니다. 기존 크기·발높이 설정과 합쳐져 실제 실전훈련에 반영됩니다.</p>
@@ -210,6 +228,7 @@ input[type=file]{display:none}
 <script src="../growth-frames.js"></script>
 <script src="../practice-scale-published.js?v=action-authoring-v46"></script><script src="../practice-scale-profiles.js?v=action-authoring-v46"></script>
 <script src="../practice-visual-profiles.js?v=motion-timeline-v53"></script>
+<script src="practice-size-stage.js?v=true-size-v54"></script>
 <script>
 (()=>{'use strict';
 const p=window.PracticeScaleProfiles;
@@ -255,7 +274,8 @@ async function frameSource(key){
   catch(_){folder='murmillo-v2';version=3;m=await json(combat+folder+'/manifest.json?v=3');}
   const frame=m.frames?.[0];if(!frame?.file)throw Error('모션 기본 포즈 누락');
   const canvas=await image(combat+folder+'/'+frame.file+'?v='+version);
-  return {canvas,pivotX:frame.pivotX??canvas.naturalWidth/2,footY:frame.footY??canvas.naturalHeight};
+  return {canvas,pivotX:frame.pivotX??canvas.naturalWidth/2,footY:frame.footY??canvas.naturalHeight,
+  cellWidth:m.cellWidth,cellHeight:m.cellHeight};
  }
  if(key.startsWith('legacy_')){
   const atlas={legacy_murmillo:'retiarius_atlas.png',legacy_thraex:'thraex_atlas.png',
@@ -270,7 +290,8 @@ async function frameSource(key){
  const ref=await cuts();
  if(!ref.sheets[key])throw Error('성장형 외형 없음');
  const sheet=await image('../assets/ludus-growth/'+key+'.png');
- return window.GrowthFrames.isolate(sheet,ref.sheets[key]).frames[0];
+ const atlas=window.GrowthFrames.isolate(sheet,ref.sheets[key]);
+ return {...atlas.frames[0],cellWidth:atlas.cellWidth,cellHeight:atlas.cellHeight};
 }
 function frameFor(key){
  if(!cache.has(key))cache.set(key,frameSource(key));
@@ -396,10 +417,7 @@ async function previewAction(){
  if(!key||!pose)return;
  const canvas=$('#actionCanvas'),c=canvas.getContext('2d');
  const anchorX=260,anchorY=345,scene=$('#actionScene').value;
- const previewScale=.52,sceneProjection=scene==='duel'?348*.82/202:1,z=previewScale*sceneProjection;
-  // Beasts use the duel's own 348px frame (.83 ink scale); human sprites
-  // use the 202px practice reference. Do not apply human projection to beasts.
-  const isBeast=key.startsWith('beast_'),actorZoom=isBeast?previewScale:z;
+ const previewScale=.52,z=previewScale*window.SpartacusStagePreview.offsetFactor(key,scene);
  const val=currentAction(),progress=Math.max(0,Math.min(1,actionProgress));
  const frameNo=Math.min(7,Math.floor(Math.min(progress,.9999)*8));
  const movement=v.sampleMotion?.(val,progress)||{x:0,y:0};
@@ -419,31 +437,16 @@ async function previewAction(){
   c.strokeStyle='#ead09b';c.setLineDash([6,6]);c.beginPath();
   c.moveTo(8,anchorY);c.lineTo(512,anchorY);c.stroke();c.setLineDash([]);
   const img=frame.canvas,base=idle.canvas,baseH=base.naturalHeight||base.height;
-  const size=Number(state[key]),offsetY=Number(feet[key]);
-  const x=anchorX+(val.x+movement.x)*actorZoom;
-  const y=(offsetY+val.y+movement.y)*actorZoom;
-  if(key==='npc_carnifex'){
-   const p=202/(348*.82),k=436/270*z*p*size*val.scale;
-   c.drawImage(img,x-135*k,
-    anchorY-(326/342)*466*z*p*size*val.scale+y,img.width*k,img.height*k);
-  }else if(key.startsWith('beast_')){
-   const factor={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,
-    beast_lion:1.18,beast_elephant:1.38}[key]||1;
-   const basePixels=scene==='duel'?348*.83*factor:202;
-   const k=basePixels/baseH*previewScale*size*val.scale;
-   c.drawImage(img,x-(frame.pivotX??img.width/2)*k,
-    anchorY-(frame.footY??img.height)*k+y,img.width*k,img.height*k);
-  }else{
-   const k=202/baseH*z*size*val.scale;
-   c.drawImage(img,x-(frame.pivotX??img.width/2)*k,
-    anchorY-(frame.footY??img.height)*k+y,
-    (img.naturalWidth||img.width)*k,(img.naturalHeight||img.height)*k);
-  }
+  window.SpartacusStagePreview.draw(c,{
+   key,frame,idle,scene,zoom:previewScale,
+   scale:Number(state[key])*val.scale,foot:Number(feet[key]),
+   x:anchorX,y:anchorY,offsetX:val.x+movement.x,offsetY:val.y+movement.y
+  });
   if(fx){
    // In live combat each FX is spawned at the 50% action key. It then
    // animates in place, even when the pose scrubber continues moving.
    // Preview THAT exact spawn transform, not the currently scrubbed pose.
-   const fxZoom=isBeast&&scene==='duel'?previewScale:z;
+   const fxZoom=z;
    const box=v.effectGeometry({
     kind,baseX:anchorX+(kind==='hit'?0:52*fxZoom),
     baseY:anchorY-113*fxZoom+offsetY*fxZoom,zoom:fxZoom,face:1,pose:val,progress:.5
@@ -633,32 +636,16 @@ function initActionEditor(){
  }
 }
 function paint(canvas,frame,key){
- const c=canvas.getContext('2d');
- c.clearRect(0,0,460,460);
- const floor=404,center=230,previewZoom=.75;
+ const c=canvas.getContext('2d');c.clearRect(0,0,460,460);
+ const floor=404,center=230;
  c.fillStyle='rgba(245,202,120,.12)';c.fillRect(0,floor,460,56);
  c.strokeStyle='#e0b57b';c.setLineDash([4,5]);c.beginPath();
  c.moveTo(7,floor);c.lineTo(453,floor);c.stroke();c.setLineDash([]);
- const img=frame.canvas;
- // Preview uses the SAME full-source-frame baseline and the foreground court
- // camera, not the previous arbitrary .88 factor applied to gladiators.
- if(key==='npc_carnifex'){
-  // The actual Carnifex draws its 270×342 ink sprite as a 436×466
-  // animation. Match THAT ratio, grounded at his boots (not 270×342).
-  const courtProjection=202/(348*.82);
-  const z=courtProjection*previewZoom*Number(state[key]);
-  c.drawImage(img,0,0,270,342,center-218*z,
-    floor+Number(feet[key])*previewZoom-326/342*466*z,436*z,466*z);
-  return;
- }
- const beastBase={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,
-  beast_lion:1.18,beast_elephant:1.38};
- const baseHeight=key.startsWith('beast_')?348*.83*beastBase[key]:202;
- const pixels=baseHeight/(img.naturalHeight||img.height)*Number(state[key])*previewZoom;
- c.drawImage(img,center-frame.pivotX*pixels,
-  floor+Number(feet[key])*previewZoom-frame.footY*pixels,(img.naturalWidth||img.width)*pixels,
-  (img.naturalHeight||img.height)*pixels);
+ window.SpartacusStagePreview.draw(c,{key,frame,idle:frame,
+  scene:$('#scaleScene').value,zoom:.75,scale:Number(state[key]),
+  foot:Number(feet[key]),x:center,y:floor});
 }
+
 function updateBulkState(){
  const count=selection.size;
  $('#selectedCount').textContent='선택 '+count+' / '+keys.length;
