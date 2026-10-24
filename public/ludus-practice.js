@@ -288,23 +288,28 @@ function sparks(target,force=false){
 // No fake geometry arcs or newly drawn vector attack effects.
 function emitVfx(kind,unit,other,emphasis=false){
  if(!battle||unit.seat<0||!COURTS[unit.seat])return;
- const c=COURTS[unit.seat],duration=root.ArenaRasterFX?.FAMILIES?.[kind]?.duration||.34;
+ const court=COURTS[unit.seat],fx=root.ArenaRasterFX;
  const face=(kind==='hit'&&other)?(other.side==='ally'?1:-1):
   (unit.side==='ally'?1:-1);
  const action=['slash','sweep','thrust'].includes(kind)?kind:
   kind==='hit'?'hit':kind==='guard'?'guard':kind==='parry'?'parry':
-  kind==='dash'?'dodge':kind==='special'?'special':kind==='finisher'?'finisher':'attack';
- const key=visualLook(unit),v=root.PracticeVisualProfiles?.resolve?.(key,action);
- const effect=v?.effect||{kind:'auto',x:0,y:0,scale:1};
- const chosen=effect.kind==='auto'?kind:effect.kind;
- if(chosen==='none')return;
- if(!root.ArenaRasterFX?.FAMILIES?.[chosen])return;
- const fxDuration=root.ArenaRasterFX.FAMILIES[chosen].duration||duration;
- battle.fx.push({seat:unit.seat,kind:chosen,x:unit.x+(kind==='hit'?0:face*52*c.scale)+
-    (v?.x||0)*c.scale*face+(effect.x||0)*c.scale*face,
-  y:unit.y-113*c.scale+(v?.y||0)*c.scale+(effect.y||0)*c.scale,
-  scale:c.scale*(effect.scale||1),face,age:0,duration:fxDuration,
-  depth:c.y-(unit.side==='enemy'?12:0)+.6,
+  kind==='dash'?'dodge':kind==='finisher'?'finisher':
+  kind==='special'?'special':'attack';
+ const settings=root.PracticeVisualProfiles;
+ const authored=settings?.resolve?.(visualLook(unit),action);
+ const selected=authored?.effect?.kind;
+ const chosen=!selected||selected==='auto'?kind:selected;
+ if(chosen==='none'||!fx?.FAMILIES?.[chosen])return;
+ const geometry=settings?.effectGeometry?.({
+  kind:chosen,baseX:unit.x+(kind==='hit'?0:face*52*court.scale),
+  baseY:unit.y-113*court.scale+profilesFoot(unit)*court.scale,
+  face,zoom:court.scale,pose:authored
+ });
+ if(!geometry)return;
+ battle.fx.push({seat:unit.seat,kind:chosen,x:geometry.x,y:geometry.y,
+  width:geometry.width,height:geometry.height,face,
+  age:0,duration:fx.FAMILIES[chosen].duration||.34,
+  depth:court.y-(unit.side==='enemy'?12:0)+.6,
   front:unit.side==='ally'?1:0,alpha:emphasis?1:.87});
 }
 function beginRemoval(unit){
@@ -386,9 +391,9 @@ function updateDepartures(dt){
 // Authored FX size library lives in PracticeVisualProfiles and is exposed
 // to the same editor that controls each action's sprite transform.
 function drawVfx(v){
- const fx=root.ArenaRasterFX,size=root.PracticeVisualProfiles?.size?.(v.kind)||[600,560];
+ const fx=root.ArenaRasterFX;
  const p=clamp(v.age/v.duration,0,.9999);
- fx?.draw?.(ctx,v.kind,v.x,v.y,size[0]*v.scale,size[1]*v.scale,p,
+ fx?.draw?.(ctx,v.kind,v.x,v.y,v.width,v.height,p,
   v.alpha*Math.min(1,(1-p)*2.7),v.face,0);
 }
 function drawSpark(p){
