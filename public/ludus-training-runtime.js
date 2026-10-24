@@ -64,37 +64,32 @@ function paint(canvas,img){
   return true;
  }catch(error){return false;}
 }
-function profileFor(canvas,reference){
+// One authored full-frame baseline; no invisible-alpha fitting or
+// scene-owned per-action sliding, squash, zoom or rotation. The same look
+// and pose transform edited in the calibration studio is used in battle.
+function profileFor(canvas,reference,look=null){
  if(!reference?.width||!reference?.height)return null;
- const box=visibleBounds(reference);
- // Use the selected fighter's idle silhouette as the ONLY scale reference.
- // We do not resize their body to fit each attacking sword, cape or crouch.
- const height=350;
- const scale=Math.min(height/Math.max(1,box.h),
-  (canvas.width-40)/Math.max(1,box.w));
- return {source:reference,scale};
+ const scale=Math.min(350/reference.height,(canvas.width-40)/reference.width);
+ return {source:reference,scale,look};
 }
 function paintTrainingFighter(canvas,img,action,progress,profile){
  if(!canvas)return;
  const ctx=canvas.getContext('2d');if(!ctx)return;
  ctx.clearRect(0,0,canvas.width,canvas.height);
  if(!img?.width||!img?.height)return;
- const box=visibleBounds(img);
- const scale=profile?.scale??profileFor(canvas,img)?.scale??1;
- const width=box.w*scale,height=box.h*scale;
- const isHit=action==='hit';
- const strike=!isHit&&action!=='idle'?Math.sin(Math.PI*progress):0;
- // Whip contact interrupts sword practice: a sharp recoil away from the
- // instructor, stagger and return to guard. Keep the exact idle art scale.
- const recoil=isHit?Math.sin(Math.PI*Math.max(0,Math.min(1,progress)))*(1-.26*progress):0;
- const towardDoctore=isHit?-33*recoil:(action==='thrust'?15:action==='heavy'?10:8)*strike;
- const lean=isHit?-.15*recoil:(action==='slash'?.04:action==='sweep'?.033:action==='thrust'?.018:.027)*strike;
- const tremor=isHit&&progress<.38?Math.sin(progress*95)*4*(1-progress/.38):0;
+ const look=profile?.look||null;
+ const authored=window.PracticeVisualProfiles?.resolve?.(look,action)||
+  {x:0,y:0,scale:1};
+ const bodyScale=window.PracticeScaleProfiles?.scale?.(look)??1;
+ const bootY=window.PracticeScaleProfiles?.foot?.(look)??0;
+ const k=(profile?.scale??profileFor(canvas,img)?.scale??1)*bodyScale*authored.scale;
  ctx.save();
- ctx.translate(canvas.width/2-towardDoctore+tremor,canvas.height-9);
- ctx.rotate(-lean);
- ctx.scale(-1,isHit?1-.055*recoil:1);
- try{ctx.drawImage(img,box.x,box.y,box.w,box.h,-width/2,-height,width,height);}catch(error){}
+ // The training fighter faces left. X is in facing space just as it is in
+ // normal combat and in the studio. Gameplay hitboxes are never shifted.
+ ctx.translate(canvas.width/2-authored.x,canvas.height-9+bootY+authored.y);
+ ctx.scale(-1,1);
+ try{ctx.drawImage(img,0,0,img.width,img.height,
+  -img.width*k/2,-img.height*k,img.width*k,img.height*k);}catch(error){}
  ctx.restore();
 }
 function actionAt(t){
@@ -120,7 +115,8 @@ function animate(a,stage,selected){
   if(!canvas.isConnected){stop();return;}
   // Calibrate all motion against the SAME idle pose; never rescale on impact.
   const idle=a.trainingFrame?.(selected,'idle',0)||a.portrait(selected);
-  if(idle&&profile?.source!==idle)profile=profileFor(canvas,idle);
+  const look=a.appearanceKey?.(selected)||null;
+  if(idle&&(profile?.source!==idle||profile?.look!==look))profile=profileFor(canvas,idle,look);
   const elapsed=hitStart<0?HIT_MS:performance.now()-hitStart;
   const takingHit=elapsed<HIT_MS;
   const motion=takingHit?
