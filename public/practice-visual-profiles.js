@@ -98,11 +98,11 @@ function size(kind){return FX_SIZES[kind]||[600,560];}
 // unit as the original fighter sheet, then inherit ONLY the scene camera scale.
 // The normal arena's render-camera scale is separate from extra effect boosts.
 function effectGeometry({kind,baseX=0,baseY=0,face=1,zoom=1,pose=null,
- effect=null,applyPoseOffset=true,progress=.5}={}){
+ effect=null,applyPoseOffset=true,applyMotionOffset=true,progress=.5}={}){
  const p=clean(pose),e=effect?clean({effect}).effect:p.effect;
  const [width,height]=size(kind);
  const z=between(zoom,.01,10,1),direction=face<0?-1:1;
- const move=sampleMotion(p,progress);
+ const move=applyMotionOffset?sampleMotion(p,progress):neutralPoint();
  return Object.freeze({
   kind,x:baseX+direction*((applyPoseOffset?p.x:0)+e.x+move.x)*z,
   y:baseY+((applyPoseOffset?p.y:0)+e.y+move.y)*z,
