@@ -5,7 +5,11 @@
  */
 (function(root){'use strict';
 const KEY='spartacus.practice.visual-actions.v46';
-const ACTIONS=Object.freeze(['idle','walk','attack','special','guard','parry','dodge','hit','death','finisher','victory']);
+const ACTIONS=Object.freeze(['idle','walk','attack','slash','sweep','thrust','heavy','special','guard','parry','dodge','hit','death','finisher','victory']);
+// Attack subtypes inherit their base action ONLY when no artist override exists.
+// The runtime and studio use this same mapping, with no scene-owned pose tweaks.
+const ACTION_FALLBACK=Object.freeze({slash:'attack',sweep:'attack',thrust:'attack',heavy:'special'});
+const fallbackAction=action=>ACTION_FALLBACK[action]||null;
 const EFFECTS=Object.freeze(['auto','none','slash','sweep','thrust','hit','guard','parry','finisher','special','dash','victory']);
 const FX_SIZES=Object.freeze({slash:[600,570],sweep:[655,605],thrust:[710,570],hit:[480,450],
  guard:[440,430],parry:[510,495],finisher:[690,650],special:[660,620],dash:[790,510],victory:[660,600]});
@@ -57,7 +61,9 @@ function all(){
 function resolve(key,action='idle'){
  if(!key||!ACTIONS.includes(action))return clean();
  const v=read()?.[key]?.[action]||published[key]?.[action];
- return clean(v);
+ if(v)return clean(v);
+ const base=fallbackAction(action);
+ return clean(base?(read()?.[key]?.[base]||published[key]?.[base]):undefined);
 }
 function write(values){
  const actions=sanitize(values);
@@ -66,6 +72,6 @@ function write(values){
 }
 function reset(){try{root.localStorage?.removeItem(KEY);local={};return true;}catch(_){return false;}}
 function size(kind){return FX_SIZES[kind]||[600,560];}
-root.PracticeVisualProfiles=Object.freeze({KEY,ACTIONS,EFFECTS,FX_SIZES,clean,sanitize,read,all,resolve,write,reset,size});
+root.PracticeVisualProfiles=Object.freeze({KEY,ACTIONS,ACTION_FALLBACK,fallbackAction,EFFECTS,FX_SIZES,clean,sanitize,read,all,resolve,write,reset,size});
 if(typeof module!=='undefined')module.exports=root.PracticeVisualProfiles;
 })(typeof window!=='undefined'?window:globalThis);
