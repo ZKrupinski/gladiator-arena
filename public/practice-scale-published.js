@@ -1,9 +1,68 @@
-/* SPARTACUS — GitHub canonical appearance sizes, version-controlled on main.
- * This file is the production default across all devices. Keep values as
- * numeric, reviewed 31-key data. Studio changes require an authenticated
- * GitHub commit; browser-only preview is NOT a repository save.
+/* 31 author-approved Spartacus fighter, beast and executioner sizes and foot heights.
+ * Repository source-of-truth: GitHub main. No credentials stored.
  */
-(function(root){'use strict';
- root.SpartacusPublishedScales=Object.freeze({});
- root.SpartacusPublishedFeet=Object.freeze({});
-})(typeof window!=='undefined'?window:globalThis);
+(function(root){"use strict";root.SpartacusPublishedScales=Object.freeze({
+  "murmillo_a_L1": 0.9747,
+  "murmillo_a_L2": 1.0198249999999998,
+  "murmillo_a_L3": 1.1913,
+  "murmillo_a_L4": 1.10105,
+  "murmillo_a_L5": 1.128125,
+  "thraex_a_L1": 0.9025,
+  "thraex_a_L2": 1.0108,
+  "thraex_a_L3": 0.92055,
+  "thraex_a_L4": 1.0288499999999998,
+  "thraex_a_L5": 1.083,
+  "thraex_b_L1": 0.9386,
+  "thraex_b_L2": 0.9295749999999999,
+  "thraex_b_L3": 1.10105,
+  "thraex_b_L4": 1.1371499999999999,
+  "thraex_b_L5": 1.083,
+  "retiarius_a_L1": 1.0017749999999999,
+  "retiarius_a_L2": 1.10105,
+  "retiarius_a_L3": 1.1371499999999999,
+  "retiarius_a_L4": 1.182275,
+  "retiarius_a_L5": 1.24545,
+  "murmillo_champion_red": 1.5071749999999997,
+  "murmillo_motion_v3": 1.1552,
+  "legacy_murmillo": 1.28155,
+  "legacy_thraex": 1.3627749999999998,
+  "legacy_retiarius": 1.272525,
+  "beast_wolf": 1.344725,
+  "beast_leopard": 1.434975,
+  "beast_tiger": 1.4620499999999998,
+  "beast_lion": 1.434975,
+  "beast_elephant": 1.33,
+  "npc_carnifex": 1.0108
+});root.SpartacusPublishedFeet=Object.freeze({
+  "murmillo_a_L1": 0,
+  "murmillo_a_L2": 0,
+  "murmillo_a_L3": 0,
+  "murmillo_a_L4": 0,
+  "murmillo_a_L5": 0,
+  "thraex_a_L1": 0,
+  "thraex_a_L2": 0,
+  "thraex_a_L3": 0,
+  "thraex_a_L4": 0,
+  "thraex_a_L5": 0,
+  "thraex_b_L1": 0,
+  "thraex_b_L2": 0,
+  "thraex_b_L3": 0,
+  "thraex_b_L4": 0,
+  "thraex_b_L5": 0,
+  "retiarius_a_L1": 0,
+  "retiarius_a_L2": 0,
+  "retiarius_a_L3": 0,
+  "retiarius_a_L4": 0,
+  "retiarius_a_L5": 0,
+  "murmillo_champion_red": 0,
+  "murmillo_motion_v3": 0,
+  "legacy_murmillo": 0,
+  "legacy_thraex": 0,
+  "legacy_retiarius": 0,
+  "beast_wolf": -5,
+  "beast_leopard": -5,
+  "beast_tiger": -5,
+  "beast_lion": -5,
+  "beast_elephant": -5,
+  "npc_carnifex": -10
+});})(typeof window!=="undefined"?window:globalThis);
