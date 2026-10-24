@@ -41,12 +41,12 @@ for(const t of trail)assert.ok(Math.max(...t)-Math.min(...t)>12,'combatants shif
 // The corridor applies even when attacks/parries displace the combatants.
 const rearBoundary=(layout[2].x+layout[3].x)/2;
 assert.ok(layout[3].x-layout[2].x>=400,'rear station anchors spread out');
-assert.ok(enemies[2].x<=rearBoundary-110,'3 rival cannot occupy the 4 ally's artwork');
+assert.ok(enemies[2].x<=rearBoundary-110,"3 rival cannot occupy the 4 ally's artwork");
 assert.ok(heroes[3].x>=rearBoundary+110,'4 ally retains his own artwork corridor');
 enemies[2].x=rearBoundary+35;heroes[3].x=rearBoundary-35;
 api.keepCourtSpacing();
 assert.ok(enemies[2].x<=rearBoundary-110,'knockback cannot drag 3 enemy across shared corridor');
-assert.ok(heroes[3].x>=rearBoundary+110,'4 ally cannot enter 3 rival's 220px art corridor');
+assert.ok(heroes[3].x>=rearBoundary+110,"4 ally cannot enter 3 rival's 220px art corridor");
 for(let i=0;i<4;i++){
  heroes[i].x=layout[i].x+10;enemies[i].x=layout[i].x-10;
 }
