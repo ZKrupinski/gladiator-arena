@@ -17,17 +17,22 @@ function describe(message,kind=''){
 function source(){
  const apiScale=root.PracticeScaleProfiles;
  const current=studio()?.values?.();
+ const currentFeet=studio()?.feet?.()||{};
  if(!current||!apiScale)throw Error('보정실 크기 설정에 접근할 수 없습니다');
- const accepted={};
+ const accepted={},acceptedFeet={};
  for(const key of Object.keys(apiScale.DEFAULTS)){
   const n=Number(current[key]);
   if(!Number.isFinite(n))throw Error(key+' 배율이 숫자가 아닙니다');
   accepted[key]=apiScale.clamp(n);
+  const y=Number(currentFeet[key]??0);
+  if(!Number.isFinite(y))throw Error(key+' 발높이가 숫자가 아닙니다');
+  acceptedFeet[key]=apiScale.clampFoot?.(y)??Math.max(-70,Math.min(40,Math.round(y)));
  }
- return '/* 31 author-approved Spartacus fighter, beast and executioner sizes.\n'+
+ return '/* 31 author-approved Spartacus fighter, beast and executioner sizes and foot heights.\n'+
  ' * Repository source-of-truth: GitHub main. No credentials stored.\n */\n'+
  '(function(root){"use strict";root.SpartacusPublishedScales=Object.freeze('+
- JSON.stringify(accepted,null,2)+');})(typeof window!=="undefined"?window:globalThis);\n';
+ JSON.stringify(accepted,null,2)+');root.SpartacusPublishedFeet=Object.freeze('+
+ JSON.stringify(acceptedFeet,null,2)+');})(typeof window!=="undefined"?window:globalThis);\n';
 }
 function base64(text){
  const bytes=new TextEncoder().encode(text),chunk=8192;
@@ -44,7 +49,7 @@ async function commit(token,payload=source()){
  const old=await get.json();
  if(!/^[0-9a-f]{40}$/.test(old.sha||''))throw Error('저장소 파일 버전을 확인할 수 없습니다');
  const response=await request(api,{method:'PUT',headers:{...headers,'Content-Type':'application/json'},
-  body:JSON.stringify({message:'chore(scale): publish 31 calibrated original sizes',
+  body:JSON.stringify({message:'chore(scale): publish 31 calibrated sizes and foot heights',
    content:base64(payload),sha:old.sha,branch:'main'})});
  if(!response.ok)throw Error('GitHub 커밋 실패 (HTTP '+response.status+
   '). 저장소 Contents 쓰기 권한 또는 main 브랜치 보호 정책을 확인하세요');
@@ -62,24 +67,36 @@ function decode(content){return new TextDecoder().decode(Uint8Array.from(atob((c
 function valuesFrom(text){
  const match=text.match(/SpartacusPublishedScales\s*=\s*Object\.freeze\(\s*(\{[\s\S]*?\})\s*\)/);
  if(!match)throw Error('저장 파일 형식을 확인할 수 없습니다');
- const data=JSON.parse(match[1]),defaults=root.PracticeScaleProfiles.BASE,out={};
+ const data=JSON.parse(match[1]);
+ const footMatch=text.match(/SpartacusPublishedFeet\s*=\s*Object\.freeze\(\s*(\{[\s\S]*?\})\s*\)/);
+ const footData=footMatch?JSON.parse(footMatch[1]):{};
+ const defaults=root.PracticeScaleProfiles.BASE,out={},feet={};
  for(const key of Object.keys(defaults)){
   const n=Object.hasOwn(data,key)?data[key]:defaults[key];
+  const y=Object.hasOwn(footData,key)?footData[key]:0;
   if(typeof n!=='number'||!Number.isFinite(n)||n<.65||n>1.85)throw Error('저장 배율이 올바르지 않습니다');
-  out[key]=n;
+  if(typeof y!=='number'||!Number.isFinite(y)||y< -70||y>40)throw Error('저장 발높이가 올바르지 않습니다');
+  out[key]=n;feet[key]=y;
  }
- return out;
+ return {scales:out,feet};
 }
-function same(a,b){return !!a&&!!b&&Object.keys(root.PracticeScaleProfiles.DEFAULTS).every(k=>Math.abs(Number(a[k])-Number(b[k]))<1e-8);}
+function currentSnapshot(){return {scales:studio()?.values?.(),feet:studio()?.feet?.()||{}};}
+function same(a,b){
+ if(!a||!b)return false;
+ const keys=Object.keys(root.PracticeScaleProfiles.DEFAULTS);
+ return keys.every(k=>Math.abs(Number((a.scales||a)[k])-Number((b.scales||b)[k]))<1e-8&&
+  Math.abs(Number((a.feet||{})[k]??0)-Number((b.feet||{})[k]??0))<1e-8);
+}
 function health(id,text,state){const el=$('#'+id);if(el){el.textContent=text;el.dataset.state=state;}}
 function refreshHealth(){
- const now=studio()?.values?.();if(!now)return;
- const local={...root.PracticeScaleProfiles.DEFAULTS,...root.PracticeScaleProfiles.read()};
- health('draftHealth',same(now,local)?'✓ 이 기기: 현재 배율과 적용값 일치':'● 이 기기: 수정한 배율 미저장',same(now,local)?'ok':'warn');
+ const now=currentSnapshot();if(!now.scales)return;
+ const local={scales:{...root.PracticeScaleProfiles.DEFAULTS,...root.PracticeScaleProfiles.read()},
+  feet:{...root.PracticeScaleProfiles.FOOT_DEFAULTS,...root.PracticeScaleProfiles.readFeet?.()}};
+ health('draftHealth',same(now,local)?'✓ 이 기기: 크기·발높이 저장됨':'● 이 기기: 크기·발높이 수정값 미저장',same(now,local)?'ok':'warn');
  const repoMatch=same(now,repositoryValues),liveMatch=same(now,liveValues);
- health('repoHealth',repositoryValues?(repoMatch?'✓ GitHub: 현재 배율 저장 확인':'● GitHub: 현재 수정값과 다름 · 원본 게시 필요')+(lastCommit?' · '+lastCommit.slice(0,8):''):
+ health('repoHealth',repositoryValues?(repoMatch?'✓ GitHub: 크기·발높이 저장 확인':'● GitHub: 크기·발높이 변경값 게시 필요')+(lastCommit?' · '+lastCommit.slice(0,8):''):
   'GitHub: '+(repoError||'확인 중'),repositoryValues?(repoMatch?'ok':'warn'):repoError?'error':'warn');
- health('liveHealth',liveValues?(liveMatch?'✓ 게임 배포: 현재 배율 반영 확인':repoMatch?'◷ 게임 배포: GitHub 저장 완료 · 배포 대기':'● 게임 배포: 현재 수정값 미반영'):
+ health('liveHealth',liveValues?(liveMatch?'✓ 게임 배포: 크기·발높이 반영 확인':repoMatch?'◷ 게임 배포: GitHub 저장 완료 · 배포 대기':'● 게임 배포: 현재 수정값 미반영'):
   '게임 배포: '+(liveError||'확인 중'),liveValues?(liveMatch?'ok':'warn'):liveError?'error':'warn');
 }
 async function verifySaved(){
@@ -98,7 +115,7 @@ async function verifySaved(){
   }catch(e){liveValues=null;liveError=e.message;}})()
  ]);
  checking=false;if(button)button.disabled=false;refreshHealth();
- if(same(studio()?.values?.(),repositoryValues)&&same(studio()?.values?.(),liveValues)&&lastCommit){
+ if(same(currentSnapshot(),repositoryValues)&&same(currentSnapshot(),liveValues)&&lastCommit){
   describe('✓ GitHub 저장과 게임 배포 확인 완료 · 커밋 '+lastCommit.slice(0,12),'success');
   clearTimeout(poll);poll=null;
  }
