@@ -55,7 +55,7 @@ assert.match(inline,/String\(frameNumber\)\.padStart\(2,'0'\)/,'beast action act
 assert.match(inline,/m\.actions\?\.\[name\]/,'champion action manifest clips');
 assert.match(inline,/v\.sampleMotion\?\.\(val,progress\)/,'studio animates user XY keys');
 assert.match(inline,/pose:val,progress/,'studio effect and body use same curve time');
-assert.match(inline,/const targets=\[\.\.\.selection\]\.filter\(target=>target!==key\)/,
+assert.match(inline,/targets=\[\.\.\.selection\]\.filter\(target=>target!==key\)/,
  'bulk excludes the source actor');
 assert.match(inline,/if\(which==='effect'\)dest\.effect=/,
  'copy FX without changing destination sprite transforms');
