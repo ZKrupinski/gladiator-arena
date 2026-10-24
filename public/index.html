@@ -3152,7 +3152,7 @@ function fxTiming(v){
 }
 // Runtime presentation scale only: preserve original 8-frame transparent PNGs
 // and leave dash, parry, finisher, guard, special and victory untouched.
-const ORDINARY_ATTACK_FX_BOOST=Object.freeze({slash:1.6,sweep:1.6,thrust:2.0});
+// Attack FX scale and offsets come solely from PracticeVisualProfiles.
 function drawEffects(backOnly=false){
  if(!backOnly){
   drawResultFx();drawDashStreaks();drawParryBursts();
@@ -3172,7 +3172,6 @@ function drawEffects(backOnly=false){
       v.w,v.h,progress,v.alpha*fade,v.flip?-1:1,v.rotation||0);
     continue;
    }
-  const scale=.9+.13*progress;
   const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   let mapped=v.sequence||({hit_slash:'slash',parry_burst:'guard',
     dash_trail:'dash',special_aura:'special'}[v.art]);
@@ -3180,35 +3179,34 @@ function drawEffects(backOnly=false){
    mapped==='parry'?'parry':mapped==='hit'?'hit':
    mapped==='dash'?'dodge':mapped==='special'?'special':
    mapped==='finisher'?'finisher':'attack';
-  const fxEdit=v.owner?window.PracticeVisualProfiles?.resolve?.(duelAppearanceKey(v.owner),fxAction)?.effect:null;
-  if(fxEdit?.kind==='none')continue;
-  if(fxEdit?.kind&&fxEdit.kind!=='auto')mapped=fxEdit.kind;
-  cx+=(v.owner?.face||1)*(fxEdit?.x||0);
-  cy+=(fxEdit?.y||0);
-  const authoredFxScale=fxEdit?.scale||1;
-  const vfxScale=1.31*(CINEMATIC_FX_SCALE[v.art]??.65)*(mapped==='finisher'?1.12:1);
-  const normalAttackBoost=ORDINARY_ATTACK_FX_BOOST[mapped]??1;
-  // Expand only the ordinary sword trails, preserving each sprite's origin,
-  // direction, opacity, eight-frame timing and transparent source artwork.
-  if(S.fx&&mapped&&window.ArenaRasterFX?.draw?.(ctx,mapped,cx,cy,
-    v.w*scale*vfxScale*1.20*normalAttackBoost*authoredFxScale,
-    v.h*scale*vfxScale*1.20*normalAttackBoost*authoredFxScale,
-    reduced?.52:progress,v.alpha*fade,v.flip?-1:1,v.rotation))continue;
-  if(mapped&&window.ArenaRasterFX?.FAMILIES?.[mapped])continue;
-  // Legacy fallback is only for unrelated environmental effects;
-  // never render geometric/vector effects over approved PNG art.
-  if(S.fx&&mapped&&window.ArenaAnimatedFX?.draw?.(ctx,mapped,cx,cy,
-    v.w*scale*vfxScale*authoredFxScale,v.h*scale*vfxScale*authoredFxScale,reduced?.52:progress,
-    v.alpha*fade,v.flip,v.rotation))continue;
-  if(mapped&&window.ArenaAnimatedFX?.FAMILIES?.[mapped])continue;
-  if(v.art&&drawIllustratedEffect(v.art,cx,cy,v.w*scale,v.h*scale,
-    v.alpha*fade,v.flip,v.rotation))continue;
-  // Existing high-quality atlas art is an emergency fallback for missing WebP.
-  ctx.save();ctx.translate(cx,cy);ctx.rotate(v.rotation);
-  const fallbackScale=CINEMATIC_FX_SCALE[v.art]??1;
-  const fw=v.w*fallbackScale,fh=v.h*fallbackScale;
+  const tool=window.PracticeVisualProfiles;
+  const authored=v.owner?tool?.resolve?.(duelAppearanceKey(v.owner),fxAction):null;
+  if(authored?.effect?.kind==='none')continue;
+  if(authored?.effect?.kind&&authored.effect.kind!=='auto')
+   mapped=authored.effect.kind;
+  // Normal and practice use the exact same 31-look action+FX geometry.
+  // Scene projection scales art and effects together, never per FX family.
+  const sceneZoom=FIGHTER_DRAW_SIZE*DUEL_BASE_VISUAL_SCALE/202;
+  const tracked=v.track==='body'&&!!v.owner?._fxRender;
+  const geom=tool?.effectGeometry?.({
+   kind:mapped,baseX:cx,baseY:cy,face:v.owner?.face||1,
+   zoom:sceneZoom,pose:authored,applyPoseOffset:!tracked
+  });
+  if(geom){cx=geom.x;cy=geom.y;}
+  const fw=geom?.width??v.w,fh=geom?.height??v.h;
+  if(S.fx&&mapped&&window.ArenaRasterFX?.FAMILIES?.[mapped]){
+   window.ArenaRasterFX.draw?.(ctx,mapped,cx,cy,fw,fh,
+    reduced?.52:progress,v.alpha*fade,v.flip?-1:1,v.rotation);
+   continue;
+  }
+  // All secondary raster/illustrated fallbacks use the same authoring size.
+  if(mapped&&window.ArenaAnimatedFX?.draw?.(ctx,mapped,cx,cy,
+     fw,fh,reduced?.52:progress,v.alpha*fade,v.flip,v.rotation))continue;
+  if(v.art&&drawIllustratedEffect(v.art,cx,cy,fw,fh,
+     v.alpha*fade,v.flip,v.rotation))continue;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(v.rotation||0);
   atlasFrame(IMG[v.atlas]||IMG.fx,v.frame,-fw/2,-fh/2,
-    fw,fh,v.flip,v.alpha*fade);
+   fw,fh,v.flip,v.alpha*fade);
   ctx.restore();
  }
 }
