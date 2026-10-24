@@ -68,5 +68,5 @@ assert.ok(index.includes('arena-carnifex.js?v=action-authoring-v46'),'existing e
 assert.match(index,/function duelFootOffset\(f\)/,'regular duel uses calibration key');
 assert.match(index,/const footOffset=duelFootOffset\(f\)/,'regular duel stores per-look Y offset');
 assert.match(index,/if\(!f\.beastType\)y\+=footOffset/,'regular duel renders all human actions at approved foot height');
-assert.match(index,/\(motionExtra\?\.y\|\|0\)\+footOffset/,'combat VFX rendering follows the moved fighter');
+assert.match(index,/dy:drawY-\(feet-height\)\+footOffset\+editedY/,'combat VFX follows shared artist Y offset');
 console.log('PASS: 31 foot controls, isolated device save, released defaults, live rendering hooks, publisher, cache versions');
