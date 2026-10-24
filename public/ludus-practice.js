@@ -15,9 +15,10 @@ const COURT_LAYOUTS=Object.freeze({
    {x:640,y:606,scale:1}]),
  // Keep all four ALLIED silhouettes in their own horizontal columns.
  // Enemies may cross columns, but foreground allies cannot occlude rear allies.
- 4:Object.freeze([{x:260,y:689,scale:1},{x:1120,y:689,scale:1},
-   // Spread the rear courts so court 3's rival cannot stand inside court 4's hero art.
-   {x:485,y:606,scale:1},{x:900,y:606,scale:1}])
+ 4:Object.freeze([{x:215,y:689,scale:1},{x:1120,y:689,scale:1},
+   // Four allies remain visible at authored full-frame size; the rear-left
+   // enemy is also clear of the rear-right hero, even during lateral footwork.
+   {x:465,y:606,scale:1},{x:885,y:606,scale:1}])
 });
 function courtsForParty(count){
  // Does not depend on later-initialized variables; works at script load.
