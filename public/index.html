@@ -2913,6 +2913,10 @@ function safeFighterPose(f,requested){
 }
 function drawFighter(f){if(!f||f.removedFromArena)return;
  const pose=safeFighterPose(f,choosePose(f)),frame=FRAMES[pose]??0;
+ const editorAction={net:'special',defeat:'death'}[pose]||pose;
+ const authored=window.PracticeVisualProfiles?.resolve?.(duelAppearanceKey(f),editorAction)||
+  {x:0,y:0,scale:1};
+ const editedX=(f.face||1)*authored.x,editedY=authored.y;
  // Keep a fixed feet pivot for every class, image pose and character.
  const height=FIGHTER_DRAW_SIZE,width=FIGHTER_DRAW_SIZE,feet=FLOOR-1;
  // Keep idle and walk feet planted. Whole-body sine bob made boots hover
@@ -3009,8 +3013,8 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   pose!=='defeat'&&pose!=='death')?
   (window.ArenaMotion?.visual?.(f,reduceImpact,S.fx)||{scale:1,flash:0}):
   {scale:1,flash:0};
- f._fxRender={dx:drawX-(f.x-width/2)+(motionExtra?.x||0),
-  dy:drawY-(feet-height)+(motionExtra?.y||0)+footOffset,tilt,
+ f._fxRender={dx:drawX-(f.x-width/2)+(motionExtra?.x||0)+editedX,
+  dy:drawY-(feet-height)+(motionExtra?.y||0)+footOffset+editedY,tilt,
   sx:impactVisual.scale,sy:impactVisual.scale,
   pivotX:f.x,pivotY:feet};
  // No transparency strobing or new vector weapon layer.
@@ -3035,14 +3039,23 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   atlasFrame(IMG[f.cls],frame,nx,ny,width*factor,height*factor,f.face<0,alpha);
  };
  const renderActor=(alpha,x=drawX,y=drawY)=>{
-  // Align every human class including ghosts and hit flashes to the published feet.
+  // Beast art consumes the same editor profile in ArenaBeasts.draw;
+  // never apply its authored size twice.
   if(!f.beastType)y+=footOffset;
+  if(!f.beastType){
+   ctx.save();
+   // All human poses, echoes and white hit flashes share one foot pivot.
+   ctx.translate(x+width/2+editedX,y+height+editedY);
+   ctx.scale(authored.scale,authored.scale);
+   ctx.translate(-(x+width/2),-(y+height));
+  }
   const animal=!!f.beastType&&!!window.ArenaBeasts?.draw?.(ctx,{
    fighter:f,pose,clock,x,y,w:width,h:height,flip:f.face>0,alpha
   });
   if(!animal&&
    !drawGrowthPose(f,pose,x,y,width,height,f.face<0,alpha))
     renderClassic(alpha,x,y);
+  if(!f.beastType)ctx.restore();
  };
  if(S.phase==='fight'&&!f.dead&&f.hp>0&&S.fx&&!reduceImpact){
   // Five full-resolution echoes, 0.94 seconds visible. Keep sprite scale,
