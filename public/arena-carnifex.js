@@ -109,7 +109,8 @@ function drawExecutioner(ctx,seq,pose,floorY){
    pose.exiting?Math.sin(seq.t*14)*2.0:0;
  const tilt=pose.phase==='walk'?Math.sin(seq.t*9)*.010:pose.exiting?Math.sin(seq.t*8)*.008:0;
  ctx.save();
- ctx.translate(pose.executionerX,floorY);
+ const bootOffset=root.PracticeScaleProfiles?.foot?.('npc_carnifex')??0;
+  ctx.translate(pose.executionerX,floorY+bootOffset);
  // Scale only the executioner about his boot contact point. Do not scale
  // the victim, his drag motion, or any physics/exit viewport coordinates.
  const visualScale=root.PracticeScaleProfiles?.scale?.('npc_carnifex')??1;
