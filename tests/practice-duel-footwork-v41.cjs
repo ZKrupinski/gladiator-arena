@@ -36,7 +36,10 @@ for(let frame=0;frame<220;frame++){
  const xs=heroes.map(h=>h.x).sort((a,b)=>a-b);
  for(let j=1;j<xs.length;j++)assert.ok(xs[j]-xs[j-1] >=215,'all four allies remain unobscured with split-depth columns');
 }
-for(const t of trail)assert.ok(Math.max(...t)-Math.min(...t)>12,'combatants shift horizontally instead of freezing');
+for(const [i,t] of trail.entries()){
+ const range=Math.max(...t)-Math.min(...t);
+ assert.ok(range>12,'court '+(i+1)+' player footwork range '+range.toFixed(1)+'px must exceed 12px');
+}
 // Adjacent REAR courts must never put seat 3's enemy body under seat 4's ally.
 // The corridor applies even when attacks/parries displace the combatants.
 const rearBoundary=(layout[2].x+layout[3].x)/2;
