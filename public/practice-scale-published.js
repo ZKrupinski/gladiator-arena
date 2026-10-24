@@ -2,36 +2,36 @@
  * Repository source-of-truth: GitHub main. No credentials stored.
  */
 (function(root){"use strict";root.SpartacusPublishedScales=Object.freeze({
-  "murmillo_a_L1": 0.9747,
+  "murmillo_a_L1": 1.18,
   "murmillo_a_L2": 1.0198249999999998,
   "murmillo_a_L3": 1.1913,
   "murmillo_a_L4": 1.10105,
-  "murmillo_a_L5": 1.128125,
-  "thraex_a_L1": 0.9025,
-  "thraex_a_L2": 1.0108,
-  "thraex_a_L3": 0.92055,
-  "thraex_a_L4": 1.0288499999999998,
-  "thraex_a_L5": 1.083,
-  "thraex_b_L1": 0.9386,
-  "thraex_b_L2": 0.9295749999999999,
-  "thraex_b_L3": 1.10105,
-  "thraex_b_L4": 1.1371499999999999,
-  "thraex_b_L5": 1.083,
-  "retiarius_a_L1": 1.0017749999999999,
-  "retiarius_a_L2": 1.10105,
-  "retiarius_a_L3": 1.1371499999999999,
-  "retiarius_a_L4": 1.182275,
-  "retiarius_a_L5": 1.24545,
-  "murmillo_champion_red": 1.16,
-  "murmillo_motion_v3": 1.1552,
-  "legacy_murmillo": 1.28155,
-  "legacy_thraex": 1.3627749999999998,
-  "legacy_retiarius": 1.272525,
-  "beast_wolf": 1.344725,
-  "beast_leopard": 1.434975,
-  "beast_tiger": 1.4620499999999998,
-  "beast_lion": 1.434975,
-  "beast_elephant": 1.33,
+  "murmillo_a_L5": 1.08,
+  "thraex_a_L1": 1.39,
+  "thraex_a_L2": 1.34,
+  "thraex_a_L3": 1.18,
+  "thraex_a_L4": 1.3,
+  "thraex_a_L5": 1.29,
+  "thraex_b_L1": 1.3,
+  "thraex_b_L2": 1.3,
+  "thraex_b_L3": 1.26,
+  "thraex_b_L4": 1.25,
+  "thraex_b_L5": 1.2,
+  "retiarius_a_L1": 1.33,
+  "retiarius_a_L2": 1.31,
+  "retiarius_a_L3": 1.29,
+  "retiarius_a_L4": 1.26,
+  "retiarius_a_L5": 1.37,
+  "murmillo_champion_red": 1.66,
+  "murmillo_motion_v3": 1.16,
+  "legacy_murmillo": 1.49,
+  "legacy_thraex": 1.57,
+  "legacy_retiarius": 1.53,
+  "beast_wolf": 1.64,
+  "beast_leopard": 1.62,
+  "beast_tiger": 1.62,
+  "beast_lion": 1.61,
+  "beast_elephant": 1.61,
   "npc_carnifex": 1.0108
 });root.SpartacusPublishedFeet=Object.freeze({
   "murmillo_a_L1": 0,
@@ -59,10 +59,81 @@
   "legacy_murmillo": 0,
   "legacy_thraex": 0,
   "legacy_retiarius": 0,
-  "beast_wolf": -5,
+  "beast_wolf": -1,
   "beast_leopard": -5,
   "beast_tiger": -5,
   "beast_lion": -5,
   "beast_elephant": -5,
   "npc_carnifex": -10
-});root.SpartacusPublishedActions=Object.freeze({});})(typeof window!=="undefined"?window:globalThis);
+});root.SpartacusPublishedActions=Object.freeze({
+  "murmillo_a_L1": {
+    "idle": {
+      "x": 0,
+      "y": 0,
+      "scale": 1,
+      "effect": {
+        "kind": "auto",
+        "x": 0,
+        "y": 0,
+        "scale": 1
+      },
+      "motion": {
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "middle": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "keys": [
+          {
+            "t": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "t": 0.5,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "t": 1,
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "interpolation": "ease"
+      }
+    },
+    "walk": {
+      "x": 0,
+      "y": 0,
+      "scale": 1,
+      "effect": {
+        "kind": "auto",
+        "x": 0,
+        "y": 0,
+        "scale": 1
+      },
+      "motion": {
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "middle": {
+          "x": 0,
+          "y": -14
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  }
+});})(typeof window!=="undefined"?window:globalThis);
