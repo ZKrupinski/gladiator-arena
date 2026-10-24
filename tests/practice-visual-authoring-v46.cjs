@@ -42,10 +42,10 @@ assert.match(game,/metric\.pixels\*scale\*t\.scale/,'one explicit action multipl
 assert.match(game,/ctx\.translate\(t\.x\*scale\*face,\(profilesFoot\(unit\)\+t\.y\)\*scale\)/,'action X/Y controls visible feet');
 assert.match(game,/ctx\.drawImage\(art,-pivotX\*k,-pivotY\*k/,'render original complete bitmap, no alpha crop');
 assert.doesNotMatch(game,/ctx\.drawImage\(art,bounds\.x,bounds\.y,bounds\.w,bounds\.h/);
-assert.match(game,/root\.PracticeVisualProfiles\?\.resolve\?\.\(key,action\)/,'hit/guard/attack events lookup same editor FX');
-assert.match(game,/effect\.kind==='auto'\?kind:effect\.kind/,'artist-selected FX sprite kind');
-assert.match(game,/effect\.scale\|\|1/,'artist-selected FX size');
-assert.match(game,/root\.PracticeVisualProfiles\?\.size\?\.\(v\.kind\)/,'all default FX sizes from shared registry');
+assert.match(game,/settings\?\.resolve\?\.\(visualLook\(unit\),action\)/,'hit/guard/attack events lookup same editor FX');
+assert.match(game,/chosen=!selected\|\|selected==='auto'\?kind:selected/,'artist-selected FX kind applied');
+assert.match(game,/settings\?\.effectGeometry\?\.\(/,'shared effect geometry replaces scene multiplication');
+assert.match(game,/geometry\.width,height:geometry\.height/,'authored FX pixel size forwarded');
 assert(!game.includes('PRACTICE_FX_SIZE='),'no hidden copy of effect dimensions');
 const html=fs.readFileSync('public/tools/practice-scale-calibrator.html','utf8');
 for(const id of ['actionKey','actionPose','actionCanvas','frameX','frameY','frameScale',
@@ -59,9 +59,9 @@ new vm.Script(publisher,{filename:'practice-scale-publish.js'});
 assert.match(publisher,/SpartacusPublishedActions=Object\.freeze/,'GitHub source includes all action corrections');
 assert.match(publisher,/actions:root\.PracticeVisualProfiles\?\.sanitize/,'saved versions parse action values');
 const deployed=fs.readFileSync('public/index.html','utf8');
-assert(deployed.includes('practice-visual-profiles.js?v=unified-action-v51'));
-const indexProfile=deployed.indexOf('practice-visual-profiles.js?v=unified-action-v51');
-const indexRuntime=deployed.indexOf('ludus-practice.js?v=unified-action-v51');
+assert(deployed.includes('practice-visual-profiles.js?v=fx-geometry-v52'));
+const indexProfile=deployed.indexOf('practice-visual-profiles.js?v=fx-geometry-v52');
+const indexRuntime=deployed.indexOf('ludus-practice.js?v=fx-geometry-v52');
 assert(indexProfile>=0&&indexRuntime>indexProfile,'action profiles load before live runtime');
 const rules=require('../public/ludus-practice.js');
 for(let n=1;n<=4;n++){
@@ -71,7 +71,7 @@ for(let n=1;n<=4;n++){
 }
 assert.doesNotMatch(game,/scale:1\.29|scale:1\.06|scale:1\.24/,
  'remove ALL old staggered front/rear scales');
-assert(html.includes('const courtProjection=202/(348*.82)'),'studio executioner preview equals current arena camera');
-assert(html.includes("stage=1,zoom=.8"),'action preview uses actual single stage scale');
+assert(html.includes('const p=202/(348*.82)'),'studio executioner preview equals current arena camera');
+assert(html.includes("const previewScale=.52,sceneProjection=scene==='duel'"),'action preview supports correct 52% relative camera preview');
 assert(html.includes("slash:'slash',sweep:'sweep',thrust:'thrust'"),'studio previews exact attack FX variants');
 console.log('PASS: edits preserved, defaults isolated, true action bitmap rendering, artist FX selection, UI and GitHub source publish');
