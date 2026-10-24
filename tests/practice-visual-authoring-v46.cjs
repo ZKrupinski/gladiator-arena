@@ -56,6 +56,16 @@ assert.match(publisher,/actions:root\.PracticeVisualProfiles\?\.sanitize/,'saved
 const deployed=fs.readFileSync('public/index.html','utf8');
 assert(deployed.includes('practice-visual-profiles.js?v=action-authoring-v46'));
 const indexProfile=deployed.indexOf('practice-visual-profiles.js?v=action-authoring-v46');
-const indexRuntime=deployed.indexOf('ludus-practice.js?v=action-authoring-v46');
+const indexRuntime=deployed.indexOf('ludus-practice.js?v=unified-stage-scale-v47');
 assert(indexProfile>=0&&indexRuntime>indexProfile,'action profiles load before live runtime');
+const rules=require('../public/ludus-practice.js');
+for(let n=1;n<=4;n++){
+ const courts=rules.courtsForParty(n);
+ assert.equal(courts.length,n);
+ for(const c of courts)assert.equal(c.scale,1,'NO hidden party/seat enlargement: '+n);
+}
+assert.doesNotMatch(game,/scale:1\.29|scale:1\.06|scale:1\.24/,
+ 'remove ALL old staggered front/rear scales');
+assert(html.includes('const courtProjection=202/(348*.82)'),'studio executioner preview equals current arena camera');
+assert(html.includes("stage=1,zoom=.8"),'action preview uses actual single stage scale');
 console.log('PASS: edits preserved, defaults isolated, true action bitmap rendering, artist FX selection, UI and GitHub source publish');
