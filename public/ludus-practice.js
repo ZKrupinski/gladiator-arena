@@ -559,6 +559,10 @@ function sprite(unit){
   Math.abs(unit.x-unit.homeX)>13?'walk':'idle';
  return rawSprite(unit,kind);
 }
+function profilesFoot(unit){
+ const p=root.PracticeScaleProfiles;
+ return p?.foot?.(p?.look?.(unit,api()?.state()?.roster))||0;
+}
 function drawUnit(unit){
  const scale=(COURTS[unit.seat]?.scale||.78)*(unit.side==='enemy'?.96:1),height=202*scale;
  ctx.save();ctx.translate(unit.x,unit.y-(unit.side==='enemy'?12:0));
@@ -574,6 +578,8 @@ function drawUnit(unit){
     Math.abs(unit.x-unit.homeX)>13?'walk':'idle';
    const atlasFrame=api()?.practiceFrame?.(unit,pose);
    ctx.save(); // Only artwork flips. Original frame pivots stabilize the torso.
+    // Move visible boots, not fight hitboxes, base floor, or physics.
+    ctx.translate(0,profilesFoot(unit)*scale);
    if(unit.side==='enemy')ctx.scale(-1,1);
    try{
     if(atlasFrame?.canvas===art&&Number.isFinite(atlasFrame.pivotX)&&Number.isFinite(atlasFrame.footY))
