@@ -60,9 +60,9 @@ new vm.Script(publisher,{filename:'practice-scale-publish.js'});
 assert.match(publisher,/SpartacusPublishedActions=Object\.freeze/,'GitHub source includes all action corrections');
 assert.match(publisher,/actions:root\.PracticeVisualProfiles\?\.sanitize/,'saved versions parse action values');
 const deployed=fs.readFileSync('public/index.html','utf8');
-assert(deployed.includes('practice-visual-profiles.js?v=fx-geometry-v52'));
-const indexProfile=deployed.indexOf('practice-visual-profiles.js?v=fx-geometry-v52');
-const indexRuntime=deployed.indexOf('ludus-practice.js?v=fx-geometry-v52');
+assert(deployed.includes('practice-visual-profiles.js?v=motion-timeline-v53'));
+const indexProfile=deployed.indexOf('practice-visual-profiles.js?v=motion-timeline-v53');
+const indexRuntime=deployed.indexOf('ludus-practice.js?v=motion-timeline-v53');
 assert(indexProfile>=0&&indexRuntime>indexProfile,'action profiles load before live runtime');
 const rules=require('../public/ludus-practice.js');
 for(let n=1;n<=4;n++){
