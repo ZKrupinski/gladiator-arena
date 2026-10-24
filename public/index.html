@@ -2926,6 +2926,7 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  // Retire all scene-coded per-pose X/Y and scale changes. The sprite uses
  // its world position, the camera projection and the studio's action edit.
  let drawX=f.x-width/2,drawY=feet-height;
+ const footOffset=duelFootOffset(f); // same published per-look boot pivot as practice and training
  if(S.phase==='fight'){
   const trail=f.dodgeEcho||f.specialLunge||f.attackLunge;
   if(trail){
