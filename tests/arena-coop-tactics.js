@@ -1,5 +1,5 @@
 // Run: node tests/arena-coop-tactics.js
-// Deterministic stress test for tactical 5v5 combat and permanent body collision.
+// Deterministic stress test for tactical 5v5 combat and live-actor-only collision.
 'use strict';
 const assert=require('node:assert/strict');
 const Core=require('../public/arena-coop-core');
@@ -27,8 +27,8 @@ for(let seed=1;seed<=250;seed++){
    assert(Number.isFinite(u.hp)&&Number.isFinite(u.x)&&Number.isFinite(u.y));
    assert(u.hp>=0&&u.hp<=u.maxHp+.0001,'bounded HP, including retreat healing');
    assert(u.x>=85&&u.x<=1195&&u.y>=395&&u.y<=675,'valid arena boundary');
-   for(let j=i+1;j<10;j++)assert(Core.footDistance(u,sim.units[j])>=101.9,
-    'collision with living fighter or fallen body in seed '+seed);
+   for(let j=i+1;j<10;j++)if(!u.dead&&!sim.units[j].dead)assert(Core.footDistance(u,sim.units[j])>=101.9,
+    'collision between two living fighters in seed '+seed);
   }
  }
  assert(sim.result,'every game must finish before/at 120-second limit');
@@ -37,4 +37,4 @@ for(let seed=1;seed<=250;seed++){
 }
 for(const kind of ['chase','bait','ambush-call','ambush','rescue-call','rescue',
  'parry','riposte','push','assist','retreat','recover','rejoin','net','ko'])assert(events.has(kind),kind);
-console.log('PASS: '+finished+' varied team fights, all dynamic tactics, no overlap through permanent corpses; mean '+(elapsed/finished).toFixed(1)+'s; '+JSON.stringify({finishReasons,wins}));
+console.log('PASS: '+finished+' varied team fights, all dynamic tactics, living fighters remain separated; corpses nonblocking; mean '+(elapsed/finished).toFixed(1)+'s; '+JSON.stringify({finishReasons,wins}));
