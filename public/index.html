@@ -2911,6 +2911,12 @@ function safeFighterPose(f,requested){
  }
  return requested;
 }
+function duelMotionProgress(f,action){
+ if(f.actionT>0&&f.actionDuration>0)return Math.max(0,Math.min(1,
+  1-f.actionT/f.actionDuration));
+ if(action==='walk')return ((S?.clock||0)*.8)%1;
+ return action==='idle'?.5:1;
+}
 function drawFighter(f){if(!f||f.removedFromArena)return;
  const pose=safeFighterPose(f,choosePose(f)),frame=FRAMES[pose]??0;
  const baseAction={net:'special',defeat:'death'}[pose]||pose;
@@ -2923,7 +2929,10 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  // Authoring coordinates are expressed in a 202px practice-body reference.
  // In normal duel, body and VFX coordinates share this single scene projection.
  const poseZoom=(FIGHTER_DRAW_SIZE*DUEL_BASE_VISUAL_SCALE)/202;
- const editedX=(f.face||1)*authored.x*poseZoom,editedY=authored.y*poseZoom;
+ const move=window.PracticeVisualProfiles?.sampleMotion?.(
+  authored,duelMotionProgress(f,editorAction))||{x:0,y:0};
+ const editedX=(f.face||1)*(authored.x+move.x)*poseZoom,
+  editedY=(authored.y+move.y)*poseZoom;
  // Keep a fixed feet pivot for every class, image pose and character.
  const height=FIGHTER_DRAW_SIZE,width=FIGHTER_DRAW_SIZE,feet=FLOOR-1;
  // Retire all scene-coded per-pose X/Y and scale changes. The sprite uses
@@ -3202,11 +3211,12 @@ function drawEffects(backOnly=false){
    pose:authored,applyPoseOffset:true
   });
   if(geom){cx=geom.x;cy=geom.y;}
+  const fxMotion=tool?.sampleMotion?.(authored,.5)||{x:0,y:0};
   if(isGladiatorFX&&v.track==='body'&&v.owner?._fxRender){
    // Follow actual attack lunges, excluding offsets already represented by
    // authoring geometry. A pose edit is never added twice.
-   cx+=(v.owner._fxRender.dx||0)-dir*(authored?.x||0)*sceneZoom;
-   cy+=(v.owner._fxRender.dy||0)-(authored?.y||0)*sceneZoom-foot;
+   cx+=(v.owner._fxRender.dx||0)-dir*((authored?.x||0)+fxMotion.x)*sceneZoom;
+   cy+=(v.owner._fxRender.dy||0)-((authored?.y||0)+fxMotion.y)*sceneZoom-foot;
   }
   const fw=geom?.width??v.w,fh=geom?.height??v.h;
   if(S.fx&&mapped&&window.ArenaRasterFX?.FAMILIES?.[mapped]){
