@@ -23,6 +23,20 @@ for(const kind of ['net','push','cover','parry','assist','ko','dash','riposte','
 const a=C.create(team(),team(),{seed:123}),b=C.create(team(),team(),{seed:123});for(let i=0;i<800;i++){C.step(a,.05);C.step(b,.05);}assert.deepEqual(a.units,b.units);
 s=C.create(team(),team(),{limit:10});while(!s.result)C.step(s,.05);assert.equal(s.result.reason,'timeout');
 s=C.create(team(),team());assert.equal(C.finish(s,'retreat').win,false);
+// The death pose must share the live-fighter depth axis, not render behind everyone.
+const mockDepth=[
+ {id:'corpse-near',y:550,dead:true},
+ {id:'living-far',y:500,dead:false},
+ {id:'living-near',y:610,dead:false},
+ {id:'corpse-far',y:440,dead:true}
+];
+assert.deepEqual(C.depthOrder(mockDepth).map(u=>u.id),
+ ['corpse-far','living-far','corpse-near','living-near'],
+ 'foot Y, not alive/dead state, decides occlusion');
+assert.deepEqual(mockDepth.map(u=>u.id),
+ ['corpse-near','living-far','living-near','corpse-far'],'sorting must not reorder simulation state');
+const equalDepth=[{id:'corpse',y:510,dead:true},{id:'alive',y:510,dead:false}];
+assert.deepEqual(C.depthOrder(equalDepth).map(u=>u.id),['corpse','alive'],'equal foot positions retain stable order');
 const fallen=C.create(team(),team(),{seed:120});
 fallen.units[2].dead=true;fallen.units[2].hp=0;fallen.units[2].deathAt=0;
 const body={x:fallen.units[2].x,y:fallen.units[2].y};
