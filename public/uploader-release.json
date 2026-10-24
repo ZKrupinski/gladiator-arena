@@ -1,15 +1,14 @@
 {
   "assetSha256": {
-    "public/index.html": "75177f2656ad3744f02ed6ea9d68af2686612e9b41e1ac525186457620397d15",
-    "public/ludus-practice.js": "65a86b7413b202e22d3d813dd9c85f374ac60f2332bbebfa363f0e8916a16d8b",
-    "public/ludus-training-runtime.js": "66e9a952297764827164051e0faf804c85b0b5386faa9bf78d181d563deeb061",
-    "public/practice-scale-profiles.js": "049434f9272d0e232bb55efa7f94c030c59d53587673608325513c35a0061b6b",
-    "public/practice-visual-profiles.js": "3959be6781011f61a539a7a0fa00c059ecf23bb06839dce9e40e2f5be5b337ab",
-    "public/tools/practice-scale-calibrator.html": "99ed617bbc9b75df5393eaa6837417a1f4cfba0214cbe02dc1e2bd3ef82e6055"
+    "public/index.html": "dcca58484f9b1242856afa808bf1cf1e039ab188e457cf471d9530448a40464b",
+    "public/ludus-practice.js": "b1a55dcab267edac44b800742f9d093e5bb8b8c7e0afda266c32ecee76c3f6cc",
+    "public/ludus-training-runtime.js": "85f79f707e2376d1847ad14566ca961f8760a2053fe34d14cea8eabb4791af18",
+    "public/practice-visual-profiles.js": "e3454faef1b4450c4ee546fe09f3de4d8b29e839c333daf3ceee2811ad2c4759",
+    "public/tools/practice-scale-calibrator.html": "b4554fdd372e29e7eaf890e85689182d686772577932e81120732c202a1e64c1"
   },
-  "baseCommit": "9e736a076c27dc18c70b7f5104750b23379c7e1a",
+  "baseCommit": "816e4f144eeb6b56f8ad2c1ec004d297640a0c92",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "unified-artist-pose-scaling-scenes-20261024-v51",
+  "releaseId": "studio-action-motion-fx-bulk-20261024-v53",
   "releaseProtocol": "spartacus-uploader-v1"
 }
