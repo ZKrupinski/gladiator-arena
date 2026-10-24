@@ -665,6 +665,15 @@ let comparisonSerial=0;
 async function renderComparison(){
  const serial=++comparisonSerial,canvas=$('#compareCanvas');
  if(!canvas)return;
+ // Changes from the 31 individual cards and from bulk controls must also
+ // update the controls beside the shared comparison, without changing focus.
+ const focused=$('#compareKey')?.value;
+ if(focused&&Object.hasOwn(state,focused)){
+  $('#compareScale').value=String(state[focused]);
+  $('#compareFeet').value=String(feet[focused]);
+  $('#compareScaleValue').textContent='×'+Number(state[focused]).toFixed(2);
+  $('#compareFeetValue').textContent=String(feet[focused])+'px';
+ }
  const selected=[...selection].slice(0,4);
  const looks=selected.length?selected:compareDefaultLooks.slice();
  const focus=$('#compareKey')?.value;
