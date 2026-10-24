@@ -337,7 +337,7 @@ async function previewAction(){
  try{
   const [id,frame]=await Promise.all([frameFor(key),actionFrame(key,pose)]);
   if(serial!==actionPaintSerial||key!==$('#actionKey').value||pose!==$('#actionPose').value)return;
-  const img=frame.canvas,base=id.canvas,basH=base.naturalHeight||base.height,stage=1.29,zoom=.8;
+  const img=frame.canvas,base=id.canvas,basH=base.naturalHeight||base.height,stage=1,zoom=.8;
   const size=Number(state[key]),offsetY=Number(feet[key]),z=stage*zoom;
   if(key==='npc_carnifex'){
    const k=436/270*z*size*val.scale;
@@ -370,7 +370,7 @@ async function previewAction(){
   }
   $('#actionFrameStatus').textContent=nameFor(key)+' · '+pose+
    ' · 프레임 '+(img.naturalWidth||img.width)+'×'+(img.naturalHeight||img.height)+
-   ' (실전훈련 전열 원근 80% 미리보기)';
+   ' (실전훈련 공통 배율 80% 미리보기)';
  }catch(error){
   if(serial!==actionPaintSerial)return;
   $('#actionFrameStatus').textContent='해당 동작 미리보기 로딩 실패: '+error.message;
@@ -432,7 +432,7 @@ function paint(canvas,frame,key){
  if(key==='npc_carnifex'){
   // The actual Carnifex draws its 270×342 ink sprite as a 436×466
   // animation. Match THAT ratio, grounded at his boots (not 270×342).
-  const courtProjection=1.29*202/(348*.82);
+  const courtProjection=202/(348*.82);
   const z=courtProjection*previewZoom*Number(state[key]);
   c.drawImage(img,0,0,270,342,center-218*z,
     floor+Number(feet[key])*previewZoom-326/342*466*z,436*z,466*z);
@@ -440,7 +440,7 @@ function paint(canvas,frame,key){
  }
  const beastBase={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,
   beast_lion:1.18,beast_elephant:1.38};
- const baseHeight=key.startsWith('beast_')?348*.83*beastBase[key]:202*1.29;
+ const baseHeight=key.startsWith('beast_')?348*.83*beastBase[key]:202;
  const pixels=baseHeight/(img.naturalHeight||img.height)*Number(state[key])*previewZoom;
  c.drawImage(img,center-frame.pivotX*pixels,
   floor+Number(feet[key])*previewZoom-frame.footY*pixels,(img.naturalWidth||img.width)*pixels,
