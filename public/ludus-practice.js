@@ -530,8 +530,9 @@ function simulate(dt){
  }
  if(battle.cleared&&((battle.breakTime-=dt)<=0))nextWave();
 }
-// Stable model-space pixel scale: measure the idle pose ONCE, including an
-// approximate head width from alpha runs. Never fit action frames individually.
+// Original authored frame geometry is shared with the normal arena duel.
+// Do not fit the alpha/opaque head-height here: padded red-helmet or special
+// frames would be blown up for practice alone.
 function rawSprite(u,kind){
  if(u.side==='ally'){
   const hero=api()?.state()?.roster?.[u.index];
@@ -539,11 +540,6 @@ function rawSprite(u,kind){
    api()?.trainingFrame?.(u.index,kind,battle?.clock||0);
  }
  return api()?.practiceEnemySprite?.(u.look,kind);
-}
-function alphaBounds(art){
- if(!art)return null;
- return root.ArenaPortraitFit?.bounds?.(art)||
-  {x:0,y:0,w:art.width||art.naturalWidth||0,h:art.height||art.naturalHeight||0};
 }
 // Artist-adjustable stable scale per costume; no torso/helmet heuristic.
 function alphaBounds(art){
@@ -555,11 +551,18 @@ function calibration(unit,frame){
  const profiles=root.PracticeScaleProfiles;
  const appearance=profiles?.look?.(unit,api()?.state()?.roster);
  const scaleFactor=profiles?.scale?.(appearance)||1;
- if(unit._bodyScale&&unit._bodyScale.relative===scaleFactor)return unit._bodyScale;
  const idle=api()?.practiceFrame?.(unit,'idle')?.canvas||rawSprite(unit,'idle')||frame;
- const bound=alphaBounds(idle);if(!bound?.h)return null;
- return unit._bodyScale={pixels:202/bound.h*scaleFactor,relative:scaleFactor,
-  appearance:appearance||'special',refH:bound.h};
+ const referenceH=idle?.height||idle?.naturalHeight||0;
+ if(!referenceH)return null;
+ if(unit._bodyScale&&unit._bodyScale.relative===scaleFactor&&
+    unit._bodyScale.reference===idle)return unit._bodyScale;
+ // Standard duel uses the complete authored frame. Previously dividing by
+ // alpha bounds artificially enlarged characters with transparent margins.
+ // Preserve camera depth and the 31 artist-authored size profiles, only.
+ const visible=alphaBounds(idle);
+ return unit._bodyScale={pixels:202/referenceH*scaleFactor,relative:scaleFactor,
+  appearance:appearance||'special',refH:visible?.h||referenceH,
+  reference:idle,frameH:referenceH};
 }
 function sprite(unit){
  const kind=unit.dead?'death':unit.entry>0?'walk':unit.hit>0?'hit':unit.guard>0?'guard':
@@ -572,8 +575,10 @@ function profilesFoot(unit){
  return p?.foot?.(p?.look?.(unit,api()?.state()?.roster))||0;
 }
 function drawUnit(unit){
- const scale=(COURTS[unit.seat]?.scale||.78)*(unit.side==='enemy'?.96:1),height=202*scale;
- ctx.save();ctx.translate(unit.x,unit.y-(unit.side==='enemy'?12:0));
+ const scale=COURTS[unit.seat]?.scale||.78;
+ const height=202*scale;
+ let labelHeight=height;
+ ctx.save();ctx.translate(unit.x,unit.y);
  // Approved backdrop already has baked floor lighting: NO vector shadow.
  if(unit.dead)ctx.globalAlpha=1;
  const art=sprite(unit);
@@ -581,6 +586,9 @@ function drawUnit(unit){
   const bounds=alphaBounds(art),metric=calibration(unit,art);
   if(bounds?.w&&bounds?.h&&metric){
    const k=metric.pixels*scale,w=bounds.w*k,h=bounds.h*k;
+   // Place labels near the stable IDLE silhouette, not the transparent padding.
+   // Never derive a different combat scale from an attack/guard/KO pose.
+   labelHeight=Math.min(height,Math.max(72*scale,metric.refH*k));
    const pose=unit.dead?'death':unit.entry>0?'walk':unit.hit>0?'hit':unit.guard>0?'guard':
     unit.dodge>0?'dodge':unit.windup>0||unit.swing>0?'attack':
     Math.abs(unit.x-unit.homeX)>13?'walk':'idle';
@@ -603,12 +611,12 @@ function drawUnit(unit){
  // Authored slash/thrust/sweep PNG sequences are rendered separately.
  ctx.globalAlpha=1;
  const bar=78*scale,percent=clamp(unit.hp/Math.max(1,unit.maxHp),0,1);
- ctx.fillStyle='#160b08';ctx.fillRect(-bar/2,-height-26*scale,bar,8*scale);
+ ctx.fillStyle='#160b08';ctx.fillRect(-bar/2,-labelHeight-26*scale,bar,8*scale);
  ctx.fillStyle=unit.side==='ally'?'#a8e99c':'#e27b68';
- ctx.fillRect(-bar/2,-height-26*scale,bar*percent,8*scale);
- ctx.strokeStyle='#ffdf9a';ctx.lineWidth=.8;ctx.strokeRect(-bar/2,-height-26*scale,bar,8*scale);
+ ctx.fillRect(-bar/2,-labelHeight-26*scale,bar*percent,8*scale);
+ ctx.strokeStyle='#ffdf9a';ctx.lineWidth=.8;ctx.strokeRect(-bar/2,-labelHeight-26*scale,bar,8*scale);
  ctx.font='bold '+Math.max(10,Math.round(13*scale))+'px sans-serif';
- ctx.fillStyle='#fff0cf';ctx.textAlign='center';ctx.fillText(unit.name.slice(0,15),0,-height-31*scale);
+ ctx.fillStyle='#fff0cf';ctx.textAlign='center';ctx.fillText(unit.name.slice(0,15),0,-labelHeight-31*scale);
  ctx.restore();
 }
 function paint(){
