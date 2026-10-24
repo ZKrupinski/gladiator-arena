@@ -278,8 +278,9 @@ function frameFor(key){
 }
 // Pose picker uses real standalone sources, atlas-cut metadata and the same
 // full-frame anchor logic used by the live training renderer.
-function poseSource(key,pose){
- if(pose==='idle')return frameFor(key);
+function poseSource(key,pose,frameNumber=0){
+ frameNumber=Math.max(0,Math.min(7,Math.floor(Number(frameNumber)||0)));
+ if(pose==='idle'&&frameNumber===0)return frameFor(key);
  const special={parry:'guard',finisher:'attack',victory:'idle'};
  const action=special[pose]||pose;
  if(key==='npc_carnifex'){
@@ -292,13 +293,16 @@ function poseSource(key,pose){
  }
  if(key.startsWith('beast_')){
   const folder={attack:'attack',slash:'attack',sweep:'attack',thrust:'attack',heavy:'attack',special:'attack',guard:'hit',dodge:'walk',hit:'hit',death:'defeat'}[action]||'walk';
-  return image('../assets/beasts/individual/'+key.slice(6)+'/'+folder+'/00.png?v=3').then(canvas=>
+  const base='../assets/beasts/individual/'+key.slice(6)+'/'+folder+'/';
+  const file=String(frameNumber).padStart(2,'0')+'.png?v=3';
+  return image(base+file).catch(()=>image(base+'00.png?v=3')).then(canvas=>
    ({canvas,pivotX:canvas.naturalWidth/2,footY:p.footY(canvas,canvas.naturalHeight*.88)}));
  }
  if(key==='murmillo_champion_red'){
   return json('../assets/combat/champion-murmillo/manifest.json?v=2').then(async m=>{
    const name={attack:'slash',special:'heavy',dodge:'walk',death:'death'}[action]||action;
-   const frame=m.actions?.[name]?.[0]||m.actions?.idle?.[0];
+   const frames=m.actions?.[name]||m.actions?.idle||[];
+   const frame=frames[Math.min(frameNumber,frames.length-1)]||frames[0];
    if(!frame?.file)throw Error('챔피언 '+action+' 프레임 없음');
    const canvas=await image('../assets/combat/champion-murmillo/'+frame.file+'?v=2');
    return {canvas,pivotX:frame.pivotX??canvas.naturalWidth/2,footY:frame.footY??canvas.naturalHeight};
@@ -307,7 +311,8 @@ function poseSource(key,pose){
  if(key==='murmillo_motion_v3'){
   return json('../assets/combat/murmillo-b/manifest.json?v=4').then(async m=>{
    const name={attack:'slash',special:'heavy',death:'defeat'}[action]||action;
-   const frame=m.frames?.find(f=>f.name===name)||m.frames?.[0];
+   const frames=m.frames?.filter(f=>f.name===name)||[];
+   const frame=frames[Math.min(frameNumber,frames.length-1)]||m.frames?.[0];
    const canvas=await image('../assets/combat/murmillo-b/'+frame.file+'?v=4');
    return {canvas,pivotX:frame.pivotX??canvas.naturalWidth/2,footY:frame.footY??canvas.naturalHeight};
   });
@@ -328,16 +333,20 @@ function poseSource(key,pose){
   return window.GrowthFrames.isolate(sheet,m.sheets[key]).frames[index];
  });
 }
-function actionFrame(key,pose){
- const id=key+':'+pose;
- if(!actionCache.has(id))actionCache.set(id,Promise.resolve().then(()=>poseSource(key,pose)));
+function actionFrame(key,pose,index=0){
+ const id=key+':'+pose+':'+index;
+ if(!actionCache.has(id))actionCache.set(id,
+  Promise.resolve().then(()=>poseSource(key,pose,index)));
  return actionCache.get(id);
 }
-async function effectPreviewFrame(kind){
+async function effectPreviewFrame(kind,index=3){
  if(!kind||kind==='none')return null;
- if(!effectCache.has(kind))effectCache.set(kind,
-  image('../assets/new-era/directional-v4/'+kind+'-03.png?v=4').catch(()=>null));
- return effectCache.get(kind);
+ const id=kind+':'+index;
+ if(!effectCache.has(id))effectCache.set(id,
+  image('../assets/new-era/directional-v4/'+kind+'-'+
+   String(index).padStart(2,'0')+'.png?v=4')
+   .catch(()=>index===3?null:image('../assets/new-era/directional-v4/'+kind+'-03.png?v=4').catch(()=>null)));
+ return effectCache.get(id);
 }
 function currentAction(){
  const key=$('#actionKey').value,pose=$('#actionPose').value;
