@@ -11,6 +11,7 @@ on:
       - public/ludus-practice.js
       - public/ludus-training-runtime.js
       - tests/unified-action-scenes-v51.cjs
+      - tests/studio-motion-preview-bulk-v53.cjs
       - public/index.html
       - tests/practice-visual-authoring-v46.cjs
       - tests/practice-fx-editor-fidelity-v52.cjs
@@ -44,6 +45,8 @@ jobs:
         run: node tests/practice-fx-editor-fidelity-v52.cjs
       - name: Verify unified cross-scene action profiles and no hidden pose adjustments
         run: node tests/unified-action-scenes-v51.cjs
+      - name: Verify 8-frame studio animation, three motion keys and selective batch-copy
+        run: node tests/studio-motion-preview-bulk-v53.cjs
       - name: Original Ludus training sprite pose regression
         run: node scripts/qa_training_scale_and_poses.mjs
       - name: Existing persisted foot offset regression
