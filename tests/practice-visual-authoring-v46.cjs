@@ -19,7 +19,7 @@ assert.equal(profile.resolve('murmillo_champion_red','attack').scale,1);
 assert.equal(profile.resolve('murmillo_champion_red','attack').effect.kind,'auto');
 const edit=profile.clean({x:27,y:-14,scale:1.22,effect:{kind:'sweep',x:34,y:-25,scale:1.55}});
 assert.equal(edit.x,27);assert.equal(edit.effect.kind,'sweep');
-assert.deepEqual({...profile.clean({x:999,y:-999,scale:99,effect:{kind:'INVALID',x:999,scale:-20}})},
+assert.deepEqual(JSON.parse(JSON.stringify(profile.clean({x:999,y:-999,scale:99,effect:{kind:'INVALID',x:999,scale:-20}}))),
  {x:180,y:-180,scale:1.8,effect:{kind:'auto',x:300,y:0,scale:.2}});
 assert(profile.write({murmillo_champion_red:{attack:edit}}));
 profile=load();assert.equal(profile.resolve('murmillo_champion_red','attack').x,27);
