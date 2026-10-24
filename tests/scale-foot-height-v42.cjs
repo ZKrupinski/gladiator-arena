@@ -58,4 +58,8 @@ const saved=fs.readFileSync('public/practice-scale-published.js','utf8');
 assert.match(saved,/SpartacusPublishedFeet=Object\.freeze/);
 const index=fs.readFileSync('public/index.html','utf8');
 assert.ok((index.match(/foot-height-v42/g)||[]).length>=5,'latest JS load paths have cache-busting keys');
+assert.match(index,/function duelFootOffset\(f\)/,'regular duel uses calibration key');
+assert.match(index,/const footOffset=duelFootOffset\(f\)/,'regular duel stores per-look Y offset');
+assert.match(index,/if\(!f\.beastType\)y\+=footOffset/,'regular duel renders all human actions at approved foot height');
+assert.match(index,/\(motionExtra\?\.y\|\|0\)\+footOffset/,'combat VFX rendering follows the moved fighter');
 console.log('PASS: 31 foot controls, isolated device save, released defaults, live rendering hooks, publisher, cache versions');
