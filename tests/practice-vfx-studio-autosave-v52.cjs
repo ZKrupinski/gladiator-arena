@@ -16,7 +16,7 @@ function load(published={}){
 }
 let p=load(),look='murmillo_champion_red';
 const edited=p.clean({x:13,y:-9,scale:1.13,effect:{kind:'thrust',x:69,y:-34,scale:1.78}});
-assert(p.write({[look]:{slash:edited}}),'artist's effect edits must be written to device');
+assert(p.write({[look]:{slash:edited}}),"artist's effect edits must be written to device");
 const stored=JSON.parse(cells.get(p.KEY));
 assert.equal(stored.actions[look].slash.effect.x,69);
 assert.equal(stored.actions[look].slash.effect.y,-34);

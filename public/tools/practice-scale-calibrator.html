@@ -87,6 +87,8 @@ input[type=file]{display:none}
 .action-top label{font-size:12px;font-weight:700}.action-top select{min-width:135px;max-width:240px}
 .action-body{display:grid;grid-template-columns:minmax(270px,490px) minmax(290px,1fr);gap:17px;align-items:start}
 .action-preview{width:100%;max-width:490px;background:radial-gradient(ellipse at center bottom,#92724e,#291b14 75%);border:1px solid #ae8456;border-radius:8px;overflow:hidden}
+.action-editor{scroll-margin-top:220px}.numeric-edit{width:85px!important;min-height:36px;background:#20160f;color:#ffe5aa;border:1px solid #a78357;border-radius:5px;padding:5px;font:700 14px system-ui}.quick-links{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}.tools .quick-links a{padding:4px}
+@media(max-width:650px){.tools{position:relative}.action-editor{scroll-margin-top:12px}.compare-scroll canvas{min-width:0}}
 .action-preview canvas{display:block;width:100%;aspect-ratio:1}
 .action-sliders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
 .action-field{display:grid;gap:3px;min-width:0}.action-field label{font-size:12px;color:#f9dcab}.action-field output{color:#ffe4a4;font-weight:800;font-variant-numeric:tabular-nums}.action-field input{width:100%;accent-color:#efbb77}
@@ -116,6 +118,7 @@ input[type=file]{display:none}
    <option value="checked">선택된 항목 먼저</option>
    <option value="shuffle">셔플 순서</option>
   </select>
+  <button id="undoEdit" disabled>↶ 실행 취소</button><button id="redoEdit" disabled>↷ 다시 실행</button>
   <button id="shuffle">🔀 셔플</button>
   <button id="checkAll">전체 선택</button><button id="clearChecks">선택 해제</button>
   <span id="selectedCount" aria-live="polite">선택 0 / 31</span>
@@ -131,6 +134,7 @@ input[type=file]{display:none}
   <button id="bulkFootPlus" disabled>선택 발 ↓ 5px</button>
   <button id="bulkFootReset" disabled>발높이 0</button>
  </div>
+<nav class="quick-links" aria-label="편집실 바로가기"><a href="#actionEditor">동작 편집</a><a href="#grid">캐릭터 목록</a><a href="#gitTitle">GitHub 게시</a></nav>
 <div class="save-health" aria-label="현재 크기·발높이 저장 상태" aria-live="polite">
  <span id="draftHealth">기기 임시저장: 확인 중</span>
  <span id="repoHealth">GitHub 원본: 확인 중</span>
@@ -240,7 +244,7 @@ input[type=file]{display:none}
 <p class="guide">체크한 여러 외형에 크기 ±5% 또는 발높이 ↑↓5px을 일괄 적용할 수 있습니다. 발높이는 음수일수록 위로, 양수일수록 아래로 이동하며 바닥 안내선은 움직이지 않습니다. 셔플하면 위치만 바뀌고 선택·크기·발높이는 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
 <script src="../growth-frames.js"></script>
 <script src="../practice-scale-published.js?v=true-size-v54"></script><script src="../practice-scale-profiles.js?v=true-size-v54"></script>
-<script src="../practice-visual-profiles.js?v=motion-timeline-v53"></script>
+<script src="../practice-visual-profiles.js?v=motion-timeline-v53&qa=v56"></script>
 <script src="practice-size-stage.js?v=true-size-v54"></script>
 <script>
 (()=>{'use strict';
@@ -314,7 +318,7 @@ function frameFor(key){
 // full-frame anchor logic used by the live training renderer.
 function poseSource(key,pose,frameNumber=0){
  frameNumber=Math.max(0,Math.min(7,Math.floor(Number(frameNumber)||0)));
- if(pose==='idle'&&frameNumber===0)return frameFor(key);
+ if(pose==='idle'&&(!key.startsWith('beast_')||frameNumber===0))return frameFor(key);
  const special={parry:'guard',finisher:'attack',victory:'idle'};
  const action=special[pose]||pose;
  if(key==='npc_carnifex'){
@@ -326,7 +330,7 @@ function poseSource(key,pose,frameNumber=0){
   });
  }
  if(key.startsWith('beast_')){
-  const folder={attack:'attack',slash:'attack',sweep:'attack',thrust:'attack',heavy:'attack',special:'attack',guard:'hit',dodge:'walk',hit:'hit',death:'defeat'}[action]||'walk';
+  const folder={idle:'idle',attack:'attack',slash:'attack',sweep:'attack',thrust:'attack',heavy:'attack',special:'attack',guard:'hit',dodge:'walk',hit:'hit',death:'defeat',victory:'idle'}[action]||'walk';
   const base='../assets/beasts/individual/'+key.slice(6)+'/'+folder+'/';
   const file=String(frameNumber).padStart(2,'0')+'.png?v=3';
   return image(base+file).catch(()=>image(base+'00.png?v=3')).then(canvas=>
@@ -354,7 +358,7 @@ function poseSource(key,pose,frameNumber=0){
  if(key.startsWith('legacy_')){
   const atlas={legacy_murmillo:'retiarius_atlas.png',legacy_thraex:'thraex_atlas.png',
    legacy_retiarius:'murmillo_atlas.png'}[key];
-  const i={walk:1,attack:2,slash:2,sweep:2,thrust:2,heavy:3,special:3,guard:4,dodge:5,hit:6,death:9}[action]??0;
+  const i={walk:1,attack:2,slash:2,sweep:2,thrust:2,heavy:3,special:3,guard:4,dodge:5,hit:6,victory:8,death:9}[action]??0;
   return image('../assets/new-era/'+atlas+'?v=4').then(sheet=>{
    const w=Math.floor(sheet.naturalWidth/5),h=Math.floor(sheet.naturalHeight/2),
     canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
@@ -363,7 +367,7 @@ function poseSource(key,pose,frameNumber=0){
   });
  }
  return Promise.all([cuts(),image('../assets/ludus-growth/'+key+'.png')]).then(([m,sheet])=>{
-  const index={walk:1,attack:2,slash:2,sweep:2,thrust:2,heavy:3,special:3,guard:6,dodge:8,hit:7,death:11}[action]??0;
+  const index={walk:1,attack:2,slash:2,sweep:2,thrust:2,heavy:3,special:3,guard:6,dodge:8,hit:7,victory:10,death:11}[action]??0;
   return window.GrowthFrames.isolate(sheet,m.sheets[key]).frames[index];
  });
 }
@@ -439,7 +443,7 @@ async function previewAction(){
  const movement=v.sampleMotion?.(val,progress)||{x:0,y:0};
  const auto={attack:'slash',slash:'slash',sweep:'sweep',thrust:'thrust',
   heavy:'special',special:'special',guard:'guard',parry:'parry',
-  dodge:'dash',hit:'hit',death:'hit',finisher:'finisher',victory:'victory'};
+  dodge:'dash',hit:'hit',death:'none',finisher:'finisher',victory:'victory'};
  const kind=val.effect.kind==='auto'?(auto[pose]||'none'):val.effect.kind;
  try{
   const [idle,frame,fx]=await Promise.all([
@@ -481,7 +485,7 @@ async function previewAction(){
  }
 }
 function persistScaleEdit(){
- renderComparison();
+ renderComparison();previewAction();
  // All 31 look/foot sliders persist immediately, like per-action FX edits.
  // The game reads these exact same device drafts until GitHub publication.
  const sizeOK=p.write(state),feetOK=p.writeFeet(feet),ok=sizeOK&&feetOK;
@@ -572,6 +576,9 @@ function initActionEditor(){
   const key=$('#actionKey').value,pose=$('#actionPose').value;
   if(!actions[key])actions[key]={};
   const cfg=currentAction(),point=$('#motionKey').value;
+  actionPlaying=false;actionProgress=({start:0,middle:.5,end:1}[point]??0);
+  $('#actionPlay').textContent='▶ 재생';$('#actionPlay').setAttribute('aria-pressed','false');
+  updateTimelineLabel();
   cfg.motion[point][axis.toLowerCase()]=Number($('#motion'+axis).value);
   actions[key][pose]=v.clean(cfg);
   persistActionEdit();showMotionKey();previewAction();
@@ -602,7 +609,8 @@ function initActionEditor(){
   persistActionEdit();updateActionControls();
  };
  $('#actionPreviewRefresh').onclick=()=>{
-  const prefix=$('#actionKey').value+':'+$('#actionPose').value+':';
+  const currentKey=$('#actionKey').value;cache.delete(currentKey);effectCache.clear();cutsPromise=null;
+  const prefix=currentKey+':'+$('#actionPose').value+':';
   for(const key of actionCache.keys())if(key.startsWith(prefix))actionCache.delete(key);
   previewAction();
  };
@@ -877,11 +885,13 @@ $('#bulkSlider').addEventListener('change',()=>{
  if(['large','small'].includes($('#sort').value))sortCards();
 });
 $('#save').addEventListener('click',()=>{
- announce(p.write(state)&&p.writeFeet(feet)&&v.write(actions)?
+ announce(saveAllDraft()?
   '크기·발높이·동작 프레임·이펙트를 이 기기에 임시저장했습니다. 다른 기기에 반영하려면 GitHub 원본에 게시하세요.':
   '브라우저 저장 실패: JSON 내보내기를 사용하세요.');
 });
 $('#reset').addEventListener('click',()=>{
+ if(!confirm('31종의 모든 수정값을 게시된 기본값으로 복원할까요? 실행 취소로 되돌릴 수 있습니다.'))return;
+ recordHistory();
  Object.assign(state,p.DEFAULTS);Object.assign(feet,p.FOOT_DEFAULTS);for(const key of keys)refresh(key);
  p.reset();p.resetFeet();v.reset();
  for(const key of Object.keys(actions))delete actions[key];
@@ -900,7 +910,12 @@ $('#file').addEventListener('change',async e=>{
  const file=e.target.files?.[0];if(!file)return;
  try{
   const input=JSON.parse(await file.text()),values=input.overrides||input,footValues=input.footOffsets||{};
-  if(!values||typeof values!=='object')throw Error('잘못된 설정 형식');
+  if(!values||typeof values!=='object'||Array.isArray(values)||
+   !keys.some(key=>Object.hasOwn(values,key))&&!input.actions&&!input.footOffsets)throw Error('캐릭터 설정이 없는 JSON입니다');
+  for(const data of [values,footValues])for(const key of keys)if(Object.hasOwn(data,key)&&
+   (typeof data[key]!=='number'||!Number.isFinite(data[key])))throw Error(key+' 값은 숫자여야 합니다');
+  if(input.actions!==undefined&&(!input.actions||typeof input.actions!=='object'||Array.isArray(input.actions)))throw Error('동작 설정 형식이 올바르지 않습니다');
+  recordHistory();
   for(const key of keys)if(Object.hasOwn(values,key)&&Number.isFinite(Number(values[key])))
    state[key]=p.clamp(values[key]);
   for(const key of keys)if(Object.hasOwn(footValues,key)&&Number.isFinite(Number(footValues[key])))
@@ -910,8 +925,8 @@ $('#file').addEventListener('change',async e=>{
    Object.assign(actions,imported);
   }
   for(const key of keys)refresh(key);
-  p.write(state);p.writeFeet(feet);v.write(actions);updateBulkState();sortCards();updateActionControls();
-  announce('크기·발높이·동작·이펙트 설정을 가져오고 임시저장했습니다.');
+  const saved=saveAllDraft();updateBulkState();sortCards();updateActionControls();recordHistory();
+  announce(saved?'크기·발높이·동작·이펙트 설정을 가져오고 임시저장했습니다.':'설정은 불러왔지만 기기 저장에 실패했습니다. JSON 내보내기로 백업하세요.');
  }catch(error){announce('불러오기 실패: '+error.message);}
  e.target.value='';
 });
@@ -920,9 +935,57 @@ window.SpartacusScaleStudio={
  values:()=>Object.fromEntries(keys.map(key=>[key,Number(state[key])])),
  feet:()=>Object.fromEntries(keys.map(key=>[key,Number(feet[key])])),
  actions:()=>v.sanitize(actions),
- saveDraft:()=>p.write(state)&&p.writeFeet(feet)&&v.write(actions)
+ saveDraft:saveAllDraft
 };
+function saveAllDraft(){
+ const a=p.write(state),b=p.writeFeet(feet),c=v.write(actions);return a&&b&&c;
+}
+const history=[],future=[];
+const snapshot=()=>JSON.stringify({state,feet,actions});
+function historyButtons(){ $('#undoEdit').disabled=history.length<2;$('#redoEdit').disabled=!future.length; }
+function recordHistory(){
+ const next=snapshot();if(history.at(-1)!==next){history.push(next);if(history.length>60)history.shift();future.length=0;}
+ historyButtons();
+}
+function restoreHistory(value){
+ const data=JSON.parse(value);
+ for(const [target,source] of [[state,data.state],[feet,data.feet],[actions,data.actions]]){
+  for(const key of Object.keys(target))delete target[key];Object.assign(target,source);
+ }
+ for(const key of keys)refresh(key);
+ updateBulkState();sortCards();updateActionControls();
+ const ok=saveAllDraft();historyButtons();syncNumbers();document.dispatchEvent(new Event('input'));
+ announce(ok?'변경 이력을 복원하고 이 기기에 저장했습니다.':'변경은 복원됐지만 기기 저장에 실패했습니다. JSON으로 백업하세요.');
+}
+function undo(){recordHistory();if(history.length<2)return;future.push(history.pop());restoreHistory(history.at(-1));}
+function redo(){if(!future.length)return;const next=future.pop();history.push(next);restoreHistory(next);}
+$('#undoEdit').addEventListener('click',undo);$('#redoEdit').addEventListener('click',redo);
+document.addEventListener('change',()=>{recordHistory();syncNumbers();});
+document.addEventListener('click',()=>{recordHistory();syncNumbers();});
+document.addEventListener('keydown',event=>{
+ if(!(event.ctrlKey||event.metaKey)||event.altKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
+ if(event.key.toLowerCase()==='z'){event.preventDefault();event.shiftKey?redo():undo();}
+});
+const numberPairs=[];
+function syncNumbers(){for(const [range,number] of numberPairs)if(document.activeElement!==number)number.value=range.value;}
+function setupNumbers(){
+ for(const id of ['compareScale','compareFeet','frameX','frameY','frameScale','motionX','motionY','fxX','fxY','fxScale']){
+  const range=$('#'+id),number=document.createElement('input');
+  number.type='number';number.className='numeric-edit';number.id=id+'Number';
+  number.min=range.min;number.max=range.max;number.step=range.step;
+  number.setAttribute('aria-label',document.querySelector('label[for="'+id+'"]').textContent+' 숫자 직접 입력');
+  range.after(number);numberPairs.push([range,number]);
+  number.addEventListener('change',()=>{
+   if(number.value.trim()===''||!Number.isFinite(Number(number.value))){number.value=range.value;return;}
+   range.value=String(Math.max(Number(range.min),Math.min(Number(range.max),Number(number.value))));
+   number.value=range.value;range.dispatchEvent(new Event('input',{bubbles:true}));
+  });
+ }
+ document.addEventListener('input',syncNumbers);
+ syncNumbers();
+}
 setupCompareEditor();initActionEditor();build();
+setupNumbers();recordHistory();
 })();
 </script>
 <script src="practice-scale-publish.js?v=fx-autosave-v52"></script>

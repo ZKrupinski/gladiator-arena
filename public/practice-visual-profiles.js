@@ -55,7 +55,8 @@ function sanitize(data){
   if(!data||!Object.hasOwn(data,key)||!data[key]||typeof data[key]!=='object')continue;
   const poses={};
   for(const action of ACTIONS)if(Object.hasOwn(data[key],action)){
-   const v=clean(data[key][action]);if(!isDefault(v))poses[action]=v;
+   // Explicit neutral poses override published/inherited non-neutral poses.
+   poses[action]=clean(data[key][action]);
   }
   if(Object.keys(poses).length)out[key]=poses;
  }

@@ -1,14 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "dcca58484f9b1242856afa808bf1cf1e039ab188e457cf471d9530448a40464b",
-    "public/ludus-practice.js": "b1a55dcab267edac44b800742f9d093e5bb8b8c7e0afda266c32ecee76c3f6cc",
-    "public/ludus-training-runtime.js": "85f79f707e2376d1847ad14566ca961f8760a2053fe34d14cea8eabb4791af18",
-    "public/practice-visual-profiles.js": "e3454faef1b4450c4ee546fe09f3de4d8b29e839c333daf3ceee2811ad2c4759",
-    "public/tools/practice-scale-calibrator.html": "b4554fdd372e29e7eaf890e85689182d686772577932e81120732c202a1e64c1"
+    "public/index.html": "3c7c7bc681e931531008b54236f997b3357e015a5ab7ab5a4e40b06f8a9a2ea5",
+    "public/practice-visual-profiles.js": "44be11fd43d5e0d38e811df6368a7acf419b28ea9ae622df791a306d1891dd76",
+    "public/tools/practice-scale-calibrator.html": "cb29939bee35b0b61acbbfc082431f93bfa5f5fc73922019646a043b4a2d2b7a"
   },
-  "baseCommit": "816e4f144eeb6b56f8ad2c1ec004d297640a0c92",
+  "baseCommit": "a599b07f69bc9c73b1109669f318acef916e8597",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "studio-action-motion-fx-bulk-20261024-v53",
+  "releaseId": "studio-qa-20261024-v56",
   "releaseProtocol": "spartacus-uploader-v1"
 }
