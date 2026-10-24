@@ -5,4 +5,5 @@
  */
 (function(root){'use strict';
  root.SpartacusPublishedScales=Object.freeze({});
+ root.SpartacusPublishedFeet=Object.freeze({});
 })(typeof window!=='undefined'?window:globalThis);
