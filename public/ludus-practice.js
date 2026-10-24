@@ -11,7 +11,7 @@ const W=1280,H=720,MAX=4,TYPES=['murmillo','thraex','retiarius'];
 const COURT_LAYOUTS=Object.freeze({
  1:Object.freeze([{x:640,y:676,scale:1}]),
  2:Object.freeze([{x:325,y:689,scale:1},{x:955,y:689,scale:1}]),
- 3:Object.freeze([{x:325,y:689,scale:1.29},{x:955,y:689,scale:1.29},
+ 3:Object.freeze([{x:325,y:689,scale:1},{x:955,y:689,scale:1},
    {x:640,y:606,scale:1}]),
  // Keep all four ALLIED silhouettes in their own horizontal columns.
  // Enemies may cross columns, but foreground allies cannot occlude rear allies.
