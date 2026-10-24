@@ -1,0 +1,34 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "practice-three-key-motion-preview-bulk-20261024-v53",
+  "expectedMainSha": "a03fab3cb748d76ba7eefa634e8ca3adedd65350",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/practice-visual-profiles.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/a03fab3cb748d76ba7eefa634e8ca3adedd65350/public/practice-visual-profiles.js",
+      "sha256": "e3454faef1b4450c4ee546fe09f3de4d8b29e839c333daf3ceee2811ad2c4759"
+    },
+    {
+      "path": "public/tools/practice-scale-calibrator.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/a03fab3cb748d76ba7eefa634e8ca3adedd65350/public/tools/practice-scale-calibrator.html",
+      "sha256": "b4554fdd372e29e7eaf890e85689182d686772577932e81120732c202a1e64c1"
+    },
+    {
+      "path": "public/ludus-practice.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/a03fab3cb748d76ba7eefa634e8ca3adedd65350/public/ludus-practice.js",
+      "sha256": "b1a55dcab267edac44b800742f9d093e5bb8b8c7e0afda266c32ecee76c3f6cc"
+    },
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/a03fab3cb748d76ba7eefa634e8ca3adedd65350/public/index.html",
+      "sha256": "dcca58484f9b1242856afa808bf1cf1e039ab188e457cf471d9530448a40464b"
+    },
+    {
+      "path": "public/ludus-training-runtime.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/a03fab3cb748d76ba7eefa634e8ca3adedd65350/public/ludus-training-runtime.js",
+      "sha256": "85f79f707e2376d1847ad14566ca961f8760a2053fe34d14cea8eabb4791af18"
+    }
+  ]
+}
