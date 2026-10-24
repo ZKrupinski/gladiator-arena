@@ -109,12 +109,17 @@ function drawExecutioner(ctx,seq,pose,floorY,footOffsetFactor=1){
    pose.exiting?Math.sin(seq.t*14)*2.0:0;
  const tilt=pose.phase==='walk'?Math.sin(seq.t*9)*.010:pose.exiting?Math.sin(seq.t*8)*.008:0;
  ctx.save();
- const bootOffset=(root.PracticeScaleProfiles?.foot?.('npc_carnifex')??0)*footOffsetFactor;
-  ctx.translate(pose.executionerX,floorY+bootOffset);
- // Scale only the executioner about his boot contact point. Do not scale
- // the victim, his drag motion, or any physics/exit viewport coordinates.
- const visualScale=root.PracticeScaleProfiles?.scale?.('npc_carnifex')??1;
- const size=Number.isFinite(visualScale)?Math.max(.65,Math.min(1.85,visualScale)):1;
+ const key='npc_carnifex';
+ const action=pose.phase==='walk'?'walk':pose.phase==='grab'?'guard':'attack';
+ const authored=root.PracticeVisualProfiles?.resolve?.(key,action)||
+  {x:0,y:0,scale:1};
+ const bootOffset=(root.PracticeScaleProfiles?.foot?.(key)??0)*footOffsetFactor;
+ // Only the visible executioner is shifted; the hauled corpse and all
+ // world collision paths retain their original transforms.
+ ctx.translate(pose.executionerX+(flip?-1:1)*authored.x*footOffsetFactor,
+  floorY+bootOffset+authored.y*footOffsetFactor);
+ const visualScale=root.PracticeScaleProfiles?.scale?.(key)??1;
+ const size=(Number.isFinite(visualScale)?Math.max(.65,Math.min(1.85,visualScale)):1)*authored.scale;
  ctx.scale((flip?-1:1)*size,size);
  ctx.rotate(tilt);
  ctx.filter='none'; // approved ink outlines and surface details are baked in
