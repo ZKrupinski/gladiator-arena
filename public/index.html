@@ -2944,15 +2944,8 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   dy:drawY-(feet-height)+footOffset+editedY,tilt:0,
   sx:1,sy:1,pivotX:f.x,pivotY:feet};
  ctx.save();
- // No transparency strobing or new vector weapon layer.
- ctx.save();if(tilt){
-  // Feet remain the pivot; all impact scaling is UNIFORM.
-  ctx.translate(f.x,feet);ctx.rotate(tilt);ctx.translate(-f.x,-feet);
- }
- if(Math.abs(impactVisual.scale-1)>.0001){
-  ctx.translate(f.x,feet);ctx.scale(impactVisual.scale,impactVisual.scale);
-  ctx.translate(-f.x,-feet);
- }
+ // The artist's authored action scale is the sole body-size animation.
+ // World hit feedback remains in the flash and camera, never implicit zoom.
  // All ten poses have independent, pre-cleaned bitmaps; do not truncate any
  // Retiarius attack/defeat weapon just to hide a stray neighboring frame.
  if(S.phase==='fight'&&f.comboDash&&f.comboDash.t>=.17&&f.comboDash.t<.43){
