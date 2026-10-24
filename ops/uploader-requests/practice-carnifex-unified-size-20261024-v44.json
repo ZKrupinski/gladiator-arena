@@ -1,0 +1,24 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "practice-carnifex-unified-size-20261024-v44",
+  "expectedMainSha": "34eb87007c4e14c1ffda8d0179a9cfa0890983b6",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/ludus-practice.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/34eb87007c4e14c1ffda8d0179a9cfa0890983b6/public/ludus-practice.js",
+      "sha256": "583e056988187cd1a5116d7560b4fcb7196ac63cbbe3db01df460f87af3ba45e"
+    },
+    {
+      "path": "public/arena-carnifex.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/34eb87007c4e14c1ffda8d0179a9cfa0890983b6/public/arena-carnifex.js",
+      "sha256": "553dbbdec1783effa6cf30f5ffde18470dd273a5eea9b4b07e6c57713e7441f6"
+    },
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/34eb87007c4e14c1ffda8d0179a9cfa0890983b6/public/index.html",
+      "sha256": "96d742c2cb271eb173205890c6befc441d1169bfa149f91db211cd78d2f39128"
+    }
+  ]
+}
