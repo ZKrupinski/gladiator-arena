@@ -1,0 +1,49 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "character-foot-height-controls-20261024-v42b",
+  "expectedMainSha": "58197dc441c2e1eefcca4161b9c32a4290e15d5e",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/practice-scale-profiles.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/364119dc47bd1a740d889a7be09dab5568a0a18b/public/practice-scale-profiles.js",
+      "sha256": "f3942911ccc1b1c8ba56cc9f6db77d00ba5c101c29629f3fd13bd25fc41c4116"
+    },
+    {
+      "path": "public/practice-scale-published.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/364119dc47bd1a740d889a7be09dab5568a0a18b/public/practice-scale-published.js",
+      "sha256": "1accab4aeffe9d6d23d6d046f697ef0cf99e12be746c66a962ea35a57cf628d3"
+    },
+    {
+      "path": "public/tools/practice-scale-calibrator.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/364119dc47bd1a740d889a7be09dab5568a0a18b/public/tools/practice-scale-calibrator.html",
+      "sha256": "582c05c83d052e237747e533d1e0766224790644093651a7f527b311c2d43e24"
+    },
+    {
+      "path": "public/tools/practice-scale-publish.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/364119dc47bd1a740d889a7be09dab5568a0a18b/public/tools/practice-scale-publish.js",
+      "sha256": "cea95ab7602198f7ab9689a19000928a515a411fe934dba46d0f7453a64e3cd8"
+    },
+    {
+      "path": "public/ludus-practice.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/364119dc47bd1a740d889a7be09dab5568a0a18b/public/ludus-practice.js",
+      "sha256": "ad0aea5706a41b8b6087e7b73bc1186d3e5f0d82ec7c2994eaf8fa47ff781dd5"
+    },
+    {
+      "path": "public/arena-beasts.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/364119dc47bd1a740d889a7be09dab5568a0a18b/public/arena-beasts.js",
+      "sha256": "ee90b83992472500587afd208e89771d9d1bfe8587b5d330c06e265d08268fcc"
+    },
+    {
+      "path": "public/arena-carnifex.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/364119dc47bd1a740d889a7be09dab5568a0a18b/public/arena-carnifex.js",
+      "sha256": "e7c95a1851dc38288c5eaadcd1f62a1ab779ddc0f7b85f16a8031647845152d2"
+    },
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/364119dc47bd1a740d889a7be09dab5568a0a18b/public/index.html",
+      "sha256": "3357495233cbbb92485885933db3cc8d6b04539b99859d0f7dd6f9028884fa6b"
+    }
+  ]
+}
