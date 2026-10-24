@@ -55,9 +55,9 @@ assert.match(inline,/String\(frameNumber\)\.padStart\(2,'0'\)/,'beast action act
 assert.match(inline,/m\.actions\?\.\[name\]/,'champion action manifest clips');
 assert.match(inline,/v\.sampleMotion\?\.\(val,progress\)/,'studio animates user XY keys');
 assert.match(inline,/pose:val,progress:\.5/,'studio FX stays at the live spawn key (50%)');
-assert.match(inline,/const isBeast=key\.startsWith\('beast_'\),actorZoom=isBeast\?previewScale:z/,'beast offsets do not receive human projection');
-assert.match(inline,/const basePixels=scene==='duel'\?348\*\.83\*factor:202/,'beast preview uses real 348px duel ink size');
-assert.match(inline,/const fxZoom=isBeast&&scene==='duel'\?previewScale:z/,'beast effects use real duel zoom');
+assert.match(inline,/SpartacusStagePreview\.draw\(c/,'all body previews share live geometry');
+assert.match(inline,/SpartacusStagePreview\.offsetFactor\(key,scene\)/,'beast offsets use native world pixels');
+assert.match(inline,/const fxZoom=z/,'FX and body share scene projection');
 assert.match(inline,/const selected=\[\.\.\.selection\]\.filter\(key=>key!==source\)/,
  'bulk excludes the source actor');
 assert.match(inline,/if\(mode==='effect'\)to\.effect=\{\.\.\.from\.effect\}/,
@@ -68,7 +68,7 @@ assert.match(inline,/persistActionEdit\(\)/,'bulk keys saved immediately');
 assert.match(inline,/function persistScaleEdit\(\)/,'studio look/foot edits autosave without manual Save');
 assert.match(inline,/const sizeOK=p\.write\(state\),feetOK=p\.writeFeet\(feet\),actionOK=v\.write\(actions\)/,
  'editing FX also persists pending size and foot changes atomically in the studio');
-assert.match(inline,/const setFoot=v=>\{feet\[key\]=p\.clampFoot\(v\);redraw\(\);persistScaleEdit\(\);\}/,
+assert.match(inline,/const setFoot=v=>\{feet\[key\]=p\.clampFoot\(v\);redraw\(\);persistScaleEdit\(\);renderComparison\(\);\}/,
  'editing foot sliders saves immediately');
 const practice=fs.readFileSync('public/ludus-practice.js','utf8');
 assert.match(practice,/sampleMotion/,'practice samples same authoring keys');
