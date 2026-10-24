@@ -24,6 +24,20 @@ function courtsForParty(count){
  return COURT_LAYOUTS[n].map(c=>({...c}));
 }
 let COURTS=courtsForParty(4);
+// Compositing order for independent duel groups. 3/4 are behind 1/2;
+// inside each numbered group: opponent, our gladiator, VFX and Carnifex.
+// Do not sort the four groups together by actor feet: long weapons / VFX
+// must stay within their own duel layer even when they overlap a neighbor.
+const COURT_PAINT_STACK=Object.freeze({
+ 1:Object.freeze([0]),
+ 2:Object.freeze([0,1]),
+ 3:Object.freeze([2,0,1]),
+ 4:Object.freeze([2,3,0,1])
+});
+function courtPaintOrder(count=COURTS.length){
+ const n=Math.max(1,Math.min(MAX,Math.floor(Number(count)||1)));
+ return COURT_PAINT_STACK[n].slice();
+}
 const LEASH=168,MIN_PAIR_GAP=172,ATTACK_START_RANGE=188,CONTACT_REACH=214;
 // Reference on-screen size of the same gladiator in standard duels (348 * .82)
 // and in practice (202). Carnifex shares the gladiator's COURT perspective;
@@ -250,7 +264,7 @@ function sparks(target,force=false){
  const s=COURTS[target.seat];
  for(let i=0;i<(force?11:6);i++){
   const rad=Math.random()*Math.PI*2,velocity=30+Math.random()*85;
-  battle.particles.push({x:target.x,y:target.y-77*s.scale,
+  battle.particles.push({seat:target.seat,x:target.x,y:target.y-77*s.scale,
    dx:Math.cos(rad)*velocity,dy:Math.sin(rad)*velocity-40,
    depth:s.y-(target.side==='enemy'?12:0)+.55,
    front:target.side==='ally'?1:0,
@@ -272,7 +286,7 @@ function emitVfx(kind,unit,other,emphasis=false){
  if(chosen==='none')return;
  if(!root.ArenaRasterFX?.FAMILIES?.[chosen])return;
  const fxDuration=root.ArenaRasterFX.FAMILIES[chosen].duration||duration;
- battle.fx.push({kind:chosen,x:unit.x+(kind==='hit'?0:face*52*c.scale)+
+ battle.fx.push({seat:unit.seat,kind:chosen,x:unit.x+(kind==='hit'?0:face*52*c.scale)+
     (v?.x||0)*c.scale*face+(effect.x||0)*c.scale*face,
   y:unit.y-113*c.scale+(v?.y||0)*c.scale+(effect.y||0)*c.scale,
   scale:c.scale*(effect.scale||1),face,age:0,duration:fxDuration,
@@ -631,6 +645,37 @@ function drawUnit(unit){
  ctx.fillStyle='#fff0cf';ctx.textAlign='center';ctx.fillText(unit.name.slice(0,15),0,-labelHeight-31*scale);
  ctx.restore();
 }
+// A numbered combat court is an independent compositing layer.
+function courtPaintQueue(scene){
+ const order=courtPaintOrder(COURTS.length);
+ const ranks=new Map(order.map((seat,i)=>[seat,i]));
+ const result=[];
+ let serial=0;
+ function add(seat,depth,front,kind,paint){
+  if(!ranks.has(seat))return;
+  result.push({seat,depth,front,kind,serial:serial++,paint});
+ }
+ for(const unit of (scene.heroes||[]).concat(scene.enemies||[])){
+  if(unit.retiring||(unit.dead&&!(unit.fade>0)))continue;
+  add(unit.seat,unit.y-(unit.side==='enemy'?12:0),
+   unit.side==='ally'?1:0,'fighter',()=>drawUnit(unit));
+ }
+ for(const exit of scene.exits||[]){
+  add(exit.unit?.seat,exit.court.y-(exit.unit.side==='enemy'?12:0),
+   exit.unit.side==='ally'?1:0,'executioner',()=>drawDeparture(exit));
+ }
+ for(const effect of scene.fx||[]){
+  add(effect.seat,effect.depth,effect.front,'effect',()=>drawVfx(effect));
+ }
+ for(const particle of scene.particles||[]){
+  add(particle.seat,particle.depth,particle.front,'spark',()=>drawSpark(particle));
+ }
+ // Global court rank FIRST; within one court retain actor-depth, faction
+ // and stable painter order. Side-by-side duels cannot mix visual layers.
+ result.sort((a,b)=>ranks.get(a.seat)-ranks.get(b.seat)||
+  a.depth-b.depth||a.front-b.front||a.serial-b.serial);
+ return result;
+}
 function paint(){
  if(!battle||!ctx)return;
  ctx.save();ctx.clearRect(0,0,W,H);
@@ -639,30 +684,11 @@ function paint(){
  else{const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#24120e');grad.addColorStop(1,'#754328');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);}
  ctx.fillStyle='#160a0929';ctx.fillRect(0,0,W,H);
  // All court floor overlays removed: gladiators stand on the original sand.
- // The original arena's approved Carnifex walks on behind its fallen target.
- // Sort stage actors/departures by real foot depth, not by sprite image size.
- // Explicit depth groups: opponents and their exits BEHIND our fighters.
- // This prevents the enemy from covering allied characters in any court.
- // Distant characters BEFORE nearer characters, regardless of affiliation.
- // At the SAME depth: enemy behind our assigned gladiator.
- const units=battle.heroes.concat(battle.enemies)
-  .filter(u=>!u.retiring&&(!u.dead||u.fade>0))
-  .map(unit=>({depth:unit.y-(unit.side==='enemy'?12:0),
-   front:unit.side==='ally'?1:0,paint:()=>drawUnit(unit)}));
- const bodies=battle.exits.map(exit=>({depth:exit.court.y-
-  (exit.unit.side==='enemy'?12:0),front:exit.unit.side==='ally'?1:0,
-  paint:()=>drawDeparture(exit)}));
- const effects=battle.fx.map(effect=>({
-  depth:effect.depth,front:effect.front,paint:()=>drawVfx(effect)
- }));
- const sparks=battle.particles.map(p=>({
-  depth:p.depth,front:p.front,paint:()=>drawSpark(p)
- }));
- // Render all actor/corpse/effect/particle layers in ONE world-depth pass.
- // Distant strikes can never obscure closer fighters.
- units.concat(bodies,effects,sparks)
-  .sort((a,b)=>a.depth-b.depth||a.front-b.front)
-  .forEach(item=>item.paint());
+ // Draw each entire duel as one indivisible scene layer: rear 3 → 4,
+ // then front 1 → 2. The executor, corpse, slash VFX and impact sparks
+ // belong to the SAME court as their fighter. Never intermingle entries
+ // from two different court groups, even when they share the same Y.
+ courtPaintQueue(battle).forEach(item=>item.paint());
  ctx.restore();
 }
 function status(){
