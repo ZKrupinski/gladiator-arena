@@ -46,7 +46,7 @@ for(let seat=0;seat<4;seat++){
 }
 assert(!source.includes('c.scale*.58'),'remove legacy hidden scale preset');
 const npc=fs.readFileSync('public/arena-carnifex.js','utf8');
-assert.match(npc,/const visualScale=root\.PracticeScaleProfiles\?\.scale\?\.\('npc_carnifex'\)/);
+assert.match(npc,/const visualScale=root\.PracticeScaleProfiles\?\.scale\?\.\(key\)/);
 assert.match(npc,/footOffsetFactor=1/);
 assert.match(npc,/bootOffset=\(root\.PracticeScaleProfiles\?\.foot/);
 assert.match(npc,/ctx\.scale\(\(flip\?-1:1\)\*size,size\)/);
