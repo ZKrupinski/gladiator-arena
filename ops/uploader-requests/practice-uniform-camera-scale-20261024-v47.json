@@ -1,0 +1,24 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "practice-uniform-camera-scale-20261024-v47",
+  "expectedMainSha": "6e9c52c60f59606b94c24f4733cb6255ce743bd5",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/ludus-practice.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/6e9c52c60f59606b94c24f4733cb6255ce743bd5/public/ludus-practice.js",
+      "sha256": "2b4261849f03f5356bcded58ee485fcffe6893b70ff1fbbafa4b73e456aca714"
+    },
+    {
+      "path": "public/tools/practice-scale-calibrator.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/6e9c52c60f59606b94c24f4733cb6255ce743bd5/public/tools/practice-scale-calibrator.html",
+      "sha256": "62658960f2f57d819e4f59a2045d9bf789d48872de172459fdd55ed6a9b0d89e"
+    },
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/6e9c52c60f59606b94c24f4733cb6255ce743bd5/public/index.html",
+      "sha256": "4fb433c7b5a53ab9af37a6496d0af3556b78173a01dedf4f366a77ed31437c59"
+    }
+  ]
+}
