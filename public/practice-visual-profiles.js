@@ -1,4 +1,4 @@
-/* Spartacus visual-authoring profiles v46.
+/* Spartacus visual-authoring profiles v52.
  * Only one artist-authored action transform exists per appearance+pose.
  * No detection-based resizing, no undocumented practice-only costume boosts.
  * Positive X moves right in FACING space; positive Y moves downward.
@@ -48,7 +48,10 @@ function read(){
  if(local)return local;
  try{
   const stored=JSON.parse(root.localStorage?.getItem(KEY)||'{}');
-  local=stored?.baseline===baseline?sanitize(stored?.actions||{}):{};
+  // Preserve drafts edited on this device across unrelated game releases.
+  // Published defaults may change, but a user's unpublished FX tweaks must
+  // never disappear merely because the repo deployed a new code version.
+  local=sanitize(stored?.actions||{});
  }catch(_){local={};}
  return local;
 }
@@ -67,7 +70,7 @@ function resolve(key,action='idle'){
 }
 function write(values){
  const actions=sanitize(values);
- try{root.localStorage?.setItem(KEY,JSON.stringify({version:46,baseline,actions}));local=actions;return true;}
+ try{root.localStorage?.setItem(KEY,JSON.stringify({version:52,baseline,actions}));local=actions;return true;}
  catch(_){return false;}
 }
 function reset(){try{root.localStorage?.removeItem(KEY);local={};return true;}catch(_){return false;}}
@@ -87,6 +90,7 @@ function effectGeometry({kind,baseX=0,baseY=0,face=1,zoom=1,pose=null,
   zoom:z,scale:e.scale
  });
 }
-root.PracticeVisualProfiles=Object.freeze({KEY,ACTIONS,ACTION_FALLBACK,fallbackAction,EFFECTS,FX_SIZES,clean,sanitize,read,all,resolve,write,reset,size,effectGeometry});
+root.PracticeVisualProfiles=Object.freeze({KEY,ACTIONS,ACTION_FALLBACK,fallbackAction,
+ EFFECTS,FX_SIZES,clean,sanitize,read,all,resolve,write,reset,size,effectGeometry});
 if(typeof module!=='undefined')module.exports=root.PracticeVisualProfiles;
 })(typeof window!=='undefined'?window:globalThis);
