@@ -1,0 +1,19 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "practice-rear-rival-visibility-20261024-v50",
+  "expectedMainSha": "21606dfaa75cf861c872891993be40544893834b",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/ludus-practice.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/21606dfaa75cf861c872891993be40544893834b/public/ludus-practice.js",
+      "sha256": "85d323df3d39cc8c9d004f49fc8f4a1bb39080379a45348334659cb610fb037d"
+    },
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/21606dfaa75cf861c872891993be40544893834b/public/index.html",
+      "sha256": "40212487bdceb8b38a99b552402a0cdb35196fb873b63598e7eaf5cece9713a0"
+    }
+  ]
+}
