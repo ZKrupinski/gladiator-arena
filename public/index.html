@@ -3241,7 +3241,7 @@ function drawEffects(backOnly=false){
   // Success and contact paint remain clearly visible in the foreground.
   if((v.layer==='back')!==backOnly)continue;
   const time=fxTiming(v);if(!time.visible)continue;
-  const {x:cx,y:cy}=fxPoint(v);
+  let {x:cx,y:cy}=fxPoint(v);
   const progress=time.progress;
   const fade=clamp(Math.min(progress*8+.18,(1-progress)*3),0,1);
    if(v.beastFx){
@@ -3253,21 +3253,30 @@ function drawEffects(backOnly=false){
    }
   const scale=.9+.13*progress;
   const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
-  const mapped=v.sequence||({hit_slash:'slash',parry_burst:'guard',
+  let mapped=v.sequence||({hit_slash:'slash',parry_burst:'guard',
     dash_trail:'dash',special_aura:'special'}[v.art]);
+  const fxAction=mapped==='parry'?'guard':mapped==='hit'?'hit':
+   mapped==='dash'?'dodge':mapped==='special'?'special':
+   mapped==='finisher'?'finisher':'attack';
+  const fxEdit=v.owner?window.PracticeVisualProfiles?.resolve?.(duelAppearanceKey(v.owner),fxAction)?.effect:null;
+  if(fxEdit?.kind==='none')continue;
+  if(fxEdit?.kind&&fxEdit.kind!=='auto')mapped=fxEdit.kind;
+  cx+=(v.owner?.face||1)*(fxEdit?.x||0);
+  cy+=(fxEdit?.y||0);
+  const authoredFxScale=fxEdit?.scale||1;
   const vfxScale=1.31*(CINEMATIC_FX_SCALE[v.art]??.65)*(mapped==='finisher'?1.12:1);
   const normalAttackBoost=ORDINARY_ATTACK_FX_BOOST[mapped]??1;
   // Expand only the ordinary sword trails, preserving each sprite's origin,
   // direction, opacity, eight-frame timing and transparent source artwork.
   if(S.fx&&mapped&&window.ArenaRasterFX?.draw?.(ctx,mapped,cx,cy,
-    v.w*scale*vfxScale*1.20*normalAttackBoost,
-    v.h*scale*vfxScale*1.20*normalAttackBoost,
+    v.w*scale*vfxScale*1.20*normalAttackBoost*authoredFxScale,
+    v.h*scale*vfxScale*1.20*normalAttackBoost*authoredFxScale,
     reduced?.52:progress,v.alpha*fade,v.flip?-1:1,v.rotation))continue;
   if(mapped&&window.ArenaRasterFX?.FAMILIES?.[mapped])continue;
   // Legacy fallback is only for unrelated environmental effects;
   // never render geometric/vector effects over approved PNG art.
   if(S.fx&&mapped&&window.ArenaAnimatedFX?.draw?.(ctx,mapped,cx,cy,
-    v.w*scale*vfxScale,v.h*scale*vfxScale,reduced?.52:progress,
+    v.w*scale*vfxScale*authoredFxScale,v.h*scale*vfxScale*authoredFxScale,reduced?.52:progress,
     v.alpha*fade,v.flip,v.rotation))continue;
   if(mapped&&window.ArenaAnimatedFX?.FAMILIES?.[mapped])continue;
   if(v.art&&drawIllustratedEffect(v.art,cx,cy,v.w*scale,v.h*scale,
