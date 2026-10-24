@@ -1,0 +1,14 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "character-foot-height-duel-integration-20261024-v43",
+  "expectedMainSha": "edf25372971aa3724e410c6c34c3f78c063624b3",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/edf25372971aa3724e410c6c34c3f78c063624b3/public/index.html",
+      "sha256": "715eb019f595fd6cca74f616ab9b2188fd077d1673cfa796a79925e839adfd0e"
+    }
+  ]
+}
