@@ -1,21 +1,22 @@
 {
   "assetSha256": {
     "docs/arena-coop-v58.md": "b4abd8fab0b238c0297acdc6dd528457e9f6e3421d328770b7cd7a39f2d2d6bc",
-    "public/arena-coop-core.js": "57f0bf1a90ffbe16c0b899ce67756b351d50f23338c195eb1774c696ce15e3e2",
+    "public/arena-coop-core.js": "60ed7b4e5665fae36f01deb2ea24e5b27a35408e294dff579725129f5116cc24",
     "public/arena-coop.css": "a795a5433f569c7e2545f8d6dc0475caeb6231f88acbbfe1178b22d5eac1bb4f",
-    "public/arena-coop.js": "7c9c163a1783fcc16f7328895110befe1da2176c9c061d6309316d378f48f985",
-    "public/index.html": "9bda9781d4c3988a70f8813985565923d5115e91dec7d4f18d8dc0c197727960",
+    "public/arena-coop.js": "b86bd01617fd99ca5c974ed726e5b1231abb49d3cfd86f8b0c718896bec5cc70",
+    "public/index.html": "ff1f95f92d02e4584df4926126ba44fe8a935a87726d6f6d6161595aa32a18f9",
     "public/ludus-cards.js": "31d13ef12dfbfaa0bc4be79747bdd3342c7fd357f1d30cbeb6e65bb811b6df32",
     "tests/arena-coop-browser.js": "57312fc1756a276b192ba7a2bd582e3f570031dfbe4d4c81cf8102039b136984",
-    "tests/arena-coop-core.js": "781d46ca5ee2c81dd0c658424e32adb34d1cb09674f7b3831cf12eee99ee868b",
+    "tests/arena-coop-core.js": "808f7ab2abc030e1e9e616ef6dab72aaf4357ed3ff03a427cf0e170fd6e32469",
     "docs/arena-coop-v59.md": "a8f8137a239ae58710fc845baf74d12aa32dea71dcda458a4f217d1069103c0a",
-    "tests/arena-coop-tactics.js": "e494574ebdd55e1cec8d3e6e6122a8a69dac109b944a2c8c80f6be18f969b0a9",
-    "docs/arena-coop-v60.md": "b764b06e10c81c4cd886bc73ea0e23052784276aa6e3828b7b95c9ab1daf2fa6"
+    "tests/arena-coop-tactics.js": "a18eb76aeb44f801524d6fe89398c712f907942bac733280d2a567687bda84a2",
+    "docs/arena-coop-v60.md": "b764b06e10c81c4cd886bc73ea0e23052784276aa6e3828b7b95c9ab1daf2fa6",
+    "docs/arena-coop-v61.md": "2938c71e2e19ae963afcd7199a867f079e486c8be3a60ac827eea4d261b58faf"
   },
   "baseCommit": "958cf8eef8e5dae84cb70e065d371b50aa19586b",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "concordia-5v5-v60-20261025",
+  "releaseId": "concordia-5v5-v61-20261025",
   "releaseProtocol": "spartacus-uploader-v1",
-  "previousReleaseId": "concordia-5v5-v59-20261025"
+  "previousReleaseId": "concordia-5v5-v60-20261025"
 }
