@@ -41,9 +41,9 @@ const translate=calls.find(x=>x[0]==='translate'),draw=calls.find(x=>x[0]==='ima
 assert.equal(translate[1],268,'studio X movement respects training left-facing actor');
 assert.equal(translate[2],418,'studio pose Y and global feet reach training');
 const k=p.scale*1.4*1.25;
-assert(Math.abs(draw[8]-actionImage.height*k)<1e-8,'look and action scales applied exactly once');
-assert(Math.abs(draw[7]-actionImage.width*k)<1e-8,'same scale for X and Y');
-assert.equal(draw[2],0,'full uncropped source frame, no per-pose alpha bounds');
+assert(Math.abs(draw[9]-actionImage.height*k)<1e-8,'look and action scales applied exactly once');
+assert(Math.abs(draw[8]-actionImage.width*k)<1e-8,'same scale for X and Y');
+assert.equal(draw[2],0,'full uncropped source X, no per-pose alpha bounds');
 assert.equal(draw[4],960,'full source frame width');
 assert.doesNotMatch(training,/const towardDoctore=/);
 assert.doesNotMatch(training,/ctx\.rotate\(-lean\)/);
