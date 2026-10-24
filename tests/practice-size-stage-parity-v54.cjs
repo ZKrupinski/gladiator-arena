@@ -35,7 +35,7 @@ const studio=fs.readFileSync('public/tools/practice-scale-calibrator.html','utf8
 assert(studio.includes('id="compareCanvas"')&&studio.includes('id="compareScale"'));
 assert(studio.includes('id="compareKey"')&&studio.includes('id="scaleScene"'));
 assert(studio.includes('setupCompareEditor();initActionEditor();build();'));
-assert.match(studio,/frame,idle:frame,scene:\$\('#scaleScene'\)\.value/);
+assert.match(studio,/frame,idle:frame,\s*scene:\$\('#scaleScene'\)\.value/);
 assert.match(studio,/cellWidth:atlas\.cellWidth,cellHeight:atlas\.cellHeight/);
 assert.match(studio,/function renderComparison\(\)/);
 assert.match(studio,/persistScaleEdit\(\)/,'live comparison edits autosave');
