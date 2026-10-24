@@ -1,5 +1,5 @@
-/* Spartacus / practice appearance size profiles v32.
- * Fixed per-look artist scale, never recomputed from attack or helmet extents.
+/* Spartacus / cross-scene appearance size profiles.
+ * A neutral ×1 default, with artist-controlled values from the same editor.
  */
 (function(root){'use strict';
 const KEY='spartacus.practice.scale.v32';
@@ -7,16 +7,13 @@ const FEET_KEY='spartacus.practice.feet.v42';
 const FOOT_MIN=-70,FOOT_MAX=40;
 const clampFoot=v=>Math.max(FOOT_MIN,Math.min(FOOT_MAX,Math.round(Number(v)||0)));
 const TYPES=['murmillo_a','thraex_a','thraex_b','retiarius_a'];
-const values={
- murmillo_a:[.92,.90,.88,.86,.85],
- thraex_a:[1.04,1.04,1.02,1.01,1.00],
- thraex_b:[1.04,1.03,1.02,1.01,1.00],
- retiarius_a:[1.45,1.44,1.43,1.41,1.40]
-};
+// The baseline for EVERY costume is neutral ×1. No class-specific Murmillo,
+// Thraex or Retiarius correction is hidden in the runtime. A non-1 value
+// can now only come from the artist's published or device draft studio data.
 const EXTRAS=Object.freeze(['murmillo_champion_red','murmillo_motion_v3','legacy_murmillo','legacy_thraex','legacy_retiarius']);
 const BEASTS=Object.freeze(['beast_wolf','beast_leopard','beast_tiger','beast_lion','beast_elephant']);
 const NPCS=Object.freeze(['npc_carnifex']);
-const BASE=Object.freeze({...Object.fromEntries(TYPES.flatMap(type=>values[type].map((v,i)=>[type+'_L'+(i+1),v]))),...Object.fromEntries(EXTRAS.concat(BEASTS,NPCS).map(key=>[key,1]))});
+const BASE=Object.freeze({...Object.fromEntries(TYPES.flatMap(type=>Array.from({length:5},(_,i)=>[type+'_L'+(i+1),1]))),...Object.fromEntries(EXTRAS.concat(BEASTS,NPCS).map(key=>[key,1]))});
 const source=root.SpartacusPublishedScales||{};
 const published={};
 for(const key of Object.keys(BASE))if(Object.prototype.hasOwnProperty.call(source,key)&&
