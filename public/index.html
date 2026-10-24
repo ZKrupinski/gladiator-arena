@@ -800,11 +800,16 @@ const DUEL_BASE_VISUAL_SCALE=.82;
 const CHAMPION_MURMILLO_SCALE=DUEL_BASE_VISUAL_SCALE;
 function isChampionMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===CHAMPION_MURMILLO_VARIANT;}
 const ANIMATED_MURMILLO_SCALE=DUEL_BASE_VISUAL_SCALE;
-function duelVisualScale(f){
- const look=f?.championVariant||f?.motionVariant||f?.legacyVisualId||
+function duelAppearanceKey(f){
+ return f?.championVariant||f?.motionVariant||f?.legacyVisualId||
   (f?.growthType&&f?.growthLevel?f.growthType+'_L'+f.growthLevel:null)||
   (f?.cls?'legacy_'+f.cls:null);
- return DUEL_BASE_VISUAL_SCALE*(window.PracticeScaleProfiles?.scale?.(look)??1);
+}
+function duelVisualScale(f){
+ return DUEL_BASE_VISUAL_SCALE*(window.PracticeScaleProfiles?.scale?.(duelAppearanceKey(f))??1);
+}
+function duelFootOffset(f){
+ return f?.beastType?0:(window.PracticeScaleProfiles?.foot?.(duelAppearanceKey(f))??0);
 }
 function isAnimatedMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===ANIMATED_MURMILLO_VARIANT;}
 function careerXpNeeded(l){return 36+l*19;}
@@ -2915,6 +2920,7 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  let bob=0;
  if(f.dodge>0)bob-=8;
  let drawX=f.x-width/2,drawY=feet-height+bob;
+ const footOffset=duelFootOffset(f); // visual art only; hitboxes and physics stay planted
  if(S.phase==='fight'){
   // Render-only position easing leaves combat hitboxes undisturbed.
   const trail=f.dodgeEcho||f.specialLunge||f.attackLunge;
@@ -3004,7 +3010,7 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   (window.ArenaMotion?.visual?.(f,reduceImpact,S.fx)||{scale:1,flash:0}):
   {scale:1,flash:0};
  f._fxRender={dx:drawX-(f.x-width/2)+(motionExtra?.x||0),
-  dy:drawY-(feet-height)+(motionExtra?.y||0),tilt,
+  dy:drawY-(feet-height)+(motionExtra?.y||0)+footOffset,tilt,
   sx:impactVisual.scale,sy:impactVisual.scale,
   pivotX:f.x,pivotY:feet};
  // No transparency strobing or new vector weapon layer.
@@ -3029,6 +3035,8 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   atlasFrame(IMG[f.cls],frame,nx,ny,width*factor,height*factor,f.face<0,alpha);
  };
  const renderActor=(alpha,x=drawX,y=drawY)=>{
+  // Align every human class including ghosts and hit flashes to the published feet.
+  if(!f.beastType)y+=footOffset;
   const animal=!!f.beastType&&!!window.ArenaBeasts?.draw?.(ctx,{
    fighter:f,pose,clock,x,y,w:width,h:height,flip:f.face>0,alpha
   });
