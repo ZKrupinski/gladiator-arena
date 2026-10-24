@@ -1,12 +1,11 @@
 {
   "assetSha256": {
-    "public/index.html": "4fb433c7b5a53ab9af37a6496d0af3556b78173a01dedf4f366a77ed31437c59",
-    "public/ludus-practice.js": "2b4261849f03f5356bcded58ee485fcffe6893b70ff1fbbafa4b73e456aca714",
-    "public/tools/practice-scale-calibrator.html": "62658960f2f57d819e4f59a2045d9bf789d48872de172459fdd55ed6a9b0d89e"
+    "public/index.html": "a50e70ab1df2a6d480fd38248b931bc5928556e7de67759b433a2d68c28193b6",
+    "public/ludus-practice.js": "1ea8f1c9136fe029deefc56992e8a31a961d6a100e3d05738a756564a0411ef5"
   },
-  "baseCommit": "9ac093a79464d5cb07637b48edcf6217ec192049",
+  "baseCommit": "8243c2bbb5fbc0b04c5f18e7299d899e22d0689f",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-uniform-camera-scale-20261024-v47",
+  "releaseId": "practice-four-independent-layer-groups-20261024-v49b",
   "releaseProtocol": "spartacus-uploader-v1"
 }
