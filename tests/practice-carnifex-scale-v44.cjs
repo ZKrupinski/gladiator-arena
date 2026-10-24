@@ -41,7 +41,7 @@ for(let seat=0;seat<4;seat++){
  assert(outer&&Math.abs(outer[1]-expected)<1e-10,'scene camera scales only by court projection');
  const rendered=calls.find(x=>x[0]==='engineDraw');
  assert(rendered&&rendered[1]===617,'original Carnifex stage floor preserved');
- assert(Math.abs(rendered[2].footOffsetFactor*court.scale*0+rendered[2].footOffsetFactor*expected-court.scale)<1e-8,
+ assert(Math.abs(rendered[2].footOffsetFactor*expected-court.scale)<1e-8,
    'foot offsets follow fighter court-space Y scale');
 }
 assert(!source.includes('c.scale*.58'),'remove legacy hidden scale preset');
