@@ -15,7 +15,7 @@ s=C.create(team(),team(),{seed:2});s.units[5].dead=true;s.units[5].hp=0;s.links.
 let wins=0,total=0,allKinds=new Set();
 for(let seed=1;seed<=100;seed++){
  s=C.create(team(),team(),{seed});let moved=new Set();
- while(!s.result){C.step(s,.05);for(const [i,u] of s.units.entries()){if(u.moving)moved.add(u.id);assert(Number.isFinite(u.x)&&Number.isFinite(u.y)&&Number.isFinite(u.hp));assert(u.hp>=0);assert(u.x>=85&&u.x<=1195);assert(u.y>=395&&u.y<=675);for(let j=i+1;j<s.units.length;j++)assert(C.footDistance(u,s.units[j])>=101.9,'no living fighter or permanent corpse may be crossed');}for(const e of s.events)allKinds.add(e.type);}
+ while(!s.result){C.step(s,.05);for(const [i,u] of s.units.entries()){if(u.moving)moved.add(u.id);assert(Number.isFinite(u.x)&&Number.isFinite(u.y)&&Number.isFinite(u.hp));assert(u.hp>=0);assert(u.x>=85&&u.x<=1195);assert(u.y>=395&&u.y<=675);for(let j=i+1;j<s.units.length;j++)if(!u.dead&&!s.units[j].dead)assert(C.footDistance(u,s.units[j])>=101.9,'living fighters cannot overlap');}for(const e of s.events)allKinds.add(e.type);}
  assert.equal(moved.size,10,'all ten actors move simultaneously');assert(s.time<=120.1);assert(s.teamwork.ally>0);wins+=s.result.win;total+=s.time;
  const result=s.result,after=JSON.stringify(s.units);C.step(s,.05);C.finish(s,'retreat');assert.equal(s.result,result);assert.equal(JSON.stringify(s.units),after);assert.equal(C.command(s,'focus','enemy0'),false);
 }
@@ -27,8 +27,24 @@ const fallen=C.create(team(),team(),{seed:120});
 fallen.units[2].dead=true;fallen.units[2].hp=0;fallen.units[2].deathAt=0;
 const body={x:fallen.units[2].x,y:fallen.units[2].y};
 for(let i=0;i<160;i++)C.step(fallen,.05);
-assert.deepEqual({x:fallen.units[2].x,y:fallen.units[2].y},body,'body remains stationary and fully solid');
-for(const v of fallen.units.filter(u=>u!==fallen.units[2]))assert(C.footDistance(v,fallen.units[2])>=101.9,'body cannot be crossed');
+assert.deepEqual({x:fallen.units[2].x,y:fallen.units[2].y},body,'fallen body remains stationary');
+// Place one living fighter on an unobstructed lane with a fallen body directly in the path.
+// All other bodies are dead, and the distant surviving enemy is rooted in place.
+const passThrough=C.create(team(),team(),{seed:19});
+for(const u of passThrough.units){u.dead=true;u.hp=0;u.deathAt=0;}
+const runner=passThrough.units[0],corpse=passThrough.units[1],foe=passThrough.units[5];
+Object.assign(runner,{dead:false,hp:runner.maxHp,x:420,y:510,attack:null,rooted:0});
+Object.assign(corpse,{dead:true,hp:0,x:550,y:510,deathAt:0});
+Object.assign(foe,{dead:false,hp:foe.maxHp,x:1100,y:510,rooted:20,attack:null});
+let crossedCorpse=false;
+for(let i=0;i<100&&!passThrough.result;i++){
+ C.step(passThrough,.05);
+ if(C.footDistance(runner,corpse)<80)crossedCorpse=true;
+}
+assert(crossedCorpse,'living fighter moves through a visible nonblocking corpse');
+assert(runner.x>corpse.x+102,'living fighter passes fully beyond the fallen body');
+assert.deepEqual({x:corpse.x,y:corpse.y},{x:550,y:510},'corpse remains visible in place');
+assert(C.footDistance(runner,foe)>=101.9,'living combatant collision remains enabled');
 const noCascade=C.create(team(),team(),{seed:7});
 noCascade.units[0].reaction={kind:'rescue',target:'enemy0',ward:'ally1',due:0,expires:2};
 noCascade.units[0].x=680;noCascade.units[0].y=405;
@@ -41,4 +57,4 @@ assert(noCascade.units[5].hp<120,'rescue attack strikes the attacker');
 assert(noCascade.units[1].protectedUntil>0,'rescued fighter gets temporary protection');
 assert(noCascade.events.some(e=>e.type==='rescue'),'rescue completion event is emitted');
 
-console.log('PASS: 100 seeded battles; collision-free alive/corpse footprints, dash/riposte/assist, feints, retreat/recovery, commands/cooldowns, pause, timeout and result idempotence. Average '+(total/100).toFixed(1)+'s, ally wins '+wins+'%.');
+console.log('PASS: 100 seeded battles; collision-free living fighters with pass-through corpses, dash/riposte/assist, feints, retreat/recovery, commands/cooldowns, pause, timeout and result idempotence. Average '+(total/100).toFixed(1)+'s, ally wins '+wins+'%.');
