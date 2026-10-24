@@ -78,7 +78,7 @@
  function callReaction(s,kind,ward,foe){
   if(!ward||!foe||ward.dead||foe.dead)return false;
   const candidates=alive(s,ward.side).filter(u=>u!==ward&&!u.reaction&&
-   !u.counter&&u.rooted<=0&&u.reactionReady<=s.time&&distance(u,foe)<485)
+   !u.counter&&u.stagger<=0&&u.rooted<=0&&u.mode!=='retreat'&&u.reactionReady<=s.time&&distance(u,foe)<485)
     .sort((a,b)=>(distance(a,foe)-(a.cls==='murmillo'&&kind==='rescue'?45:0))-
                   (distance(b,foe)-(b.cls==='murmillo'&&kind==='rescue'?45:0)));
   const actor=candidates[0];if(!actor)return false;
