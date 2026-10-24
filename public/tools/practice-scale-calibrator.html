@@ -248,6 +248,167 @@ function frameFor(key){
  if(!cache.has(key))cache.set(key,frameSource(key));
  return cache.get(key);
 }
+// Pose picker uses real standalone sources, atlas-cut metadata and the same
+// full-frame anchor logic used by the live training renderer.
+function poseSource(key,pose){
+ if(pose==='idle')return frameFor(key);
+ const special={parry:'guard',finisher:'attack',victory:'idle'};
+ const action=special[pose]||pose;
+ if(key==='npc_carnifex'){
+  const file=action==='walk'?'carnifex-walk-ink-v1.webp':'carnifex-haul-ink-v1.webp';
+  return image('../assets/npc/'+file+'?v=1').then(sheet=>{
+   const canvas=document.createElement('canvas');canvas.width=270;canvas.height=342;
+   canvas.getContext('2d').drawImage(sheet,0,0,270,342,0,0,270,342);
+   return {canvas,pivotX:135,footY:326};
+  });
+ }
+ if(key.startsWith('beast_')){
+  const folder={attack:'attack',special:'attack',guard:'hit',dodge:'walk',hit:'hit',death:'defeat'}[action]||'walk';
+  return image('../assets/beasts/individual/'+key.slice(6)+'/'+folder+'/00.png?v=3').then(canvas=>
+   ({canvas,pivotX:canvas.naturalWidth/2,footY:p.footY(canvas,canvas.naturalHeight*.88)}));
+ }
+ if(key==='murmillo_champion_red'){
+  return json('../assets/combat/champion-murmillo/manifest.json?v=2').then(async m=>{
+   const name={attack:'slash',special:'heavy',dodge:'walk',death:'death'}[action]||action;
+   const frame=m.actions?.[name]?.[0]||m.actions?.idle?.[0];
+   if(!frame?.file)throw Error('챔피언 '+action+' 프레임 없음');
+   const canvas=await image('../assets/combat/champion-murmillo/'+frame.file+'?v=2');
+   return {canvas,pivotX:frame.pivotX??canvas.naturalWidth/2,footY:frame.footY??canvas.naturalHeight};
+  });
+ }
+ if(key==='murmillo_motion_v3'){
+  return json('../assets/combat/murmillo-b/manifest.json?v=4').then(async m=>{
+   const name={attack:'slash',special:'heavy',death:'defeat'}[action]||action;
+   const frame=m.frames?.find(f=>f.name===name)||m.frames?.[0];
+   const canvas=await image('../assets/combat/murmillo-b/'+frame.file+'?v=4');
+   return {canvas,pivotX:frame.pivotX??canvas.naturalWidth/2,footY:frame.footY??canvas.naturalHeight};
+  });
+ }
+ if(key.startsWith('legacy_')){
+  const atlas={legacy_murmillo:'retiarius_atlas.png',legacy_thraex:'thraex_atlas.png',
+   legacy_retiarius:'murmillo_atlas.png'}[key];
+  const i={walk:1,attack:2,special:3,guard:4,dodge:5,hit:6,death:9}[action]??0;
+  return image('../assets/new-era/'+atlas+'?v=4').then(sheet=>{
+   const w=Math.floor(sheet.naturalWidth/5),h=Math.floor(sheet.naturalHeight/2),
+    canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+   canvas.getContext('2d').drawImage(sheet,(i%5)*w,Math.floor(i/5)*h,w,h,0,0,w,h);
+   return {canvas,pivotX:w/2,footY:h};
+  });
+ }
+ return Promise.all([cuts(),image('../assets/ludus-growth/'+key+'.png')]).then(([m,sheet])=>{
+  const index={walk:1,attack:2,special:3,guard:6,dodge:8,hit:7,death:11}[action]??0;
+  return window.GrowthFrames.isolate(sheet,m.sheets[key]).frames[index];
+ });
+}
+function actionFrame(key,pose){
+ const id=key+':'+pose;
+ if(!actionCache.has(id))actionCache.set(id,Promise.resolve().then(()=>poseSource(key,pose)));
+ return actionCache.get(id);
+}
+function currentAction(){
+ const key=$('#actionKey').value,pose=$('#actionPose').value;
+ return v.clean(actions[key]?.[pose]);
+}
+function formatAction(){
+ const val=currentAction();
+ for(const [field,n] of [['frameX',val.x],['frameY',val.y],['frameScale',val.scale],
+  ['fxX',val.effect.x],['fxY',val.effect.y],['fxScale',val.effect.scale]]){
+  $('#'+field).value=String(n);
+  $('#'+field+'Value').textContent=(field.includes('Scale')?'×':'')+String(n)+(field.includes('Scale')?'':'px');
+ }
+ $('#fxKind').value=val.effect.kind;
+}
+let actionPaintSerial=0;
+async function previewAction(){
+ const key=$('#actionKey').value,pose=$('#actionPose').value,serial=++actionPaintSerial;
+ if(!key||!pose)return;
+ const canvas=$('#actionCanvas'),c=canvas.getContext('2d'),anchorX=260,anchorY=448;
+ const val=currentAction();
+ c.clearRect(0,0,520,520);
+ c.fillStyle='rgba(254,202,130,.09)';c.fillRect(0,anchorY,520,520-anchorY);
+ c.strokeStyle='#ead09b';c.setLineDash([6,6]);c.beginPath();c.moveTo(8,anchorY);c.lineTo(512,anchorY);c.stroke();c.setLineDash([]);
+ $('#actionFrameStatus').textContent='그림 불러오는 중 · '+nameFor(key)+' / '+pose;
+ try{
+  const [id,frame]=await Promise.all([frameFor(key),actionFrame(key,pose)]);
+  if(serial!==actionPaintSerial||key!==$('#actionKey').value||pose!==$('#actionPose').value)return;
+  const img=frame.canvas,base=id.canvas,basH=base.naturalHeight||base.height,stage=1.29,zoom=.8;
+  const size=Number(state[key]),offsetY=Number(feet[key]),z=stage*zoom;
+  if(key==='npc_carnifex'){
+   const k=436/270*z*size*val.scale;
+   c.drawImage(img,anchorX-135*k+val.x*z,anchorY-(326*k)+
+    (offsetY+val.y)*z,img.width*k,img.height*k);
+  }else if(key.startsWith('beast_')){
+   // Beast sprite has its own authored species anatomy, no frame auto-fit.
+   const baseFactor={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,beast_lion:1.18,beast_elephant:1.38}[key]||1;
+   const k=202/basH*.83*baseFactor*z*size*val.scale;
+   c.drawImage(img,anchorX-(frame.pivotX??img.width/2)*k+val.x*z,
+    anchorY-(frame.footY??img.height)*k+(offsetY+val.y)*z,img.width*k,img.height*k);
+  }else{
+   const k=202/basH*z*size*val.scale;
+   c.drawImage(img,anchorX-(frame.pivotX??img.width/2)*k+val.x*z,
+    anchorY-(frame.footY??img.height)*k+(offsetY+val.y)*z,
+    (img.naturalWidth||img.width)*k,(img.naturalHeight||img.height)*k);
+  }
+  const candidate=val.effect.kind==='auto'?
+   ({attack:'slash',special:'special',guard:'guard',parry:'parry',dodge:'dash',hit:'hit',death:'hit',finisher:'finisher',victory:'victory'}[pose]||'none'):
+   val.effect.kind;
+  if(candidate!=='none'){
+   const width=v.size(candidate),face=1,fx=window.ArenaRasterFX;
+   fx?.draw?.(c,candidate,anchorX+52*z+val.x*z+val.effect.x*z,
+    anchorY-113*z+offsetY*z+val.y*z+val.effect.y*z,
+    width[0]*z*val.effect.scale,width[1]*z*val.effect.scale,.38,.85,face);
+  }
+  $('#actionFrameStatus').textContent=nameFor(key)+' · '+pose+
+   ' · 프레임 '+(img.naturalWidth||img.width)+'×'+(img.naturalHeight||img.height)+
+   ' (실전훈련 전열 원근 80% 미리보기)';
+ }catch(error){
+  if(serial!==actionPaintSerial)return;
+  $('#actionFrameStatus').textContent='해당 동작 미리보기 로딩 실패: '+error.message;
+ }
+}
+function updateActionControls(){formatAction();previewAction();}
+function initActionEditor(){
+ const labels={idle:'기본',walk:'걷기',attack:'공격',special:'필살기',guard:'방어',parry:'패링',
+  dodge:'회피',hit:'피격',death:'패배',finisher:'피니시',victory:'승리'};
+ $('#actionKey').replaceChildren(...keys.map(key=>{
+  const op=document.createElement('option');op.value=key;op.textContent=nameFor(key);return op;
+ }));
+ $('#actionPose').replaceChildren(...v.ACTIONS.map(action=>{
+  const op=document.createElement('option');op.value=action;op.textContent=labels[action]||action;return op;
+ }));
+ $('#fxKind').replaceChildren(...v.EFFECTS.map(kind=>{
+  const op=document.createElement('option');op.value=kind;
+  op.textContent=kind==='auto'?'자동(기존 이벤트)':kind==='none'?'없음':kind;return op;
+ }));
+ $('#actionKey').onchange=updateActionControls;
+ $('#actionPose').onchange=updateActionControls;
+ for(const field of ['frameX','frameY','frameScale','fxX','fxY','fxScale','fxKind'])
+  $('#'+field).addEventListener(field==='fxKind'?'change':'input',()=>{
+   const key=$('#actionKey').value,pose=$('#actionPose').value;
+   if(!actions[key])actions[key]={};
+   const cfg=currentAction(),value=field==='fxKind'?$('#'+field).value:Number($('#'+field).value);
+   if(field==='frameX')cfg.x=value;
+   if(field==='frameY')cfg.y=value;
+   if(field==='frameScale')cfg.scale=value;
+   if(field==='fxKind')cfg.effect.kind=value;
+   if(field==='fxX')cfg.effect.x=value;
+   if(field==='fxY')cfg.effect.y=value;
+   if(field==='fxScale')cfg.effect.scale=value;
+   actions[key][pose]=v.clean(cfg);formatAction();previewAction();
+  });
+ $('#actionReset').onclick=()=>{
+  const key=$('#actionKey').value,pose=$('#actionPose').value;
+  if(!actions[key])actions[key]={};
+  actions[key][pose]=v.clean(window.SpartacusPublishedActions?.[key]?.[pose]);
+  updateActionControls();
+ };
+ $('#actionPreviewRefresh').onclick=()=>{
+  actionCache.delete($('#actionKey').value+':'+$('#actionPose').value);
+  previewAction();
+ };
+ $('#actionShowIdle').onclick=()=>{$('#actionPose').value='idle';updateActionControls();};
+ updateActionControls();
+}
 function paint(canvas,frame,key){
  const c=canvas.getContext('2d');
  c.clearRect(0,0,310,310);
@@ -468,7 +629,7 @@ window.SpartacusScaleStudio={
  actions:()=>v.sanitize(actions),
  saveDraft:()=>p.write(state)&&p.writeFeet(feet)&&v.write(actions)
 };
-build();
+initActionEditor();build();
 })();
 </script>
 <script src="practice-scale-publish.js?v=action-authoring-v46"></script>
