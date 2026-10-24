@@ -61,7 +61,7 @@ const index=fs.readFileSync('public/index.html','utf8');
 for(const asset of ['practice-scale-published','practice-scale-profiles'])
  assert.ok(index.includes(asset+'.js?v=action-authoring-v46'),'shared editor asset version');
 assert.ok(index.includes('arena-beasts.js?v=action-authoring-v46'),'beast renderer cache version');
-assert.ok(index.includes('ludus-practice.js?v=unified-stage-scale-v47'),'practice v46 cache invalidation');
+assert.ok(index.includes('ludus-practice.js?v=independent-courts-v49'),'practice v46 cache invalidation');
 assert.ok(index.includes('arena-carnifex.js?v=action-authoring-v46'),'existing executioner projection cache');
 assert.match(index,/function duelFootOffset\(f\)/,'regular duel uses calibration key');
 assert.match(index,/const footOffset=duelFootOffset\(f\)/,'regular duel stores per-look Y offset');
