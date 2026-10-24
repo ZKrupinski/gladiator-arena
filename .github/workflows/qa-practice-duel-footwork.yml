@@ -8,6 +8,7 @@ on:
       - tests/practice-carnifex-scale-v44.cjs
       - tests/practice-duel-footwork-v41.cjs
       - tests/practice-appearance-proportions-v45.cjs
+      - tests/practice-independent-layers-v49.cjs
       - .github/workflows/qa-practice-duel-footwork.yml
   pull_request:
     branches: [main]
@@ -17,6 +18,7 @@ on:
       - tests/practice-carnifex-scale-v44.cjs
       - tests/practice-duel-footwork-v41.cjs
       - tests/practice-appearance-proportions-v45.cjs
+      - tests/practice-independent-layers-v49.cjs
       - .github/workflows/qa-practice-duel-footwork.yml
   workflow_dispatch:
 permissions:
@@ -37,3 +39,5 @@ jobs:
         run: node tests/practice-appearance-proportions-v45.cjs
       - name: Prevent hidden Carnifex scaling or foot offset drift in practice
         run: node tests/practice-carnifex-scale-v44.cjs
+      - name: Check atomic court layers (3/4 rear, 1/2 front)
+        run: node tests/practice-independent-layers-v49.cjs
