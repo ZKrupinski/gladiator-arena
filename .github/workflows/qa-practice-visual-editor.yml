@@ -13,6 +13,7 @@ on:
       - public/ludus-training-runtime.js
       - tests/unified-action-scenes-v51.cjs
       - tests/studio-motion-preview-bulk-v53.cjs
+      - tests/studio-motion-playback-v55.cjs
       - tests/practice-size-stage-parity-v54.cjs
       - public/index.html
       - tests/practice-visual-authoring-v46.cjs
@@ -55,6 +56,8 @@ jobs:
         run: node tests/unified-action-scenes-v51.cjs
       - name: Verify 8-frame studio animation, three motion keys and selective batch-copy
         run: node tests/studio-motion-preview-bulk-v53.cjs
+      - name: Validate mobile motion key editing and Play / Pause
+        run: node tests/studio-motion-playback-v55.cjs
       - name: Original Ludus training sprite pose regression
         run: node scripts/qa_training_scale_and_poses.mjs
       - name: Existing persisted foot offset regression
