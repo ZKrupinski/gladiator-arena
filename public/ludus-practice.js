@@ -508,6 +508,24 @@ function act(u,dt){
 }
 // Resolve pair overlap in *world coordinates* after both sides act.
 // Preserve hero-left/opponent-right ordering and enforce minimum visible gap.
+// Guard four ALLIED silhouettes from adjacent court occlusion, too.
+// As rear seats 3/4 spread farther apart their allies sit near front seats
+// 1/2: reserve 220px between the four authored 202px-size actors.
+// These are X-only visual travel limits; court Y, sprite scale and hurtboxes
+// are unchanged.
+function keepAlliedColumns(){
+ if(COURTS.length!==4||!battle)return;
+ const bySeat=new Map(battle.heroes.filter(h=>!h.dead&&!h.retiring).map(h=>[h.seat,h]));
+ const leftToRight=[0,2,3,1];
+ const gap=220;
+ for(let i=0;i<leftToRight.length-1;i++){
+  const leftSeat=leftToRight[i],rightSeat=leftToRight[i+1];
+  const left=bySeat.get(leftSeat),right=bySeat.get(rightSeat);
+  const mid=(COURTS[leftSeat].x+COURTS[rightSeat].x)/2-87;
+  if(left)left.x=Math.min(left.x,mid-gap/2);
+  if(right)right.x=Math.max(right.x,mid+gap/2);
+ }
+}
 function keepCourtSpacing(){
  // Adjacent rear fights previously occupied the same pixels: seat 3's
  // opponent could disappear behind seat 4's ally even with separate layers.
@@ -541,6 +559,7 @@ function keepCourtSpacing(){
   if(e3)e3.x=Math.min(e3.x,boundary.leftMax);
   if(h4)h4.x=Math.max(h4.x,boundary.rightMin);
  }
+ keepAlliedColumns();
 }
 function simulate(dt){
  if(!battle||battle.paused||battle.finished)return;
