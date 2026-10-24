@@ -1,17 +1,10 @@
 {
   "assetSha256": {
-    "public/arena-beasts.js": "ee90b83992472500587afd208e89771d9d1bfe8587b5d330c06e265d08268fcc",
-    "public/arena-carnifex.js": "e7c95a1851dc38288c5eaadcd1f62a1ab779ddc0f7b85f16a8031647845152d2",
-    "public/index.html": "3357495233cbbb92485885933db3cc8d6b04539b99859d0f7dd6f9028884fa6b",
-    "public/ludus-practice.js": "ad0aea5706a41b8b6087e7b73bc1186d3e5f0d82ec7c2994eaf8fa47ff781dd5",
-    "public/practice-scale-profiles.js": "f3942911ccc1b1c8ba56cc9f6db77d00ba5c101c29629f3fd13bd25fc41c4116",
-    "public/practice-scale-published.js": "1accab4aeffe9d6d23d6d046f697ef0cf99e12be746c66a962ea35a57cf628d3",
-    "public/tools/practice-scale-calibrator.html": "582c05c83d052e237747e533d1e0766224790644093651a7f527b311c2d43e24",
-    "public/tools/practice-scale-publish.js": "cea95ab7602198f7ab9689a19000928a515a411fe934dba46d0f7453a64e3cd8"
+    "public/index.html": "715eb019f595fd6cca74f616ab9b2188fd077d1673cfa796a79925e839adfd0e"
   },
-  "baseCommit": "3ce5c14b824174f547172ee4397fa78b110e6473",
+  "baseCommit": "faaf4fb876326619ae3d7edda48e939fddd971e1",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "character-foot-height-controls-20261024-v42b",
+  "releaseId": "character-foot-height-duel-integration-20261024-v43",
   "releaseProtocol": "spartacus-uploader-v1"
 }
