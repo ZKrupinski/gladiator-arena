@@ -1,0 +1,48 @@
+name: Calibrated fighter and beast foot heights
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/practice-scale-profiles.js
+      - public/practice-scale-published.js
+      - public/tools/practice-scale-calibrator.html
+      - public/tools/practice-scale-publish.js
+      - public/ludus-practice.js
+      - public/arena-beasts.js
+      - public/arena-carnifex.js
+      - public/index.html
+      - tests/scale-foot-height-v42.cjs
+      - tests/scale-draft-baseline.cjs
+      - tests/scale-publish-status-v40.cjs
+      - .github/workflows/qa-scale-foot-height.yml
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Check changed scripts
+        run: |
+          node --check public/practice-scale-profiles.js
+          node --check public/practice-scale-published.js
+          node --check public/tools/practice-scale-publish.js
+          node --check public/ludus-practice.js
+          node --check public/arena-beasts.js
+          node --check public/arena-carnifex.js
+      - name: Test new per-character feet and publisher
+        run: node tests/scale-foot-height-v42.cjs
+      - name: Preserve legacy scale drafts
+        run: node tests/scale-draft-baseline.cjs
+      - name: Verify GitHub live-save status
+        run: node tests/scale-publish-status-v40.cjs
+      - name: Verify fixed beast ground-contact artwork
+        run: node tests/ground-contact-v39.cjs
+      - name: Verify four-fighter formation
+        run: node tests/practice-duel-footwork-v41.cjs
