@@ -20,7 +20,7 @@
    x:side==='ally'?(seat%2?125:265):(seat%2?1155:1015),y:405+seat*62,
    face:side==='ally'?1:-1,cooldown:.4+seat*.2,linkReady:0,specialReady:4+seat,
    hit:0,guard:0,swing:0,rooted:0,exposed:0,stagger:0,dash:0,dashReady:2+seat*.5,
-   counter:null,mode:'',tacticUntil:0,retreatReady:5+seat*1.7,recoverBudget:0,lastHitAt:-10,
+   counter:null,reaction:null,reactionReady:5+seat*.55,rescueAlertReady:0,chase:null,chaseReady:6+seat*.45,lure:false,protectedUntil:0,mode:'',tacticUntil:0,retreatReady:5+seat*1.7,recoverBudget:0,lastHitAt:-10,
    dead:false,moving:false,attack:null,damage:0,assists:0,blocks:0,kills:0};
  }
  function create(allies,enemies,{seed=Date.now(),limit=120}={}){
@@ -73,6 +73,22 @@
   });
   return candidates.length>0;
  }
+ // Crisis reactions are scheduled on the rescuer, never the victim. Limited cooldowns
+ // prevent a cascade of reactions triggering themselves.
+ function callReaction(s,kind,ward,foe){
+  if(!ward||!foe||ward.dead||foe.dead)return false;
+  const candidates=alive(s,ward.side).filter(u=>u!==ward&&!u.reaction&&
+   !u.counter&&u.rooted<=0&&u.reactionReady<=s.time&&distance(u,foe)<485)
+    .sort((a,b)=>(distance(a,foe)-(a.cls==='murmillo'&&kind==='rescue'?45:0))-
+                  (distance(b,foe)-(b.cls==='murmillo'&&kind==='rescue'?45:0)));
+  const actor=candidates[0];if(!actor)return false;
+  actor.reaction={kind,target:foe.id,ward:ward.id,due:s.time+.24,expires:s.time+3.2};
+  actor.reactionReady=s.time+(kind==='rescue'?12:14);
+  actor.attack=null;actor.mode='';actor.lure=false;
+  emit(s,kind==='rescue'?'rescue-call':'ambush-call',actor,ward,
+    actor.name+(kind==='rescue'?' 동료 구출!':' 매복 준비!'),{victim:foe.id});
+  return true;
+ }
  function hurt(s,a,b,mult=1,kind='hit',chain=true){
   if(a.dead||b.dead)return 0;
   let target=b,amount=a.atk*.52*mult*(.87+s.random()*.26)*(1-b.armor);
@@ -94,15 +110,22 @@
    }else if(protecting){amount*=.55;b.guard=.5;}
   }
   if(b.exposed>0)amount*=1.25;
+  if(target.protectedUntil>s.time)amount*=.58;
   const damage=Math.min(target.hp,Math.max(1,Math.round(amount)));
   target.hp-=damage;target.hit=.24;target.lastHitAt=s.time;a.damage+=damage;
   emit(s,kind,a,target,(kind==='assist'?'협공 ':'')+'−'+damage,{damage});
   if(target.hp<=0){
    target.dead=true;target.attack=null;target.counter=null;target.mode='';target.moving=false;target.deathAt=s.time;a.kills++;
    emit(s,'ko',a,target,target.name+' 전투 불능');
-  }else if(chain&&kind==='hit'&&s.random()<.18){
-   target.stagger=Math.max(target.stagger,.24);target.exposed=Math.max(target.exposed,.7);
-   link(s,a,target,'빈틈 추격',1);
+  }else{
+   if(chain&&target.hp/target.maxHp<.53&&s.time>=target.rescueAlertReady){
+    target.rescueAlertReady=s.time+10;
+    callReaction(s,'rescue',target,a);
+   }
+   if(chain&&kind==='hit'&&s.random()<.18){
+    target.stagger=Math.max(target.stagger,.24);target.exposed=Math.max(target.exposed,.7);
+    link(s,a,target,'빈틈 추격',1);
+   }
   }
   return damage;
  }
@@ -163,6 +186,32 @@
      continue;
     }
    }
+   // Rescuers and ambushers dash into range before making one decisive interruption.
+   if(u.reaction){
+    const r=u.reaction,foe=s.units.find(v=>v.id===r.target),ward=s.units.find(v=>v.id===r.ward);
+    if(!foe||foe.dead||!ward||ward.dead||s.time>r.expires)u.reaction=null;
+    else{
+     u.face=foe.x>=u.x?1:-1;
+     if(s.time>=r.due&&distance(u,foe)<215){
+      u.reaction=null;u.swing=.56;u.dash=.4;
+      const dealt=hurt(s,u,foe,r.kind==='ambush'?1.32:1.04,r.kind,false);
+      if(dealt){
+       foe.stagger=Math.max(foe.stagger,r.kind==='ambush'?.9:.75);
+       foe.exposed=Math.max(foe.exposed,1.3);
+       shove(s,foe,u.face*(r.kind==='ambush'?72:58));
+       u.blocks++;s.teamwork[u.side]++;
+       if(u.side==='ally')s.meter=clamp(s.meter+12,0,100);
+       if(r.kind==='rescue'){ward.protectedUntil=s.time+1.8;ward.guard=Math.max(ward.guard,.85);}
+       if(!foe.dead)link(s,u,foe,r.kind==='rescue'?'구출 후 반격':'매복 협공',2);
+       emit(s,r.kind,u,foe,u.name+(r.kind==='rescue'?' 구출 성공 → 반격!':' 기습 성공 → 연속 공격!'));
+      }
+     }else{
+      u.dash=Math.max(u.dash,.18);
+      travel(s,u,foe.x-u.face*135,foe.y+((u.seat%3)-1)*22,u.speed*dt*2.75);
+     }
+     continue;
+    }
+   }
    if(u.stagger>0)continue;
    const assist=s.links.find(l=>l.actor===u.id&&l.expires>=s.time&&s.units.some(v=>v.id===l.target&&!v.dead));
    if(assist){
@@ -198,13 +247,26 @@
    const enemies=alive(s,u.side==='ally'?'enemy':'ally');
    if(!enemies.length)continue;
    const directed=u.side==='ally'&&s.focus?.until>s.time?enemies.find(v=>v.id===s.focus.id):null;
-   const target=directed||enemies.slice().sort((a,b)=>distance(u,a)+(a.seat===u.seat?-32:0)-distance(u,b)-(b.seat===u.seat?-32:0))[0];
+   const chasing=u.chase?.until>s.time?enemies.find(v=>v.id===u.chase.target):null;
+   const target=directed||chasing||enemies.slice().sort((a,b)=>distance(u,a)+(a.seat===u.seat?-32:0)-distance(u,b)-(b.seat===u.seat?-32:0))[0];
    const near=enemies.slice().sort((a,b)=>distance(u,a)-distance(u,b))[0],nearDist=distance(u,near);
    u.target=target.id;u.face=target.x>=u.x?1:-1;
+   if(u.chase&&(!chasing||s.time>=u.chase.until))u.chase=null;
+   if(!directed&&target.mode==='retreat'&&nearDist<435&&
+       s.time>=u.chaseReady&&!u.chase&&u.hp/u.maxHp>.26){
+    u.chase={target:target.id,until:s.time+2.6};
+    u.chaseReady=s.time+11+s.random()*4;u.dash=Math.max(.55,u.dash);
+    emit(s,'chase',u,target,u.name+' 도주자 추격!');
+    if(target.lure)callReaction(s,'ambush',target,u);
+   }
    if(!u.mode&&s.time>=u.retreatReady&&nearDist<255&&s.random()<dt*(u.hp/u.maxHp<.48?.42:.016)){
     u.mode='retreat';u.tacticUntil=s.time+2.5+s.random()*1.2;
     u.retreatReady=s.time+16+s.random()*6;u.recoverBudget=u.maxHp*.11;
-    emit(s,'retreat',u,near,u.name+' 전열 이탈!');
+    // An occasional intentional retreat invites enemy pursuit into a friendly ambush.
+    u.lure=u.hp/u.maxHp>.38&&s.random()<.42&&
+       alive(s,u.side).some(v=>v!==u&&!v.dead&&v.reactionReady<=s.time&&distance(v,near)<485);
+    if(u.lure){u.recoverBudget=0;emit(s,'bait',u,near,u.name+' 후퇴로 적을 유인!');}
+    else emit(s,'retreat',u,near,u.name+' 전열 이탈!');
    }
    if(u.mode==='retreat'&&s.time<u.tacticUntil){
     const dx=u.x-near.x,dy=u.y-near.y,len=Math.hypot(dx,dy)||1;
@@ -220,7 +282,7 @@
     }
     continue;
    }
-   if(u.mode==='retreat'){u.mode='';emit(s,'rejoin',u,target,u.name+' 전선 복귀');}
+   if(u.mode==='retreat'){u.mode='';u.lure=false;emit(s,'rejoin',u,target,u.name+' 전선 복귀');}
    if(!u.mode&&u.cooldown>.2&&nearDist>170&&nearDist<310&&s.random()<dt*.13){
     u.mode='feint';u.tacticUntil=s.time+.7+s.random()*.95;
     emit(s,'feint',u,target,u.name+' 간격 탐색 · 견제');
@@ -235,7 +297,8 @@
     u.dash=.65;u.dashReady=s.time+6+s.random()*3;emit(s,'dash',u,target,u.name+' 전력 돌진!');
    }
    if(distance(u,target)>198){
-    const speed=u.speed*(u.dash>0?2.65:1)*(u.side==='ally'&&s.cover?.id===u.id&&s.cover.until>s.time?.75:1);
+    const speed=u.speed*(u.dash>0?2.65:1)*(u.chase?1.55:1)*
+     (u.side==='ally'&&s.cover?.id===u.id&&s.cover.until>s.time?.75:1);
     travel(s,u,target.x-u.face*130,target.y+((u.seat%3)-1)*25,speed*dt);
    }else if(u.cooldown<=0){
     const special=s.time>=u.specialReady;
