@@ -36,6 +36,10 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .config input{width:100%;accent-color:#ebb876}
 .config .value{text-align:center;font:bold 20px Georgia;color:#ffdc8f;font-variant-numeric:tabular-nums}
 .adjust{display:flex;gap:4px}.adjust button{flex:1;padding:6px 3px;font-size:11px}
+.foot-track{display:flex;gap:7px;align-items:center}.foot-track input{flex:1;min-width:0}
+.foot-track output{min-width:46px;text-align:right;color:#ffe4af;font-weight:800;font-variant-numeric:tabular-nums}
+.foot-caption{font-size:11px;color:#f3d19c;font-weight:700}
+.foot-adjust{display:flex;gap:4px}.foot-adjust button{flex:1;padding:6px 2px;font-size:11px}
 .actions{margin-top:19px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .actions .primary{background:#955030;border-color:#f1c47f}
 .guide{margin-top:12px;font-size:13px}
@@ -66,7 +70,7 @@ input[type=file]{display:none}
 <body>
 <header><small>SPARTACVS · LVDVS · SPRITE CALIBRATION</small>
 <h1>검투사 · 야수 · 집행인 크기 보정실</h1>
-<p>31종을 <strong>한 페이지에서 끝까지 스크롤</strong>해 비교합니다. 개별 슬라이더와 다중 선택 일괄 조정, 셔플 정렬을 지원합니다. 투명 영역이나 무기·투구 길이를 기준으로 크기를 다시 추정하지 않습니다.</p></header>
+<p>31종을 <strong>한 페이지에서 끝까지 스크롤</strong>해 비교합니다. 개별 크기·발높이(Y) 슬라이더와 다중 선택 일괄 조정, 셔플 정렬을 지원합니다. 투명 영역이나 무기·투구 길이를 기준으로 크기를 다시 추정하지 않습니다.</p></header>
 <section class="tools" aria-label="정렬 및 일괄 크기 조정">
  <div class="toolbar">
   <label for="sort">정렬</label><select id="sort">
@@ -87,9 +91,12 @@ input[type=file]{display:none}
   <output id="bulkValue" for="bulkSlider">×1.00</output>
   <button id="bulkMinus" disabled>모두 −5%</button>
   <button id="bulkPlus" disabled>모두 +5%</button>
-  <button id="bulkReset" disabled>선택 기본값</button>
+  <button id="bulkReset" disabled>크기 기본값</button>
+  <button id="bulkFootMinus" disabled>선택 발 ↑ 5px</button>
+  <button id="bulkFootPlus" disabled>선택 발 ↓ 5px</button>
+  <button id="bulkFootReset" disabled>발높이 0</button>
  </div>
-<div class="save-health" aria-label="현재 배율 저장 상태" aria-live="polite">
+<div class="save-health" aria-label="현재 크기·발높이 저장 상태" aria-live="polite">
  <span id="draftHealth">기기 임시저장: 확인 중</span>
  <span id="repoHealth">GitHub 원본: 확인 중</span>
  <span id="liveHealth">게임 배포: 확인 중</span>
@@ -99,8 +106,8 @@ input[type=file]{display:none}
 <div id="status" class="status" role="status">원본 캐릭터 그림을 준비하고 있습니다.</div>
 <main class="grid" id="grid" aria-label="검투사, 야수, 집행인 전체 31종 크기 미리보기"></main>
 <section class="source-panel" aria-labelledby="gitTitle">
-<h2 id="gitTitle">GitHub 원본에 크기 저장</h2>
-<p>여기에 게시한 31종 배율이 모든 기기에 적용되는 <strong>게임 기본값</strong>입니다. 브라우저 임시저장만으로는 GitHub 원본이 바뀌지 않습니다.</p>
+<h2 id="gitTitle">GitHub 원본에 크기·발높이 저장</h2>
+<p>여기에 게시한 31종 크기·발높이가 모든 기기에 적용되는 <strong>게임 기본값</strong>입니다. 브라우저 임시저장만으로는 GitHub 원본이 바뀌지 않습니다.</p>
 <div class="source-actions">
  <button id="publishOpen" class="primary" type="button">GitHub 원본 게시</button>
  <button id="githubEdit" type="button">GitHub 편집기에서 저장</button>
@@ -118,7 +125,7 @@ input[type=file]{display:none}
  <label for="githubToken">GitHub 인증 토큰 (저장소 <code>ZKrupinski/gladiator-arena</code>의 Contents 쓰기 권한)</label>
  <input id="githubToken" type="password" autocomplete="off" spellcheck="false" placeholder="게시할 때만 입력 · 기기에 저장하지 않음">
  <div class="source-actions">
-  <button id="publishConfirm" class="primary" type="button">GitHub main에 31종 커밋</button>
+  <button id="publishConfirm" class="primary" type="button">GitHub main에 크기·발높이 커밋</button>
   <button id="publishCancel" type="button">취소</button>
  </div>
  <p class="source-note">입력한 인증 토큰은 이 페이지에서 저장·기록하지 않고 GitHub API 요청에만 사용합니다. GitHub 사이트에서 직접 저장하려면 위 ‘GitHub 편집기에서 저장’을 사용하세요.</p>
@@ -132,9 +139,9 @@ input[type=file]{display:none}
 <button id="import">JSON 불러오기</button><input id="file" type="file" accept=".json,application/json">
 <a href="../">게임으로 돌아가기 ↗</a>
 </footer>
-<p class="guide">체크한 여러 외형에 ±5%를 적용하거나 위 일괄 슬라이더로 함께 조절하세요. 셔플하면 위치만 바뀌고 선택·배율은 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
+<p class="guide">체크한 여러 외형에 크기 ±5% 또는 발높이 ↑↓5px을 일괄 적용할 수 있습니다. 발높이는 음수일수록 위로, 양수일수록 아래로 이동하며 바닥 안내선은 움직이지 않습니다. 셔플하면 위치만 바뀌고 선택·크기·발높이는 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
 <script src="../growth-frames.js"></script>
-<script src="../practice-scale-published.js?v=git-defaults-v37"></script><script src="../practice-scale-profiles.js?v=github-canonical-v37"></script>
+<script src="../practice-scale-published.js?v=foot-height-v42"></script><script src="../practice-scale-profiles.js?v=foot-height-v42"></script>
 <script>
 (()=>{'use strict';
 const p=window.PracticeScaleProfiles;
@@ -143,7 +150,7 @@ const names={murmillo_a:'무르밀로',thraex_a:'트라엑스 A',thraex_b:'트�
  legacy_murmillo:'클래식 무르밀로',legacy_thraex:'클래식 트라엑스',legacy_retiarius:'클래식 레티아리우스',
  beast_wolf:'늑대',beast_leopard:'표범',beast_tiger:'호랑이',beast_lion:'사자',
  beast_elephant:'코끼리',npc_carnifex:'사형집행인'};
-const state={...p.DEFAULTS,...p.read()},selection=new Set(),keys=Object.keys(p.DEFAULTS);
+const state={...p.DEFAULTS,...p.read()},feet={...p.FOOT_DEFAULTS,...p.readFeet()},selection=new Set(),keys=Object.keys(p.DEFAULTS);
 let order=keys.slice(),origin=new Map(),observer=null,cutsPromise=null;
 const cache=new Map(),drawers=new Map(),$=selector=>document.querySelector(selector);
 const announce=s=>$('#status').textContent=s;
@@ -213,7 +220,7 @@ function paint(canvas,frame,key){
   // The actual Carnifex draws its 270×342 ink sprite as a 436×466
   // animation. Match THAT ratio, grounded at his boots (not 270×342).
   const z=.56*Number(state[key]);
-  c.drawImage(img,0,0,270,342,155-218*z,262-326/342*466*z,436*z,466*z);
+  c.drawImage(img,0,0,270,342,155-218*z,262+Number(feet[key])-326/342*466*z,436*z,466*z);
   return;
  }
  const beastBase={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,
@@ -221,13 +228,13 @@ function paint(canvas,frame,key){
  const visualUnit=key.startsWith('beast_')?.83*beastBase[key]:.88;
  const pixels=202/(img.naturalHeight||img.height)*Number(state[key])*visualUnit;
  c.drawImage(img,155-frame.pivotX*pixels,
-  262-frame.footY*pixels,(img.naturalWidth||img.width)*pixels,
+  262+Number(feet[key])-frame.footY*pixels,(img.naturalWidth||img.width)*pixels,
   (img.naturalHeight||img.height)*pixels);
 }
 function updateBulkState(){
  const count=selection.size;
  $('#selectedCount').textContent='선택 '+count+' / '+keys.length;
- for(const id of ['bulkSlider','bulkMinus','bulkPlus','bulkReset'])$('#'+id).disabled=!count;
+ for(const id of ['bulkSlider','bulkMinus','bulkPlus','bulkReset','bulkFootMinus','bulkFootPlus','bulkFootReset'])$('#'+id).disabled=!count;
  $('#bulkSlider').value='1';$('#bulkValue').textContent='×1.00';
  origin=new Map([...selection].map(k=>[k,Number(state[k])]));
 }
@@ -241,6 +248,10 @@ function mutateSelected(fn){
  origin=new Map([...selection].map(k=>[k,Number(state[k])]));
  $('#bulkSlider').value='1';$('#bulkValue').textContent='×1.00';
  if($('#sort').value==='large'||$('#sort').value==='small')sortCards();
+}
+function mutateSelectedFeet(fn){
+ if(!selection.size)return;
+ for(const key of selection){feet[key]=p.clampFoot(fn(Number(feet[key]),key));refresh(key);}
 }
 function sortCards(){
  const mode=$('#sort').value;
@@ -290,11 +301,22 @@ function build(){
   const adjust=document.createElement('div');adjust.className='adjust';
   const minus=document.createElement('button'),original=document.createElement('button'),plus=document.createElement('button');
   minus.textContent='−5%';original.textContent='기본';plus.textContent='+5%';
-  adjust.append(minus,original,plus);controls.append(code,value,slider,adjust);
+  adjust.append(minus,original,plus);
+  const footCaption=document.createElement('label');footCaption.className='foot-caption';footCaption.textContent='발높이 (↑ 음수 / ↓ 양수)';
+  const footTrack=document.createElement('div');footTrack.className='foot-track';
+  const footSlider=document.createElement('input');footSlider.type='range';footSlider.min=String(p.FOOT_MIN);footSlider.max=String(p.FOOT_MAX);footSlider.step='1';
+  footSlider.setAttribute('aria-label',nameFor(key)+' 발높이 Y 조절');
+  const footValue=document.createElement('output');footTrack.append(footSlider,footValue);
+  const footActions=document.createElement('div');footActions.className='foot-adjust';
+  const up=document.createElement('button'),feetReset=document.createElement('button'),down=document.createElement('button');
+  up.textContent='발 ↑ 5px';feetReset.textContent='발 0';down.textContent='발 ↓ 5px';
+  footActions.append(up,feetReset,down);
+  controls.append(code,value,slider,adjust,footCaption,footTrack,footActions);
   card.append(head,art,controls);root.appendChild(card);
   let available=null;
   const redraw=()=>{
    slider.value=String(state[key]);value.textContent='×'+Number(state[key]).toFixed(2);
+   footSlider.value=String(feet[key]);footValue.textContent=(feet[key]>0?'+':'')+feet[key]+'px';
    if(available)paint(canvas,available,key);
   };
   drawers.set(key,redraw);
@@ -319,6 +341,11 @@ function build(){
   minus.addEventListener('click',()=>set(Number(state[key])*.95));
   plus.addEventListener('click',()=>set(Number(state[key])*1.05));
   original.addEventListener('click',()=>set(p.DEFAULTS[key]));
+  const setFoot=v=>{feet[key]=p.clampFoot(v);redraw();};
+  footSlider.addEventListener('input',()=>setFoot(footSlider.value));
+  up.addEventListener('click',()=>setFoot(Number(feet[key])-5));
+  down.addEventListener('click',()=>setFoot(Number(feet[key])+5));
+  feetReset.addEventListener('click',()=>setFoot(p.FOOT_DEFAULTS[key]));
  }
  sortCards();updateBulkState();announce('31종 모두 표시했습니다. 아래로 스크롤하여 비교하세요.');
 }
@@ -338,6 +365,9 @@ $('#clearChecks').addEventListener('click',()=>{
 $('#bulkMinus').addEventListener('click',()=>mutateSelected(v=>v*.95));
 $('#bulkPlus').addEventListener('click',()=>mutateSelected(v=>v*1.05));
 $('#bulkReset').addEventListener('click',()=>mutateSelected((_,key)=>p.DEFAULTS[key]));
+$('#bulkFootMinus').addEventListener('click',()=>mutateSelectedFeet(y=>y-5));
+$('#bulkFootPlus').addEventListener('click',()=>mutateSelectedFeet(y=>y+5));
+$('#bulkFootReset').addEventListener('click',()=>mutateSelectedFeet((_,key)=>p.FOOT_DEFAULTS[key]));
 $('#bulkSlider').addEventListener('input',e=>{
  const factor=Number(e.target.value);$('#bulkValue').textContent='×'+factor.toFixed(2);
  for(const key of selection){state[key]=p.clamp(origin.get(key)*factor);refresh(key);}
@@ -348,16 +378,16 @@ $('#bulkSlider').addEventListener('change',()=>{
  if(['large','small'].includes($('#sort').value))sortCards();
 });
 $('#save').addEventListener('click',()=>{
- announce(p.write(state)?'이 기기에 임시 저장했습니다. 모든 기기에 반영하려면 GitHub 원본에 게시하세요.':'브라우저 저장 실패: JSON 내보내기를 사용하세요.');
+ announce(p.write(state)&&p.writeFeet(feet)?'크기·발높이를 이 기기에 임시저장했습니다. 모든 기기에 반영하려면 GitHub 원본에 게시하세요.':'브라우저 저장 실패: JSON 내보내기를 사용하세요.');
 });
 $('#reset').addEventListener('click',()=>{
- Object.assign(state,p.DEFAULTS);for(const key of keys)refresh(key);
- updateBulkState();sortCards();p.reset();announce('31종 기본 배율을 복원했습니다.');
+ Object.assign(state,p.DEFAULTS);Object.assign(feet,p.FOOT_DEFAULTS);for(const key of keys)refresh(key);
+ updateBulkState();sortCards();p.reset();p.resetFeet();announce('31종 크기·발높이 기본값을 복원했습니다.');
 });
 $('#export').addEventListener('click',()=>{
- const blob=new Blob([JSON.stringify({version:36,overrides:state},null,2)],{type:'application/json'});
+ const blob=new Blob([JSON.stringify({version:42,overrides:state,footOffsets:feet},null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');
- a.href=url;a.download='spartacus-31-character-scales.json';a.click();
+ a.href=url;a.download='spartacus-31-character-scales-feet.json';a.click();
  setTimeout(()=>URL.revokeObjectURL(url),1000);
  announce('31종 설정 JSON을 내보냈습니다.');
 });
@@ -365,21 +395,24 @@ $('#import').addEventListener('click',()=>$('#file').click());
 $('#file').addEventListener('change',async e=>{
  const file=e.target.files?.[0];if(!file)return;
  try{
-  const input=JSON.parse(await file.text()),values=input.overrides||input;
+  const input=JSON.parse(await file.text()),values=input.overrides||input,footValues=input.footOffsets||{};
   if(!values||typeof values!=='object')throw Error('잘못된 설정 형식');
   for(const key of keys)if(Object.hasOwn(values,key)&&Number.isFinite(Number(values[key])))
    state[key]=p.clamp(values[key]);
+  for(const key of keys)if(Object.hasOwn(footValues,key)&&Number.isFinite(Number(footValues[key])))
+   feet[key]=p.clampFoot(footValues[key]);
   for(const key of keys)refresh(key);
-  p.write(state);updateBulkState();sortCards();announce('31종 설정을 가져오고 저장했습니다.');
+  p.write(state);p.writeFeet(feet);updateBulkState();sortCards();announce('31종 설정을 가져오고 저장했습니다.');
  }catch(error){announce('불러오기 실패: '+error.message);}
  e.target.value='';
 });
 window.SpartacusScaleStudio={
  values:()=>Object.fromEntries(keys.map(key=>[key,Number(state[key])])),
- saveDraft:()=>p.write(state)
+ feet:()=>Object.fromEntries(keys.map(key=>[key,Number(feet[key])])),
+ saveDraft:()=>p.write(state)&&p.writeFeet(feet)
 };
 build();
 })();
 </script>
-<script src="practice-scale-publish.js?v=verified-status-v40"></script>
+<script src="practice-scale-publish.js?v=foot-height-v42"></script>
 </body></html>
