@@ -121,7 +121,8 @@
    if(bg.complete&&bg.naturalWidth){const horizon=bg.naturalHeight*.76;ctx.drawImage(bg,0,0,bg.naturalWidth,horizon,0,0,1280,350);ctx.drawImage(bg,0,horizon,bg.naturalWidth,bg.naturalHeight-horizon,0,350,1280,370);}else{ctx.fillStyle='#69503b';ctx.fillRect(0,0,1280,720);}
    // A wide camera keeps all ten fighters on the approved arena floor.
    ctx.fillStyle='#120b0744';ctx.fillRect(0,0,1280,720);
-   for(const u of sim.units.slice().sort((a,b)=>a.y-b.y))drawUnit(u);
+   // Corpses remain fully opaque but render beneath moving fighters who can pass through them.
+   for(const u of sim.units.slice().sort((a,b)=>Number(b.dead)-Number(a.dead)||a.y-b.y))drawUnit(u);
    for(const e of state.fx){
     const age=sim.time-e.time;if(age>1.3)continue;
     if(['link','cover','rescue-call','ambush-call','chase','bait'].includes(e.type)){
