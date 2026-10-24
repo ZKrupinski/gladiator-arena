@@ -14,3 +14,11 @@
 .lc-draft-screen .lc-draft-actions{position:sticky;bottom:-12px;z-index:3;background:#24160f;padding:10px 0;flex-shrink:0}
 .lc-draft-screen .lc-team-count-5 .lc-rival-art{height:clamp(85px,13vh,130px)}
 @media(max-width:700px){.coop-scoreboard{flex-direction:column;gap:5px}.coop-team{width:100%;flex:none}.coop-unit-name{font-size:11px}.coop-unit small{font-size:9px;white-space:nowrap}.coop-hp{font-size:10px}.coop-field canvas{object-fit:fill}}
+
+/* CONCORDIA v60: readable tactical callouts, never obscure fighter touch targets. */
+.coop-callout[data-kind="rescue"]{border-color:#9fead5;color:#dbfff2;text-shadow:0 0 8px #369b8466;animation:coop-event-enter .24s ease-out}
+.coop-callout[data-kind="ambush"]{border-color:#f7c477;color:#fff0c9;text-shadow:0 0 9px #f0a02f70;animation:coop-event-enter .24s ease-out}
+.coop-callout[data-kind="bait"]{border-color:#bdadf2;color:#e8dffe;animation:coop-event-enter .24s ease-out}
+.coop-callout[data-kind="chase"]{border-color:#ef9b84;color:#ffe0ce;animation:coop-event-enter .24s ease-out}
+@keyframes coop-event-enter{from{opacity:.25;transform:translate(-50%,-12px) scale(.94)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.coop-callout[data-kind]{animation:none}}
