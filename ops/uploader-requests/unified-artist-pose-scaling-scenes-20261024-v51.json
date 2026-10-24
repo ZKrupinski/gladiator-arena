@@ -1,0 +1,39 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "unified-artist-pose-scaling-scenes-20261024-v51",
+  "expectedMainSha": "0ad5b345a11f0bc139fb1e1d07da6f66624db105",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/practice-scale-profiles.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/0ad5b345a11f0bc139fb1e1d07da6f66624db105/public/practice-scale-profiles.js",
+      "sha256": "049434f9272d0e232bb55efa7f94c030c59d53587673608325513c35a0061b6b"
+    },
+    {
+      "path": "public/practice-visual-profiles.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/0ad5b345a11f0bc139fb1e1d07da6f66624db105/public/practice-visual-profiles.js",
+      "sha256": "3959be6781011f61a539a7a0fa00c059ecf23bb06839dce9e40e2f5be5b337ab"
+    },
+    {
+      "path": "public/tools/practice-scale-calibrator.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/0ad5b345a11f0bc139fb1e1d07da6f66624db105/public/tools/practice-scale-calibrator.html",
+      "sha256": "99ed617bbc9b75df5393eaa6837417a1f4cfba0214cbe02dc1e2bd3ef82e6055"
+    },
+    {
+      "path": "public/ludus-practice.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/0ad5b345a11f0bc139fb1e1d07da6f66624db105/public/ludus-practice.js",
+      "sha256": "65a86b7413b202e22d3d813dd9c85f374ac60f2332bbebfa363f0e8916a16d8b"
+    },
+    {
+      "path": "public/ludus-training-runtime.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/0ad5b345a11f0bc139fb1e1d07da6f66624db105/public/ludus-training-runtime.js",
+      "sha256": "66e9a952297764827164051e0faf804c85b0b5386faa9bf78d181d563deeb061"
+    },
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/0ad5b345a11f0bc139fb1e1d07da6f66624db105/public/index.html",
+      "sha256": "75177f2656ad3744f02ed6ea9d68af2686612e9b41e1ac525186457620397d15"
+    }
+  ]
+}
