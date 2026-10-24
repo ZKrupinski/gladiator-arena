@@ -18,6 +18,8 @@ function source(){
  const apiScale=root.PracticeScaleProfiles;
  const current=studio()?.values?.();
  const currentFeet=studio()?.feet?.()||{};
+ const visual=root.PracticeVisualProfiles;
+ const currentActions=visual?.sanitize?.(studio()?.actions?.()||{})||{};
  if(!current||!apiScale)throw Error('보정실 크기 설정에 접근할 수 없습니다');
  const accepted={},acceptedFeet={};
  for(const key of Object.keys(apiScale.DEFAULTS)){
@@ -32,7 +34,8 @@ function source(){
  ' * Repository source-of-truth: GitHub main. No credentials stored.\n */\n'+
  '(function(root){"use strict";root.SpartacusPublishedScales=Object.freeze('+
  JSON.stringify(accepted,null,2)+');root.SpartacusPublishedFeet=Object.freeze('+
- JSON.stringify(acceptedFeet,null,2)+');})(typeof window!=="undefined"?window:globalThis);\n';
+ JSON.stringify(acceptedFeet,null,2)+');root.SpartacusPublishedActions=Object.freeze('+
+ JSON.stringify(currentActions,null,2)+');})(typeof window!=="undefined"?window:globalThis);\n';
 }
 function base64(text){
  const bytes=new TextEncoder().encode(text),chunk=8192;
@@ -49,7 +52,7 @@ async function commit(token,payload=source()){
  const old=await get.json();
  if(!/^[0-9a-f]{40}$/.test(old.sha||''))throw Error('저장소 파일 버전을 확인할 수 없습니다');
  const response=await request(api,{method:'PUT',headers:{...headers,'Content-Type':'application/json'},
-  body:JSON.stringify({message:'chore(scale): publish 31 calibrated sizes and foot heights',
+  body:JSON.stringify({message:'feat(visual): publish 31 looks with action frames and VFX authoring',
    content:base64(payload),sha:old.sha,branch:'main'})});
  if(!response.ok)throw Error('GitHub 커밋 실패 (HTTP '+response.status+
   '). 저장소 Contents 쓰기 권한 또는 main 브랜치 보호 정책을 확인하세요');
@@ -78,25 +81,31 @@ function valuesFrom(text){
   if(typeof y!=='number'||!Number.isFinite(y)||y< -70||y>40)throw Error('저장 발높이가 올바르지 않습니다');
   out[key]=n;feet[key]=y;
  }
- return {scales:out,feet};
+ const acts=text.match(/SpartacusPublishedActions\s*=\s*Object\.freeze\(\s*(\{[\s\S]*?\})\s*\)/);
+ const actions=acts?JSON.parse(acts[1]):{};
+ return {scales:out,feet,actions:root.PracticeVisualProfiles?.sanitize?.(actions)||actions};
 }
-function currentSnapshot(){return {scales:studio()?.values?.(),feet:studio()?.feet?.()||{}};}
+function currentSnapshot(){return {scales:studio()?.values?.(),feet:studio()?.feet?.()||{},
+ actions:root.PracticeVisualProfiles?.sanitize?.(studio()?.actions?.()||{})||{}};}
 function same(a,b){
  if(!a||!b)return false;
  const keys=Object.keys(root.PracticeScaleProfiles.DEFAULTS);
- return keys.every(k=>Math.abs(Number((a.scales||a)[k])-Number((b.scales||b)[k]))<1e-8&&
+ const sameSizes=keys.every(k=>Math.abs(Number((a.scales||a)[k])-Number((b.scales||b)[k]))<1e-8&&
   Math.abs(Number((a.feet||{})[k]??0)-Number((b.feet||{})[k]??0))<1e-8);
+ const normalize=o=>root.PracticeVisualProfiles?.sanitize?.(o||{})||o||{};
+ return sameSizes&&JSON.stringify(normalize(a.actions))===JSON.stringify(normalize(b.actions));
 }
 function health(id,text,state){const el=$('#'+id);if(el){el.textContent=text;el.dataset.state=state;}}
 function refreshHealth(){
  const now=currentSnapshot();if(!now.scales)return;
  const local={scales:{...root.PracticeScaleProfiles.DEFAULTS,...root.PracticeScaleProfiles.read()},
-  feet:{...root.PracticeScaleProfiles.FOOT_DEFAULTS,...root.PracticeScaleProfiles.readFeet?.()}};
- health('draftHealth',same(now,local)?'✓ 이 기기: 크기·발높이 저장됨':'● 이 기기: 크기·발높이 수정값 미저장',same(now,local)?'ok':'warn');
+  feet:{...root.PracticeScaleProfiles.FOOT_DEFAULTS,...root.PracticeScaleProfiles.readFeet?.()},
+  actions:root.PracticeVisualProfiles?.all?.()||{}};
+ health('draftHealth',same(now,local)?'✓ 이 기기: 크기·발높이·동작·이펙트 저장됨':'● 이 기기: 연출 수정값 미저장',same(now,local)?'ok':'warn');
  const repoMatch=same(now,repositoryValues),liveMatch=same(now,liveValues);
- health('repoHealth',repositoryValues?(repoMatch?'✓ GitHub: 크기·발높이 저장 확인':'● GitHub: 크기·발높이 변경값 게시 필요')+(lastCommit?' · '+lastCommit.slice(0,8):''):
+ health('repoHealth',repositoryValues?(repoMatch?'✓ GitHub: 연출 설정 저장 확인':'● GitHub: 연출 변경값 게시 필요')+(lastCommit?' · '+lastCommit.slice(0,8):''):
   'GitHub: '+(repoError||'확인 중'),repositoryValues?(repoMatch?'ok':'warn'):repoError?'error':'warn');
- health('liveHealth',liveValues?(liveMatch?'✓ 게임 배포: 크기·발높이 반영 확인':repoMatch?'◷ 게임 배포: GitHub 저장 완료 · 배포 대기':'● 게임 배포: 현재 수정값 미반영'):
+ health('liveHealth',liveValues?(liveMatch?'✓ 게임 배포: 동작·이펙트 반영 확인':repoMatch?'◷ 게임 배포: GitHub 저장 완료 · 배포 대기':'● 게임 배포: 현재 수정값 미반영'):
   '게임 배포: '+(liveError||'확인 중'),liveValues?(liveMatch?'ok':'warn'):liveError?'error':'warn');
 }
 async function verifySaved(){
