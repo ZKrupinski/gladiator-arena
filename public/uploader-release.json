@@ -1,18 +1,21 @@
 {
   "assetSha256": {
     "docs/arena-coop-v58.md": "b4abd8fab0b238c0297acdc6dd528457e9f6e3421d328770b7cd7a39f2d2d6bc",
-    "public/arena-coop-core.js": "8880f251e5b81aeb7d76f5e9d69641269315f5d85713aad42fc15fa368a01f92",
-    "public/arena-coop.css": "d58b376b546eb981dfeae35a3d05d2a7a3959ee2378e969aef7c20f9a4daa8ae",
-    "public/arena-coop.js": "67ada1724b43a62aee89638a60e78de3fc4be9ee18b411799e64145f9df992c2",
-    "public/index.html": "bb8cb86cee8f1739286dc6d40a42d2cd3fcf9f502ed96fd6f5386cb5b7c045eb",
+    "public/arena-coop-core.js": "57f0bf1a90ffbe16c0b899ce67756b351d50f23338c195eb1774c696ce15e3e2",
+    "public/arena-coop.css": "a795a5433f569c7e2545f8d6dc0475caeb6231f88acbbfe1178b22d5eac1bb4f",
+    "public/arena-coop.js": "7c9c163a1783fcc16f7328895110befe1da2176c9c061d6309316d378f48f985",
+    "public/index.html": "9bda9781d4c3988a70f8813985565923d5115e91dec7d4f18d8dc0c197727960",
     "public/ludus-cards.js": "31d13ef12dfbfaa0bc4be79747bdd3342c7fd357f1d30cbeb6e65bb811b6df32",
     "tests/arena-coop-browser.js": "57312fc1756a276b192ba7a2bd582e3f570031dfbe4d4c81cf8102039b136984",
-    "tests/arena-coop-core.js": "4c54fa5fb0c4121f5decbab6fc5c9c11f29c9f30cc01351c7bfb8f4a45615f68",
-    "docs/arena-coop-v59.md": "a8f8137a239ae58710fc845baf74d12aa32dea71dcda458a4f217d1069103c0a"
+    "tests/arena-coop-core.js": "781d46ca5ee2c81dd0c658424e32adb34d1cb09674f7b3831cf12eee99ee868b",
+    "docs/arena-coop-v59.md": "a8f8137a239ae58710fc845baf74d12aa32dea71dcda458a4f217d1069103c0a",
+    "tests/arena-coop-tactics.js": "e494574ebdd55e1cec8d3e6e6122a8a69dac109b944a2c8c80f6be18f969b0a9",
+    "docs/arena-coop-v60.md": "b764b06e10c81c4cd886bc73ea0e23052784276aa6e3828b7b95c9ab1daf2fa6"
   },
   "baseCommit": "958cf8eef8e5dae84cb70e065d371b50aa19586b",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "concordia-5v5-v59-20261025",
-  "releaseProtocol": "spartacus-uploader-v1"
+  "releaseId": "concordia-5v5-v60-20261025",
+  "releaseProtocol": "spartacus-uploader-v1",
+  "previousReleaseId": "concordia-5v5-v59-20261025"
 }
