@@ -9,6 +9,9 @@
  const finite=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
  const distance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.45);
  const footDistance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.6);
+ // A unit's world-space Y is its grounded foot position. Draw back-to-front
+ // by this value alone: a corpse has exactly the same depth rules as a live fighter.
+ function depthOrder(units){return units.slice().sort((a,b)=>a.y-b.y);}
  const SOLID_GAP=102; // Solid spacing applies only to living fighters. Corpses remain visual, nonblocking.
  function rng(seed){let n=seed>>>0;return ()=>{n=(Math.imul(1664525,n)+1013904223)>>>0;return n/4294967296;};}
  function makeUnit(h,side,seat){
@@ -323,5 +326,5 @@
   else if(s.time>=s.limit)finish(s,'timeout');
   return s;
  }
- return {create,step,command,finish,alive,distance,footDistance};
+ return {create,step,command,finish,alive,distance,footDistance,depthOrder};
 });
