@@ -15,12 +15,12 @@ s=C.create(team(),team(),{seed:2});s.units[5].dead=true;s.units[5].hp=0;s.links.
 let wins=0,total=0,allKinds=new Set();
 for(let seed=1;seed<=100;seed++){
  s=C.create(team(),team(),{seed});let moved=new Set();
- while(!s.result){C.step(s,.05);for(const u of s.units){if(u.moving)moved.add(u.id);assert(Number.isFinite(u.x)&&Number.isFinite(u.y)&&Number.isFinite(u.hp));assert(u.hp>=0);assert(u.x>=85&&u.x<=1195);assert(u.y>=395&&u.y<=675);}for(const e of s.events)allKinds.add(e.type);}
+ while(!s.result){C.step(s,.05);for(const [i,u] of s.units.entries()){if(u.moving)moved.add(u.id);assert(Number.isFinite(u.x)&&Number.isFinite(u.y)&&Number.isFinite(u.hp));assert(u.hp>=0);assert(u.x>=85&&u.x<=1195);assert(u.y>=395&&u.y<=675);for(let j=i+1;j<s.units.length;j++)assert(C.footDistance(u,s.units[j])>=101.9,'no living fighter or permanent corpse may be crossed');}for(const e of s.events)allKinds.add(e.type);}
  assert.equal(moved.size,10,'all ten actors move simultaneously');assert(s.time<=120.1);assert(s.teamwork.ally>0);wins+=s.result.win;total+=s.time;
  const result=s.result,after=JSON.stringify(s.units);C.step(s,.05);C.finish(s,'retreat');assert.equal(s.result,result);assert.equal(JSON.stringify(s.units),after);assert.equal(C.command(s,'focus','enemy0'),false);
 }
-for(const kind of ['net','push','cover','parry','assist','ko'])assert(allKinds.has(kind),kind);
+for(const kind of ['net','push','cover','parry','assist','ko','dash','riposte','retreat','feint','recover','rejoin'])assert(allKinds.has(kind),kind);
 const a=C.create(team(),team(),{seed:123}),b=C.create(team(),team(),{seed:123});for(let i=0;i<800;i++){C.step(a,.05);C.step(b,.05);}assert.deepEqual(a.units,b.units);
 s=C.create(team(),team(),{limit:10});while(!s.result)C.step(s,.05);assert.equal(s.result.reason,'timeout');
 s=C.create(team(),team());assert.equal(C.finish(s,'retreat').win,false);
-console.log('PASS: 100 seeded battles; all ten move, all cooperation types, targeting/death, commands/cooldowns, pause, timeout, retreat and terminal idempotence. Average '+(total/100).toFixed(1)+'s, ally wins '+wins+'%.');
+console.log('PASS: 100 seeded battles; collision-free alive/corpse footprints, dash/riposte/assist, feints, retreat/recovery, commands/cooldowns, pause, timeout and result idempotence. Average '+(total/100).toFixed(1)+'s, ally wins '+wins+'%.');
