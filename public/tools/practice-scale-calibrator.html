@@ -397,6 +397,9 @@ async function previewAction(){
  const canvas=$('#actionCanvas'),c=canvas.getContext('2d');
  const anchorX=260,anchorY=345,scene=$('#actionScene').value;
  const previewScale=.52,sceneProjection=scene==='duel'?348*.82/202:1,z=previewScale*sceneProjection;
+  // Beasts use the duel's own 348px frame (.83 ink scale); human sprites
+  // use the 202px practice reference. Do not apply human projection to beasts.
+  const isBeast=key.startsWith('beast_'),actorZoom=isBeast?previewScale:z;
  const val=currentAction(),progress=Math.max(0,Math.min(1,actionProgress));
  const frameNo=Math.min(7,Math.floor(Math.min(progress,.9999)*8));
  const movement=v.sampleMotion?.(val,progress)||{x:0,y:0};
@@ -417,8 +420,8 @@ async function previewAction(){
   c.moveTo(8,anchorY);c.lineTo(512,anchorY);c.stroke();c.setLineDash([]);
   const img=frame.canvas,base=idle.canvas,baseH=base.naturalHeight||base.height;
   const size=Number(state[key]),offsetY=Number(feet[key]);
-  const x=anchorX+(val.x+movement.x)*z;
-  const y=(offsetY+val.y+movement.y)*z;
+  const x=anchorX+(val.x+movement.x)*actorZoom;
+  const y=(offsetY+val.y+movement.y)*actorZoom;
   if(key==='npc_carnifex'){
    const p=202/(348*.82),k=436/270*z*p*size*val.scale;
    c.drawImage(img,x-135*k,
@@ -426,7 +429,8 @@ async function previewAction(){
   }else if(key.startsWith('beast_')){
    const factor={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,
     beast_lion:1.18,beast_elephant:1.38}[key]||1;
-   const k=202/baseH*.83*factor*z*size*val.scale;
+   const basePixels=scene==='duel'?348*.83*factor:202;
+   const k=basePixels/baseH*previewScale*size*val.scale;
    c.drawImage(img,x-(frame.pivotX??img.width/2)*k,
     anchorY-(frame.footY??img.height)*k+y,img.width*k,img.height*k);
   }else{
@@ -436,9 +440,13 @@ async function previewAction(){
     (img.naturalWidth||img.width)*k,(img.naturalHeight||img.height)*k);
   }
   if(fx){
+   // In live combat each FX is spawned at the 50% action key. It then
+   // animates in place, even when the pose scrubber continues moving.
+   // Preview THAT exact spawn transform, not the currently scrubbed pose.
+   const fxZoom=isBeast&&scene==='duel'?previewScale:z;
    const box=v.effectGeometry({
-    kind,baseX:anchorX+(kind==='hit'?0:52*z),
-    baseY:anchorY-113*z+offsetY*z,zoom:z,face:1,pose:val,progress
+    kind,baseX:anchorX+(kind==='hit'?0:52*fxZoom),
+    baseY:anchorY-113*fxZoom+offsetY*fxZoom,zoom:fxZoom,face:1,pose:val,progress:.5
    });
    c.save();c.globalAlpha=.87;
    c.drawImage(fx,box.x-box.width/2,box.y-box.height/2,box.width,box.height);

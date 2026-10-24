@@ -54,7 +54,10 @@ assert.match(inline,/effectPreviewFrame\(kind,frameNo\)/,'8-frame VFX synchroniz
 assert.match(inline,/String\(frameNumber\)\.padStart\(2,'0'\)/,'beast action actual frame numbering');
 assert.match(inline,/m\.actions\?\.\[name\]/,'champion action manifest clips');
 assert.match(inline,/v\.sampleMotion\?\.\(val,progress\)/,'studio animates user XY keys');
-assert.match(inline,/pose:val,progress/,'studio effect and body use same curve time');
+assert.match(inline,/pose:val,progress:\.5/,'studio FX stays at the live spawn key (50%)');
+assert.match(inline,/const isBeast=key\.startsWith\('beast_'\),actorZoom=isBeast\?previewScale:z/,'beast offsets do not receive human projection');
+assert.match(inline,/const basePixels=scene==='duel'\?348\*\.83\*factor:202/,'beast preview uses real 348px duel ink size');
+assert.match(inline,/const fxZoom=isBeast&&scene==='duel'\?previewScale:z/,'beast effects use real duel zoom');
 assert.match(inline,/const selected=\[\.\.\.selection\]\.filter\(key=>key!==source\)/,
  'bulk excludes the source actor');
 assert.match(inline,/if\(mode==='effect'\)to\.effect=\{\.\.\.from\.effect\}/,
