@@ -2913,20 +2913,20 @@ function safeFighterPose(f,requested){
 }
 function drawFighter(f){if(!f||f.removedFromArena)return;
  const pose=safeFighterPose(f,choosePose(f)),frame=FRAMES[pose]??0;
- const editorAction={net:'special',defeat:'death'}[pose]||pose;
+ const baseAction={net:'special',defeat:'death'}[pose]||pose;
+ // The studio owns independent slash/sweep/thrust settings; when unset each
+ // inherits its common attack transform rather than a scene-coded position.
+ const variant=['slash','sweep','thrust'][f.attackVariant]||'slash';
+ const editorAction=f.action==='attack'&&f.actionT>0?variant:baseAction;
  const authored=window.PracticeVisualProfiles?.resolve?.(duelAppearanceKey(f),editorAction)||
   {x:0,y:0,scale:1};
  const editedX=(f.face||1)*authored.x,editedY=authored.y;
  // Keep a fixed feet pivot for every class, image pose and character.
  const height=FIGHTER_DRAW_SIZE,width=FIGHTER_DRAW_SIZE,feet=FLOOR-1;
- // Keep idle and walk feet planted. Whole-body sine bob made boots hover
- // above the arena floor. Explicit dodge and leap-rush moves may lift the sprite.
- let bob=0;
- if(f.dodge>0)bob-=8;
- let drawX=f.x-width/2,drawY=feet-height+bob;
- const footOffset=duelFootOffset(f); // visual art only; hitboxes and physics stay planted
+ // Retire all scene-coded per-pose X/Y and scale changes. The sprite uses
+ // its world position, the camera projection and the studio's action edit.
+ let drawX=f.x-width/2,drawY=feet-height;
  if(S.phase==='fight'){
-  // Render-only position easing leaves combat hitboxes undisturbed.
   const trail=f.dodgeEcho||f.specialLunge||f.attackLunge;
   if(trail){
    const elapsed=trail.total-trail.t;
@@ -2935,88 +2935,15 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
    drawX+=(trail.fromX-trail.toX)*(1-smooth);
   }
  }
- if(S.phase==='entrance'&&f._entranceStepT)
-  drawX+=Math.sin(f._entranceStepT)*2;
- // Result poses stay grounded: the champion holds the pose on the floor instead of floating upward.
- // Character art must never squash, widen or shrink during combat.
- let tilt=0;
- if(!f.beastType&&f.actionT>0&&f.action==='attack'&&S.phase==='fight'){
-  const phase=clamp(1-f.actionT/Math.max(.01,f.actionDuration),0,1);
-  const swing=Math.sin(Math.PI*phase),dir=f.face||1;
-  if(f.attackVariant===0){
-    tilt=dir*.07*swing;drawX+=dir*13*swing;
-  }else if(f.attackVariant===1){
-    // Rising slash: guard -> raised strike, with an upward lift.
-    drawY-=23*swing;tilt=dir*(-.23+.32*phase)*swing;
-  }else if(f.attackVariant===2){
-    // Long thrust: compact crouch, full-body forward lunge.
-    drawX+=dir*40*swing;drawY+=10*swing;
-    tilt=dir*.17*swing;
-  }
- }
- if(f.action==='comboDash'&&S.phase==='fight'){
-  const t=f.comboDash?f.comboDash.t:COMBO_DASH_DURATION;
-  const dir=f.face||1;
-  const lift=t<.17?Math.sin(t/.17*Math.PI*.5)*57:t<.42?57*(1-(t-.17)/.25):0;
-  drawY-=lift;
-  if(t<.17){tilt=-dir*.11;}
-  else if(t<.42){tilt=dir*.18;drawX+=dir*16;}
- }
- if((S.phase==='finisher'||S.phase==='result')&&S.resultApplied){
-  const won=(f===S.player)===S.resultWin,progress=clamp(S.resultAnim/1.15,0,1);
-  const ease=progress*progress*(3-2*progress);
-   if(won){drawY-=15*Math.sin(Math.PI*Math.min(1,progress)) + 5*ease;}
-   else{drawY+=22*ease;tilt=(f.face<0?1:-1)*.055*ease;}
- }
- // The animated fighter supplies its own foot-anchored motion, so do not
- // compound a second whole-body combat transform.
- if(f.motionVariant===ANIMATED_MURMILLO_VARIANT||f.championVariant===CHAMPION_MURMILLO_VARIANT){tilt=0;}
- // Add a subtle independent secondary-action response to every fighter
- // class, including champion and custom-animation variants. Pivot remains at
- // the planted toe/floor location; even idle breathing cannot float boots.
- const secondary=window.ArenaMotion?.pose?.(f,clock,
-  !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
- if(secondary){
-  tilt+=secondary.tilt;
-  drawX+=secondary.x;drawY+=secondary.y;
- }
- // Layer 2: independent hit body shiver, drawn AFTER the global backdrop +
- // fighter camera shake. Never resize or warp the approved source sprite.
- const rumble=f.hitRumble;
- if(rumble&&S.phase==='fight'&&S.fx&&
-    !window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches){
-  const progress=clamp(rumble.t/rumble.total,0,1);
-  const envelope=Math.pow(1-progress,1.25);
-  drawX+=Math.sin(rumble.t*127+(f.enemy?1.1:.3))*rumble.amp*envelope;
-  drawY+=Math.cos(rumble.t*97+(f.enemy?.8:0))*rumble.amp*.54*envelope;
-  tilt+=Math.sin(rumble.t*83)*envelope*.015*(rumble.dir||1);
- }
- // Directional emotional counterpoint: the victor presses forward and the
- // cancelled striker buckles backwards. These transforms are cosmetic only.
- if(S.phase==='fight'){
-  if(f.parryTriumphT>0&&!f.dead&&f.stagger<=0){
-   const beat=Math.sin(Math.PI*(1-clamp(f.parryTriumphT/.56,0,1)));
-   drawX+=f.face*12*beat;tilt+=f.face*.045*beat;
-  }
-  if(f.parryFailT>0){
-   const beat=Math.sin(Math.PI*(1-clamp(f.parryFailT/.74,0,1))*.94);
-   drawX-=f.face*25*beat;tilt-=f.face*.16*beat;
-  }
- }
- // Export the actual render-space translation, rotation and grounded pivot.
- // FX are painted after both fighters and therefore can follow the SAME pose
- // instead of a stale physics-only x coordinate.
- const motionExtra=f.motionVariant===ANIMATED_MURMILLO_VARIANT?
-  window.MurmilloMotion?.motionAt?.(f,S,clock):null;
+ // Keep impact flashing but never enlarge/squash the character at hit time.
  const reduceImpact=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
  const impactVisual=(S.phase==='fight'&&!f.dead&&f.hp>0&&
   pose!=='defeat'&&pose!=='death')?
-  (window.ArenaMotion?.visual?.(f,reduceImpact,S.fx)||{scale:1,flash:0}):
-  {scale:1,flash:0};
- f._fxRender={dx:drawX-(f.x-width/2)+(motionExtra?.x||0)+editedX,
-  dy:drawY-(feet-height)+(motionExtra?.y||0)+footOffset+editedY,tilt,
-  sx:impactVisual.scale,sy:impactVisual.scale,
-  pivotX:f.x,pivotY:feet};
+  (window.ArenaMotion?.visual?.(f,reduceImpact,S.fx)||{flash:0}):{flash:0};
+ f._fxRender={dx:drawX-(f.x-width/2)+editedX,
+  dy:drawY-(feet-height)+footOffset+editedY,tilt:0,
+  sx:1,sy:1,pivotX:f.x,pivotY:feet};
+ ctx.save();
  // No transparency strobing or new vector weapon layer.
  ctx.save();if(tilt){
   // Feet remain the pivot; all impact scaling is UNIFORM.
@@ -3255,7 +3182,8 @@ function drawEffects(backOnly=false){
   const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   let mapped=v.sequence||({hit_slash:'slash',parry_burst:'guard',
     dash_trail:'dash',special_aura:'special'}[v.art]);
-  const fxAction=mapped==='parry'?'guard':mapped==='hit'?'hit':
+  const fxAction=['slash','sweep','thrust'].includes(mapped)?mapped:
+   mapped==='parry'?'parry':mapped==='hit'?'hit':
    mapped==='dash'?'dodge':mapped==='special'?'special':
    mapped==='finisher'?'finisher':'attack';
   const fxEdit=v.owner?window.PracticeVisualProfiles?.resolve?.(duelAppearanceKey(v.owner),fxAction)?.effect:null;
@@ -3522,6 +3450,7 @@ $('#classSubtitle').textContent=DATA[$('#classChoice').value].eng;
 
 /* Visual Ludus adapter; the existing career state remains authoritative. */
 window.LudusBridge={
+ appearanceKey:i=>window.PracticeScaleProfiles?.look?.({side:'ally',index:i},CAREER.roster)||null,
  trainingCost:(i,stat)=>careerTrainingCost(CAREER.roster[i],stat),
  aptitude:(i,stat)=>ArenaBalance.trainingAptitude(CAREER.roster[i],stat),
  enemyPortrait:(enemy)=>arenaOpponentPortrait(enemy),
