@@ -1,0 +1,19 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "practice-four-independent-layer-groups-20261024-v49b",
+  "expectedMainSha": "4322951c0e289b26347364962f4b8b2cdd7706ca",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/ludus-practice.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/9829ee0a5b8a0a24248cf63f23aa2027b0cbb8ad/public/ludus-practice.js",
+      "sha256": "1ea8f1c9136fe029deefc56992e8a31a961d6a100e3d05738a756564a0411ef5"
+    },
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/9829ee0a5b8a0a24248cf63f23aa2027b0cbb8ad/public/index.html",
+      "sha256": "a50e70ab1df2a6d480fd38248b931bc5928556e7de67759b433a2d68c28193b6"
+    }
+  ]
+}
