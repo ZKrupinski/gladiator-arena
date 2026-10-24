@@ -1,11 +1,11 @@
 {
   "assetSha256": {
-    "public/index.html": "a50e70ab1df2a6d480fd38248b931bc5928556e7de67759b433a2d68c28193b6",
-    "public/ludus-practice.js": "1ea8f1c9136fe029deefc56992e8a31a961d6a100e3d05738a756564a0411ef5"
+    "public/index.html": "40212487bdceb8b38a99b552402a0cdb35196fb873b63598e7eaf5cece9713a0",
+    "public/ludus-practice.js": "85d323df3d39cc8c9d004f49fc8f4a1bb39080379a45348334659cb610fb037d"
   },
-  "baseCommit": "8243c2bbb5fbc0b04c5f18e7299d899e22d0689f",
+  "baseCommit": "516d6c075fa1a0585880ecdbecd608ae7f7b3827",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-four-independent-layer-groups-20261024-v49b",
+  "releaseId": "practice-rear-rival-visibility-20261024-v50",
   "releaseProtocol": "spartacus-uploader-v1"
 }
