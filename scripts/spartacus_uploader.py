@@ -34,6 +34,7 @@ ALLOWED_PREFIXES = (
     "public/uploader-release.json",
     # Explicitly sanctioned size/foot studio sources, not arbitrary public/tools files.
     "public/practice-scale-profiles.js", "public/practice-scale-published.js",
+    "public/practice-visual-profiles.js",
     "public/tools/practice-scale-calibrator.html", "public/tools/practice-scale-publish.js",
     "scripts/", "config/",
     "docs/", "tests/"
