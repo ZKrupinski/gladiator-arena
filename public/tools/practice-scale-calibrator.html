@@ -377,7 +377,7 @@ async function previewAction(){
     // Shared geometry with actual combat emitVfx/drawEffects, not a
     // second editor-specific width/height and offset algorithm.
     const box=v.effectGeometry({
-     kind,baseX:anchorX+(kind==='hit'?0:52*z),
+     kind,baseX:anchorX+((auto[pose]==='hit')?0:52*z),
      baseY:anchorY-113*z+offsetY*z,zoom:z,face:1,pose:val
     });
     c.save();c.globalAlpha=.87;
