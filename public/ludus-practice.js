@@ -16,7 +16,8 @@ const COURT_LAYOUTS=Object.freeze({
  // Keep all four ALLIED silhouettes in their own horizontal columns.
  // Enemies may cross columns, but foreground allies cannot occlude rear allies.
  4:Object.freeze([{x:260,y:689,scale:1},{x:1120,y:689,scale:1},
-   {x:552,y:606,scale:1},{x:836,y:606,scale:1}])
+   // Spread the rear courts so court 3's rival cannot stand inside court 4's hero art.
+   {x:485,y:606,scale:1},{x:900,y:606,scale:1}])
 });
 function courtsForParty(count){
  // Does not depend on later-initialized variables; works at script load.
@@ -30,15 +31,26 @@ let COURTS=courtsForParty(4);
 // must stay within their own duel layer even when they overlap a neighbor.
 const COURT_PAINT_STACK=Object.freeze({
  1:Object.freeze([0]),
- 2:Object.freeze([0,1]),
- 3:Object.freeze([2,0,1]),
- 4:Object.freeze([2,3,0,1])
+ 2:Object.freeze([1,0]),
+ 3:Object.freeze([2,1,0]),
+ // The left court must paint AFTER the right court: seat 3's enemy
+ // is on the near-right edge of court 3, overlapping seat 4's left fighter.
+ // Rear row remains underneath the entire front row.
+ 4:Object.freeze([3,2,1,0])
 });
 function courtPaintOrder(count=COURTS.length){
  const n=Math.max(1,Math.min(MAX,Math.floor(Number(count)||1)));
  return COURT_PAINT_STACK[n].slice();
 }
 const LEASH=168,MIN_PAIR_GAP=172,ATTACK_START_RANGE=188,CONTACT_REACH=214;
+const REAR_COURT_ART_GAP=220; // 202px artwork + 18px motion/weapon clearance
+function rearCourtBoundary(){
+ if(COURTS.length<4)return null;
+ const left=COURTS[2],right=COURTS[3];
+ const midpoint=(left.x+right.x)/2;
+ return {leftMax:midpoint-REAR_COURT_ART_GAP/2,
+  rightMin:midpoint+REAR_COURT_ART_GAP/2};
+}
 // Reference on-screen size of the same gladiator in standard duels (348 * .82)
 // and in practice (202). Carnifex shares the gladiator's COURT perspective;
 // the studio's npc_carnifex scale is then applied ONCE by ArenaCarnifex.
@@ -497,6 +509,20 @@ function act(u,dt){
 // Resolve pair overlap in *world coordinates* after both sides act.
 // Preserve hero-left/opponent-right ordering and enforce minimum visible gap.
 function keepCourtSpacing(){
+ // Adjacent rear fights previously occupied the same pixels: seat 3's
+ // opponent could disappear behind seat 4's ally even with separate layers.
+ // Give those two visible actors a permanent corridor between the courts.
+ const boundary=rearCourtBoundary();
+ if(boundary){
+  for(const u of battle.enemies){
+   if(!u.dead&&!u.retiring&&u.seat===2&&u.entry<=0)
+    u.x=Math.min(u.x,boundary.leftMax);
+  }
+  for(const u of battle.heroes){
+   if(!u.dead&&!u.retiring&&u.seat===3)
+    u.x=Math.max(u.x,boundary.rightMin);
+  }
+ }
  for(const h of battle.heroes){
   if(h.dead||h.retiring)continue;
   const e=battle.enemies.find(u=>!u.dead&&!u.retiring&&u.seat===h.seat&&u.entry<=0);
@@ -506,6 +532,14 @@ function keepCourtSpacing(){
    ring.x-LEASH+MIN_PAIR_GAP/2,ring.x+LEASH-MIN_PAIR_GAP/2);
   h.x=middle-MIN_PAIR_GAP/2;
   e.x=middle+MIN_PAIR_GAP/2;
+ }
+ // Pair collision recovery cannot undo the rear lane art corridor.
+ // Keep both visible bodies apart while retaining their own attack reach.
+ if(boundary){
+  const e3=battle.enemies.find(u=>!u.dead&&!u.retiring&&u.seat===2&&u.entry<=0);
+  const h4=battle.heroes.find(u=>!u.dead&&!u.retiring&&u.seat===3);
+  if(e3)e3.x=Math.min(e3.x,boundary.leftMax);
+  if(h4)h4.x=Math.max(h4.x,boundary.rightMin);
  }
 }
 function simulate(dt){
@@ -684,8 +718,9 @@ function paint(){
  else{const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#24120e');grad.addColorStop(1,'#754328');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);}
  ctx.fillStyle='#160a0929';ctx.fillRect(0,0,W,H);
  // All court floor overlays removed: gladiators stand on the original sand.
- // Draw each entire duel as one indivisible scene layer: rear 3 → 4,
- // then front 1 → 2. The executor, corpse, slash VFX and impact sparks
+ // Draw each duel as an indivisible scene layer: rear 4 → 3,
+ // then front 2 → 1. This specifically keeps court 3's opponent
+ // above court 4 artwork where an extreme action pose may overlap. The executor, corpse, slash VFX and impact sparks
  // belong to the SAME court as their fighter. Never intermingle entries
  // from two different court groups, even when they share the same Y.
  courtPaintQueue(battle).forEach(item=>item.paint());
