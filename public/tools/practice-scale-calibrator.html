@@ -464,7 +464,32 @@ function persistActionEdit(){
  document.dispatchEvent(new Event('input'));
  return ok;
 }
-function updateActionControls(){formatAction();previewAction();}
+function updateActionControls(){formatAction();showMotionKey();previewAction();}
+function applyActionToChecked(mode){
+ const source=$('#actionKey').value,pose=$('#actionPose').value;
+ const selected=[...selection].filter(key=>key!==source);
+ const status=$('#batchActionStatus');
+ if(!selected.length){
+  status.textContent='대상 없음: 아래 캐릭터 목록에서 다른 캐릭터를 체크해 주세요.';
+  return 0;
+ }
+ const from=currentAction();
+ for(const key of selected){
+  if(!actions[key])actions[key]={};
+  const inherited=v.fallbackAction?.(pose);
+  const to=v.clean(actions[key][pose]||(inherited?actions[key][inherited]:null));
+  if(mode==='effect')to.effect={...from.effect};
+  else if(mode==='motion')to.motion={
+   start:{...from.motion.start},middle:{...from.motion.middle},end:{...from.motion.end}};
+  actions[key][pose]=v.clean(to);
+ }
+ const saved=persistActionEdit();
+ status.textContent=saved?
+  '✓ '+selected.length+'명에게 '+(mode==='effect'?'이펙트 종류·X·Y·크기':'시작·중간·끝 위치 키')+
+  ' 복사·기기 저장 완료 · 이 동작 외의 설정과 크기·발높이는 유지':
+  '⚠ 변경은 적용됐지만 기기 저장 실패 · JSON 내보내기 권장';
+ return selected.length;
+}
 function initActionEditor(){
  const labels={idle:'기본',walk:'걷기',attack:'일반공격 공통',slash:'종베기',sweep:'횡베기',thrust:'찌르기',heavy:'강베기',special:'필살기',guard:'방어',parry:'패링',
   dodge:'회피',hit:'피격',death:'패배',finisher:'피니시',victory:'승리'};
@@ -481,6 +506,29 @@ function initActionEditor(){
  $('#actionKey').onchange=updateActionControls;
  $('#actionPose').onchange=updateActionControls;
  $('#actionScene').onchange=previewAction;
+ $('#motionKey').addEventListener('change',showMotionKey);
+ for(const axis of ['X','Y'])$('#motion'+axis).addEventListener('input',()=>{
+  const key=$('#actionKey').value,pose=$('#actionPose').value;
+  if(!actions[key])actions[key]={};
+  const cfg=currentAction(),point=$('#motionKey').value;
+  cfg.motion[point][axis.toLowerCase()]=Number($('#motion'+axis).value);
+  actions[key][pose]=v.clean(cfg);
+  persistActionEdit();showMotionKey();previewAction();
+ });
+ $('#actionTime').addEventListener('input',()=>{
+  actionProgress=Math.max(0,Math.min(1,Number($('#actionTime').value)/100));
+  actionPlaying=false;$('#actionPlay').textContent='▶ 재생';
+  $('#actionPlay').setAttribute('aria-pressed','false');
+  updateTimelineLabel();previewAction();
+ });
+ $('#actionPlay').addEventListener('click',()=>{
+  actionPlaying=!actionPlaying;
+  $('#actionPlay').textContent=actionPlaying?'Ⅱ 일시정지':'▶ 재생';
+  $('#actionPlay').setAttribute('aria-pressed',String(actionPlaying));
+  actionLastTick=0;
+ });
+ $('#bulkCopyFx').addEventListener('click',()=>applyActionToChecked('effect'));
+ $('#bulkCopyMotion').addEventListener('click',()=>applyActionToChecked('motion'));
  $('#motionKey').onchange=()=>{
   actionProgress=({start:0,middle:.5,end:1}[$('#motionKey').value]??0);
   actionPlaying=false;$('#actionPlay').textContent='▶ 재생';
