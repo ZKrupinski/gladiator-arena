@@ -1,12 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "3c7c7bc681e931531008b54236f997b3357e015a5ab7ab5a4e40b06f8a9a2ea5",
-    "public/practice-visual-profiles.js": "44be11fd43d5e0d38e811df6368a7acf419b28ea9ae622df791a306d1891dd76",
-    "public/tools/practice-scale-calibrator.html": "cb29939bee35b0b61acbbfc082431f93bfa5f5fc73922019646a043b4a2d2b7a"
+    "public/index.html": "e7956862899b7b862b01851e022229c9894f40495c01f7a263fbcf778319eca9",
+    "public/practice-visual-profiles.js": "ed08bf0fd6173882b243ad2c301b8b1594b5256cf31408830943cb8ef5342752",
+    "public/tools/practice-scale-calibrator.html": "0c1fe3d77809fd458d7d4fcd87fe1e8f57175e09a1dae8ac33d88ca7257f59f4"
   },
-  "baseCommit": "a599b07f69bc9c73b1109669f318acef916e8597",
+  "baseCommit": "f3f91e57d8f836bf76eaa76059c8867d59407985",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "studio-qa-20261024-v56",
+  "releaseId": "studio-free-drag-keys-20261024-v57",
   "releaseProtocol": "spartacus-uploader-v1"
 }

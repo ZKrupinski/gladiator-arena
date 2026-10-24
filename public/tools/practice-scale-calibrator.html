@@ -89,7 +89,7 @@ input[type=file]{display:none}
 .action-preview{width:100%;max-width:490px;background:radial-gradient(ellipse at center bottom,#92724e,#291b14 75%);border:1px solid #ae8456;border-radius:8px;overflow:hidden}
 .action-editor{scroll-margin-top:220px}.numeric-edit{width:85px!important;min-height:36px;background:#20160f;color:#ffe5aa;border:1px solid #a78357;border-radius:5px;padding:5px;font:700 14px system-ui}.quick-links{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}.tools .quick-links a{padding:4px}
 @media(max-width:650px){.tools{position:relative}.action-editor{scroll-margin-top:12px}.compare-scroll canvas{min-width:0}}
-.action-preview canvas{display:block;width:100%;aspect-ratio:1}
+.action-preview canvas{touch-action:none;cursor:grab;display:block;width:100%;aspect-ratio:1}
 .action-sliders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
 .action-field{display:grid;gap:3px;min-width:0}.action-field label{font-size:12px;color:#f9dcab}.action-field output{color:#ffe4a4;font-weight:800;font-variant-numeric:tabular-nums}.action-field input{width:100%;accent-color:#efbb77}
 .action-field select{max-width:100%}.action-separator{grid-column:1/-1;margin-top:6px;border-top:1px solid #745438;padding-top:8px;color:#ffdf9c;font-weight:800}
@@ -98,6 +98,7 @@ input[type=file]{display:none}
 .motion-toolbar input[type=range]{flex:1;min-width:100px;accent-color:#efbb77}
 .motion-toolbar button,.motion-bulk button{padding:7px 11px;font-weight:700}
 .motion-bulk output{color:#f8d79b;font-size:12px}
+.key-track{display:flex;flex-wrap:wrap;gap:5px;padding:7px 0}.key-track button{min-width:58px}.key-track button[aria-pressed="true"]{background:#a65d29;outline:2px solid #ffda87}#motionKeyInfo{font-size:12px;font-weight:400}
 .motion-hint{font-size:11px;color:#ebcc96}
 .motion-toolbar label{font-size:12px}
 .motion-toolbar select{min-width:74px}
@@ -176,10 +177,11 @@ input[type=file]{display:none}
 <div><div class="action-preview"><canvas id="actionCanvas" width="520" height="520" aria-label="동작과 이펙트의 프레임별 합성 애니메이션 미리보기"></canvas></div>
 <div class="motion-toolbar">
 <button id="actionPlay" type="button" aria-pressed="true">Ⅱ 일시정지</button>
-<label for="actionTime">진행</label><input id="actionTime" type="range" min="0" max="100" step="1" value="0" aria-label="동작 시간 0~100% 직접 이동">
+<label for="actionTime">진행</label><input id="actionTime" type="range" min="0" max="100" step=".1" value="0" aria-label="동작 시간 0~100% 직접 이동">
 <output id="actionTimeValue">0%</output>
 <label for="actionSpeed">속도</label><select id="actionSpeed"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
 </div>
+<p class="motion-hint"><strong>진행 시간을 선택한 뒤 캐릭터 그림을 마우스나 손가락으로 드래그하면 그 시간에 위치 키가 자동 생성됩니다.</strong> X·Y 숫자로 0.1px씩 미세 조정할 수 있습니다. 드래그 한 번은 실행 취소 한 번으로 복원됩니다.</p>
 <p class="motion-hint">그림에 여러 원본 프레임이 있으면 실제 프레임을 순서대로 재생합니다. 한 장뿐인 동작도 아래 위치 키로 움직일 수 있습니다. 이펙트 역시 8프레임으로 함께 재생합니다.</p>
 <p id="actionFrameStatus" role="status">선택한 동작 프레임을 준비합니다.</p></div>
 <div class="action-sliders">
@@ -187,11 +189,15 @@ input[type=file]{display:none}
 <div class="action-field"><label for="frameX">동작 X <output id="frameXValue"></output></label><input type="range" id="frameX" min="-180" max="180" step="1"></div>
 <div class="action-field"><label for="frameY">동작 Y <output id="frameYValue"></output></label><input type="range" id="frameY" min="-180" max="180" step="1"></div>
 <div class="action-field"><label for="frameScale">동작 배율 <output id="frameScaleValue"></output></label><input type="range" id="frameScale" min=".45" max="1.8" step=".01"></div>
-<div class="action-separator">동작 이동 애니메이션 — 시작 / 중간 / 끝 X·Y (기본 0px)</div>
+<div class="action-separator">동작 이동 애니메이션 — 자유 시간 키 · 시간 0.1% / 위치 0.1px 정밀 편집</div>
 <div class="action-field"><label for="motionKey">편집할 위치 키</label><select id="motionKey">
 <option value="start">시작 0%</option><option value="middle">중간 50%</option><option value="end">끝 100%</option></select></div>
-<div class="action-field"><label for="motionX">이동 X <output id="motionXValue">0px</output></label><input type="range" id="motionX" min="-150" max="150" step="1" value="0"></div>
-<div class="action-field"><label for="motionY">이동 Y <output id="motionYValue">0px</output></label><input type="range" id="motionY" min="-150" max="150" step="1" value="0"></div>
+<div class="action-field"><label for="motionKeyTime">선택 키 시간 (%)</label><input id="motionKeyTime" type="number" min="0" max="100" step=".1" value="0"></div>
+<div class="action-field"><label for="motionInterpolation">보간 방식</label><select id="motionInterpolation"><option value="smooth">자연스러운 곡선 (연속 이동)</option><option value="ease">키마다 부드럽게 정지</option><option value="linear">일정한 속도 (직선)</option></select></div>
+<div class="action-field"><button id="motionAdd" type="button">현재 시간에 키 추가</button><button id="motionDelete" type="button">선택 키 삭제</button></div>
+<div class="action-separator"><div id="motionKeyTrack" class="key-track" aria-label="시간별 위치 키 선택"></div><span id="motionKeyInfo" role="status"></span></div>
+<div class="action-field"><label for="motionX">이동 X <output id="motionXValue">0px</output></label><input type="range" id="motionX" min="-150" max="150" step=".1" value="0"></div>
+<div class="action-field"><label for="motionY">이동 Y <output id="motionYValue">0px</output></label><input type="range" id="motionY" min="-150" max="150" step=".1" value="0"></div>
 <div class="action-separator">이펙트 — 종류 / 위치 / 크기 (기본: 자동)</div>
 <div class="action-field"><label for="fxKind">이펙트 종류</label><select id="fxKind"></select></div>
 <div class="action-field"><label for="fxScale">이펙트 배율 <output id="fxScaleValue"></output></label><input type="range" id="fxScale" min=".2" max="2.5" step=".01"></div>
@@ -201,7 +207,7 @@ input[type=file]{display:none}
 </div></div>
 <div class="motion-bulk" aria-label="선택한 캐릭터에 동작별 이펙트 및 이동 키 일괄 적용">
 <button id="bulkCopyFx" type="button">체크 캐릭터들에 이 동작 이펙트 복사</button>
-<button id="bulkCopyMotion" type="button">체크 캐릭터들에 이 동작 이동 키 복사</button>
+<button id="bulkCopyMotion" type="button">체크 캐릭터들에 모든 시간 키·보간 복사</button>
 <output id="batchActionStatus" role="status">위 캐릭터/동작의 설정을 아래 목록에서 체크한 다른 캐릭터에게만 적용합니다.</output>
 </div>
 <div class="action-actions"><button id="actionShowIdle">기본 동작 보기</button><output id="actionAutosave" role="status">동작·이펙트 변경값은 이 기기에 자동 임시저장됩니다.</output><span class="source-note">프리뷰는 전열 기준이며 투명영역 자동 확대를 사용하지 않습니다. 변경 후 기기 임시저장 또는 GitHub 원본 게시를 누르세요.</span></div>
@@ -244,7 +250,7 @@ input[type=file]{display:none}
 <p class="guide">체크한 여러 외형에 크기 ±5% 또는 발높이 ↑↓5px을 일괄 적용할 수 있습니다. 발높이는 음수일수록 위로, 양수일수록 아래로 이동하며 바닥 안내선은 움직이지 않습니다. 셔플하면 위치만 바뀌고 선택·크기·발높이는 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
 <script src="../growth-frames.js"></script>
 <script src="../practice-scale-published.js?v=true-size-v54"></script><script src="../practice-scale-profiles.js?v=true-size-v54"></script>
-<script src="../practice-visual-profiles.js?v=motion-timeline-v53&qa=v56"></script>
+<script src="../practice-visual-profiles.js?v=motion-timeline-v53&qa=v57"></script>
 <script src="practice-size-stage.js?v=true-size-v54"></script>
 <script>
 (()=>{'use strict';
@@ -401,12 +407,14 @@ function formatAction(){
  $('#fxKind').value=val.effect.kind;
  showMotionKey();
 }
+let previewHit=null,dragMotion=null;
 let actionPaintSerial=0,actionProgress=0,actionPlaying=true;
 let actionLastTick=0,actionLoopStarted=false,actionPreviousFrame=-1,actionLastPaint=0;
 function updateTimelineLabel(){
- const pct=Math.round(actionProgress*100);
+ const pct=Math.round(actionProgress*1000)/10;
  $('#actionTime').value=String(pct);
  $('#actionTimeValue').textContent=pct+'%';
+ const precise=$('#actionTimeNumber');if(precise&&document.activeElement!==precise)precise.value=String(pct);
 }
 function animateStudioPreview(now){
  if(!actionLoopStarted)return;
@@ -424,13 +432,42 @@ function animateStudioPreview(now){
  }
  requestAnimationFrame(animateStudioPreview);
 }
-function showMotionKey(){
- const cfg=currentAction(),key=$('#motionKey').value;
- const point=cfg.motion?.[key]||{x:0,y:0};
+function keyList(cfg=currentAction()){return v.motionKeys(cfg);}
+function selectedKeyIndex(){
+ const raw=$('#motionKey').value;
+ return ({start:0,middle:1,end:2}[raw]??Number(raw))||0;
+}
+function pauseAtKey(index){
+ const keys=keyList();index=Math.max(0,Math.min(keys.length-1,index));
+ $('#motionKey').value=String(index);actionProgress=keys[index].t;actionPlaying=false;
+ actionPreviousFrame=-1;$('#actionPlay').textContent='▶ 재생';
+ $('#actionPlay').setAttribute('aria-pressed','false');updateTimelineLabel();showMotionKey(index);previewAction();
+}
+function showMotionKey(forceIndex){
+ const cfg=currentAction(),keys=keyList(cfg),index=Math.min(forceIndex??selectedKeyIndex(),keys.length-1),point=keys[index];
+ $('#motionKey').replaceChildren(...keys.map((key,i)=>{
+  const op=document.createElement('option');op.value=String(i);op.textContent=(i+1)+' · '+Math.round(key.t*1000)/10+'%';return op;
+ }));$('#motionKey').value=String(index);
+ $('#motionKeyTime').value=String(Math.round(point.t*1000)/10);
+ $('#motionInterpolation').value=cfg.motion.interpolation||'ease';
+ $('#motionDelete').disabled=keys.length<=1;
+ $('#motionKeyTrack').replaceChildren(...keys.map((key,i)=>{
+  const button=document.createElement('button');button.type='button';button.textContent=Math.round(key.t*1000)/10+'%';
+  button.setAttribute('aria-label','위치 키 '+(i+1)+' · '+Math.round(key.t*1000)/10+'%');
+  button.setAttribute('aria-pressed',String(i===index));button.onclick=()=>pauseAtKey(i);return button;
+ }));
+ $('#motionKeyInfo').textContent=keys.length+'개 키 · 진행 막대로 시간을 지정하고 키를 추가하세요. 같은 시간은 기존 키를 선택합니다.';
  for(const axis of ['X','Y']){
   $('#motion'+axis).value=String(point[axis.toLowerCase()]);
   $('#motion'+axis+'Value').textContent=String(point[axis.toLowerCase()])+'px';
  }
+}
+function saveMotionKeys(keys,selectedTime,mode){
+ const key=$('#actionKey').value,pose=$('#actionPose').value,cfg=currentAction();
+ cfg.motion=v.cleanMotion({...cfg.motion,keys,interpolation:mode||cfg.motion.interpolation||'smooth'});
+ if(!actions[key])actions[key]={};actions[key][pose]=v.clean(cfg);persistActionEdit();
+ const index=cfg.motion.keys.findIndex(k=>Math.abs(k.t-selectedTime)<.00005);
+ pauseAtKey(Math.max(0,index));
 }
 async function previewAction(){
  const key=$('#actionKey').value,pose=$('#actionPose').value,serial=++actionPaintSerial;
@@ -457,11 +494,13 @@ async function previewAction(){
   c.strokeStyle='#ead09b';c.setLineDash([6,6]);c.beginPath();
   c.moveTo(8,anchorY);c.lineTo(512,anchorY);c.stroke();c.setLineDash([]);
   const img=frame.canvas,base=idle.canvas,baseH=base.naturalHeight||base.height;
-  window.SpartacusStagePreview.draw(c,{
+  const hitBox=window.SpartacusStagePreview.draw(c,{
    key,frame,idle,scene,zoom:previewScale,
    scale:Number(state[key])*val.scale,foot:Number(feet[key]),
    x:anchorX,y:anchorY,offsetX:val.x+movement.x,offsetY:val.y+movement.y
   });
+  previewHit=hitBox?{key,pose,scene,progress,z,frame:img,
+   left:hitBox.center-hitBox.pivotX,top:hitBox.ground-hitBox.pivotY,width:hitBox.w,height:hitBox.h}:null;
   if(fx){
    // In live combat each FX is spawned at the 50% action key. It then
    // animates in place, even when the pose scrubber continues moving.
@@ -477,7 +516,7 @@ async function previewAction(){
   }
   $('#actionFrameStatus').textContent=nameFor(key)+' · '+pose+
    ' · '+(scene==='duel'?'일반전투':'실전훈련')+
-   ' · '+Math.round(progress*100)+'% · 원본/이펙트 '+(frameNo+1)+'/8 프레임 · 이동('+
+   ' · '+Math.round(progress*100)+'% · 재생 구간 '+(frameNo+1)+'/8 프레임 · 이동('+
    movement.x+', '+movement.y+')px';
  }catch(error){
   if(serial!==actionPaintSerial)return;
@@ -522,16 +561,62 @@ function applyActionToChecked(mode){
   const inherited=v.fallbackAction?.(pose);
   const to=v.clean(actions[key][pose]||(inherited?actions[key][inherited]:null));
   if(mode==='effect')to.effect={...from.effect};
-  else if(mode==='motion')to.motion={
-   start:{...from.motion.start},middle:{...from.motion.middle},end:{...from.motion.end}};
+  else if(mode==='motion')to.motion=v.cleanMotion(from.motion);
   actions[key][pose]=v.clean(to);
  }
  const saved=persistActionEdit();
  status.textContent=saved?
-  '✓ '+selected.length+'명에게 '+(mode==='effect'?'이펙트 종류·X·Y·크기':'시작·중간·끝 위치 키')+
+  '✓ '+selected.length+'명에게 '+(mode==='effect'?'이펙트 종류·X·Y·크기':'시간별 위치 키')+
   ' 복사·기기 저장 완료 · 이 동작 외의 설정과 크기·발높이는 유지':
   '⚠ 변경은 적용됐지만 기기 저장 실패 · JSON 내보내기 권장';
  return selected.length;
+}
+function initMotionDrag(){
+ const canvas=$('#actionCanvas');
+ const point=event=>{
+  const box=canvas.getBoundingClientRect();
+  return {x:(event.clientX-box.left)*canvas.width/box.width,y:(event.clientY-box.top)*canvas.height/box.height};
+ };
+ canvas.addEventListener('pointerdown',event=>{
+  if(event.button!==0||dragMotion||!previewHit)return;
+  const pos=point(event),hit=previewHit;
+  if(hit.key!==$('#actionKey').value||hit.pose!==$('#actionPose').value||hit.scene!==$('#actionScene').value)return;
+  if(pos.x<hit.left||pos.x>hit.left+hit.width||pos.y<hit.top||pos.y>hit.top+hit.height)return;
+  // Use the visible sprite alpha, so tapping empty canvas or the FX does not move a key.
+  try{
+   const probe=document.createElement('canvas');probe.width=probe.height=1;
+   const context=probe.getContext('2d');
+   const w=hit.frame.naturalWidth||hit.frame.width,h=hit.frame.naturalHeight||hit.frame.height;
+   context.drawImage(hit.frame,(pos.x-hit.left)/hit.width*w,(pos.y-hit.top)/hit.height*h,1,1,0,0,1,1);
+   if(context.getImageData(0,0,1,1).data[3]<16)return;
+  }catch(_){return;}
+  event.preventDefault();recordHistory();
+  const selectedTime=actionPlaying?hit.progress:actionProgress;
+  actionPlaying=false;actionProgress=Math.round(selectedTime*1000)/1000;
+  $('#actionPlay').textContent='▶ 재생';$('#actionPlay').setAttribute('aria-pressed','false');updateTimelineLabel();
+  dragMotion={pointer:event.pointerId,start:pos,time:actionProgress,base:v.sampleMotion(currentAction(),actionProgress),
+   key:hit.key,pose:hit.pose,z:hit.z,moved:false};
+  canvas.setPointerCapture(event.pointerId);canvas.style.cursor='grabbing';previewAction();
+ });
+ canvas.addEventListener('pointermove',event=>{
+  const drag=dragMotion;if(!drag||drag.pointer!==event.pointerId)return;
+  if(drag.key!==$('#actionKey').value||drag.pose!==$('#actionPose').value)return;
+  event.preventDefault();const pos=point(event),dx=pos.x-drag.start.x,dy=pos.y-drag.start.y;
+  if(!drag.moved&&Math.hypot(dx,dy)<2)return;
+  drag.moved=true;
+  const key={t:drag.time,x:Math.round((drag.base.x+dx/drag.z)*10)/10,y:Math.round((drag.base.y+dy/drag.z)*10)/10};
+  const keys=keyList(),index=keys.findIndex(k=>Math.abs(k.t-key.t)<.00005);
+  if(index<0)keys.push(key);else keys[index]=key;
+  saveMotionKeys(keys,key.t);syncNumbers();
+  $('#motionKeyInfo').textContent='드래그 키 '+Math.round(key.t*1000)/10+'% · X '+$('#motionX').value+' / Y '+$('#motionY').value+'px · 자동 저장';
+ });
+ const finish=event=>{
+  if(!dragMotion||event.pointerId!==dragMotion.pointer)return;
+  dragMotion=null;canvas.style.cursor='grab';
+  if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);
+  recordHistory();syncNumbers();
+ };
+ canvas.addEventListener('pointerup',finish);canvas.addEventListener('pointercancel',finish);canvas.addEventListener('lostpointercapture',finish);
 }
 function initActionEditor(){
  const labels={idle:'기본',walk:'걷기',attack:'일반공격 공통',slash:'종베기',sweep:'횡베기',thrust:'찌르기',heavy:'강베기',special:'필살기',guard:'방어',parry:'패링',
@@ -546,17 +631,33 @@ function initActionEditor(){
   const op=document.createElement('option');op.value=kind;
   op.textContent=kind==='auto'?'자동(기존 이벤트)':kind==='none'?'없음':kind;return op;
  }));
- $('#actionKey').onchange=updateActionControls;
- $('#actionPose').onchange=updateActionControls;
+ $('#actionKey').onchange=()=>{$('#motionKey').value='0';updateActionControls();};
+ $('#actionPose').onchange=()=>{$('#motionKey').value='0';updateActionControls();};
  $('#actionScene').onchange=previewAction;
  // One listener per UI control. Previous addEventListener and onclick
  // both toggled playback, cancelling each other out on every click.
- $('#motionKey').addEventListener('change',()=>{
-  actionProgress=({start:0,middle:.5,end:1}[$('#motionKey').value]??0);
-  actionPlaying=false;actionPreviousFrame=-1;
-  $('#actionPlay').textContent='▶ 재생';
-  $('#actionPlay').setAttribute('aria-pressed','false');
-  updateTimelineLabel();showMotionKey();previewAction();
+ $('#motionKey').addEventListener('change',()=>pauseAtKey(selectedKeyIndex()));
+ $('#motionAdd').addEventListener('click',()=>{
+  const keys=keyList(),t=Math.round(actionProgress*1000)/1000;
+  const existing=keys.findIndex(k=>Math.abs(k.t-t)<.00005);
+  if(existing>=0){pauseAtKey(existing);return;}
+  const point=v.sampleMotion(currentAction(),t);keys.push({t,...point});saveMotionKeys(keys,t);
+ });
+ $('#motionDelete').addEventListener('click',()=>{
+  const keys=keyList(),i=selectedKeyIndex();if(keys.length<=1)return;
+  keys.splice(i,1);saveMotionKeys(keys,keys[Math.min(i,keys.length-1)].t);
+ });
+ $('#motionKeyTime').addEventListener('change',()=>{
+  const input=$('#motionKeyTime'),keys=keyList(),i=selectedKeyIndex();
+  if(!input.value.trim()||!Number.isFinite(Number(input.value))){showMotionKey();return;}
+  const t=Math.round(Math.max(0,Math.min(100,Number(input.value)))*10)/1000;
+  if(keys.some((k,n)=>n!==i&&Math.abs(k.t-t)<.00005)){
+   showMotionKey();$('#motionKeyInfo').textContent='그 시간에는 이미 키가 있습니다. 다른 시간을 지정하세요.';return;
+  }
+  keys[i].t=t;saveMotionKeys(keys,t);
+ });
+ $('#motionInterpolation').addEventListener('change',()=>{
+  const keys=keyList();saveMotionKeys(keys,keys[selectedKeyIndex()].t,$('#motionInterpolation').value);
  });
  $('#actionTime').addEventListener('input',()=>{
   actionProgress=Math.max(0,Math.min(1,Number($('#actionTime').value)/100));
@@ -573,15 +674,9 @@ function initActionEditor(){
   if(!actionPlaying)previewAction();
  });
  for(const axis of ['X','Y'])$('#motion'+axis).addEventListener('input',()=>{
-  const key=$('#actionKey').value,pose=$('#actionPose').value;
-  if(!actions[key])actions[key]={};
-  const cfg=currentAction(),point=$('#motionKey').value;
-  actionPlaying=false;actionProgress=({start:0,middle:.5,end:1}[point]??0);
-  $('#actionPlay').textContent='▶ 재생';$('#actionPlay').setAttribute('aria-pressed','false');
-  updateTimelineLabel();
-  cfg.motion[point][axis.toLowerCase()]=Number($('#motion'+axis).value);
-  actions[key][pose]=v.clean(cfg);
-  persistActionEdit();showMotionKey();previewAction();
+  const keys=keyList(),index=selectedKeyIndex();
+  keys[index][axis.toLowerCase()]=Number($('#motion'+axis).value);
+  saveMotionKeys(keys,keys[index].t);
  });
  $('#bulkCopyFx').addEventListener('click',()=>applyActionToChecked('effect'));
  $('#bulkCopyMotion').addEventListener('click',()=>applyActionToChecked('motion'));
@@ -969,12 +1064,16 @@ document.addEventListener('keydown',event=>{
 const numberPairs=[];
 function syncNumbers(){for(const [range,number] of numberPairs)if(document.activeElement!==number)number.value=range.value;}
 function setupNumbers(){
- for(const id of ['compareScale','compareFeet','frameX','frameY','frameScale','motionX','motionY','fxX','fxY','fxScale']){
+ for(const id of ['actionTime','compareScale','compareFeet','frameX','frameY','frameScale','motionX','motionY','fxX','fxY','fxScale']){
   const range=$('#'+id),number=document.createElement('input');
   number.type='number';number.className='numeric-edit';number.id=id+'Number';
   number.min=range.min;number.max=range.max;number.step=range.step;
   number.setAttribute('aria-label',document.querySelector('label[for="'+id+'"]').textContent+' 숫자 직접 입력');
   range.after(number);numberPairs.push([range,number]);
+  number.addEventListener('input',()=>{
+   if(number.value.trim()===''||!Number.isFinite(Number(number.value)))return;
+   range.value=number.value;range.dispatchEvent(new Event('input',{bubbles:true}));
+  });
   number.addEventListener('change',()=>{
    if(number.value.trim()===''||!Number.isFinite(Number(number.value))){number.value=range.value;return;}
    range.value=String(Math.max(Number(range.min),Math.min(Number(range.max),Number(number.value))));
@@ -985,7 +1084,7 @@ function setupNumbers(){
  syncNumbers();
 }
 setupCompareEditor();initActionEditor();build();
-setupNumbers();recordHistory();
+setupNumbers();recordHistory();initMotionDrag();
 })();
 </script>
 <script src="practice-scale-publish.js?v=fx-autosave-v52"></script>

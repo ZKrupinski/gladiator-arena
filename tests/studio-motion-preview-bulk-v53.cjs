@@ -62,8 +62,8 @@ assert.match(inline,/const selected=\[\.\.\.selection\]\.filter\(key=>key!==sour
  'bulk excludes the source actor');
 assert.match(inline,/if\(mode==='effect'\)to\.effect=\{\.\.\.from\.effect\}/,
  'copy FX without changing destination sprite transforms');
-assert.match(inline,/else if\(mode==='motion'\)to\.motion=\{/,
- 'copy only 0,50,100% key positions, not FX or body scale');
+assert.match(inline,/else if\(mode==='motion'\)to\.motion=v\.cleanMotion\(from\.motion\)/,
+ 'copy all timed keys and interpolation without FX or body scale');
 assert.match(inline,/persistActionEdit\(\)/,'bulk keys saved immediately');
 assert.match(inline,/function persistScaleEdit\(\)/,'studio look/foot edits autosave without manual Save');
 assert.match(inline,/const sizeOK=p\.write\(state\),feetOK=p\.writeFeet\(feet\),actionOK=v\.write\(actions\)/,

@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const html=fs.readFileSync('public/tools/practice-scale-calibrator.html','utf8');
+const code=html.slice(html.indexOf('function initMotionDrag(){'),html.indexOf('function initActionEditor(){'));
+const handlers={},nodes=new Map();const $=id=>{if(!nodes.has(id))nodes.set(id,{value:id==='#actionKey'?'red':id==='#actionPose'?'slash':id==='#actionScene'?'duel':'',style:{},setAttribute(){}});return nodes.get(id)};
+const canvas=$('#actionCanvas');Object.assign(canvas,{width:520,height:520,getBoundingClientRect:()=>({left:0,top:0,width:260,height:260}),addEventListener:(type,fn)=>handlers[type]=fn,setPointerCapture(){},hasPointerCapture:()=>true,releasePointerCapture(){}});
+let alpha=255,saved=[],history=0;
+const ctx={$,document:{createElement:()=>({getContext:()=>({drawImage(){},getImageData:()=>({data:[0,0,0,alpha]})})})},previewHit:{key:'red',pose:'slash',scene:'duel',progress:.32,z:.5,left:10,top:10,width:150,height:180,frame:{width:100,height:100}},dragMotion:null,actionPlaying:false,actionProgress:.234,v:{sampleMotion:()=>({x:10,y:-5})},currentAction:()=>({}),recordHistory:()=>history++,updateTimelineLabel(){},previewAction(){},syncNumbers(){},keyList:()=>saved.length?saved:[{t:0,x:0,y:0},{t:1,x:0,y:0}],saveMotionKeys:keys=>saved=keys};
+vm.runInNewContext(code+';initMotionDrag();',ctx);
+const event=(x,y)=>({button:0,pointerId:1,clientX:x,clientY:y,preventDefault(){}});
+alpha=0;handlers.pointerdown(event(30,30));assert.equal(ctx.dragMotion,null,'transparent sprite area ignores drag');
+alpha=255;handlers.pointerdown(event(30,30));assert.equal(ctx.dragMotion.time,.234,'paused selected time preserved');
+handlers.pointermove(event(40,25));let k=saved.find(k=>k.t===.234);assert.equal(k.x,50,'CSS drag converts to canvas then scene world units');assert.equal(k.y,-25);
+handlers.pointermove(event(42,26));assert.equal(saved.length,3,'continued drag updates one timed key');
+handlers.pointerup(event(42,26));assert.equal(ctx.dragMotion,null);assert.equal(history,2,'one history checkpoint before/after drag');
+assert.equal(canvas.style.cursor,'grab');
+console.log('PASS: alpha hit testing, selected time, CSS/camera coordinate conversion, auto key creation/update, pointer release and single-step undo grouping');

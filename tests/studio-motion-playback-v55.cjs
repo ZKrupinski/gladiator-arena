@@ -30,15 +30,16 @@ const model={motion:{start:{x:-30,y:3},middle:{x:60,y:-23},end:{x:0,y:0}},
  effect:{kind:'auto',x:0,y:0,scale:1},x:0,y:0,scale:1};
 const actions={red:{slash:model}};
 let nextFrame=null,painting=[],edits=0;
+const profileRoot={PracticeScaleProfiles:{DEFAULTS:{red:1}}};
+vm.runInNewContext(fs.readFileSync('public/practice-visual-profiles.js','utf8'),{window:profileRoot});
 const context={
- document:{hidden:false,createElement:()=>({value:'',textContent:''})},
+ document:{hidden:false,createElement:()=>({value:'',textContent:'',setAttribute(){}})},
  window:{SpartacusPublishedActions:{}},
  requestAnimationFrame:fn=>{nextFrame=fn;},
- v:{ACTIONS:['slash'],EFFECTS:['auto','none'],fallbackAction:()=>null,
-    clean:obj=>obj,cleanMotion:m=>m},
+ v:{...profileRoot.PracticeVisualProfiles,ACTIONS:['slash']},
  keys:['red'],nameFor:()=> 'Red Champion',actions,selection:new Set(),
  '$':node,console,
- currentAction:()=>model,
+ currentAction:()=>profileRoot.PracticeVisualProfiles.clean(actions.red.slash),
  previewAction:()=>{painting.push(context.__state().progress);},
  updateActionControls:()=>{},
  persistActionEdit:()=>{edits++;return true;},
@@ -62,7 +63,7 @@ assert.equal(context.__state().playing,false,'selecting middle key pauses previe
 assert.equal(context.__state().progress,.5,'middle key seeks 50 percent');
 node('#motionX').value='65';
 handlers['#motionX:input'][0]();
-assert.equal(model.motion.middle.x,65,'motion key can be edited and saved');
+assert.equal(actions.red.slash.motion.keys[1].x,65,'motion key can be edited and saved');
 assert(edits>0);
 const play=handlers['#actionPlay:click'][0];
 play();
@@ -87,3 +88,20 @@ assert.match(inline,/baseY:anchorY-113\*fxZoom\+Number\(feet\[key\]\)\*fxZoom/,
 assert.doesNotMatch(inline,/\+offsetY\*fxZoom/,
  'old undefined FX offset cannot crash frame rendering');
 console.log('PASS: middle/end keys, mobile Play/Pause, single handlers, 30fps interpolation, saved XY and FX height');
+
+node('#actionTime').value='23.4';handlers['#actionTime:input'][0]();
+handlers['#motionAdd:click'][0]();
+assert.equal(actions.red.slash.motion.keys.length,4);
+assert.equal(context.__state().progress,.234,'new key selected at requested time');
+assert.equal(node('#motionKey').value,'1','new key retains correct sorted index');
+handlers['#motionAdd:click'][0]();assert.equal(actions.red.slash.motion.keys.length,4,'duplicate time selects existing key');
+node('#motionY').value='-12.7';handlers['#motionY:input'][0]();
+assert.equal(actions.red.slash.motion.keys[1].y,-12.7,'subpixel key positions retained');
+node('#motionKeyTime').value='72.1';handlers['#motionKeyTime:change'][0]();
+assert.equal(context.__state().progress,.721,'retimed key remains selected after sorting');
+assert.equal(node('#motionKey').value,'2');
+node('#motionKeyTime').value='50';handlers['#motionKeyTime:change'][0]();
+assert.match(node('#motionKeyInfo').textContent,/이미 키/,'collision never silently deletes another key');
+assert.equal(actions.red.slash.motion.keys.length,4);
+handlers['#motionDelete:click'][0]();assert.equal(actions.red.slash.motion.keys.length,3);
+console.log('PASS: arbitrary 23.4% key, duplicate select, 0.1px edit, retime/reorder, collision protection and delete');

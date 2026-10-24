@@ -19,21 +19,50 @@ const baseline=JSON.stringify(PUBLISHED);
 const between=(n,a,b,d=0)=>Number.isFinite(Number(n))?Math.max(a,Math.min(b,Number(n))):d;
 const round=(n)=>Math.round(n*1000)/1000;
 const neutralPoint=()=>({x:0,y:0});
-const cleanPoint=p=>({
- x:Math.round(between(p?.x,-150,150)),
- y:Math.round(between(p?.y,-150,150))
-});
+const cleanPoint=p=>({x:round(between(p?.x,-150,150)),y:round(between(p?.y,-150,150))});
 function cleanMotion(motion){
  const m=motion&&typeof motion==='object'?motion:{};
- return {start:cleanPoint(m.start),middle:cleanPoint(m.middle),end:cleanPoint(m.end)};
+ const legacy={start:cleanPoint(m.start),middle:cleanPoint(m.middle),end:cleanPoint(m.end)};
+ if(!Array.isArray(m.keys)||!m.keys.length)return legacy;
+ const unique=new Map();
+ for(const k of m.keys){
+  if(!k||typeof k.t!=='number'||!Number.isFinite(k.t))continue;
+  const t=Math.round(between(k.t,0,1)*10000)/10000;
+  unique.set(t,{t,...cleanPoint(k)});
+ }
+ if(!unique.size)return legacy;
+ return {...legacy,keys:[...unique.values()].sort((a,b)=>a.t-b.t),
+  interpolation:['smooth','ease','linear'].includes(m.interpolation)?m.interpolation:'smooth'};
+}
+function motionKeys(value){
+ const m=cleanMotion(value?.motion||value);
+ return m.keys||[{t:0,...m.start},{t:.5,...m.middle},{t:1,...m.end}];
 }
 function sampleMotion(value,progress=0){
- const m=cleanMotion(value?.motion||value);
- const t=between(progress,0,1),u=t<=.5?t*2:(t-.5)*2;
- const from=t<=.5?m.start:m.middle,to=t<=.5?m.middle:m.end;
- // Continuous ease-in/ease-out interpolation through start/50%/end keys.
- const e=u*u*(3-2*u);
- return {x:round(from.x+(to.x-from.x)*e),y:round(from.y+(to.y-from.y)*e)};
+ const m=cleanMotion(value?.motion||value),keys=motionKeys(m),t=between(progress,0,1);
+ if(t<=keys[0].t)return cleanPoint(keys[0]);
+ if(t>=keys.at(-1).t)return cleanPoint(keys.at(-1));
+ let i=0;while(i<keys.length-2&&keys[i+1].t<t)i++;
+ const a=keys[i],b=keys[i+1],h=b.t-a.t,u=(t-a.t)/h;
+ const mode=m.keys?m.interpolation:'ease';
+ const out={};
+ for(const axis of ['x','y']){
+  if(mode==='linear'){out[axis]=round(a[axis]+(b[axis]-a[axis])*u);continue;}
+  if(mode==='ease'){out[axis]=round(a[axis]+(b[axis]-a[axis])*u*u*(3-2*u));continue;}
+  // Shape-preserving cubic Hermite: continuous velocity at interior keys,
+  // supports uneven timing and never overshoots either adjacent key value.
+  const slope=j=>{
+   const sec=k=>(keys[k+1][axis]-keys[k][axis])/(keys[k+1].t-keys[k].t);
+   if(j===0)return sec(0);if(j===keys.length-1)return sec(j-1);
+   const left=sec(j-1),right=sec(j);if(left*right<=0)return 0;
+   const hl=keys[j].t-keys[j-1].t,hr=keys[j+1].t-keys[j].t;
+   const w1=2*hr+hl,w2=hr+2*hl;return (w1+w2)/(w1/left+w2/right);
+  };
+  const u2=u*u,u3=u2*u;
+  out[axis]=round((2*u3-3*u2+1)*a[axis]+(u3-2*u2+u)*h*slope(i)+
+   (-2*u3+3*u2)*b[axis]+(u3-u2)*h*slope(i+1));
+ }
+ return out;
 }
 function clean(value){
  const v=value&&typeof value==='object'?value:{},e=v.effect&&typeof v.effect==='object'?v.effect:{};
@@ -112,6 +141,6 @@ function effectGeometry({kind,baseX=0,baseY=0,face=1,zoom=1,pose=null,
  });
 }
 root.PracticeVisualProfiles=Object.freeze({KEY,ACTIONS,ACTION_FALLBACK,fallbackAction,
- EFFECTS,FX_SIZES,clean,cleanMotion,sampleMotion,sanitize,read,all,resolve,write,reset,size,effectGeometry});
+ EFFECTS,FX_SIZES,clean,cleanMotion,motionKeys,sampleMotion,sanitize,read,all,resolve,write,reset,size,effectGeometry});
 if(typeof module!=='undefined')module.exports=root.PracticeVisualProfiles;
 })(typeof window!=='undefined'?window:globalThis);
