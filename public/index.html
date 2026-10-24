@@ -309,7 +309,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 #startScreen #ludusResetCancel{background:#a8763d;border:1px solid #f3d29c;color:#fff5df}
 #startScreen #ludusResetConfirm{background:#3b2523;border:1px solid #94635c;color:#f2cac4}
 @media(max-width:600px){#startScreen .ludus-reset-trigger{min-height:34px;padding:5px 9px;font-size:10px}}
-</style><link rel="stylesheet" href="ludus-practice.css?v=exercitium-infinitum-v26"><link rel="stylesheet" href="market-scene.css?v=no-hover-vector-v23"><link rel="stylesheet" href="market-transactions.css?v=all-market-skins-v24"><link rel="stylesheet" href="ludus-scene.css?v=roster-proportions-v10"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=aptitudes-v22"><link rel="stylesheet" href="ludus-armory-live.css?v=armory-icon-centered-v16"><link rel="stylesheet" href="arena-excitement.css?v=rare-jackpot-six-rewards-v7"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=whip-hit-v1"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=result-actions-centered-v19"><link rel="stylesheet" href="beast-hunt.css?v=venatio-thumbnail-strip-v17"><link rel="stylesheet" href="spartacus-title.css?v=glory-v1"><link rel="stylesheet" href="mobile-legibility.css?v=portrait-tablet-v18"><link rel="stylesheet" href="arena-responsive.css?v=roman-name-qa-v20"></head><body>
+</style><link rel="stylesheet" href="ludus-practice.css?v=exercitium-infinitum-v26"><link rel="stylesheet" href="market-scene.css?v=no-hover-vector-v23"><link rel="stylesheet" href="market-transactions.css?v=all-market-skins-v24"><link rel="stylesheet" href="ludus-scene.css?v=roster-proportions-v10"><link rel="stylesheet" href="ludus-approved-scenes.css?v=1"><link rel="stylesheet" href="ludus-return.css?v=2"><link rel="stylesheet" href="ludus-menu-live.css?v=1"><link rel="stylesheet" href="ludus-domina-expressions.css?v=2"><link rel="stylesheet" href="ludus-cards.css?v=aptitudes-v22"><link rel="stylesheet" href="ludus-armory-live.css?v=armory-icon-centered-v16"><link rel="stylesheet" href="arena-excitement.css?v=rare-jackpot-six-rewards-v7"><link rel="stylesheet" href="market-merchant-live.css?v=4"><link rel="stylesheet" href="market-selection-live.css?v=1"><link rel="stylesheet" href="ludus-training-doctore.css?v=11"><link rel="stylesheet" href="ludus-training-runtime.css?v=whip-hit-v1"><link rel="stylesheet" href="arena-lineup-visual.css?v=2"><link rel="stylesheet" href="arena-herald.css?v=3"><link rel="stylesheet" href="arena-result-roman-v2.css?v=result-actions-centered-v19"><link rel="stylesheet" href="beast-hunt.css?v=venatio-thumbnail-strip-v17"><link rel="stylesheet" href="spartacus-title.css?v=glory-v1"><link rel="stylesheet" href="mobile-legibility.css?v=portrait-tablet-v18"><link rel="stylesheet" href="arena-responsive.css?v=roman-name-qa-v20"><link rel="stylesheet" href="arena-coop.css?v=concordia-v58"></head><body>
 <div class="page"><header class="masthead"><div class="brand">GLADIATOR <small>THE GLADIUS RENAISSANCE · NEW ERA</small></div><nav class="links"><a class="gold" href="https://github.com/ZKrupinski/gladiator-arena" target="_blank" rel="noopener noreferrer">GitHub 프로젝트</a></nav></header>
 <div class="headline"><div><span class="label">THE ARENA / NEW ERA 4.7</span> <span class="match-info"><b id="roundLabel">ROUND 1</b><span id="autoState" class="auto-indicator">AUTO 대기</span></span><div class="subtitle">새 3D 애니메이션풍 아트 리소스 · 실전 전투 검증</div></div><div id="cooldown" class="subtitle">필살기 준비 완료</div></div>
 <div class="hud"><div class="hud-unit"><div class="hud-line"><span id="pName">무르밀로</span><span id="pValue">138 / 138</span></div><div class="meter"><div id="pHp" style="width:100%"></div></div><div class="meter st"><div id="pSt" style="width:100%"></div></div></div><div class="timer"><small>TIME</small><span id="clock">90</span></div><div class="hud-unit"><div class="hud-line"><span id="eName">레티아리우스</span><span id="eValue">116 / 116</span></div><div class="meter"><div id="eHp" style="width:100%"></div></div><div class="meter st"><div id="eSt" style="width:100%"></div></div></div></div>
@@ -863,7 +863,7 @@ function careerTrainingCost(h,stat){
 Object.defineProperty(CAREER,'hero',{get(){return this.roster[this.active]||null;}});
 function careerHealth(h){const max=ArenaBalance.heroStats(h,DATA[h.cls],equipmentBonus(h)).hp;return {max,current:Math.max(1,max-h.injury)};}
 function careerEligible(h){return ArenaLineup.condition(h).eligible;}
-function saveCareer(){ArenaLoot.ensure(CAREER);try{localStorage.setItem(CAREER_KEY,JSON.stringify({gold:CAREER.gold,glory:CAREER.glory,fights:CAREER.fights,wins:CAREER.wins,roster:CAREER.roster,active:CAREER.active,message:CAREER.message,lastPrize:CAREER.lastPrize||null,lastLoot:CAREER.lastLoot||null,discoveredGear:CAREER.discoveredGear,armoryInventory:CAREER.armoryInventory,gearStorageV2:true,lootDryStreak:CAREER.lootDryStreak,lootRareStreak:CAREER.lootRareStreak,pendingOpponent:CAREER.pendingOpponent||null,marketSeed:CAREER.marketSeed||0,marketInventory:CAREER.marketInventory||null}));}catch(err){}}
+function saveCareer(){ArenaLoot.ensure(CAREER);try{localStorage.setItem(CAREER_KEY,JSON.stringify({gold:CAREER.gold,glory:CAREER.glory,fights:CAREER.fights,wins:CAREER.wins,roster:CAREER.roster,active:CAREER.active,message:CAREER.message,lastPrize:CAREER.lastPrize||null,lastLoot:CAREER.lastLoot||null,discoveredGear:CAREER.discoveredGear,armoryInventory:CAREER.armoryInventory,gearStorageV2:true,lootDryStreak:CAREER.lootDryStreak,lootRareStreak:CAREER.lootRareStreak,pendingOpponent:CAREER.pendingOpponent||null,marketSeed:CAREER.marketSeed||0,marketInventory:CAREER.marketInventory||null,coopRuns:CAREER.coopRuns||0,coopWins:CAREER.coopWins||0,coopLast:CAREER.coopLast||null}));return true;}catch(err){return false;}}
 // Add one dedicated fighter to existing saves without changing old fighters.
 function installAnimatedMurmilloStarter(){
  if(CAREER.roster.some(isAnimatedMurmillo))return false;
@@ -3351,6 +3351,7 @@ function loop(t){
  if(!t0)t0=t;
  const dt=clamp((t-t0)/1000,0,.04);
  t0=t;
+ if(window.ArenaCoop?.isOpen())return;
  // The simulation alone slows; camera, input, canvas and audio timing stay
  // responsive. The clock runs in real time so focus ends even during hitstop.
  let gameDt=dt;
@@ -3466,7 +3467,56 @@ $('#classChoice').onchange=refreshFighterPreviews;refreshFighterPreviews();
 $('#classSubtitle').textContent=DATA[$('#classChoice').value].eng;
 
 /* Visual Ludus adapter; the existing career state remains authoritative. */
+// Independent simultaneous team match. Practice and sequential duel progress stay separate.
+function coopPreview(indices){
+ const team=indices.map(i=>CAREER.roster[i]).filter(Boolean);if(team.length!==5)return [];
+ const average=key=>team.reduce((sum,h)=>sum+ArenaBalance.heroStats(h,DATA[h.cls],equipmentBonus(h))[key],0)/5;
+ const level=Math.max(1,Math.round(team.reduce((n,h)=>n+careerLevel(h),0)/5));
+ return ['murmillo','retiarius','thraex','murmillo','thraex'].map((cls,i)=>{
+  const stage=level>=20?5:level>=15?4:level>=10?3:level>=5?2:1;
+  const growthType=cls+'_a',look=growthType+'_L'+stage;
+  return {name:['방패장 루키우스','포획수 네로','검객 카시우스','호위병 티투스','돌격수 마르쿠스'][i],cls,level,stage,growthType,look,visualId:look,
+   combat:{hp:Math.round(average('hp')*(cls==='murmillo'?1.12:.94)),atk:Math.round(average('atk')*(cls==='thraex'?1.04:.96)),
+    move:average('move'),armor:cls==='murmillo'?.2:.1,parry:Math.min(.3,average('parry'))},injury:0,fatigue:0};
+ });
+}
+function startCoopMatch(indices){
+ if(!CAREER_SELECTING||window.ArenaCoop?.isOpen()||!window.ArenaCoop)return false;
+ if(!Array.isArray(indices)||indices.length!==5||new Set(indices).size!==5||indices.some(i=>!Number.isInteger(i)||!CAREER.roster[i]||!careerEligible(CAREER.roster[i])))return false;
+ const heroes=indices.map(i=>CAREER.roster[i]);
+ const allies=heroes.map((h,j)=>({...h,index:indices[j],look:window.LudusBridge.appearanceKey(indices[j]),combat:window.LudusBridge.combatStats(indices[j])}));
+ const enemies=coopPreview(indices),averageLevel=Math.round(heroes.reduce((n,h)=>n+careerLevel(h),0)/5);
+ // Charge participation once before combat, including reloads or abandoned tabs.
+ const oldRuns=CAREER.coopRuns||0,oldFatigue=heroes.map(h=>h.fatigue||0);
+ heroes.forEach(h=>{h.fatigue=Math.min(100,(h.fatigue||0)+8);});CAREER.coopRuns=oldRuns+1;
+ if(!saveCareer()){
+  heroes.forEach((h,j)=>{h.fatigue=oldFatigue[j];});CAREER.coopRuns=oldRuns;
+  CAREER.message='저장할 수 없어 협동전을 시작하지 않았습니다. 브라우저 저장 공간을 확인하세요.';renderCareer();const notice=$('#careerHub .lc-hint');if(notice)notice.textContent=CAREER.message;return false;
+ }
+ let settled=false,summary=null;CAREER_SELECTING=false;$('#careerHub').hidden=true;
+ const opened=window.ArenaCoop.open(allies,enemies,{
+  onFinish:result=>{
+   if(settled)return summary;settled=true;
+   const retreat=result.reason==='retreat',gold=result.win?220+averageLevel*25:0,glory=result.win?8:0;
+   CAREER.gold+=gold;CAREER.glory+=glory;if(result.win)CAREER.coopWins=(CAREER.coopWins||0)+1;
+   const awards=result.units.filter(u=>u.side==='ally').map(u=>{
+    const h=CAREER.roster[u.index],xp=retreat?0:result.win?35+averageLevel*4:12+averageLevel*2;
+    const injury=Math.ceil((u.startHp-u.hp)/u.maxHp*18)+(u.dead?8:0);
+    h.injury=Math.min(100,(h.injury||0)+injury);h.fatigue=Math.min(100,(h.fatigue||0)+Math.min(12,Math.floor(result.time/8)));
+    h.coopFights=(h.coopFights||0)+1;if(result.win)h.coopWins=(h.coopWins||0)+1;
+    grantCareerXp(h,xp);return {index:u.index,name:h.name,xp,injury:h.injury,fatigue:h.fatigue};
+   });
+   CAREER.coopLast={win:result.win,reason:result.reason,gold,glory,teamwork:result.teamwork,time:Math.round(result.time)};
+   CAREER.message='5vs5 협동전 '+(retreat?'철수':result.win?'승리':'패배')+' · '+gold+' D · 협동 '+result.teamwork+'회';
+   summary={gold,glory,heroes:awards,saved:saveCareer(),retry:saveCareer};return summary;
+  },
+  onClose:()=>{CAREER_SELECTING=true;$('#careerHub').hidden=false;renderCareer();}
+ });
+ if(!opened){heroes.forEach((h,j)=>{h.fatigue=oldFatigue[j];});CAREER.coopRuns=oldRuns;saveCareer();CAREER_SELECTING=true;$('#careerHub').hidden=false;renderCareer();}
+ return opened;
+}
 window.LudusBridge={
+ coopPreview,coopStart:startCoopMatch,
  appearanceKey:i=>window.PracticeScaleProfiles?.look?.({side:'ally',index:i},CAREER.roster)||null,
  trainingCost:(i,stat)=>careerTrainingCost(CAREER.roster[i],stat),
  aptitude:(i,stat)=>ArenaBalance.trainingAptitude(CAREER.roster[i],stat),
@@ -3629,6 +3679,6 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=practice-route-v26"></script><script src="practice-scale-published.js?v=true-size-v54"></script><script src="practice-scale-profiles.js?v=true-size-v54"></script><script src="practice-visual-profiles.js?v=motion-timeline-v53&qa=v57"></script><script src="ludus-practice.js?v=motion-timeline-v53"></script><script src="ludus-training-runtime.js?v=motion-timeline-v53"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=portrait-fullteam-v17"></script><script src="ludus-armory-live.js?v=portrait-fullteam-v17"></script><script src="ludus-cards.js?v=independent-looks-v25"></script>
+<script src="ludus-scene.js?v=practice-route-v26"></script><script src="practice-scale-published.js?v=true-size-v54"></script><script src="practice-scale-profiles.js?v=true-size-v54"></script><script src="practice-visual-profiles.js?v=motion-timeline-v53&qa=v57"></script><script src="ludus-practice.js?v=motion-timeline-v53"></script><script src="ludus-training-runtime.js?v=motion-timeline-v53"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=portrait-fullteam-v17"></script><script src="ludus-armory-live.js?v=portrait-fullteam-v17"></script><script src="arena-coop-core.js?v=concordia-v58"></script><script src="arena-coop.js?v=concordia-v58"></script><script src="ludus-cards.js?v=concordia-v58"></script>
 
 </body></html>

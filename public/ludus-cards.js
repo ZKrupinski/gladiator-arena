@@ -118,30 +118,30 @@ function beginDraft(selectedIndex){
  chosen=Number.isInteger(selectedIndex)?selectedIndex:-1;
  matchMode='1v1';squadPicks=chosen>=0?[chosen]:[];scrollPosition=0;
 }
-function draftConfig(){return window.ArenaBalance?.MODES?.[matchMode]||{allies:1,enemies:1,label:'정규 결투'};}
+function draftConfig(){if(matchMode==='5v5')return {allies:5,enemies:5,label:'실시간 협동전'};return window.ArenaBalance?.MODES?.[matchMode]||{allies:1,enemies:1,label:'정규 결투'};}
 function draft(enemy,painter){
  const a=bridge(),s=state();if(!s||!enemy)return;
  paintOpponent=painter||paintOpponent;
  if(chosen<0||!s.roster[chosen]||wounded(s.roster[chosen]))
   chosen=!wounded(s.roster[s.active])?s.active:s.roster.findIndex(h=>!wounded(h));
- const config=draftConfig();
+ const config=draftConfig(),coop=matchMode==='5v5';
  squadPicks=squadPicks.filter(i=>s.roster[i]&&!wounded(s.roster[i])).slice(0,config.allies);
  if(!squadPicks.length&&chosen>=0)squadPicks=[chosen];
  if(matchMode==='1v1')squadPicks=chosen>=0?[chosen]:[];
  const ready=squadPicks.length===config.allies,pick=s.roster[squadPicks[0]??chosen];
  // A new choice or changed equipment must immediately refresh the opponent
  // shown on the draft screen, not only the enemy generated at match start.
- if(ready)enemy=a.matchOpponent?.(squadPicks)||enemy;
+ if(ready&&!coop)enemy=a.matchOpponent?.(squadPicks)||enemy;
  // Incomplete squads never advertise a stale single-fighter enemy as their matched team.
- const choices=['1v1','1v2','1v3','2v2','3v3'];
+ const choices=['1v1','1v2','1v3','2v2','3v3','5v5'];
  const controls='<div class="lc-mode-picker" role="group" aria-label="아레나 대전 형식">'+choices.map(mode=>{
-  const option=window.ArenaBalance?.MODES?.[mode]||{};
+  const option=mode==='5v5'?{label:'실시간 협동전'}:window.ArenaBalance?.MODES?.[mode]||{};
   return '<button type="button" class="'+(mode===matchMode?'selected':'')+'" data-battle-mode="'+mode+
    '" aria-pressed="'+(mode===matchMode)+'">'+mode+' <small>'+safe(option.label||'')+'</small></button>';
  }).join('')+'<button type="button" class="lc-beast-mode" data-beast-hunt="open" aria-label="야수전 스테이지 선택">🐾 야수전 <small>VENATIO</small></button></div>';
- const info=matchMode==='1v1'?'정규 1:1 결투':
+ const info=coop?'5vs5 동시 전투 · 선택 '+squadPicks.length+'/5명':matchMode==='1v1'?'정규 1:1 결투':
   '연속 1:1 · 아군 '+config.allies+'명 / 적 '+config.enemies+'명 · 선택 '+squadPicks.length+'/'+config.allies+'명';
- const enemies=ready?(a.previewMatch?.(matchMode,enemy)||[enemy]):[];
+ const enemies=ready?(coop?a.coopPreview(squadPicks):(a.previewMatch?.(matchMode,enemy)||[enemy])):[];
  draftEnemies=enemies;
  const ourSequence=squadPicks.map((i,order)=>'<span class="lc-lineup-ally"><em>'+(order+1)+'번</em>'+safe(s.roster[i]?.name||'')+'</span>').join('')||
   '<span class="lc-lineup-empty">출전할 검투사를 선택하세요</span>';
@@ -155,24 +155,24 @@ function draft(enemy,painter){
    '<small>'+(unit?safe(className(unit))+' · Lv.'+Number(unit.level||1):'아군 '+config.allies+'명 선택 후 공개')+'</small></div></div>';
  }).join('');
  const strength=squadPicks.reduce((total,i)=>total+(window.ArenaBalance?.heroPower?.(s.roster[i])||0),0);
- const matched=enemy.match;
+ const matched=coop?null:enemy.match;
  const matchSummary=!ready?'출전 '+squadPicks.length+'/'+config.allies+'명 선택 중 · 모두 선택하면 상대팀 전원이 해당 전력으로 갱신됩니다.':
-  matched?'아군 평균 예상 전력 '+matched.power+' · 매칭 Lv.'+enemy.level+
+  coop?'10명 동시 전투 · 패링 반격 / 포획 협공 / 방패 엄호 / 측면 협공 · 120초 제한':matched?'아군 평균 예상 전력 '+matched.power+' · 매칭 Lv.'+enemy.level+
    ' · 장비 '+matched.equipment+'부위 / 훈련 '+matched.training:'기본 대진';
- const rivalRole=ready?(window.ArenaBalance?.TRAITS?.[enemy.cls]?.role||'투기장 도전자'):'편성 대기';
+ const rivalRole=coop?'협동 전술':ready?(window.ArenaBalance?.TRAITS?.[enemy.cls]?.role||'투기장 도전자'):'편성 대기';
  const host='<section class="lc-screen lc-draft-screen" aria-label="아레나 출전 선수 선택"><div class="lc-top">'+header('아레나 출전',s)+'</div>'+
- '<div class="lc-match-top"><span>도전 '+Number(enemy.round||1)+'회차</span><strong>⚔ '+info+'</strong><span>'+(enemy.boss?'CHAMPION BATTLE':'ARENA CHALLENGE')+'</span></div>'+
+ '<div class="lc-match-top"><span>도전 '+Number(enemy.round||1)+'회차</span><strong>⚔ '+info+'</strong><span>'+(coop?'CONCORDIA · TEAM BATTLE':enemy.boss?'CHAMPION BATTLE':'ARENA CHALLENGE')+'</span></div>'+
  '<div class="lc-mode-note">경기 형태 선택은 현재 개발 확인용 임시 메뉴 · 향후 이벤트에 따라 자동 지정</div>'+controls+
  '<div class="lc-screen-body lc-draft-body"><div class="lc-gallery"><div class="lc-section-head"><h2>♜ 나의 검투사</h2><small>출전 선수 '+config.allies+'명 선택</small></div>'+
- '<div class="lc-ally-order"><strong>아군 출전 순서 · 승자는 다음 상대와 연전</strong><div>'+ourSequence+'</div></div>'+
+ '<div class="lc-ally-order"><strong>'+(coop?'동시 출전 · 선택한 5명이 한 팀으로 싸웁니다':'아군 출전 순서 · 승자는 다음 상대와 연전')+'</strong><div>'+ourSequence+'</div></div>'+
  '<div class="lc-card-grid">'+s.roster.map((h,i)=>card(h,i,squadPicks.includes(i),true)).join('')+'</div></div>'+
- '<div class="lc-opponent"><div class="lc-section-head"><h2>⚔ 이번 경기의 상대</h2><small>'+(enemy.boss?'챔피언 보스전':'일반 경기')+'</small></div>'+
+ '<div class="lc-opponent"><div class="lc-section-head"><h2>⚔ 이번 경기의 상대</h2><small>'+(coop?'5vs5 협동전':enemy.boss?'챔피언 보스전':'일반 경기')+'</small></div>'+
  '<div class="lc-enemy-lineup lc-team-lineup"><strong>상대팀 전원 · '+config.enemies+'명 '+(ready?' · 매칭 완료':' · 출전자 선택 대기')+'</strong>'+
  '<div class="lc-enemy-team lc-team-count-'+config.enemies+'">'+theirSequence+'</div></div>'+
- '<div class="lc-matchup"><div><small>아군 전력</small><strong>'+safe(pick?pick.name:'선택 필요')+' · '+strength+'</strong></div><span>VS</span><div><small>상대 전술 · '+safe(rivalRole)+'</small><strong>'+safe(ready?enemy.name:'선택 완료 시 공개')+'</strong></div></div>'+
+ '<div class="lc-matchup"><div><small>아군 전력</small><strong>'+safe(pick?pick.name:'선택 필요')+' · '+strength+'</strong></div><span>VS</span><div><small>상대 전술 · '+safe(rivalRole)+'</small><strong>'+safe(ready?(coop?'상대 검투사 5명':enemy.name):'선택 완료 시 공개')+'</strong></div></div>'+
  '<div class="lc-mode-note">'+safe(matchSummary)+'</div>'+
- '<div class="lc-buttons lc-draft-actions"><button id="lcDraftCancel">선택 취소</button><button class="lc-emphasis" id="lcDeploy" '+(!ready?'disabled':'')+'>⚔ '+(ready?(matchMode==='1v1'?safe(pick.name)+' 출전':'연속 1:1 대진 '+matchMode+' 시작'):'검투사 '+config.allies+'명 필요')+'</button></div>'+
- '</div></div><div class="lc-hint">현재 출전한 검투사는 기존 전투 조작 그대로 사용 · 승자는 남은 체력으로 다음 상대와 싸움 · 부상 80 / 피로 80 이상 출전 불가</div></section>';
+ '<div class="lc-buttons lc-draft-actions"><button id="lcDraftCancel">선택 취소</button><button class="lc-emphasis" id="lcDeploy" '+(!ready?'disabled':'')+'>⚔ '+(ready?(coop?'5vs5 협동전 시작':matchMode==='1v1'?safe(pick.name)+' 출전':'연속 1:1 대진 '+matchMode+' 시작'):'검투사 '+config.allies+'명 필요')+'</button></div>'+
+ '</div></div><div class="lc-hint">'+(coop?'자동 전투 + 집중 공격 / 엄호 / 총공세 명령 · 출전 피로 8 · 결과에 따라 경험치·보상·부상 저장 · 일반 결투 진행도 별도':'현재 출전한 검투사는 기존 전투 조작 그대로 사용 · 승자는 남은 체력으로 다음 상대와 싸움 · 부상 80 / 피로 80 이상 출전 불가')+'</div></section>';
  const old=$('.lc-gallery .lc-card-grid');if(old)scrollPosition=old.scrollTop;
  reveal(host,'draft');
  const root=$('.lc-screen'),grid=root.querySelector('.lc-card-grid');if(grid)grid.scrollTop=scrollPosition;
@@ -201,6 +201,7 @@ function draft(enemy,painter){
  root.querySelector('#lcDeploy').onclick=()=>{
   if(!ready)return;
   if(matchMode==='1v1')a.deploy(squadPicks[0]);
+  else if(coop)a.coopStart?.(squadPicks);
   else a.squadStart?.(matchMode,squadPicks);
  };
 }
