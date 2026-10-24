@@ -1,11 +1,10 @@
 {
   "assetSha256": {
-    "public/tools/practice-scale-calibrator.html": "5b148221475f4e4a39aee7952ececad786997a961c0adbe6cdacd481f9c573a6",
-    "public/tools/practice-scale-publish.js": "f8b0cf2e312ff9ba8c83c131498e62fddbce619a9cd64acf1aeb500518651301"
+    "public/ludus-practice.js": "4e944b5af8390d96cde7aa16ebeb4adbed92a9e4d8110b89588c9d5794e8e432"
   },
-  "baseCommit": "a98c807afbac39b53133b42217f490c6b192f791",
+  "baseCommit": "fb7b966c335f85af89f77f17612ac2e0187dfd16",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "scale-save-status-token-guide-20261024-v40",
+  "releaseId": "practice-footwork-republish-20261024-v41",
   "releaseProtocol": "spartacus-uploader-v1"
 }
