@@ -65,6 +65,11 @@ assert.match(inline,/if\(mode==='effect'\)to\.effect=\{\.\.\.from\.effect\}/,
 assert.match(inline,/else if\(mode==='motion'\)to\.motion=\{/,
  'copy only 0,50,100% key positions, not FX or body scale');
 assert.match(inline,/persistActionEdit\(\)/,'bulk keys saved immediately');
+assert.match(inline,/function persistScaleEdit\(\)/,'studio look/foot edits autosave without manual Save');
+assert.match(inline,/const sizeOK=p\.write\(state\),feetOK=p\.writeFeet\(feet\),actionOK=v\.write\(actions\)/,
+ 'editing FX also persists pending size and foot changes atomically in the studio');
+assert.match(inline,/const setFoot=v=>\{feet\[key\]=p\.clampFoot\(v\);redraw\(\);persistScaleEdit\(\);\}/,
+ 'editing foot sliders saves immediately');
 const practice=fs.readFileSync('public/ludus-practice.js','utf8');
 assert.match(practice,/sampleMotion/,'practice samples same authoring keys');
 const duel=fs.readFileSync('public/index.html','utf8');

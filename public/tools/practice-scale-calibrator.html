@@ -461,8 +461,19 @@ async function previewAction(){
   $('#actionFrameStatus').textContent='애니메이션 미리보기 로딩 실패: '+error.message;
  }
 }
+function persistScaleEdit(){
+ // All 31 look/foot sliders persist immediately, like per-action FX edits.
+ // The game reads these exact same device drafts until GitHub publication.
+ const sizeOK=p.write(state),feetOK=p.writeFeet(feet),ok=sizeOK&&feetOK;
+ if(!ok)announce('크기·발높이 자동저장 실패: JSON 내보내기로 백업하세요.');
+ document.dispatchEvent(new Event('input'));
+ return ok;
+}
 function persistActionEdit(){
- const ok=v.write(actions);
+ // Save the complete studio snapshot, not just FX: an unsaved size change
+ // must never make the editor preview disagree with the next game load.
+ const sizeOK=p.write(state),feetOK=p.writeFeet(feet),actionOK=v.write(actions);
+ const ok=sizeOK&&feetOK&&actionOK;
  const status=$('#actionAutosave');
  if(status)status.textContent=ok?
   '✓ 이 기기에 자동 저장됨 · GitHub 원본 게시를 해야 모든 기기에 적용':
@@ -665,10 +676,12 @@ function mutateSelected(fn){
  origin=new Map([...selection].map(k=>[k,Number(state[k])]));
  $('#bulkSlider').value='1';$('#bulkValue').textContent='×1.00';
  if($('#sort').value==='large'||$('#sort').value==='small')sortCards();
+ persistScaleEdit();
 }
 function mutateSelectedFeet(fn){
  if(!selection.size)return;
  for(const key of selection){feet[key]=p.clampFoot(fn(Number(feet[key]),key));refresh(key);}
+ persistScaleEdit();
 }
 function sortCards(){
  const mode=$('#sort').value;
@@ -755,12 +768,13 @@ function build(){
    state[key]=p.clamp(v);redraw();
    updateBulkState();
    if(['large','small'].includes($('#sort').value))sortCards();
+   persistScaleEdit();
   };
   slider.addEventListener('input',()=>set(slider.value));
   minus.addEventListener('click',()=>set(Number(state[key])*.95));
   plus.addEventListener('click',()=>set(Number(state[key])*1.05));
   original.addEventListener('click',()=>set(p.DEFAULTS[key]));
-  const setFoot=v=>{feet[key]=p.clampFoot(v);redraw();};
+  const setFoot=v=>{feet[key]=p.clampFoot(v);redraw();persistScaleEdit();};
   footSlider.addEventListener('input',()=>setFoot(footSlider.value));
   up.addEventListener('click',()=>setFoot(Number(feet[key])-5));
   down.addEventListener('click',()=>setFoot(Number(feet[key])+5));
@@ -794,6 +808,7 @@ $('#bulkFootReset').addEventListener('click',()=>mutateSelectedFeet((_,key)=>p.F
 $('#bulkSlider').addEventListener('input',e=>{
  const factor=Number(e.target.value);$('#bulkValue').textContent='×'+factor.toFixed(2);
  for(const key of selection){state[key]=p.clamp(origin.get(key)*factor);refresh(key);}
+ persistScaleEdit();
 });
 $('#bulkSlider').addEventListener('change',()=>{
  origin=new Map([...selection].map(key=>[key,Number(state[key])]));
