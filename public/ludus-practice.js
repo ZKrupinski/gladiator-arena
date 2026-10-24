@@ -303,7 +303,7 @@ function emitVfx(kind,unit,other,emphasis=false){
  const geometry=settings?.effectGeometry?.({
   kind:chosen,baseX:unit.x+(kind==='hit'?0:face*52*court.scale),
   baseY:unit.y-113*court.scale+profilesFoot(unit)*court.scale,
-  face,zoom:court.scale,pose:authored
+  face,zoom:court.scale,pose:authored,progress:.5
  });
  if(!geometry)return;
  battle.fx.push({seat:unit.seat,kind:chosen,x:geometry.x,y:geometry.y,
@@ -344,7 +344,8 @@ function drawDefeatPose(unit,zoom){
  // Display the exact approved loss pose, no extraneous 90-degree rotation.
  ctx.save();
  const action=visualAction(unit,'death'),face=unit.side==='enemy'?-1:1;
- ctx.translate(action.x*zoom*face,(profilesFoot(unit)+action.y)*zoom);
+ const motion=root.PracticeVisualProfiles?.sampleMotion?.(action,1)||{x:0,y:0};
+ ctx.translate((action.x+motion.x)*zoom*face,(profilesFoot(unit)+action.y+motion.y)*zoom);
  if(face<0)ctx.scale(-1,1);
  const px=meta?.canvas===art&&Number.isFinite(meta.pivotX)?meta.pivotX:(art.width||art.naturalWidth)/2;
  const py=meta?.canvas===art&&Number.isFinite(meta.footY)?meta.footY:(art.height||art.naturalHeight);
@@ -431,7 +432,8 @@ function prepareStrike(u,target){
  u.swings++;u.special=false; // Practice deliberately omits dash/special attack.
  playCombatSound(u.swings%3===0?'heavy_swing':'swing',u,
   u.swings%3===0?.65:.53);
- u.windup=u.special?.34:.24;u.target=target;u.swing=u.special?.59:.46;
+ u.windup=u.special?.34:.24;u.windupTotal=u.windup;
+ u.target=target;u.swing=u.special?.59:.46;u.swingTotal=u.swing;
  u.cooldown=(u.side==='ally'?.81:.94)+(u.special?.24:0)+Math.random()*.17;
  // Original duel-inspired timing: guard can parry during a brief window,
  // otherwise absorbs part of the hit. Foes can also evade.
@@ -639,6 +641,19 @@ function visualAction(unit,pose){
  return root.PracticeVisualProfiles?.resolve?.(visualLook(unit),action)||
   {x:0,y:0,scale:1,effect:{kind:'auto',x:0,y:0,scale:1}};
 }
+function motionProgress(unit,pose){
+ if(pose==='attack'){
+  if(unit.windup>0)return .4*(1-Math.min(1,unit.windup/(unit.windupTotal||.24)));
+  if(unit.swing>0)return .4+.6*(1-Math.min(1,unit.swing/(unit.swingTotal||.46)));
+  return 1;
+ }
+ if(pose==='hit')return 1-Math.min(1,unit.hit/.25);
+ if(pose==='guard')return 1-Math.min(1,unit.guard/.54);
+ if(pose==='dodge')return 1-Math.min(1,unit.dodge/.42);
+ if(pose==='walk')return ((battle?.clock||0)*.8)%1;
+ if(pose==='idle')return ((battle?.clock||0)*.3)%1;
+ return 1;
+}
 function actorPose(unit){
  return unit.dead?'death':unit.entry>0?'walk':unit.hit>0?'hit':unit.guard>0?'guard':
    unit.dodge>0?'dodge':unit.windup>0||unit.swing>0?'attack':
@@ -678,6 +693,7 @@ function drawUnit(unit){
   const bounds=alphaBounds(art),metric=calibration(unit,art);
   if(bounds?.w&&bounds?.h&&metric){
    const pose=actorPose(unit),t=visualAction(unit,pose);
+   const motion=root.PracticeVisualProfiles?.sampleMotion?.(t,motionProgress(unit,pose))||{x:0,y:0};
    const k=metric.pixels*scale*t.scale;
    // One FULL authored frame, one global artist size, one optional action edit.
    // No alpha-crop, class/squad modifier, or automatic per-pose resizing.
@@ -689,7 +705,7 @@ function drawUnit(unit){
      atlasFrame.footY:(art.height||art.naturalHeight);
    const face=unit.side==='enemy'?-1:1;
    ctx.save();
-   ctx.translate(t.x*scale*face,(profilesFoot(unit)+t.y)*scale);
+   ctx.translate((t.x+motion.x)*scale*face,(profilesFoot(unit)+t.y+motion.y)*scale);
    if(face<0)ctx.scale(-1,1);
    try{ctx.drawImage(art,-pivotX*k,-pivotY*k,
     (art.width||art.naturalWidth)*k,(art.height||art.naturalHeight)*k);}
