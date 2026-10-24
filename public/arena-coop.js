@@ -91,7 +91,7 @@
    }
    ctx.globalAlpha=1;ctx.drawImage(image,-px*k,-py*k,image.width*k,image.height*k);ctx.restore();
    if(u.dead)return;
-   const tactic=u.reaction?u.reaction.kind:u.chase?'chase':u.mode==='retreat'&&u.lure?'bait':u.mode;
+   const tactic=u.reaction?u.reaction.kind:u.chase?.until>sim.time?'chase':u.mode==='retreat'&&u.lure?'bait':u.mode;
    const tag={rescue:'구출 돌진',ambush:'기습!',chase:'맹추격',bait:'유인 중',retreat:'후퇴 · 회복',feint:'견제'}[tactic];
    if(tag){
     ctx.save();ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.lineWidth=4;ctx.strokeStyle='#171008';
