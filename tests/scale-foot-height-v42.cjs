@@ -49,17 +49,19 @@ assert.match(publisher,/SpartacusPublishedFeet=Object\.freeze/);
 assert.match(publisher,/feet:studio\(\)\?\.feet/);
 assert.match(publisher,/저장 발높이가 올바르지 않습니다/);
 const runtime=fs.readFileSync('public/ludus-practice.js','utf8');
-assert.match(runtime,/ctx\.translate\(0,profilesFoot\(unit\)\*scale\)/);
+assert.match(runtime,/profilesFoot\(unit\)\+t\.y/);
 const beast=fs.readFileSync('public/arena-beasts.js','utf8');
 assert.match(beast,/ctx\.translate\(cx,ground\+foot\)/);
 const carnifex=fs.readFileSync('public/arena-carnifex.js','utf8');
 assert.match(carnifex,/floorY\+bootOffset/);
 const saved=fs.readFileSync('public/practice-scale-published.js','utf8');
 assert.match(saved,/SpartacusPublishedFeet=Object\.freeze/);
+assert.match(saved,/SpartacusPublishedActions=Object\.freeze/);
 const index=fs.readFileSync('public/index.html','utf8');
-for(const asset of ['practice-scale-published','practice-scale-profiles','arena-beasts'])
- assert.match(index,new RegExp(asset+'\\.js\\?v=foot-height-v42'),'current foot editor asset version');
-assert.ok(index.includes('ludus-practice.js?v=native-frame-scale-v45'),'practice v45 cache invalidation');
+for(const asset of ['practice-scale-published','practice-scale-profiles'])
+ assert.ok(index.includes(asset+'.js?v=action-authoring-v46'),'shared editor asset version');
+assert.ok(index.includes('arena-beasts.js?v=foot-height-v42'),'beast renderer cache version');
+assert.ok(index.includes('ludus-practice.js?v=action-authoring-v46'),'practice v46 cache invalidation');
 assert.ok(index.includes('arena-carnifex.js?v=carnifex-projection-v44'),'existing executioner projection cache');
 assert.match(index,/function duelFootOffset\(f\)/,'regular duel uses calibration key');
 assert.match(index,/const footOffset=duelFootOffset\(f\)/,'regular duel stores per-look Y offset');
