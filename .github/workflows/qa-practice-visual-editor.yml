@@ -13,6 +13,7 @@ on:
       - tests/unified-action-scenes-v51.cjs
       - public/index.html
       - tests/practice-visual-authoring-v46.cjs
+      - tests/practice-fx-editor-fidelity-v52.cjs
       - tests/scale-foot-height-v42.cjs
       - tests/scale-publish-status-v40.cjs
       - .github/workflows/qa-practice-visual-editor.yml
@@ -39,6 +40,8 @@ jobs:
           node --check public/ludus-training-runtime.js
       - name: Real authoring and effects integration
         run: node tests/practice-visual-authoring-v46.cjs
+      - name: Verify editor FX autosave and cross-scene geometry
+        run: node tests/practice-fx-editor-fidelity-v52.cjs
       - name: Verify unified cross-scene action profiles and no hidden pose adjustments
         run: node tests/unified-action-scenes-v51.cjs
       - name: Original Ludus training sprite pose regression
