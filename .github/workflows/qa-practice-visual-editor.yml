@@ -1,0 +1,48 @@
+name: Practice action and VFX studio QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/practice-visual-profiles.js
+      - public/practice-scale-profiles.js
+      - public/practice-scale-published.js
+      - public/tools/practice-scale-calibrator.html
+      - public/tools/practice-scale-publish.js
+      - public/ludus-practice.js
+      - public/index.html
+      - tests/practice-visual-authoring-v46.cjs
+      - tests/scale-foot-height-v42.cjs
+      - tests/scale-publish-status-v40.cjs
+      - .github/workflows/qa-practice-visual-editor.yml
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  authoring:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: JavaScript parse check
+        run: |
+          node --check public/practice-visual-profiles.js
+          node --check public/practice-scale-profiles.js
+          node --check public/practice-scale-published.js
+          node --check public/tools/practice-scale-publish.js
+          node --check public/ludus-practice.js
+      - name: Real authoring and effects integration
+        run: node tests/practice-visual-authoring-v46.cjs
+      - name: Existing persisted foot offset regression
+        run: node tests/scale-foot-height-v42.cjs
+      - name: GitHub and live deployment-status parser regression
+        run: node tests/scale-publish-status-v40.cjs
+      - name: Fighter and rival frame-proportion regression
+        run: node tests/practice-appearance-proportions-v45.cjs
+      - name: Four-fighter lane spacing unchanged
+        run: node tests/practice-duel-footwork-v41.cjs
+      - name: Carnifex perspective unchanged
+        run: node tests/practice-carnifex-scale-v44.cjs
