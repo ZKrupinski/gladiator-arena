@@ -57,7 +57,10 @@ assert.match(carnifex,/floorY\+bootOffset/);
 const saved=fs.readFileSync('public/practice-scale-published.js','utf8');
 assert.match(saved,/SpartacusPublishedFeet=Object\.freeze/);
 const index=fs.readFileSync('public/index.html','utf8');
-assert.ok((index.match(/foot-height-v42/g)||[]).length>=5,'latest JS load paths have cache-busting keys');
+for(const asset of ['practice-scale-published','practice-scale-profiles','arena-beasts'])
+ assert.match(index,new RegExp(asset+'\\.js\\?v=foot-height-v42'),'current foot editor asset version');
+for(const asset of ['ludus-practice','arena-carnifex'])
+ assert.match(index,new RegExp(asset+'\\.js\\?v=carnifex-projection-v44'),'updated match renderer cache version');
 assert.match(index,/function duelFootOffset\(f\)/,'regular duel uses calibration key');
 assert.match(index,/const footOffset=duelFootOffset\(f\)/,'regular duel stores per-look Y offset');
 assert.match(index,/if\(!f\.beastType\)y\+=footOffset/,'regular duel renders all human actions at approved foot height');
