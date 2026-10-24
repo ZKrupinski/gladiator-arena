@@ -8,8 +8,8 @@
  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
  const finite=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
  const distance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.45);
- const footDistance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.2);
- const SOLID_GAP=111; // One constant for standing AND corpses, preventing a new overlap on death.
+ const footDistance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.6);
+ const SOLID_GAP=102; // One constant for standing AND corpses, preventing a new overlap on death.
  function rng(seed){let n=seed>>>0;return ()=>{n=(Math.imul(1664525,n)+1013904223)>>>0;return n/4294967296;};}
  function makeUnit(h,side,seat){
   const stats=h.combat||{},maxHp=Math.max(40,finite(stats.hp,160));
@@ -234,7 +234,7 @@
    if(nearDist>205&&nearDist<415&&s.time>=u.dashReady&&s.random()<dt*.45){
     u.dash=.65;u.dashReady=s.time+6+s.random()*3;emit(s,'dash',u,target,u.name+' 전력 돌진!');
    }
-   if(distance(u,target)>158){
+   if(distance(u,target)>198){
     const speed=u.speed*(u.dash>0?2.65:1)*(u.side==='ally'&&s.cover?.id===u.id&&s.cover.until>s.time?.75:1);
     travel(s,u,target.x-u.face*130,target.y+((u.seat%3)-1)*25,speed*dt);
    }else if(u.cooldown<=0){
