@@ -82,7 +82,7 @@ assert.match(inline,/actions\[key\]\[pose\]=v\.clean\(cfg\);persistActionEdit\(\
  'FX slider edits save instantly, not only via a separate Save button');
 assert.match(inline,/function previewAction\(/);
 assert.match(inline,/v\.effectGeometry\(\{/,'studio preview uses same pixel transform as both scenes');
-assert.match(inline,/const previewScale=\.52,sceneProjection=scene==='duel'/);
+assert.match(inline,/const previewScale=\.52,z=previewScale\*window\.SpartacusStagePreview\.offsetFactor\(key,scene\)/);
 assert.match(studio,/id="actionScene"/);
 assert.match(studio,/id="actionAutosave"/);
 const publisher=fs.readFileSync('public/tools/practice-scale-publish.js','utf8');
