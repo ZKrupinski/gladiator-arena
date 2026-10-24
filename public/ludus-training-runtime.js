@@ -80,13 +80,14 @@ function paintTrainingFighter(canvas,img,action,progress,profile){
  const look=profile?.look||null;
  const authored=window.PracticeVisualProfiles?.resolve?.(look,action)||
   {x:0,y:0,scale:1};
+ const motion=window.PracticeVisualProfiles?.sampleMotion?.(authored,progress)||{x:0,y:0};
  const bodyScale=window.PracticeScaleProfiles?.scale?.(look)??1;
  const bootY=window.PracticeScaleProfiles?.foot?.(look)??0;
  const k=(profile?.scale??profileFor(canvas,img)?.scale??1)*bodyScale*authored.scale;
  ctx.save();
  // The training fighter faces left. X is in facing space just as it is in
  // normal combat and in the studio. Gameplay hitboxes are never shifted.
- ctx.translate(canvas.width/2-authored.x,canvas.height-9+bootY+authored.y);
+ ctx.translate(canvas.width/2-authored.x-motion.x,canvas.height-9+bootY+authored.y+motion.y);
  ctx.scale(-1,1);
  try{ctx.drawImage(img,0,0,img.width,img.height,
   -img.width*k/2,-img.height*k,img.width*k,img.height*k);}catch(error){}
