@@ -72,7 +72,8 @@ for(let n=1;n<=4;n++){
 }
 assert.doesNotMatch(game,/scale:1\.29|scale:1\.06|scale:1\.24/,
  'remove ALL old staggered front/rear scales');
-assert(html.includes('const p=202/(348*.82)'),'studio executioner preview equals current arena camera');
-assert(html.includes("const previewScale=.52,sceneProjection=scene==='duel'"),'action preview supports correct 52% relative camera preview');
+assert(html.includes('practice-size-stage.js?v=true-size-v54'),'studio imports actual shared battle-sized preview');
+assert(html.includes('const previewScale=.52,z=previewScale*window.SpartacusStagePreview.offsetFactor(key,scene)'),
+ 'studio action preview shares live duel/practice scene projection');
 assert(html.includes("slash:'slash',sweep:'sweep',thrust:'thrust'"),'studio previews exact attack FX variants');
 console.log('PASS: edits preserved, defaults isolated, true action bitmap rendering, artist FX selection, UI and GitHub source publish');
