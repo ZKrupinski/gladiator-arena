@@ -1,0 +1,19 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "practice-native-frame-proportions-20261024-v45",
+  "expectedMainSha": "92c1be6145c6ae066bee9da96cd55555d38acce3",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/ludus-practice.js",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/92c1be6145c6ae066bee9da96cd55555d38acce3/public/ludus-practice.js",
+      "sha256": "ce8aecefb023ce4e287f03c1c0ced05c0a6617e0ac11e05210b5b0974ee8c8c9"
+    },
+    {
+      "path": "public/index.html",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/92c1be6145c6ae066bee9da96cd55555d38acce3/public/index.html",
+      "sha256": "f97a9846996273c5eceba8fa973da41fbab369eb47bddce538a8b2e491b3dfc6"
+    }
+  ]
+}
