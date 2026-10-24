@@ -141,7 +141,7 @@ input[type=file]{display:none}
 <div class="action-field"><label for="fxY">이펙트 Y <output id="fxYValue"></output></label><input type="range" id="fxY" min="-300" max="300" step="1"></div>
 <div class="action-separator">동작별 X·Y·크기는 모든 게임 씬에서 같은 원본 설정을 사용합니다. 이펙트 선택도 동작별 설정이 우선입니다.</div>
 </div></div>
-<div class="action-actions"><button id="actionShowIdle">기본 동작 보기</button><span class="source-note">프리뷰는 전열 기준이며 투명영역 자동 확대를 사용하지 않습니다. 변경 후 기기 임시저장 또는 GitHub 원본 게시를 누르세요.</span></div>
+<div class="action-actions"><button id="actionShowIdle">기본 동작 보기</button><output id="actionAutosave" role="status">동작·이펙트 변경값은 이 기기에 자동 임시저장됩니다.</output><span class="source-note">프리뷰는 전열 기준이며 투명영역 자동 확대를 사용하지 않습니다. 변경 후 기기 임시저장 또는 GitHub 원본 게시를 누르세요.</span></div>
 </section>
 <main class="grid" id="grid" aria-label="검투사, 야수, 집행인 전체 31종 크기 미리보기"></main>
 <section class="source-panel" aria-labelledby="gitTitle">
@@ -363,10 +363,15 @@ async function previewAction(){
    const fx=await effectPreviewFrame(candidate);
    if(serial!==actionPaintSerial)return;
    if(fx){
-    const width=v.size(candidate),w=width[0]*z*val.effect.scale,h=width[1]*z*val.effect.scale;
-    const x=anchorX+52*z+val.x*z+val.effect.x*z,y=anchorY-113*z+
-      offsetY*z+val.y*z+val.effect.y*z;
-    c.save();c.globalAlpha=.85;c.drawImage(fx,x-w/2,y-h/2,w,h);c.restore();
+    // Exactly the same placement/size helper as the live 1v1 and
+    // 1–4 fighter modes. The 80% zoom is applied ONCE here.
+    const g=v.effectGeometry({
+     kind:candidate,baseX:anchorX+52*z,baseY:anchorY-113*z+offsetY*z,
+     face:1,zoom:z,pose:val
+    });
+    c.save();c.globalAlpha=.85;
+    c.drawImage(fx,g.x-g.width/2,g.y-g.height/2,g.width,g.height);
+    c.restore();
    }
   }
   $('#actionFrameStatus').textContent=nameFor(key)+' · '+pose+
@@ -376,6 +381,17 @@ async function previewAction(){
   if(serial!==actionPaintSerial)return;
   $('#actionFrameStatus').textContent='해당 동작 미리보기 로딩 실패: '+error.message;
  }
+}
+function persistActionEdit(){
+ const ok=v.write(actions);
+ const status=$('#actionAutosave');
+ if(status)status.textContent=ok?
+  '✓ 이 기기에 자동 저장됨 · GitHub 원본 게시를 해야 모든 기기에 적용':
+  '⚠ 이 기기 자동저장 실패 · JSON 내보내기로 설정을 백업하세요';
+ if(!ok)announce('동작·이펙트 임시저장에 실패했습니다. 저장 공간을 확인하세요.');
+ // Refresh local / GitHub / deployed indicator after every action edit.
+ document.dispatchEvent(new Event('input'));
+ return ok;
 }
 function updateActionControls(){formatAction();previewAction();}
 function initActionEditor(){
@@ -405,7 +421,7 @@ function initActionEditor(){
    if(field==='fxX')cfg.effect.x=value;
    if(field==='fxY')cfg.effect.y=value;
    if(field==='fxScale')cfg.effect.scale=value;
-   actions[key][pose]=v.clean(cfg);formatAction();previewAction();
+   actions[key][pose]=v.clean(cfg);persistActionEdit();formatAction();previewAction();
   });
  $('#actionReset').onclick=()=>{
   const key=$('#actionKey').value,pose=$('#actionPose').value;
@@ -414,7 +430,7 @@ function initActionEditor(){
   const published=window.SpartacusPublishedActions?.[key]?.[pose];
   if(published)actions[key][pose]=v.clean(published);
   else delete actions[key][pose];
-  updateActionControls();
+  persistActionEdit();updateActionControls();
  };
  $('#actionPreviewRefresh').onclick=()=>{
   actionCache.delete($('#actionKey').value+':'+$('#actionPose').value);
@@ -642,6 +658,7 @@ $('#file').addEventListener('change',async e=>{
  e.target.value='';
 });
 window.SpartacusScaleStudio={
+ persistActionEdit,
  values:()=>Object.fromEntries(keys.map(key=>[key,Number(state[key])])),
  feet:()=>Object.fromEntries(keys.map(key=>[key,Number(feet[key])])),
  actions:()=>v.sanitize(actions),
@@ -650,5 +667,5 @@ window.SpartacusScaleStudio={
 initActionEditor();build();
 })();
 </script>
-<script src="practice-scale-publish.js?v=unified-action-v51"></script>
+<script src="practice-scale-publish.js?v=fx-autosave-v52"></script>
 </body></html>
