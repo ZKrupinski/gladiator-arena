@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>스파르타쿠스 · 31종 크기 보정실</title>
+<title>스파르타쿠스 · 31종 크기·동작·이펙트 보정실</title>
 <style>
 :root{background:#170d09;color:#f7ddae;color-scheme:dark;font:15px/1.48 system-ui,"Noto Sans KR",sans-serif}
 *{box-sizing:border-box}body{margin:0;padding:18px max(10px,env(safe-area-inset-right)) 32px max(10px,env(safe-area-inset-left))}
@@ -66,11 +66,24 @@ input[type=file]{display:none}
 .save-health [data-state="ok"]{color:#bcebbd}.save-health [data-state="warn"]{color:#ffd688}.save-health [data-state="error"]{color:#ffad9f}
 .save-health button{justify-self:start;padding:6px 10px}
 .token-help{line-height:1.7;font-size:13px}.token-help ol{padding-left:22px}
+.action-editor{max-width:1290px;margin:15px auto;border:2px solid #d1a267;background:linear-gradient(135deg,#42291b,#1e1410);border-radius:12px;padding:15px}
+.action-editor h2{font-size:21px;margin:0 0 5px;color:#ffe5aa}.action-editor p{font-size:12px;margin:4px 0 10px}
+.action-top{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:10px 0}
+.action-top label{font-size:12px;font-weight:700}.action-top select{min-width:135px;max-width:240px}
+.action-body{display:grid;grid-template-columns:minmax(270px,490px) minmax(290px,1fr);gap:17px;align-items:start}
+.action-preview{width:100%;max-width:490px;background:radial-gradient(ellipse at center bottom,#92724e,#291b14 75%);border:1px solid #ae8456;border-radius:8px;overflow:hidden}
+.action-preview canvas{display:block;width:100%;aspect-ratio:1}
+.action-sliders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
+.action-field{display:grid;gap:3px;min-width:0}.action-field label{font-size:12px;color:#f9dcab}.action-field output{color:#ffe4a4;font-weight:800;font-variant-numeric:tabular-nums}.action-field input{width:100%;accent-color:#efbb77}
+.action-field select{max-width:100%}.action-separator{grid-column:1/-1;margin-top:6px;border-top:1px solid #745438;padding-top:8px;color:#ffdf9c;font-weight:800}
+.action-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:11px}
+.action-open{margin:3px 0;padding:8px 6px!important;font-size:11px!important}
+@media(max-width:720px){.action-body{grid-template-columns:1fr}.action-preview{margin:auto;max-width:420px}.action-sliders{gap:8px}.action-editor{padding:10px}}
 </style></head>
 <body>
 <header><small>SPARTACVS · LVDVS · SPRITE CALIBRATION</small>
-<h1>검투사 · 야수 · 집행인 크기 보정실</h1>
-<p>31종을 <strong>한 페이지에서 끝까지 스크롤</strong>해 비교합니다. 개별 크기·발높이(Y) 슬라이더와 다중 선택 일괄 조정, 셔플 정렬을 지원합니다. 투명 영역이나 무기·투구 길이를 기준으로 크기를 다시 추정하지 않습니다.</p></header>
+<h1>검투사 · 야수 · 집행인 크기·동작 보정실</h1>
+<p>31종을 <strong>한 페이지에서 끝까지 스크롤</strong>해 비교합니다. 개별 크기·발높이(Y)와 <strong>동작별 프레임 위치·크기 / 이펙트 종류·위치·크기</strong>를 직접 조정합니다. 검투사 실전훈련의 자동 프레임 크기 보정은 제거했습니다. 투명 영역이나 무기·투구 길이를 기준으로 크기를 다시 추정하지 않습니다.</p></header>
 <section class="tools" aria-label="정렬 및 일괄 크기 조정">
  <div class="toolbar">
   <label for="sort">정렬</label><select id="sort">
@@ -104,10 +117,36 @@ input[type=file]{display:none}
 </div>
 </section>
 <div id="status" class="status" role="status">원본 캐릭터 그림을 준비하고 있습니다.</div>
+<section id="actionEditor" class="action-editor" aria-label="캐릭터 동작별 프레임 및 이펙트 편집">
+<h2>⚔ 동작별 프레임·이펙트 편집실</h2>
+<p>선택한 외형의 <strong>각 동작을 개별로</strong> 설정합니다. X는 캐릭터가 바라보는 방향 기준, Y는 아래가 양수입니다. 기존 크기·발높이 설정과 합쳐져 실제 실전훈련에 반영됩니다.</p>
+<div class="action-top">
+<label for="actionKey">캐릭터</label><select id="actionKey"></select>
+<label for="actionPose">동작</label><select id="actionPose"></select>
+<button id="actionReset" type="button">이 동작 기준값 복원</button>
+<button id="actionPreviewRefresh" type="button">그림 새로고침</button>
+</div>
+<div class="action-body">
+<div><div class="action-preview"><canvas id="actionCanvas" width="520" height="520" aria-label="프레임 및 이펙트 위치 미리보기"></canvas></div>
+<p id="actionFrameStatus" role="status">선택한 동작 프레임을 준비합니다.</p></div>
+<div class="action-sliders">
+<div class="action-separator">캐릭터 프레임 — 원본 그림을 건드리지 않는 화면 보정</div>
+<div class="action-field"><label for="frameX">동작 X <output id="frameXValue"></output></label><input type="range" id="frameX" min="-180" max="180" step="1"></div>
+<div class="action-field"><label for="frameY">동작 Y <output id="frameYValue"></output></label><input type="range" id="frameY" min="-180" max="180" step="1"></div>
+<div class="action-field"><label for="frameScale">동작 배율 <output id="frameScaleValue"></output></label><input type="range" id="frameScale" min=".45" max="1.8" step=".01"></div>
+<div class="action-separator">이펙트 — 종류 / 위치 / 크기 (기본: 자동)</div>
+<div class="action-field"><label for="fxKind">이펙트 종류</label><select id="fxKind"></select></div>
+<div class="action-field"><label for="fxScale">이펙트 배율 <output id="fxScaleValue"></output></label><input type="range" id="fxScale" min=".2" max="2.5" step=".01"></div>
+<div class="action-field"><label for="fxX">이펙트 X <output id="fxXValue"></output></label><input type="range" id="fxX" min="-300" max="300" step="1"></div>
+<div class="action-field"><label for="fxY">이펙트 Y <output id="fxYValue"></output></label><input type="range" id="fxY" min="-300" max="300" step="1"></div>
+<div class="action-separator">실제 게임에서는 동작 선택과 효과 발생 이벤트에 따라 출력됩니다.</div>
+</div></div>
+<div class="action-actions"><button id="actionShowIdle">기본 동작 보기</button><span class="source-note">프리뷰는 전열 기준이며 투명영역 자동 확대를 사용하지 않습니다. 변경 후 기기 임시저장 또는 GitHub 원본 게시를 누르세요.</span></div>
+</section>
 <main class="grid" id="grid" aria-label="검투사, 야수, 집행인 전체 31종 크기 미리보기"></main>
 <section class="source-panel" aria-labelledby="gitTitle">
-<h2 id="gitTitle">GitHub 원본에 크기·발높이 저장</h2>
-<p>여기에 게시한 31종 크기·발높이가 모든 기기에 적용되는 <strong>게임 기본값</strong>입니다. 브라우저 임시저장만으로는 GitHub 원본이 바뀌지 않습니다.</p>
+<h2 id="gitTitle">GitHub 원본에 크기·발높이·동작·이펙트 저장</h2>
+<p>여기에 게시한 31종 크기·발높이·동작별 프레임/이펙트 설정이 모든 기기에 적용되는 <strong>게임 기본값</strong>입니다. 브라우저 임시저장만으로는 GitHub 원본이 바뀌지 않습니다.</p>
 <div class="source-actions">
  <button id="publishOpen" class="primary" type="button">GitHub 원본 게시</button>
  <button id="githubEdit" type="button">GitHub 편집기에서 저장</button>
@@ -125,7 +164,7 @@ input[type=file]{display:none}
  <label for="githubToken">GitHub 인증 토큰 (저장소 <code>ZKrupinski/gladiator-arena</code>의 Contents 쓰기 권한)</label>
  <input id="githubToken" type="password" autocomplete="off" spellcheck="false" placeholder="게시할 때만 입력 · 기기에 저장하지 않음">
  <div class="source-actions">
-  <button id="publishConfirm" class="primary" type="button">GitHub main에 크기·발높이 커밋</button>
+  <button id="publishConfirm" class="primary" type="button">GitHub main에 모든 연출 설정 커밋</button>
   <button id="publishCancel" type="button">취소</button>
  </div>
  <p class="source-note">입력한 인증 토큰은 이 페이지에서 저장·기록하지 않고 GitHub API 요청에만 사용합니다. GitHub 사이트에서 직접 저장하려면 위 ‘GitHub 편집기에서 저장’을 사용하세요.</p>
@@ -141,7 +180,8 @@ input[type=file]{display:none}
 </footer>
 <p class="guide">체크한 여러 외형에 크기 ±5% 또는 발높이 ↑↓5px을 일괄 적용할 수 있습니다. 발높이는 음수일수록 위로, 양수일수록 아래로 이동하며 바닥 안내선은 움직이지 않습니다. 셔플하면 위치만 바뀌고 선택·크기·발높이는 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
 <script src="../growth-frames.js"></script>
-<script src="../practice-scale-published.js?v=foot-height-v42"></script><script src="../practice-scale-profiles.js?v=foot-height-v42"></script>
+<script src="../practice-scale-published.js?v=action-authoring-v46"></script><script src="../practice-scale-profiles.js?v=action-authoring-v46"></script>
+<script src="../practice-visual-profiles.js?v=action-authoring-v46"></script><script src="../arena-raster-vfx.js?v=4-isolated"></script>
 <script>
 (()=>{'use strict';
 const p=window.PracticeScaleProfiles;
@@ -150,9 +190,10 @@ const names={murmillo_a:'무르밀로',thraex_a:'트라엑스 A',thraex_b:'트�
  legacy_murmillo:'클래식 무르밀로',legacy_thraex:'클래식 트라엑스',legacy_retiarius:'클래식 레티아리우스',
  beast_wolf:'늑대',beast_leopard:'표범',beast_tiger:'호랑이',beast_lion:'사자',
  beast_elephant:'코끼리',npc_carnifex:'사형집행인'};
-const state={...p.DEFAULTS,...p.read()},feet={...p.FOOT_DEFAULTS,...p.readFeet()},selection=new Set(),keys=Object.keys(p.DEFAULTS);
+const v=window.PracticeVisualProfiles;
+const state={...p.DEFAULTS,...p.read()},feet={...p.FOOT_DEFAULTS,...p.readFeet()},actions=v.all(),selection=new Set(),keys=Object.keys(p.DEFAULTS);
 let order=keys.slice(),origin=new Map(),observer=null,cutsPromise=null;
-const cache=new Map(),drawers=new Map(),$=selector=>document.querySelector(selector);
+const cache=new Map(),actionCache=new Map(),drawers=new Map(),$=selector=>document.querySelector(selector);
 const announce=s=>$('#status').textContent=s;
 const category=key=>key.startsWith('beast_')?'야수':key.startsWith('npc_')?'NPC':p.EXTRAS.includes(key)?'특수/클래식':'검투사';
 function nameFor(key){const type=key.replace(/_L[1-5]$/,'');return (names[type]||key)+(type!==key?' · '+key.slice(-1)+'형':'');}
@@ -214,8 +255,8 @@ function paint(canvas,frame,key){
  c.strokeStyle='#e0b57b';c.setLineDash([4,5]);c.beginPath();
  c.moveTo(7,262);c.lineTo(303,262);c.stroke();c.setLineDash([]);
  const img=frame.canvas;
- // Previews keep the same ARTIST-DEFINED relative size logic as the game,
- // not an independent helmet/weapon tight-bounds fit.
+ // Preview uses the SAME full-source-frame baseline and the foreground court
+ // camera, not the previous arbitrary .88 factor applied to gladiators.
  if(key==='npc_carnifex'){
   // The actual Carnifex draws its 270×342 ink sprite as a 436×466
   // animation. Match THAT ratio, grounded at his boots (not 270×342).
@@ -225,7 +266,7 @@ function paint(canvas,frame,key){
  }
  const beastBase={beast_wolf:1,beast_leopard:1.05,beast_tiger:1.12,
   beast_lion:1.18,beast_elephant:1.38};
- const visualUnit=key.startsWith('beast_')?.83*beastBase[key]:.88;
+ const visualUnit=key.startsWith('beast_')?.83*beastBase[key]:1.29;
  const pixels=202/(img.naturalHeight||img.height)*Number(state[key])*visualUnit;
  c.drawImage(img,155-frame.pivotX*pixels,
   262+Number(feet[key])-frame.footY*pixels,(img.naturalWidth||img.width)*pixels,
@@ -311,7 +352,9 @@ function build(){
   const up=document.createElement('button'),feetReset=document.createElement('button'),down=document.createElement('button');
   up.textContent='발 ↑ 5px';feetReset.textContent='발 0';down.textContent='발 ↓ 5px';
   footActions.append(up,feetReset,down);
-  controls.append(code,value,slider,adjust,footCaption,footTrack,footActions);
+  const edit=document.createElement('button');edit.className='action-open';
+  edit.textContent='⚔ 이 캐릭터 동작·이펙트 편집';
+  controls.append(code,value,slider,adjust,footCaption,footTrack,footActions,edit);
   card.append(head,art,controls);root.appendChild(card);
   let available=null;
   const redraw=()=>{
@@ -346,6 +389,10 @@ function build(){
   up.addEventListener('click',()=>setFoot(Number(feet[key])-5));
   down.addEventListener('click',()=>setFoot(Number(feet[key])+5));
   feetReset.addEventListener('click',()=>setFoot(p.FOOT_DEFAULTS[key]));
+  edit.addEventListener('click',()=>{
+   $('#actionKey').value=key;updateActionControls();
+   $('#actionEditor').scrollIntoView({behavior:'smooth',block:'start'});
+  });
  }
  sortCards();updateBulkState();announce('31종 모두 표시했습니다. 아래로 스크롤하여 비교하세요.');
 }
@@ -378,16 +425,20 @@ $('#bulkSlider').addEventListener('change',()=>{
  if(['large','small'].includes($('#sort').value))sortCards();
 });
 $('#save').addEventListener('click',()=>{
- announce(p.write(state)&&p.writeFeet(feet)?'크기·발높이를 이 기기에 임시저장했습니다. 모든 기기에 반영하려면 GitHub 원본에 게시하세요.':'브라우저 저장 실패: JSON 내보내기를 사용하세요.');
+ announce(p.write(state)&&p.writeFeet(feet)&&v.write(actions)?
+  '크기·발높이·동작 프레임·이펙트를 이 기기에 임시저장했습니다. 다른 기기에 반영하려면 GitHub 원본에 게시하세요.':
+  '브라우저 저장 실패: JSON 내보내기를 사용하세요.');
 });
 $('#reset').addEventListener('click',()=>{
  Object.assign(state,p.DEFAULTS);Object.assign(feet,p.FOOT_DEFAULTS);for(const key of keys)refresh(key);
- updateBulkState();sortCards();p.reset();p.resetFeet();announce('31종 크기·발높이 기본값을 복원했습니다.');
+ for(const key of Object.keys(actions))delete actions[key];
+ Object.assign(actions,v.all());updateBulkState();sortCards();p.reset();p.resetFeet();v.reset();
+ updateActionControls();announce('31종 크기·발높이·동작·이펙트 수정값을 기본값으로 복원했습니다.');
 });
 $('#export').addEventListener('click',()=>{
- const blob=new Blob([JSON.stringify({version:42,overrides:state,footOffsets:feet},null,2)],{type:'application/json'});
+ const blob=new Blob([JSON.stringify({version:46,overrides:state,footOffsets:feet,actions},null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');
- a.href=url;a.download='spartacus-31-character-scales-feet.json';a.click();
+ a.href=url;a.download='spartacus-31-character-action-fx.json';a.click();
  setTimeout(()=>URL.revokeObjectURL(url),1000);
  announce('31종 설정 JSON을 내보냈습니다.');
 });
@@ -401,18 +452,24 @@ $('#file').addEventListener('change',async e=>{
    state[key]=p.clamp(values[key]);
   for(const key of keys)if(Object.hasOwn(footValues,key)&&Number.isFinite(Number(footValues[key])))
    feet[key]=p.clampFoot(footValues[key]);
+  if(input.actions&&typeof input.actions==='object'){
+   const imported=v.sanitize(input.actions);for(const key of Object.keys(actions))delete actions[key];
+   Object.assign(actions,imported);
+  }
   for(const key of keys)refresh(key);
-  p.write(state);p.writeFeet(feet);updateBulkState();sortCards();announce('31종 설정을 가져오고 저장했습니다.');
+  p.write(state);p.writeFeet(feet);v.write(actions);updateBulkState();sortCards();updateActionControls();
+  announce('크기·발높이·동작·이펙트 설정을 가져오고 임시저장했습니다.');
  }catch(error){announce('불러오기 실패: '+error.message);}
  e.target.value='';
 });
 window.SpartacusScaleStudio={
  values:()=>Object.fromEntries(keys.map(key=>[key,Number(state[key])])),
  feet:()=>Object.fromEntries(keys.map(key=>[key,Number(feet[key])])),
- saveDraft:()=>p.write(state)&&p.writeFeet(feet)
+ actions:()=>v.sanitize(actions),
+ saveDraft:()=>p.write(state)&&p.writeFeet(feet)&&v.write(actions)
 };
 build();
 })();
 </script>
-<script src="practice-scale-publish.js?v=foot-height-v42"></script>
+<script src="practice-scale-publish.js?v=action-authoring-v46"></script>
 </body></html>
