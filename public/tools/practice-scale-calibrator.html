@@ -465,6 +465,7 @@ async function previewAction(){
  }
 }
 function persistScaleEdit(){
+ renderComparison();
  // All 31 look/foot sliders persist immediately, like per-action FX edits.
  // The game reads these exact same device drafts until GitHub publication.
  const sizeOK=p.write(state),feetOK=p.writeFeet(feet),ok=sizeOK&&feetOK;
@@ -646,6 +647,44 @@ function paint(canvas,frame,key){
   foot:Number(feet[key]),x:center,y:floor});
 }
 
+const compareDefaultLooks=['murmillo_champion_red','murmillo_a_L5','thraex_a_L5','retiarius_a_L5'];
+let comparisonSerial=0;
+async function renderComparison(){
+ const serial=++comparisonSerial,canvas=$('#compareCanvas');
+ if(!canvas)return;
+ const selected=[...selection].slice(0,4);
+ const looks=selected.length?selected:compareDefaultLooks;
+ const items=await Promise.all(looks.map(key=>frameFor(key)
+  .then(frame=>({key,frame})).catch(error=>({key,error}))));
+ if(serial!==comparisonSerial)return;
+ const ctx=canvas.getContext('2d'),floor=370;
+ if(!ctx)return;
+ ctx.clearRect(0,0,1280,480);
+ const gradient=ctx.createLinearGradient(0,0,0,480);
+ gradient.addColorStop(0,'#37231a');gradient.addColorStop(1,'#8c6545');
+ ctx.fillStyle=gradient;ctx.fillRect(0,0,1280,480);
+ ctx.fillStyle='#b58a5688';ctx.fillRect(0,floor,1280,110);
+ ctx.strokeStyle='#ffe1a6';ctx.lineWidth=2;ctx.setLineDash([8,7]);
+ ctx.beginPath();ctx.moveTo(0,floor);ctx.lineTo(1280,floor);ctx.stroke();ctx.setLineDash([]);
+ const scene=$('#scaleScene').value;
+ items.forEach(({key,frame,error},index)=>{
+  const center=160+index*320;
+  ctx.strokeStyle='#fff2bb3b';ctx.lineWidth=1;
+  if(index){ctx.beginPath();ctx.moveTo(index*320,0);ctx.lineTo(index*320,480);ctx.stroke();}
+  if(frame)window.SpartacusStagePreview.draw(ctx,{
+   key,frame,idle:frame,scene,zoom:.64,scale:Number(state[key]),
+   foot:Number(feet[key]),x:center,y:floor
+  });
+  ctx.textAlign='center';ctx.fillStyle='#ffdf9c';ctx.font='bold 20px system-ui';
+  ctx.fillText(nameFor(key),center,424,304);
+  ctx.fillStyle='#f2d5ae';ctx.font='16px system-ui';
+  ctx.fillText(error?'리소스 로드 실패':
+   '×'+Number(state[key]).toFixed(2)+' · 발 '+feet[key]+'px',center,450,300);
+ });
+ $('#compareStatus').textContent=(scene==='duel'?'일반전투':'실전훈련')+
+  ' · 동일 카메라 '+looks.length+'명'+(selection.size>4?' · 앞 4명 표시':'');
+}
+
 function updateBulkState(){
  const count=selection.size;
  $('#selectedCount').textContent='선택 '+count+' / '+keys.length;
@@ -655,6 +694,7 @@ function updateBulkState(){
 }
 function refresh(key){
  const redraw=drawers.get(key);if(redraw)redraw();
+ renderComparison();
 }
 function mutateSelected(fn){
  if(!selection.size)return;
@@ -748,7 +788,7 @@ function build(){
   redraw();
   check.addEventListener('change',()=>{
    if(check.checked)selection.add(key);else selection.delete(key);
-   card.classList.toggle('chosen',check.checked);updateBulkState();
+   card.classList.toggle('chosen',check.checked);updateBulkState();renderComparison();
    if($('#sort').value==='checked')sortCards();
   });
   const set=v=>{
@@ -771,20 +811,33 @@ function build(){
    $('#actionEditor').scrollIntoView({behavior:'smooth',block:'start'});
   });
  }
- sortCards();updateBulkState();announce('31종 모두 표시했습니다. 아래로 스크롤하여 비교하세요.');
+ sortCards();updateBulkState();renderComparison();
+ announce('31종 표시 완료. 위에서 실제 같은 카메라의 크기를 비교하세요.');
 }
+$('#scaleScene').addEventListener('change',()=>{
+ for(const redraw of drawers.values())redraw();
+ renderComparison();
+});
+$('#compareDefaults').addEventListener('click',()=>{
+ selection.clear();document.querySelectorAll('.card').forEach(card=>{
+  const check=card.querySelector('input[type=checkbox]');
+  if(check)check.checked=false;
+  card.classList.remove('chosen');
+ });
+ updateBulkState();renderComparison();
+});
 $('#sort').addEventListener('change',sortCards);
 $('#shuffle').addEventListener('click',shuffle);
 $('#checkAll').addEventListener('click',()=>{
  for(const key of keys)selection.add(key);
  document.querySelectorAll('.card').forEach(card=>{
   card.querySelector('input[type=checkbox]').checked=true;card.classList.add('chosen');
- });updateBulkState();if($('#sort').value==='checked')sortCards();
+ });updateBulkState();renderComparison();if($('#sort').value==='checked')sortCards();
 });
 $('#clearChecks').addEventListener('click',()=>{
  selection.clear();document.querySelectorAll('.card').forEach(card=>{
   card.querySelector('input[type=checkbox]').checked=false;card.classList.remove('chosen');
- });updateBulkState();if($('#sort').value==='checked')sortCards();
+ });updateBulkState();renderComparison();if($('#sort').value==='checked')sortCards();
 });
 $('#bulkMinus').addEventListener('click',()=>mutateSelected(v=>v*.95));
 $('#bulkPlus').addEventListener('click',()=>mutateSelected(v=>v*1.05));
