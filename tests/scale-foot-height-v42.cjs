@@ -58,10 +58,12 @@ const saved=fs.readFileSync('public/practice-scale-published.js','utf8');
 assert.match(saved,/SpartacusPublishedFeet=Object\.freeze/);
 assert.match(saved,/SpartacusPublishedActions=Object\.freeze/);
 const index=fs.readFileSync('public/index.html','utf8');
-for(const asset of ['practice-scale-published','practice-scale-profiles'])
- assert.ok(index.includes(asset+'.js?v=action-authoring-v46'),'shared editor asset version');
+assert.ok(index.includes('practice-scale-published.js?v=action-authoring-v46'),'published settings remain authoritative');
+assert.ok(index.includes('practice-scale-profiles.js?v=unified-action-v51'),'all scenes share neutral base and artist size');
+assert.ok(index.includes('practice-visual-profiles.js?v=unified-action-v51'),'all scenes share authored pose transforms');
+assert.ok(index.includes('ludus-training-runtime.js?v=unified-action-v51'),'Ludus art uses shared profile');
 assert.ok(index.includes('arena-beasts.js?v=action-authoring-v46'),'beast renderer cache version');
-assert.ok(index.includes('ludus-practice.js?v=rear-occlusion-clearance-v50'),'practice v46 cache invalidation');
+assert.ok(index.includes('ludus-practice.js?v=unified-action-v51'),'practice authoring shares studio definitions');
 assert.ok(index.includes('arena-carnifex.js?v=action-authoring-v46'),'existing executioner projection cache');
 assert.match(index,/function duelFootOffset\(f\)/,'regular duel uses calibration key');
 assert.match(index,/const footOffset=duelFootOffset\(f\)/,'regular duel stores per-look Y offset');
