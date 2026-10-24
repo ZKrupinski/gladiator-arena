@@ -31,7 +31,7 @@ assert.equal(profile.fallbackAction('heavy'),'special');
 assert.equal(profile.resolve('murmillo_champion_red','attack').effect.kind,'sweep');
 assert.equal(profile.resolve('murmillo_champion_red','idle').scale,1);
 profile=load({murmillo_champion_red:{attack:{x:8,scale:1.1,effect:{kind:'thrust'}}}});
-assert.equal(profile.resolve('murmillo_champion_red','attack').x,8,'new published baseline expires old device-only pose draft');
+assert.equal(profile.resolve('murmillo_champion_red','attack').x,27,'an artist draft must survive an unrelated published baseline update');
 assert.equal(profile.resolve('murmillo_champion_red','attack').effect.kind,'thrust');
 profile.write({murmillo_champion_red:{attack:edit}});
 assert.equal(load({murmillo_champion_red:{attack:{x:8,scale:1.1,effect:{kind:'thrust'}}}})
