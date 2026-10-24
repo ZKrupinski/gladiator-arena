@@ -291,7 +291,8 @@ function emitVfx(kind,unit,other,emphasis=false){
  const c=COURTS[unit.seat],duration=root.ArenaRasterFX?.FAMILIES?.[kind]?.duration||.34;
  const face=(kind==='hit'&&other)?(other.side==='ally'?1:-1):
   (unit.side==='ally'?1:-1);
- const action=kind==='hit'?'hit':kind==='guard'||kind==='parry'?'guard':
+ const action=['slash','sweep','thrust'].includes(kind)?kind:
+  kind==='hit'?'hit':kind==='guard'?'guard':kind==='parry'?'parry':
   kind==='dash'?'dodge':kind==='special'?'special':kind==='finisher'?'finisher':'attack';
  const key=visualLook(unit),v=root.PracticeVisualProfiles?.resolve?.(key,action);
  const effect=v?.effect||{kind:'auto',x:0,y:0,scale:1};
@@ -623,8 +624,14 @@ function alphaBounds(art){
 function visualLook(unit){
  return root.PracticeScaleProfiles?.look?.(unit,api()?.state()?.roster)||null;
 }
+function authoredPose(unit,pose){
+ if(pose==='attack'&&(unit.windup>0||unit.swing>0))
+  return ['thrust','slash','sweep'][unit.swings%3]||'attack';
+ return pose;
+}
 function visualAction(unit,pose){
- return root.PracticeVisualProfiles?.resolve?.(visualLook(unit),pose)||
+ const action=authoredPose(unit,pose);
+ return root.PracticeVisualProfiles?.resolve?.(visualLook(unit),action)||
   {x:0,y:0,scale:1,effect:{kind:'auto',x:0,y:0,scale:1}};
 }
 function actorPose(unit){
