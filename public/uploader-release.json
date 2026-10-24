@@ -1,18 +1,12 @@
 {
   "assetSha256": {
-    "public/arena-beasts.js": "268749610632ea61ce396d79dcc0a5eb08709c423d05060ba428a4214c8ad1e5",
-    "public/arena-carnifex.js": "d9dd2d455cda26680297a00af8c94b1120080fb17872f66083b93507cda6647f",
-    "public/index.html": "6a039fb25f219eab04c5cd5a21a24cd05a9a4dc239240a3251345d293af2d7d2",
-    "public/ludus-practice.js": "7c148ead98db1daba611c3de93f69225f87bdb46a8d0696901495c89288d60c6",
-    "public/practice-scale-profiles.js": "f3942911ccc1b1c8ba56cc9f6db77d00ba5c101c29629f3fd13bd25fc41c4116",
-    "public/practice-scale-published.js": "c3e23fe70a90f02430a1e8224132cd4229b89e2d8c4ca19f0dc3d3688afb4544",
-    "public/practice-visual-profiles.js": "1a49ae6cdcd44909e343ec4d8585030300cd376486cb1ca3dcf040c10664bf95",
-    "public/tools/practice-scale-calibrator.html": "43edae3acfd2e707b3c89b120d1601a142642b64893f68172fb893eb2def65f0",
-    "public/tools/practice-scale-publish.js": "71a58483dcd4c329fae28146fc2643259606e6a43cad73fd280866d172f27f02"
+    "public/index.html": "4fb433c7b5a53ab9af37a6496d0af3556b78173a01dedf4f366a77ed31437c59",
+    "public/ludus-practice.js": "2b4261849f03f5356bcded58ee485fcffe6893b70ff1fbbafa4b73e456aca714",
+    "public/tools/practice-scale-calibrator.html": "62658960f2f57d819e4f59a2045d9bf789d48872de172459fdd55ed6a9b0d89e"
   },
-  "baseCommit": "bd21c2694ff3e8f120287edbd41a9ebd3e0721f9",
+  "baseCommit": "9ac093a79464d5cb07637b48edcf6217ec192049",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-visual-action-fx-studio-20261024-v46",
+  "releaseId": "practice-uniform-camera-scale-20261024-v47",
   "releaseProtocol": "spartacus-uploader-v1"
 }
