@@ -22,7 +22,7 @@
   "retiarius_a_L3": 1.1371499999999999,
   "retiarius_a_L4": 1.182275,
   "retiarius_a_L5": 1.24545,
-  "murmillo_champion_red": 1.5071749999999997,
+  "murmillo_champion_red": 1.16,
   "murmillo_motion_v3": 1.1552,
   "legacy_murmillo": 1.28155,
   "legacy_thraex": 1.3627749999999998,

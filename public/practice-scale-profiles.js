@@ -33,14 +33,23 @@ const clamp=v=>Math.max(.65,Math.min(1.85,Number(v)));
 function read(){
  try{
   const stored=JSON.parse(root.localStorage?.getItem(KEY)||'{}');
-  // A preview belongs to the published baseline it was made against.
-  // Never let an old device draft mask a newer GitHub release.
-  if(stored?.baseline!==baseline&&
-   (stored?.baseline!==undefined||Object.keys(published).length))return {};
+  // A changed published look invalidates ONLY that look's stale device draft.
+  // Other 30 artist-calibrated characters must not lose their unpublished edits
+  // when a single champion is corrected in GitHub.
+  let previous=null;
+  if(stored?.baseline!==baseline){
+   if(stored?.baseline===undefined){
+    if(Object.keys(published).length)return {};
+   }else{
+    try{previous=JSON.parse(stored.baseline);}catch(_){return {};}
+    if(!previous||typeof previous!=='object')return {};
+   }
+  }
   const input=stored?.overrides||stored;
   const out={};
   for(const key of Object.keys(DEFAULTS))
-   if(Object.prototype.hasOwnProperty.call(input,key)&&Number.isFinite(Number(input[key])))
+   if((!previous||(Object.hasOwn(previous,key)&&previous[key]===DEFAULTS[key]))&&
+    Object.prototype.hasOwnProperty.call(input,key)&&Number.isFinite(Number(input[key])))
     out[key]=clamp(input[key]);
   return out;
  }catch(_){return {};}
@@ -58,9 +67,16 @@ function reset(){try{root.localStorage?.removeItem(KEY);return true;}catch(_){re
 function readFeet(){
  try{
   const stored=JSON.parse(root.localStorage?.getItem(FEET_KEY)||'{}');
-  if(stored?.baseline!==feetBaseline)return {};
+  let previousFeet=null;
+  if(stored?.baseline!==feetBaseline){
+   // The foot baseline historically also serialized every body scale.
+   // Changing a helmet/body scale must not erase unrelated foot editing.
+   try{previousFeet=JSON.parse(stored.baseline).feet;}catch(_){return {};}
+   if(!previousFeet||typeof previousFeet!=='object')return {};
+  }
   const input=stored?.overrides||{};
   return Object.fromEntries(Object.keys(FOOT_DEFAULTS).filter(key=>
+   (!previousFeet||(Object.hasOwn(previousFeet,key)&&previousFeet[key]===FOOT_DEFAULTS[key]))&&
    Object.hasOwn(input,key)&&Number.isFinite(Number(input[key])))
    .map(key=>[key,clampFoot(input[key])]));
  }catch(_){return {};}

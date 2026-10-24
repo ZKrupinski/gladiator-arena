@@ -32,6 +32,12 @@ assert.equal(p.foot('beast_wolf'),-40);
 p.resetFeet();
 assert.equal(p.foot('beast_wolf'),-40);
 assert.equal(p.scale('beast_wolf'),1.33,'reset feet does not erase size');
+// Body-size releases do not silently delete unrelated saved boot alignment.
+p=load({murmillo_champion_red:1.507175});
+p.writeFeet({thraex_a_L3:-9,beast_wolf:8});
+p=load({murmillo_champion_red:1.16});
+assert.equal(p.foot('thraex_a_L3'),-9,'champion resize must preserve other gladiator foot draft');
+assert.equal(p.foot('beast_wolf'),8,'champion resize must preserve beast foot draft');
 const html=fs.readFileSync('public/tools/practice-scale-calibrator.html','utf8');
 const inline=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
  .map(x=>x[1]).find(x=>x.includes('SpartacusScaleStudio'));
