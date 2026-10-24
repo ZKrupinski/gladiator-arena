@@ -72,6 +72,21 @@ function write(values){
 }
 function reset(){try{root.localStorage?.removeItem(KEY);local={};return true;}catch(_){return false;}}
 function size(kind){return FX_SIZES[kind]||[600,560];}
-root.PracticeVisualProfiles=Object.freeze({KEY,ACTIONS,ACTION_FALLBACK,fallbackAction,EFFECTS,FX_SIZES,clean,sanitize,read,all,resolve,write,reset,size});
+// Single game/editor effect transform. All offsets use the same world-space
+// unit as the original fighter sheet, then inherit ONLY the scene camera scale.
+// The normal arena's render-camera scale is separate from extra effect boosts.
+function effectGeometry({kind,baseX=0,baseY=0,face=1,zoom=1,pose=null,
+ effect=null,applyPoseOffset=true}={}){
+ const p=clean(pose),e=effect?clean({effect}).effect:p.effect;
+ const [width,height]=size(kind);
+ const z=between(zoom,.01,10,1),direction=face<0?-1:1;
+ return Object.freeze({
+  kind,x:baseX+direction*((applyPoseOffset?p.x:0)+e.x)*z,
+  y:baseY+((applyPoseOffset?p.y:0)+e.y)*z,
+  width:width*z*e.scale,height:height*z*e.scale,
+  zoom:z,scale:e.scale
+ });
+}
+root.PracticeVisualProfiles=Object.freeze({KEY,ACTIONS,ACTION_FALLBACK,fallbackAction,EFFECTS,FX_SIZES,clean,sanitize,read,all,resolve,write,reset,size,effectGeometry});
 if(typeof module!=='undefined')module.exports=root.PracticeVisualProfiles;
 })(typeof window!=='undefined'?window:globalThis);
