@@ -1,17 +1,18 @@
 {
   "assetSha256": {
     "docs/arena-coop-v58.md": "b4abd8fab0b238c0297acdc6dd528457e9f6e3421d328770b7cd7a39f2d2d6bc",
-    "public/arena-coop-core.js": "d35fe9cf3448771c1d8c2193d838e8be0c644ecff53b7a3ff2578d4ba58762d6",
+    "public/arena-coop-core.js": "8880f251e5b81aeb7d76f5e9d69641269315f5d85713aad42fc15fa368a01f92",
     "public/arena-coop.css": "d58b376b546eb981dfeae35a3d05d2a7a3959ee2378e969aef7c20f9a4daa8ae",
-    "public/arena-coop.js": "e35c1470473d5849a5ffc46476b91cf37832d1d479c41948fe44dad697d622d7",
-    "public/index.html": "7c34ff4e857f7257f6a11fd85a0a887bf873d2315d6a39c974f0ea19a3f87c1a",
+    "public/arena-coop.js": "67ada1724b43a62aee89638a60e78de3fc4be9ee18b411799e64145f9df992c2",
+    "public/index.html": "bb8cb86cee8f1739286dc6d40a42d2cd3fcf9f502ed96fd6f5386cb5b7c045eb",
     "public/ludus-cards.js": "31d13ef12dfbfaa0bc4be79747bdd3342c7fd357f1d30cbeb6e65bb811b6df32",
     "tests/arena-coop-browser.js": "57312fc1756a276b192ba7a2bd582e3f570031dfbe4d4c81cf8102039b136984",
-    "tests/arena-coop-core.js": "8298b389db73921699234c59cec8c95fc57e775e872099c45619b86d00ff795e"
+    "tests/arena-coop-core.js": "4c54fa5fb0c4121f5decbab6fc5c9c11f29c9f30cc01351c7bfb8f4a45615f68",
+    "docs/arena-coop-v59.md": "a8f8137a239ae58710fc845baf74d12aa32dea71dcda458a4f217d1069103c0a"
   },
   "baseCommit": "958cf8eef8e5dae84cb70e065d371b50aa19586b",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "concordia-5v5-v58-20261025",
+  "releaseId": "concordia-5v5-v59-20261025",
   "releaseProtocol": "spartacus-uploader-v1"
 }
