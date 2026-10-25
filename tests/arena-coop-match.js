@@ -66,4 +66,34 @@ for(const [tag,allies] of factions){
  console.log('MATCH '+tag+': '+ended+' seeded matches, median '+mid[Math.floor(ended/2)].toFixed(1)+'s, wins '+wins+'/'+ended+
   ', formation '+formations+', flank '+flanks+', rally '+rallies+', under-30s '+fast);
 }
+// Actual Lv.50 archetypes can output huge specialty hits. They too need
+// multiple command opportunities, without modifying player stats.
+const Balance=require('../public/arena-balance');
+const lvl50=roles.map((cls,i)=>{
+ const h={index:i,cls,name:'Legend '+i,level:50,
+  stats:{str:i===0?8:4,agi:i===1?8:4,end:i===2?8:4,focus:i===3?8:4},
+  birthStats:{str:i===0?8:3,agi:i===1?8:3,end:i===2?8:3,focus:i===3?8:3},
+  aptitudes:{str:i===0?1.5:.8,agi:i===1?1.5:.8,end:i===2?1.5:.8,focus:i===3?1.5:.8}};
+ return {...h,combat:Balance.heroStats(h,{atk:18,hp:140,move:220,sp:45})};
+});
+const lv50Rivals=Match.build(lvl50);
+assert(lv50Rivals.every(u=>u.level===50),'rivals show Lv.50 instead of Lv.20');
+const durations=[];
+for(let seed=1;seed<=35;seed++){
+ const s=Core.create(lvl50,lv50Rivals,{seed});let ticks=0;
+ while(!s.result&&ticks++<2450){
+  if(seed%2===0){
+   if(s.time>=1&&s.time>=s.formationReady)Core.command(s,'formation');
+   if(s.time>=3&&s.time>=s.flankReady)Core.command(s,'flank');
+   if(s.meter>=60)Core.command(s,'rally');
+  }
+  Core.step(s,.05);
+ }
+ assert(s.result,'high-level round must finish');
+ durations.push(s.time);
+}
+durations.sort((a,b)=>a-b);
+assert(durations[17]>=45&&durations[17]<105,
+ 'even max-level tactical parties should get a meaningful 5v5 engagement');
+console.log('MATCH level-50: 35 seeds, median '+durations[17].toFixed(1)+'s, tactics reusable');
 console.log('PASS: real selected-stat matchmaking, injury compensation, adaptive 5v5 endurance and repeated tactics');
