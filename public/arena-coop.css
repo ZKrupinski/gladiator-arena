@@ -22,3 +22,50 @@
 .coop-callout[data-kind="chase"]{border-color:#ef9b84;color:#ffe0ce;animation:coop-event-enter .24s ease-out}
 @keyframes coop-event-enter{from{opacity:.25;transform:translate(-50%,-12px) scale(.94)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.coop-callout[data-kind]{animation:none}}
+
+/* CONCORDIA v65: editable fighter portrait orders immediately BELOW the arena.
+   Faces oppose one another; CSS never mirrors captions/HP/controls. */
+.coop-scoreboard{flex:0 0 auto;gap:12px;padding:7px 18px 8px;border-top:1px solid #98734b;border-bottom:1px solid #674827;background:#1f1712}
+.coop-team{min-width:0;gap:7px}
+.arena-coop .coop-unit{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-end;min-width:0;min-height:114px;padding:4px 5px 6px;gap:2px;overflow:hidden;border-radius:7px;transition:border-color .15s,box-shadow .15s}
+.coop-allies .coop-unit{border-color:#45769d;background:linear-gradient(#2a4252,#1a2934)}
+.coop-enemies .coop-unit{border-color:#9c5348;background:linear-gradient(#512d29,#291a19)}
+.arena-coop .coop-thumb{width:100%;max-width:118px;height:69px;flex:1;min-height:50px;object-fit:contain;display:block;margin:auto}
+.coop-unit-name{font:700 11px/1.13 system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.arena-coop .coop-unit small.coop-unit-state{margin:1px 0 0;font:700 10px/1.14 system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.coop-allies .coop-unit-state{color:#abdfff}.coop-enemies .coop-unit-state{color:#ffb8ac}
+.arena-coop .coop-unit progress{height:5px;margin:2px 0;flex:none}
+.arena-coop .coop-allies .coop-unit.is-selected{outline:2px solid #58b5ff;box-shadow:0 0 0 1px #9bdcff,0 0 15px #3b97ff8c}
+.arena-coop .coop-enemies .coop-unit.is-selected{outline:2px solid #ff7269;box-shadow:0 0 0 1px #ffc0b1,0 0 15px #ff534783}
+.arena-coop .coop-unit.is-active-command{background-image:linear-gradient(#4a5e62,#1a2934)}
+.arena-coop .coop-enemies .coop-unit.is-active-command{background-image:linear-gradient(#754136,#291a19)}
+.arena-coop .coop-unit.is-dead{filter:saturate(.35);opacity:.53;text-decoration:none}
+.arena-coop .coop-unit.is-dead canvas{filter:grayscale(1)}
+.coop-footer{flex:0 0 auto;padding:8px 17px 10px}.coop-orders{gap:8px;flex-wrap:wrap}
+.coop-orders button{min-width:125px;flex:0 1 180px}
+.coop-orders small{min-height:1.3em}
+.coop-help{line-height:1.35;margin:6px 0 4px}
+.coop-field{min-height:200px}
+@media(max-width:700px){
+ .coop-scoreboard{padding:4px 6px;gap:4px;flex-direction:column}
+ .coop-team{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;width:100%}
+ .arena-coop .coop-unit{padding:2px 2px 3px;min-height:66px;gap:1px;border-radius:4px}
+ .arena-coop .coop-thumb{height:40px;min-height:37px;max-width:72px}
+ .arena-coop .coop-unit-name{font-size:9px}
+ .arena-coop .coop-unit small.coop-unit-state{font-size:8px;margin:0}
+ .arena-coop .coop-unit progress{height:4px;margin:0}
+ .coop-field{min-height:190px}
+ .coop-field canvas{object-fit:contain}
+ .coop-footer{padding:5px 7px}.coop-orders{gap:5px}
+ .coop-orders button{min-width:0;flex:1 1 24%;padding:4px 3px;font-size:11px;min-height:42px}
+ .coop-orders small{font-size:8px;line-height:1.1;margin-top:2px}
+ .coop-gauge{flex:1 1 80px;width:auto;max-width:135px}
+ .coop-help{font-size:9px;margin:4px 0}
+}
+@media(max-height:550px) and (min-width:701px){
+ .arena-coop .coop-unit{min-height:72px;padding:2px 3px}
+ .arena-coop .coop-thumb{height:45px;min-height:32px}
+ .coop-field{min-height:160px}
+ .coop-footer{padding:3px 8px}.coop-help{display:none}
+}
+@media(prefers-reduced-motion:reduce){.arena-coop .coop-unit{transition:none}}
