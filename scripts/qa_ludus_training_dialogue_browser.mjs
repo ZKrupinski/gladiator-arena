@@ -29,7 +29,7 @@ try{
    aria:speech.getAttribute('aria-live'),
    legacy:!!document.querySelector('.la-stage.training .la-doctore-parchment')};
  });
- assert.ok(initial.url.includes('training_blank_v71.webp'),'new key art must have baked fake dialogue removed');
+ assert.ok(initial.url.includes('training_blank_v74.webp'),'new source art must contain the repaired parchment');
  assert.equal(initial.width,1672);
  assert.equal(initial.height,941);
  assert.ok(initial.z>initial.fighterZ&&initial.z>initial.trainerZ,
@@ -64,10 +64,13 @@ try{
    fighterZoneTop:parseFloat(getComputedStyle(canvas.parentElement).top),
    trainerTop:parseFloat(getComputedStyle(trainer).top),
    fighterMetrics:window.LudusTrainingV2?.metrics??null,
-   repairVisible:!!stage.querySelector('.la-speech-paper-restoration')&&
-     getComputedStyle(stage.querySelector('.la-speech-paper-restoration')).display!=='none',
-   repairBackground:getComputedStyle(stage.querySelector('.la-speech-paper-restoration')).backgroundImage,
-   repairRect:stage.querySelector('.la-speech-paper-restoration').getBoundingClientRect().toJSON(),
+   repairNodes:stage.querySelectorAll('.la-speech-paper-restoration').length,
+   repairedColor:(()=>{
+     const src=stage.querySelector('.la-key');
+     const c=document.createElement('canvas');c.width=src.naturalWidth;c.height=src.naturalHeight;
+     const cx=c.getContext('2d');cx.drawImage(src,0,0);
+     return [...cx.getImageData(522,154,1,1).data].slice(0,3);
+   })(),
    bubbleRect:bubble.getBoundingClientRect().toJSON(),
    effectsRect:stage.querySelector('.lt-effect').getBoundingClientRect().toJSON(),
    guidanceRect:stage.querySelector('.lt-guidance').getBoundingClientRect().toJSON(),
@@ -75,15 +78,9 @@ try{
    startRect:stage.querySelector('.lt-start-button').getBoundingClientRect().toJSON(),
    panelExtension:getComputedStyle(stage.querySelector('.lt-info'),'::after').content};
  });
- assert.equal(initialVisual.repairVisible,true,'baked brown stain must be covered by real paper surface');
- assert.ok(initialVisual.repairBackground.includes('linear-gradient'),
-  'restoration must match the painted parchment rather than show dark stained pixels');
- assert.ok(initialVisual.repairRect.left>=initialVisual.bubbleRect.left,
-  'paper repair must stay inside the original balloon left border');
- assert.ok(initialVisual.repairRect.right<=initialVisual.bubbleRect.right+10,
-  'paper repair must not cover the neighboring gladiator artwork');
- assert.ok(initialVisual.repairRect.height>=90,
-  'restoration must cover the full stained dialogue interior');
+ assert.equal(initialVisual.repairNodes,0,'old CSS/UI cover-up must be fully removed');
+ assert.ok(initialVisual.repairedColor[0]>220&&initialVisual.repairedColor[1]>200&&initialVisual.repairedColor[2]>160,
+  'original baked brown source pixels must actually be repainted light parchment: '+JSON.stringify(initialVisual.repairedColor));
  assert.ok(initialVisual.panelExtension!=='none',
   'effects pane needs a painted bottom continuation');
  assert.ok(initialVisual.effectsRect.bottom+3<=initialVisual.guidanceRect.top,
@@ -101,11 +98,12 @@ try{
  assert.equal(initialVisual.fighterCanvasH,800,'fighter needs padded canvas height');
  assert.ok(initialVisual.trainerScale>=.88&&initialVisual.trainerScale<=1.08,'Doctore is resized consistently');
  assert.equal(initialVisual.trainerFloor,575,'Doctore stays on raised floor');
- assert.equal(initialVisual.fighterMetrics?.scaleFactor,.70,'training gladiator is slightly larger');
+ assert.equal(initialVisual.fighterMetrics?.scaleFactor,.70,'gladiator size unchanged');
+ assert.equal(initialVisual.fighterMetrics?.canvasFootY,670,'fighter foot moved down 12px');
  const fighterFoot=initialVisual.fighterZoneTop+initialVisual.fighterMetrics.canvasFootY;
  const doctoreFoot=initialVisual.trainerTop+initialVisual.trainerFloor;
- assert.ok(doctoreFoot-fighterFoot>=5&&doctoreFoot-fighterFoot<=15,
-  'fighter feet should be just above Doctore: '+JSON.stringify({fighterFoot,doctoreFoot}));
+ assert.ok(fighterFoot>=doctoreFoot&&fighterFoot-doctoreFoot<=6,
+  'lowered fighter feet should align naturally with Doctore floor: '+JSON.stringify({fighterFoot,doctoreFoot}));
  const selected=[];
  for(let i=0;i<5;i++){
   await page.evaluate(i=>{
