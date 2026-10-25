@@ -43,6 +43,28 @@ try{
  await page.evaluate(()=>{window.__originalRandom=Math.random;Math.random=()=>0;});
  await page.locator('.la-stage.training .lt-start-button').click();
  await page.waitForFunction(()=>document.querySelector('.la-stage.training .la-training-speech')?.dataset.phase==='failed',{timeout:5000});
+ const failureBadge=page.locator('.la-stage.training .la-training-feedback');
+ assert.equal(await failureBadge.count(),1,'a single, large failure badge must appear after a real failed session');
+ const failBadgeData=await failureBadge.evaluate(node=>{
+  const b=node.getBoundingClientRect(),stage=document.querySelector('.la-stage.training').getBoundingClientRect();
+  const comp=getComputedStyle(node);
+  return {kind:node.dataset.outcome,duration:Number(node.dataset.durationMs),text:node.textContent,
+   w:b.width,h:b.height,visible:comp.visibility,opacity:parseFloat(comp.opacity),
+   svg:node.querySelector('svg')?.outerHTML||'',
+   x:(b.left-stage.left)/((stage.width)/1672),y:(b.top-stage.top)/((stage.height)/941)};
+ });
+ assert.equal(failBadgeData.kind,'fail','actual failed training must show red failure artwork');
+ assert(failBadgeData.text.includes('훈련 실패')&&failBadgeData.text.includes('성장 없음'),
+  'large failure graphic must name outcome and explain no growth');
+ assert(failBadgeData.svg.includes('la-result-glyph'),'training failure emblem SVG must exist');
+ assert(failBadgeData.duration>=3000,'result must last long enough to read');
+ assert(failBadgeData.w>=80&&failBadgeData.h>=65,'icon text should remain legible on scene');
+ assert(failBadgeData.x>420&&failBadgeData.x<800&&failBadgeData.y>230&&failBadgeData.y<560,
+  'emblem must appear in the center between instructor and fighter '+JSON.stringify(failBadgeData));
+ await page.waitForTimeout(1880);
+ assert.equal(await failureBadge.count(),1,'failure graphic must remain visible for at least ~2 seconds');
+ assert((await failureBadge.evaluate(n=>parseFloat(getComputedStyle(n).opacity)))>.7,
+  'failure graphic should not already be faded out during hold time');
  const failed=await page.evaluate(()=>{
   const s=LudusBridge.state(),h=s.roster[s.active],risk=LudusTrainingRisk.quote(h,'str');
   const stage=document.querySelector('.la-stage.training'),effect=stage.querySelector('.lt-effect'),
@@ -68,6 +90,22 @@ try{
   'attempts must be saved in actual career roster');
  await page.evaluate(()=>{Math.random=()=>.999999;});
  await page.locator('.la-stage.training .lt-start-button').click();
+ const successBadge=page.locator('.la-stage.training .la-training-feedback');
+ assert.equal(await successBadge.count(),1,'success reuses the one emblem layer');
+ const successMarkup=await successBadge.evaluate(n=>({
+  kind:n.dataset.outcome,text:n.textContent,
+  image:n.querySelector('svg')?.outerHTML||'',duration:Number(n.dataset.durationMs)
+ }));
+ assert.equal(successMarkup.kind,'success','real training success must display gold check artwork');
+ assert(successMarkup.text.includes('훈련 성공')&&successMarkup.text.includes('상승'));
+ assert(successMarkup.image.includes('la-result-glyph'));
+ assert(successMarkup.duration>=3000);
+ await page.waitForTimeout(1960);
+ assert.equal(await successBadge.count(),1,'success emblem must stay visible for >1.9 seconds');
+ assert((await successBadge.evaluate(n=>parseFloat(getComputedStyle(n).opacity)))>.7,
+  'gold success graphic should remain opaque during its long hold');
+ await page.waitForTimeout(1510);
+ assert.equal(await successBadge.count(),0,'success overlay must remove itself instead of staying over the actors');
  const success=await page.evaluate(()=>{
   const h=LudusBridge.state().roster[0],s=LudusBridge.state();
   return {gold:s.gold,xp:h.xp,str:h.stats.str,attempts:h.trainingAttempts.str,status:s.message};
