@@ -1,5 +1,36 @@
 # GLADIATOR ARENA — assistant / coding-agent production instructions
 
+## Startup protocol for resumed Chat / Work development sessions (2026-10-25)
+
+The user expects existing game-development connectors and release tools to be
+**rediscovered and used automatically** at the start of each resumed session,
+rather than being asked to reconnect tools that are already available.
+
+1. Identify the game/project from the current conversation and project history.
+   For this game, immediately inspect `ZKrupinski/gladiator-arena` on `main`,
+   recent commits, `AGENTS.md`, uploader docs and open QA failures. Do not ask
+   the user to repeat a known repository, asset path, deployment URL or version.
+2. Discover **currently available** GitHub, Google Drive, image and file tools
+   before claiming that repository writes or uploads are impossible. Use the
+   connected GitHub integration for code reads/writes when authorized; use
+   the configured project uploader or approved GitHub Actions upload request
+   protocol for supported binary assets. Do not request a new personal access
+   token if the connected integration already has sufficient permission.
+3. For ongoing user-approved game changes, prefer **inspect latest state →
+   modify real project files → QA → commit/upload → independently verify live
+   Cloudflare content** in the same session. Distinguish code commits, binary
+   publication, passing checks, and production deployment.
+4. A new Chat session **cannot itself grant, reconnect, authorize or persist**
+   plugin access. Never represent account-level OAuth activation, tool
+   availability in another session, or future background execution as
+   guaranteed. If an actual connector is missing/expired, identify the exact
+   unavailable capability and only request user reauthorization when needed.
+5. Never claim "no GitHub access" based solely on assumptions or earlier
+   failures: attempt the available connector first. Never store tokens,
+   credentials or sensitive connection strings in repository files.
+6. Applies to this repository. For other games, identify their correct
+   project/repository rather than blindly reusing Spartacus deployment paths.
+
 ## MANDATORY: SpriteForge V3 pre-art briefing for ALL artists and tools
 
 This rule applies to **the ChatGPT assistant itself**, including when using
