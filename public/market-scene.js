@@ -229,7 +229,7 @@ function reaction(line,mood='select',duration=4800){
  const frames=poses[mood]||poses.select;let index=0;face(frames[0]);
  if(frames.length>1)animateTimer=setInterval(()=>{index=(index+1)%frames.length;face(frames[index]);},490);
  speechReset=setTimeout(()=>{
-  text.hidden=true;glow.classList.remove('active');clearInterval(animateTimer);
+  text.hidden=false;glow.classList.remove('active');clearInterval(animateTimer);
   face(1);$('#gmMerchantMain')?.classList.remove('is-speaking');
  },duration);
 }
