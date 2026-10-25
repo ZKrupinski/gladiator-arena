@@ -65,7 +65,7 @@
   const special=boss&&(round%20===5);
   const cls=boss?(special?'murmillo':classes[(Math.floor(round/5)-1)%3]):
    (rng()<.60?preferred:classes[Math.floor(rng()*3)]);
-  const level=clamp(match?.level??1,1,20);
+  const level=clamp(match?.level??1,1,50);
   // First and every fourth championship round introduces the new red-plume
   // Murmillo boss. Other classic bosses keep their established rotation.
   return state.pendingOpponent={cls,level,stage:stage(level),boss,match,matchKey,
