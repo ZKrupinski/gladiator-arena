@@ -80,7 +80,11 @@
    const motion=root.PracticeVisualProfiles?.sampleMotion(profile,progress)||{x:0,y:0};
    const tick=pose==='death'?Math.floor(progress*7):pose==='attack'?Math.floor(progress*7):sim.time*8;
    const image=art(u,pose,tick),idle=art(u,'idle',0);if(!image||!idle?.height)return;
-   const z=.60,k=(root.PracticeScaleProfiles?.framePixels?.(look,idle.height,202)||
+   const basis=root.LudusBridge?.practiceNominal?.(u);
+   const sourceScale=basis?.width>0&&basis?.height>0?
+    root.PracticeScaleProfiles?.cellPixels?.(look,basis.width,basis.height,202):0;
+   const z=.60,k=(sourceScale||
+    root.PracticeScaleProfiles?.framePixels?.(look,idle.height,202)||
     202/idle.height*(root.PracticeScaleProfiles?.scale?.(look)||1))*z*profile.scale;
    const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
    const body=root.ArenaMotion?.pose?.(u,sim.time,reduced)||{x:0,y:0,tilt:0};
