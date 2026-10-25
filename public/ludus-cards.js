@@ -38,7 +38,7 @@ function card(h,i,selected,draft){
 function header(heading,s,care=false){
  return '<div class="lc-banner"><span class="lc-laurel">❧</span><div><div class="lc-kicker">LVDVS · GLADIATORVM</div><h1>'+heading+'</h1></div><span class="lc-laurel">❧</span></div>'+
  (care?'<div class="lc-resources lc-recovery-funds" role="group" aria-label="회복에 사용할 수 있는 재화">'+
- '<span><small>회복 금화</small><strong>◉ '+Number(s.gold||0).toLocaleString('ko-KR')+' <em>D</em></strong></span>'+
+ '<span><small>'+(heading==='아레나 출전'?'보유 금화':'회복 금화')+'</small><strong>◉ '+Number(s.gold||0).toLocaleString('ko-KR')+' <em>D</em></strong></span>'+
  '<span><small>보유 명예</small><strong>✥ '+Number(s.glory||0).toLocaleString('ko-KR')+'</strong></span></div>':
  '<div class="lc-resources"><span>◉ '+Number(s.gold||0).toLocaleString('ko-KR')+' D</span><span>✥ '+Number(s.glory||0).toLocaleString('ko-KR')+' 명예</span><span>♜ '+s.roster.length+'명</span></div>');
 }
