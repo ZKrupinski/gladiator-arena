@@ -88,3 +88,26 @@
  top:559px;left:21px;width:351px;
  font-size:14px;line-height:1.5;white-space:normal;
 }
+
+
+/* v72: real per-gladiator training persistence and innate weakness odds.
+   Keep the added risk information inside the extended illustrated effect panel. */
+.la-stage.training .lt-effect p{
+ font-size:14px!important;line-height:1.32!important;margin:3px 0 4px!important;
+}
+.la-stage.training .lt-risk-row{
+ display:flex;align-items:center;justify-content:space-between;gap:7px;
+ min-height:27px;max-width:344px;margin:3px 0 4px;
+ padding:3px 6px;box-sizing:border-box;
+ background:linear-gradient(90deg,#2f301eab,#1b230ec4);
+ border:1px solid #9f98628e;border-radius:4px;
+ font:800 13px/1.25 'Noto Sans KR',sans-serif;color:#d9e4ad;
+}
+.la-stage.training .lt-risk-row b{font:900 14px/1.2 'Noto Sans KR',sans-serif;white-space:nowrap}
+.la-stage.training .lt-risk-row.lt-risk-active{
+ background:linear-gradient(90deg,#58301cdb,#412014e5);
+ border-color:#d7a361;color:#ffe1a3;
+}
+.la-stage.training .lt-risk-row.lt-risk-active b{color:#ffb58e}
+.la-stage.training .lt-cost{min-height:27px!important;line-height:1.3!important;padding:3px 0!important}
+.la-stage.training .lt-guidance{top:569px!important;line-height:1.4!important}
