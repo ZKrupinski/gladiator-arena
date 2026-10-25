@@ -6,6 +6,9 @@ const errors=[];
 page.on('pageerror',err=>errors.push(String(err)));
 try{
  await page.addInitScript(()=>{
+  // Seed a fixture ONCE. Reload must read the actual saved outcome, not re-seed.
+  if(localStorage.getItem('qa-innate-training-seeded-v72'))return;
+  localStorage.setItem('qa-innate-training-seeded-v72','1');
   const hero={
    cls:'murmillo',name:'Atilius',level:21,xp:7,stats:{str:5,agi:3,end:6,focus:4},
    birthStats:{str:1,agi:6,end:8,focus:7},
