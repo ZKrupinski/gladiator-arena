@@ -6,6 +6,9 @@
  // No hard cap on trained points. Beyond +10, the contribution to combat
  // grows continuously but with decreasing marginal returns.
  const TRAINING_SOFTCAP=10;
+ const LEVEL_CAP=50;
+ const innate=(h,key)=>root.ArenaProgression?.growth?.(h,key)||0;
+ const stat=(h,key)=>trainedStat(h?.stats?.[key])+innate(h,key);
  function trainedStat(value){
   const n=Number(value);
   if(!Number.isFinite(n)||n<=0)return 0;
@@ -45,12 +48,12 @@
  function heroPower(h){
   if(!h)return 0;
   const s=h.stats||{},equip=h.equipment||{};
-  const level=clamp(h.level||1,1,20);
+  const level=clamp(h.level||1,1,LEVEL_CAP);
   return Math.round(level*2.8+
-    trainedStat(s.str)*6.5+
-    trainedStat(s.agi)*5.2+
-    trainedStat(s.end)*6.2+
-    trainedStat(s.focus)*6.1+
+    stat(h,'str')*6.5+
+    stat(h,'agi')*5.2+
+    stat(h,'end')*6.2+
+    stat(h,'focus')*6.1+
     (equip.weapon&&equip.weapon!=='wood'?13:0)+
     (equip.shield?9:0)+(equip.armor?15:0));
  }
@@ -61,16 +64,16 @@
   shield:{atk:0,hp:24},elite:{atk:9,hp:15}};
  function matchStrength(h){
   const s=h?.stats||{},equip=h?.equipment||{},base=BASE[h?.cls]||BASE.murmillo;
-  const level=clamp(h?.level||1,1,20);
-  const training=['str','agi','end','focus'].reduce((n,k)=>n+trainedStat(s[k]),0);
+  const level=clamp(h?.level||1,1,LEVEL_CAP);
+  const training=['str','agi','end','focus'].reduce((n,k)=>n+stat(h,k),0);
   const worn=['weapon','shield','armor'].map(k=>EQUIP[equip[k]]||null).filter(Boolean);
   const equipment=worn.filter(g=>g.atk||g.hp).length;
   const gear=worn.reduce((sum,g)=>({atk:sum.atk+g.atk,hp:sum.hp+g.hp}),{atk:0,hp:0});
   const injury=clamp(h?.injury||0,0,120),fatigue=clamp(h?.fatigue||0,0,100);
-  const hp=Math.max(1,Math.round(base.hp+trainedStat(s.end)*15+gear.hp-injury));
-  const atk=Math.round(base.atk+trainedStat(s.str)*2.65+gear.atk);
+  const hp=Math.max(1,Math.round(base.hp+stat(h,'end')*15+gear.hp-injury));
+  const atk=Math.round(base.atk+stat(h,'str')*2.65+gear.atk);
   const effectiveLevel=clamp(1+(level-1)*.58+training*.255+equipment*1.15
-    -injury*.024-fatigue*.016,1,20);
+    -injury*.024-fatigue*.016,1,LEVEL_CAP);
   return {level,hp,atk,training,equipment,injury,fatigue,
    power:heroPower(h),effectiveLevel};
  }
@@ -81,7 +84,7 @@
   // Gauntlets are consecutive one-on-one fights: average per fighter, never
   // sum team power (which otherwise makes 3v3 enemies absurdly strong).
   const experience=avg('effectiveLevel');
-  const level=Math.round(clamp(experience+.75-(boss?3:0),1,20));
+  const level=Math.round(clamp(experience+.75-(boss?3:0),1,LEVEL_CAP));
   return {level,effectiveLevel:+experience.toFixed(2),
    hp:Math.round(avg('hp')),atk:Math.round(avg('atk')),
    training:Math.round(avg('training')),equipment:Math.round(avg('equipment')),
@@ -100,18 +103,21 @@
  }
  function encounterLevel(round,heroLevel,boss=false){
   const r=clamp(round||1,1,90);
-  const level=clamp(heroLevel||1,1,20);
+  const level=clamp(heroLevel||1,1,LEVEL_CAP);
   // Early bouts are difficult but beatable. Opponents outpace untrained
   // veterans so equipment and training matter beyond mere XP level.
-  return Math.round(clamp(Math.max(1,level*.72+r*.35+(boss?3:0)),1,20));
+  return Math.round(clamp(Math.max(1,level*.72+r*.35+(boss?3:0)),1,LEVEL_CAP));
  }
  function duelEnemy(base,opponent,round){
-  const level=clamp(opponent?.level||1,1,20);
+  const level=clamp(opponent?.level||1,1,LEVEL_CAP);
   const boss=!!opponent?.boss;
   const special=opponent?.appearance==='murmillo_champion_red';
   const rounds=clamp(round||1,1,40);
-  const hpScale=1+level*.043+rounds*.014+(boss?.60:0)+(special?.30:0);
-  const atkScale=1+level*.026+rounds*.013+(boss?.34:0)+(special?.19:0);
+  // Keep high-level duels matched to actual trained power, without runaway
+  // level-only multiplicative scaling beyond the historical Lv.20 curve.
+  const rankPressure=Math.min(20,level);
+  const hpScale=1+rankPressure*.043+rounds*.014+(boss?.60:0)+(special?.30:0);
+  const atkScale=1+rankPressure*.026+rounds*.013+(boss?.34:0)+(special?.19:0);
   const match=opponent?.match;
   const originalHp=base.hp*hpScale,originalAtk=base.atk*atkScale;
   // Constrain to an achievable duel even in late rounds; armor, AI and boss
@@ -129,18 +135,17 @@
   };
  }
  function heroStats(h,base,gear={atk:0,hp:0}){
-  const s=h?.stats||{};
   const trait=TRAITS[h?.cls]||TRAITS.murmillo;
   return {
-   atk:Math.round(base.atk+trainedStat(s.str)*2.65+(gear.atk||0)),
-   hp:Math.round(base.hp+trainedStat(s.end)*15+(gear.hp||0)),
-   move:Math.round(base.move*(1+trainedStat(s.agi)*.041)),
-   sp:Math.round(base.sp+trainedStat(s.focus)*4.9+trainedStat(s.str)*.65+(gear.sp||0)),
-   staminaRegen:1+trainedStat(s.agi)*.048+(gear.stamina||0),
-   specialCooldown:clamp(7-trainedStat(s.focus)*.33-(gear.cooldown||0),3.1,7),
-   armor:clamp(trait.armor+trainedStat(s.end)*.007+(gear.armor||0),0,.48),
+   atk:Math.round(base.atk+stat(h,'str')*2.65+(gear.atk||0)),
+   hp:Math.round(base.hp+stat(h,'end')*15+(gear.hp||0)),
+   move:Math.round(base.move*(1+stat(h,'agi')*.041)),
+   sp:Math.round(base.sp+stat(h,'focus')*4.9+stat(h,'str')*.65+(gear.sp||0)),
+   staminaRegen:1+stat(h,'agi')*.048+(gear.stamina||0),
+   specialCooldown:clamp(7-stat(h,'focus')*.33-(gear.cooldown||0),3.1,7),
+   armor:clamp(trait.armor+stat(h,'end')*.007+(gear.armor||0),0,.48),
    focus:trainedStat(s.focus),
-   parry:clamp(trait.parry+trainedStat(s.focus)*.016,0,.48)
+   parry:clamp(trait.parry+stat(h,'focus')*.016,0,.48)
   };
  }
  function enemyAi(level,boss=false,cls='murmillo',hpRatio=1){
@@ -181,7 +186,7 @@
  function combatDamage(value,kind='normal'){
   return Math.max(1,Math.round(Math.max(0,Number(value)||0)*(DAMAGE_RATES[kind]??DAMAGE_RATES.normal)));
  }
- root.ArenaBalance={version:'1.4.0',TRAINING_SOFTCAP,trainedStat,trainingAptitude,trainingGain,combatDamage,DAMAGE_RATES,TRAITS,MODES,trainingCost,heroPower,
+ root.ArenaBalance={version:'1.4.0',TRAINING_SOFTCAP,LEVEL_CAP,trainedStat,stat,trainingAptitude,trainingGain,combatDamage,DAMAGE_RATES,TRAITS,MODES,trainingCost,heroPower,
   matchStrength,makeMatch,comebackParry,
   encounterLevel,duelEnemy,heroStats,enemyAi,damageReduction,
   playerParryDamage,rewards};
