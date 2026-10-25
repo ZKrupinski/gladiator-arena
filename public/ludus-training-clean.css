@@ -111,3 +111,99 @@
 .la-stage.training .lt-risk-row.lt-risk-active b{color:#ffb58e}
 .la-stage.training .lt-cost{min-height:27px!important;line-height:1.3!important;padding:3px 0!important}
 .la-stage.training .lt-guidance{top:569px!important;line-height:1.4!important}
+
+
+/* Training result v73. Pure DOM/CSS art, no baked background or PNG changes.
+   Coordinates are in the native 1672×941 arena; the approved stage scales the
+   badge with fighters on phones. Long 3.2-second lifetime with a held center. */
+.la-stage.training .la-training-feedback{
+ position:absolute;left:466px;top:286px;width:288px;height:258px;
+ display:flex;align-items:center;justify-content:center;flex-direction:column;
+ box-sizing:border-box;z-index:45;pointer-events:none;isolation:isolate;
+ color:#fff3cb;opacity:0;
+ animation:laTrainingBadgeReveal 3200ms cubic-bezier(.21,.79,.18,1) both;
+ filter:drop-shadow(0 6px 14px #0d070bd9);
+}
+.la-stage.training .la-training-feedback::before{
+ content:'';position:absolute;z-index:-1;inset:9px 17px 0;
+ border:4px double #e8bd69;border-radius:45% 45% 19% 19% / 33% 33% 18% 18%;
+ background:
+ radial-gradient(circle at 49% 24%,#9a793887 0%,transparent 56%),
+ linear-gradient(180deg,#4c291aef 0%,#291510f7 76%,#1a0e0dec 100%);
+ box-shadow:
+ inset 0 0 0 3px #281108e6,inset 0 3px 24px #c39a3840,
+ 0 0 19px #efc36b9e,0 0 38px #e5ad5c62;
+}
+.la-stage.training .la-training-feedback.is-fail::before{
+ border-color:#f08c78;
+ background:
+ radial-gradient(circle at 49% 24%,#ac453772 0%,transparent 58%),
+ linear-gradient(180deg,#53211bef 0%,#2e1113f7 76%,#1b0a0eec 100%);
+ box-shadow:inset 0 0 0 3px #280a0ae6,inset 0 3px 24px #c23f3040,
+ 0 0 19px #e55f5a9e,0 0 38px #ed514d62;
+}
+.la-stage.training .la-result-rays{
+ position:absolute;z-index:-2;left:-45px;top:-65px;width:380px;height:360px;
+ background:repeating-conic-gradient(from 0deg,#ffe49e42 0deg 5deg,transparent 5deg 22deg);
+ -webkit-mask-image:radial-gradient(circle,transparent 0 18%,#000 24% 45%,transparent 72%);
+ mask-image:radial-gradient(circle,transparent 0 18%,#000 24% 45%,transparent 72%);
+ opacity:.78;animation:laResultRaySpin 5500ms linear infinite;
+}
+.la-stage.training .is-fail .la-result-rays{
+ background:repeating-conic-gradient(from 0deg,#f46a573c 0deg 5deg,transparent 5deg 22deg);
+}
+.la-stage.training .la-result-emblem{
+ display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+ height:139px;width:142px;margin-top:0;
+ filter:drop-shadow(0 3px 5px #120509d8);
+}
+.la-stage.training .la-result-emblem svg{width:139px;height:139px;overflow:visible}
+.la-stage.training .la-result-emblem .la-result-emblem-outline{
+ fill:#b57a2978;stroke:#ffe1a0;stroke-width:5.5;
+ stroke-linejoin:round;stroke-linecap:round;
+}
+.la-stage.training .la-result-emblem .la-result-glyph{
+ fill:none;stroke:#fff1b0;stroke-width:13;
+ stroke-linecap:round;stroke-linejoin:round;
+ filter:drop-shadow(0 0 7px #ffe5a3c7);
+}
+.la-stage.training .is-fail .la-result-emblem-outline{
+ fill:#7525219c;stroke:#ffb0a0;
+}
+.la-stage.training .is-fail .la-result-glyph{
+ stroke:#fff4e6;filter:drop-shadow(0 0 8px #fa5e50ca);
+}
+.la-stage.training .la-result-headline{
+ display:block;max-width:100%;position:relative;z-index:2;
+ margin-top:-6px;color:#fff1b9;
+ font:900 37px/1.16 'Noto Sans KR',sans-serif;letter-spacing:-.045em;
+ white-space:nowrap;text-shadow:0 3px 0 #482e17,0 0 12px #ffc762a9,0 4px 8px #100809;
+}
+.la-stage.training .is-fail .la-result-headline{
+ color:#ffe0d7;text-shadow:0 3px 0 #501818,0 0 12px #ff5d61c4,0 4px 8px #100809;
+}
+.la-stage.training .la-result-subtitle{
+ display:block;box-sizing:border-box;max-width:260px;
+ margin-top:7px;padding:4px 6px;color:#fff1d2;
+ font:800 16px/1.35 'Noto Sans KR',sans-serif;text-align:center;
+ overflow-wrap:break-word;text-shadow:0 2px 5px #000;
+}
+.la-stage.training .is-fail .la-result-subtitle{color:#ffe2d8}
+@keyframes laTrainingBadgeReveal{
+ 0%{opacity:0;transform:translateY(23px) scale(.77)}
+ 9%{opacity:1;transform:translateY(-6px) scale(1.07)}
+ 16%{opacity:1;transform:translateY(0) scale(1)}
+ 82%{opacity:1;transform:translateY(0) scale(1)}
+ 100%{opacity:0;transform:translateY(-12px) scale(.95)}
+}
+@keyframes laResultRaySpin{to{transform:rotate(36deg)}}
+@media(prefers-reduced-motion:reduce){
+ .la-stage.training .la-training-feedback{
+  animation:laTrainingResultReduced 3200ms linear both;
+ }
+ .la-stage.training .la-result-rays{animation:none}
+}
+@keyframes laTrainingResultReduced{
+ 0%,82%{opacity:1;transform:none}
+ 100%{opacity:0;transform:none}
+}
