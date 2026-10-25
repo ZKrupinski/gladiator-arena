@@ -8,9 +8,9 @@ let timer=null,tick=0,current=null,frameIndex=-1,impactStage=null,impactHandler=
 const HIT_MS=640;
 const names={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};
 const FRAME_MS=88;
-// Training-only framing: 70% of canonical authoring scale and feet 9px above Doctore.
-// CSS zone top -92 + local foot 658 = stage y566; Doctore stands at y575.
-const PRACTICE_SCALE=0.70, PRACTICE_FOOT_Y=658;
+// Training-only framing: unchanged 70% size, fighter feet lowered 12px.
+// CSS zone top -92 + local foot 670 = stage y578, close to Doctore's 575.
+const PRACTICE_SCALE=0.70, PRACTICE_FOOT_Y=670;
 const ACTION_CYCLE=[
  {name:'slash',ticks:12},{name:'sweep',ticks:12},
  {name:'thrust',ticks:11},{name:'heavy',ticks:13}
@@ -215,5 +215,5 @@ function mount(stage,a,s,cbs){
  home.setAttribute('aria-label','메인 루두스 로비로 돌아가기');home.onclick=cbs.onHome;stage.appendChild(home);
  if(h)animate(a,stage,s.active);
 }
-window.LudusTrainingV2={version:'6.9.0',mount,stop,metrics:{scaleFactor:PRACTICE_SCALE,canvasFootY:PRACTICE_FOOT_Y}};
+window.LudusTrainingV2={version:'6.9.1',mount,stop,metrics:{scaleFactor:PRACTICE_SCALE,canvasFootY:PRACTICE_FOOT_Y}};
 })();
