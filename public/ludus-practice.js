@@ -105,9 +105,16 @@ function setup(){
  '<p>검투사들은 자동으로 싸웁니다. 생존자가 있으면 다음 단계가 즉시 이어집니다.</p>'+
  '<button data-do="speed" id="epSpeed">속도 ×1</button><button data-do="pause" id="epPause">Ⅱ 일시정지</button>'+
  '<button data-do="finish" class="ep-stop">훈련 종료 · 경험치 정산</button></div></section>'+
- '<section class="ep-result" hidden><small>EXERCITIVM · RECORDVM</small><h2 id="epResultTitle">훈련 결과</h2>'+
- '<p id="epResultText"></p><div class="ep-rewards" id="epRewards"></div>'+
- '<p class="ep-exp-note">✦ 경험치만 획득 · 데나리우스 0D · 장비 0개 · 영구 부상 없음</p>'+
+ '<section class="ep-result" hidden><small>EXERCITIVM · RECORDVM</small>'+
+ '<div class="ep-result-achievement"><span class="ep-result-overline">이번 시련의 성과</span>'+
+ '<h2 id="epResultTitle" aria-live="polite">도전 기록</h2>'+
+ '<div class="ep-result-metrics" role="group" aria-label="실전훈련 도전 기록">'+
+ '<div class="ep-result-metric"><span>돌파 단계</span><strong id="epResultCleared">0</strong><small>WAVES CLEARED</small></div>'+
+ '<div class="ep-result-metric"><span>적 격파</span><strong id="epResultKills">0</strong><small>ENEMIES DEFEATED</small></div>'+
+ '<div class="ep-result-metric"><span>최고 기록</span><strong id="epResultBest">0</strong><small>PERSONAL BEST</small></div></div></div>'+
+ '<h3 class="ep-rewards-title">검투사 성장 <small>EXPERIENTIA</small></h3>'+
+ '<div class="ep-rewards" id="epRewards"></div>'+
+ '<p class="ep-exp-note">✦ 경험치 획득 · 데나리우스 0D · 장비 0개 · 영구 부상 없음</p>'+
  '<div class="ep-final-buttons"><button data-do="retry" class="ep-primary">↻ 다시 편성하기</button>'+
  '<button data-do="exit">❮ 루두스 복귀</button></div></section></main>';
  document.body.appendChild(screen);canvas=$('#epCanvas');ctx=canvas.getContext('2d');
@@ -835,6 +842,13 @@ function loop(timestamp){
   paint();frameId=requestAnimationFrame(loop);
  }else frameId=0;
 }
+// One success-first scoreboard for both natural KO and voluntary finish.
+// No penalty/failure label: the meaningful result is the distance and growth.
+function practiceSummary(snap={},results={}){
+ const integer=(n,fallback=0)=>{const x=Number(n);return Number.isFinite(x)?Math.max(0,Math.trunc(x)):fallback;};
+ const reached=integer(snap.wave),cleared=Math.min(reached,integer(snap.clearedWave));
+ return {reached,cleared,kills:integer(snap.kills),best:integer(results.best)};
+}
 function finish(quit){
  if(!battle||battle.finished)return;
  battle.finished=true;cancelAnimationFrame(frameId);frameId=0;
@@ -844,9 +858,11 @@ function finish(quit){
  for(const h of snap.heroes)payout[h.index]=h.exp;
  const results=api()?.practiceReward?.(payout,snap.wave,snap.kills,quit)||{awards:[],best:0,totalXp:0};
  $('.ep-selection').hidden=true;$('.ep-combat').hidden=true;$('.ep-result').hidden=false;
- $('#epResultTitle').textContent=quit?'훈련 종료':'전원 전투불능';
- $('#epResultText').textContent='도달 '+snap.wave+'단계 · 돌파 '+snap.clearedWave+'단계 · 적 '+
-  snap.kills+'명 격파 · 최고 '+results.best+'단계';
+ const accomplishment=practiceSummary(snap,results);
+ $('#epResultTitle').textContent=accomplishment.reached.toLocaleString('ko-KR')+'단계 도달';
+ $('#epResultCleared').textContent=accomplishment.cleared.toLocaleString('ko-KR');
+ $('#epResultKills').textContent=accomplishment.kills.toLocaleString('ko-KR');
+ $('#epResultBest').textContent=accomplishment.best.toLocaleString('ko-KR');
  $('#epRewards').innerHTML=(results.awards||[]).map(x=>'<div class="ep-reward"><strong>'+safe(x.name)+
   '</strong><span>EXP +'+x.xp+'</span><small>Lv.'+x.level+(x.levels?' · LEVEL UP +'+x.levels:'')+'</small></div>').join('');
  $('#epRecord').textContent='최고 '+results.best+'단계';
@@ -862,6 +878,6 @@ function close(){
 if(typeof document!=='undefined')document.addEventListener('visibilitychange',()=>{
  if(document.hidden&&battle&&!battle.paused){battle.paused=true;prev=0;updateButtons();}
 });
-root.LudusPractice={open,close,isOpen:display,rules:{eligible,waveSize,enemyHP,enemyAttack,waveXP,killXP,enemyFor,courtsForParty,deathFrame}};
+root.LudusPractice={open,close,isOpen:display,rules:{eligible,waveSize,enemyHP,enemyAttack,waveXP,killXP,enemyFor,courtsForParty,deathFrame,practiceSummary}};
 if(typeof module!=='undefined')module.exports=root.LudusPractice.rules;
 })(typeof window!=='undefined'?window:globalThis);
