@@ -65,7 +65,7 @@ assert(cards.includes("draft&&severity?"),'big overlapping blocked-state banner 
 assert(cards.includes("h?.severeInjury?'중상"),'severe tag must require actual severe event');
 assert(index.includes('ludus-recovery.js?v=overexertion-v69'));
 assert(index.includes('ludus-cards.js?v=recovery-fixed-v69'));
-assert(index.includes('ludus-cards.css?v=recovery-fixed-v69'));
+assert(index.includes('ludus-cards.css?v=recovery-header-v70'));
 assert(index.includes('CAREER.gold-=quote.gold;CAREER.glory-=quote.glory'));
 assert(index.includes('h.severeInjury=false'));
 assert(index.includes('recoveryQuote:(i)=>'));
