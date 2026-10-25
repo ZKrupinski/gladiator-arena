@@ -1,5 +1,6 @@
 /* Spartacus Training Aptitude v72. A failed training consumes the quoted
- * denarii but awards no stat/XP. Uses immutable Lv.0 identity, NEVER mutable
+ * denarii but awards no stat/XP. Risk uses both lifetime total bouts
+ * of training and repeated concentration in the selected ability. Uses immutable Lv.0 identity, NEVER mutable
  * current stats. Per-stat attempts share existing trainingAttempts saved on
  * the gladiator. Both defense and endurance train END and share its count.
  */
@@ -21,17 +22,21 @@
   return clamp(.65+(aptitude-1)*1.05+(birth-4)*.088,.28,1.72);
  }
  function quote(h,key){
-  if(!h||!KEYS.includes(key))return {attempts:0,turn:1,chance:0,percent:0,risk:'안정',weakness:0};
-  const done=attempts(h,key),strength=potential(h,key);
+  if(!h||!KEYS.includes(key))return {attempts:0,totalAttempts:0,turn:1,chance:0,percent:0,risk:'안정',weakness:0};
+  const done=attempts(h,key),total=KEYS.reduce((n,k)=>n+attempts(h,k),0);
+  const strength=potential(h,key);
   const mean=KEYS.reduce((sum,k)=>sum+potential(h,k),0)/KEYS.length;
   // Lower-at-birth strengths lose consistency increasingly with repetition.
   const handicap=clamp((mean-strength)/Math.max(.28,mean),-.6,1);
   const multiplier=clamp(1+handicap*1.65,.72,2.35);
-  // Five free-of-random-risk sessions. On sixth: baseline 3.4%, then grow.
-  const steps=Math.max(0,done-4);
-  const chance=steps===0?0:Math.min(.72,steps*.034*multiplier);
+  // The gladiator's overall accumulated practice starts causing risk from
+  // the eighth session. Repeating one ability piles on additional fatigue.
+  const generalSteps=Math.max(0,total-6);
+  const focusedSteps=Math.max(0,done-4);
+  const chance=generalSteps===0?0:Math.min(.72,
+   (generalSteps*.023+focusedSteps*.010)*multiplier);
   const percent=Math.round(chance*100);
-  return {attempts:done,turn:done+1,chance,percent,weakness:Math.round(handicap*100),
+  return {attempts:done,totalAttempts:total,turn:done+1,chance,percent,weakness:Math.round(handicap*100),
    risk:percent===0?'안정':percent<15?'주의':percent<36?'부담':'고위험'};
  }
  function attempt(h,key,random=Math.random){
