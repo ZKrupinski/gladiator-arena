@@ -3607,6 +3607,21 @@ window.LudusBridge={
   saveCareer();renderCareer();
   return {awards:summary,best:CAREER.practiceBest,totalXp:total};
  },
+ // Source-of-truth body projection, identical to normal duel GrowthFrames.draw.
+ // Never enlarge a cropped 12-pose frame to a 202px body by itself.
+ practiceNominal:(unit)=>{
+  const h=unit?.side==='ally'?CAREER.roster[unit.index]:null;
+  if(h&&isChampionMurmillo(h))return {width:540,height:540};
+  const atlas=h?(isAnimatedMurmillo(h)?GROWTH_IMAGES.get('murmillo_a_L5'):growthImage(h)):
+   GROWTH_IMAGES.get(unit?.look||'murmillo_a_L1');
+  if(atlas?.cellWidth>0&&atlas?.cellHeight>0)
+   return {width:atlas.cellWidth,height:atlas.cellHeight};
+  if(h?.appearance==='legacy'){
+   const image=IMG[h.cls],frame=image&&INDEPENDENT_CHARACTER_FRAMES.get(image)?.[0];
+   if(frame){const n=Math.max(frame.width||1,frame.height||1);return {width:n,height:n};}
+  }
+  return null;
+ },
  practiceFrame:(unit,kind='idle')=>{
   const h=unit?.side==='ally'?CAREER.roster[unit.index]:null;
   if(h&&(h.appearance==='legacy'||isChampionMurmillo(h)||isAnimatedMurmillo(h)))return null;
