@@ -169,7 +169,7 @@ function mount(stage,a,s,cbs){
  '<strong>'+E(cbs.tiles[selected].name)+'</strong>'+
  '<p>'+E(cbs.tiles[selected].help)+'</p>'+
  '<div class="lt-risk-row '+(risk?.percent?'lt-risk-active':'')+'" role="status" aria-label="선택 능력치 훈련횟수 및 실패 확률">'+
- '<span>누적 훈련 '+Number(risk?.attempts||0)+'회</span><b>실패 확률 '+Number(risk?.percent||0)+'%</b></div>'+
+ '<span>총 '+Number(risk?.totalAttempts||0)+'회 · 선택 '+Number(risk?.attempts||0)+'회</span><b>실패 '+Number(risk?.percent||0)+'%</b></div>'+
  '<div class="lt-cost"><span>훈련 비용</span><b>◉ '+Number(a.trainingCost?.(s.active,cbs.tiles[selected].stat)||12).toLocaleString('ko-KR')+' D</b></div>'+
  '<div class="lt-cost"><span>보유 금화</span><b>◉ '+Number(s.gold||0).toLocaleString('ko-KR')+' D</b></div></div>'+
  '<div class="lt-guidance">'+(!h?'검투사를 먼저 영입하세요.':Number(s.gold)<Number(a.trainingCost?.(s.active,cbs.tiles[selected].stat)||12)?'금화가 부족합니다.':risk?.percent?'실패하면 훈련비만 소모되며 능력치·경험치는 오르지 않습니다.':'아래 훈련 항목을 선택한 뒤 훈련 시작을 누르세요.')+'</div>';
