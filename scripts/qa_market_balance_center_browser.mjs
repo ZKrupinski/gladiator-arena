@@ -44,6 +44,8 @@ try{
    assert.deepEqual(Object.values(metrics.overlaps),[0,0,0,0,0,0],'wallet must not obscure any market button');
    assert.equal(metrics.walletPointer,'none');
    assert.equal(metrics.maskPointer,'none');
+   const displayedCost=await page.evaluate(()=>window.__marketBalanceQAState.marketInventory[0]?.cost);
+   assert.ok(Number.isFinite(displayedCost)&&displayedCost>0,'selected fighter must have valid live cost');
    await page.locator('#gmHire').click();
    await page.locator('#gmDialog:not([hidden]) #gmConfirm').click();
    const bought=await page.evaluate(()=>({
@@ -52,8 +54,9 @@ try{
     recruits:window.__marketBalanceQAState.roster.length,
     inventory:window.__marketBalanceQAState.marketInventory.filter(Boolean).length
    }));
-   assert.equal(bought.gold,2700,'hire charges 500 once');
-   assert.equal(bought.displayed,'2,700','live balance updates on the actual purchase');
+   assert.equal(bought.gold,3200-displayedCost,'hire charges actual listed price exactly once');
+   assert.equal(bought.displayed,(3200-displayedCost).toLocaleString('ko-KR'),
+    'live balance updates on the actual purchase');
    assert.equal(bought.recruits,1);
    assert.equal(bought.inventory,2);
    const soldBox=await page.evaluate(()=>{
