@@ -227,12 +227,34 @@
   }
   function hud(){
    const time=Math.ceil(Math.max(0,sim.limit-sim.time));$('.coop-clock').textContent=Math.floor(time/60)+':'+String(time%60).padStart(2,'0');
-   for(const u of sim.units){const b=$('[data-unit="'+u.id+'"]');b.disabled=u.dead||!!sim.result;b.classList.toggle('is-selected',u.id===state.selected||sim.focus?.id===u.id&&sim.focus.until>sim.time);b.classList.toggle('is-dead',u.dead);b.querySelector('progress').value=u.hp;b.querySelector('.coop-hp').textContent=u.dead?'전투 불능':Math.ceil(u.hp)+' / '+u.maxHp;}
+   for(const u of sim.units){
+    const b=$('[data-unit="'+u.id+'"]');if(!b)continue;
+    const ally=u.side==='ally';
+    const active=ally?sim.cover?.id===u.id&&sim.cover.until>sim.time:
+     sim.focus?.id===u.id&&sim.focus.until>sim.time;
+    const until=ally?sim.cover?.until:sim.focus?.until;
+    const remaining=Math.max(0,Math.ceil((until||0)-sim.time));
+    const cooldown=Math.max(0,Math.ceil((ally?sim.coverReady:sim.focusReady)-sim.time));
+    const selected=state.selected===u.id&&state.pickedUntil>sim.time||active;
+    b.disabled=u.dead||!!sim.result;b.setAttribute('aria-pressed',String(!!selected));
+    b.classList.toggle('is-selected',!!selected);
+    b.classList.toggle('is-active-command',!!active);
+    b.classList.toggle('is-dead',u.dead);
+    b.querySelector('progress').value=u.hp;
+    b.querySelector('.coop-unit-state').textContent=u.dead?'전투 불능':
+     active?(ally?'엄호 '+remaining+'초':'집중 '+remaining+'초'):
+     cooldown?'재사용 '+cooldown+'초':ally?'터치 · 엄호':'터치 · 집중';
+   }
    $('[data-meter]').textContent=Math.floor(sim.meter)+' / 100';$('progress[max="100"]').value=sim.meter;
-   const cd=Math.max(0,Math.ceil(sim.coverReady-sim.time));$('[data-cover]').disabled=!!sim.result||state.paused||cd>0;
-   $('[data-cover]').innerHTML='엄호 <small>'+(cd?cd+'초 후 사용':state.selected?escape(sim.units.find(u=>u.id===state.selected)?.name):'가장 위험한 아군')+'</small>';
+   const formationCD=Math.max(0,Math.ceil(sim.formationReady-sim.time));
+   const flankCD=Math.max(0,Math.ceil(sim.flankReady-sim.time));
+   const formationTime=Math.max(0,Math.ceil((sim.formation?.until||0)-sim.time));
+   const flankTime=Math.max(0,Math.ceil((sim.flank?.until||0)-sim.time));
+   $('[data-formation]').disabled=!!sim.result||state.paused||formationCD>0;
+   $('[data-flank]').disabled=!!sim.result||state.paused||flankCD>0;
+   $('[data-formation]').innerHTML='방어진형 <small>'+(formationTime?'유지 '+formationTime+'초':formationCD?'재사용 '+formationCD+'초':'피해 감소 + 패링 강화')+'</small>';
+   $('[data-flank]').innerHTML='양익 돌파 <small>'+(flankTime?'돌파 '+flankTime+'초':flankCD?'재사용 '+flankCD+'초':'전원 돌진 4.5초')+'</small>';
    $('[data-rally]').disabled=!!sim.result||state.paused||sim.meter<60;
-   $('[data-focus]').textContent=sim.focusReady>sim.time?'집중 공격 '+Math.ceil(sim.focusReady-sim.time)+'초 후 사용':'집중 공격 준비';
    $('.coop-enemies').setAttribute('aria-label','적군 · 집중 공격 재사용 '+Math.max(0,Math.ceil(sim.focusReady-sim.time))+'초');
    if(state.calloutUntil<sim.time)$('.coop-callout').textContent='';
   }
@@ -268,6 +290,7 @@
     units:sim.units,mobile:host.clientWidth<=700,reduced,
     paused:state.paused,finished:!!sim.result})||{zoom:1,x:640,y:360};
    draw();if(!state.lastHud||now-state.lastHud>100){hud();state.lastHud=now;}
+   if(!state.lastPortrait||now-state.lastPortrait>1200){paintThumbnails();state.lastPortrait=now;}
    root.ArenaAudio?.update?.({phase:sim.result?'result':'fight',paused:state.paused,combo:sim.teamwork.ally,health:C.alive(sim,'ally').reduce((n,u)=>n+u.hp/u.maxHp,0)/5,distance:100});
    if(sim.result)results();state.frame=requestAnimationFrame(loop);
   }
