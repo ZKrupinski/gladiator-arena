@@ -32,7 +32,7 @@
   if(allies.some(h=>finite(h.injury,0)>=80||finite(h.fatigue,0)>=80))throw Error('중상 또는 탈진한 검투사는 출전할 수 없습니다.');
   return {units:[...allies.map((h,i)=>makeUnit(h,'ally',i)),...enemies.map((h,i)=>makeUnit(h,'enemy',i))],
    time:0,limit:clamp(finite(limit,120),10,180),random:rng(seed),events:[],serial:0,links:[],
-   meter:25,focus:null,cover:null,focusReady:0,coverReady:0,paused:false,result:null,teamwork:{ally:0,enemy:0}};
+   meter:25,focus:null,cover:null,focusReady:0,coverReady:0,formation:null,formationReady:0,flank:null,flankReady:0,paused:false,result:null,teamwork:{ally:0,enemy:0}};
  }
  const alive=(s,side)=>s.units.filter(u=>!u.dead&&(!side||u.side===side));
  function emit(s,type,a,b,text,extra={}){
@@ -96,7 +96,7 @@
  function hurt(s,a,b,mult=1,kind='hit',chain=true){
   if(a.dead||b.dead)return 0;
   let target=b,amount=a.atk*.52*mult*(.87+s.random()*.26)*(1-b.armor);
-  if(chain&&b.stagger<=0&&b.rooted<=0&&s.random()<b.parry){
+  if(chain&&b.stagger<=0&&b.rooted<=0&&s.random()<Math.min(.65,b.parry*(b.side==='ally'&&s.formation?.until>s.time?1.38:1))){
    b.guard=.5;b.blocks++;b.counter={target:a.id,due:s.time+.18,expires:s.time+1.7};
    b.attack=null;b.dash=.55;b.dashReady=s.time+3;
    a.exposed=1.7;a.stagger=.55;shove(s,a,a.x>=b.x?175:-175);
@@ -114,6 +114,7 @@
    }else if(protecting){amount*=.55;b.guard=.5;}
   }
   if(b.exposed>0)amount*=1.25;
+  if(target.side==='ally'&&s.formation?.until>s.time)amount*=.74;
   if(target.protectedUntil>s.time)amount*=.58;
   const damage=Math.min(target.hp,Math.max(1,Math.round(amount)));
   target.hp-=damage;target.hit=.24;target.lastHitAt=s.time;a.damage+=damage;
@@ -154,6 +155,20 @@
    const target=s.units.find(u=>u.id===id&&u.side==='ally'&&!u.dead)||alive(s,'ally').sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];
    if(!target||s.time<s.coverReady)return false;
    s.cover={id:target.id,until:s.time+7};s.coverReady=s.time+15;emit(s,'command',null,target,target.name+' 보호 진형 · 7초');return true;
+  }
+  if(kind==='formation'){
+   if(s.time<s.formationReady||!alive(s,'ally').length)return false;
+   s.formation={until:s.time+5.3};s.formationReady=s.time+19;
+   for(const u of alive(s,'ally'))u.guard=Math.max(u.guard,.62);
+   emit(s,'command',null,null,'방어진형 · 5초간 피해 감소, 패링 확률 상승');
+   return true;
+  }
+  if(kind==='flank'){
+   if(s.time<s.flankReady||!alive(s,'ally').length||!alive(s,'enemy').length)return false;
+   s.flank={until:s.time+4.5};s.flankReady=s.time+17;
+   for(const u of alive(s,'ally')){u.dash=Math.max(u.dash,.65);u.cooldown=Math.min(u.cooldown,.28);}
+   emit(s,'command',null,null,'양익 돌파 · 4.5초간 돌진속도 상승');
+   return true;
   }
   if(kind==='rally'&&s.meter>=60){
    const allies=alive(s,'ally'),enemies=alive(s,'enemy');if(!allies.length||!enemies.length)return false;
@@ -302,6 +317,7 @@
    }
    if(distance(u,target)>198){
     const speed=u.speed*(u.dash>0?2.65:1)*(u.chase?1.55:1)*
+     (u.side==='ally'&&s.flank?.until>s.time?1.38:1)*
      (u.side==='ally'&&s.cover?.id===u.id&&s.cover.until>s.time?.75:1);
     travel(s,u,target.x-u.face*130,target.y+((u.seat%3)-1)*25,speed*dt);
    }else if(u.cooldown<=0){
