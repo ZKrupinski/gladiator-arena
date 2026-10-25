@@ -34,6 +34,14 @@ try{
   const hub=document.getElementById('careerHub');
   hub.hidden=false;
   window.LudusCardScenes.renderRoster();
+  // Real lobby return control is created by LudusScene.open in normal play.
+  // It MUST exist in this isolated QA too, or the overlap test is meaningless.
+  if(!document.getElementById('careerVisualHome')){
+   const home=document.createElement('button');
+   home.id='careerVisualHome';home.type='button';home.textContent='❮ 루두스 로비';
+   home.setAttribute('aria-label','루두스 메인 로비로 돌아가기');
+   hub.appendChild(home);
+  }
  });
  let initial=await page.evaluate(()=>({
    resources:[...document.querySelectorAll('.lc-recovery-funds strong')].map(e=>e.textContent),
@@ -84,10 +92,11 @@ try{
    const rect=el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};
    const title=rect(document.querySelector('.lc-banner h1'));
    const funds=rect(document.querySelector('.lc-recovery-funds'));
+   const header=rect(document.querySelector('.lc-roster-screen .lc-top'));
    const home=document.getElementById('careerVisualHome');
    const homeRect=home?rect(home):null;
    const overlap=(a,b)=>a&&b&&a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
-   return {title,funds,home:homeRect,conflict:overlap(title,funds)||overlap(funds,homeRect)||overlap(title,homeRect),
+   return {title,funds,header,home:homeRect,conflict:overlap(title,funds)||overlap(funds,homeRect)||overlap(title,homeRect),
      screenWidth:document.documentElement.scrollWidth,viewport:innerWidth,
      actions:document.querySelectorAll('.lc-care-actions button').length,
      badges:document.querySelectorAll('.lc-care-tags').length,
@@ -102,7 +111,18 @@ try{
      noOldBanner:document.querySelectorAll('.lc-roster-screen .lc-unavailable').length===0,
      rosterStatus:[...document.querySelectorAll('.lc-fighter-card[data-unit] .lc-care-tags')].map(e=>({height:rect(e).height,top:rect(e).top,visible:getComputedStyle(e).display!=='none'}))};
   });
+  assert(layout.home,'shared fixed lobby button must exist in browser test');
   assert(!layout.conflict,'header currency/title/back overlap '+JSON.stringify({size,layout}));
+  assert(layout.header.height<=83,'roster title bar is too tall '+JSON.stringify({size,layout}));
+  assert(layout.funds.left>=layout.title.right+2,'title and funds lack breathing room '+JSON.stringify({size,layout}));
+  assert(layout.home.left>=layout.funds.right+5,'currency and lobby button overlap or touch '+JSON.stringify({size,layout}));
+  const mid=r=>(r.top+r.bottom)/2;
+  assert(Math.abs(mid(layout.title)-mid(layout.home))<=13,
+    'title and lobby button should be on same horizontal line '+JSON.stringify({size,layout}));
+  assert(Math.abs(mid(layout.funds)-mid(layout.home))<=13,
+    'currency and lobby button should be on same horizontal line '+JSON.stringify({size,layout}));
+  assert(layout.funds.top>=layout.header.top-1&&layout.funds.bottom<=layout.header.bottom+1,
+    'currency must remain inside compact title bar '+JSON.stringify({size,layout}));
   assert(layout.screenWidth<=layout.viewport+2,'horizontal overflow '+JSON.stringify({size,layout}));
   assert(layout.actions===2&&layout.badges===4);
   assert(layout.actionWidth>=90,'recovery buttons too narrow '+JSON.stringify({size,layout}));
