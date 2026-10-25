@@ -9,6 +9,26 @@ s.paused=true;C.step(s,1);assert.equal(s.time,0);assert.equal(JSON.stringify(s.u
 assert.equal(C.command(s,'focus','ally0'),false);assert.equal(C.command(s,'focus','enemy3'),true);assert.equal(C.command(s,'focus','enemy2'),false);
 assert.equal(C.command(s,'cover','ally1'),true);assert.equal(C.command(s,'cover','ally2'),false);
 assert.equal(C.command(s,'rally'),false);s.meter=60;assert.equal(C.command(s,'rally'),true);assert.equal(s.meter,0);assert.equal(C.command(s,'rally'),false);
+// Portrait-tap commands use these existing ally/foe skills; group buttons use independent cooldowns.
+const tactical=C.create(team(),team(),{seed:82});
+assert.equal(C.command(tactical,'cover','enemy0'),true,'invalid ally defaults to a real threatened ally');
+assert.equal(tactical.cover.id.startsWith('ally'),true);
+assert.equal(C.command(tactical,'focus','enemy3'),true);
+assert.equal(tactical.focus.id,'enemy3');
+assert.equal(C.command(tactical,'formation'),true);
+assert.equal(C.command(tactical,'formation'),false,'team defense is cooldown-limited');
+assert.equal(tactical.formation.until,5.3);
+assert.equal(tactical.formationReady,19);
+assert.equal(C.command(tactical,'flank'),true);
+assert.equal(C.command(tactical,'flank'),false,'flank is cooldown-limited');
+assert.equal(tactical.flank.until,4.5);
+assert.equal(tactical.flankReady,17);
+assert(tactical.units.filter(u=>u.side==='ally').every(u=>u.dash>=.65),'all five allies take a dash impulse');
+assert(tactical.events.some(e=>e.type==='command'&&e.text.includes('방어진형')));
+assert(tactical.events.some(e=>e.type==='command'&&e.text.includes('양익 돌파')));
+tactical.paused=true;
+assert.equal(C.command(tactical,'formation'),false);
+assert.equal(C.command(tactical,'flank'),false);
 // Queued assists must not hit after either actor or target has fallen.
 s=C.create(team(),team(),{seed:2});s.units[0].dead=true;s.units[0].hp=0;s.links.push({actor:'ally0',target:'enemy0',due:0,expires:3});C.step(s,.05);assert.equal(s.links.length,0);assert.equal(s.units[5].hp,150);
 s=C.create(team(),team(),{seed:2});s.units[5].dead=true;s.units[5].hp=0;s.links.push({actor:'ally0',target:'enemy0',due:0,expires:3});C.step(s,.05);assert.equal(s.links.length,0);
