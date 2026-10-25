@@ -7,7 +7,7 @@
   const sim=C.create(allies,enemies,{seed}),host=document.createElement('section');
   host.className='arena-coop';host.setAttribute('aria-label','5vs5 실시간 협동전투');
   const previousFocus=document.activeElement,oldOverflow=document.body.style.overflow;
-  const state={sim,host,frame:0,last:0,eventId:0,fx:[],paused:false,settled:false,selected:null,flash:0,nextCinematicAt:0,cinematic:null,focusFrame:null};current=state;
+  const state={sim,host,frame:0,last:0,eventId:0,fx:[],paused:false,settled:false,selected:null,flash:0,nextCinematicAt:0,cinematic:null,focusFrame:null, director:root.ArenaCoopCamera?.create?.()||null,lens:{zoom:1,x:640,y:360}};current=state;
   host.innerHTML='<header class="coop-header"><div><small>CONCORDIA · TEAM ARENA</small><h1>5 vs 5 협동전투</h1></div><div class="coop-clock" aria-label="남은 시간">2:00</div><div class="coop-header-actions"><button data-pause>일시정지</button><button data-exit>철수</button></div></header>'+
    '<div class="coop-scoreboard"><div class="coop-team coop-allies" aria-label="아군"></div><div class="coop-versus">VS</div><div class="coop-team coop-enemies" aria-label="적군"></div></div>'+
    '<div class="coop-field"><canvas width="1280" height="720" aria-label="열 명이 동시에 싸우는 전장. 아래와 위의 버튼으로 명령할 수 있습니다."></canvas><div class="coop-callout" role="status"></div><div class="coop-pause-layer" hidden><strong>전투 일시정지</strong><span>명령과 전투 시간이 함께 멈춥니다.</span><button data-resume>계속하기</button></div></div>'+
@@ -132,15 +132,24 @@
    if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
    ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#100c09';ctx.fillRect(0,0,width,height);
    if(mobile){const visible=C.alive(sim),xs=visible.map(u=>u.x),left=Math.min(...xs,640),right=Math.max(...xs,640);
-    const desired=Math.max(620,right-left+220);state.cameraWidth=(state.cameraWidth||1280)+(desired-(state.cameraWidth||1280))*.06;
-    const scale=Math.min(width/state.cameraWidth,height/720),center=(left+right)/2;
-    ctx.setTransform(scale,0,0,scale,width/2-center*scale,(height-720*scale)/2);
+    // Keep enough of the arena in view even when only two fighters remain.
+    const desired=Math.max(920,right-left+235);
+    state.cameraWidth=(state.cameraWidth||1280)+(desired-(state.cameraWidth||1280))*.06;
+    const desiredCenter=(left+right)/2;
+    state.mobileCenter=(state.mobileCenter??desiredCenter)+(desiredCenter-(state.mobileCenter??desiredCenter))*.07;
+    const scale=Math.min(width/state.cameraWidth,height/720);
+    ctx.setTransform(scale,0,0,scale,width/2-state.mobileCenter*scale,(height-720*scale)/2);
    }
    const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
    const shot=root.ArenaCombatFeel?.sample?.(state,{reduced,team:true})||{x:0,y:0,angle:0,zoom:1};
-   ctx.save();ctx.translate(shot.x||0,shot.y||0);
-   if(shot.angle){ctx.translate(640,460);ctx.rotate(shot.angle);ctx.translate(-640,-460);}
-   if(shot.zoom>1){ctx.translate(640,490);ctx.scale(shot.zoom,shot.zoom);ctx.translate(-640,-490);}
+   const lens=state.lens||{zoom:1,x:640,y:360};
+   // One WORLD camera for the backdrop, corpses, fighters and all raster effects.
+   const anchorX=mobile?(state.mobileCenter??640):640;
+   const centerX=mobile?anchorX+(lens.x-640)*.40:lens.x;
+   ctx.save();ctx.translate(anchorX,360);ctx.scale(lens.zoom,lens.zoom);ctx.translate(-centerX,-lens.y);
+   // Keep a readable horizon: a very small nudge only during push-in shots.
+   const vibration=Math.min(.46,Math.max(0,(lens.zoom-1)/.04));
+   ctx.translate((shot.x||0)*vibration,(shot.y||0)*vibration);
    if(bg.complete&&bg.naturalWidth){const horizon=bg.naturalHeight*.76;ctx.drawImage(bg,0,0,bg.naturalWidth,horizon,0,0,1280,350);ctx.drawImage(bg,0,horizon,bg.naturalWidth,bg.naturalHeight-horizon,0,350,1280,370);}else{ctx.fillStyle='#69503b';ctx.fillRect(0,0,1280,720);}
    // A wide camera keeps all ten fighters on the approved arena floor.
    ctx.fillStyle='#120b0744';ctx.fillRect(0,0,1280,720);
@@ -210,6 +219,10 @@
     state.nextSound=sim.time+.12;
    }
    state.fx=state.fx.filter(e=>sim.time-e.time<1.3);
+   root.ArenaCoopCamera?.record?.(state.director,events);
+   state.lens=root.ArenaCoopCamera?.advance?.(state.director,dt,{
+    units:sim.units,mobile:host.clientWidth<=700,reduced,
+    paused:state.paused,finished:!!sim.result})||{zoom:1,x:640,y:360};
    draw();if(!state.lastHud||now-state.lastHud>100){hud();state.lastHud=now;}
    root.ArenaAudio?.update?.({phase:sim.result?'result':'fight',paused:state.paused,combo:sim.teamwork.ally,health:C.alive(sim,'ally').reduce((n,u)=>n+u.hp/u.maxHp,0)/5,distance:100});
    if(sim.result)results();state.frame=requestAnimationFrame(loop);
