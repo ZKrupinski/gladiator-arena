@@ -39,8 +39,12 @@ function draw(canvas,source,opts={}){
  const scale=Math.min(availableW/b.w,availableH/b.h);
  const dw=b.w*scale,dh=b.h*scale;
  const destX=(w-dw)/2,destY=h-h*inset-dh;
- try{ctx.drawImage(source,b.x,b.y,b.w,b.h,destX,destY,dw,dh);return true}
- catch(_){return false}
+ try{
+  ctx.save();
+  if(opts.flipX){ctx.translate(w,0);ctx.scale(-1,1);}
+  ctx.drawImage(source,b.x,b.y,b.w,b.h,destX,destY,dw,dh);
+  ctx.restore();return true;
+ }catch(_){ctx.restore();return false}
 }
 root.ArenaPortraitFit={bounds,draw};
 })(globalThis);
