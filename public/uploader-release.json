@@ -1,14 +1,13 @@
 {
   "assetSha256": {
-    "public/assets/ludus/training_blank_v69.webp": "fa20bb3c024bd3ddcce13accdd9d518c4332ab7eee9a7e1e5004039215800b52",
-    "public/index.html": "7ad62b9a4e7b26fbe0a93a2317e94bff9f45662182a375d48cbeb7eda1a6cd92",
-    "public/ludus-approved-scenes.js": "a393fe47c861bd22e9304d11ff66b9127a3ecb9f791cff50cfcc689329942bc1",
-    "public/ludus-training-clean.css": "91af548255e1012ba2f92af50902f946a8ab6de086b73f80c6f4b1108b805630",
-    "public/ludus-training-runtime.js": "644aefdc11d9101857b48191beb86b3835c7db9e21645110bbe23753fc364753"
+    "public/assets/ludus/ludus_blank_v70.webp": "d60381c7cbe41f11829efd880fb25d6dc4200c91b4bf13eb77377405395eaca0",
+    "public/index.html": "2351149f7192996b45460c9f19bc345f36eb0fc63d4b37392e39b3bc7a28a4d8",
+    "public/ludus-clean.css": "c887e6c6d1de9e6b2e07518d1feeb1ea72fa1dd97bbdb7af4b49db08b48f41f2",
+    "public/ludus-scene.js": "b59d38e078e134617ab1a2ec3d21e15b8001bf68194f20eabcdc0b40c22d911f"
   },
-  "baseCommit": "d78f2f2c1425353f2490ac8fcb9ee12c177d4354",
+  "baseCommit": "11801e0e89ac3c39a121a36989ce8fc71d317f4c",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "training-clean-v69-20261025",
+  "releaseId": "ludus-clean-v70-20261025",
   "releaseProtocol": "spartacus-uploader-v1"
 }
