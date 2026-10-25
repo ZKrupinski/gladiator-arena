@@ -13,10 +13,13 @@
  // by this value alone: a corpse has exactly the same depth rules as a live fighter.
  function depthOrder(units){return units.slice().sort((a,b)=>a.y-b.y);}
  const SOLID_GAP=102; // Solid spacing applies only to living fighters. Corpses remain visual, nonblocking.
+ // Team-only endurance: the crowd can see multiple tactics before eliminations.
+ // Not written to roster stats; both sides benefit from the same multiplier.
+ const STAMINA_MULT=1.5,CONTACT_RATE=.42;
  function rng(seed){let n=seed>>>0;return ()=>{n=(Math.imul(1664525,n)+1013904223)>>>0;return n/4294967296;};}
  function makeUnit(h,side,seat){
-  const stats=h.combat||{},maxHp=Math.max(40,finite(stats.hp,160));
-  const hp=Math.max(1,maxHp-clamp(finite(h.injury,0),0,maxHp-1));
+  const stats=h.combat||{},maxHp=Math.max(40,Math.round(finite(stats.hp,160)*STAMINA_MULT));
+  const hp=Math.max(1,maxHp-clamp(Math.round(finite(h.injury,0)*1.3),0,maxHp-1));
   return {...h,id:side+seat,side,seat,maxHp,hp,startHp:hp,
    atk:Math.max(4,finite(stats.atk,20)),armor:clamp(finite(stats.armor,.1),0,.48),
    parry:clamp(finite(stats.parry,.14),.05,.4),speed:clamp(finite(stats.move,220)*.48,70,160),
@@ -95,7 +98,7 @@
  }
  function hurt(s,a,b,mult=1,kind='hit',chain=true){
   if(a.dead||b.dead)return 0;
-  let target=b,amount=a.atk*.52*mult*(.87+s.random()*.26)*(1-b.armor);
+  let target=b,amount=a.atk*CONTACT_RATE*mult*(.87+s.random()*.26)*(1-b.armor);
   if(chain&&b.stagger<=0&&b.rooted<=0&&s.random()<Math.min(.65,b.parry*(b.side==='ally'&&s.formation?.until>s.time?1.38:1))){
    b.guard=.5;b.blocks++;b.counter={target:a.id,due:s.time+.18,expires:s.time+1.7};
    b.attack=null;b.dash=.55;b.dashReady=s.time+3;
