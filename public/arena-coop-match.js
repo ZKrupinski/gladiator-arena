@@ -34,7 +34,10 @@
     combat:{
      // A fighter's current condition affects enemy offense more than enemy
      // endurance: avoids five-minute sprints ending in an instant with injuries.
-     hp:Math.max(40,Math.round((hp-injuryOf(h)*.4)*1.12)),
+     // Lv.20+ innate specialists hit much harder than raw level suggests.
+     // More enemy endurance (not burst damage) preserves repeated command rounds.
+     hp:Math.max(40,Math.round((hp-injuryOf(h)*.4)*1.12*
+      (1+.45*clamp((level-15)/35,0,1)))),
      atk:Math.max(4,Math.round(atk*offense*(cls==='thraex'?1.025:cls==='retiarius'?.985:1))),
      move:Math.round(moveAvg*.95),
      armor:cls==='murmillo'?.16:cls==='retiarius'?.08:.10,
