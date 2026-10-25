@@ -30,7 +30,7 @@ tactical.paused=true;
 assert.equal(C.command(tactical,'formation'),false);
 assert.equal(C.command(tactical,'flank'),false);
 // Queued assists must not hit after either actor or target has fallen.
-s=C.create(team(),team(),{seed:2});s.units[0].dead=true;s.units[0].hp=0;s.links.push({actor:'ally0',target:'enemy0',due:0,expires:3});C.step(s,.05);assert.equal(s.links.length,0);assert.equal(s.units[5].hp,150);
+s=C.create(team(),team(),{seed:2});const enemyStartHp=s.units[5].hp;s.units[0].dead=true;s.units[0].hp=0;s.links.push({actor:'ally0',target:'enemy0',due:0,expires:3});C.step(s,.05);assert.equal(s.links.length,0);assert.equal(s.units[5].hp,enemyStartHp);
 s=C.create(team(),team(),{seed:2});s.units[5].dead=true;s.units[5].hp=0;s.links.push({actor:'ally0',target:'enemy0',due:0,expires:3});C.step(s,.05);assert.equal(s.links.length,0);
 let wins=0,total=0,allKinds=new Set();
 for(let seed=1;seed<=100;seed++){
