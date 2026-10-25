@@ -333,3 +333,10 @@
 #careerHub .lc-roster-screen .lc-aptitude em{min-width:0;font:800 clamp(10px,1.1vw,13px)/1.15 'Noto Sans KR',sans-serif;font-style:normal;overflow-wrap:anywhere;color:#edddb6}
 #careerHub .lc-roster-screen .lc-aptitude em.apt-strong{color:#b0efba}
 #careerHub .lc-roster-screen .lc-aptitude em.apt-weak{color:#f3a6a0}
+
+/* V67 · born-at-Lv.0 specialization becomes legible in the Lv.50 roster. */
+#careerHub .lc-roster-screen .lc-born-signature{display:grid;gap:4px;margin:5px 0 10px;padding:8px 10px;background:linear-gradient(110deg,#332313,#201712);border:1px solid #a88751;border-radius:6px;font:600 11px/1.4 'Noto Sans KR',system-ui,sans-serif}
+#careerHub .lc-born-signature strong{font-size:13px;color:#f9dda0}
+#careerHub .lc-born-signature span{color:#e7d5b1}
+#careerHub .lc-born-signature small{font-size:11px;color:#b8e1ca}
+@media(max-width:700px){#careerHub .lc-roster-screen .lc-born-signature{padding:6px 7px;font-size:10px}#careerHub .lc-born-signature strong{font-size:12px}}
