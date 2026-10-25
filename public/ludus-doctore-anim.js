@@ -5,7 +5,7 @@
  */
 (function(root){
 'use strict';
-const DIR='assets/ludus/',SCALE=1.125,WHIP_SCALE=1.335,GROUND=600;
+const DIR='assets/ludus/',SCALE=0.9,WHIP_SCALE=1.068,GROUND=575;
 const WIDE_ID=4,WHIP_ORDER=[0,1,2,3,4,4,5,6];
 const WHIP_BOXES=[
  {x:0,y:132,w:372,h:430},{x:332,y:12,w:399,h:548},
@@ -160,3 +160,4 @@ root.LudusDoctoreAnim={version:'4.3.0',mount,react,unmount:stop,
   actions:{idle:0,talk:1,command:2,whip:3}},
  status:()=>({mode,frame,ready:{...ready},baseline:GROUND,scale:SCALE,whipScale:WHIP_SCALE})};
 })(window);
+

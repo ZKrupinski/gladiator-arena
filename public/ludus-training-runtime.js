@@ -69,7 +69,7 @@ function paint(canvas,img){
 // and pose transform edited in the calibration studio is used in battle.
 function profileFor(canvas,reference,look=null){
  if(!reference?.width||!reference?.height)return null;
- const scale=Math.min(350/reference.height,(canvas.width-40)/reference.width);
+ const scale=Math.min(350/reference.height,520/reference.width)*0.65;
  return {source:reference,scale,look};
 }
 function paintTrainingFighter(canvas,img,action,progress,profile){
@@ -87,7 +87,7 @@ function paintTrainingFighter(canvas,img,action,progress,profile){
  ctx.save();
  // The training fighter faces left. X is in facing space just as it is in
  // normal combat and in the studio. Gameplay hitboxes are never shifted.
- ctx.translate(canvas.width/2-authored.x-motion.x,canvas.height-9+bootY+authored.y+motion.y);
+ ctx.translate(canvas.width/2-authored.x-motion.x,691+bootY+authored.y+motion.y);
  ctx.scale(-1,1);
  try{ctx.drawImage(img,0,0,img.width,img.height,
   -img.width*k/2,-img.height*k,img.width*k,img.height*k);}catch(error){}
@@ -172,7 +172,7 @@ function mount(stage,a,s,cbs){
  if(h)paint(panel.querySelector('#ltInfoPortrait'),a.portrait(s.active));
  const fighter=document.createElement('div');fighter.className='lt-fighter-zone';
  fighter.setAttribute('aria-label',h?h.name+' · 교관을 바라보고 제자리에서 공격 연습 중':'훈련 중인 검투사 없음');
- fighter.innerHTML='<canvas class="lt-fighter-canvas" width="560" height="440"></canvas><div class="lt-motion-slash" aria-hidden="true"></div>';
+ fighter.innerHTML='<canvas class="lt-fighter-canvas" width="1000" height="800"></canvas><div class="lt-motion-slash" aria-hidden="true"></div>';
  stage.appendChild(fighter);
  const roster=document.createElement('section');roster.className='lt-roster';
  roster.innerHTML='<div class="lt-roster-title"><strong>♜ 소속 검투사</strong><span>'+s.roster.length+'명 · 선택 중 '+(s.roster.length?s.active+1:0)+'명</span>'+

@@ -6,19 +6,19 @@ const tiles=[{name:'공격 훈련',stat:'str',help:'공격력 향상'},{name:'�
 // tile (including separate scripts for END defense and endurance training).
 const DOCTORE_SCRIPT=[
  {title:'ARS GLADII · 공격 훈련',
-  lines:'칼은 팔이 아니라 온몸으로 휘두르는 것이다.\n발을 딛고 허리를 비틀어라!\n방패 뒤의 적까지 흔들 일격을 만들어라.',
+  lines:'발을 딛고 허리를 비틀어라! 온몸으로 칼을 휘둘러 방패 뒤의 적까지 흔들어라.',
   success:'좋아! 그 일격을 기억해라.\n힘이 아니라 정확한 자세가 적을 쓰러뜨린다.'},
  {title:'SCUTUM · 방어 훈련',
-  lines:'방패를 몸에 단단히 붙여라.\n무릎을 굽혀 충격을 땅으로 흘려보내고,\n막아낸 순간 곧바로 반격해라!',
+  lines:'방패를 몸에 붙여라. 무릎을 굽혀 충격을 흘리고, 막아낸 순간 곧바로 반격해라!',
   success:'그래, 그거다!\n칼을 막는 건 시작이다. 살아남는 법을 익혀라.'},
  {title:'FORTITUDO · 체력 훈련',
-  lines:'모래바닥 열 바퀴다!\n숨이 턱까지 차올라도 자세를 무너뜨리지 마라.\n마지막까지 선 전사가 승리를 거머쥔다.',
+  lines:'모래바닥 열 바퀴다! 숨이 차도 자세를 지켜라. 마지막까지 선 전사가 승리한다.',
   success:'아직 쓰러지지 않았군.\n더 버틸 수 있는 몸이 네 생명을 지켜줄 것이다.'},
  {title:'CELERITAS · 민첩 훈련',
-  lines:'칼끝만 쳐다보지 마라. 적의 어깨를 읽어라!\n한발 먼저 피하고, 한걸음 더 파고들어라.\n빠른 발이 느린 칼을 이긴다.',
+  lines:'적의 어깨를 읽어라! 한발 먼저 피하고 더 깊이 파고들어라. 빠른 발이 칼을 이긴다.',
   success:'이제야 발이 움직이는군!\n다음에는 적이 검을 빼기도 전에 움직여라.'},
  {title:'DISCIPLINA · 기술 훈련',
-  lines:'호흡을 고르고 칼의 궤적을 읽어라.\n패링은 완력이 아니라 찰나의 판단이다.\n그 한순간에 전세를 뒤집는 법을 배워라!',
+  lines:'호흡을 고르고 칼의 궤적을 읽어라. 찰나의 패링으로 전세를 뒤집는 법을 배워라!',
   success:'눈빛이 달라졌군.\n지금처럼 상대의 빈틈을 읽으면 승산이 생긴다.'}
 ];
 let speechPhase='welcome';
@@ -26,9 +26,9 @@ function speechData(){
  const script=DOCTORE_SCRIPT[selectedTraining]||DOCTORE_SCRIPT[0];
  if(speechPhase==='selected')return {title:script.title,lines:script.lines};
  if(speechPhase==='success')return {title:'BENE FACTUM · 훌륭하다!',lines:script.success};
- if(speechPhase==='insufficient')return {title:'NVMMI · 훈련비 부족',lines:'기량을 갈고닦는 데에도 대가가 든다.\n먼저 투기장에서 상금을 벌어 와라.\n그때 다시 혹독하게 훈련시켜 주마!'};
- if(speechPhase==='mastery')return {title:'MAGISTER · 심화 훈련',lines:'한계라고 여겼던 지점을 넘어섰군!\n이제는 작은 진전에도 큰 노력이 필요하다.\n꾸준히 단련하면 더 강해질 수 있다.'};
- return {title:'DOCTORE · 교관',lines:'살아남고 싶다면 나를 똑바로 보아라!\n훈련 항목을 골라라.\n경기장에서는 약자에게 두 번째 기회가 없다.'};
+ if(speechPhase==='insufficient')return {title:'NVMMI · 훈련비 부족',lines:'훈련에는 대가가 든다. 먼저 투기장에서 상금을 벌어 와라. 다시 단련시켜 주마!'};
+ if(speechPhase==='mastery')return {title:'MAGISTER · 심화 훈련',lines:'한계를 넘어섰군! 이제 작은 진전에도 큰 노력이 든다. 꾸준히 단련해 더 강해져라.'};
+ return {title:'DOCTORE · 교관',lines:'나를 똑바로 보고 훈련을 골라라! 살아남고 싶다면 한순간도 방심하지 마라.'};
 }
 function drawTrainingSpeech(){
  if(room!=='training'||!stage)return;
@@ -99,7 +99,7 @@ function liveFighter(a,s,isTraining){
 }
 function setup(){if(screen)return;screen=document.createElement('section');screen.className='la-screen';screen.hidden=true;screen.setAttribute('aria-label','승인된 루두스 장비실 및 훈련소');screen.innerHTML='<div class="la-stage"><img class="la-key" draggable="false" alt=""><div class="la-notice" role="status" hidden></div><div class="la-pose"></div></div><div class="la-orient">가로 화면에서 더 크게 볼 수 있습니다.<button type="button">작은 화면으로 계속</button></div>';document.body.appendChild(screen);stage=$('.la-stage');$('.la-orient button').addEventListener('click',()=>screen.classList.add('la-allow-portrait'));addEventListener('resize',fit,{passive:true});document.addEventListener('keydown',e=>{if(screen.hidden)return;if(e.key==='Escape'){e.preventDefault();goHome();}else if(e.key==='ArrowLeft'){e.preventDefault();moveHero(-1);}else if(e.key==='ArrowRight'){e.preventDefault();moveHero(1);}else if(e.key==='Enter'&&room==='training'){e.preventDefault();actionTraining();}});fit();}
 function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state();if(!s)return;const h=s.roster[s.active],training=room==='training';stage.className='la-stage '+room;
- const key=$('.la-key');const src=training?'assets/ludus/training_blank_v69.webp':'assets/ludus/armory_approved.webp';if(!key.src.endsWith(src))key.src=src;
+ const key=$('.la-key');const src=training?'assets/ludus/training_blank_v71.webp':'assets/ludus/armory_approved.webp';if(!key.src.endsWith(src))key.src=src;
  // Halt the old RAF before replacing this scene's character node.
  window.LudusDoctoreAnim?.unmount?.();
  // Keep backdrop and transient NPC pose nodes, replace everything else atomically.
@@ -198,3 +198,4 @@ window.addEventListener('arena-gear-atlas-ready',()=>{if(screen&&!screen.hidden&
 for(const [id,name] of [['careerTrainTab','training'],['careerGearTab','gear']])document.getElementById(id)?.addEventListener('click',()=>open(name));
 document.getElementById('careerRosterTab')?.addEventListener('click',close);
 })();
+

@@ -47,3 +47,11 @@
 .la-stage.training .la-gold{left:1338px!important;top:18px!important;width:204px;height:37px;text-align:right;padding:0 8px;font:900 30px/37px Georgia,serif;box-sizing:border-box}
 .la-stage.training .la-gold::before{content:'◉';float:left;color:#f0c875;font-size:23px}
 .la-stage.training .lt-home{left:1584px!important;top:7px!important;width:78px!important;height:69px!important;min-height:0!important;background:transparent!important;border:0!important;box-shadow:none!important;font-size:0!important;color:transparent!important;padding:0!important}
+
+
+/* v71: padded render surface; unchanged fighter foot anchor at stage y=599. */
+.la-stage.training .lt-fighter-zone{left:445px;top:-92px;width:1000px;height:800px;overflow:visible}
+.la-stage.training .la-doctore-live{left:226px}
+.la-stage.training .la-training-speech{left:523px;top:110px;width:296px;height:94px;display:flex;align-items:center}
+.la-stage.training .la-speech-lines{width:100%;margin:0;font:800 19px/1.23 'Noto Sans KR',sans-serif;white-space:normal;word-break:normal;overflow-wrap:anywhere;text-align:justify;text-align-last:left}
+.la-stage.training .la-training-speech::after{display:none!important}
