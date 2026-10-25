@@ -17,11 +17,17 @@
    motion?.pulse?.(target,pulseKind,'target',dir);
    motion?.impact?.(target,kind==='parry'||kind==='reversal'?'reversal':pulseKind);
   }
-  motion?.shake?.(state,pulseKind,dir,clamp((team?1.24:.84)*power,.24,1.4));
-  state.flash=Math.max(state.flash||0,clamp((strong.has(kind)?.48:.15)*power,0,.75));
   const now=Number(clock)||0;
+  // Ten simultaneous units used to retrigger the 1v1 shake on EVERY clash.
+  // Team impacts now have a small, throttled impulse; body recoil remains strong.
+  if(!team||now>=(state.nextTeamShakeAt||0)){
+   motion?.shake?.(state,pulseKind,dir,clamp((team?.18:.84)*power,.12,1.4));
+   if(team)state.nextTeamShakeAt=now+.38;
+  }
+  state.flash=Math.max(state.flash||0,clamp((strong.has(kind)?.48:.15)*power,0,.75));
   if(strong.has(kind)&&now>=(state.nextCinematicAt||0)&&root.ArenaFocus?.start){
-   state.cinematic=root.ArenaFocus.start(focusKind(kind),target?.x??attacker?.x??640,dir);
+   // Team-wide time slow lasts for a short punctuation beat, not a long 1v1 freeze.
+   state.cinematic=root.ArenaFocus.start(team?'strike':focusKind(kind),target?.x??attacker?.x??640,dir);
    state.nextCinematicAt=now+(team?2.7:2.2);
   }
   return true;
@@ -44,11 +50,14 @@
   const kick=root.ArenaMotion?.sampleShake?.(state,reduced)||{x:0,y:0,angle:0};
   const focus=state?.focusFrame;
   const multiplier=team?.28:.22;
-  return {x:reduced?0:kick.x,y:reduced?0:kick.y,angle:reduced?0:kick.angle,
-   zoom:1+Math.min(team?.12:.085,(focus?.zoom||0)*multiplier),
-   flash:reduced?0:clamp((state?.flash||0)*.23+(focus?.bloom||0)*.12,0,.26),
-   shade:reduced?0:clamp((focus?.shade||0)*.32,0,.16),
-   bars:reduced?0:Math.min(18,(focus?.cinemaBars||0)*.16)};
+  return {x:reduced?0:team?clamp(kick.x,-4,4):kick.x,
+   y:reduced?0:team?clamp(kick.y,-2.4,2.4):kick.y,
+   angle:reduced?0:team?clamp(kick.angle,-.0018,.0018):kick.angle,
+   // A dedicated 5v5 director owns the slow overview/close-up lens.
+   zoom:team?1:1+Math.min(.085,(focus?.zoom||0)*multiplier),
+   flash:reduced?0:clamp((state?.flash||0)*(team?.14:.23)+(focus?.bloom||0)*.12,0,team?.15:.26),
+   shade:reduced?0:clamp((focus?.shade||0)*(team?.17:.32),0,team?.08:.16),
+   bars:reduced?0:team?0:Math.min(18,(focus?.cinemaBars||0)*.16)};
  }
  function overlay(ctx,w,h,cue){
   if(!ctx||!cue)return;
