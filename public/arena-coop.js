@@ -24,6 +24,26 @@
      '<span class="coop-unit-name">'+escape(u.name)+'</span><progress max="'+u.maxHp+'" value="'+u.hp+'"></progress>'+
      '<small class="coop-unit-state">'+(side==='ally'?'터치 · 엄호':'터치 · 집중')+'</small></button>').join('');
   }
+  // Approved roster art. Only human opponents are mirrored for confrontation.
+  function paintThumbnails(){
+   for(const u of sim.units){
+    const canvas=$('[data-thumb="'+u.id+'"]');if(!canvas)continue;
+    const sprite=u.side==='ally'?
+      (root.LudusBridge?.portrait?.(u.index)||root.LudusBridge?.squadSprite?.(u,'idle',0)):
+      (u.beastType?root.ArenaBeasts?.portrait?.(u.beastType):
+       root.LudusBridge?.practiceEnemySprite?.(u.look,'idle'));
+    if(!sprite?.width&&!sprite?.naturalWidth)continue;
+    const flip=u.side==='enemy'&&!u.beastType;
+    if(root.ArenaPortraitFit?.draw?.(canvas,sprite,{inset:.055,flipX:flip}))continue;
+    const c=canvas.getContext('2d');if(!c)continue;
+    const w=canvas.width,h=canvas.height,sw=sprite.naturalWidth||sprite.width,sh=sprite.naturalHeight||sprite.height;
+    const scale=Math.min(w*.9/sw,h*.9/sh);
+    c.clearRect(0,0,w,h);c.save();if(flip){c.translate(w,0);c.scale(-1,1);}
+    try{c.drawImage(sprite,(w-sw*scale)/2,h-sh*scale*.98,sw*scale,sh*scale);}catch(_){}
+    c.restore();
+   }
+  }
+  paintThumbnails();
   function tell(text,kind=''){const callout=$('.coop-callout');callout.textContent=text;
    callout.dataset.kind=['rescue','ambush','chase','bait'].includes(kind)?kind:'';
    state.calloutUntil=sim.time+(kind?2.2:2.8);}
