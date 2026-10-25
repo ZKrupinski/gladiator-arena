@@ -1,0 +1,70 @@
+name: QA Practice achievement results and live publish
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/ludus-practice.js
+      - public/ludus-practice.css
+      - public/index.html
+      - tests/practice-result-achievement-v27.cjs
+      - scripts/qa_practice_result_honors_browser.mjs
+      - .github/workflows/qa-practice-result-honors.yml
+  workflow_dispatch:
+jobs:
+  result-achievements:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate real result logic and markup
+        run: |
+          node --check public/ludus-practice.js
+          node --check tests/practice-result-achievement-v27.cjs
+          node tests/practice-result-achievement-v27.cjs
+      - name: Install browser for responsive QA
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve game production directory
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/practice-result.log 2>&1 &
+          sleep 3
+      - name: Verify achievement cards on actual game markup at desktop and phone widths
+        run: node scripts/qa_practice_result_honors_browser.mjs
+      - name: Preserve result screenshot for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: practice-result-honors-v27
+          path: /tmp/practice-result-honors-v27.png
+          if-no-files-found: ignore
+      - name: Confirm live Cloudflare JS and CSS exactly match this commit
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,pathlib,urllib.request,time
+          base='https://gladiator-arena-git.pages.dev'
+          files=['ludus-practice.js','ludus-practice.css']
+          digest={f:hashlib.sha256((pathlib.Path('public')/f).read_bytes()).hexdigest() for f in files}
+          headers={'Cache-Control':'no-cache','User-Agent':'PracticeResultHonorsQA'}
+          def read(p):
+              with urllib.request.urlopen(urllib.request.Request(base+p,headers=headers),timeout=20) as response:
+                  return response.read()
+          for attempt in range(24):
+              try:
+                  html=read('/?practice-result-honors-v27='+str(attempt)).decode('utf-8')
+                  valid=('ludus-practice.js?v=cinema-restore-v63-result-honors-v27' in html
+                    and 'ludus-practice.css?v=exercitium-infinitum-v26-result-honors-v27' in html)
+                  for f in files:
+                      valid=valid and hashlib.sha256(read('/'+f+'?v=honors-v27-'+str(attempt))).hexdigest()==digest[f]
+                  if valid:
+                      print('LIVE_PRACTICE_ACHIEVEMENT_DEPLOYMENT_PASS',digest,flush=True)
+                      break
+              except Exception as exc:
+                  print('Live result check',attempt,str(exc),flush=True)
+              if attempt==23:raise AssertionError('Cloudflare result presentation does not yet match GitHub source')
+              time.sleep(10)
+          PY
