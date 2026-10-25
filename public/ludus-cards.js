@@ -46,10 +46,12 @@ function drawArt(root){
   var unit=draftEnemies[Number(canvas.dataset.enemyArt)];
   var image=unit&&a.enemyPortrait?.(unit);
   if(!image)return;
-  if(window.ArenaPortraitFit?.draw?.(canvas,image,{inset:.052}))return;
+  if(window.ArenaPortraitFit?.draw?.(canvas,image,{inset:.052,flipX:!unit?.beastType}))return;
   var ctx=canvas.getContext('2d'),scale=Math.min((canvas.width-12)/image.width,(canvas.height-12)/image.height);
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.clearRect(0,0,canvas.width,canvas.height);ctx.save();
+  if(!unit?.beastType){ctx.translate(canvas.width,0);ctx.scale(-1,1);}
   try{ctx.drawImage(image,(canvas.width-image.width*scale)/2,canvas.height-image.height*scale-6,image.width*scale,image.height*scale)}catch(_){}
+  ctx.restore();
  });
  var heroCanvas=root.querySelector('#lcFeaturedHero');
  if(heroCanvas){
