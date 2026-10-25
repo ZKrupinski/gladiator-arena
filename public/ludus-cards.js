@@ -13,19 +13,19 @@ function className(h){var n={murmillo:'무르밀로',thraex:'트라엑스',retia
 function injury(h){return Math.max(0,Number(h.injury)||0);}
 function fatigue(h){return Math.max(0,Math.min(100,Number(h?.fatigue)||0));}
 function wounded(h){return injury(h)>=80||fatigue(h)>=80;}
-function conditionText(h){return injury(h)>=80||h?.severeInjury?'중상 · 치료 필요':fatigue(h)>=80?'탈진 · 휴식 필요':injury(h)>0||fatigue(h)>0?'부상 '+injury(h)+' · 피로 '+fatigue(h):'출전 가능';}
+function conditionText(h){return h?.severeInjury?'중상 · 치료 필요':injury(h)>=80?'부상 누적 · 출전 불가':fatigue(h)>=80?'탈진 · 휴식 필요':injury(h)>0||fatigue(h)>0?'부상 '+injury(h)+' · 피로 '+fatigue(h):'출전 가능';}
 function careQuote(h){return {heal:window.LudusRecovery?.healQuote(h)||{needed:injury(h)>0,gold:Math.max(12,Math.ceil(injury(h)*.6)),glory:0,severe:false},
  rest:window.LudusRecovery?.restQuote(h)||{needed:fatigue(h)>0,gold:Math.max(18,Math.round(16+fatigue(h)*.75)),glory:0}};}
 function careTags(h){
  const parts=[];
- if(injury(h)>0||h.severeInjury)parts.push('<span class="lc-care-tag lc-care-injury '+(injury(h)>=80||h.severeInjury?'lc-care-severe':'')+'">✚ '+(injury(h)>=80||h.severeInjury?'중상 치료':'치료 필요')+' · '+injury(h)+'</span>');
+ if(injury(h)>0||h.severeInjury)parts.push('<span class="lc-care-tag lc-care-injury '+(h.severeInjury?'lc-care-severe':'')+'">✚ '+(h.severeInjury?'중상 치료':injury(h)>=80?'부상 누적 · 치료':'치료 필요')+' · '+injury(h)+'</span>');
  if(fatigue(h)>0)parts.push('<span class="lc-care-tag lc-care-fatigue">☾ '+(fatigue(h)>=80?'탈진 휴식':'휴식 필요')+' · '+fatigue(h)+'</span>');
  return '<span class="lc-care-tags" aria-label="필요한 회복">'+(parts.join('')||'<span class="lc-care-tag lc-care-ready">✓ 회복 양호</span>')+'</span>';
 }
 function percent(h){return level(h)>=50?100:Math.min(100,Math.max(0,Math.round((h.xp||0)/(36+level(h)*19)*100)));}
 function card(h,i,selected,draft){
  const off=draft&&wounded(h),order=draft?squadPicks.indexOf(i)+1:0;
- const severity=injury(h)>=80?'중상':fatigue(h)>=80?'탈진':'';
+ const severity=h.severeInjury?'중상':injury(h)>=80?'부상 누적':fatigue(h)>=80?'탈진':'';
  return '<button type="button" class="lc-fighter-card '+(selected?'is-selected ':'')+(off?'is-blocked':'')+'" data-'+(draft?'candidate':'unit')+'="'+i+'" '+(off?'disabled ':'')+'aria-pressed="'+selected+'" aria-label="'+safe(h.name)+' · '+safe(conditionText(h))+' · '+(order?'출전 '+order+'번':'출전 미선택')+'">'+
  '<span class="lc-card-corner lc-card-corner-a">✦</span><span class="lc-card-corner lc-card-corner-b">✦</span>'+
  (draft&&order?'<span class="lc-queue-order" aria-label="출전 순서 '+order+'번">'+order+'번 출전</span>':'')+
