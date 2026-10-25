@@ -1,4 +1,4 @@
-name: QA Innate Training Failure v72
+name: QA Training Results Emblems v73
 on:
   push:
     branches: [main]
@@ -49,8 +49,8 @@ jobs:
           markers=[
             'ludus-training-risk.js?v=innate-repetition-v72',
             'ludus-training-runtime.js?v=innate-repetition-v72',
-            'ludus-training-clean.css?v=innate-repetition-v72',
-            'ludus-approved-scenes.js?v=innate-repetition-v72'
+            'ludus-training-clean.css?v=training-result-emblem-v73',
+            'ludus-approved-scenes.js?v=training-result-emblem-v73'
           ]
           headers={'User-Agent':'GladiatorInnateTrainingQA','Cache-Control':'no-cache'}
           def download(resource):
@@ -63,7 +63,7 @@ jobs:
               for name,digest in expected.items():
                 ok=ok and hashlib.sha256(download('/'+name+'?v=verify-training-'+str(attempt))).hexdigest()==digest
               if ok:
-                print('LIVE_TRAINING_INNATE_REPETITION_V72_PASS',expected,flush=True)
+                print('LIVE_TRAINING_RESULT_EMBLEM_V73_PASS',expected,flush=True)
                 break
             except Exception as error:print('Wait for deploy',attempt,error,flush=True)
             if attempt==29:raise AssertionError('Cloudflare not yet serving the tested saved-training sources')
