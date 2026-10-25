@@ -139,6 +139,20 @@
    }
    ctx.globalAlpha=1;ctx.drawImage(image,-px*k,-py*k,image.width*k,image.height*k);ctx.restore();
    if(u.dead)return;
+   const ally=u.side==='ally';
+   const active=(ally&&sim.cover?.id===u.id&&sim.cover.until>sim.time)||
+    (!ally&&sim.focus?.id===u.id&&sim.focus.until>sim.time);
+   if(active||state.selected===u.id&&state.pickedUntil>sim.time){
+    const color=ally?'#5cb9ff':'#ff665c',strength=.72+.28*Math.sin(sim.time*10);
+    ctx.save();ctx.strokeStyle=color;ctx.fillStyle=color;
+    ctx.shadowColor=color;ctx.shadowBlur=16;ctx.globalAlpha=strength;ctx.lineWidth=4;
+    ctx.beginPath();ctx.ellipse(u.x,u.y+5,50,15,0,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(u.x-46,u.y-23);ctx.lineTo(u.x-46,u.y-43);ctx.lineTo(u.x-30,u.y-43);
+    ctx.moveTo(u.x+46,u.y-23);ctx.lineTo(u.x+46,u.y-43);ctx.lineTo(u.x+30,u.y-43);ctx.stroke();
+    ctx.shadowBlur=0;ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+    ctx.fillText(active?(ally?'엄호 대상':'집중 대상'):(ally?'아군 지정':'적군 지정'),u.x,u.y-50);
+    ctx.restore();
+   }
    const tactic=u.reaction?u.reaction.kind:u.chase?.until>sim.time?'chase':u.mode==='retreat'&&u.lure?'bait':u.mode;
    const tag={rescue:'구출 돌진',ambush:'기습!',chase:'맹추격',bait:'유인 중',retreat:'후퇴 · 회복',feint:'견제'}[tactic];
    if(tag){
