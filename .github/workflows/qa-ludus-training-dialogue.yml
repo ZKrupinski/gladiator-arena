@@ -49,12 +49,16 @@ jobs:
                   html=fetch('/?trainer-dialogue='+str(i)).decode('utf-8')
                   code=fetch('/ludus-approved-scenes.js?v=training-fit-v71').decode('utf-8')
                   style=fetch('/ludus-training-clean.css?v=training-fit-v71').decode('utf-8')
+                  runtime=fetch('/ludus-training-runtime.js?v=fighter-fit-v72').decode('utf-8')
                   if (hashlib.sha256(livebg).hexdigest()==expect and
                     'ludus-approved-scenes.js?v=training-fit-v71' in html and
+                    'ludus-training-runtime.js?v=fighter-fit-v72' in html and
                     'training_blank_v71.webp' in code and
                     'DOCTORE_SCRIPT' in code and
                     '.la-training-speech' in style and
-                    'word-break:keep-all' in style):
+                    'word-break:keep-all' in style and
+                    'PRACTICE_FOOT_Y=658' in runtime and
+                    'PRACTICE_SCALE=0.70' in runtime):
                       print('LIVE_TRAINING_DIALOGUE_DEPLOYMENT_PASS');break
               except Exception as exc:
                   print('Waiting for Cloudflare',i,str(exc),flush=True)
