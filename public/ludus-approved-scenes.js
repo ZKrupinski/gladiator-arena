@@ -26,6 +26,7 @@ function speechData(){
  const script=DOCTORE_SCRIPT[selectedTraining]||DOCTORE_SCRIPT[0];
  if(speechPhase==='selected')return {title:script.title,lines:script.lines};
  if(speechPhase==='success')return {title:'BENE FACTUM · 훌륭하다!',lines:script.success};
+ if(speechPhase==='failed')return {title:'DEFECIT · 훈련 실패',lines:'이번 훈련은 성과가 없었다. 타고난 약점일수록 더 오래 단련해야 한다. 훈련비는 소모됐다.'};
  if(speechPhase==='insufficient')return {title:'NVMMI · 훈련비 부족',lines:'훈련에는 대가가 든다. 먼저 투기장에서 상금을 벌어 와라. 다시 단련시켜 주마!'};
  if(speechPhase==='mastery')return {title:'MAGISTER · 심화 훈련',lines:'한계를 넘어섰군! 이제 작은 진전에도 큰 노력이 든다. 꾸준히 단련해 더 강해져라.'};
  return {title:'DOCTORE · 교관',lines:'나를 똑바로 보고 훈련을 골라라! 살아남고 싶다면 한순간도 방심하지 마라.'};
@@ -69,7 +70,10 @@ function moveHero(step){let a=bridge(),s=a?.state();if(!s?.roster?.length){toast
 function changeRoom(next){room=next;bridge()?.section(next);screen.hidden=false;render();}
 function goHome(){window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();screen.hidden=true;clearTimeout(toastTimer);clearTimeout(poseTimer);pose(-1);bridge()?.returnHome();document.getElementById('careerHub').hidden=true;window.LudusScene?.open();}
 function actionTraining(){const s=bridge()?.state();if(!s?.roster?.length){toast('훈련할 검투사가 없습니다.');return;}const opt=tiles[selectedTraining],h=s.roster[s.active];const cost=bridge()?.trainingCost?.(s.active,opt.stat)||12;if(s.gold<cost){speechPhase='insufficient';drawTrainingSpeech();toast('훈련 비용 '+cost+'D가 부족합니다.');pose(2);return;}
- bridge().train(opt.stat);speechPhase=Number(h.stats[opt.stat])>10?'mastery':'success';refresh();pose(3);toast(h.name+' · '+opt.name+' 완료!');}
+ const msg=bridge().train(opt.stat)||'';
+ const failed=msg.startsWith('훈련 실패!');
+ speechPhase=failed?'failed':Number(h.stats[opt.stat])>10?'mastery':'success';
+ refresh();pose(failed?2:3);toast(failed?h.name+' · 훈련 실패 · '+cost+'D 소모':h.name+' · '+opt.name+' 완료!');}
 function changeItem(mode){const a=bridge(),list=a?.catalog()||[],gear=list.find(g=>g.id===selectedGear);if(!gear){toast('장비를 먼저 선택하세요.');return;}const outcome=a.equip(selectedGear,mode);toast(outcome||'장비 상태가 갱신되었습니다.');refresh();}
 function drawRoster(parent,isTraining){parent.replaceChildren();const a=bridge(),s=a?.state();if(!s)return;
  const from=Math.max(0,Math.min(s.active-1,Math.max(0,s.roster.length-(isTraining?6:3))));
