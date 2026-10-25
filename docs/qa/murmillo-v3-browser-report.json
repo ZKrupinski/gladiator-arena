@@ -1,45 +1,45 @@
 {
-  "testedAt": "2026-10-25T07:13:24.697Z",
+  "testedAt": "2026-10-25T07:30:52.173Z",
   "source": "local GitHub Pages public/",
   "samples": {
     "idle": {
-      "changedChannels": 52669,
-      "totalDifference": 3653818,
+      "changedChannels": 63277,
+      "totalDifference": 4678667,
       "retries": 0
     },
     "walk": {
-      "changedChannels": 114162,
-      "totalDifference": 9684365,
+      "changedChannels": 98050,
+      "totalDifference": 8359346,
       "retries": 0
     },
     "sweep": {
-      "changedChannels": 117742,
-      "totalDifference": 10323072,
+      "changedChannels": 117732,
+      "totalDifference": 10314694,
       "retries": 0
     },
     "defeat": {
-      "changedChannels": 93990,
-      "totalDifference": 8302582,
+      "changedChannels": 101086,
+      "totalDifference": 8960610,
       "retries": 0
     },
     "slash": {
-      "changedChannels": 113670,
-      "totalDifference": 9902715,
+      "changedChannels": 72467,
+      "totalDifference": 5785788,
       "retries": 0
     },
     "thrust": {
-      "changedChannels": 101834,
-      "totalDifference": 9194511,
+      "changedChannels": 105727,
+      "totalDifference": 9408347,
       "retries": 0
     },
     "victory": {
-      "changedChannels": 86906,
-      "totalDifference": 7426708,
+      "changedChannels": 56261,
+      "totalDifference": 4311400,
       "retries": 0
     },
     "guard": {
-      "changedChannels": 33217,
-      "totalDifference": 2243100,
+      "changedChannels": 90138,
+      "totalDifference": 8171067,
       "retries": 0
     }
   },
