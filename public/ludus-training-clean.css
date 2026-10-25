@@ -60,6 +60,10 @@
 /* Training v73 parchment: the brown stain belongs to the baked bitmap,
    NOT the live speech HTML. Paint inside the existing image border only;
    keep the artwork's single speech tail and the readable live dialogue. */
+/* Doctore is drawn at z=8 and intrudes into the left 20–30px
+   of this balloon. Put the repaired paper and live text above that
+   overlap so his brown sprite no longer fills the balloon's interior. */
+.la-stage.training .la-training-speech{z-index:10!important}
 .la-stage.training .la-training-speech .la-speech-paper-restoration{
  position:absolute;pointer-events:none;z-index:0;
  left:6px;right:-4px;top:-7px;height:109px;box-sizing:border-box;
