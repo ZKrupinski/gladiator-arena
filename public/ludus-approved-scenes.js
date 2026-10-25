@@ -38,7 +38,7 @@ function drawTrainingSpeech(){
   bubble=document.createElement('aside');bubble.className='la-training-speech';
   bubble.setAttribute('role','status');bubble.setAttribute('aria-live','polite');
   bubble.setAttribute('aria-label','훈련소 교관 대화');
-  bubble.innerHTML='<span class="la-speech-badge"></span><p class="la-speech-lines"></p>';
+  bubble.innerHTML='<span class="la-speech-paper-restoration" aria-hidden="true"></span><span class="la-speech-badge"></span><p class="la-speech-lines"></p>';
   stage.appendChild(bubble);
  }
  bubble.dataset.training=String(selectedTraining);
