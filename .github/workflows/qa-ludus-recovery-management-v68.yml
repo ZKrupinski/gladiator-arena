@@ -1,4 +1,4 @@
-name: QA Ludus Recovery Header v70
+name: QA Ludus Arena Draft Header v71
 on:
   push:
     branches: [main]
@@ -33,14 +33,16 @@ jobs:
         run: |
           python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/ludus-care-qa.log 2>&1 &
           sleep 3
-      - name: Verify recovery states, treatment buttons and header geometry on multiple devices
+      - name: Verify recovery buttons and 1v1-5v5 compact header on seven viewport sizes
         run: node scripts/qa_ludus_recovery_management_browser_v68.mjs
       - name: Capture preview screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ludus-recovery-management-v68
-          path: /tmp/ludus-recovery-v68-*.png
+          name: ludus-arena-header-v71
+          path: |
+            /tmp/ludus-recovery-v68-*.png
+            /tmp/ludus-arena-header-v71-*.png
           if-no-files-found: ignore
       - name: Verify exact deployed HTML, scripts and styles on Cloudflare
         shell: bash
@@ -55,14 +57,14 @@ jobs:
               with urllib.request.urlopen(urllib.request.Request(site+path,headers=headers),timeout=18) as r:return r.read()
           for attempt in range(24):
               try:
-                  html=get('/?ludus-recovery-v70='+str(attempt)).decode('utf-8')
+                  html=get('/?ludus-arena-header-v71='+str(attempt)).decode('utf-8')
                   ok=('ludus-recovery.js?v=overexertion-v69' in html and
-                      'ludus-cards.js?v=recovery-fixed-v69' in html and
-                      'ludus-cards.css?v=recovery-header-v70' in html)
+                      'ludus-cards.js?v=arena-draft-header-v71' in html and
+                      'ludus-cards.css?v=arena-draft-header-v71' in html)
                   for name,hash_value in expected.items():
-                      ok=ok and hashlib.sha256(get('/'+name+'?verify-recovery-v70='+str(attempt))).hexdigest()==hash_value
+                      ok=ok and hashlib.sha256(get('/'+name+'?verify-arena-header-v71='+str(attempt))).hexdigest()==hash_value
                   if ok:
-                      print('CLOUDFLARE_LUDUS_RECOVERY_V70_VERIFIED',expected,flush=True)
+                      print('CLOUDFLARE_ARENA_DRAFT_HEADER_V71_VERIFIED',expected,flush=True)
                       break
               except Exception as error:print('Retry deployment',attempt,str(error),flush=True)
               if attempt==23:raise AssertionError('Cloudflare source does not match this tested commit')
