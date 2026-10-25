@@ -121,6 +121,13 @@ function footY(image,fallback){
  return fallback;
 }
 function scale(key){return key?(read()[key]??DEFAULTS[key]??1):1;}
-root.PracticeScaleProfiles={KEY,FEET_KEY,TYPES,EXTRAS,BEASTS,NPCS,BASE,DEFAULTS,FOOT_DEFAULTS,FOOT_MIN,FOOT_MAX,footY,clamp,clampFoot,read,write,reset,readFeet,writeFeet,resetFeet,foot,look,scale};
+// All scenes project the SAME published per-look size against the COMPLETE
+// idle frame, never alpha bounds or a scene-specific champion/class boost.
+function framePixels(key,referenceHeight,worldHeight=202,actionScale=1){
+ const h=Number(referenceHeight),base=Number(worldHeight),pose=Number(actionScale);
+ if(!Number.isFinite(h)||h<=0||!Number.isFinite(base)||base<=0)return 0;
+ return base/h*scale(key)*(Number.isFinite(pose)&&pose>0?pose:1);
+}
+root.PracticeScaleProfiles={KEY,FEET_KEY,TYPES,EXTRAS,BEASTS,NPCS,BASE,DEFAULTS,FOOT_DEFAULTS,FOOT_MIN,FOOT_MAX,footY,clamp,clampFoot,read,write,reset,readFeet,writeFeet,resetFeet,foot,look,scale,framePixels};
 if(typeof module!=='undefined')module.exports=root.PracticeScaleProfiles;
 })(typeof window!=='undefined'?window:globalThis);
