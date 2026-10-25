@@ -29,9 +29,9 @@ function card(h,i,selected,draft){
  return '<button type="button" class="lc-fighter-card '+(selected?'is-selected ':'')+(off?'is-blocked':'')+'" data-'+(draft?'candidate':'unit')+'="'+i+'" '+(off?'disabled ':'')+'aria-pressed="'+selected+'" aria-label="'+safe(h.name)+' · '+safe(conditionText(h))+' · '+(order?'출전 '+order+'번':'출전 미선택')+'">'+
  '<span class="lc-card-corner lc-card-corner-a">✦</span><span class="lc-card-corner lc-card-corner-b">✦</span>'+
  (draft&&order?'<span class="lc-queue-order" aria-label="출전 순서 '+order+'번">'+order+'번 출전</span>':'')+
- (severity?'<span class="lc-unavailable" role="status">'+severity+' · 출전 불가</span>':'')+
- '<span class="lc-rank">'+rank(h)+'</span><span class="lc-portrait"><canvas width="222" height="235" data-card-art="'+i+'" aria-hidden="true"></canvas></span>'+
- '<span class="lc-card-title">'+safe(h.name)+'</span><span class="lc-card-class">'+className(h)+' · Lv.'+level(h)+'</span>'+(!draft?careTags(h):'')+
+ (draft&&severity?'<span class="lc-unavailable" role="status">'+severity+' · 출전 불가</span>':'')+
+ '<span class="lc-rank">'+rank(h)+'</span>'+(!draft?careTags(h):'')+'<span class="lc-portrait"><canvas width="222" height="235" data-card-art="'+i+'" aria-hidden="true"></canvas></span>'+
+ '<span class="lc-card-title">'+safe(h.name)+'</span><span class="lc-card-class">'+className(h)+' · Lv.'+level(h)+'</span>'+
  '<span class="lc-card-meta"><b>⚔ '+(Number(h.wins)||0)+'승</b><b class="'+(wounded(h)?'lc-danger':'')+'">부상 '+injury(h)+' / 피로 '+fatigue(h)+'</b></span>'+
  '<span class="lc-card-foot">'+(draft?(off?'치료 또는 휴식 필요':order?order+'번 출전 · 누르면 제외':'출전 순서에 등록'):(selected?'◆ 회복 상태 확인':'눌러서 회복하기'))+'</span></button>';
 }
@@ -113,7 +113,7 @@ function roster(){
  '<small class="lc-recovery-count">✚ 치료 '+healCount+'명 <i>·</i> ☾ 휴식 '+restCount+'명</small></div>'+
  '<div class="lc-card-grid">'+s.roster.map(function(item,i){return card(item,i,i===s.active,false);}).join('')+
  '<button type="button" class="lc-hire-card" id="lcHire"><span>＋</span><strong>검투사 영입</strong><small>검투사시장 방문</small></button></div></div>'+
- '<div class="lc-detail"><div class="lc-section-head"><h2>♜ 전투 명부</h2><small>선택된 검투사</small></div>'+
+ '<div class="lc-detail"><div class="lc-detail-scroll"><div class="lc-section-head"><h2>♜ 전투 명부</h2><small>선택된 검투사</small></div>'+
  (has?'<div class="lc-highlight"><div class="lc-hero-badge">'+rank(h)+'</div><canvas id="lcFeaturedHero" width="355" height="352" aria-label="'+safe(h.name)+' 스탠딩"></canvas></div>'+
  '<div class="lc-nameplate"><h2>'+safe(h.name)+'</h2><span>'+className(h)+' · Lv.'+level(h)+'</span></div>'+
  '<div class="lc-xp"><div><strong>LEVEL '+level(h)+' / 50</strong><small>경험치 '+(level(h)>=50?'MAX':Number(h.xp||0)+' / '+(36+level(h)*19))+'</small></div><i><b style="width:'+percent(h)+'%"></b></i></div>'+
@@ -123,15 +123,13 @@ function roster(){
  '<span>Lv.'+level(h)+' 누적 성장 보정: '+[['str','근력'],['agi','민첩'],['end','체력'],['focus','집중']].map(function(v){return v[1]+' +'+innate.growth[v[0]].toFixed(1);}).join(' · ')+'</span>'+
  '<small>Lv.50 예상 강점: '+safe(projected.name)+' +'+projected.growth[projected.best].toFixed(1)+' / 약점 '+safe(projected.weakness)+' +'+projected.growth[projected.weak].toFixed(1)+'</small></div>':'')+
  '<div class="lc-record"><span>시합 <b>'+(Number(h.fights)||0)+'전 '+(Number(h.wins)||0)+'승</b></span><span>부상 <b class="'+(injury(h)>=80?'lc-danger':'')+'">'+injury(h)+'</b></span><span>피로 <b class="'+(fatigue(h)>=80?'lc-danger':'')+'">'+fatigue(h)+'</b></span></div>'+
- '<div class="lc-equipment">'+equip+'</div>'+
- '<div class="lc-care-overview"><span class="lc-care-state '+(quote.heal.severe?'lc-care-state-danger':'')+'">✚ '+(quote.heal.severe?'중상 · 치료 시 명예 소모':quote.heal.needed?'부상 · 치료 필요':'부상 없음')+'</span>'+
- '<span class="lc-care-state '+(quote.rest.needed?'lc-care-state-tired':'')+'">☾ '+(quote.rest.needed?'피로 · 휴식 필요':'피로 없음')+'</span></div>'+
- '<div class="lc-care-actions" role="group" aria-label="선택된 검투사 회복">'+
- '<button class="lc-heal-action '+(quote.heal.severe?'lc-major-action':'')+'" id="lcHeal" '+(!canHeal?'disabled ':'')+'aria-label="'+safe(h.name)+' 치료, 금화 '+quote.heal.gold+(quote.heal.glory?' 및 명예 '+quote.heal.glory:'')+' 소모">'+
- '<span>✚ '+(quote.heal.severe?'중상 치료':'치료')+'</span><strong>◉ '+costText(quote.heal.gold)+' D'+(quote.heal.glory?' <em>✥ '+costText(quote.heal.glory)+'</em>':'')+'</strong></button>'+
- '<button class="lc-rest-action" id="lcRest" '+(!canRest?'disabled ':'')+'aria-label="'+safe(h.name)+' 휴식, 금화 '+quote.rest.gold+' 소모">'+
- '<span>☾ 휴식</span><strong>◉ '+costText(quote.rest.gold)+' D</strong></button></div>'+
- '<p class="lc-care-guidance" role="status">'+guidance+'</p>':
+ '<div class="lc-equipment">'+equip+'</div></div>'+
+ '<div class="lc-recovery-dock"><div class="lc-care-actions" role="group" aria-label="선택된 검투사 회복">'+
+ '<button class="lc-heal-action '+(quote.heal.severe?'lc-major-action ':'')+(!canHeal&&quote.heal.needed?'lc-short-funds':'')+'" id="lcHeal" '+(!quote.heal.needed?'disabled ':'')+'aria-label="'+safe(h.name)+' '+(quote.heal.severe?'중상 치료':'일반 치료')+', 금화 '+quote.heal.gold+(quote.heal.glory?' 및 명예 '+quote.heal.glory:'')+' 필요'+(!canHeal&&quote.heal.needed?' · 재화 부족':'')+'">'+
+ '<span>✚ '+(quote.heal.severe?'중상 치료':'일반 치료')+'</span><strong>◉ '+costText(quote.heal.gold)+' D'+(quote.heal.glory?' <em>✥ '+costText(quote.heal.glory)+'</em>':'')+'</strong>'+(!canHeal&&quote.heal.needed?'<small>재화 부족 · 눌러서 확인</small>':'')+'</button>'+
+ '<button class="lc-rest-action '+(!canRest&&quote.rest.needed?'lc-short-funds':'')+'" id="lcRest" '+(!quote.rest.needed?'disabled ':'')+'aria-label="'+safe(h.name)+' 휴식, 금화 '+quote.rest.gold+' 필요">'+
+ '<span>☾ 휴식</span><strong>◉ '+costText(quote.rest.gold)+' D</strong>'+(!canRest&&quote.rest.needed?'<small>금화 부족 · 눌러서 확인</small>':'')+'</button></div>'+
+ '<p class="lc-care-guidance" role="status">'+guidance+'</p></div>':
  '<div class="lc-empty"><strong>아직 소속 검투사가 없습니다</strong><p>검투사시장에서 첫 검투사를 영입하세요.</p></div>')+
  '</div></div><div class="lc-hint">'+safe(s.message||'붉은색은 부상 치료, 주황색은 피로 휴식이 필요합니다.')+'</div></section>';
  var old=$('.lc-gallery .lc-card-grid');if(old)scrollPosition=old.scrollTop;
@@ -142,8 +140,14 @@ function roster(){
   b.onclick=function(){var i=Number(b.dataset.unit);if(!s.roster[i])return;scrollPosition=grid.scrollTop;a.select(i);};
  });
  var hire=root.querySelector('#lcHire');if(hire)hire.onclick=function(){var hub=$('#careerHub');if(hub)hub.hidden=true;a.market();};
- var heal=root.querySelector('#lcHeal');if(heal)heal.onclick=function(){a.heal();};
- var rest=root.querySelector('#lcRest');if(rest)rest.onclick=function(){a.rest?.();};
+ var heal=root.querySelector('#lcHeal');if(heal)heal.onclick=function(){
+  var msg=a.heal();if(root.isConnected){var feedback=root.querySelector('.lc-care-guidance');
+   if(feedback&&msg)feedback.textContent=msg;}
+ };
+ var rest=root.querySelector('#lcRest');if(rest)rest.onclick=function(){
+  var msg=a.rest?.();if(root.isConnected){var feedback=root.querySelector('.lc-care-guidance');
+   if(feedback&&msg)feedback.textContent=msg;}
+ };
 }
 function beginDraft(selectedIndex){
  chosen=Number.isInteger(selectedIndex)?selectedIndex:-1;
