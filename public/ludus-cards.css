@@ -340,3 +340,132 @@
 #careerHub .lc-born-signature span{color:#e7d5b1}
 #careerHub .lc-born-signature small{font-size:11px;color:#b8e1ca}
 @media(max-width:700px){#careerHub .lc-roster-screen .lc-born-signature{padding:6px 7px;font-size:10px}#careerHub .lc-born-signature strong{font-size:12px}}
+
+
+/* V68 · recuperatio: recovery-first Gladiator Management, without touching arena draft. */
+.lc-roster-screen .lc-top{
+ display:flex;justify-content:space-between;align-items:center;gap:clamp(12px,2vw,26px);
+ padding:9px clamp(175px,19.5vw,245px) 9px 20px;min-height:111px;
+}
+.lc-roster-screen .lc-banner{justify-content:flex-start;flex:0 1 auto;min-width:0;gap:clamp(7px,1vw,14px)}
+.lc-roster-screen .lc-banner h1{font-size:clamp(25px,3.5vw,47px);white-space:nowrap}
+.lc-roster-screen .lc-banner .lc-laurel{font-size:clamp(21px,2.1vw,36px)}
+.lc-roster-screen .lc-recovery-funds{
+ position:static;display:flex;align-items:stretch;gap:10px;flex:0 0 auto;min-width:0;
+}
+.lc-roster-screen .lc-recovery-funds>span{
+ display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+ min-width:124px;gap:4px;padding:8px 12px;
+ background:linear-gradient(135deg,#382013e8,#130b09ed);
+ border:1px solid #c29758;border-radius:7px;box-shadow:inset 0 1px #ffe1a321;
+}
+.lc-roster-screen .lc-recovery-funds small{
+ color:#e9c88d;font:800 12px/1.2 'Noto Sans KR',sans-serif;
+}
+.lc-roster-screen .lc-recovery-funds strong{
+ color:#ffe5ad;font:900 clamp(18px,1.9vw,26px)/1.15 Georgia,'Noto Sans KR',serif;
+ font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.lc-roster-screen .lc-recovery-funds em{font:800 .66em 'Noto Sans KR',sans-serif;font-style:normal}
+.lc-roster-screen .lc-recovery-count{font-size:clamp(11px,1vw,13px);color:#f5c6a9}
+.lc-roster-screen .lc-recovery-count i{font-style:normal;color:#c4a276;margin:0 5px}
+.lc-roster-screen .lc-fighter-card{border-color:#a97c46}
+.lc-roster-screen .lc-fighter-card:has(.lc-care-severe){border-color:#d56f6a}
+.lc-roster-screen .lc-fighter-card.is-selected{border-color:#ffe2a2}
+.lc-roster-screen .lc-care-tags{
+ display:flex;justify-content:center;align-content:center;flex-wrap:wrap;
+ gap:3px;width:100%;min-height:25px;padding:5px 2px 1px;
+}
+.lc-roster-screen .lc-care-tag{
+ display:inline-flex;align-items:center;justify-content:center;min-width:0;
+ padding:3px 6px;border-radius:5px;border:1px solid currentColor;
+ font:900 clamp(9px,.85vw,11px)/1.25 'Noto Sans KR',sans-serif;
+ white-space:nowrap;box-shadow:inset 0 1px #ffffff1c;
+}
+.lc-roster-screen .lc-care-injury{color:#ffb9ad;background:#682720ed}
+.lc-roster-screen .lc-care-severe{
+ color:#fff4df;border-color:#ffb9a0;
+ background:linear-gradient(100deg,#ab382b,#662017);
+ box-shadow:0 0 9px #db593c77;
+}
+.lc-roster-screen .lc-care-fatigue{color:#ffe2a4;background:#67451bf0}
+.lc-roster-screen .lc-care-ready{color:#b6e3b5;background:#173e2eab}
+.lc-roster-screen .lc-card-meta{padding:3px 4px 4px}
+.lc-roster-screen .lc-card-meta b:last-child{white-space:normal;text-align:right}
+.lc-roster-screen .lc-highlight{height:clamp(155px,23vh,280px);min-height:125px}
+.lc-roster-screen .lc-nameplate{margin:4px 0 3px}
+.lc-roster-screen .lc-nameplate h2{font-size:clamp(23px,2.4vw,31px)}
+.lc-roster-screen .lc-care-overview{
+ display:flex;justify-content:space-between;gap:7px;margin:13px 0 4px;
+}
+.lc-roster-screen .lc-care-state{
+ display:flex;align-items:center;justify-content:center;flex:1;min-width:0;
+ padding:7px 4px;border:1px solid #6d7451;border-radius:5px;
+ color:#c7dfae;background:#152e229c;text-align:center;
+ font:800 clamp(10px,1.02vw,12px)/1.35 'Noto Sans KR',sans-serif;
+}
+.lc-roster-screen .lc-care-state-danger{border-color:#d08077;color:#ffd3c4;background:#63271fc9}
+.lc-roster-screen .lc-care-state-tired{border-color:#d5a362;color:#ffe1ae;background:#61441dc5}
+.lc-roster-screen .lc-care-actions{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;
+ margin-top:10px;padding:5px 0;position:relative;z-index:2;
+}
+.lc-roster-screen .lc-care-actions>button{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+ min-width:0;min-height:89px;padding:8px 5px;border-radius:9px;
+ border:3px ridge #edba90;cursor:pointer;touch-action:manipulation;
+ box-shadow:inset 0 2px 0 #fff7dc3e,0 5px 14px #0007;
+ transition:filter .12s ease,box-shadow .12s ease;
+}
+.lc-roster-screen .lc-care-actions>button span{
+ color:#fff8e7;font:900 clamp(17px,1.7vw,22px)/1.2 'Noto Sans KR',sans-serif;
+ text-shadow:0 2px 4px #200707;
+}
+.lc-roster-screen .lc-care-actions>button strong{
+ color:#ffedca;font:800 clamp(11px,1.22vw,16px)/1.35 Georgia,'Noto Sans KR',serif;
+ text-align:center;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;
+}
+.lc-roster-screen .lc-care-actions>button em{font:800 .87em 'Noto Sans KR',sans-serif;font-style:normal;color:#fff4d1}
+.lc-roster-screen .lc-heal-action{background:linear-gradient(145deg,#b44c38,#711e24 72%);border-color:#e8a691!important}
+.lc-roster-screen .lc-major-action{background:linear-gradient(125deg,#cb493b,#6c1b26 72%);border-color:#ffd3a1!important}
+.lc-roster-screen .lc-rest-action{background:linear-gradient(145deg,#cf8439,#66401a 75%);border-color:#efc57d!important}
+.lc-roster-screen .lc-care-actions>button:not(:disabled):hover,
+.lc-roster-screen .lc-care-actions>button:not(:disabled):focus-visible{
+ filter:brightness(1.18);box-shadow:0 0 13px #f3c0769b;
+ outline:2px solid #ffe5a5;outline-offset:1px;
+}
+.lc-roster-screen .lc-care-actions>button:disabled{opacity:.43;filter:grayscale(.48);cursor:not-allowed}
+.lc-roster-screen .lc-care-guidance{
+ margin:7px 0 2px;padding:7px 8px;min-height:25px;
+ color:#eacbaa;background:#29191187;border-radius:4px;
+ font:700 11px/1.35 'Noto Sans KR',sans-serif;text-align:center;
+}
+@media(max-width:980px){
+ .lc-roster-screen .lc-top{padding:8px 185px 8px 15px;gap:10px}
+ .lc-roster-screen .lc-banner{gap:5px}
+ .lc-roster-screen .lc-banner h1{font-size:clamp(23px,3.1vw,32px)}
+ .lc-roster-screen .lc-recovery-funds{gap:5px}
+ .lc-roster-screen .lc-recovery-funds>span{min-width:94px;padding:6px 7px}
+ .lc-roster-screen .lc-recovery-funds strong{font-size:clamp(15px,1.75vw,21px)}
+ .lc-roster-screen .lc-recovery-funds small{font-size:10px}
+}
+@media(max-width:760px){
+ .lc-roster-screen .lc-top{flex-wrap:wrap;align-content:center;min-height:125px;padding-right:153px}
+ .lc-roster-screen .lc-recovery-funds{flex:1 1 100%;justify-content:flex-start}
+ .lc-roster-screen .lc-recovery-funds>span{min-width:0;flex:0 1 auto}
+ .lc-roster-screen .lc-recovery-funds strong{font-size:clamp(13px,2.1vw,19px)}
+ .lc-roster-screen .lc-care-actions>button{min-height:80px}
+ .lc-roster-screen .lc-card-meta{font-size:9px}
+}
+@media(max-width:400px){
+ .lc-roster-screen .lc-top{padding-right:126px}
+ .lc-roster-screen .lc-banner .lc-laurel:last-child{display:none}
+ .lc-roster-screen .lc-recovery-funds{gap:3px}
+ .lc-roster-screen .lc-recovery-funds>span{padding:5px 4px}
+ .lc-roster-screen .lc-recovery-funds strong{font-size:13px}
+ .lc-roster-screen .lc-care-actions{gap:5px}
+ .lc-roster-screen .lc-care-actions>button span{font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){
+ .lc-roster-screen .lc-care-actions>button{transition:none}
+}
