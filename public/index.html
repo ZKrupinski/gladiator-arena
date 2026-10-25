@@ -393,7 +393,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-beast-stage-previews.js?v=versus-v5"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
 <script src="arena-carnifex.js?v=action-authoring-v46"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=combat-drama-v6"></script><script src="arena-motion.js?v=combat-drama-v6"></script><script src="arena-combat-feel.js?v=combat-impact-v2"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=training-hit-v1"></script>
-<script src="ludus-recovery.js?v=overexertion-v69"></script><script src="ludus-roster.js?v=innate-lv50-v67"></script>
+<script src="ludus-recovery.js?v=overexertion-v69"></script><script src="ludus-training-risk.js?v=innate-repetition-v72"></script><script src="ludus-roster.js?v=innate-lv50-v67"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
    Pose sheets extracted from user-approved 3D-look static character art.
@@ -1127,19 +1127,28 @@ function renderCareer(){
 }
 function autoCareerTrain(stat){
  const h=CAREER.hero;
- if(!h||!['str','agi','end','focus'].includes(stat))return;
+ if(!h||!window.LudusTrainingRisk?.KEYS.includes(stat))return '훈련 항목을 선택하세요.';
  const cost=careerTrainingCost(h,stat);
- if(CAREER.gold<cost){careerMessage('훈련 비용 '+cost+'D가 부족합니다.');return;}
- const before=h.stats[stat],gained=grantCareerXp(h,Math.max(7,17-Math.floor(before/3)));
+ if(CAREER.gold<cost){careerMessage('훈련 비용 '+cost+'D가 부족합니다.');return CAREER.message;}
+ // Payment and the attempt are committed together. Failure grants neither stats
+ // nor XP, but the money and the per-stat effort count are still consumed.
  CAREER.gold-=cost;
- h.stats[stat]=before+ArenaBalance.trainingGain(h,stat,before<3?2:1);
- h.trainingAttempts=h.trainingAttempts||{};
- h.trainingAttempts[stat]=(h.trainingAttempts[stat]||0)+1;
+ const result=window.LudusTrainingRisk.attempt(h,stat);
  const names={str:'공격',agi:'민첩',end:'체력',focus:'기술'};
- CAREER.message='훈련 성공! '+h.name+' · '+names[stat]+' +'+(h.stats[stat]-before)+' · 훈련비 '+cost+'D'+(gained?' · LEVEL UP!':'');
+ if(result.failed){
+  CAREER.message='훈련 실패! '+h.name+' · '+names[stat]+' 성장 없음 · 훈련비 '+cost+'D 소모 · '+result.total+'회차 (실패 확률 '+result.percent+'%)';
+ }else{
+  const before=Number(h.stats[stat])||0;
+  h.stats[stat]=before+ArenaBalance.trainingGain(h,stat,before<3?2:1);
+  const gained=grantCareerXp(h,Math.max(7,17-Math.floor(before/3)));
+  CAREER.message='훈련 성공! '+h.name+' · '+names[stat]+' +'+(h.stats[stat]-before)+' · 훈련비 '+cost+'D · '+result.total+'회차'+(gained?' · LEVEL UP!':'');
+ }
  saveCareer();renderCareer();
- const tile=document.querySelector('[data-autotrain="'+stat+'"]');
- if(tile){tile.classList.add('ludus-training-success');setTimeout(()=>tile.classList.remove('ludus-training-success'),800);}
+ if(!result.failed){
+  const tile=document.querySelector('[data-autotrain="'+stat+'"]');
+  if(tile){tile.classList.add('ludus-training-success');setTimeout(()=>tile.classList.remove('ludus-training-success'),800);}
+ }
+ return CAREER.message;
 }
 function startTraining(stat){
  if(!CAREER.hero||CAREER.gold<careerTrainingCost(CAREER.hero,stat))return;
@@ -1152,7 +1161,7 @@ function startTraining(stat){
  agi:'상대의 발을 피해 리듬을 잡으세요. 황금 구간에서 회피!',
  end:'호흡을 일정하게 유지하세요. 황금 구간에 맞춰 버티기!',
  focus:'창끝의 조준이 일치하면 집중하세요. 황금 구간을 노리세요.'
- }[stat])+' · '+d.name+' ('+(d.attempts+1)+'회차) · 버튼 터치 / SPACE';
+ }[stat])+' · '+d.name+' ('+(d.attempts+1)+'회차) · 누적 실패 위험 '+window.LudusTrainingRisk.quote(CAREER.hero,stat).percent+'% · 버튼 터치 / SPACE';
  $('#careerHit').textContent=({str:'⚔ 타격!',agi:'↶ 회피!',end:'◆ 버티기!',focus:'✧ 집중!'}[stat]);
  $('#careerTrainingResult').hidden=true;$('#careerHit').hidden=false;$('#careerCancel').textContent='취소';
  $('#careerMini').hidden=false;requestAnimationFrame(animateCareerNeedle);
@@ -1170,23 +1179,24 @@ function completeTraining(){
  const v=needlePosition(),difference=Math.abs(v-.5);
  const gain=v>=MINI.lower&&v<=MINI.upper?(difference<=MINI.perfect?3:2):0;
  const stat=MINI.stat;MINI.finished=true;
- CAREER.hero.trainingAttempts=CAREER.hero.trainingAttempts||{};
- CAREER.hero.trainingAttempts[stat]=(CAREER.hero.trainingAttempts[stat]||0)+1;
  $('#careerNeedle').style.left='calc('+(v*100).toFixed(2)+'% - 2.5px)';
  CAREER.gold-=careerTrainingCost(CAREER.hero,stat);
+ const attempt=window.LudusTrainingRisk.attempt(CAREER.hero,stat);
+ const exhausted=attempt.failed,actualGain=exhausted?0:gain;
  const before=CAREER.hero.stats[stat];
- CAREER.hero.stats[stat]=before+ArenaBalance.trainingGain(CAREER.hero,stat,gain);
+ if(actualGain)CAREER.hero.stats[stat]=before+ArenaBalance.trainingGain(CAREER.hero,stat,actualGain);
  const applied=CAREER.hero.stats[stat]-before;
- const rank=gain===3?'perfect':gain===2?'success':'fail';
- const label=gain===3?'대성공!':gain===2?'성공!':'실패!';
+ const rank=exhausted||gain===0?'fail':gain===3?'perfect':'success';
+ const label=exhausted?'훈련 실패!':gain===3?'대성공!':gain===2?'성공!':'실패!';
  const name={str:'근력',agi:'민첩',end:'체력',focus:'집중'}[stat];
  const result=$('#careerTrainingResult');
  result.className='career-training-result '+rank;
- result.textContent=label+'  ·  '+name+' +'+applied+' · '+MINI.level+' '+(MINI.attempts+1)+'회차'+(gain===0?' · 황금 구간 밖':'');
+ result.textContent=label+'  ·  '+name+' +'+applied+' · '+MINI.level+' '+attempt.total+'회차'+
+  (exhausted?' · 누적 훈련 실패 (확률 '+attempt.percent+'%) · 비용 소모':gain===0?' · 황금 구간 밖':'');
  result.hidden=false;
  $('#careerHit').hidden=true;
  $('#careerCancel').textContent='루두스로 돌아가기';
- const earned=gain===3?19:gain===2?13:4,gained=grantCareerXp(CAREER.hero,earned);
+ const earned=exhausted?0:gain===3?19:gain===2?13:4,gained=earned?grantCareerXp(CAREER.hero,earned):0;
  CAREER.message=label+' '+name+' +'+applied+' · 경험치 +'+earned+(gained?' · LEVEL UP!':'');
  result.textContent+=' · 경험치 +'+earned+(gained?' · LEVEL UP!':'');
  saveCareer();
