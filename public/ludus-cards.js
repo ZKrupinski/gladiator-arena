@@ -7,14 +7,14 @@ var $=function(q){return document.querySelector(q);};
 function safe(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;','\'':'&#39;'}[c];});}
 function bridge(){return window.LudusBridge;}
 function state(){return bridge()&&bridge().state();}
-function level(h){return Math.max(1,Math.min(20,Number(h.level)||1));}
+function level(h){return Math.max(1,Math.min(window.ArenaProgression?.LEVEL_CAP||50,Number(h.level)||1));}
 function rank(h){if(h.marketOrigin==='mercatus'&&h.marketQuality==='rare')return 'RARVS';if(h.marketOrigin==='mercatus'&&h.marketQuality==='veteran')return 'VETERAN';if(h.appearance==='murmillo_champion_red')return 'CHAMPION';if(h.appearance==='murmillo_motion_v3')return 'MOTION';if(h.appearance==='legacy')return 'CHAMPION';return 'GLADIATOR · Lv.'+level(h);}
 function className(h){var n={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};return h.appearance==='murmillo_champion_red'?'무르밀로 · 챔피언':h.appearance==='murmillo_motion_v3'?'무르밀로 · 정예':(n[h.cls]||h.cls||'검투사');}
 function injury(h){return Math.max(0,Number(h.injury)||0);}
 function fatigue(h){return Math.max(0,Math.min(100,Number(h?.fatigue)||0));}
 function wounded(h){return injury(h)>=80||fatigue(h)>=80;}
 function conditionText(h){return injury(h)>=80?'중상 · 출전 불가':fatigue(h)>=80?'탈진 · 출전 불가':injury(h)>0||fatigue(h)>0?'부상 '+injury(h)+' · 피로 '+fatigue(h):'출전 가능';}
-function percent(h){return level(h)>=20?100:Math.min(100,Math.max(0,Math.round((h.xp||0)/(36+level(h)*19)*100)));}
+function percent(h){return level(h)>=50?100:Math.min(100,Math.max(0,Math.round((h.xp||0)/(36+level(h)*19)*100)));}
 function card(h,i,selected,draft){
  const off=draft&&wounded(h),order=draft?squadPicks.indexOf(i)+1:0;
  const severity=injury(h)>=80?'중상':fatigue(h)>=80?'탈진':'';
@@ -91,7 +91,7 @@ function roster(){
  '<div class="lc-detail"><div class="lc-section-head"><h2>♜ 전투 명부</h2><small>선택된 검투사</small></div>'+
  (has?'<div class="lc-highlight"><div class="lc-hero-badge">'+rank(h)+'</div><canvas id="lcFeaturedHero" width="355" height="352" aria-label="'+safe(h.name)+' 스탠딩"></canvas></div>'+
  '<div class="lc-nameplate"><h2>'+safe(h.name)+'</h2><span>'+className(h)+' · Lv.'+level(h)+'</span></div>'+
- '<div class="lc-xp"><div><strong>LEVEL '+level(h)+'</strong><small>경험치 '+Number(h.xp||0)+'</small></div><i><b style="width:'+percent(h)+'%"></b></i></div>'+
+ '<div class="lc-xp"><div><strong>LEVEL '+level(h)+' / 50</strong><small>경험치 '+(level(h)>=50?'MAX':Number(h.xp||0)+' / '+(36+level(h)*19))+'</small></div><i><b style="width:'+percent(h)+'%"></b></i></div>'+
  '<div class="lc-stats">'+stats.map(function(p){return '<span><small>'+p[0]+' · '+p[1]+'</small><strong>'+p[2]+'</strong></span>';}).join('')+'</div>'+ 
  (h.aptitudes?'<div class="lc-aptitude"><strong>타고난 성장 적성</strong><span>'+[['str','근력'],['agi','민첩'],['end','체력'],['focus','집중']].map(function(v){var n=Number(h.aptitudes[v[0]])||1;return '<em class="'+(n>=1.22?'apt-strong':n<.89?'apt-weak':'')+'">'+v[1]+' ×'+n.toFixed(2)+'</em>';}).join('')+'</span></div>':'')+
  '<div class="lc-record"><span>시합 <b>'+(Number(h.fights)||0)+'전 '+(Number(h.wins)||0)+'승</b></span><span>부상 <b class="'+(injury(h)>=80?'lc-danger':'')+'">'+injury(h)+'</b></span><span>피로 <b class="'+(fatigue(h)>=80?'lc-danger':'')+'">'+fatigue(h)+'</b></span></div>'+
