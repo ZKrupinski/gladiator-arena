@@ -392,7 +392,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-beasts.js?v=action-authoring-v46"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
 <script src="arena-beast-stage-previews.js?v=versus-v5"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
-<script src="arena-carnifex.js?v=action-authoring-v46"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=combat-drama-v6"></script><script src="arena-motion.js?v=combat-drama-v6"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=training-hit-v1"></script>
+<script src="arena-carnifex.js?v=action-authoring-v46"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=combat-drama-v6"></script><script src="arena-motion.js?v=combat-drama-v6"></script><script src="arena-combat-feel.js?v=combat-impact-v1"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=training-hit-v1"></script>
 <script src="ludus-roster.js?v=market-only-heroes-v24"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -2952,7 +2952,9 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  const reduceImpact=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
  const impactVisual=(S.phase==='fight'&&!f.dead&&f.hp>0&&
   pose!=='defeat'&&pose!=='death')?
-  (window.ArenaMotion?.visual?.(f,reduceImpact,S.fx)||{flash:0}):{flash:0};
+  (window.ArenaMotion?.visual?.(f,reduceImpact,S.fx)||{flash:0,scale:1}):{flash:0,scale:1};
+ // Temporary foot-anchored collision rebound, never a saved character-size override.
+ const contactZoom=clamp(impactVisual.scale||1,.97,1.115);
  f._fxRender={dx:drawX-(f.x-width/2)+editedX,
   dy:drawY-(feet-height)+footOffset+editedY,tilt:0,
   sx:1,sy:1,pivotX:f.x,pivotY:feet};
@@ -2979,7 +2981,7 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
    ctx.save();
    // All human poses, echoes and white hit flashes share one foot pivot.
    ctx.translate(x+width/2+editedX,y+height+editedY);
-   ctx.scale(authored.scale,authored.scale);
+   ctx.scale(authored.scale*contactZoom,authored.scale*contactZoom);
    ctx.translate(-(x+width/2),-(y+height));
   }
   const animal=!!f.beastType&&!!window.ArenaBeasts?.draw?.(ctx,{
