@@ -60,7 +60,10 @@ try{
    studioScale:canvas?.dataset.fixedScale??null,
    fighterCanvasW:canvas?.width, fighterCanvasH:canvas?.height,
    trainerScale:Number(trainer?.dataset.scale||0),
-   trainerFloor:Number(trainer?.dataset.footY||0)};
+   trainerFloor:Number(trainer?.dataset.footY||0),
+   fighterZoneTop:parseFloat(getComputedStyle(canvas.parentElement).top),
+   trainerTop:parseFloat(getComputedStyle(trainer).top),
+   fighterMetrics:window.LudusTrainingV2?.metrics??null};
  });
  assert.equal(initialVisual.before,'none','painted bubble tail must not be duplicated by CSS');
  assert.equal(initialVisual.after,'none','only one bubble tail is allowed');
@@ -71,6 +74,11 @@ try{
  assert.equal(initialVisual.fighterCanvasH,800,'fighter needs padded canvas height');
  assert.ok(initialVisual.trainerScale>=.88&&initialVisual.trainerScale<=1.08,'Doctore is resized consistently');
  assert.equal(initialVisual.trainerFloor,575,'Doctore stays on raised floor');
+ assert.equal(initialVisual.fighterMetrics?.scaleFactor,.70,'training gladiator is slightly larger');
+ const fighterFoot=initialVisual.fighterZoneTop+initialVisual.fighterMetrics.canvasFootY;
+ const doctoreFoot=initialVisual.trainerTop+initialVisual.trainerFloor;
+ assert.ok(doctoreFoot-fighterFoot>=5&&doctoreFoot-fighterFoot<=15,
+  'fighter feet should be just above Doctore: '+JSON.stringify({fighterFoot,doctoreFoot}));
  const selected=[];
  for(let i=0;i<5;i++){
   await page.evaluate(i=>{
