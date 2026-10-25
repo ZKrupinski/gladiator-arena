@@ -8,6 +8,9 @@ let timer=null,tick=0,current=null,frameIndex=-1,impactStage=null,impactHandler=
 const HIT_MS=640;
 const names={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};
 const FRAME_MS=88;
+// Training-only framing: 70% of canonical authoring scale and feet 9px above Doctore.
+// CSS zone top -92 + local foot 658 = stage y566; Doctore stands at y575.
+const PRACTICE_SCALE=0.70, PRACTICE_FOOT_Y=658;
 const ACTION_CYCLE=[
  {name:'slash',ticks:12},{name:'sweep',ticks:12},
  {name:'thrust',ticks:11},{name:'heavy',ticks:13}
@@ -69,7 +72,7 @@ function paint(canvas,img){
 // and pose transform edited in the calibration studio is used in battle.
 function profileFor(canvas,reference,look=null){
  if(!reference?.width||!reference?.height)return null;
- const scale=Math.min(350/reference.height,520/reference.width)*0.65;
+ const scale=Math.min(350/reference.height,520/reference.width)*PRACTICE_SCALE;
  return {source:reference,scale,look};
 }
 function paintTrainingFighter(canvas,img,action,progress,profile){
@@ -87,7 +90,7 @@ function paintTrainingFighter(canvas,img,action,progress,profile){
  ctx.save();
  // The training fighter faces left. X is in facing space just as it is in
  // normal combat and in the studio. Gameplay hitboxes are never shifted.
- ctx.translate(canvas.width/2-authored.x-motion.x,691+bootY+authored.y+motion.y);
+ ctx.translate(canvas.width/2-authored.x-motion.x,PRACTICE_FOOT_Y+bootY+authored.y+motion.y);
  ctx.scale(-1,1);
  try{ctx.drawImage(img,0,0,img.width,img.height,
   -img.width*k/2,-img.height*k,img.width*k,img.height*k);}catch(error){}
@@ -212,5 +215,5 @@ function mount(stage,a,s,cbs){
  home.setAttribute('aria-label','메인 루두스 로비로 돌아가기');home.onclick=cbs.onHome;stage.appendChild(home);
  if(h)animate(a,stage,s.active);
 }
-window.LudusTrainingV2={version:'6.8.0',mount,stop};
+window.LudusTrainingV2={version:'6.9.0',mount,stop,metrics:{scaleFactor:PRACTICE_SCALE,canvasFootY:PRACTICE_FOOT_Y}};
 })();
