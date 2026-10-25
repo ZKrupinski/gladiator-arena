@@ -1,13 +1,13 @@
 {
   "assetSha256": {
     "docs/arena-coop-v58.md": "b4abd8fab0b238c0297acdc6dd528457e9f6e3421d328770b7cd7a39f2d2d6bc",
-    "public/arena-coop-core.js": "7a05f9389c81fbb39986bde6e9592dea97434f1e2039f984886481239e8d64fe",
-    "public/arena-coop.css": "a795a5433f569c7e2545f8d6dc0475caeb6231f88acbbfe1178b22d5eac1bb4f",
-    "public/arena-coop.js": "c533aaa15aaac41a6b6852ec9815644772d8807b67cef50db1d941756d80659c",
-    "public/index.html": "f80bce1dd3cde8f4b2b657a23aa397f42e5eb3d010c6a84fb33b35eab8e174d3",
-    "public/ludus-cards.js": "31d13ef12dfbfaa0bc4be79747bdd3342c7fd357f1d30cbeb6e65bb811b6df32",
+    "public/arena-coop-core.js": "a986c433b9df16cb815400b4d962adc129f69d4c106651cfae96be1c4f3e1f00",
+    "public/arena-coop.css": "ea0705d90d64668b5db09a1cff251b0f2d348371007cfeeadd09fe564eaec5a9",
+    "public/arena-coop.js": "ba3f6aecb97cbeed16b5d4781da2dca08394fc69e87f824292ef5d329fa6cc8d",
+    "public/index.html": "af3ed2a3ef5354f9809dcc44b5580af09619e893fb23938d83dcc9ab5e1afdbf",
+    "public/ludus-cards.js": "1c85e50c1590544c5d1c2b8d475c53173ba181720bcbe910b475076efb686ed0",
     "tests/arena-coop-browser.js": "57312fc1756a276b192ba7a2bd582e3f570031dfbe4d4c81cf8102039b136984",
-    "tests/arena-coop-core.js": "f26af9cbed26f5733404e2f4e8dc06cea8f9950f0c8f1e4b33fdda8dd210ac7a",
+    "tests/arena-coop-core.js": "19010d9d79d579e3d55e1d7297ad7cb915016e81766b8ee226c9a0cd56aab6e3",
     "docs/arena-coop-v59.md": "a8f8137a239ae58710fc845baf74d12aa32dea71dcda458a4f217d1069103c0a",
     "tests/arena-coop-tactics.js": "a18eb76aeb44f801524d6fe89398c712f907942bac733280d2a567687bda84a2",
     "docs/arena-coop-v60.md": "b764b06e10c81c4cd886bc73ea0e23052784276aa6e3828b7b95c9ab1daf2fa6",
@@ -20,12 +20,15 @@
     "docs/combat-shared-v63.md": "2893ea48fa3449fb7ca4fbc33a0ca5fb9a7ab4f6b0acb2b39b6e0b4627479eb1",
     "public/arena-coop-camera.js": "2d89f648bcb68873a1cb3aa1b7319a69c644aa563cce85df4d7151efba9171e9",
     "tests/arena-coop-camera.js": "46f22ed4ad191426b3bf008b2cdb2783a03a7f36d92b9e43d373b351fdaa0584",
-    "docs/arena-coop-camera-v64.md": "b7b9f3dc301165c2f6013cb09885e0aa93ed0ea9aa00e403945ad6a04d61419c"
+    "docs/arena-coop-camera-v64.md": "b7b9f3dc301165c2f6013cb09885e0aa93ed0ea9aa00e403945ad6a04d61419c",
+    "public/arena-portrait-fit.js": "155a05c5f453130cb6eb3d6609d41f5aa63098c437c1db572c12aefcacae64de",
+    "tests/arena-coop-ux.js": "9f7348baa6b22858133b5fba3968e15483478a1a9b6aa62380df4acba14522e9",
+    "docs/arena-coop-ux-v65.md": "b92dfbc6961fd7a872d20f3acd180b40a2bda45337c8cc71a3354a0c9c89b093"
   },
   "baseCommit": "958cf8eef8e5dae84cb70e065d371b50aa19586b",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "concordia-camera-v64-20261025",
+  "releaseId": "concordia-portrait-command-v65-20261025",
   "releaseProtocol": "spartacus-uploader-v1",
-  "previousReleaseId": "combat-shared-v63-20261025"
+  "previousReleaseId": "concordia-camera-v64-20261025"
 }
