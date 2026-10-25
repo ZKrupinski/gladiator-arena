@@ -3473,16 +3473,14 @@ $('#classSubtitle').textContent=DATA[$('#classChoice').value].eng;
 /* Visual Ludus adapter; the existing career state remains authoritative. */
 // Independent simultaneous team match. Practice and sequential duel progress stay separate.
 function coopPreview(indices){
- const team=indices.map(i=>CAREER.roster[i]).filter(Boolean);if(team.length!==5)return [];
- const average=key=>team.reduce((sum,h)=>sum+ArenaBalance.heroStats(h,DATA[h.cls],equipmentBonus(h))[key],0)/5;
- const level=Math.max(1,Math.round(team.reduce((n,h)=>n+careerLevel(h),0)/5));
- return ['murmillo','retiarius','thraex','murmillo','thraex'].map((cls,i)=>{
-  const stage=level>=20?5:level>=15?4:level>=10?3:level>=5?2:1;
-  const growthType=cls+'_a',look=growthType+'_L'+stage;
-  return {name:['방패장 루키우스','포획수 네로','검객 카시우스','호위병 티투스','돌격수 마르쿠스'][i],cls,level,stage,growthType,look,visualId:look,
-   combat:{hp:Math.round(average('hp')*(cls==='murmillo'?1.12:.94)),atk:Math.round(average('atk')*(cls==='thraex'?1.04:.96)),
-    move:average('move'),armor:cls==='murmillo'?.2:.1,parry:Math.min(.3,average('parry'))},injury:0,fatigue:0};
- });
+ // Generate draft rivals from the very same equipped stats used by live 5vs5.
+ // Fighter level changes only the cosmetic stage, not battle strength.
+ const team=indices.map(i=>{
+  const h=CAREER.roster[i];if(!h)return null;
+  return {...h,index:i,combat:window.LudusBridge?.combatStats?.(i)};
+ }).filter(h=>h?.combat);
+ if(team.length!==5)return [];
+ return window.ArenaCoopMatch?.build?.(team)||[];
 }
 function startCoopMatch(indices){
  if(!CAREER_SELECTING||window.ArenaCoop?.isOpen()||!window.ArenaCoop)return false;
@@ -3490,6 +3488,7 @@ function startCoopMatch(indices){
  const heroes=indices.map(i=>CAREER.roster[i]);
  const allies=heroes.map((h,j)=>({...h,index:indices[j],look:window.LudusBridge.appearanceKey(indices[j]),combat:window.LudusBridge.combatStats(indices[j])}));
  const enemies=coopPreview(indices),averageLevel=Math.round(heroes.reduce((n,h)=>n+careerLevel(h),0)/5);
+ if(enemies.length!==5){CAREER.message='5vs5 대진 데이터를 구성하지 못했습니다. 화면을 새로고침한 후 다시 시도하세요.';return false;}
  // Charge participation once before combat, including reloads or abandoned tabs.
  const oldRuns=CAREER.coopRuns||0,oldFatigue=heroes.map(h=>h.fatigue||0);
  heroes.forEach(h=>{h.fatigue=Math.min(100,(h.fatigue||0)+8);});CAREER.coopRuns=oldRuns+1;
@@ -3698,6 +3697,6 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=practice-route-v26"></script><script src="practice-scale-published.js?v=true-size-v54"></script><script src="practice-scale-profiles.js?v=atlas-cell-v63"></script><script src="practice-visual-profiles.js?v=motion-timeline-v53&qa=v57"></script><script src="ludus-practice.js?v=cinema-restore-v63"></script><script src="ludus-training-runtime.js?v=motion-timeline-v53"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=portrait-fullteam-v17"></script><script src="ludus-armory-live.js?v=portrait-fullteam-v17"></script><script src="arena-coop-core.js?v=concordia-v65"></script><script src="arena-coop-camera.js?v=concordia-camera-v64"></script><script src="arena-coop.js?v=portrait-command-v65"></script><script src="ludus-cards.js?v=enemy-facing-v65"></script>
+<script src="ludus-scene.js?v=practice-route-v26"></script><script src="practice-scale-published.js?v=true-size-v54"></script><script src="practice-scale-profiles.js?v=atlas-cell-v63"></script><script src="practice-visual-profiles.js?v=motion-timeline-v53&qa=v57"></script><script src="ludus-practice.js?v=cinema-restore-v63"></script><script src="ludus-training-runtime.js?v=motion-timeline-v53"></script><script src="ludus-doctore-anim.js?v=8"></script><script src="ludus-approved-scenes.js?v=portrait-fullteam-v17"></script><script src="ludus-armory-live.js?v=portrait-fullteam-v17"></script><script src="arena-coop-core.js?v=concordia-balance-v66"></script><script src="arena-coop-match.js?v=concordia-balance-v66"></script><script src="arena-coop-camera.js?v=concordia-camera-v64"></script><script src="arena-coop.js?v=portrait-command-v65"></script><script src="ludus-cards.js?v=enemy-facing-v65"></script>
 
 </body></html>
