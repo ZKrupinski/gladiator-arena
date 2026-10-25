@@ -8,6 +8,7 @@ on:
       - public/ludus-training-doctore.css
       - public/ludus-training-clean.css
       - public/ludus-training-runtime.js
+      - public/ludus-training-risk.js
       - public/ludus-doctore-anim.js
       - public/assets/ludus/training_blank_v74.webp
       - scripts/qa_ludus_training_dialogue_browser.mjs
@@ -42,6 +43,7 @@ jobs:
           expected_code=hashlib.sha256(pathlib.Path('public/ludus-approved-scenes.js').read_bytes()).hexdigest()
           expected_style=hashlib.sha256(pathlib.Path('public/ludus-training-clean.css').read_bytes()).hexdigest()
           expected_runtime=hashlib.sha256(pathlib.Path('public/ludus-training-runtime.js').read_bytes()).hexdigest()
+          expected_risk=hashlib.sha256(pathlib.Path('public/ludus-training-risk.js').read_bytes()).hexdigest()
           for i in range(18):
               try:
                   headers={'User-Agent':'ArenaTrainerDialogueQA','Cache-Control':'no-cache'}
@@ -50,19 +52,22 @@ jobs:
                           return r.read()
                   livebg=fetch('/assets/ludus/training_blank_v74.webp?painted-v74')
                   html=fetch('/?trainer-dialogue='+str(i)).decode('utf-8')
-                  code_bytes=fetch('/ludus-approved-scenes.js?v=training-bitmap-v74')
-                  style_bytes=fetch('/ludus-training-clean.css?v=training-bitmap-v74')
+                  code_bytes=fetch('/ludus-approved-scenes.js?v=innate-repetition-v72')
+                  style_bytes=fetch('/ludus-training-clean.css?v=innate-repetition-v72')
                   code=code_bytes.decode('utf-8')
                   style=style_bytes.decode('utf-8')
-                  runtime_bytes=fetch('/ludus-training-runtime.js?v=fighter-ground-v74')
+                  runtime_bytes=fetch('/ludus-training-runtime.js?v=innate-repetition-v72')
                   runtime=runtime_bytes.decode('utf-8')
+                  risk_bytes=fetch('/ludus-training-risk.js?v=innate-repetition-v72')
                   if (hashlib.sha256(livebg).hexdigest()==expect and
-                    'ludus-approved-scenes.js?v=training-bitmap-v74' in html and
-                    'ludus-training-clean.css?v=training-bitmap-v74' in html and
+                    'ludus-approved-scenes.js?v=innate-repetition-v72' in html and
+                    'ludus-training-clean.css?v=innate-repetition-v72' in html and
                     hashlib.sha256(code_bytes).hexdigest()==expected_code and
                     hashlib.sha256(style_bytes).hexdigest()==expected_style and
                     hashlib.sha256(runtime_bytes).hexdigest()==expected_runtime and
-                    'ludus-training-runtime.js?v=fighter-ground-v74' in html and
+                    hashlib.sha256(risk_bytes).hexdigest()==expected_risk and
+                    'ludus-training-risk.js?v=innate-repetition-v72' in html and
+                    'ludus-training-runtime.js?v=innate-repetition-v72' in html and
                     'training_blank_v74.webp' in code and
                     'DOCTORE_SCRIPT' in code and
                     'la-speech-paper-restoration' not in code and
