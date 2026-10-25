@@ -168,6 +168,7 @@ function mount(stage,a,s,cbs){
  '<div class="lt-cost"><span>보유 금화</span><b>◉ '+Number(s.gold||0).toLocaleString('ko-KR')+' D</b></div></div>'+
  '<div class="lt-guidance">'+(!h?'검투사를 먼저 영입하세요.':Number(s.gold)<Number(a.trainingCost?.(s.active,cbs.tiles[selected].stat)||12)?'금화가 부족합니다.':'아래 훈련 항목을 선택한 뒤 훈련 시작을 누르세요.')+'</div>';
  stage.appendChild(panel);
+ const heading=document.createElement('div');heading.className='lt-choice-heading';heading.textContent='훈련 항목 선택';stage.appendChild(heading);
  if(h)paint(panel.querySelector('#ltInfoPortrait'),a.portrait(s.active));
  const fighter=document.createElement('div');fighter.className='lt-fighter-zone';
  fighter.setAttribute('aria-label',h?h.name+' · 교관을 바라보고 제자리에서 공격 연습 중':'훈련 중인 검투사 없음');
@@ -194,14 +195,16 @@ function mount(stage,a,s,cbs){
   b.className='lt-tile-button';b.type='button';
   b.style.left=x+'px';b.style.top=y+'px';b.style.width=w+'px';
   b.setAttribute('aria-label',cbs.tiles[i].name);
+  b.innerHTML='<strong>'+E(cbs.tiles[i].name)+'</strong><small>'+E(cbs.tiles[i].help)+'</small>';
   b.setAttribute('aria-pressed',String(i===selected));
   b.onclick=()=>cbs.onTrainingChoice(i);
   stage.appendChild(b);
   if(i===selected){const frame=document.createElement('div');frame.className='lt-tile-selected';frame.style.cssText='left:'+x+'px;top:'+y+'px;width:'+w+'px';stage.appendChild(frame);}
  });
  const start=document.createElement('button');start.className='lt-start-button';start.type='button';
- start.style.cssText='left:1243px;top:721px;width:393px;height:154px';
+ start.style.cssText='left:1250px;top:734px;width:406px;height:146px';
  start.setAttribute('aria-label',cbs.tiles[selected].name+' 훈련 시작');
+ start.textContent='훈련 시작';
  start.disabled=!h;
  start.onclick=cbs.onTrain;stage.appendChild(start);
  const home=document.createElement('button');home.className='la-home-nav lt-home';

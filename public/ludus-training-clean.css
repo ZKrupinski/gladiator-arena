@@ -1,0 +1,49 @@
+/* Training v69: original painted frames, a single layer of live content. */
+.la-stage.training .lt-info,
+.la-stage.training .lt-selected-unit,
+.la-stage.training .lt-stat-list>div,
+.la-stage.training .lt-effect,
+.la-stage.training .lt-roster,
+.la-stage.training .la-gold,
+.la-stage.training .la-training-speech{
+ background:transparent!important;border:0!important;outline:0!important;
+ box-shadow:none!important;border-radius:0!important;
+}
+.la-stage.training .lt-info{left:1252px;top:78px;width:395px;height:540px;padding:0;display:block}
+.la-stage.training .lt-info h2{position:absolute;left:8px;top:7px;width:237px;height:37px;padding:0;border:0;font:900 23px/37px 'Noto Sans KR',sans-serif}
+.la-stage.training .lt-selected-unit{position:absolute;left:18px;top:64px;width:345px;height:102px;padding:0}
+.la-stage.training .lt-selected-unit canvas{width:98px;height:102px}
+.la-stage.training .lt-info-head{position:absolute;left:20px;top:174px;width:350px;margin:0;border:0;font-size:17px}
+.la-stage.training .lt-stat-list{position:absolute;left:20px;top:202px;width:350px;gap:5px 14px}
+.la-stage.training .lt-stat-list>div{min-height:35px;padding:2px 0;border-bottom:1px solid #bd925c40!important;gap:5px}
+.la-stage.training .lt-stat-list>div span{font-size:15px}
+.la-stage.training .lt-stat-list small{display:block;font-size:11px}
+.la-stage.training .lt-stat-list strong{font-size:26px}
+.la-stage.training .lt-stat-list+.lt-info-head{left:8px;top:332px;width:210px;height:37px;font:900 23px/37px 'Noto Sans KR',sans-serif}
+.la-stage.training .lt-effect{position:absolute;left:22px;top:379px;width:344px;padding:0}
+.la-stage.training .lt-effect p{font-size:15px;margin:5px 0 8px}
+.la-stage.training .lt-cost{padding:5px 0;font-size:14px}
+.la-stage.training .lt-guidance{position:absolute;left:20px;top:507px;width:350px;font-size:12px;line-height:1.3}
+.la-stage.training .lt-no-unit{position:absolute;left:20px;top:70px;width:345px}
+.la-stage.training .lt-roster{left:25px;top:780px;width:1190px;height:132px;padding:0 10px;gap:16px}
+.la-stage.training .lt-roster-title{width:200px}
+.la-stage.training .lt-roster-title strong{font-size:23px}
+.la-stage.training .lt-roster-items>button{background:transparent;border:2px solid transparent;border-radius:0;box-shadow:none}
+.la-stage.training .lt-roster-items>button.selected{border-bottom-color:#ffe3a0;background:#f6c76d12;box-shadow:none}
+.la-stage.training .lt-roster-items>button:focus-visible{outline:2px solid #ffe3a0;outline-offset:-2px}
+.la-stage.training .lt-step button{background:transparent;border:0;box-shadow:none;font-size:27px}
+.la-stage.training .lt-choice-heading{position:absolute;left:500px;top:573px;width:380px;height:30px;z-index:10;text-align:center;font:900 25px/30px 'Noto Sans KR',sans-serif;color:#ffeac3;text-shadow:0 2px 3px #000}
+.la-stage.training .lt-tile-button{color:#fff0cf;text-shadow:0 2px 3px #180805}
+.la-stage.training .lt-tile-button strong{position:absolute;left:0;right:0;top:89px;font:900 24px/30px 'Noto Sans KR',sans-serif}
+.la-stage.training .lt-tile-button small{position:absolute;left:0;right:0;top:123px;font:700 17px/22px 'Noto Sans KR',sans-serif}
+.la-stage.training .lt-start-button{color:#fff0c5;font:900 45px 'Noto Sans KR',sans-serif;text-shadow:0 3px 4px #310a07}
+.la-stage.training .lt-tile-selected{border:0;box-shadow:none}
+.la-stage.training .lt-tile-button[aria-pressed=true]{box-shadow:inset 0 -5px #fff0ad;background:linear-gradient(0deg,#ffd46d20,transparent 65%)}
+.la-stage.training .lt-tile-button:focus-visible,.la-stage.training .lt-start-button:focus-visible{outline:2px solid #fff0b8;outline-offset:-5px}
+.la-stage.training .la-training-speech{left:521px;top:110px;width:300px;min-height:0;height:99px;max-height:none;padding:0;z-index:7}
+.la-stage.training .la-training-speech::before{display:none}
+.la-stage.training .la-speech-badge{display:none}
+.la-stage.training .la-speech-lines{font:800 15px/1.3 'Noto Sans KR',sans-serif;word-break:keep-all;overflow-wrap:normal}
+.la-stage.training .la-gold{left:1338px!important;top:18px!important;width:204px;height:37px;text-align:right;padding:0 8px;font:900 30px/37px Georgia,serif;box-sizing:border-box}
+.la-stage.training .la-gold::before{content:'◉';float:left;color:#f0c875;font-size:23px}
+.la-stage.training .lt-home{left:1584px!important;top:7px!important;width:78px!important;height:69px!important;min-height:0!important;background:transparent!important;border:0!important;box-shadow:none!important;font-size:0!important;color:transparent!important;padding:0!important}
