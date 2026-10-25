@@ -174,7 +174,7 @@ function draft(enemy,painter){
  '<div class="lc-matchup"><div><small>아군 전력</small><strong>'+safe(pick?pick.name:'선택 필요')+' · '+strength+'</strong></div><span>VS</span><div><small>상대 전술 · '+safe(rivalRole)+'</small><strong>'+safe(ready?(coop?'상대 검투사 5명':enemy.name):'선택 완료 시 공개')+'</strong></div></div>'+
  '<div class="lc-mode-note">'+safe(matchSummary)+'</div>'+
  '<div class="lc-buttons lc-draft-actions"><button id="lcDraftCancel">선택 취소</button><button class="lc-emphasis" id="lcDeploy" '+(!ready?'disabled':'')+'>⚔ '+(ready?(coop?'5vs5 협동전 시작':matchMode==='1v1'?safe(pick.name)+' 출전':'연속 1:1 대진 '+matchMode+' 시작'):'검투사 '+config.allies+'명 필요')+'</button></div>'+
- '</div></div><div class="lc-hint">'+(coop?'자동 전투 + 집중 공격 / 엄호 / 총공세 명령 · 출전 피로 8 · 결과에 따라 경험치·보상·부상 저장 · 일반 결투 진행도 별도':'현재 출전한 검투사는 기존 전투 조작 그대로 사용 · 승자는 남은 체력으로 다음 상대와 싸움 · 부상 80 / 피로 80 이상 출전 불가')+'</div></section>';
+ '</div></div><div class="lc-hint">'+(coop?'자동 전투 · 아군 썸네일 터치=엄호 / 적 썸네일 터치=집중 공격 · 방어진형/양익 돌파/총공세 · 출전 피로 8 · 결과에 따라 경험치·보상·부상 저장 · 일반 결투 진행도 별도':'현재 출전한 검투사는 기존 전투 조작 그대로 사용 · 승자는 남은 체력으로 다음 상대와 싸움 · 부상 80 / 피로 80 이상 출전 불가')+'</div></section>';
  const old=$('.lc-gallery .lc-card-grid');if(old)scrollPosition=old.scrollTop;
  reveal(host,'draft');
  const root=$('.lc-screen'),grid=root.querySelector('.lc-card-grid');if(grid)grid.scrollTop=scrollPosition;
