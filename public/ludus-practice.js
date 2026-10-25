@@ -673,18 +673,22 @@ function actorPose(unit){
 }
 function calibration(unit,frame){
  const profiles=root.PracticeScaleProfiles;
- const appearance=visualLook(unit);
- const scaleFactor=profiles?.scale?.(appearance)||1;
+ const appearance=visualLook(unit),factor=profiles?.scale?.(appearance)||1;
  const idle=api()?.practiceFrame?.(unit,'idle')?.canvas||rawSprite(unit,'idle')||frame;
  const referenceH=idle?.height||idle?.naturalHeight||0;
  if(!referenceH)return null;
- if(unit._bodyScale&&unit._bodyScale.relative===scaleFactor&&
-    unit._bodyScale.reference===idle)return unit._bodyScale;
- // Standard duel uses the complete authored frame. Previously dividing by
- // alpha bounds artificially enlarged characters with transparent margins.
- // Preserve camera depth and the 31 artist-authored size profiles, only.
+ const basis=api()?.practiceNominal?.(unit),w=basis?.width||0,h=basis?.height||0;
+ if(unit._bodyScale&&unit._bodyScale.relative===factor&&
+    unit._bodyScale.reference===idle&&unit._bodyScale.basisW===w&&unit._bodyScale.basisH===h)
+  return unit._bodyScale;
+ // All 12 isolated poses (including the smallest trimmed idle cell) share
+ // the exact original normal-duel source-cell scale, never frame height.
+ const sourcePixels=w>0&&h>0?profiles?.cellPixels?.(appearance,w,h,PRACTICE_GLADIATOR_REFERENCE):0;
+ const pixels=sourcePixels||
+  profiles?.framePixels?.(appearance,referenceH,PRACTICE_GLADIATOR_REFERENCE)||
+  PRACTICE_GLADIATOR_REFERENCE/referenceH*factor;
  const visible=alphaBounds(idle);
- return unit._bodyScale={pixels:profiles?.framePixels?.(appearance,referenceH,PRACTICE_GLADIATOR_REFERENCE)??(PRACTICE_GLADIATOR_REFERENCE/referenceH*scaleFactor),relative:scaleFactor,
+ return unit._bodyScale={pixels,relative:factor,basisW:w,basisH:h,
   appearance:appearance||'special',refH:visible?.h||referenceH,
   reference:idle,frameH:referenceH};
 }
