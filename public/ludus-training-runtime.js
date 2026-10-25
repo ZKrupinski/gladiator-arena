@@ -155,6 +155,7 @@ function mount(stage,a,s,cbs){
  const h=s.roster[s.active],stats=h?.stats||{};
  const statsList=[['STR','공격',stats.str||0],['AGI','민첩',stats.agi||0],['END','방어·체력',stats.end||0],['FOCUS','기술',stats.focus||0]];
  const selected=cbs.selectedTraining||0;
+ const risk=h?window.LudusTrainingRisk?.quote(h,cbs.tiles[selected].stat):null;
  const details=h?'<div class="lt-selected-unit"><canvas width="84" height="91" id="ltInfoPortrait"></canvas>'+
  '<div><strong>'+E(h.name)+'</strong><small>'+E(names[h.cls]||h.cls)+' · Lv.'+(Number(h.level)||1)+'</small>'+
  '<small>경험치 '+Number(h.xp||0)+' · 부상 '+Number(h.injury||0)+'</small></div></div>':
@@ -167,9 +168,11 @@ function mount(stage,a,s,cbs){
  '<div class="lt-info-head">훈련 효과</div><div class="lt-effect">'+
  '<strong>'+E(cbs.tiles[selected].name)+'</strong>'+
  '<p>'+E(cbs.tiles[selected].help)+'</p>'+
+ '<div class="lt-risk-row '+(risk?.percent?'lt-risk-active':'')+'" role="status" aria-label="선택 능력치 훈련횟수 및 실패 확률">'+
+ '<span>누적 훈련 '+Number(risk?.attempts||0)+'회</span><b>실패 확률 '+Number(risk?.percent||0)+'%</b></div>'+
  '<div class="lt-cost"><span>훈련 비용</span><b>◉ '+Number(a.trainingCost?.(s.active,cbs.tiles[selected].stat)||12).toLocaleString('ko-KR')+' D</b></div>'+
  '<div class="lt-cost"><span>보유 금화</span><b>◉ '+Number(s.gold||0).toLocaleString('ko-KR')+' D</b></div></div>'+
- '<div class="lt-guidance">'+(!h?'검투사를 먼저 영입하세요.':Number(s.gold)<Number(a.trainingCost?.(s.active,cbs.tiles[selected].stat)||12)?'금화가 부족합니다.':'아래 훈련 항목을 선택한 뒤 훈련 시작을 누르세요.')+'</div>';
+ '<div class="lt-guidance">'+(!h?'검투사를 먼저 영입하세요.':Number(s.gold)<Number(a.trainingCost?.(s.active,cbs.tiles[selected].stat)||12)?'금화가 부족합니다.':risk?.percent?'실패하면 훈련비만 소모되며 능력치·경험치는 오르지 않습니다.':'아래 훈련 항목을 선택한 뒤 훈련 시작을 누르세요.')+'</div>';
  stage.appendChild(panel);
  const heading=document.createElement('div');heading.className='lt-choice-heading';heading.textContent='훈련 항목 선택';stage.appendChild(heading);
  if(h)paint(panel.querySelector('#ltInfoPortrait'),a.portrait(s.active));
@@ -197,7 +200,9 @@ function mount(stage,a,s,cbs){
   const b=document.createElement('button');
   b.className='lt-tile-button';b.type='button';
   b.style.left=x+'px';b.style.top=y+'px';b.style.width=w+'px';
-  b.setAttribute('aria-label',cbs.tiles[i].name);
+  const tileRisk=h?window.LudusTrainingRisk?.quote(h,cbs.tiles[i].stat):null;
+   b.setAttribute('aria-label',cbs.tiles[i].name+' · 누적 '+Number(tileRisk?.attempts||0)+'회 · 실패 확률 '+Number(tileRisk?.percent||0)+'%');
+   b.title=cbs.tiles[i].name+' · '+Number(tileRisk?.attempts||0)+'회 훈련 · 실패 '+Number(tileRisk?.percent||0)+'%';
   b.innerHTML='<strong>'+E(cbs.tiles[i].name)+'</strong><small>'+E(cbs.tiles[i].help)+'</small>';
   b.setAttribute('aria-pressed',String(i===selected));
   b.onclick=()=>cbs.onTrainingChoice(i);
@@ -215,5 +220,5 @@ function mount(stage,a,s,cbs){
  home.setAttribute('aria-label','메인 루두스 로비로 돌아가기');home.onclick=cbs.onHome;stage.appendChild(home);
  if(h)animate(a,stage,s.active);
 }
-window.LudusTrainingV2={version:'6.9.1',mount,stop,metrics:{scaleFactor:PRACTICE_SCALE,canvasFootY:PRACTICE_FOOT_Y}};
+window.LudusTrainingV2={version:'7.2.0',mount,stop,metrics:{scaleFactor:PRACTICE_SCALE,canvasFootY:PRACTICE_FOOT_Y}};
 })();
