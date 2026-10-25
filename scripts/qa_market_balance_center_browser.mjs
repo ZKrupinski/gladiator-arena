@@ -36,9 +36,9 @@ try{
      maskPointer:getComputedStyle($('.gm-wallet-legacy-mask')).pointerEvents};
    });
    assert.equal(metrics.amount,'3,200','initial balance must always be visible');
-   assert.ok(metrics.visible&&metrics.x>1120&&metrics.x<1170&&metrics.y>=0&&metrics.y<25,JSON.stringify(metrics));
-   assert.ok(metrics.width>=410&&metrics.height>=75&&metrics.amountSize>=45,JSON.stringify(metrics));
-   assert.ok(metrics.visualAmountPx>=17,'mobile landscape number remains readable');
+   assert.ok(metrics.visible&&metrics.x>=1325&&metrics.x<=1350&&metrics.y>=15&&metrics.y<=40,JSON.stringify(metrics));
+   assert.ok(metrics.width>=205&&metrics.height>=40&&metrics.amountSize>=30,JSON.stringify(metrics));
+   assert.ok(metrics.visualAmountPx>=12,'mobile landscape number remains readable');
    assert.ok(metrics.amountFits,'balance must fit its plaque');
    console.log('MARKET_GEOMETRY_DEBUG '+JSON.stringify(metrics));
    assert.deepEqual(Object.values(metrics.overlaps),[0,0,0,0,0,0],'wallet must not obscure any market button');
@@ -70,7 +70,7 @@ try{
    const emptyVisual=await page.evaluate(()=>[0,1,2].map(i=>{
     const el=document.querySelector('#gmEmpty'+i),rect=el.getBoundingClientRect(),
       root=document.querySelector('#gmStage').getBoundingClientRect(),scale=root.width/1672;
-    return {hidden:el.hidden,background:getComputedStyle(el).backgroundImage,
+    return {hidden:el.hidden,background:getComputedStyle(el).backgroundImage,display:getComputedStyle(el).display,
      x:(rect.left-root.left)/scale,y:(rect.top-root.top)/scale,
      w:rect.width/scale,h:rect.height/scale};
    }));
@@ -78,10 +78,11 @@ try{
     'only the purchased fighter must disappear');
    assert.ok(!emptyVisual[0].background.includes('market_keyvisual_no_merchant.webp'),
     'sold backdrop must never sample or enlarge the original fighter-containing image');
-   assert.ok(emptyVisual[0].background.includes('gradient'),
-    'sold backdrop uses clean shaded Roman fabric, not a corrupted screenshot');
-   assert.ok(emptyVisual[0].y<=260&&emptyVisual[0].h>=260,
-    'mask the actual character region, not only the stats: '+JSON.stringify(emptyVisual));
+   assert.ok(emptyVisual.every(v=>v.display==='none'),
+    'v68 clean key art must not be covered by legacy sold-slot paintings: '+JSON.stringify(emptyVisual));
+   const cleanArt=await page.locator('#gmKey').getAttribute('src');
+   assert.ok(cleanArt.includes('market_blank_v68.webp'),
+    'market should render the clean single-layer key art');
    assert.ok(soldBox.y>=525&&soldBox.y<=535&&soldBox.h<=205,
     'sold plaque must cover stats ONLY, not character: '+JSON.stringify(soldBox));
    assert.ok(soldBox.x>=490&&soldBox.x<=495&&soldBox.w<=230);
