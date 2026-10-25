@@ -1,0 +1,71 @@
+name: QA Ludus Recovery Management v68
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - public/ludus-recovery.js
+      - public/ludus-cards.js
+      - public/ludus-cards.css
+      - tests/ludus-recovery-management-v68.cjs
+      - scripts/qa_ludus_recovery_management_browser_v68.mjs
+      - .github/workflows/qa-ludus-recovery-management-v68.yml
+  workflow_dispatch:
+jobs:
+  recovery-management:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Validate syntax and real recovery economy
+        run: |
+          node --check public/index.html || true
+          node --check public/ludus-cards.js
+          node --check public/ludus-recovery.js
+          node --check tests/ludus-recovery-management-v68.cjs
+          node tests/ludus-recovery-management-v68.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve actual game build
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/ludus-care-qa.log 2>&1 &
+          sleep 3
+      - name: Verify recovery states, treatment buttons and header geometry on multiple devices
+        run: node scripts/qa_ludus_recovery_management_browser_v68.mjs
+      - name: Capture preview screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ludus-recovery-management-v68
+          path: /tmp/ludus-recovery-v68-*.png
+          if-no-files-found: ignore
+      - name: Verify exact deployed HTML, scripts and styles on Cloudflare
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,pathlib,time,urllib.request
+          site='https://gladiator-arena-git.pages.dev'
+          paths=['ludus-recovery.js','ludus-cards.js','ludus-cards.css']
+          expected={x:hashlib.sha256((pathlib.Path('public')/x).read_bytes()).hexdigest() for x in paths}
+          headers={'User-Agent':'LudusRecovery68Verification','Cache-Control':'no-cache'}
+          def get(path):
+              with urllib.request.urlopen(urllib.request.Request(site+path,headers=headers),timeout=18) as r:return r.read()
+          for attempt in range(24):
+              try:
+                  html=get('/?ludus-recovery-v68='+str(attempt)).decode('utf-8')
+                  ok=('ludus-recovery.js?v=healing-v68' in html and
+                      'ludus-cards.js?v=recovery-management-v68' in html and
+                      'ludus-cards.css?v=recovery-management-v68' in html)
+                  for name,hash_value in expected.items():
+                      ok=ok and hashlib.sha256(get('/'+name+'?verify-recovery-v68='+str(attempt))).hexdigest()==hash_value
+                  if ok:
+                      print('CLOUDFLARE_LUDUS_RECOVERY_V68_VERIFIED',expected,flush=True)
+                      break
+              except Exception as error:print('Retry deployment',attempt,str(error),flush=True)
+              if attempt==23:raise AssertionError('Cloudflare source does not match this tested commit')
+              time.sleep(10)
+          PY
