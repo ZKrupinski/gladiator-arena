@@ -38,7 +38,7 @@ function drawTrainingSpeech(){
   bubble=document.createElement('aside');bubble.className='la-training-speech';
   bubble.setAttribute('role','status');bubble.setAttribute('aria-live','polite');
   bubble.setAttribute('aria-label','훈련소 교관 대화');
-  bubble.innerHTML='<span class="la-speech-paper-restoration" aria-hidden="true"></span><span class="la-speech-badge"></span><p class="la-speech-lines"></p>';
+  bubble.innerHTML='<span class="la-speech-badge"></span><p class="la-speech-lines"></p>';
   stage.appendChild(bubble);
  }
  bubble.dataset.training=String(selectedTraining);
@@ -99,7 +99,7 @@ function liveFighter(a,s,isTraining){
 }
 function setup(){if(screen)return;screen=document.createElement('section');screen.className='la-screen';screen.hidden=true;screen.setAttribute('aria-label','승인된 루두스 장비실 및 훈련소');screen.innerHTML='<div class="la-stage"><img class="la-key" draggable="false" alt=""><div class="la-notice" role="status" hidden></div><div class="la-pose"></div></div><div class="la-orient">가로 화면에서 더 크게 볼 수 있습니다.<button type="button">작은 화면으로 계속</button></div>';document.body.appendChild(screen);stage=$('.la-stage');$('.la-orient button').addEventListener('click',()=>screen.classList.add('la-allow-portrait'));addEventListener('resize',fit,{passive:true});document.addEventListener('keydown',e=>{if(screen.hidden)return;if(e.key==='Escape'){e.preventDefault();goHome();}else if(e.key==='ArrowLeft'){e.preventDefault();moveHero(-1);}else if(e.key==='ArrowRight'){e.preventDefault();moveHero(1);}else if(e.key==='Enter'&&room==='training'){e.preventDefault();actionTraining();}});fit();}
 function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state();if(!s)return;const h=s.roster[s.active],training=room==='training';stage.className='la-stage '+room;
- const key=$('.la-key');const src=training?'assets/ludus/training_blank_v71.webp':'assets/ludus/armory_approved.webp';if(!key.src.endsWith(src))key.src=src;
+ const key=$('.la-key');const src=training?'assets/ludus/training_blank_v74.webp':'assets/ludus/armory_approved.webp';if(!key.src.endsWith(src))key.src=src;
  // Halt the old RAF before replacing this scene's character node.
  window.LudusDoctoreAnim?.unmount?.();
  // Keep backdrop and transient NPC pose nodes, replace everything else atomically.
