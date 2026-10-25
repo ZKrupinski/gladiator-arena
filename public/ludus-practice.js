@@ -333,7 +333,7 @@ function beginRemoval(unit){
 const FALL_DURATION=.72;
 function deathFrame(unit,clock){
  const elapsed=Math.max(0,(Number(clock)||0)-(unit.deathAt??(Number(clock)||0)));
- return Math.min(7,Math.floor(elapsed*10));
+ return Math.min(7,Math.floor((elapsed+1e-6)*10));
 }
 function selectedDeathArt(unit){
  // Prioritize the dedicated approved defeat frame; special art falls back
