@@ -7,7 +7,7 @@
   const sim=C.create(allies,enemies,{seed}),host=document.createElement('section');
   host.className='arena-coop';host.setAttribute('aria-label','5vs5 실시간 협동전투');
   const previousFocus=document.activeElement,oldOverflow=document.body.style.overflow;
-  const state={sim,host,frame:0,last:0,eventId:0,fx:[],paused:false,settled:false,selected:null};current=state;
+  const state={sim,host,frame:0,last:0,eventId:0,fx:[],paused:false,settled:false,selected:null,flash:0,nextCinematicAt:0,cinematic:null,focusFrame:null};current=state;
   host.innerHTML='<header class="coop-header"><div><small>CONCORDIA · TEAM ARENA</small><h1>5 vs 5 협동전투</h1></div><div class="coop-clock" aria-label="남은 시간">2:00</div><div class="coop-header-actions"><button data-pause>일시정지</button><button data-exit>철수</button></div></header>'+
    '<div class="coop-scoreboard"><div class="coop-team coop-allies" aria-label="아군"></div><div class="coop-versus">VS</div><div class="coop-team coop-enemies" aria-label="적군"></div></div>'+
    '<div class="coop-field"><canvas width="1280" height="720" aria-label="열 명이 동시에 싸우는 전장. 아래와 위의 버튼으로 명령할 수 있습니다."></canvas><div class="coop-callout" role="status"></div><div class="coop-pause-layer" hidden><strong>전투 일시정지</strong><span>명령과 전투 시간이 함께 멈춥니다.</span><button data-resume>계속하기</button></div></div>'+
@@ -75,11 +75,16 @@
    const pose=u.dead?'death':u.hit>0?'hit':u.guard>0?'guard':u.attack||u.swing>0?'attack':u.moving?'walk':'idle';
    const progress=u.dead?Math.min(1,(sim.time-u.deathAt)/.8):u.attack? .4*(1-u.attack.remaining/u.attack.total):u.swing>0?.4+.6*(1-u.swing/.4):pose==='hit'?1-u.hit/.24:(sim.time*.8)%1;
    const action=pose==='attack'?(u.cls==='retiarius'?'thrust':'slash'):pose;
-   const look=u.look,profile=root.PracticeVisualProfiles?.resolve(look,action)||{x:0,y:0,scale:1};
+   const look=root.PracticeScaleProfiles?.look?.(u,root.LudusBridge?.state?.()?.roster)||u.look,
+    profile=root.PracticeVisualProfiles?.resolve(look,action)||{x:0,y:0,scale:1};
    const motion=root.PracticeVisualProfiles?.sampleMotion(profile,progress)||{x:0,y:0};
    const tick=pose==='death'?Math.floor(progress*7):pose==='attack'?Math.floor(progress*7):sim.time*8;
    const image=art(u,pose,tick),idle=art(u,'idle',0);if(!image||!idle?.height)return;
-   const z=.60,k=202/idle.height*z*(root.PracticeScaleProfiles?.scale(look)||1)*profile.scale;
+   const z=.60,k=(root.PracticeScaleProfiles?.framePixels?.(look,idle.height,202)||
+    202/idle.height*(root.PracticeScaleProfiles?.scale?.(look)||1))*z*profile.scale;
+   const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+   const body=root.ArenaMotion?.pose?.(u,sim.time,reduced)||{x:0,y:0,tilt:0};
+   const impact=root.ArenaMotion?.visual?.(u,reduced,true)||{scale:1,flash:0};
    const frame=root.LudusBridge.practiceFrame(u,pose),px=frame?.canvas===image&&Number.isFinite(frame.pivotX)?frame.pivotX:image.width/2,py=frame?.canvas===image&&Number.isFinite(frame.footY)?frame.footY:image.height;
    ctx.save();ctx.translate(u.x+(profile.x+motion.x)*z*u.face,u.y+((root.PracticeScaleProfiles?.foot(look)||0)+profile.y+motion.y)*z);
    ctx.scale(u.face,1);
