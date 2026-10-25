@@ -23,11 +23,11 @@ try{
    select:i=>{s.active=i;LudusCardScenes.renderRoster();},
    heal:()=>{const h=s.roster[s.active],q=LudusRecovery.healQuote(h);
     if(s.gold<q.gold||s.glory<q.glory)return '재화 부족';
-    s.gold-=q.gold;s.glory-=q.glory;h.injury=0;h.severeInjury=false;
+    s.gold-=q.gold;s.glory-=q.glory;h.injury=0;h.severeInjury=false;LudusRecovery.recovered(h);
     LudusCardScenes.renderRoster();return '치료 완료';},
    rest:()=>{const h=s.roster[s.active],q=LudusRecovery.restQuote(h);
     if(s.gold<q.gold)return '금화 부족';
-    s.gold-=q.gold;h.fatigue=Math.max(0,h.fatigue-55);
+    s.gold-=q.gold;h.fatigue=Math.max(0,h.fatigue-55);LudusRecovery.recovered(h);
     LudusCardScenes.renderRoster();return '휴식 완료';},
    market:()=>{}
   };
@@ -57,6 +57,20 @@ try{
  await page.locator('.lc-fighter-card[data-unit="3"]').click();
  const severe=await page.locator('#lcHeal').textContent();
  assert(severe.includes('중상 치료')&&severe.includes('✥ 17'),'severe treatment needs gold AND honor');
+ // Reproduce the screenshot: 684 D cannot pay the 800 D serious surgery.
+ await page.evaluate(()=>{window.__recoveryState.gold=684;LudusCardScenes.renderRoster()});
+ assert.equal(await page.locator('#lcHeal').isEnabled(),true,
+  'insufficient funds must not silently disable the treatment button');
+ const noFundsBefore=await page.evaluate(()=>({gold:__recoveryState.gold,glory:__recoveryState.glory}));
+ await page.locator('#lcHeal').click();
+ const shortage=await page.evaluate(()=>({
+  gold:__recoveryState.gold,glory:__recoveryState.glory,
+  guidance:document.querySelector('.lc-care-guidance').textContent
+ }));
+ assert.equal(shortage.gold,noFundsBefore.gold);
+ assert.equal(shortage.glory,noFundsBefore.glory);
+ assert(shortage.guidance.includes('재화 부족'),'click should explain the missing recovery cost');
+ await page.evaluate(()=>{window.__recoveryState.gold=1741;LudusCardScenes.renderRoster()});
  const fundsBefore=await page.evaluate(()=>({gold:window.__recoveryState.gold,glory:window.__recoveryState.glory}));
  await page.locator('#lcHeal').click();
  const fundsAfter=await page.evaluate(()=>({gold:window.__recoveryState.gold,glory:window.__recoveryState.glory,hero:window.__recoveryState.roster[3]}));
@@ -65,6 +79,7 @@ try{
  const screenshots=[];
  for(const size of [{width:1182,height:1150},{width:930,height:1050},{width:768,height:1024},{width:430,height:932},{width:390,height:844},{width:360,height:800}]){
   await page.setViewportSize(size);
+  await page.evaluate(()=>{window.scrollTo(0,0);const sc=document.querySelector('.lc-detail-scroll');if(sc)sc.scrollTop=0});
   const layout=await page.evaluate(()=>{
    const rect=el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};
    const title=rect(document.querySelector('.lc-banner h1'));
@@ -76,17 +91,37 @@ try{
      screenWidth:document.documentElement.scrollWidth,viewport:innerWidth,
      actions:document.querySelectorAll('.lc-care-actions button').length,
      badges:document.querySelectorAll('.lc-care-tags').length,
-     actionWidth:rect(document.querySelector('#lcHeal')).width};
+     actionWidth:rect(document.querySelector('#lcHeal')).width,
+     detail:rect(document.querySelector('.lc-detail')),
+     scrollArea:rect(document.querySelector('.lc-detail-scroll')),
+     dock:rect(document.querySelector('.lc-recovery-dock')),
+     heal:rect(document.querySelector('#lcHeal')),
+     rest:rect(document.querySelector('#lcRest')),
+     dockPosition:getComputedStyle(document.querySelector('.lc-recovery-dock')).position,
+     parentScroll:document.querySelector('.lc-detail').scrollTop,
+     noOldBanner:document.querySelectorAll('.lc-roster-screen .lc-unavailable').length===0,
+     rosterStatus:[...document.querySelectorAll('.lc-fighter-card[data-unit] .lc-care-tags')].map(e=>({height:rect(e).height,top:rect(e).top,visible:getComputedStyle(e).display!=='none'}))};
   });
   assert(!layout.conflict,'header currency/title/back overlap '+JSON.stringify({size,layout}));
   assert(layout.screenWidth<=layout.viewport+2,'horizontal overflow '+JSON.stringify({size,layout}));
   assert(layout.actions===2&&layout.badges===4);
   assert(layout.actionWidth>=90,'recovery buttons too narrow '+JSON.stringify({size,layout}));
+  assert(layout.noOldBanner,'roster should not use draft-style overlapping KO banner');
+  assert(layout.rosterStatus.every(x=>x.visible&&x.height>=18),
+    'injury/rest status must be visible on cards '+JSON.stringify({size,layout}));
+  assert(layout.dock.top>=layout.detail.top-2&&layout.dock.bottom<=layout.detail.bottom+2,
+    'recovery buttons must remain INSIDE the detail panel without inner scrolling '+JSON.stringify({size,layout}));
+  assert(layout.heal.top>=layout.dock.top-2&&layout.heal.bottom<=layout.dock.bottom+2,
+    'treatment button must be fully visible in fixed footer '+JSON.stringify({size,layout}));
+  assert(layout.rest.top>=layout.dock.top-2&&layout.rest.bottom<=layout.dock.bottom+2,
+    'rest button must be fully visible in fixed footer '+JSON.stringify({size,layout}));
+  if(size.width>=768)assert(layout.dock.bottom<=size.height+2,
+    'tablet / landscape recovery controls must appear WITHOUT scrolling '+JSON.stringify({size,layout}));
   if(size.width===1182||size.width===390){
    await page.screenshot({path:'/tmp/ludus-recovery-v68-'+size.width+'.png',fullPage:true});
    screenshots.push(size.width);
   }
  }
  assert.deepEqual(errors,[],'no browser JS errors');
- console.log('LUDUS_RECOVERY_BROWSER_PASS '+JSON.stringify({initial,card,severe,fundsBefore,fundsAfter,screenshots}));
+ console.log('LUDUS_RECOVERY_V69_BROWSER_PASS '+JSON.stringify({initial,card,severe,fundsBefore,fundsAfter,screenshots}));
 }finally{await browser.close()}
