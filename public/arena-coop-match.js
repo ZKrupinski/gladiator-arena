@@ -20,7 +20,7 @@
   const moveAvg=avg(allies,h=>clamp(h?.combat?.move,80,1000));
   const injuryRatio=avg(allies,h=>injuryOf(h)/hpOf(h));
   const fatigueRatio=avg(allies,h=>fatigueOf(h)/100);
-  const level=clamp(Math.round(avg(allies,h=>clamp(h?.level,1,20))),1,20);
+  const level=clamp(Math.round(avg(allies,h=>clamp(h?.level,1,50))),1,50);
   const stage=level>=20?5:level>=15?4:level>=10?3:level>=5?2:1;
   // Stay forgiving when real fighters are injured/exhausted, but give the
   // opposing team enough stamina to make protecting and rallying meaningful.
