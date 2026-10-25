@@ -29,7 +29,7 @@
    for(const u of sim.units){
     const canvas=$('[data-thumb="'+u.id+'"]');if(!canvas)continue;
     const sprite=u.side==='ally'?
-      (root.LudusBridge?.portrait?.(u.index)||root.LudusBridge?.squadSprite?.(u,'idle',0)):
+      (root.LudusBridge?.squadSprite?.(u,'idle',0)||root.LudusBridge?.portrait?.(u.index)):
       (u.beastType?root.ArenaBeasts?.portrait?.(u.beastType):
        root.LudusBridge?.practiceEnemySprite?.(u.look,'idle'));
     if(!sprite?.width&&!sprite?.naturalWidth)continue;
