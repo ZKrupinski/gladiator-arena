@@ -144,7 +144,7 @@
    staminaRegen:1+stat(h,'agi')*.048+(gear.stamina||0),
    specialCooldown:clamp(7-stat(h,'focus')*.33-(gear.cooldown||0),3.1,7),
    armor:clamp(trait.armor+stat(h,'end')*.007+(gear.armor||0),0,.48),
-   focus:trainedStat(s.focus),
+   focus:stat(h,'focus'),
    parry:clamp(trait.parry+stat(h,'focus')*.016,0,.48)
   };
  }
