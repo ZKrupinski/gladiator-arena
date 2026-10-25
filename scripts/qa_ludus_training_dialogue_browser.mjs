@@ -32,8 +32,8 @@ try{
  assert.ok(initial.url.includes('training_blank_v71.webp'),'new key art must have baked fake dialogue removed');
  assert.equal(initial.width,1672);
  assert.equal(initial.height,941);
- assert.ok(initial.z>initial.fighterZ&&initial.z<initial.trainerZ,
-  'real speech bubble must appear behind Doctore and above the arena fighter');
+ assert.ok(initial.z>initial.fighterZ&&initial.z>initial.trainerZ,
+  'real speech and restored paper must cover brown Doctore overlap on the left');
  assert.ok(initial.left>=520&&initial.left<545&&initial.top>=105&&initial.top<=125,
   'real speech occupies old painted speech location');
  assert.equal(initial.aria,'polite');
@@ -63,8 +63,35 @@ try{
    trainerFloor:Number(trainer?.dataset.footY||0),
    fighterZoneTop:parseFloat(getComputedStyle(canvas.parentElement).top),
    trainerTop:parseFloat(getComputedStyle(trainer).top),
-   fighterMetrics:window.LudusTrainingV2?.metrics??null};
+   fighterMetrics:window.LudusTrainingV2?.metrics??null,
+   repairVisible:!!stage.querySelector('.la-speech-paper-restoration')&&
+     getComputedStyle(stage.querySelector('.la-speech-paper-restoration')).display!=='none',
+   repairBackground:getComputedStyle(stage.querySelector('.la-speech-paper-restoration')).backgroundImage,
+   repairRect:stage.querySelector('.la-speech-paper-restoration').getBoundingClientRect().toJSON(),
+   bubbleRect:bubble.getBoundingClientRect().toJSON(),
+   effectsRect:stage.querySelector('.lt-effect').getBoundingClientRect().toJSON(),
+   guidanceRect:stage.querySelector('.lt-guidance').getBoundingClientRect().toJSON(),
+   infoRect:stage.querySelector('.lt-info').getBoundingClientRect().toJSON(),
+   startRect:stage.querySelector('.lt-start-button').getBoundingClientRect().toJSON(),
+   panelExtension:getComputedStyle(stage.querySelector('.lt-info'),'::after').content};
  });
+ assert.equal(initialVisual.repairVisible,true,'baked brown stain must be covered by real paper surface');
+ assert.ok(initialVisual.repairBackground.includes('linear-gradient'),
+  'restoration must match the painted parchment rather than show dark stained pixels');
+ assert.ok(initialVisual.repairRect.left>=initialVisual.bubbleRect.left,
+  'paper repair must stay inside the original balloon left border');
+ assert.ok(initialVisual.repairRect.right<=initialVisual.bubbleRect.right+10,
+  'paper repair must not cover the neighboring gladiator artwork');
+ assert.ok(initialVisual.repairRect.height>=90,
+  'restoration must cover the full stained dialogue interior');
+ assert.ok(initialVisual.panelExtension!=='none',
+  'effects pane needs a painted bottom continuation');
+ assert.ok(initialVisual.effectsRect.bottom+3<=initialVisual.guidanceRect.top,
+  'effects content must not collide with guidance');
+ assert.ok(initialVisual.guidanceRect.bottom<initialVisual.infoRect.bottom-10,
+  'effect guidance must fit inside the extended panel');
+ assert.ok(initialVisual.infoRect.bottom<initialVisual.startRect.top,
+  'extended effects pane must not overlap the train button');
  assert.equal(initialVisual.before,'none','painted bubble tail must not be duplicated by CSS');
  assert.equal(initialVisual.after,'none','only one bubble tail is allowed');
  assert.ok(initialVisual.speechFont>=18&&initialVisual.speechWidth>=280,'training speech needs large readable text');
