@@ -26,12 +26,12 @@
     "docs/arena-coop-ux-v65.md": "b92dfbc6961fd7a872d20f3acd180b40a2bda45337c8cc71a3354a0c9c89b093",
     "public/arena-progression.js": "f0c0949e84d798a986a993141caa551c91de14069ae02c56361b2477b7409446",
     "public/arena-balance.js": "62d19afe68ad3c7f46fe8bda2ec51314cedffb2a1b48e69a6f253c8987bbc26f",
-    "public/arena-coop-match.js": "874bee0680e8e2cfd6c6eedd9bea0906272834a140645baad53f9cf7ae8d8b6d",
+    "public/arena-coop-match.js": "6ed1729bc0d87392db408111f05b88ae0ce31593f6ce2ea3b25efa987c10f5f6",
     "public/ludus-roster.js": "18158e607369c5d45542cc2133a3b106b8535cc5b76a73d96b8e9f515b6ff586",
     "public/ludus-cards.css": "0200ac7282642ae5538b1598eebe40ef082fd91168b7dba09ef22f4d2467b539",
     "tests/arena-progression-lv50.js": "f258030404366d5ef5408c21caf9761e91d4d1a5f7240fcd4826659e9a4ad65f",
-    "tests/arena-coop-match.js": "dc87272b6f2ca660dd27e543d95bf259ba3c4f809e94a6b34714a8a1a87173bc",
-    "docs/arena-progression-match-v67.md": "6224544dd11fb3aae65f4e2261115e80f36f1a1cf0abfc66318bf9f4025b96ef"
+    "tests/arena-coop-match.js": "3ca2f46e59ffecca2856ed1bb40a1fbf6aa3b055c5a571d49c99891c577104b2",
+    "docs/arena-progression-match-v67.md": "3c8400e20f47e376681e4c642a005495cba44fd0fdc899214169bd7b6cb0beea"
   },
   "baseCommit": "958cf8eef8e5dae84cb70e065d371b50aa19586b",
   "branch": "main",
