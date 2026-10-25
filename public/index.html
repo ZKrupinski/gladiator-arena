@@ -393,7 +393,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-beast-stage-previews.js?v=versus-v5"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
 <script src="arena-carnifex.js?v=action-authoring-v46"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=combat-drama-v6"></script><script src="arena-motion.js?v=combat-drama-v6"></script><script src="arena-combat-feel.js?v=combat-impact-v2"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=training-hit-v1"></script>
-<script src="ludus-roster.js?v=innate-lv50-v67"></script>
+<script src="ludus-recovery.js?v=healing-v68"></script><script src="ludus-roster.js?v=innate-lv50-v67"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
    Pose sheets extracted from user-approved 3D-look static character art.
@@ -972,6 +972,7 @@ function finishCareerMatch(){
  CAREER.lastPrize={mode:'1v1',win,round:S.careerOpponent?.round||1,
   gold:reward,before:beforeGold,after:CAREER.gold,at:Date.now()};
  h.injury=Math.min(120,h.injury+Math.max(3,Math.round(Math.max(0,S.careerStartingHp-S.player.hp)*.62*(1-equipmentBonus(h).injuryReduction))));
+ const serious=window.LudusRecovery.maybeSevere(h,{knockout:S.player.hp<=0,damageRatio:Math.max(0,S.careerStartingHp-S.player.hp)/Math.max(1,S.careerStartingHp),glory:CAREER.glory,rosterCount:CAREER.roster.length});
  h.fatigue=Math.min(100,(Number(h.fatigue)||0)+Math.round(ArenaLineup.fatigueGain(S.careerStartingHp,S.player.hp,1)*(1-equipmentBonus(h).fatigueReduction)));
  h.fights++;if(win)h.wins++;
  const earned=Math.round(payout.xp*(1+(win?(equipmentBonus(h).xpBonus||0):0))),gained=grantCareerXp(h,earned);
@@ -1117,8 +1118,8 @@ function renderCareer(){
   if(result.ok)careerMessage(result.message);
  };
  const heal=$('#careerHeal');if(heal)heal.onclick=()=>{
-  const cost=Math.max(12,Math.ceil(h.injury*.6));if(CAREER.gold<cost)return;
-  CAREER.gold-=cost;h.injury=0;careerMessage('의무실에서 치료를 마쳤습니다.');
+  const quote=window.LudusRecovery.healQuote(h);if(CAREER.gold<quote.gold||CAREER.glory<quote.glory)return;
+  CAREER.gold-=quote.gold;CAREER.glory-=quote.glory;h.injury=0;h.severeInjury=false;careerMessage('의무실에서 치료를 마쳤습니다.');
  };
  const fight=$('#careerFight');if(fight)fight.onclick=openCareerDraft;
  window.LudusScene?.refresh();
@@ -1364,6 +1365,7 @@ function finishBeastMatch(){
  const win=!!S.resultWin,final=win&&run.roundIndex+1===run.stage.rounds;
  const damage=Math.max(0,S.careerStartingHp-Math.max(0,S.player.hp));
  h.injury=Math.min(120,(Number(h.injury)||0)+Math.max(2,Math.round(damage*.40*(1-equipmentBonus(h).injuryReduction)))+(win?0:8));
+ window.LudusRecovery.maybeSevere(h,{knockout:S.player.hp<=0,damageRatio:damage/Math.max(1,S.careerStartingHp),glory:CAREER.glory,rosterCount:CAREER.roster.length});
  h.fatigue=Math.min(100,(Number(h.fatigue)||0)+Math.max(2,Math.round(ArenaLineup.fatigueGain(S.careerStartingHp,Math.max(0,S.player.hp),1)*.55*(1-equipmentBonus(h).fatigueReduction))));
  if(final||!win){
   CAREER.fights++;h.fights=(h.fights||0)+1;
@@ -1651,6 +1653,7 @@ function finishLineupCareerMatch(){
   const idx=Number(key),h=CAREER.roster[idx],entry=q.records[key];if(!h)continue;
   const damage=Math.max(0,entry.initialHp-entry.lastHp);
   h.injury=Math.min(120,(Number(h.injury)||0)+Math.max(3,Math.round(damage*.48))+(entry.lastHp<=0?12:0));
+   window.LudusRecovery.maybeSevere(h,{knockout:entry.lastHp<=0,damageRatio:damage/Math.max(1,entry.initialHp),glory:CAREER.glory,rosterCount:CAREER.roster.length});
   h.fatigue=Math.min(100,(Number(h.fatigue)||0)+ArenaLineup.fatigueGain(entry.initialHp,entry.lastHp,entry.bouts));
   h.fights=(h.fights||0)+1;if(win)h.wins=(h.wins||0)+1;
   grantCareerXp(h,Math.max(5,Math.round(payout.xp*(q.allies.length>1?.78:1)*(1+(equipmentBonus(h).xpBonus||0)))));
@@ -3507,7 +3510,9 @@ function startCoopMatch(indices){
    const awards=result.units.filter(u=>u.side==='ally').map(u=>{
     const h=CAREER.roster[u.index],xp=retreat?0:result.win?35+averageLevel*4:12+averageLevel*2;
     const injury=Math.ceil((u.startHp-u.hp)/u.maxHp*18)+(u.dead?8:0);
-    h.injury=Math.min(100,(h.injury||0)+injury);h.fatigue=Math.min(100,(h.fatigue||0)+Math.min(12,Math.floor(result.time/8)));
+    h.injury=Math.min(120,(h.injury||0)+injury);
+    window.LudusRecovery.maybeSevere(h,{knockout:u.dead,damageRatio:Math.max(0,u.startHp-u.hp)/Math.max(1,u.maxHp),glory:CAREER.glory,rosterCount:CAREER.roster.length});
+    h.fatigue=Math.min(100,(h.fatigue||0)+Math.min(12,Math.floor(result.time/8)));
     h.coopFights=(h.coopFights||0)+1;if(result.win)h.coopWins=(h.coopWins||0)+1;
     grantCareerXp(h,xp);return {index:u.index,name:h.name,xp,injury:h.injury,fatigue:h.fatigue};
    });
@@ -3663,19 +3668,30 @@ window.LudusBridge={
   return result.message;
  },
  fight:openCareerDraft,
- heal:()=>{
-  const h=CAREER.hero;if(!h)return '검투사를 먼저 영입하세요.';
-  const cost=Math.max(12,Math.ceil((Number(h.injury)||0)*.6));
-  if(!h.injury)return '치료할 부상이 없습니다.';
-  if(CAREER.gold<cost)return '치료 비용이 부족합니다.';
-  CAREER.gold-=cost;h.injury=0;h.fatigue=Math.max(0,(Number(h.fatigue)||0)-18);
-  careerMessage(h.name+' · 부상 치료 및 피로 일부 회복.');return CAREER.message;
- },
- rest:()=>{
+ recoveryQuote:(i)=>{
+   const h=CAREER.roster[i===undefined?CAREER.active:i];
+   if(!h)return null;
+   return {heal:window.LudusRecovery.healQuote(h),rest:window.LudusRecovery.restQuote(h)};
+  },
+  heal:()=>{
+   const h=CAREER.hero;if(!h)return '검투사를 먼저 영입하세요.';
+   const quote=window.LudusRecovery.healQuote(h);
+   if(!quote.needed)return '치료할 부상이 없습니다.';
+   if(CAREER.gold<quote.gold||CAREER.glory<quote.glory){
+    careerMessage('치료 비용 부족 · '+quote.gold+'D'+(quote.glory?' · 명예 '+quote.glory:''));
+    return CAREER.message;
+   }
+   CAREER.gold-=quote.gold;CAREER.glory-=quote.glory;
+   h.injury=0;h.severeInjury=false;h.fatigue=Math.max(0,(Number(h.fatigue)||0)-18);
+   careerMessage(h.name+' · '+(quote.severe?'중상 치료 완료':'부상 치료 완료')+
+    ' · '+quote.gold+'D'+(quote.glory?' · 명예 '+quote.glory:'')+' 소모.');
+   return CAREER.message;
+  },
+  rest:()=>{
   const h=CAREER.hero;if(!h)return '검투사를 먼저 영입하세요.';
   const fatigue=ArenaLineup.condition(h).fatigue;
   if(!fatigue)return '회복할 피로가 없습니다.';
-  const cost=ArenaLineup.restCost(h);
+  const cost=window.LudusRecovery.restQuote(h).gold;
   if(CAREER.gold<cost){careerMessage('휴식 비용 '+cost+'D가 부족합니다.');return CAREER.message;}
   CAREER.gold-=cost;h.fatigue=Math.max(0,fatigue-55);
   careerMessage(h.name+' · 휴식 완료! 피로 '+fatigue+' → '+h.fatigue+' · '+cost+'D');
