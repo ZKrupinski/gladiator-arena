@@ -128,6 +128,14 @@ function framePixels(key,referenceHeight,worldHeight=202,actionScale=1){
  if(!Number.isFinite(h)||h<=0||!Number.isFinite(base)||base<=0)return 0;
  return base/h*scale(key)*(Number.isFinite(pose)&&pose>0?pose:1);
 }
-root.PracticeScaleProfiles={KEY,FEET_KEY,TYPES,EXTRAS,BEASTS,NPCS,BASE,DEFAULTS,FOOT_DEFAULTS,FOOT_MIN,FOOT_MAX,footY,clamp,clampFoot,read,write,reset,readFeet,writeFeet,resetFeet,foot,look,scale,framePixels};
+// Match GrowthFrames.draw: project a fixed square world-space body against
+// the UNTRIMMED source atlas cell, never the trimmed action/idle image canvas.
+// Published scale and one artist-authored action multiplier are separate.
+function cellPixels(key,cellWidth,cellHeight,worldSize=202){
+ const w=Number(cellWidth),h=Number(cellHeight),s=Number(worldSize);
+ if(!(w>0&&h>0&&s>0))return 0;
+ return Math.min(s/w,s/h)*scale(key);
+}
+root.PracticeScaleProfiles={KEY,FEET_KEY,TYPES,EXTRAS,BEASTS,NPCS,BASE,DEFAULTS,FOOT_DEFAULTS,FOOT_MIN,FOOT_MAX,footY,clamp,clampFoot,read,write,reset,readFeet,writeFeet,resetFeet,foot,look,scale,framePixels,cellPixels};
 if(typeof module!=='undefined')module.exports=root.PracticeScaleProfiles;
 })(typeof window!=='undefined'?window:globalThis);
