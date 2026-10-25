@@ -423,7 +423,11 @@ function deal(attacker,target,multiplier=1,style='normal'){
  else emitVfx(crit?'sweep':attacker.swings%3===0?'thrust':'slash',attacker,target,crit);
  playCombatSound(isKO||crit?'heavy_hit':'hit',target,isKO?.98:crit?.87:.70);
  const c=COURTS[target.seat],sign=attacker.side==='ally'?1:-1;
- target.x=clamp(target.x+sign*13,c.x-LEASH,c.x+LEASH);
+ const knock=style==='parry'?82:style==='special'?76:crit?34:18;
+ target.x=clamp(target.x+sign*knock,c.x-LEASH,c.x+LEASH);
+ root.ArenaCombatFeel?.event?.(battle,style==='parry'?'reversal':
+   style==='special'?'special':crit?'strike':'hit',
+   attacker,target,battle.clock,{power:style==='parry'||style==='special'?1.12:.72});
  if(isKO){
   target.dead=true;target.deathAt=battle.clock;target.fade=1.6;target.windup=0;target.guard=0;
   beginRemoval(target);
@@ -433,9 +437,10 @@ function deal(attacker,target,multiplier=1,style='normal'){
  }
 }
 function prepareStrike(u,target){
- u.swings++;u.special=false; // Practice deliberately omits dash/special attack.
- playCombatSound(u.swings%3===0?'heavy_swing':'swing',u,
-  u.swings%3===0?.65:.53);
+ u.swings++;u.special=u.swings%4===0;
+ playCombatSound(u.special?'dash':u.swings%3===0?'heavy_swing':'swing',u,
+  u.special?.84:u.swings%3===0?.65:.53);
+ if(u.special){emitVfx('dash',u,target,true);root.ArenaCombatFeel?.event?.(battle,'dash',u,target,battle.clock);}
  u.windup=u.special?.34:.24;u.windupTotal=u.windup;
  u.target=target;u.swing=u.special?.59:.46;u.swingTotal=u.swing;
  u.cooldown=(u.side==='ally'?.81:.94)+(u.special?.24:0)+Math.random()*.17;
@@ -463,10 +468,12 @@ function contact(u,target){
  }
  if(target.guard>0){
   if(target.parry>0){
-   // Practice retains the parry clang/flash, not the arena's counterattack.
-   u.stun=.20;u.cooldown=Math.max(u.cooldown,.48);
-   target.swing=.22;emitVfx('parry',target,u,true);
-   playCombatSound('parry',target,.89);
+   // Contact interruption -> one counterstrike. No recursive hit response.
+   u.stun=.52;u.cooldown=Math.max(u.cooldown,.85);
+   target.swing=.32;target.guard=0;target.parry=0;
+   emitVfx('parry',target,u,true);
+   playCombatSound('parry',target,.98);
+   deal(target,u,.72,'parry');
    return;
   }
   emitVfx('guard',target,u,false);
@@ -691,6 +698,9 @@ function drawUnit(unit){
  const height=202*scale;
  let labelHeight=height;
  ctx.save();ctx.translate(unit.x,unit.y);
+ const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ const bodyMotion=root.ArenaMotion?.pose?.(unit,battle?.clock||0,reduced)||{x:0,y:0,tilt:0};
+ const impact=root.ArenaMotion?.visual?.(unit,reduced,true)||{scale:1,flash:0};
  // Approved backdrop already has baked floor lighting: NO vector shadow.
  if(unit.dead)ctx.globalAlpha=1;
  const art=sprite(unit);
@@ -710,8 +720,14 @@ function drawUnit(unit){
      atlasFrame.footY:(art.height||art.naturalHeight);
    const face=unit.side==='enemy'?-1:1;
    ctx.save();
+   if(!unit.dead){
+    ctx.translate(bodyMotion.x,bodyMotion.y);
+    ctx.rotate(bodyMotion.tilt||0);
+    ctx.scale(impact.scale||1,impact.scale||1);
+   }
    ctx.translate((t.x+motion.x)*scale*face,(profilesFoot(unit)+t.y+motion.y)*scale);
    if(face<0)ctx.scale(-1,1);
+   if(impact.flash>0)ctx.filter='brightness('+(1+impact.flash*2.5).toFixed(2)+')';
    try{ctx.drawImage(art,-pivotX*k,-pivotY*k,
     (art.width||art.naturalWidth)*k,(art.height||art.naturalHeight)*k);}
    catch(_){}
@@ -766,7 +782,12 @@ function courtPaintQueue(scene){
 function paint(){
  if(!battle||!ctx)return;
  ctx.save();ctx.clearRect(0,0,W,H);
- if(battle.shakes)ctx.translate((Math.random()-.5)*battle.shakes,(Math.random()-.5)*battle.shakes);
+ const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ const shot=root.ArenaCombatFeel?.sample?.(battle,{reduced})||{x:0,y:0,angle:0,zoom:1};
+ ctx.translate(shot.x||0,shot.y||0);
+ if(shot.angle){ctx.translate(W/2,H/2);ctx.rotate(shot.angle);ctx.translate(-W/2,-H/2);}
+ if(shot.zoom>1){ctx.translate(W/2,H*.63);ctx.scale(shot.zoom,shot.zoom);ctx.translate(-W/2,-H*.63);}
+ if(!root.ArenaCombatFeel&&battle.shakes)ctx.translate((Math.random()-.5)*battle.shakes,(Math.random()-.5)*battle.shakes);
  if(back.complete&&back.naturalWidth)ctx.drawImage(back,0,0,W,H);
  else{const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#24120e');grad.addColorStop(1,'#754328');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);}
  ctx.fillStyle='#160a0929';ctx.fillRect(0,0,W,H);
@@ -778,6 +799,7 @@ function paint(){
  // from two different court groups, even when they share the same Y.
  courtPaintQueue(battle).forEach(item=>item.paint());
  ctx.restore();
+ root.ArenaCombatFeel?.overlay?.(ctx,W,H,shot);
 }
 function status(){
  if(!battle)return;
@@ -795,8 +817,12 @@ function updateButtons(){
 }
 function loop(timestamp){
  if(!display()||!battle||battle.finished){frameId=0;return;}
- const dt=prev?clamp((timestamp-prev)/1000,0,.05)*battle.speed:0;
- prev=timestamp;if(!battle.paused)simulate(dt);
+ const realDt=prev?clamp((timestamp-prev)/1000,0,.05):0;
+ prev=timestamp;
+ const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ const scaled=root.ArenaCombatFeel?.advance?.(battle,battle.heroes.concat(battle.enemies),
+  realDt,{paused:battle.paused,reduced})??realDt;
+ if(!battle.paused)simulate(scaled*battle.speed);
  if(battle&&!battle.finished){
   root.ArenaAudio?.update?.({phase:'fight',paused:battle.paused,
    health:battle.heroes.reduce((hp,u)=>hp+Math.max(0,u.hp/u.maxHp),0)/Math.max(1,battle.heroes.length),
