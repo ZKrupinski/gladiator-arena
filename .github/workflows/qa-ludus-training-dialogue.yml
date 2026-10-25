@@ -9,7 +9,7 @@ on:
       - public/ludus-training-clean.css
       - public/ludus-training-runtime.js
       - public/ludus-doctore-anim.js
-      - public/assets/ludus/training_blank_v71.webp
+      - public/assets/ludus/training_blank_v74.webp
       - scripts/qa_ludus_training_dialogue_browser.mjs
       - .github/workflows/qa-ludus-training-dialogue.yml
   workflow_dispatch:
@@ -37,38 +37,41 @@ jobs:
           python - <<'PY'
           import pathlib,hashlib,urllib.request,time
           origin='https://gladiator-arena-git.pages.dev'
-          bg=pathlib.Path('public/assets/ludus/training_blank_v71.webp')
+          bg=pathlib.Path('public/assets/ludus/training_blank_v74.webp')
           expect=hashlib.sha256(bg.read_bytes()).hexdigest()
           expected_code=hashlib.sha256(pathlib.Path('public/ludus-approved-scenes.js').read_bytes()).hexdigest()
           expected_style=hashlib.sha256(pathlib.Path('public/ludus-training-clean.css').read_bytes()).hexdigest()
+          expected_runtime=hashlib.sha256(pathlib.Path('public/ludus-training-runtime.js').read_bytes()).hexdigest()
           for i in range(18):
               try:
                   headers={'User-Agent':'ArenaTrainerDialogueQA','Cache-Control':'no-cache'}
                   def fetch(path):
                       with urllib.request.urlopen(urllib.request.Request(origin+path,headers=headers),timeout=20) as r:
                           return r.read()
-                  livebg=fetch('/assets/ludus/training_blank_v71.webp?dialogue-v1')
+                  livebg=fetch('/assets/ludus/training_blank_v74.webp?painted-v74')
                   html=fetch('/?trainer-dialogue='+str(i)).decode('utf-8')
-                  code_bytes=fetch('/ludus-approved-scenes.js?v=paper-effect-v73')
-                  style_bytes=fetch('/ludus-training-clean.css?v=paper-effect-v73')
+                  code_bytes=fetch('/ludus-approved-scenes.js?v=training-bitmap-v74')
+                  style_bytes=fetch('/ludus-training-clean.css?v=training-bitmap-v74')
                   code=code_bytes.decode('utf-8')
                   style=style_bytes.decode('utf-8')
-                  runtime=fetch('/ludus-training-runtime.js?v=fighter-fit-v72').decode('utf-8')
+                  runtime_bytes=fetch('/ludus-training-runtime.js?v=fighter-ground-v74')
+                  runtime=runtime_bytes.decode('utf-8')
                   if (hashlib.sha256(livebg).hexdigest()==expect and
-                    'ludus-approved-scenes.js?v=paper-effect-v73' in html and
-                    'ludus-training-clean.css?v=paper-effect-v73' in html and
+                    'ludus-approved-scenes.js?v=training-bitmap-v74' in html and
+                    'ludus-training-clean.css?v=training-bitmap-v74' in html and
                     hashlib.sha256(code_bytes).hexdigest()==expected_code and
                     hashlib.sha256(style_bytes).hexdigest()==expected_style and
-                    'ludus-training-runtime.js?v=fighter-fit-v72' in html and
-                    'training_blank_v71.webp' in code and
+                    hashlib.sha256(runtime_bytes).hexdigest()==expected_runtime and
+                    'ludus-training-runtime.js?v=fighter-ground-v74' in html and
+                    'training_blank_v74.webp' in code and
                     'DOCTORE_SCRIPT' in code and
-                    'la-speech-paper-restoration' in code and
+                    'la-speech-paper-restoration' not in code and
                     '.la-training-speech' in style and
                     'word-break:keep-all' in style and
-                    'Training v73 parchment' in style and
+                    'training_blank_v74.webp' in style and
                     'z-index:10!important' in style and
                     'height:131px' in style and
-                    'PRACTICE_FOOT_Y=658' in runtime and
+                    'PRACTICE_FOOT_Y=670' in runtime and
                     'PRACTICE_SCALE=0.70' in runtime):
                       print('LIVE_TRAINING_DIALOGUE_DEPLOYMENT_PASS');break
               except Exception as exc:
