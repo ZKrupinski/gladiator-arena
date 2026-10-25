@@ -87,7 +87,16 @@
    const impact=root.ArenaMotion?.visual?.(u,reduced,true)||{scale:1,flash:0};
    const frame=root.LudusBridge.practiceFrame(u,pose),px=frame?.canvas===image&&Number.isFinite(frame.pivotX)?frame.pivotX:image.width/2,py=frame?.canvas===image&&Number.isFinite(frame.footY)?frame.footY:image.height;
    ctx.save();ctx.translate(u.x+(profile.x+motion.x)*z*u.face,u.y+((root.PracticeScaleProfiles?.foot(look)||0)+profile.y+motion.y)*z);
+   if(!u.dead){ctx.translate(body.x,body.y);ctx.rotate(body.tilt||0);ctx.scale(impact.scale||1,impact.scale||1);}
    ctx.scale(u.face,1);
+   if(impact.flash>0)ctx.filter='brightness('+(1+impact.flash*2.5).toFixed(2)+')';
+   if(!u.dead&&u.recoilAt!==undefined&&sim.time-u.recoilAt<.58){
+    const life=1-(sim.time-u.recoilAt)/.58;
+    for(const [t,alpha] of [[0,.14],[.25,.23],[.5,.36],[.75,.48]]){
+     ctx.globalAlpha=life*alpha;
+     ctx.drawImage(image,-px*k+(u.recoilFromX-u.x)*(1-t)*u.face,-py*k,image.width*k,image.height*k);
+    }
+   }
    if(u.dash>0&&!u.dead){
     for(const [offset,alpha] of [[-69,.12],[-38,.23]]){
      ctx.globalAlpha=alpha*Math.min(1,u.dash/.25);
@@ -138,10 +147,11 @@
      ctx.lineWidth=e.type==='rescue-call'||e.type==='ambush-call'?5:3;ctx.setLineDash([9,7]);
      ctx.beginPath();ctx.moveTo(a.x,a.y-75);ctx.lineTo(b.x,b.y-75);ctx.stroke();ctx.restore();
     }
-    if(['hit','assist','parry','counter','riposte','rescue','ambush'].includes(e.type)&&age<.45){
-     const kind=e.type==='parry'?'parry':'hit';
-     const big=['counter','riposte','rescue','ambush'].includes(e.type);
-     root.ArenaRasterFX?.draw(ctx,kind,e.x,e.y-70,big?215:160,big?190:150,age/.45,big?1:.85,1);
+    if(['hit','assist','parry','counter','riposte','rescue','ambush','push'].includes(e.type)&&age<.52){
+     const kind=['parry','counter','riposte','rescue'].includes(e.type)?'parry':
+      ['ambush','push'].includes(e.type)?'special':'hit';
+     const big=['counter','riposte','rescue','ambush','push'].includes(e.type);
+     root.ArenaRasterFX?.draw(ctx,kind,e.x,e.y-80,big?305:180,big?270:166,age/.52,big?1:.90,1);
     }
     if(['dash','push','retreat','recover','chase','bait','rescue-call','ambush-call'].includes(e.type)&&age<.9){
      ctx.save();ctx.globalAlpha=Math.max(0,.68-age*.75);ctx.lineWidth=e.type==='push'?5:3;
