@@ -132,6 +132,11 @@
     const scale=Math.min(width/state.cameraWidth,height/720),center=(left+right)/2;
     ctx.setTransform(scale,0,0,scale,width/2-center*scale,(height-720*scale)/2);
    }
+   const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+   const shot=root.ArenaCombatFeel?.sample?.(state,{reduced,team:true})||{x:0,y:0,angle:0,zoom:1};
+   ctx.save();ctx.translate(shot.x||0,shot.y||0);
+   if(shot.angle){ctx.translate(640,460);ctx.rotate(shot.angle);ctx.translate(-640,-460);}
+   if(shot.zoom>1){ctx.translate(640,490);ctx.scale(shot.zoom,shot.zoom);ctx.translate(-640,-490);}
    if(bg.complete&&bg.naturalWidth){const horizon=bg.naturalHeight*.76;ctx.drawImage(bg,0,0,bg.naturalWidth,horizon,0,0,1280,350);ctx.drawImage(bg,0,horizon,bg.naturalWidth,bg.naturalHeight-horizon,0,350,1280,370);}else{ctx.fillStyle='#69503b';ctx.fillRect(0,0,1280,720);}
    // A wide camera keeps all ten fighters on the approved arena floor.
    ctx.fillStyle='#120b0744';ctx.fillRect(0,0,1280,720);
@@ -160,6 +165,8 @@
     }
     if(e.damage){ctx.save();ctx.globalAlpha=Math.max(0,1-age/1.3);ctx.fillStyle=e.type==='assist'?'#ffdf84':'#fff1dd';ctx.strokeStyle='#29160f';ctx.lineWidth=4;ctx.textAlign='center';ctx.font='bold 22px sans-serif';ctx.strokeText(e.text,e.x,e.y-110-age*35);ctx.fillText(e.text,e.x,e.y-110-age*35);ctx.restore();}
    }
+   ctx.restore();
+   root.ArenaCombatFeel?.overlay?.(ctx,width,height,shot);
   }
   function hud(){
    const time=Math.ceil(Math.max(0,sim.limit-sim.time));$('.coop-clock').textContent=Math.floor(time/60)+':'+String(time%60).padStart(2,'0');
@@ -175,9 +182,18 @@
   function loop(now){
    if(current!==state)return;
    const dt=state.last?Math.min(.05,(now-state.last)/1000):0;state.last=now;
-   C.step(sim,dt);
+   const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+   const scaled=root.ArenaCombatFeel?.advance?.(state,sim.units,dt,{paused:state.paused||!!sim.result,reduced})??dt;
+   C.step(sim,scaled);
    const events=sim.events.filter(e=>e.id>state.eventId);
    for(const e of events){state.eventId=e.id;state.fx.push(e);
+    if(['parry','counter','riposte','push','dash','rescue','ambush','hit','assist'].includes(e.type)&&
+       (e.type!=='hit'&&e.type!=='assist'||sim.time>=(state.nextImpactAt||0))){
+     const a=sim.units.find(u=>u.id===e.source),b=sim.units.find(u=>u.id===e.target);
+     const kind=e.type==='riposte'?'reversal':e.type==='counter'?'parry':e.type==='push'?'special':e.type;
+     root.ArenaCombatFeel?.event?.(state,kind,a,b,sim.time,{team:true,power:e.type==='push'||e.type==='riposte'?1.25:1});
+     state.nextImpactAt=sim.time+.15;
+    }
     if(['link','cover','net','push','ko','command','dash','riposte','retreat','recover','feint','rejoin','bait','chase','ambush-call','ambush','rescue-call','rescue'].includes(e.type)){
      const row=document.createElement('span');row.textContent=e.text;$('.coop-log').prepend(row);while($('.coop-log').children.length>3)$('.coop-log').lastChild.remove();
      if(['link','command','ko','riposte','retreat','bait','ambush-call','ambush','rescue-call','rescue'].includes(e.type))tell(e.text,e.type.startsWith('rescue')?'rescue':e.type.startsWith('ambush')?'ambush':e.type==='bait'?'bait':'');
