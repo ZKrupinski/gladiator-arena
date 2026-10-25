@@ -9,16 +9,20 @@
   const previousFocus=document.activeElement,oldOverflow=document.body.style.overflow;
   const state={sim,host,frame:0,last:0,eventId:0,fx:[],paused:false,settled:false,selected:null,flash:0,nextCinematicAt:0,cinematic:null,focusFrame:null, director:root.ArenaCoopCamera?.create?.()||null,lens:{zoom:1,x:640,y:360}};current=state;
   host.innerHTML='<header class="coop-header"><div><small>CONCORDIA · TEAM ARENA</small><h1>5 vs 5 협동전투</h1></div><div class="coop-clock" aria-label="남은 시간">2:00</div><div class="coop-header-actions"><button data-pause>일시정지</button><button data-exit>철수</button></div></header>'+
-   '<div class="coop-scoreboard"><div class="coop-team coop-allies" aria-label="아군"></div><div class="coop-versus">VS</div><div class="coop-team coop-enemies" aria-label="적군"></div></div>'+
    '<div class="coop-field"><canvas width="1280" height="720" aria-label="열 명이 동시에 싸우는 전장. 아래와 위의 버튼으로 명령할 수 있습니다."></canvas><div class="coop-callout" role="status"></div><div class="coop-pause-layer" hidden><strong>전투 일시정지</strong><span>명령과 전투 시간이 함께 멈춥니다.</span><button data-resume>계속하기</button></div></div>'+
-   '<footer class="coop-footer"><div class="coop-orders"><button data-cover>엄호 <small>위험한 아군 보호</small></button><button data-rally>연계 총공세 <small>연계 60 소모</small></button><div class="coop-gauge"><label>연계 <b data-meter>25 / 100</b></label><progress max="100" value="25"></progress></div></div><p class="coop-help"><span data-focus>집중 공격 준비</span> · 자동 전투 · 적 카드를 눌러 6초 집중 공격 · 아군 선택 후 엄호 · 패링/포획/밀치기에 동료가 호응</p><div class="coop-log" aria-label="최근 전투 상황"></div></footer>'+
+   '<div class="coop-scoreboard" aria-label="전투중 아군·적군을 지정하는 썸네일 전술 패널"><div class="coop-team coop-allies" role="group" aria-label="아군 썸네일 · 누르면 즉시 엄호"></div><div class="coop-versus" aria-hidden="true">VS</div><div class="coop-team coop-enemies" role="group" aria-label="적군 썸네일 · 누르면 즉시 집중공격"></div></div>'+
+   '<footer class="coop-footer"><div class="coop-orders"><button data-formation>방어진형 <small>아군 전체 피해 감소 · 패링 강화</small></button><button data-flank>양익 돌파 <small>아군 전체 4.5초 돌진</small></button><button data-rally>연계 총공세 <small>연계 60 소모 · 전원 협공</small></button><div class="coop-gauge"><label>연계 <b data-meter>25 / 100</b></label><progress max="100" value="25"></progress></div></div><p class="coop-help">파란 아군 썸네일을 누르면 7초 엄호 · 붉은 적 썸네일을 누르면 6초 집중 공격 · 하단은 전원에게 적용되는 전술</p><div class="coop-log" aria-label="최근 전투 상황"></div></footer>'+
    '<div class="coop-modal" hidden></div>';
   document.body.append(host);document.body.style.overflow='hidden';
   const $=q=>host.querySelector(q),canvas=$('canvas'),ctx=canvas.getContext('2d'),bg=new Image();
   bg.src='assets/new-era/arena.webp';
   for(const side of ['ally','enemy']){
    const team=$(side==='ally'?'.coop-allies':'.coop-enemies');
-   team.innerHTML=sim.units.filter(u=>u.side===side).map(u=>'<button class="coop-unit" data-unit="'+u.id+'" aria-label="'+escape(u.name)+'"><span class="coop-unit-name">'+escape(u.name)+'</span><small>'+({murmillo:'방패 · 엄호',thraex:'검 · 측면',retiarius:'그물 · 포획'}[u.cls]||'검투사')+'</small><progress max="'+u.maxHp+'" value="'+u.hp+'"></progress><span class="coop-hp"></span></button>').join('');
+   team.innerHTML=sim.units.filter(u=>u.side===side).map(u=>
+     '<button class="coop-unit" type="button" data-unit="'+u.id+'" aria-label="'+escape(u.name)+(side==='ally'?' 즉시 엄호':' 즉시 집중 공격')+'" aria-pressed="false">'+
+     '<canvas class="coop-thumb" width="112" height="104" data-thumb="'+u.id+'" aria-hidden="true"></canvas>'+
+     '<span class="coop-unit-name">'+escape(u.name)+'</span><progress max="'+u.maxHp+'" value="'+u.hp+'"></progress>'+
+     '<small class="coop-unit-state">'+(side==='ally'?'터치 · 엄호':'터치 · 집중')+'</small></button>').join('');
   }
   function tell(text,kind=''){const callout=$('.coop-callout');callout.textContent=text;
    callout.dataset.kind=['rescue','ambush','chase','bait'].includes(kind)?kind:'';
@@ -27,12 +31,18 @@
   function sound(kind){root.ArenaAudio?.play?.(kind,{gain:.55});}
   host.addEventListener('click',e=>{
    const unit=e.target.closest('[data-unit]');
-   if(unit&&!sim.result){const u=sim.units.find(v=>v.id===unit.dataset.unit);if(u.dead)return;
-    if(u.side==='ally'){state.selected=u.id;tell(u.name+' 선택 · 엄호 명령으로 보호');}
-    else if(!C.command(sim,'focus',u.id))tell(state.paused?'계속하기를 눌러 전투를 재개하세요.':'집중 공격 재사용 대기 중');}
+   if(unit&&!sim.result){const u=sim.units.find(v=>v.id===unit.dataset.unit);if(!u||u.dead)return;
+    state.selected=u.id;state.pickedUntil=sim.time+2.8;
+    const action=u.side==='ally'?'cover':'focus',ready=u.side==='ally'?sim.coverReady:sim.focusReady;
+    if(C.command(sim,action,u.id)){
+     tell((u.side==='ally'?'아군 엄호 지정 · ':'집중 공격 지정 · ')+u.name+(u.side==='ally'?' (7초)':' (6초)'));
+     sound(u.side==='ally'?'guard':'parry');
+    }else tell(state.paused?'일시정지 중 · 전투 재개 후 지정 가능':u.name+' 지정됨 · 전술 재사용 '+Math.ceil(Math.max(0,ready-sim.time))+'초 남음');
+   }
   });
-  $('[data-cover]').onclick=()=>{if(!C.command(sim,'cover',state.selected))tell('엄호를 아직 사용할 수 없습니다.');};
-  $('[data-rally]').onclick=()=>{if(!C.command(sim,'rally'))tell('연계 60이 필요합니다.');};
+  $('[data-formation]').onclick=()=>{if(C.command(sim,'formation')){tell('방어진형! 전체 아군 방어 및 패링 강화 · 5초');sound('guard');}else tell('방어진형 재사용 대기 중');};
+  $('[data-flank]').onclick=()=>{if(C.command(sim,'flank')){tell('양익 돌파! 전원 돌진 · 4.5초');sound('dash');}else tell('양익 돌파 재사용 대기 중');};
+  $('[data-rally]').onclick=()=>{if(C.command(sim,'rally')){tell('연계 총공세! 전원 협공');sound('heavy_swing');}else tell('연계 60이 필요합니다.');};
   $('[data-pause]').onclick=()=>{if(!sim.result)pause(!state.paused);};
   $('[data-resume]').onclick=()=>pause(false);
   function close(){
