@@ -64,8 +64,8 @@ for(const required of ['id="lcHeal"','id="lcRest"','a.recoveryQuote?.(s.active)'
 assert(cards.includes("draft&&severity?"),'big overlapping blocked-state banner must be draft-only');
 assert(cards.includes("h?.severeInjury?'중상"),'severe tag must require actual severe event');
 assert(index.includes('ludus-recovery.js?v=overexertion-v69'));
-assert(index.includes('ludus-cards.js?v=recovery-fixed-v69'));
-assert(index.includes('ludus-cards.css?v=recovery-header-v70'));
+assert(index.includes('ludus-cards.js?v=arena-draft-header-v71'));
+assert(index.includes('ludus-cards.css?v=arena-draft-header-v71'));
 assert(index.includes('CAREER.gold-=quote.gold;CAREER.glory-=quote.glory'));
 assert(index.includes('h.severeInjury=false'));
 assert(index.includes('recoveryQuote:(i)=>'));
@@ -75,4 +75,8 @@ assert((index.match(/injuryBefore,fatigueBefore/g)||[]).length>=3,
 assert((index.match(/window.LudusRecovery.recovered\(h\)/g)||[]).length===3,
  'all 2 treatment paths and rest must reset the overexertion streak');
 assert(css.includes('.lc-roster-screen .lc-recovery-dock'));
+assert(css.includes('V71 · single horizontal header baseline'),'draft header must use compact responsive baseline');
+assert(cards.includes("header('아레나 출전',s,true)"),'all arena modes use the finance-only compact header');
+assert(cards.includes("heading==='아레나 출전'?'보유 금화':'회복 금화'"),'arena shows spendable gold instead of recovery currency label');
+
 console.log('LUDUS_RECOVERY_MANAGEMENT_V69_UNIT_PASS');
