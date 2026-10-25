@@ -58,12 +58,13 @@
   return false;
  }
  function shove(s,u,amount){
-  const sign=Math.sign(amount);
+  const from=u.x,sign=Math.sign(amount);
   for(let t=0;t<Math.abs(amount);t+=5){
    const x=clamp(u.x+sign*Math.min(5,Math.abs(amount)-t),85,1195);
    if(!free(s,u,x,u.y))break;
    u.x=x;
   }
+  if(Math.abs(u.x-from)>1){u.recoilFromX=from;u.recoilAt=s.time;u.recoilEndX=u.x;}
  }
  function link(s,source,target,kind,count=1){
   if(source.dead||target.dead)return false;
@@ -98,7 +99,7 @@
   if(chain&&b.stagger<=0&&b.rooted<=0&&s.random()<b.parry){
    b.guard=.5;b.blocks++;b.counter={target:a.id,due:s.time+.18,expires:s.time+1.7};
    b.attack=null;b.dash=.55;b.dashReady=s.time+3;
-   a.exposed=1.7;a.stagger=.55;shove(s,a,a.x>=b.x?85:-85);
+   a.exposed=1.7;a.stagger=.55;shove(s,a,a.x>=b.x?175:-175);
    emit(s,'parry',b,a,b.name+' 패링 → 돌진 반격');
    link(s,b,a,'패링 추격',2);return 0;
   }
@@ -201,7 +202,7 @@
       if(dealt){
        foe.stagger=Math.max(foe.stagger,r.kind==='ambush'?.9:.75);
        foe.exposed=Math.max(foe.exposed,1.3);
-       shove(s,foe,u.face*(r.kind==='ambush'?72:58));
+       shove(s,foe,u.face*(r.kind==='ambush'?154:120));
        u.blocks++;s.teamwork[u.side]++;
        if(u.side==='ally')s.meter=clamp(s.meter+12,0,100);
        if(r.kind==='rescue'){ward.protectedUntil=s.time+1.8;ward.guard=Math.max(ward.guard,.85);}
@@ -238,7 +239,7 @@
       }else{
        const dealt=hurt(s,u,target,atk.special?1.5:1);
        if(atk.special&&dealt&&!target.dead){
-        shove(s,target,u.face*90);target.exposed=1.5;target.stagger=.55;
+        shove(s,target,u.face*165);target.exposed=1.5;target.stagger=.55;
         emit(s,'push',u,target,u.name+' 강타 밀어내기');
         link(s,u,target,'밀려난 적 추격',3);
        }
