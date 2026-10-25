@@ -49,7 +49,7 @@
 .la-stage.training .lt-home{left:1584px!important;top:7px!important;width:78px!important;height:69px!important;min-height:0!important;background:transparent!important;border:0!important;box-shadow:none!important;font-size:0!important;color:transparent!important;padding:0!important}
 
 
-/* v72: padded fighter render surface; local foot 658 + stage top -92 = y566, 9px above Doctore. */
+/* v74: feet lower by 12px, zone unchanged; stage baseline y578 to match ground. */
 .la-stage.training .lt-fighter-zone{left:445px;top:-92px;width:1000px;height:800px;overflow:visible}
 .la-stage.training .la-doctore-live{left:226px}
 .la-stage.training .la-training-speech{left:523px;top:110px;width:296px;height:94px;display:flex;align-items:center}
@@ -57,28 +57,10 @@
 .la-stage.training .la-training-speech::after{display:none!important}
 
 
-/* Training v73 parchment: the brown stain belongs to the baked bitmap,
-   NOT the live speech HTML. Paint inside the existing image border only;
-   keep the artwork's single speech tail and the readable live dialogue. */
-/* Doctore is drawn at z=8 and intrudes into the left 20–30px
-   of this balloon. Put the repaired paper and live text above that
-   overlap so his brown sprite no longer fills the balloon's interior. */
+/* v74: removed temporary parchment overlay; corrected pixels now live in
+   training_blank_v74.webp. Keep the real dialogue transparent so the actual
+   painted background and its single tail are visible without added facets. */
 .la-stage.training .la-training-speech{z-index:10!important}
-.la-stage.training .la-training-speech .la-speech-paper-restoration{
- position:absolute;pointer-events:none;z-index:0;
- left:6px;right:-4px;top:-7px;height:109px;box-sizing:border-box;
- border-radius:4px 6px 5px 3px;
- background:
-  radial-gradient(ellipse at 17% 22%,#fff7e4aa 0%,transparent 51%),
-  radial-gradient(ellipse at 82% 86%,#d7ad7340 0%,transparent 64%),
-  linear-gradient(107deg,#f9eac9 0%,#f7e6bc 40%,#f0d8a7 100%);
- box-shadow:inset 3px 0 5px #faeaca8a,inset 0 2px 5px #fff2d78c;
-}
-.la-stage.training .la-speech-lines{
- position:relative;z-index:1;box-sizing:border-box;
- padding-left:12px;padding-right:2px;
-}
-
 /* Continue the illustrated lower effects panel toward the training
    buttons instead of cutting the help/cost/gold/guidance text at y~620. */
 .la-stage.training .lt-info{
