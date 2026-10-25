@@ -203,7 +203,7 @@ function render(){if(!scene||scene.hidden)return;
  }
  const hire=$('#gmHire'),price=$('#gmPrice');hire.disabled=!hero||Number(state.gold)<hero.cost;
  hire.setAttribute('aria-label',hero?hero.name+' 구매 확인, '+hero.cost+' 데나리우스':'구매 가능한 검투사가 없습니다');
- price.hidden=!hero||hero.cost===500;price.textContent=hero?Number(hero.cost).toLocaleString('ko-KR'):'';
+ price.hidden=!hero;price.textContent=hero?'◉ '+Number(hero.cost).toLocaleString('ko-KR')+' D':'';
  $('#gmNoCandidates').hidden=!!hero;
  const restock=$('#gmRestock');restock.disabled=Number(state.gold)<RESTOCK_COST;
  restock.setAttribute('aria-label','검투사 매대 3명 전체 갱신. 비용 '+RESTOCK_COST+' 데나리우스');
@@ -288,7 +288,7 @@ function keydown(e){if(!scene||scene.hidden)return;
 function setup(){if(scene)return;
  scene=document.createElement('section');scene.className='gm-screen';scene.id='slaveMarket';scene.hidden=true;scene.setAttribute('role','dialog');scene.setAttribute('aria-label','검투사시장');
  scene.innerHTML=`<div class="gm-stage" id="gmStage">
-  <img class="gm-key-art" id="gmKey" src="assets/market/market_keyvisual_no_merchant.webp?v=3" alt="" aria-hidden="true" decoding="sync" draggable="false">
+  <img class="gm-key-art" id="gmKey" src="assets/market/market_blank_v68.webp" alt="" aria-hidden="true" decoding="sync" draggable="false">
   <img class="gm-merchant-full gm-pose-1" id="gmMerchantMain" src="assets/market/merchant_pose_1.webp" alt="" aria-hidden="true" draggable="false">
   <div class="gm-paper-foreground" aria-hidden="true"></div>
   <button type="button" class="gm-back-hit" id="gmBack" aria-label="루두스로 돌아가기" title="루두스로 돌아가기"></button>
@@ -305,7 +305,7 @@ function setup(){if(scene)return;
   <div class="gm-no-candidates" id="gmNoCandidates" hidden>검투사 모집 완료<br><small>빈 단상을 갱신하세요</small></div>
   <div class="gm-speech-new" id="gmSpeech" hidden role="status" aria-live="polite"></div>
   <div class="gm-merchant-talk" id="gmTalking" aria-hidden="true"></div>
-  <button type="button" class="gm-hire-hit" id="gmHire" aria-label="선택한 검투사 구매 확인"></button>
+  <button type="button" class="gm-hire-hit" id="gmHire" aria-label="선택한 검투사 구매 확인"><span class="gm-hire-label">고용</span></button>
   <button type="button" class="gm-restock" id="gmRestock">✥ 전체 갱신 <span id="gmRestockCount">3명 전체</span><small>◉ ${RESTOCK_COST} D</small></button>
   <div class="gm-dialog" id="gmDialog" data-mode="confirm" hidden role="dialog" aria-modal="true" aria-label="검투사 구매 계약 확인">
    <div class="gm-dialog-content"><div class="gm-dialog-eyebrow">MERCATUS · 계약 확인</div><h2 id="gmDialogHeading">검투사 고용 계약</h2><p id="gmDialogBody"></p><small id="gmDialogDetail"></small><div class="gm-dialog-buttons"><button id="gmCancel" type="button">취소하기</button><button id="gmConfirm" type="button">고용 확정</button></div></div>

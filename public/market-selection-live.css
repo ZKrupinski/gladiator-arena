@@ -51,3 +51,47 @@
 .gm-stage .gm-merchant-full.gm-pose-2{
  left:-161px;top:83px;width:758px;height:765px;
 }
+
+/* v68: the clean illustration owns all permanent frames. Live UI is ink only. */
+.gm-screen .gm-stage .gm-empty-podium,
+.gm-screen .gm-stage .gm-visual-softener{display:none!important}
+.gm-screen .gm-stage .gm-card-dynamic,
+.gm-screen .gm-stage .gm-vacant,
+.gm-screen .gm-stage .gm-vacant-badge,
+.gm-screen .gm-stage .gm-bottom-avatar,
+.gm-screen .gm-stage .gm-bottom-info,
+.gm-screen .gm-stage .gm-speech-new,
+.gm-screen .gm-stage .gm-wallet-value,
+.gm-screen .gm-stage .gm-price-value,
+.gm-screen .gm-stage .gm-no-candidates{
+ background:transparent!important;border:0!important;border-image:none!important;
+ box-shadow:none!important;border-radius:0!important;
+}
+.gm-screen .gm-stage .gm-card-dynamic::before,
+.gm-screen .gm-stage .gm-card-dynamic::after{display:none!important;content:none!important}
+.gm-screen .gm-stage .gm-paper-foreground{
+ background-image:url('assets/market/market_blank_v68.webp');
+}
+.gm-screen .gm-stage .gm-wallet-value{
+ left:1338px;top:24px;width:214px;height:44px;padding:0 8px;gap:7px;
+}
+.gm-screen .gm-stage .gm-wallet-label{font-size:0}
+.gm-screen .gm-stage .gm-wallet-label::before{content:'◉';font-size:23px}
+.gm-screen .gm-stage .gm-wallet-amount{font-size:32px}
+.gm-screen .gm-stage .gm-wallet-amount.is-compact{font-size:24px}
+.gm-screen .gm-stage .gm-wallet-unit{font-size:17px}
+.gm-screen .gm-stage .gm-price-value{
+ left:1200px;top:843px;width:280px;height:41px;justify-content:center;font-size:32px;z-index:18;
+}
+.gm-screen .gm-stage .gm-hire-hit{left:1120px;top:770px;width:432px;height:128px}
+.gm-screen .gm-stage .gm-hire-label{
+ position:absolute;left:0;right:0;top:14px;text-align:center;
+ font:900 44px/1.1 'Noto Sans KR',sans-serif;color:#fff0c4;text-shadow:0 3px 3px #3c0d08;
+}
+.gm-screen .gm-stage .gm-card-dynamic{top:540px;height:183px;padding:0 8px}
+.gm-screen .gm-stage .gm-card-dynamic[data-i="0"]{left:498px;width:241px}
+.gm-screen .gm-stage .gm-card-dynamic[data-i="1"]{left:831px;width:253px}
+.gm-screen .gm-stage .gm-card-dynamic[data-i="2"]{left:1200px;width:265px}
+.gm-screen .gm-stage .gm-card-dynamic .gm-innate{margin-top:10px}
+.gm-screen .gm-stage .gm-card-dynamic .gm-roman-name{font-size:28px}
+.gm-screen .gm-stage .gm-no-candidates{left:565px;top:765px;width:540px;height:120px}
