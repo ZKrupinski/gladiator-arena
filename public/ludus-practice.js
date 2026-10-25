@@ -76,7 +76,7 @@ function enemyFor(wave,index,rng=Math.random){
  return {side:'enemy',name:['Varro','Rufus','Gallus','Brutus','Crispus','Atilius'][index%6],
   cls,look,seat:-1,lane:-1,x:0,y:0,hp,maxHp:hp,atk:enemyAttack(wave),
   speed:62+Math.min(42,wave*2.2),armor:Math.min(.25,(wave-1)*.008),
-  cooldown:.5+index*.13,swing:0,hit:0,dead:false,fade:1.8,
+  cooldown:.5+index*.13,swing:0,hit:0,dead:false,fade:1.8,face:-1,
   windup:0,target:null,guard:0,parry:0,guardCD:0,dodge:0,stun:0,swings:0,special:false,waiting:false,
   entry:0,arrival:0};
 }
@@ -179,7 +179,7 @@ function heroFor(i,k){
   x:c.x-87,y:c.y,homeX:c.x-87,maxHp,hp:maxHp,
   atk:Math.max(8,Math.round(number(stats.atk,17))),
   armor:clamp(number(stats.armor),0,.47),parryChance:clamp(number(stats.parry,.14)+.18,.12,.6),
-  speed:84+number(h.stats?.agi)*2,cooldown:.18+k*.12,swing:0,hit:0,dead:false,fade:1.8,
+  speed:84+number(h.stats?.agi)*2,cooldown:.18+k*.12,swing:0,hit:0,dead:false,fade:1.8,face:1,
   exp:0,kills:0,level:h.level,windup:0,target:null,guard:0,parry:0,
   guardCD:0,dodge:0,stun:0,swings:0,special:false};
 }
@@ -214,7 +214,7 @@ function start(){
  COURTS=courtsForParty(picks.length);
  $('.ep-selection').hidden=true;$('.ep-combat').hidden=false;$('.ep-result').hidden=true;
  battle={heroes:picks.map(heroFor),enemies:[],queued:[],wave:0,clearedWave:0,kills:0,left:0,serial:0,delay:0,nextSeat:0,
-  cleared:false,breakTime:0,knockout:0,finished:false,paused:false,speed:1,shakes:0,
+  cleared:false,breakTime:0,knockout:0,finished:false,paused:false,speed:1,shakes:0,flash:0,fx:true,nextCinematicAt:0,cinematic:null,focusFrame:null,
   particles:[],fx:[],exits:[],clock:0,audioTimes:{}};
  root.ArenaAudio?.enterArena?.();
  prev=0;nextWave();updateButtons();frameId=requestAnimationFrame(loop);
@@ -331,6 +331,10 @@ function beginRemoval(unit){
  battle.exits.push({unit,seq,age:0,scale,court:c,viewport});
 }
 const FALL_DURATION=.72;
+function deathFrame(unit,clock){
+ const elapsed=Math.max(0,(Number(clock)||0)-(unit.deathAt??(Number(clock)||0)));
+ return Math.min(7,Math.floor(elapsed*10));
+}
 function selectedDeathArt(unit){
  // Prioritize the dedicated approved defeat frame; special art falls back
  // to a hit/idle sprite but is tilted into a clearly prone orientation.
@@ -421,7 +425,7 @@ function deal(attacker,target,multiplier=1,style='normal'){
  const c=COURTS[target.seat],sign=attacker.side==='ally'?1:-1;
  target.x=clamp(target.x+sign*13,c.x-LEASH,c.x+LEASH);
  if(isKO){
-  target.dead=true;target.fade=1.6;target.windup=0;target.guard=0;
+  target.dead=true;target.deathAt=battle.clock;target.fade=1.6;target.windup=0;target.guard=0;
   beginRemoval(target);
   if(attacker.side==='ally'&&target.side==='enemy'){
    attacker.exp+=killXP(battle.wave);attacker.kills++;battle.kills++;
@@ -617,8 +621,9 @@ function simulate(dt){
 function rawSprite(u,kind){
  if(u.side==='ally'){
   const hero=api()?.state()?.roster?.[u.index];
-  return api()?.squadSprite?.(hero,kind,Math.floor((battle?.clock||0)*10))||
-   api()?.trainingFrame?.(u.index,kind,battle?.clock||0);
+  const tick=kind==='death'?deathFrame(u,battle?.clock||0):Math.floor((battle?.clock||0)*10);
+  return api()?.squadSprite?.(hero,kind,tick)||
+   api()?.trainingFrame?.(u.index,kind,tick);
  }
  return api()?.practiceEnemySprite?.(u.look,kind);
 }
@@ -672,7 +677,7 @@ function calibration(unit,frame){
  // alpha bounds artificially enlarged characters with transparent margins.
  // Preserve camera depth and the 31 artist-authored size profiles, only.
  const visible=alphaBounds(idle);
- return unit._bodyScale={pixels:202/referenceH*scaleFactor,relative:scaleFactor,
+ return unit._bodyScale={pixels:profiles?.framePixels?.(appearance,referenceH,PRACTICE_GLADIATOR_REFERENCE)??(PRACTICE_GLADIATOR_REFERENCE/referenceH*scaleFactor),relative:scaleFactor,
   appearance:appearance||'special',refH:visible?.h||referenceH,
   reference:idle,frameH:referenceH};
 }
@@ -682,7 +687,7 @@ function profilesFoot(unit){
  return p?.foot?.(p?.look?.(unit,api()?.state()?.roster))||0;
 }
 function drawUnit(unit){
- const scale=COURTS[unit.seat]?.scale||.78;
+ const scale=COURTS[unit.seat]?.scale??1;
  const height=202*scale;
  let labelHeight=height;
  ctx.save();ctx.translate(unit.x,unit.y);
@@ -827,6 +832,6 @@ function close(){
 if(typeof document!=='undefined')document.addEventListener('visibilitychange',()=>{
  if(document.hidden&&battle&&!battle.paused){battle.paused=true;prev=0;updateButtons();}
 });
-root.LudusPractice={open,close,isOpen:display,rules:{eligible,waveSize,enemyHP,enemyAttack,waveXP,killXP,enemyFor,courtsForParty}};
+root.LudusPractice={open,close,isOpen:display,rules:{eligible,waveSize,enemyHP,enemyAttack,waveXP,killXP,enemyFor,courtsForParty,deathFrame}};
 if(typeof module!=='undefined')module.exports=root.LudusPractice.rules;
 })(typeof window!=='undefined'?window:globalThis);
