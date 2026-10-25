@@ -1,0 +1,71 @@
+name: QA Innate Training Failure v72
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - public/ludus-training-risk.js
+      - public/ludus-training-runtime.js
+      - public/ludus-training-clean.css
+      - public/ludus-approved-scenes.js
+      - tests/training-innate-repetition-v72.cjs
+      - scripts/qa_training_innate_repetition_v72.mjs
+      - .github/workflows/qa-training-innate-repetition-v72.yml
+  workflow_dispatch:
+jobs:
+  innate-training:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Validate actual skill-weakness risk, caps and training semantics
+        run: |
+          node --check public/ludus-training-risk.js
+          node --check public/ludus-training-runtime.js
+          node --check public/ludus-approved-scenes.js
+          node --check tests/training-innate-repetition-v72.cjs
+          node tests/training-innate-repetition-v72.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Run game code locally
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/training-risk-v72.log 2>&1 &
+          sleep 3
+      - name: Verify lost money with failed stat, saved attempts and real training UI
+        run: node scripts/qa_training_innate_repetition_v72.mjs
+      - name: Verify Cloudflare serves exact tested game sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,pathlib,time,urllib.request
+          base='https://gladiator-arena-git.pages.dev'
+          paths=['ludus-training-risk.js','ludus-training-runtime.js',
+                 'ludus-training-clean.css','ludus-approved-scenes.js']
+          expected={name:hashlib.sha256((pathlib.Path('public')/name).read_bytes()).hexdigest() for name in paths}
+          markers=[
+            'ludus-training-risk.js?v=innate-repetition-v72',
+            'ludus-training-runtime.js?v=innate-repetition-v72',
+            'ludus-training-clean.css?v=innate-repetition-v72',
+            'ludus-approved-scenes.js?v=innate-repetition-v72'
+          ]
+          headers={'User-Agent':'GladiatorInnateTrainingQA','Cache-Control':'no-cache'}
+          def download(resource):
+            req=urllib.request.Request(base+resource,headers=headers)
+            with urllib.request.urlopen(req,timeout=20) as response:return response.read()
+          for attempt in range(30):
+            try:
+              html=download('/?qa-innate-training-v72='+str(attempt)).decode('utf-8')
+              ok=all(x in html for x in markers)
+              for name,digest in expected.items():
+                ok=ok and hashlib.sha256(download('/'+name+'?v=verify-training-'+str(attempt))).hexdigest()==digest
+              if ok:
+                print('LIVE_TRAINING_INNATE_REPETITION_V72_PASS',expected,flush=True)
+                break
+            except Exception as error:print('Wait for deploy',attempt,error,flush=True)
+            if attempt==29:raise AssertionError('Cloudflare not yet serving the tested saved-training sources')
+            time.sleep(10)
+          PY
