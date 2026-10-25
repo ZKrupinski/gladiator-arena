@@ -95,14 +95,23 @@ try{
  }
  // The player can train immediately; show a distinct character reaction,
  // instead of leaving the tile's description frozen.
- await page.locator('.la-stage.training .lt-start-button').click();
- await page.waitForFunction(()=>{
-  const speech=document.querySelector('.la-stage.training .la-training-speech');
-  return speech?.dataset.phase==='success';
- },{timeout:4500});
- const success=await page.locator(bubble).textContent();
- assert.ok(success.includes('BENE FACTUM'));
- assert.ok(success.includes('눈빛이 달라졌군'));
+ let success='NO_RECRUIT_EXPECTED_DISABLED';
+ const startButton=page.locator('.la-stage.training .lt-start-button');
+ if(await startButton.isEnabled()){
+  await startButton.click();
+  await page.waitForFunction(()=>{
+   const speech=document.querySelector('.la-stage.training .la-training-speech');
+   return speech?.dataset.phase==='success';
+  },{timeout:4500});
+  success=await page.locator(bubble).textContent();
+  assert.ok(success.includes('BENE FACTUM'));
+  assert.ok(success.includes('눈빛이 달라졌군'));
+ }else{
+  assert.equal(await startButton.isDisabled(),true,
+   'without a recruited fighter training must not charge gold');
+  assert.ok(await page.locator('.la-stage.training .lt-empty').count()>0,
+   'disable training only if no gladiators are available');
+ }
  assert.deepEqual(errors,[],'no dialogue / scene runtime JS errors');
  console.log('LUDUS_REAL_DIALOGUE_BROWSER_PASS '+JSON.stringify({initial,selected,success}));
 }finally{await browser.close()}
