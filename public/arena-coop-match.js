@@ -24,7 +24,7 @@
   const stage=level>=20?5:level>=15?4:level>=10?3:level>=5?2:1;
   // Stay forgiving when real fighters are injured/exhausted, but give the
   // opposing team enough stamina to make protecting and rallying meaningful.
-  const offense=clamp(.92-injuryRatio*.24-fatigueRatio*.075,.79,.92);
+  const offense=clamp(.92-injuryRatio*.40-fatigueRatio*.10,.76,.92);
   return CLASSES.map((cls,i)=>{
    const h=allies[i],unitHp=hpOf(h),unitAtk=atkOf(h);
    const hp=clamp(unitHp,hpAvg*.72,hpAvg*1.28);
@@ -34,7 +34,7 @@
     combat:{
      // A fighter's current condition affects enemy offense more than enemy
      // endurance: avoids five-minute sprints ending in an instant with injuries.
-     hp:Math.round((hp-injuryOf(h)*.4)*1.12),
+     hp:Math.max(40,Math.round((hp-injuryOf(h)*.4)*1.12)),
      atk:Math.max(4,Math.round(atk*offense*(cls==='thraex'?1.025:cls==='retiarius'?.985:1))),
      move:Math.round(moveAvg*.95),
      armor:cls==='murmillo'?.16:cls==='retiarius'?.08:.10,
