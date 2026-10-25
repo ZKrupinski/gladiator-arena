@@ -195,7 +195,7 @@ function draft(enemy,painter){
   coop?'10명 동시 전투 · 패링 반격 / 포획 협공 / 방패 엄호 / 측면 협공 · 120초 제한':matched?'아군 평균 예상 전력 '+matched.power+' · 매칭 Lv.'+enemy.level+
    ' · 장비 '+matched.equipment+'부위 / 훈련 '+matched.training:'기본 대진';
  const rivalRole=coop?'협동 전술':ready?(window.ArenaBalance?.TRAITS?.[enemy.cls]?.role||'투기장 도전자'):'편성 대기';
- const host='<section class="lc-screen lc-draft-screen" aria-label="아레나 출전 선수 선택"><div class="lc-top">'+header('아레나 출전',s)+'</div>'+
+ const host='<section class="lc-screen lc-draft-screen" aria-label="아레나 출전 선수 선택"><div class="lc-top">'+header('아레나 출전',s,true)+'</div>'+
  '<div class="lc-match-top"><span>도전 '+Number(enemy.round||1)+'회차</span><strong>⚔ '+info+'</strong><span>'+(coop?'CONCORDIA · TEAM BATTLE':enemy.boss?'CHAMPION BATTLE':'ARENA CHALLENGE')+'</span></div>'+
  '<div class="lc-mode-note">경기 형태 선택은 현재 개발 확인용 임시 메뉴 · 향후 이벤트에 따라 자동 지정</div>'+controls+
  '<div class="lc-screen-body lc-draft-body"><div class="lc-gallery"><div class="lc-section-head"><h2>♜ 나의 검투사</h2><small>출전 선수 '+config.allies+'명 선택</small></div>'+
