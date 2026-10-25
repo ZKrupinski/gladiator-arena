@@ -48,7 +48,7 @@ function drawTrainingSpeech(){
  bubble.querySelector('.la-speech-lines').textContent=data.lines;
 }
 const equips={wood:{x:-1126,y:-487},iron:{x:-991,y:-486},shield:{x:-1458,y:-486},elite:{x:-1347,y:-486}};
-let screen,stage,room='training',selectedTraining=0,selectedGear='iron',category='all',sortMode=0,toastTimer=0,poseTimer=0;
+let screen,stage,room='training',selectedTraining=0,selectedGear='iron',category='all',sortMode=0,toastTimer=0,poseTimer=0,feedbackTimer=0;
 const $=s=>screen?.querySelector(s);
 const bridge=()=>window.LudusBridge;
 const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;'}[c]));
@@ -65,15 +65,50 @@ function fit(){
  stage.style.transform=`translate(-50%,-50%) scale(${z})`;
 }
 function toast(msg){let n=$('.la-notice');if(!n)return;n.textContent=msg;n.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>n.hidden=true,2800);}
+// Big visual training result is rendered over the actual arena BETWEEN
+// Doctore and gladiator, after the real economy has committed its outcome.
+// 3.2 sec lifetime; each consecutive attempt restarts its own full duration.
+const TRAINING_RESULT_MS=3200;
+function clearTrainingFeedback(){
+ clearTimeout(feedbackTimer);feedbackTimer=0;
+ stage?.querySelector('.la-training-feedback')?.remove();
+}
+function showTrainingFeedback({failed,statName,gain,cost}){
+ if(!stage||room!=='training'||screen?.hidden)return;
+ clearTrainingFeedback();
+ const badge=document.createElement('div');
+ badge.className='la-training-feedback '+(failed?'is-fail':'is-success');
+ badge.dataset.outcome=failed?'fail':'success';
+ badge.dataset.durationMs=String(TRAINING_RESULT_MS);
+ badge.setAttribute('role','status');
+ badge.setAttribute('aria-live','assertive');
+ badge.setAttribute('aria-label',failed?'훈련 실패 · 성장 없음 · 훈련비 소모':'훈련 성공 · 능력치 상승');
+ const icon=failed
+  ?'<svg viewBox="0 0 128 128" focusable="false" aria-hidden="true"><path class="la-result-emblem-outline" d="M64 9 111 31v36c0 25-22 43-47 53C39 110 17 92 17 67V31Z"/><path class="la-result-glyph" d="M45 45 83 83 M83 45 45 83"/></svg>'
+  :'<svg viewBox="0 0 128 128" focusable="false" aria-hidden="true"><path class="la-result-emblem-outline" d="M64 10 109 34v34c0 24-20 42-45 51C39 110 19 92 19 68V34Z"/><path class="la-result-glyph" d="m35 66 21 22 38-45"/></svg>';
+ badge.innerHTML='<div class="la-result-rays" aria-hidden="true"></div>'+
+ '<div class="la-result-emblem">'+icon+'</div>'+
+ '<strong class="la-result-headline">'+(failed?'훈련 실패':'훈련 성공')+'</strong>'+
+ '<small class="la-result-subtitle">'+(failed?'성장 없음 · 훈련비 '+Number(cost).toLocaleString('ko-KR')+' D 소모':
+ escapeHtml(statName)+' +'+Number(gain)+' 상승')+'</small>';
+ stage.appendChild(badge);
+ feedbackTimer=setTimeout(()=>{
+  if(badge.parentNode)badge.remove();
+  feedbackTimer=0;
+ },TRAINING_RESULT_MS);
+}
 function pose(index){window.LudusDoctoreAnim?.react?.(index);}
 function moveHero(step){let a=bridge(),s=a?.state();if(!s?.roster?.length){toast('검투사시장에서 먼저 영입하세요.');return;}let i=((s.active||0)+step+s.roster.length)%s.roster.length;a.select(i);refresh();}
-function changeRoom(next){room=next;bridge()?.section(next);screen.hidden=false;render();}
-function goHome(){window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();screen.hidden=true;clearTimeout(toastTimer);clearTimeout(poseTimer);pose(-1);bridge()?.returnHome();document.getElementById('careerHub').hidden=true;window.LudusScene?.open();}
+function changeRoom(next){clearTrainingFeedback();room=next;bridge()?.section(next);screen.hidden=false;render();}
+function goHome(){clearTrainingFeedback();window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();screen.hidden=true;clearTimeout(toastTimer);clearTimeout(poseTimer);pose(-1);bridge()?.returnHome();document.getElementById('careerHub').hidden=true;window.LudusScene?.open();}
 function actionTraining(){const s=bridge()?.state();if(!s?.roster?.length){toast('훈련할 검투사가 없습니다.');return;}const opt=tiles[selectedTraining],h=s.roster[s.active];const cost=bridge()?.trainingCost?.(s.active,opt.stat)||12;if(s.gold<cost){speechPhase='insufficient';drawTrainingSpeech();toast('훈련 비용 '+cost+'D가 부족합니다.');pose(2);return;}
+ const before=Number(h.stats[opt.stat])||0;
  const msg=bridge().train(opt.stat)||'';
  const failed=msg.startsWith('훈련 실패!');
+ const gained=Math.max(0,(Number(h.stats[opt.stat])||0)-before);
  speechPhase=failed?'failed':Number(h.stats[opt.stat])>10?'mastery':'success';
- refresh();pose(failed?2:3);toast(failed?h.name+' · 훈련 실패 · '+cost+'D 소모':h.name+' · '+opt.name+' 완료!');}
+ refresh();showTrainingFeedback({failed,statName:opt.name,gain:gained,cost});
+ pose(failed?2:3);toast(failed?h.name+' · 훈련 실패 · '+cost+'D 소모':h.name+' · '+opt.name+' 완료!');}
 function changeItem(mode){const a=bridge(),list=a?.catalog()||[],gear=list.find(g=>g.id===selectedGear);if(!gear){toast('장비를 먼저 선택하세요.');return;}const outcome=a.equip(selectedGear,mode);toast(outcome||'장비 상태가 갱신되었습니다.');refresh();}
 function drawRoster(parent,isTraining){parent.replaceChildren();const a=bridge(),s=a?.state();if(!s)return;
  const from=Math.max(0,Math.min(s.active-1,Math.max(0,s.roster.length-(isTraining?6:3))));
@@ -190,11 +225,11 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  home.title='메인 루두스 로비로 돌아가기';
  home.addEventListener('click',goHome);stage.appendChild(home);
  fit();}
-function open(name){setup();room=name==='gear'?'armory':'training';if(room==='training'){
+function open(name){setup();clearTrainingFeedback();room=name==='gear'?'armory':'training';if(room==='training'){
  speechPhase='welcome';
  window.ArenaAudio?.prepareTrainingImpact?.();
 }screen.hidden=false;render();}
-function close(){window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();if(screen)screen.hidden=true;}
+function close(){clearTrainingFeedback();window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();if(screen)screen.hidden=true;}
 function refresh(){if(screen&&!screen.hidden)render();}
 window.LudusApprovedScenes={open,close,refresh,goHome};
 window.addEventListener('arena-gear-atlas-ready',()=>{if(screen&&!screen.hidden&&room==='armory')refresh();});
