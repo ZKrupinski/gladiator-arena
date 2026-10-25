@@ -142,6 +142,56 @@ try{
    screenshots.push(size.width);
   }
  }
+ // Validate the real arena draft header in both ordinary duel and 5v5 modes.
+ // The shared lobby button is intentionally still mounted in the parent Hub.
+ await page.evaluate(()=>{
+  if(window.ArenaBalance)window.ArenaBalance.heroPower=()=>120;
+  window.LudusCardScenes.beginDraft(0);
+  window.LudusCardScenes.renderDraft({
+   name:'Arena Challenger',cls:'murmillo',level:22,round:88,boss:false,
+   match:{power:130,equipment:1,training:3}
+  });
+ });
+ for(const mode of ['1v1','5v5']){
+  if(mode==='5v5')await page.locator('[data-battle-mode="5v5"]').click();
+  for(const size of [
+   {width:1182,height:1110},{width:930,height:930},{width:768,height:1024},
+   {width:430,height:932},{width:390,height:844},{width:360,height:800},
+   {width:320,height:650}
+  ]){
+   await page.setViewportSize(size);
+   const geom=await page.evaluate(()=>{
+    const r=e=>{const b=e.getBoundingClientRect();return {left:b.left,right:b.right,top:b.top,bottom:b.bottom,width:b.width,height:b.height}};
+    const title=r(document.querySelector('.lc-draft-screen .lc-banner h1'));
+    const funds=r(document.querySelector('.lc-draft-screen .lc-recovery-funds'));
+    const header=r(document.querySelector('.lc-draft-screen .lc-top'));
+    const home=r(document.getElementById('careerVisualHome'));
+    const intersect=(a,b)=>a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
+    const mid=b=>(b.top+b.bottom)/2;
+    const labels=[...document.querySelectorAll('.lc-draft-screen .lc-recovery-funds small')].map(x=>x.textContent);
+    const maxEdge=Math.max(title.right,funds.right,home.right);
+    return {title,funds,home,header,labels,maxEdge,
+     overlap:intersect(title,funds)||intersect(funds,home)||intersect(title,home),
+     heightOffsets:[Math.abs(mid(title)-mid(home)),Math.abs(mid(funds)-mid(home))],
+     resourcesVisible:getComputedStyle(document.querySelector('.lc-draft-screen .lc-recovery-funds')).display!=='none',
+     hasRosterChip:!!document.querySelector('.lc-draft-screen .lc-resources>span:nth-child(3)'),
+     selected5v5:document.querySelector('[data-battle-mode="5v5"]').classList.contains('selected'),
+     width:innerWidth};
+   });
+   assert.deepEqual(geom.labels,['보유 금화','보유 명예'],'arena title has only spendable currency chips');
+   assert(geom.resourcesVisible&&!geom.hasRosterChip,'both currencies, no redundant roster count');
+   assert(!geom.overlap,'draft header title/money/home overlap '+JSON.stringify({mode,size,geom}));
+   assert(geom.header.height<=83,'draft title bar too tall '+JSON.stringify({mode,size,geom}));
+   assert(geom.home.left-geom.funds.right>=4,'draft currency touches lobby button '+JSON.stringify({mode,size,geom}));
+   assert(geom.funds.left-geom.title.right>=1,'draft money touches title '+JSON.stringify({mode,size,geom}));
+   assert(geom.heightOffsets.every(v=>v<=13),'draft header items should share one line '+JSON.stringify({mode,size,geom}));
+   assert(geom.maxEdge<=size.width+2,'draft header leaves viewport '+JSON.stringify({mode,size,geom}));
+   if(mode==='5v5')assert(geom.selected5v5,'5v5 selection should survive viewport changes');
+   if(size.width===1182||size.width===390){
+    await page.screenshot({path:'/tmp/ludus-arena-header-v71-'+mode+'-'+size.width+'.png',fullPage:true});
+   }
+  }
+ }
  assert.deepEqual(errors,[],'no browser JS errors');
  console.log('LUDUS_RECOVERY_V69_BROWSER_PASS '+JSON.stringify({initial,card,severe,fundsBefore,fundsAfter,screenshots}));
 }finally{await browser.close()}
