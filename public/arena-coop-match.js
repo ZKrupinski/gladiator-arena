@@ -27,8 +27,8 @@
   const offense=clamp(.92-injuryRatio*.40-fatigueRatio*.10,.76,.92);
   return CLASSES.map((cls,i)=>{
    const h=allies[i],unitHp=hpOf(h),unitAtk=atkOf(h);
-   const hp=clamp(unitHp,hpAvg*.72,hpAvg*1.28);
-   const atk=clamp(unitAtk,atkAvg*.76,atkAvg*1.26);
+   const hp=160+(clamp(unitHp,hpAvg*.72,hpAvg*1.28)-160)*.75;
+   const atk=18+(clamp(unitAtk,atkAvg*.76,atkAvg*1.26)-18)*.75;
    const look=cls+'_a_L'+stage;
    return {name:NAMES[i],cls,level,stage,growthType:cls+'_a',look,visualId:look,
     combat:{
@@ -39,9 +39,16 @@
      hp:Math.max(40,Math.round((hp-injuryOf(h)*.4)*1.12*
       (1+.45*clamp((level-15)/35,0,1)))),
      atk:Math.max(4,Math.round(atk*offense*(cls==='thraex'?1.025:cls==='retiarius'?.985:1))),
-     move:Math.round(moveAvg*.95),
-     armor:cls==='murmillo'?.16:cls==='retiarius'?.08:.10,
-     parry:cls==='murmillo'?.21:cls==='retiarius'?.17:.19
+     move:Math.round((244+(moveAvg-244)*.75)*.95),
+     // Carry part of advanced defensive/tempo growth into rivals, avoiding free wins
+     // at Lv.50 while retaining the player's trained advantage.
+     armor:clamp((cls==='murmillo'?.16:cls==='retiarius'?.08:.10)+Math.max(0,avg(allies,h=>h.combat.armor??.1)-.16)*.65,0,.52),
+     parry:clamp((cls==='murmillo'?.21:cls==='retiarius'?.17:.19)+Math.max(0,avg(allies,h=>h.combat.parry??.2)-.22)*.65,.05,.42),
+     recovery:1-(1-avg(allies,h=>h.combat.recovery??1))*.65,
+     dodgeChance:avg(allies,h=>h.combat.dodgeChance??0)*.65,
+     guardEfficiency:avg(allies,h=>h.combat.guardEfficiency??0)*.65,
+     sp:Math.max(1,Math.round((h.combat.sp??unitAtk*2.5)*.88)),
+     specialCooldown:8-Math.max(0,7-avg(allies,h=>h.combat.specialCooldown??7))*.65
     },injury:0,fatigue:0};
   });
  }

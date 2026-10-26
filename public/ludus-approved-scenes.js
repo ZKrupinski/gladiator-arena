@@ -5,10 +5,10 @@ const W=1672,H=941;
 // DEF raises armor; END raises maximum HP. Both retain birth END aptitude.
 const tiles=[
  {name:'공격 훈련',stat:'str',statLabel:'STR · 근력',help:'공격력 증가'},
- {name:'방어 훈련',stat:'def',statLabel:'DEF · 방어',help:'피해 감소율·방어력 증가'},
+ {name:'방어 훈련',stat:'def',statLabel:'DEF · 방어',help:'피해 감소·가드 유지력 증가'},
  {name:'체력 훈련',stat:'end',statLabel:'END · 체력',help:'최대 HP 증가'},
- {name:'민첩 훈련',stat:'agi',statLabel:'AGI · 민첩',help:'이동 속도·기력 회복 증가'},
- {name:'기술 훈련',stat:'focus',statLabel:'FOCUS · 집중',help:'패링·필살기 능력 증가'}
+ {name:'민첩 훈련',stat:'agi',statLabel:'AGI · 민첩',help:'이동·공격 회복·회피 향상'},
+ {name:'기술 훈련',stat:'focus',statLabel:'FOCUS · 집중',help:'패링·필살기 위력·재사용 향상'}
 ];
 // All dialogue is text, not painted into any image. One script per training
 // tile (distinct DEF shieldwork versus END endurance conditioning).

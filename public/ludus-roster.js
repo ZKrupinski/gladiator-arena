@@ -52,7 +52,7 @@
   const match=root.ArenaBalance?.makeMatch(round,roster,boss)||null;
   // Recalculate when the selected fighter, their equipment, current injuries,
   // or the team composition changes. The same selection remains stable.
-  const matchKey=JSON.stringify([round,roster.map(h=>[
+  const matchKey=JSON.stringify(['five-stats-v97',round,roster.map(h=>[
    h.name,h.cls,h.level,h.stats,h.equipment,h.injury,h.fatigue
   ])]);
   if(state.pendingOpponent?.matchKey===matchKey){

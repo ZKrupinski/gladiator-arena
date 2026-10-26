@@ -7,7 +7,7 @@ const types=[
  {id:'murmillo',className:'무르밀로',names:['Lucius','Marcus','Brutus','Gaius','Publius','Tiberius'],base:[5,3,5,3],cost:500,desc:'견고한 방패와 단검으로 전선을 지키는 강인한 무르밀로입니다. 안정적인 방어에 능합니다.',face:[856,255,163,151]},
  {id:'retiarius',className:'레티아리우스',names:['Marcellus','Quintus','Nero','Sextus','Julius','Valerius'],base:[2,4,1,5],cost:500,desc:'그물과 삼지창으로 원거리를 장악하는 레티아리우스입니다. 높은 기술과 넓은 사거리를 가집니다.',face:[1244,264,176,150]}
 ];
-const labels=[['STR','#ff5554','#bc2223','✊'],['AGI','#66f36e','#238f39','♞'],['DEF','#5796ff','#274cc2','⬟'],['TEC','#a66afa','#6028bd','✥']];
+const labels=[['STR','#ff5554','#bc2223','✊'],['AGI','#66f36e','#238f39','♞'],['END','#f4bf6a','#9e702a','♥'],['FOC','#a66afa','#6028bd','✥'],['DEF','#5796ff','#274cc2','⬟']];
 const merchantLines={hello:'좋은 검투사가 필요하신가요? 방금 들어온 유망한 후보들입니다!',select:'훈련만 잘 시킨다면 훌륭한 투사가 될 겁니다!',confirm:'정말 이 검투사를 영입하시겠습니까? 데나리우스를 지불하면 거래가 성사됩니다.',cancel:'마음이 바뀌셨습니까? 다른 후보도 살펴보시지요.',success:'하하하! 안목이 훌륭하시군요! 이 검투사는 이제 당신의 루두스 소속입니다!',poor:'금화가 부족하다니 아쉽군요. 시합에서 승리하고 다시 방문하세요.',empty:'모든 단상이 비었습니다! 후보 갱신으로 새로운 검투사를 불러오십시오.',refresh:'새로운 후보들이 단상에 올랐습니다! 천천히 살펴보시지요.'};
 let scene=null,stage=null,opts=null,selection=0,keyImg=null,mode='idle',dialogOffer=null;
 let speechReset=null,animateTimer=null,moodTimer=null,previousFocus=null;
@@ -80,11 +80,13 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
   const improved=q.bonus+(i===primary?(quality==='rare'?2:quality==='veteran'?1:0):0);
   return Math.max(1,Math.min(9,base+variance+improved));
  });
+ const defense=Math.max(1,Math.min(9,(t.id==='murmillo'?5:3)+q.bonus+randIndex(rng,5)-2));
+ aptitudes.def=+(.70+randIndex(rng,21)*.04).toFixed(2);
  const cost=Math.round((q.min+randIndex(rng,q.range+1))/10)*10;
  const premium=
   (appearance==='legacy'?850:appearance==='murmillo_motion_v3'?2600:
    appearance==='murmillo_champion_red'?3600:0);
- return {id:t.id,className:t.className,name,vals,cost:cost+premium,aptitudes,innateSummary,
+ return {id:t.id,className:t.className,name,vals,defense,cost:cost+premium,aptitudes,innateSummary,
   desc:t.desc+' '+(quality==='rare'?'매우 드문 고급 검투사. ':quality==='veteran'?'실전 경험이 풍부한 숙련자. ':'')+
    '특기: '+trait+'.',
   face:t.face,quality,trait,growthType,visualId,appearance,visualLabel,
@@ -169,7 +171,7 @@ function overlayPanel(hero,i,visible){const el=$('#gmPanel'+i);el.hidden=!visibl
  const q=qualities[hero.quality]||qualities.common;
  el.classList.toggle('gm-rare-panel',hero.quality==='rare');
  el.innerHTML=`<div class="gm-roman-name">${clean(hero.name)}</div><div class="gm-class">${clean(hero.className)} · ${q.label} · ${clean(hero.visualLabel||'성장형')}</div><div class="gm-innate">${clean(hero.innateSummary||'성장 적성 · 보통')}</div><div class="gm-lv">Lv.0</div>`+
- hero.vals.map((n,j)=>`<div class="gm-stat"><span class="gm-stat-name"><b style="color:${labels[j][1]}">${labels[j][3]}</b>${labels[j][0]}</span><span class="gm-stat-track"><i style="--value:${Math.min(100,n*12)}%;--color:${labels[j][1]};--shade:${labels[j][2]}"></i></span></div>`).join('');
+ [...hero.vals,hero.defense??hero.vals[2]].map((n,j)=>`<div class="gm-stat"><span class="gm-stat-name"><b style="color:${labels[j][1]}">${labels[j][3]}</b>${labels[j][0]}</span><span class="gm-stat-track"><i style="--value:${Math.min(100,n*12)}%;--color:${labels[j][1]};--shade:${labels[j][2]}"></i></span></div>`).join('');
 }
 function render(){if(!scene||scene.hidden)return;
  const list=inventory(),state=opts.state;selection=pick(selection);

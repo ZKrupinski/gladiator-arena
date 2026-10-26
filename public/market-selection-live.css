@@ -98,7 +98,7 @@
 
 
 /* v89 · Safe-zone typography across all three illustrated market stalls.
-   Four innate-stat bars plus the name/quality must fit within each 183px
+   Five innate-stat bars plus the name/quality must fit within each 183px
    plaque. The approved original market art, hitboxes and rarity remain intact. */
 .gm-screen .gm-stage .gm-card-dynamic{
  box-sizing:border-box;overflow:hidden;
@@ -128,9 +128,9 @@
 }
 .gm-screen .gm-stage .gm-card-dynamic .gm-stat{
  box-sizing:border-box;display:flex;align-items:center;
- width:100%;min-width:0;height:17px;margin:1px 0!important;
+ width:100%;min-width:0;height:15px;margin:0!important;
  gap:6px;overflow:hidden;
- font:800 13px/17px Georgia,'Noto Sans KR',serif!important;
+ font:800 12px/15px Georgia,'Noto Sans KR',serif!important;
 }
 .gm-screen .gm-stage .gm-stat-name{
  box-sizing:border-box;display:inline-flex;flex:none;align-items:center;

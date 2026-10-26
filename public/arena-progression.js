@@ -7,16 +7,16 @@
  if(root)root.ArenaProgression=progression;
  if(typeof module==='object'&&module.exports)module.exports=progression;
 })(typeof window==='object'?window:globalThis,function(){'use strict';
- const LEVEL_CAP=50,STATS=['str','agi','end','focus'];
- const NAMES={str:'근력',agi:'민첩',end:'체력',focus:'집중'};
+ const LEVEL_CAP=50,STATS=['str','agi','end','focus','def'];
+ const NAMES={str:'근력',agi:'민첩',def:'방어',end:'체력',focus:'집중'};
  const clamp=(v,min,max)=>Math.min(max,Math.max(min,Number.isFinite(+v)?+v:min));
  const level=h=>Math.round(clamp(h?.level??1,1,LEVEL_CAP));
  const born=h=>h?.birthStats||h?.innateStats||null;
  function strengths(h){
   return Object.fromEntries(STATS.map(key=>{
-   const aptitude=clamp(h?.aptitudes?.[key]??1,.6,1.6);
+   const aptitude=clamp(h?.aptitudes?.[key]??(key==='def'?h?.aptitudes?.end:undefined)??1,.6,1.6);
    // Market Lv.0 rolls are 1~9; center 4 is ordinary.
-   const origin=clamp(born(h)?.[key]??4,1,9);
+   const origin=clamp(born(h)?.[key]??(key==='def'?born(h)?.end:undefined)??4,1,9);
    // Better inherited attributes become increasingly significant at Lv.50.
    const potential=clamp(.65+(aptitude-1)*1.05+(origin-4)*.088,.28,1.72);
    return [key,potential];

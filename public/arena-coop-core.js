@@ -35,8 +35,11 @@
   const stats=h.combat||{},maxHp=Math.max(40,Math.round(finite(stats.hp,160)*STAMINA_MULT));
   const hp=Math.max(1,maxHp-clamp(Math.round(finite(h.injury,0)*1.3),0,maxHp-1));
   return {...h,id:side+seat,side,seat,maxHp,hp,startHp:hp,
-   atk:Math.max(4,finite(stats.atk,20)),armor:clamp(finite(stats.armor,.1),0,.48),
-   parry:clamp(finite(stats.parry,.14),.05,.4),speed:clamp(finite(stats.move,220)*.48,70,160),
+   atk:Math.max(4,finite(stats.atk,20)),armor:clamp(finite(stats.armor,.1),0,.62),
+   parry:clamp(finite(stats.parry,.14),.05,.48),speed:Math.max(70,finite(stats.move,220)*.48),
+   sp:Math.max(1,finite(stats.sp,finite(stats.atk,20)*2.5)),specialCooldown:Math.max(3.1,finite(stats.specialCooldown,8)),
+   recovery:clamp(finite(stats.recovery,1),.6,1),dodgeChance:clamp(finite(stats.dodgeChance,0),0,.30),
+   guardEfficiency:clamp(finite(stats.guardEfficiency,0),0,.32),evadeReady:0,evade:0,
    x:side==='ally'?(seat%2?125:265):(seat%2?1155:1015),y:405+seat*62,
    face:side==='ally'?1:-1,cooldown:.4+seat*.2,linkReady:0,specialReady:4+seat,
    hit:0,guard:0,swing:0,rooted:0,exposed:0,stagger:0,dash:0,dashReady:2+seat*.5,
@@ -128,6 +131,14 @@
  function hurt(s,a,b,mult=1,kind='hit',chain=true){
   if(a.dead||b.dead)return 0;
   let target=b,amount=a.atk*CONTACT_RATE*mult*(.87+s.random()*.26)*(1-b.armor);
+  // A brief, visible evasion; rooting/stagger prevents dodges and stops chain immunity.
+  if(chain&&b.stagger<=0&&b.rooted<=0&&s.time>=b.evadeReady&&b.dodgeChance>0&&s.random()<b.dodgeChance){
+   b.evadeReady=s.time+2.4;b.evade=.30;b.dash=.28;shove(s,b,b.x>=a.x?38:-38);
+   emit(s,'dodge',b,a,b.name+' 회피!');return 0;
+  }
+  if(chain&&b.stagger<=0&&b.rooted<=0&&b.guardEfficiency>0&&s.random()<b.guardEfficiency){
+   amount*=.55;b.guard=.4;b.blocks++;emit(s,'guard',b,a,b.name+' 방패 방어');
+  }
   if(chain&&b.stagger<=0&&b.rooted<=0&&s.random()<Math.min(.65,b.parry*(b.side==='ally'&&s.formation?.until>s.time?1.38:1))){
    b.guard=.5;b.blocks++;b.counter={target:a.id,due:s.time+.18,expires:s.time+1.7};
    b.attack=null;b.dash=.55;b.dashReady=s.time+3;
@@ -224,7 +235,7 @@
   s.time+=dt;s.turn=(s.turn||0)+1;
   for(const u of (s.turn%2?s.units:s.units.slice().reverse())){
    u.moving=false;if(u.dead)continue;
-   for(const k of ['cooldown','hit','guard','swing','rooted','exposed','stagger','dash'])u[k]=Math.max(0,u[k]-dt);
+   for(const k of ['cooldown','hit','guard','swing','rooted','exposed','stagger','dash','evade'])u[k]=Math.max(0,u[k]-dt);
    if(u.counter){
     const foe=s.units.find(v=>v.id===u.counter.target);
     if(!foe||foe.dead||s.time>u.counter.expires){u.counter=null;}
@@ -286,10 +297,12 @@
      const target=s.units.find(v=>v.id===atk.target);
      if(target&&!target.dead&&distance(u,target)<205){
       if(atk.special&&u.cls==='retiarius'){
+       hurt(s,u,target,u.sp*.35/u.atk,'net-hit',false);
+       if(target.dead)continue;
        target.rooted=1.35;target.exposed=2;target.stagger=.4;
        emit(s,'net',u,target,u.name+' 그물 포획');link(s,u,target,'포획 협공',2);
       }else{
-       const dealt=hurt(s,u,target,atk.special?1.5:1);
+       const dealt=hurt(s,u,target,atk.special?u.sp*.60/u.atk:1);
        if(atk.special&&dealt&&!target.dead){
         shove(s,target,u.face*165);target.exposed=1.5;target.stagger=.55;
         emit(s,'push',u,target,u.name+' 강타 밀어내기');
@@ -363,7 +376,7 @@
    }else if(u.cooldown<=0){
     const special=s.time>=u.specialReady;
     u.attack={target:target.id,special,remaining:special?.64:.4,total:special?.64:.4};
-    u.cooldown=1.25+s.random()*.5;if(special)u.specialReady=s.time+8;
+    u.cooldown=(1.25+s.random()*.5)*u.recovery;if(special)u.specialReady=s.time+u.specialCooldown;
    }
   }
   // Only living fighters block movement, including dash and knockback. Fallen bodies persist visually.

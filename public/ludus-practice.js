@@ -190,8 +190,11 @@ function heroFor(i,k){
  return {side:'ally',index:i,cls:h.cls,name:h.name,seat:k,lane:k,
   x:c.x-87,y:c.y,homeX:c.x-87,maxHp,hp:maxHp,
   atk:Math.max(8,Math.round(number(stats.atk,17))),
-  armor:clamp(number(stats.armor),0,.47),parryChance:clamp(number(stats.parry,.14)+.18,.12,.6),
-  speed:84+number(h.stats?.agi)*2,cooldown:.18+k*.12,swing:0,hit:0,dead:false,fade:1.8,face:1,
+  armor:clamp(number(stats.armor),0,.62),parryChance:clamp(number(stats.parry,.14)+.18,.12,.6),
+  speed:Math.max(50,number(stats.move,244)*.35),
+  sp:number(stats.sp,number(stats.atk,17)*1.55/.65),specialCooldown:number(stats.specialCooldown,7),specialReady:4+k*.5,
+  recovery:number(stats.recovery,1),dodgeChance:number(stats.dodgeChance,.08),guardEfficiency:number(stats.guardEfficiency),
+  cooldown:.18+k*.12,swing:0,hit:0,dead:false,fade:1.8,face:1,
   exp:0,kills:0,level:h.level,windup:0,target:null,guard:0,parry:0,
   guardCD:0,dodge:0,stun:0,swings:0,special:false};
 }
@@ -428,7 +431,8 @@ function drawSpark(p){
 function deal(attacker,target,multiplier=1,style='normal'){
  if(attacker.dead||target.dead)return;
  const crit=Math.random()<(attacker.side==='ally'?.17:.09);
- const raw=attacker.atk*(.88+Math.random()*.24)*(crit?1.43:1)*multiplier;
+ const power=style==='special'?(attacker.sp??attacker.atk*1.55/.65)*.65:attacker.atk;
+ const raw=power*(.88+Math.random()*.24)*(crit?1.43:1)*multiplier;
  const base=root.ArenaBalance?.combatDamage?.(raw,style)
   ?? Math.round(raw*(style==='parry'?.60:style==='special'?.54:.46));
  const damage=Math.max(1,Math.round(base*(1-target.armor)));
@@ -463,13 +467,14 @@ function deal(attacker,target,multiplier=1,style='normal'){
  }
 }
 function prepareStrike(u,target){
- u.swings++;u.special=u.swings%4===0;
+ u.swings++;u.special=u.side==='ally'?battle.clock>=u.specialReady&&u.swings>=4:u.swings%4===0;
+ if(u.special&&u.side==='ally')u.specialReady=battle.clock+(u.specialCooldown||7);
  playCombatSound(u.special?'dash':u.swings%3===0?'heavy_swing':'swing',u,
   u.special?.84:u.swings%3===0?.65:.53);
  if(u.special){emitVfx('dash',u,target,true);root.ArenaCombatFeel?.event?.(battle,'dash',u,target,battle.clock);}
  u.windup=u.special?.34:.24;u.windupTotal=u.windup;
  u.target=target;u.swing=u.special?.59:.46;u.swingTotal=u.swing;
- u.cooldown=(u.side==='ally'?.81:.94)+(u.special?.24:0)+Math.random()*.17;
+ u.cooldown=((u.side==='ally'?.81:.94)+(u.special?.24:0)+Math.random()*.17)*(u.recovery||1);
  // Original duel-inspired timing: guard can parry during a brief window,
  // otherwise absorbs part of the hit. Foes can also evade.
  if(target.guardCD<=0&&target.stun<=0){
@@ -482,7 +487,7 @@ function prepareStrike(u,target){
    target.parry=Math.random()<chance/guardChance?u.windup+.10:0;
    target.guardCD=1.3+Math.random()*.8;
    playCombatSound('guard',target,.42);
-  }else if(Math.random()<(target.side==='ally'?.08:.06)){
+  }else if(Math.random()<(target.side==='ally'?(target.dodgeChance||.08):.06)){
    target.dodge=u.windup+.15;target.guardCD=1.25;
   }
  }
@@ -504,9 +509,9 @@ function contact(u,target){
   }
   emitVfx('guard',target,u,false);
   playCombatSound('block',target,.74);
-  deal(u,target,.33,'normal');return;
+  deal(u,target,.33*(1-(target.guardEfficiency||0)),'normal');return;
  }
- deal(u,target,u.special?1.55:1,u.special?'special':'normal');
+ deal(u,target,1,u.special?'special':'normal');
 }
 function act(u,dt){
  if(u.dead){u.fade=Math.max(0,u.fade-dt);return;}

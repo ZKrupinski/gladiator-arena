@@ -8,8 +8,8 @@
  const TRAINING_SOFTCAP=10;
  const LEVEL_CAP=50;
  const innate=(h,key)=>root.ArenaProgression?.growth?.(h,key)||0;
- // DEF training is separate from END; immutable END-born toughness persists.
- const stat=(h,key)=>trainedStat(h?.stats?.[key])+innate(h,key==='def'?'end':key);
+ // Five independent stats; progression preserves END fallback only for old DEF identities.
+ const stat=(h,key)=>trainedStat(h?.stats?.[key])+innate(h,key);
  function trainedStat(value){
   const n=Number(value);
   if(!Number.isFinite(n)||n<=0)return 0;
@@ -87,7 +87,8 @@
   const experience=avg('effectiveLevel');
   const level=Math.round(clamp(experience+.75-(boss?3:0),1,LEVEL_CAP));
   return {level,effectiveLevel:+experience.toFixed(2),
-   hp:Math.round(avg('hp')),atk:Math.round(avg('atk')),
+   // Rivals inherit 75% of the gain above class baseline, leaving a growth advantage.
+   hp:Math.round(138+(avg('hp')-138)*.75),atk:Math.round(17+(avg('atk')-17)*.75),
    training:Math.round(avg('training')),equipment:Math.round(avg('equipment')),
    power:Math.round(avg('power')),party:stats.length,
    label:boss?'챔피언 도전':'박빙의 상대'};
@@ -137,6 +138,7 @@
  }
  function heroStats(h,base,gear={atk:0,hp:0}){
   const trait=TRAITS[h?.cls]||TRAITS.murmillo;
+  const agility=stat(h,'agi'),defense=stat(h,'def'),focus=stat(h,'focus');
   return {
    atk:Math.round(base.atk+stat(h,'str')*2.65+(gear.atk||0)),
    hp:Math.round(base.hp+stat(h,'end')*15+(gear.hp||0)),
@@ -144,7 +146,13 @@
    sp:Math.round(base.sp+stat(h,'focus')*4.9+stat(h,'str')*.65+(gear.sp||0)),
    staminaRegen:1+stat(h,'agi')*.048+(gear.stamina||0),
    specialCooldown:clamp(7-stat(h,'focus')*.33-(gear.cooldown||0),3.1,7),
-   armor:clamp(trait.armor+stat(h,'def')*.007+(gear.armor||0),0,.48),
+   armor:clamp(trait.armor+(.62-trait.armor)*defense/(defense+18)+(gear.armor||0),0,.62),
+   guardEfficiency:.32*defense/(defense+12),
+   recovery:1-.40*agility/(agility+12),
+   dodgeChance:.06+.24*agility/(agility+14),
+   dodgeCost:23*(1-.32*agility/(agility+14)),
+   dodgeWindow:.30+.10*agility/(agility+14),
+   parryWindow:.08*focus/(focus+12),
    focus:stat(h,'focus'),
    parry:clamp(trait.parry+stat(h,'focus')*.016,0,.48)
   };
@@ -164,8 +172,8 @@
  }
  function damageReduction(defender,blocked=false){
   const trait=TRAITS[defender?.cls]||TRAITS.murmillo;
-  const armor=clamp(defender?.armor??trait.armor,0,.5);
-  return clamp(armor+(blocked?.33:0),0,.65);
+  const armor=clamp(defender?.armor??trait.armor,0,.62);
+  return clamp(armor+(blocked?.33:0),0,.78);
  }
  function playerParryDamage(f,enemy,career){
   if(!career)return null;
@@ -187,7 +195,7 @@
  function combatDamage(value,kind='normal'){
   return Math.max(1,Math.round(Math.max(0,Number(value)||0)*(DAMAGE_RATES[kind]??DAMAGE_RATES.normal)));
  }
- root.ArenaBalance={version:'1.5.0',TRAINING_SOFTCAP,LEVEL_CAP,trainedStat,stat,trainingAptitude,trainingGain,combatDamage,DAMAGE_RATES,TRAITS,MODES,trainingCost,heroPower,
+ root.ArenaBalance={version:'1.6.0',TRAINING_SOFTCAP,LEVEL_CAP,trainedStat,stat,trainingAptitude,trainingGain,combatDamage,DAMAGE_RATES,TRAITS,MODES,trainingCost,heroPower,
   matchStrength,makeMatch,comebackParry,
   encounterLevel,duelEnemy,heroStats,enemyAi,damageReduction,
   playerParryDamage,rewards};

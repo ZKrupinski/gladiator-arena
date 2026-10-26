@@ -119,7 +119,7 @@
   function drawUnit(u){
    const flight=u.flight,flightT=flight?Math.max(0,Math.min(1,(sim.time-flight.at)/flight.duration)):1;
     const airborne=flight&&flightT<1;
-    const pose=u.dead?'death':airborne?'hit':u.hit>0?'hit':u.guard>0?'guard':u.attack||u.swing>0?'attack':u.moving?'walk':'idle';
+    const pose=u.dead?'death':airborne?'hit':u.hit>0?'hit':u.evade>0?'dodge':u.guard>0?'guard':u.attack||u.swing>0?'attack':u.moving?'walk':'idle';
    const progress=u.dead?1:u.attack? .4*(1-u.attack.remaining/u.attack.total):u.swing>0?.4+.6*(1-u.swing/.4):pose==='hit'?1-u.hit/.24:(sim.time*.8)%1;
    const action=pose==='attack'?(u.cls==='retiarius'?'thrust':'slash'):pose;
    const look=root.PracticeScaleProfiles?.look?.(u,root.LudusBridge?.state?.()?.roster)||u.look,
@@ -207,17 +207,17 @@
    for(const u of C.depthOrder(sim.units))drawUnit(u);
    for(const e of state.fx){
     const age=sim.time-e.time;if(age>1.3)continue;
-    if(['hit','assist','parry','counter','riposte','rescue','ambush','push'].includes(e.type)&&age<.52){
-     const kind=['parry','counter','riposte','rescue'].includes(e.type)?'parry':
+    if(['hit','net-hit','guard','dodge','assist','parry','counter','riposte','rescue','ambush','push'].includes(e.type)&&age<.52){
+     const kind=e.type==='guard'?'guard':e.type==='dodge'?'dash':['parry','counter','riposte','rescue'].includes(e.type)?'parry':
       ['ambush','push'].includes(e.type)?'special':'hit';
      const big=['counter','riposte','rescue','ambush','push'].includes(e.type);
      // Position each VFX on a live sprite, including its recoil flight, rather than
      // leaving it at the original hit-event coordinate. Depth follows the feet.
      const target=sim.units.find(u=>u.id===e.target),source=sim.units.find(u=>u.id===e.source);
-     const owner=e.type==='parry'?(source||target):(target||source);
+     const owner=['parry','guard','dodge'].includes(e.type)?(source||target):(target||source);
      const face=owner?.face<0?-1:1;
      const appearance=owner?(root.PracticeScaleProfiles?.look?.(owner,root.LudusBridge?.state?.()?.roster)||owner.look):null;
-     const action=e.type==='parry'?'parry':kind==='special'?'special':'hit';
+     const action=['parry','guard','dodge'].includes(e.type)?e.type:kind==='special'?'special':'hit';
      const authored=root.PracticeVisualProfiles?.resolve?.(appearance,action);
      const chosen=authored?.effect?.kind&&authored.effect.kind!=='auto'?authored.effect.kind:kind;
      if(chosen==='none')continue;
@@ -292,9 +292,9 @@
     }
    }
    const audible=events.find(e=>['parry','riposte','ambush','rescue'].includes(e.type))||
-     events.find(e=>['counter','push','chase'].includes(e.type))||events.find(e=>e.type==='assist')||events.find(e=>e.type==='hit');
+     events.find(e=>['counter','push','chase'].includes(e.type))||events.find(e=>e.type==='assist')||events.find(e=>['hit','net-hit','guard','dodge'].includes(e.type));
    if(audible&&sim.time>(state.nextSound||0)){
-    sound(audible.type==='parry'?'parry':['assist','counter','riposte','push','ambush','rescue'].includes(audible.type)?'heavy_hit':'hit');
+    sound(['guard','dodge'].includes(audible.type)?audible.type:audible.type==='parry'?'parry':['assist','counter','riposte','push','ambush','rescue'].includes(audible.type)?'heavy_hit':'hit');
     state.nextSound=sim.time+.12;
    }
    state.fx=state.fx.filter(e=>sim.time-e.time<1.3);
