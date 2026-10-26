@@ -95,3 +95,78 @@
 .gm-screen .gm-stage .gm-card-dynamic .gm-innate{margin-top:10px}
 .gm-screen .gm-stage .gm-card-dynamic .gm-roman-name{font-size:28px}
 .gm-screen .gm-stage .gm-no-candidates{left:565px;top:765px;width:540px;height:120px}
+
+
+/* v89 · Safe-zone typography across all three illustrated market stalls.
+   Four innate-stat bars plus the name/quality must fit within each 183px
+   plaque. The approved original market art, hitboxes and rarity remain intact. */
+.gm-screen .gm-stage .gm-card-dynamic{
+ box-sizing:border-box;overflow:hidden;
+ padding:4px 12px 8px!important;
+}
+.gm-screen .gm-stage .gm-card-dynamic .gm-roman-name{
+ display:block;min-width:0;max-width:100%;margin:0 0 2px;
+ font:800 22px/25px Georgia,'Noto Sans KR',serif!important;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.gm-screen .gm-stage .gm-card-dynamic .gm-class{
+ display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+ line-clamp:2;max-height:30px;min-width:0;margin:0;
+ font:800 13px/15px 'Noto Sans KR',sans-serif!important;
+ overflow:hidden;word-break:keep-all;overflow-wrap:anywhere;
+ white-space:normal!important;
+}
+.gm-screen .gm-stage .gm-card-dynamic .gm-innate{
+ display:block;box-sizing:border-box;max-width:100%;
+ margin:3px 0 1px!important;
+ font:800 12px/14px 'Noto Sans KR',sans-serif!important;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.gm-screen .gm-stage .gm-card-dynamic .gm-lv{
+ margin:0 0 2px;
+ font:800 15px/18px Georgia,'Noto Sans KR',sans-serif!important;
+}
+.gm-screen .gm-stage .gm-card-dynamic .gm-stat{
+ box-sizing:border-box;display:flex;align-items:center;
+ width:100%;min-width:0;height:17px;margin:1px 0!important;
+ gap:6px;overflow:hidden;
+ font:800 13px/17px Georgia,'Noto Sans KR',serif!important;
+}
+.gm-screen .gm-stage .gm-stat-name{
+ box-sizing:border-box;display:inline-flex;flex:none;align-items:center;
+ width:65px;max-width:65px;gap:4px;overflow:hidden;
+ font:800 12px/16px 'Noto Sans KR',sans-serif!important;
+}
+.gm-screen .gm-stage .gm-stat-name b{
+ flex:none;width:19px;font-size:13px!important;text-align:center;
+}
+.gm-screen .gm-stage .gm-stat-track{
+ box-sizing:border-box;flex:1 1 0;min-width:0;max-width:100%;
+ height:11px;overflow:hidden;
+}
+.gm-screen .gm-stage .gm-stat-track i{
+ max-width:100%;box-sizing:border-box;
+}
+.gm-screen .gm-stage .gm-bottom-info{
+ box-sizing:border-box;padding:4px 14px 8px!important;min-width:0;
+}
+.gm-screen .gm-stage .gm-bottom-info h2{
+ box-sizing:border-box;max-width:100%;margin:0 0 2px!important;
+ font:800 19px/22px Georgia,'Noto Sans KR',serif!important;
+ white-space:normal!important;max-height:44px;
+ word-break:keep-all;overflow-wrap:anywhere;overflow:hidden;
+}
+.gm-screen .gm-stage .gm-bottom-info .gm-level{
+ display:flex;align-items:center;justify-content:space-between;
+ min-width:0;gap:8px!important;
+}
+.gm-screen .gm-stage .gm-bottom-info .gm-level strong{
+ min-width:0;font-size:15px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.gm-screen .gm-stage .gm-bottom-info .gm-level span{
+ flex:none;font-size:15px!important;white-space:nowrap;
+}
+.gm-screen .gm-stage .gm-bottom-info p{
+ max-width:100%;min-width:0;font-size:14px!important;
+ overflow-wrap:break-word;
+}
