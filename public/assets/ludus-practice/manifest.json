@@ -1,0 +1,40 @@
+{
+  "assetVersion": "ludus-yard-balcony-20261026",
+  "background": "ludus-practice-yard.webp",
+  "atlas": "ludus-balcony-crowd-4f.webp",
+  "frameCount": 4,
+  "frameWidth": 553,
+  "frameHeight": 149,
+  "frameMs": 290,
+  "sourceDimensions": [
+    1672,
+    941
+  ],
+  "canvasDimensions": [
+    1280,
+    720
+  ],
+  "sourceCrop": {
+    "x": 1003,
+    "y": 73,
+    "width": 553,
+    "height": 149
+  },
+  "targetDraw": {
+    "x": 767.847,
+    "y": 55.855,
+    "width": 423.349,
+    "height": 114.006
+  },
+  "notes": "Six feather-masked audience figures, all other background parts static. Animation pauses with battle.",
+  "assets": {
+    "ludus-practice-yard.webp": {
+      "size": 147000,
+      "sha256": "ccf8fe543343a82db01e39375ad5762ddce46457d7e6ef8114ac7684d05f6d3e"
+    },
+    "ludus-balcony-crowd-4f.webp": {
+      "size": 69564,
+      "sha256": "7212142903d617c8b91c0b82580baa9f8a8c741fed30944bd4ff14ab0e2e8444"
+    }
+  }
+}

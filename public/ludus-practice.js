@@ -80,7 +80,8 @@ function enemyFor(wave,index,rng=Math.random){
   windup:0,target:null,guard:0,parry:0,guardCD:0,dodge:0,stun:0,swings:0,special:false,waiting:false,
   entry:0,arrival:0};
 }
-let screen,canvas,ctx,back,chosen=[],battle=null,frameId=0,prev=0,drawTick=0;
+let screen,canvas,ctx,back,crowdAtlas,chosen=[],battle=null,frameId=0,prev=0,drawTick=0;
+let spectatorClock=0,yardAssetFailed=false;
 const $=selector=>screen?.querySelector(selector);
 const api=()=>root.LudusBridge;
 const display=()=>!!screen&&!screen.hidden;
@@ -118,7 +119,11 @@ function setup(){
  '<div class="ep-final-buttons"><button data-do="retry" class="ep-primary">↻ 다시 편성하기</button>'+
  '<button data-do="exit">❮ 루두스 복귀</button></div></section></main>';
  document.body.appendChild(screen);canvas=$('#epCanvas');ctx=canvas.getContext('2d');
- back=new Image();back.src='assets/new-era/arena.webp';
+ // One static Ludus yard background and one small four-frame, alpha-masked balcony group.
+  back=new Image();yardAssetFailed=false;
+  back.onerror=()=>{yardAssetFailed=true;back.onerror=null;back.src='assets/new-era/arena.webp';};
+  back.src='assets/ludus-practice/ludus-practice-yard.webp?v=balcony20261026';
+  crowdAtlas=new Image();crowdAtlas.src='assets/ludus-practice/ludus-balcony-crowd-4f.webp?v=balcony20261026';
  screen.addEventListener('click',event=>{
   const btn=event.target.closest('button');if(!btn||!screen.contains(btn))return;
   const id=btn.dataset.do;
@@ -817,7 +822,12 @@ function paint(){
  if(!root.ArenaCombatFeel&&battle.shakes)ctx.translate((Math.random()-.5)*battle.shakes,(Math.random()-.5)*battle.shakes);
  if(back.complete&&back.naturalWidth)ctx.drawImage(back,0,0,W,H);
  else{const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#24120e');grad.addColorStop(1,'#754328');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);}
- ctx.fillStyle='#160a0929';ctx.fillRect(0,0,W,H);
+ // Only animated characters inside the raised balcony. World, rail and equipment remain still.
+  if(!yardAssetFailed&&crowdAtlas?.complete&&crowdAtlas.naturalWidth===2212&&crowdAtlas.naturalHeight===149){
+   const frame=reduced?0:Math.floor(spectatorClock/0.29)%4;
+   ctx.drawImage(crowdAtlas,frame*553,0,553,149,767.847,55.855,423.349,114.006);
+  }
+  ctx.fillStyle='#160a0910';ctx.fillRect(0,0,W,H);
  // All court floor overlays removed: gladiators stand on the original sand.
  // Draw each duel as an indivisible scene layer: rear 4 → 3,
  // then front 2 → 1. This specifically keeps court 3's opponent
@@ -849,7 +859,7 @@ function loop(timestamp){
  const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
  const scaled=root.ArenaCombatFeel?.advance?.(battle,battle.heroes.concat(battle.enemies),
   realDt,{paused:battle.paused,reduced})??realDt;
- if(!battle.paused)simulate(scaled*battle.speed);
+ if(!battle.paused){spectatorClock+=realDt;simulate(scaled*battle.speed);}
  if(battle&&!battle.finished){
   root.ArenaAudio?.update?.({phase:'fight',paused:battle.paused,
    health:battle.heroes.reduce((hp,u)=>hp+Math.max(0,u.hp/u.maxHp),0)/Math.max(1,battle.heroes.length),
