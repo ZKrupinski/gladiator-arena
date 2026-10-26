@@ -39,6 +39,13 @@ assert.match(inline,/if\(field==='fxDirection'\)cfg\.effect\.direction=value/);
 assert.match(inline,/\['fxKind','fxDirection'\]\.includes\(field\)/);
 assert.match(inline,/to\.effect=\{\.\.\.from\.effect\}/,'batch settings retain direction');
 assert.match(inline,/c\.scale\(box\.face,1\)/,'preview mirrors actual effect');
+assert.match(editor,/id="fxDragMode"/,'sprite/effect drag selector');
+assert.match(inline,/drag\.mode==='effect'/,'effect drag has a dedicated branch');
+assert.match(inline,/cfg\.effect\.x=Math\.max\(-300/,'effect horizontal drag is clamped');
+assert.match(inline,/dx\/\(drag\.z\*drag\.face\)/,'left-facing preview saves correct offset');
+assert.match(inline,/cfg\.effect\.y=Math\.max\(-300/,'effect vertical drag is clamped');
+assert.match(inline,/persistActionEdit\(\);formatAction\(\);previewAction\(\);return/,'effect drag autosaves');
+
 const publish=fs.readFileSync('public/tools/practice-scale-publish.js','utf8');
 assert.match(publish,/visual\?\.sanitize/,'publisher includes orientation in Github serialized settings');
 const coop=fs.readFileSync('public/arena-coop.js','utf8');
