@@ -1,7 +1,11 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),crypto=require('node:crypto'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),dir=path.join(root,'public/assets/ludus-practice');
 const m=JSON.parse(fs.readFileSync(path.join(dir,'manifest.json'),'utf8'));
-assert.equal(m.assetVersion,'ludus-capua-stable-full-balcony-v5-20261026');
+assert.equal(m.assetVersion,'ludus-capua-portrait-aspect-v98-20261026');
+assert.equal(m.preferredOverlay,'ludus-balcony-actors-only-v4-4f.webp');
+assert.deepEqual(m.sourceActorFrame,{width:467,height:187});
+assert.equal(m.actorFit.horizontalScale,.90);
+assert.equal(m.actorFit.railOcclusionY,151);
 assert.equal(m.frameCount,4);assert.equal(m.frameWidth,480);assert.equal(m.frameHeight,225);
 assert.deepEqual(m.order,[0,1,2,3,2,1]);assert.deepEqual(m.targetDraw,{x:760,y:0,width:480,height:225});
 function dims(b){assert.equal(b.toString('ascii',0,4),'RIFF');assert.equal(b.toString('ascii',8,12),'WEBP');const t=b.toString('ascii',12,16);
@@ -12,12 +16,19 @@ for(const [n,v] of Object.entries(m.assets)){const b=fs.readFileSync(path.join(d
 assert.equal(crypto.createHash('sha256').update(b).digest('hex'),v.sha256,n);}
 assert.deepEqual(dims(fs.readFileSync(path.join(dir,m.background))),[1280,720]);
 assert.deepEqual(dims(fs.readFileSync(path.join(dir,m.atlas))),[1920,225]);
+assert.deepEqual(dims(fs.readFileSync(path.join(dir,m.preferredOverlay))),[1868,187]);
 const src=fs.readFileSync(path.join(root,'public/ludus-practice.js'),'utf8');
 assert.match(src,/crowdAtlas,frame\*480,0,480,225,760,0,480,225/);
+assert.match(src,/crowdActors,frame\*sourceWidth,0,sourceWidth,sourceHeight/);
+assert.match(src,/const fittedWidth=sourceWidth\*\.90/);
+assert.match(src,/ctx\.drawImage\(back,760,151,480,74,760,151,480,74\)/);
+assert.match(src,/ctx\.rect\(760,0,480,155\)/);
 assert.match(src,/crowdAtlas\.naturalWidth===1920&&crowdAtlas\.naturalHeight===225/);
 assert.match(src,/Math\.floor\(spectatorClock\/\.33\)/);
 assert.match(src,/order=\[0,1,2,3,2,1\]/);
 assert.match(src,/reduced\?0:order/);
 assert.match(src,/if\(!battle\.paused\)\{spectatorClock\+=realDt/);
 assert.doesNotMatch(src,/crowdAtlas,frame\*467,0,467,187/);
+assert.doesNotMatch(src,/ctx\.drawImage\(back,0,0,1280,720,\d+,\d+,\d+,\d+\)/);
+assert.match(fs.readFileSync(path.join(root,'public/index.html'),'utf8'),/ludus-practice\.js\?v=crowd-aspect-v98/);
 new Function(src);console.log('PASS: single 4f Capua balcony, lossless art, checksums, and pause-aware render');
