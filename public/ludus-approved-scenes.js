@@ -1,7 +1,15 @@
 /* Approved 1672×941 training/armory art. All interactive state lives in LudusBridge. */
 (function(){'use strict';
 const W=1672,H=941;
-const tiles=[{name:'공격 훈련',stat:'str',help:'공격력 향상'},{name:'방어 훈련',stat:'end',help:'방어 · 지구력 향상'},{name:'체력 훈련',stat:'end',help:'최대 HP 향상'},{name:'민첩 훈련',stat:'agi',help:'행동 속도 향상'},{name:'기술 훈련',stat:'focus',help:'기술 · 집중력 향상'}];
+// Five training categories operate on FOUR real stats; defense and stamina
+// both grow END (HP and armor), including a shared cost/failure counter.
+const tiles=[
+ {name:'공격 훈련',stat:'str',statLabel:'STR · 근력',help:'공격력 증가'},
+ {name:'방어 훈련',stat:'end',statLabel:'END · 지구력',help:'방어력·최대 HP 동시 증가',shared:'체력 훈련과 동일한 END'},
+ {name:'체력 훈련',stat:'end',statLabel:'END · 지구력',help:'최대 HP·방어력 동시 증가',shared:'방어 훈련과 동일한 END'},
+ {name:'민첩 훈련',stat:'agi',statLabel:'AGI · 민첩',help:'이동 속도·기력 회복 증가'},
+ {name:'기술 훈련',stat:'focus',statLabel:'FOCUS · 집중',help:'패링·필살기 능력 증가'}
+];
 // All dialogue is text, not painted into any image. One script per training
 // tile (including separate scripts for END defense and endurance training).
 const DOCTORE_SCRIPT=[
@@ -107,7 +115,7 @@ function actionTraining(){const s=bridge()?.state();if(!s?.roster?.length){toast
  const failed=msg.startsWith('훈련 실패!');
  const gained=Math.max(0,(Number(h.stats[opt.stat])||0)-before);
  speechPhase=failed?'failed':Number(h.stats[opt.stat])>10?'mastery':'success';
- refresh();showTrainingFeedback({failed,statName:opt.name,gain:gained,cost});
+ refresh();showTrainingFeedback({failed,statName:opt.statLabel,gain:gained,cost});
  pose(failed?2:3);toast(failed?h.name+' · 훈련 실패 · '+cost+'D 소모':h.name+' · '+opt.name+' 완료!');}
 function changeItem(mode){const a=bridge(),list=a?.catalog()||[],gear=list.find(g=>g.id===selectedGear);if(!gear){toast('장비를 먼저 선택하세요.');return;}const outcome=a.equip(selectedGear,mode);toast(outcome||'장비 상태가 갱신되었습니다.');refresh();}
 function drawRoster(parent,isTraining){parent.replaceChildren();const a=bridge(),s=a?.state();if(!s)return;
@@ -197,9 +205,9 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
   stage.appendChild(instructor);window.LudusDoctoreAnim?.mount?.(instructor);
   const st=block('la-training-stats',1471,241);st.innerHTML=h?['str','agi','end','focus'].map(k=>'<div>'+Number(h.stats?.[k]||0)+'</div>').join(''):'—';
   let nm=block('la-training-name',1413,151);nm.innerHTML=h?'<strong>'+escapeHtml(h.name)+'</strong><small>'+escapeHtml(h.cls)+' · Lv.'+Number(h.level||1)+'</small>':'검투사 없음';
-  const eff=block('la-training-effect',1309,455);eff.textContent=tiles[selectedTraining].help+'\n훈련 비용 '+(h?a.trainingCost(s.active,tiles[selectedTraining].stat):'—')+' D\n훈련 성공 시 경험치 획득';
+  const eff=block('la-training-effect',1309,455);eff.textContent=tiles[selectedTraining].name+' → '+tiles[selectedTraining].statLabel+' ↑\n'+tiles[selectedTraining].help+'\n훈련 비용 '+(h?a.trainingCost(s.active,tiles[selectedTraining].stat):'—')+' D';
   block('la-training-selected',149+selectedTraining*211,608);
-  [[153,603,195],[365,603,188],[573,603,198],[784,603,192],[994,603,196]].forEach(([x,y,w],i)=>hit('train'+i,tiles[i].name,x,y,w,158,()=>{selectedTraining=i;speechPhase='selected';render();pose(1);}));
+  [[153,603,195],[365,603,188],[573,603,198],[784,603,192],[994,603,196]].forEach(([x,y,w],i)=>hit('train'+i,tiles[i].name+' · 상승 스탯 '+tiles[i].statLabel,x,y,w,158,()=>{selectedTraining=i;speechPhase='selected';render();pose(1);}));
   hit('start-training','훈련 시작',1243,721,393,154,actionTraining);
   const roster=document.createElement('div');roster.className='la-roster training';stage.appendChild(roster);drawRoster(roster,true);
   hit('prev','이전 검투사',225,781,58,101,()=>moveHero(-1));hit('next','다음 검투사',1156,781,59,101,()=>moveHero(1));

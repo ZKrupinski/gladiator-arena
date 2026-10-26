@@ -207,3 +207,38 @@
  0%,82%{opacity:1;transform:none}
  100%{opacity:0;transform:none}
 }
+
+/* Training v87: communicate the five-to-four stat mapping on EACH tile and
+   on the selected ability in the real stat panel. No painted art changed. */
+.la-stage.training .lt-tile-button strong{
+ top:87px!important;font-size:22px!important;line-height:27px!important;
+}
+.la-stage.training .lt-tile-button .lt-tile-stat{
+ top:115px!important;left:4px;right:4px;
+ font:900 17px/20px 'Noto Sans KR',sans-serif!important;
+ color:#fff1b2;text-shadow:0 1px 5px #090402;
+ white-space:nowrap;
+}
+.la-stage.training .lt-tile-button .lt-tile-benefit{
+ position:absolute;display:block;left:3px;right:3px;top:136px;height:19px;
+ font:800 12px/19px 'Noto Sans KR',sans-serif;
+ color:#f9e1c1;text-align:center;font-style:normal;
+ text-shadow:0 1px 4px #0a0403;white-space:nowrap;letter-spacing:-.04em;
+}
+.la-stage.training .lt-stat-list>div.lt-stat-active{
+ background:#be9d4230!important;
+ border-bottom:2px solid #fff0ac!important;
+}
+.la-stage.training .lt-stat-list>div.lt-stat-active span,
+.la-stage.training .lt-stat-list>div.lt-stat-active strong{
+ color:#fff3af;
+}
+.la-stage.training .lt-effect-stat{
+ display:flex;align-items:center;justify-content:space-between;
+ font:900 13px/21px 'Noto Sans KR',sans-serif;color:#e8cda3;
+}
+.la-stage.training .lt-effect-stat b{
+ font:900 17px/21px 'Noto Sans KR',sans-serif;color:#fff0a5;
+}
+.la-stage.training .lt-effect p{margin:2px 0 4px!important}
+.la-stage.training .lt-effect .lt-shared-note{font-size:12px;color:#f1c894}
