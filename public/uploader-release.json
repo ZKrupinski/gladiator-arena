@@ -1,11 +1,11 @@
 {
   "assetSha256": {
-    "public/index.html": "33de55ae088e0c177fe0e1a8fa296caa47e14bbe18103839cd5a254709f748ba",
-    "public/ludus-practice.css": "c12d7820038a8d5e4123b266ab98db3a4cbc1c872390969dc1b753d1d11f6e41"
+    "public/index.html": "72935b37df1494c663cc011379fa0f43afe7101efbbb66d08644f2f8bbee9719",
+    "public/ludus-practice.css": "e3ed874e5387a3138cbc0979d15f37387ea3e9865f2a3fedda6d3801a85fdd25"
   },
-  "baseCommit": "29d19f38437f42d3bb017178b7ed640dd68686e2",
+  "baseCommit": "a40adf50b9e92850eaf3588b56f585492916ce1d",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-wave-hud-legibility-v102-20261026",
+  "releaseId": "practice-wave-clear-spectators-v103-20261026",
   "releaseProtocol": "spartacus-uploader-v1"
 }
