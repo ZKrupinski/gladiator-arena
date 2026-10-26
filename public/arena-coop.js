@@ -9,12 +9,10 @@
   if(!Number.isFinite(u?.deathAt)||!Number.isFinite(time))return 7;
   return Math.max(0,Math.min(7,Math.floor((time-u.deathAt)*10)));
  }
- // Depth follows the exact planted FOOT y coordinate (far 395 / near 675).
- // Linear and clamped: 0.76 at far feet, 1.22 at near feet (formerly 1.14).
- const perspectiveScale=y=>{
-  const t=Math.max(0,Math.min(1,((Number(y)||395)-395)/280));
-  return .76+t*.46;
- };
+ // Only the scene CAMERA is allowed to project scale in 5v5. No per-unit
+ // rear/front/seat multipliers: the tool's 31 relative sizes are preserved.
+ const COOP_CAMERA_BODY_ZOOM=.60;
+ const perspectiveScale=()=>1;
  function open(allies,enemies,{onFinish,onClose,seed}={}){
   if(current)return false;
   const sim=C.create(allies,enemies,{seed}),host=document.createElement('section');
@@ -132,7 +130,7 @@
    const basis=root.LudusBridge?.practiceNominal?.(u);
    const sourceScale=basis?.width>0&&basis?.height>0?
     root.PracticeScaleProfiles?.cellPixels?.(look,basis.width,basis.height,202):0;
-   const z=.60,depth=perspectiveScale(u.y),k=(sourceScale||
+   const z=COOP_CAMERA_BODY_ZOOM,depth=perspectiveScale(u.y),k=(sourceScale||
     root.PracticeScaleProfiles?.framePixels?.(look,idle.height,202)||
     202/idle.height*(root.PracticeScaleProfiles?.scale?.(look)||1))*z*profile.scale;
    const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
@@ -223,7 +221,7 @@
      const authored=root.PracticeVisualProfiles?.resolve?.(appearance,action);
      const chosen=authored?.effect?.kind&&authored.effect.kind!=='auto'?authored.effect.kind:kind;
      if(chosen==='none')continue;
-     const depth=owner?perspectiveScale(owner.y):1,zoom=.60*depth;
+     const depth=owner?perspectiveScale(owner.y):1,zoom=COOP_CAMERA_BODY_ZOOM*depth;
      const flight=owner?.flight;
      const ft=flight?Math.max(0,Math.min(1,(sim.time-flight.at)/Math.max(.01,flight.duration))):1;
      const bodyX=owner?owner.x+(ft<1?(flight.fromX-owner.x)*Math.pow(1-ft,1.6):0):e.x;

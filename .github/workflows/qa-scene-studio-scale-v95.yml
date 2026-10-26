@@ -1,0 +1,31 @@
+name: QA Unified Artist Scale Across Scenes v95
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/ludus-training-runtime.js
+      - public/arena-coop.js
+      - public/practice-scale-profiles.js
+      - public/practice-scale-published.js
+      - public/ludus-practice.js
+      - public/index.html
+      - public/tools/practice-size-stage.js
+      - tests/scene-studio-scale-parity-v95.cjs
+      - .github/workflows/qa-scene-studio-scale-v95.yml
+  workflow_dispatch:
+jobs:
+  calibrated-stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Validate game scripts and verified source-cell projection
+        run: |
+          node --check public/ludus-training-runtime.js
+          node --check public/arena-coop.js
+          node --check public/practice-scale-profiles.js
+          node tests/scene-studio-scale-parity-v95.cjs
+          node tests/practice-size-stage-parity-v54.cjs
+          node tests/practice-appearance-proportions-v45.cjs

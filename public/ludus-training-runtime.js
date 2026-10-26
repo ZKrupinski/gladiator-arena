@@ -8,9 +8,9 @@ let timer=null,tick=0,current=null,frameIndex=-1,impactStage=null,impactHandler=
 const HIT_MS=528,FX_MS=342; // Six 88ms reaction frames, before the 560ms result reveal.
 const names={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};
 const FRAME_MS=88;
-// Training-only framing: unchanged 70% size, fighter feet lowered 12px.
-// CSS zone top -92 + local foot 670 = stage y578, close to Doctore's 575.
-const PRACTICE_SCALE=0.70, PRACTICE_FOOT_Y=670;
+// Same full 202px source-cell reference used by the size studio and
+// 1-4 person practice, independent of image proportions and costume.
+const STUDIO_BODY_REFERENCE=202,PRACTICE_FOOT_Y=670;
 const ACTION_CYCLE=[
  {name:'slash',ticks:12},{name:'sweep',ticks:12},
  {name:'thrust',ticks:11},{name:'heavy',ticks:13}
@@ -70,10 +70,19 @@ function paint(canvas,img){
 // One authored full-frame baseline; no invisible-alpha fitting or
 // scene-owned per-action sliding, squash, zoom or rotation. The same look
 // and pose transform edited in the calibration studio is used in battle.
-function profileFor(canvas,reference,look=null){
- if(!reference?.width||!reference?.height)return null;
- const scale=Math.min(350/reference.height,520/reference.width)*PRACTICE_SCALE;
- return {source:reference,scale,look};
+function studioProjection(look,reference,nominal,scales=window.PracticeScaleProfiles){
+ // Include the published factor ONCE; always use the original atlas CELL.
+ // Never resize using alpha bounds, canvas width, class or current animation.
+ const height=reference?.height||reference?.naturalHeight||0;
+ if(!(height>0))return 0;
+ const cell=nominal?.width>0&&nominal?.height>0?
+  scales?.cellPixels?.(look,nominal.width,nominal.height,STUDIO_BODY_REFERENCE):0;
+ return cell||scales?.framePixels?.(look,height,STUDIO_BODY_REFERENCE)||
+  STUDIO_BODY_REFERENCE/height*(scales?.scale?.(look)??1);
+}
+function profileFor(reference,look=null,nominal=null){
+ const pixels=studioProjection(look,reference,nominal);
+ return pixels>0?{source:reference,pixels,look,nominal}:null;
 }
 
 // Additive training-only impact response; authored fighter scale/foot baseline,
@@ -103,7 +112,7 @@ function drawTrainingContactFX(ctx,kind,progress,x,y){
   size,size,progress,.85,true):false;
 }
 
-function paintTrainingFighter(canvas,img,action,progress,profile,contact=null){
+function paintTrainingFighter(canvas,img,action,progress,profile,contact=null,frameMeta=null){
  if(!canvas)return;
  const ctx=canvas.getContext('2d');if(!ctx)return;
  ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -112,17 +121,19 @@ function paintTrainingFighter(canvas,img,action,progress,profile,contact=null){
  const authored=window.PracticeVisualProfiles?.resolve?.(look,action)||
   {x:0,y:0,scale:1};
  const motion=window.PracticeVisualProfiles?.sampleMotion?.(authored,progress)||{x:0,y:0};
- const bodyScale=window.PracticeScaleProfiles?.scale?.(look)??1;
  const bootY=window.PracticeScaleProfiles?.foot?.(look)??0;
- const k=(profile?.scale??profileFor(canvas,img)?.scale??1)*bodyScale*authored.scale;
+ const k=(profile?.pixels??studioProjection(look,img,null))*authored.scale;
+ const pivotX=frameMeta?.canvas===img&&Number.isFinite(frameMeta.pivotX)?
+  frameMeta.pivotX:img.width/2;
+ const pivotY=frameMeta?.canvas===img&&Number.isFinite(frameMeta.footY)?
+  frameMeta.footY:img.height;
  const extra=contact?reactionOffset(contact.kind,contact.progress,contact.reduced):{x:0,y:0};
  ctx.save();
  // The training fighter faces left. X is in facing space just as it is in
  // normal combat and in the studio. Gameplay hitboxes are never shifted.
  ctx.translate(canvas.width/2-authored.x-motion.x+extra.x,PRACTICE_FOOT_Y+bootY+authored.y+motion.y+extra.y);
  ctx.scale(-1,1);
- try{ctx.drawImage(img,0,0,img.width,img.height,
-  -img.width*k/2,-img.height*k,img.width*k,img.height*k);}catch(error){}
+ try{ctx.drawImage(img,-pivotX*k,-pivotY*k,img.width*k,img.height*k);}catch(error){}
  ctx.restore();
  if(contact&&contact.elapsed<FX_MS){
   // Grounded guard spark appears in front of the LEFT-facing shield;
@@ -161,7 +172,11 @@ function animate(a,stage,selected){
   // Calibrate all motion against the SAME idle pose; never rescale on impact.
   const idle=a.trainingFrame?.(selected,'idle',0)||a.portrait(selected);
   const look=a.appearanceKey?.(selected)||null;
-  if(idle&&(profile?.source!==idle||profile?.look!==look))profile=profileFor(canvas,idle,look);
+  const unit={side:'ally',index:selected};
+  const nominal=a.practiceNominal?.(unit)||null;
+  if(idle&&(profile?.source!==idle||profile?.look!==look||
+   profile?.nominal?.width!==nominal?.width||profile?.nominal?.height!==nominal?.height))
+   profile=profileFor(idle,look,nominal);
   const elapsed=hitStart<0?HIT_MS:performance.now()-hitStart;
   const takingHit=elapsed<HIT_MS;
   const motion=takingHit?
@@ -170,12 +185,15 @@ function animate(a,stage,selected){
   const src=a.trainingFrame?.(selected,motion.action,motion.frame)||idle;
   const contact=takingHit?{kind:responseKind,progress:motion.progress,elapsed,
    reduced:!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches}:null;
-  paintTrainingFighter(canvas,src,motion.action,motion.progress,profile,contact);
+  const actionMap={slash:'attack',sweep:'attack',thrust:'attack',heavy:'special'};
+  const frameMeta=a.practiceFrame?.(unit,actionMap[motion.action]||motion.action)||null;
+  paintTrainingFighter(canvas,src,motion.action,motion.progress,profile,contact,frameMeta);
   canvas.dataset.recoilX=contact?String(Math.round(reactionOffset(contact.kind,contact.progress,contact.reduced).x)):'0';
   canvas.dataset.recoilY=contact?String(Math.round(reactionOffset(contact.kind,contact.progress,contact.reduced).y)):'0';
   canvas.dataset.attack=motion.action;
   canvas.dataset.face='left';
-  canvas.dataset.fixedScale=profile?String(profile.scale):'pending';
+  canvas.dataset.fixedScale=profile?String(profile.pixels):'pending';
+  canvas.dataset.studioLook=look||'';
   canvas.dataset.hitCount=String(hitCount);
   canvas.dataset.trainingResponse=takingHit?responseKind:'';
   zone?.classList.toggle('whip-hit',takingHit&&responseKind==='hit');
@@ -274,5 +292,5 @@ function mount(stage,a,s,cbs){
  home.setAttribute('aria-label','메인 루두스 로비로 돌아가기');home.onclick=cbs.onHome;stage.appendChild(home);
  if(h)animate(a,stage,s.active);
 }
-window.LudusTrainingV2={version:'7.5.0',mount,stop,reactionOffset,drawTrainingContactFX,metrics:{scaleFactor:PRACTICE_SCALE,canvasFootY:PRACTICE_FOOT_Y}};
+window.LudusTrainingV2={version:'7.6.0',mount,stop,studioProjection,reactionOffset,drawTrainingContactFX,metrics:{worldBodyPixels:STUDIO_BODY_REFERENCE,canvasFootY:PRACTICE_FOOT_Y}};
 })();
