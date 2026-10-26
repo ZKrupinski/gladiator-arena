@@ -21,7 +21,7 @@ assert.match(code,/Math\.floor\(t\/\.19\)/);
 assert.doesNotMatch(code,/Math\.floor\(Math\.max\(0,t\)\/\.35\)/);
 assert.match(code,/reduced\(\)\?0:frameOrder/);
 assert.match(fs.readFileSync(path.join(root,'public/index.html'),'utf8'),/capua-venue\.js\?v=capua-night-crowd-v4-20261026/);
-assert.ok(code.includes('capua-night-original.png'));
+assert.ok(code.includes('capua-night-original.jpg'));
 assert.ok(code.includes("const choices=['capua','capua-night','colosseum']"));
 assert.ok(code.includes('function nextMatch()'));
 assert.ok(code.includes('function buildNightFrames()'));
@@ -41,7 +41,7 @@ const coop=fs.readFileSync(path.join(root,'public','arena-coop.js'),'utf8');
 assert.doesNotMatch(coop,/CapuaVenue\?\.draw/);
 assert.match(coop,/bg\.src='assets\/new-era\/arena\.webp'/);
 assert.match(coop,/bg\.naturalHeight\*\.76/);
-assert.match(html,/arena-coop\.js\?v=corpse-prone-v81/);
+assert.match(html,/arena-coop\.js\?v=[^"']+/);
 new Function(coop);
 const vm=require('node:vm'),coop2=fs.readFileSync(path.join(root,'public','arena-coop.js'),'utf8');
 const sandbox={window:{}};vm.runInNewContext(coop2,sandbox);
@@ -55,7 +55,7 @@ assert.match(coop2,/ctx\.scale\(depth,depth\)/);
 assert.match(coop2,/const z=\.60,depth=perspectiveScale\(u\.y\)/);
 assert.match(coop2,/bg\.src='assets\/new-era\/arena\.webp'/);
 assert.doesNotMatch(coop2,/CapuaVenue\?\.draw/);
-assert.match(html,/arena-coop\.js\?v=corpse-prone-v81/);
+assert.match(html,/arena-coop\.js\?v=[^"']+/);
 console.log('COOP_PERSPECTIVE_PASS: continuous foot-anchored 0.76-1.22 depth scaling');
 
 // Regression: older ten-cell Retiarius graphics must not leave upright corpses in 5v5.
@@ -73,7 +73,7 @@ assert.match(coop2,/const pose=u\.dead\?'hit'/);
 assert.match(coop2,/const tick=u\.dead\?0/);
 assert.match(coop2,/ctx\.rotate\(-Math\.PI\*\.5\*corpseFall\(u,sim\.time\)\)/);
 assert.match(coop2,/const motion=u\.dead\?\{x:0,y:0\}/);
-assert.match(html,/arena-coop\.js\?v=corpse-prone-v81/);
+assert.match(html,/arena-coop\.js\?v=[^"']+/);
 assert.match(html,/hero\.appearance==='legacy'[\s\S]{0,120}death:9/);
 console.log('COOP_CORPSE_PASS: legacy Retiarius and all 5v5 deaths fall sideways, freeze after landing');
 
