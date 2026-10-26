@@ -94,7 +94,8 @@
    const reason=result.reason==='retreat'?'자진 철수':result.reason==='timeout'?'제한 시간 · 팀 잔여 체력 비율 판정':result.win?'상대팀 전투 불능':'아군 전투 불능';
    modal.innerHTML='<section class="coop-result" role="dialog" aria-modal="true" aria-label="협동전 결과"><small>CONCORDIA · RESULT</small><h2>'+ (result.reason==='retreat'?'전투 철수':result.win?'협동전 승리':'협동전 패배')+'</h2><p>'+reason+' · '+Math.ceil(result.time)+'초 · 협동 '+result.teamwork+'회</p><div class="coop-prize">'+escape(reward.error||('보상 +'+(reward.gold||0)+' D · 명예 +'+(reward.glory||0)))+'</div><div class="coop-result-list">'+result.units.filter(u=>u.side==='ally').map(u=>{
     const r=reward.heroes?.find(h=>h.index===u.index);
-    return '<div><strong>'+escape(u.name)+'</strong><span>피해 '+u.damage+' · 협공 '+u.assists+' · 방어 '+u.blocks+'</span><small>EXP +'+(r?.xp||0)+' · 부상 '+(r?.injury??'—')+' · 피로 '+(r?.fatigue??'—')+'</small></div>';
+    return '<div><strong>'+escape(u.name)+'</strong><span>피해 '+u.damage+' · 협공 '+u.assists+' · 방어 '+u.blocks+'</span><small>EXP +'+(r?.xp||0)+' · 부상 '+(r?.injury??'—')+' · 피로 '+(r?.fatigue??'—')+'</small>'+
+      (r?.levels?'<strong style="color:#fff0a1;text-shadow:0 0 14px #f2c54a;font-size:18px">✦ LEVEL UP! Lv.'+r.level+' (+'+r.levels+')</strong>':'')+'</div>';
    }).join('')+'</div><p data-save-note>'+escape(reward.error?'':reward.saved===false?'저장 실패 · 이 화면을 유지하고 저장 재시도를 눌러주세요.':'결과 저장 완료 · 일반 결투 진행도는 유지됩니다.')+'</p>'+(reward.saved===false?'<button data-retry>저장 재시도</button>':'')+'<button data-back>편성 화면으로</button></section>';
    modal.querySelector('[data-back]').onclick=close;
    modal.querySelector('[data-retry]')?.addEventListener('click',e=>{if(reward.retry?.()){e.target.textContent='저장 완료';e.target.disabled=true;modal.querySelector('[data-save-note]').textContent='결과 저장 완료 · 일반 결투 진행도는 유지됩니다.';}});
@@ -171,6 +172,14 @@
     }
    }
    ctx.globalAlpha=1;ctx.drawImage(image,-px*k,-py*k,image.width*k,image.height*k);ctx.restore();
+   if(!u.dead){
+    const signals=root.ArenaCombatSignals,rivals=sim.units.filter(v=>v.side!==u.side&&!v.dead);
+    const opponent=rivals.find(v=>v.id===u.target)||
+      rivals.sort((a,b)=>Math.hypot(a.x-u.x,a.y-u.y)-Math.hypot(b.x-u.x,b.y-u.y))[0];
+    const headY=u.y+flightY*depth-Math.min(225,Math.max(93,image.height*k*depth))-21;
+    if(!u._levelFx)signals?.drawAdvantage?.(ctx,u,opponent,{x:u.x+flightX,y:headY,time:sim.time,size:20});
+    signals?.drawLevelUp?.(ctx,u,{x:u.x+flightX,y:headY,time:sim.time,scale:1});
+   }
   }
   // Painted-only 5v5 battlefield: no procedural paths, rings, outlines,
   // dotted tactical beams, primitive impact bursts or canvas damage text.
