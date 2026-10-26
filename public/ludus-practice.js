@@ -301,8 +301,9 @@ function sparks(target,force=false){
 function emitVfx(kind,unit,other,emphasis=false){
  if(!battle||unit.seat<0||!COURTS[unit.seat])return;
  const court=COURTS[unit.seat],fx=root.ArenaRasterFX;
- const face=(kind==='hit'&&other)?(other.side==='ally'?1:-1):
-  (unit.side==='ally'?1:-1);
+ // Match the same orientation used by sprite() / drawDefeatPose().
+ // An impact belongs to the person HIT, not the attacker's mirrored artwork.
+ const face=unit.side==='ally'?1:-1;
  const action=['slash','sweep','thrust'].includes(kind)?kind:
   kind==='hit'?'hit':kind==='guard'?'guard':kind==='parry'?'parry':
   kind==='dash'?'dodge':kind==='finisher'?'finisher':
