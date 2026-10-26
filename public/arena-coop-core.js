@@ -69,6 +69,13 @@
   }
   if(Math.abs(u.x-from)>1){u.recoilFromX=from;u.recoilAt=s.time;u.recoilEndX=u.x;}
  }
+ function beginFlight(s,u,fromX,kind){
+  // Positions resolve immediately for squad collision; the canvas interpolates
+  // from the contact point across the exact same displacement and landing.
+  const reduced=!!(typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+  u.flight={fromX,at:s.time,duration:kind==='death'?1.16:.78,
+   height:reduced?12:kind==='death'?145:90,reduced,kind};
+ }
  function link(s,source,target,kind,count=1){
   if(source.dead||target.dead)return false;
   const candidates=alive(s,source.side).filter(u=>u!==source&&u.linkReady<=s.time&&distance(u,target)<540)
@@ -102,7 +109,8 @@
   if(chain&&b.stagger<=0&&b.rooted<=0&&s.random()<Math.min(.65,b.parry*(b.side==='ally'&&s.formation?.until>s.time?1.38:1))){
    b.guard=.5;b.blocks++;b.counter={target:a.id,due:s.time+.18,expires:s.time+1.7};
    b.attack=null;b.dash=.55;b.dashReady=s.time+3;
-   a.exposed=1.7;a.stagger=.55;shove(s,a,a.x>=b.x?175:-175);
+   a.exposed=1.7;a.stagger=.82;a.attack=null;
+   const fromX=a.x;shove(s,a,a.x>=b.x?215:-215);beginFlight(s,a,fromX,'parry');
    emit(s,'parry',b,a,b.name+' 패링 → 돌진 반격');
    link(s,b,a,'패링 추격',2);return 0;
   }
@@ -124,6 +132,7 @@
   emit(s,kind,a,target,(kind==='assist'?'협공 ':'')+'−'+damage,{damage});
   if(target.hp<=0){
    target.dead=true;target.attack=null;target.counter=null;target.mode='';target.moving=false;target.deathAt=s.time;a.kills++;
+   const fromX=target.x;shove(s,target,target.x>=a.x?330:-330);beginFlight(s,target,fromX,'death');
    emit(s,'ko',a,target,target.name+' 전투 불능');
   }else{
    if(chain&&target.hp/target.maxHp<.53&&s.time>=target.rescueAlertReady){
@@ -186,8 +195,11 @@
   return false;
  }
  function step(s,dt){
-  if(s.result||s.paused)return s;
-  dt=clamp(finite(dt,0),0,.05);s.time+=dt;s.turn=(s.turn||0)+1;
+  if(s.paused)return s;
+  dt=clamp(finite(dt,0),0,.05);
+  // Let the final body complete its real-time flight before the results dialog.
+  if(s.result){s.time+=dt;return s;}
+  s.time+=dt;s.turn=(s.turn||0)+1;
   for(const u of (s.turn%2?s.units:s.units.slice().reverse())){
    u.moving=false;if(u.dead)continue;
    for(const k of ['cooldown','hit','guard','swing','rooted','exposed','stagger','dash'])u[k]=Math.max(0,u[k]-dt);
