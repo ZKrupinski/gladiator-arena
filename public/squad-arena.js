@@ -124,11 +124,12 @@ function performAttack(battle,unit,target,special=false){
  }
  const critical=unit.cls==='thraex'&&battle.random()<(.12+unit.focus*.015);
  let dmg=(special?unit.sp:unit.atk)*(critical?1.45:1);
+ const affinity=root.ArenaMatchup?.multiplier?.(unit,target)??1;
  if(unit.boss&&unit.hp<unit.maxHp*.5)dmg*=1.23;
  if(unit.guard>0)dmg*=.65;
  dmg*=1-B.damageReduction(target,false);
  if(target.guard>0)dmg*=target.cls==='murmillo'?.36:.53;
- dmg=Math.max(1,Math.round(dmg));
+ dmg=Math.max(1,Math.round(dmg*affinity));
  target.hp=Math.max(0,target.hp-dmg);unit.damageDone+=dmg;unit.hits++;
  target.stagger=Math.max(target.stagger,target.boss?.10:.15);
  target.action='hit';target.attackT=.20;target.attackDuration=.20;
@@ -137,7 +138,7 @@ function performAttack(battle,unit,target,special=false){
  if(special&&target.hp>0)startFlight(battle,target,contactX,knock,'parry');
  if(special){
   if(unit.cls==='retiarius'){target.rooted=1.9;target.stagger=.38;}
-  if(unit.cls==='thraex'){target.bleed=3.2;target.bleedPower=Math.max(1,unit.atk*.1);}
+  if(unit.cls==='thraex'){target.bleed=3.2;target.bleedPower=Math.max(1,unit.atk*.1*affinity);}
   if(unit.cls==='murmillo'){target.stamina=Math.max(0,target.stamina-28);target.guard=0;}
  }
  // Heroic crowd-control attacks are the counterplay to 1v2 / 1v3.
@@ -147,7 +148,8 @@ function performAttack(battle,unit,target,special=false){
   for(const nearby of battle.foes){
    if(nearby===target||nearby.dead)continue;
    if(Math.abs(nearby.x-target.x)+Math.abs(nearby.lane-target.lane)*35>175)continue;
-   const splash=Math.max(1,Math.round(dmg*.38*(1-B.damageReduction(nearby,false))));
+   const nearbyAffinity=root.ArenaMatchup?.multiplier?.(unit,nearby)??1;
+   const splash=Math.max(1,Math.round(dmg/Math.max(.1,affinity)*.38*(1-B.damageReduction(nearby,false))*nearbyAffinity));
    nearby.hp=Math.max(0,nearby.hp-splash);unit.damageDone+=splash;
    nearby.stagger=Math.max(nearby.stagger,.24);
    battle.events.push({x:nearby.x,y:nearby.y-110,t:.36,text:'-'+splash,critical:false,side:unit.side});
