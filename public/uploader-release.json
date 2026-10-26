@@ -1,14 +1,10 @@
 {
   "assetSha256": {
-    "public/index.html": "9e3f8642ccd0b887a5ff87094fef03654941acc57ca04adcafa38cf9f0a40aba",
-    "public/ludus-approved-scenes.css": "7e8923d1f8d7574866e9ba8de1980f316e823a8f79343e5c5514762c764af1f7",
-    "public/ludus-approved-scenes.js": "f9c9d20f695c8380ca0f6516502e43345994dcc7b4332f56644d1a0f02a6197d",
-    "public/market-scene.css": "64e1242cd4747befbd0937372751c7a09223ab74b1e4746f1cf143a4e140c916",
-    "public/market-scene.js": "7a8400c76ba996b047301cad0ccc79a67649296d8e3e2aada2d00db7cf015b22"
+    "public/index.html": "883bf4a8cc990ad4e653c4dd3095dc5f9b9db8256421ee6924a9c65201964d80"
   },
-  "baseCommit": "8ef6104ea728c42e37206e7097412d4210811cd3",
+  "baseCommit": "03c094b066cac8752fa8d02e4d4d6a30f63a3dbe",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "market-training-atomic-asset-ready-v108-20261027",
+  "releaseId": "beast-gallery-result-return-v109-20261027",
   "releaseProtocol": "spartacus-uploader-v1"
 }

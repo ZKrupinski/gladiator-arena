@@ -1384,9 +1384,18 @@ function beastNextOrReturn(){
  returnToBeastHunt();
 }
 function returnToBeastHunt(){
- BEAST_RUN=null;S.beastHunt=false;
- returnToCareer();window.LudusScene?.close();
- CAREER_TAB='beasts';renderCareer();
+ // Result -> VENATIO must reveal the real selection screen, never the
+ // inert 1v1 canvas behind the hidden careerHub. Avoid entering/closing
+ // the illustrated Ludus lobby as an intermediate route.
+ BEAST_RUN=null;S.beastHunt=false;S.careerMatch=false;
+ returnToLudus();
+ window.LudusScene?.close();
+ window.LudusApprovedScenes?.close();
+ CAREER_SELECTING=false;CAREER_TAB='beasts';
+ $('#endScreen').hidden=true;
+ $('#startScreen').hidden=true;
+ $('#careerHub').hidden=false; // Must be visible BEFORE gallery/preview mounts.
+ renderCareer();
 }
 function finishBeastMatch(){
  const run=BEAST_RUN;if(!run||S.careerRewardApplied)return;
