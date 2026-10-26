@@ -166,6 +166,7 @@ input[type=file]{display:none}
 <div class="action-top">
 <label for="actionKey">캐릭터</label><select id="actionKey"></select>
 <label for="actionPose">동작</label><select id="actionPose"></select>
+<label for="fxDragMode">드래그 대상</label><select id="fxDragMode"><option value="sprite">캐릭터 위치 키</option><option value="effect">이펙트 위치 X/Y</option></select>
 <label for="fxPreviewFace">미리보기 바라보는 방향</label><select id="fxPreviewFace"><option value="1">→ 오른쪽</option><option value="-1">← 왼쪽</option></select>
 <label for="actionScene">씬별 미리보기</label><select id="actionScene">
 <option value="practice">실전훈련</option>
@@ -207,6 +208,7 @@ input[type=file]{display:none}
 <div class="action-field"><label for="fxScale">이펙트 배율 <output id="fxScaleValue"></output></label><input type="range" id="fxScale" min=".2" max="2.5" step=".01"></div>
 <div class="action-field"><label for="fxX">이펙트 X <output id="fxXValue"></output></label><input type="range" id="fxX" min="-300" max="300" step="1"></div>
 <div class="action-field"><label for="fxY">이펙트 Y <output id="fxYValue"></output></label><input type="range" id="fxY" min="-300" max="300" step="1"></div>
+<div class="action-separator">드래그 대상을 ‘이펙트 위치 X/Y’로 선택하면 미리보기의 이펙트를 직접 끌어 위치를 자동 저장합니다. 좌우 미리보기 모두 캐릭터가 바라보는 방향 기준으로 저장합니다.</div>
 <div class="action-separator">동작별 X·Y·크기는 모든 게임 씬에서 같은 원본 설정을 사용합니다. 이펙트 선택도 동작별 설정이 우선입니다.</div>
 </div></div>
 <div class="motion-bulk" aria-label="선택한 캐릭터에 동작별 이펙트 및 이동 키 일괄 적용">
@@ -412,7 +414,7 @@ function formatAction(){
  $('#fxDirection').value=val.effect.direction;
  showMotionKey();
 }
-let previewHit=null,dragMotion=null;
+let previewHit=null,previewFX=null,dragMotion=null;
 let actionPaintSerial=0,actionProgress=0,actionPlaying=true;
 let actionLastTick=0,actionLoopStarted=false,actionPreviousFrame=-1,actionLastPaint=0;
 function updateTimelineLabel(){
@@ -510,6 +512,7 @@ async function previewAction(){
   const hitLeft=hitBox?hitBox.center-hitBox.pivotX:0;
   previewHit=hitBox?{key,pose,scene,progress,z:z*face,face,frame:img,
    left:face<0?520-hitLeft-hitBox.w:hitLeft,top:hitBox.ground-hitBox.pivotY,width:hitBox.w,height:hitBox.h}:null;
+  previewFX=null;
   if(fx){
    // In live combat each FX is spawned at the 50% action key. It then
    // animates in place, even when the pose scrubber continues moving.
@@ -519,6 +522,8 @@ async function previewAction(){
     kind,baseX:anchorX+(kind==='hit'?0:face*52*fxZoom),
     baseY:anchorY-113*fxZoom+Number(feet[key])*fxZoom,zoom:fxZoom,face,pose:val,progress:.5
    });
+   previewFX={key,pose,scene,face,z:fxZoom,left:box.x-box.width/2,
+    top:box.y-box.height/2,width:box.width,height:box.height};
    c.save();c.translate(box.x,box.y);c.scale(box.face,1);c.globalAlpha=.87;
    c.drawImage(fx,-box.width/2,-box.height/2,box.width,box.height);
    c.restore();
@@ -587,8 +592,24 @@ function initMotionDrag(){
   return {x:(event.clientX-box.left)*canvas.width/box.width,y:(event.clientY-box.top)*canvas.height/box.height};
  };
  canvas.addEventListener('pointerdown',event=>{
-  if(event.button!==0||dragMotion||!previewHit)return;
-  const pos=point(event),hit=previewHit;
+  if(event.button!==0||dragMotion)return;
+  const pos=point(event);
+  if($('#fxDragMode').value==='effect'){
+   const hit=previewFX;
+   if(!hit||hit.key!==$('#actionKey').value||hit.pose!==$('#actionPose').value||
+      hit.scene!==$('#actionScene').value)return;
+   if(pos.x<hit.left||pos.x>hit.left+hit.width||
+      pos.y<hit.top||pos.y>hit.top+hit.height)return;
+   event.preventDefault();recordHistory();
+   const cfg=currentAction();
+   actionPlaying=false;$('#actionPlay').textContent='▶ 재생';
+   $('#actionPlay').setAttribute('aria-pressed','false');
+   dragMotion={mode:'effect',pointer:event.pointerId,start:pos,
+    base:{...cfg.effect},face:hit.face,z:hit.z,key:hit.key,pose:hit.pose,moved:false};
+   canvas.setPointerCapture(event.pointerId);canvas.style.cursor='grabbing';return;
+  }
+  if(!previewHit)return;
+  const hit=previewHit;
   if(hit.key!==$('#actionKey').value||hit.pose!==$('#actionPose').value||hit.scene!==$('#actionScene').value)return;
   if(pos.x<hit.left||pos.x>hit.left+hit.width||pos.y<hit.top||pos.y>hit.top+hit.height)return;
   // Use the visible sprite alpha, so tapping empty canvas or the FX does not move a key.
@@ -614,6 +635,14 @@ function initMotionDrag(){
   event.preventDefault();const pos=point(event),dx=pos.x-drag.start.x,dy=pos.y-drag.start.y;
   if(!drag.moved&&Math.hypot(dx,dy)<2)return;
   drag.moved=true;
+  if(drag.mode==='effect'){
+   const cfg=currentAction();
+   cfg.effect.x=Math.max(-300,Math.min(300,Math.round(drag.base.x+dx/(drag.z*drag.face))));
+   cfg.effect.y=Math.max(-300,Math.min(300,Math.round(drag.base.y+dy/drag.z)));
+   if(!actions[drag.key])actions[drag.key]={};
+   actions[drag.key][drag.pose]=v.clean(cfg);
+   persistActionEdit();formatAction();previewAction();return;
+  }
   const key={t:drag.time,x:Math.round((drag.base.x+dx/drag.z)*10)/10,y:Math.round((drag.base.y+dy/drag.z)*10)/10};
   const keys=keyList(),index=keys.findIndex(k=>Math.abs(k.t-key.t)<.00005);
   if(index<0)keys.push(key);else keys[index]=key;
@@ -645,6 +674,10 @@ function initActionEditor(){
  $('#actionPose').onchange=()=>{$('#motionKey').value='0';updateActionControls();};
  $('#actionScene').onchange=previewAction;
  $('#fxPreviewFace').onchange=previewAction;
+ $('#fxDragMode').onchange=()=>{
+  $('#actionCanvas').style.cursor=$('#fxDragMode').value==='effect'?'crosshair':'grab';
+  previewAction();
+ };
  // One listener per UI control. Previous addEventListener and onclick
  // both toggled playback, cancelling each other out on every click.
  $('#motionKey').addEventListener('change',()=>pauseAtKey(selectedKeyIndex()));
