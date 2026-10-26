@@ -33,7 +33,7 @@ function fighter(side,attack=false){
 }
 const calls=[];
 const gfx={
- save(){},restore(){},translate(...v){calls.push(['translate',...v])},
+ save(){},restore(){},rotate(){},translate(...v){calls.push(['translate',...v])},
  scale(...v){calls.push(['scale',...v])},
  drawImage(...v){calls.push(['image',...v])},
  beginPath(){},ellipse(){},fill(){},fillRect(){},strokeRect(){},fillText(...v){calls.push(['label',...v])}
