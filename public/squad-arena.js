@@ -314,6 +314,12 @@ function drawUnit(ctx,u,bridge,battle){
  ctx.fillStyle=u.boss?'#ffcb67':'#f7dfb5';
  ctx.textAlign='center';ctx.font=u.boss?'bold 18px system-ui':'bold 15px system-ui';
  ctx.fillText((u.boss?'★ ':'')+String(u.hero.name||u.cls).slice(0,15),u.x,rectY-u.size-38);
+ if(!u.dead){
+  const opponent=closest(battle,u);
+  if(!u._levelFx)root.ArenaCombatSignals?.drawAdvantage?.(ctx,u,opponent,{
+    x:u.x,y:rectY-u.size-68,time:battle.t,size:u.lane?17:21});
+  root.ArenaCombatSignals?.drawLevelUp?.(ctx,u,{x:u.x,y:rectY-u.size-65,time:battle.t,scale:1});
+ }
 }
 function canvasRender(battle,ctx,background,bridge){
  const w=1280,h=720;ctx.clearRect(0,0,w,h);
