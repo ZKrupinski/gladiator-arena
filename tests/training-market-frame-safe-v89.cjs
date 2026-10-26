@@ -7,10 +7,16 @@ for(const rule of ['.gm-card-dynamic .gm-roman-name','.gm-card-dynamic .gm-class
 assert(t.includes('top:131px!important')&&t.includes('height:16px'),'training final caption moved up');
 assert(m.includes('height:17px;margin:1px 0!important'),'market bars tightly packed');
 assert(m.includes('padding:4px 12px 8px!important'),'market card has 12px safe margin');
-assert(html.includes('ludus-training-clean.css?v=training-frame-safe-v89'),'training cache refreshed');
+assert(html.includes('ludus-training-clean.css?v=training-center-v90'),'training cache refreshed');
+assert(html.includes('ludus-training-runtime.js?v=training-center-v90'),'training renderer cache refreshed');
 assert(html.includes('market-selection-live.css?v=market-frame-safe-v89'),'market cache refreshed');
 assert(131+16<=158-10,'training help has 11px bottom safe zone');
-assert(202+3*34+2*4<332,'five real training stats fit before effect heading');
+assert(177+3*34+2*4<301,'five real training stats fit before effect heading');
+const runtime=src('ludus-training-runtime.js');
+assert(!runtime.includes('<div class="lt-info-head">현재 능력치 · 5종</div>'),'duplicate visible stat heading removed');
+assert(runtime.includes('aria-label="현재 능력치 5종"'),'screen readers retain five-stat label');
+assert(t.includes('left:50%!important')&&t.includes('transform:translateX(-50%)!important'),'all tile text centered to icon card');
+assert(t.includes('top:177px!important')&&t.includes('top:301px!important')&&t.includes('top:348px!important'),'right panel reflowed upward');
 const marketHeight=4+25+2+30+3+14+1+18+2+4*18+8;
 assert(marketHeight<=183,'four market bars and two-line class fit within illustration');
 console.log('PASS: training 5-stat info, 5 card captions and three market booths fit within painted frame safe-zones.');

@@ -327,3 +327,53 @@
  box-sizing:border-box;left:26px!important;width:335px!important;
  padding:0 6px 0 0;font-size:13px!important;
 }
+
+
+/* v90: remove the redundant stats heading and reclaim its vertical slot.
+   Keep 5 stats in a 3-row grid and training result inside approved art. */
+.la-stage.training .lt-stat-list{
+ top:177px!important;
+}
+.la-stage.training .lt-stat-list + .lt-info-head{
+ top:301px!important;
+}
+.la-stage.training .lt-effect{
+ top:348px!important;
+}
+.la-stage.training .lt-guidance{
+ top:543px!important;
+}
+/* Match label centers to the baked-in illustration centers for all 5 tiles.
+   Each line centers in its own live hitbox instead of relying on inline flow. */
+.la-stage.training .lt-tile-button{
+ text-align:center!important;
+}
+.la-stage.training .lt-tile-button strong,
+.la-stage.training .lt-tile-button .lt-tile-stat,
+.la-stage.training .lt-tile-button .lt-tile-benefit{
+ display:block!important;
+ position:absolute!important;
+ left:50%!important;
+ right:auto!important;
+ width:calc(100% - 18px)!important;
+ max-width:calc(100% - 18px)!important;
+ padding:0!important;
+ margin:0!important;
+ transform:translateX(-50%)!important;
+ text-align:center!important;
+ white-space:nowrap!important;
+ overflow:hidden!important;
+ text-overflow:ellipsis;
+}
+.la-stage.training .lt-tile-button strong{
+ top:87px!important;height:25px!important;
+ font:900 21px/25px 'Noto Sans KR',sans-serif!important;
+}
+.la-stage.training .lt-tile-button .lt-tile-stat{
+ top:112px!important;height:18px!important;
+ font:900 16px/18px 'Noto Sans KR',sans-serif!important;
+}
+.la-stage.training .lt-tile-button .lt-tile-benefit{
+ top:131px!important;height:16px!important;
+ font:800 11px/16px 'Noto Sans KR',sans-serif!important;
+}

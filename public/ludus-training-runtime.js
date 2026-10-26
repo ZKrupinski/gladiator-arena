@@ -163,7 +163,7 @@ function mount(stage,a,s,cbs){
  const panel=document.createElement('section');panel.className='lt-info';
  panel.setAttribute('aria-label','선택 검투사의 실제 훈련 정보');
  panel.innerHTML='<h2>선택된 검투사</h2>'+details+
- '<div class="lt-info-head">현재 능력치 · 5종</div><div class="lt-stat-list">'+statsList.map(([key,id,n,v])=>
+ '<div class="lt-stat-list" role="group" aria-label="현재 능력치 5종">'+statsList.map(([key,id,n,v])=>
  '<div class="'+(chosen.stat===key?'lt-stat-active':'')+'" data-stat="'+key+'"><span>'+id+' <small>'+n+'</small></span><strong>'+v+'</strong></div>').join('')+'</div>'+
  '<div class="lt-info-head">훈련 효과</div><div class="lt-effect">'+
  '<strong>'+E(chosen.name)+'</strong>'+
