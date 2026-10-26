@@ -358,6 +358,7 @@ function createUI(){
  return screen;
 }
 function start({mode,party,opponent,bridge,onFinish,onReturn}){
+ root.CapuaVenue?.nextMatch?.();
  if(session)close();
  const battle=makeBattle(mode,party,opponent);
  const screen=createUI(),canvas=screen.querySelector('#saCanvas'),ctx=canvas.getContext('2d',{alpha:false});
