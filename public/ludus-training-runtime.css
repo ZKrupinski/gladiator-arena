@@ -153,3 +153,8 @@
 @media(prefers-reduced-motion:reduce){
  .la-stage.training .lt-fighter-zone.whip-hit::after{animation:none;opacity:.24}
 }
+
+/* Contact FX v94: authentic directional guard/hit PNGs are rendered
+   on the fighter canvas in sync with source poses. Retire the old generic
+   CSS radial flash so it never competes with the approved painted VFX. */
+.la-stage.training .lt-fighter-zone.whip-hit::after{content:none!important}

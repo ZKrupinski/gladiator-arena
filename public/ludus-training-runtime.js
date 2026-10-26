@@ -5,7 +5,7 @@
 'use strict';
 const E=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let timer=null,tick=0,current=null,frameIndex=-1,impactStage=null,impactHandler=null;
-const HIT_MS=640;
+const HIT_MS=528,FX_MS=342; // Six 88ms reaction frames, before the 560ms result reveal.
 const names={murmillo:'무르밀로',thraex:'트라엑스',retiarius:'레티아리우스'};
 const FRAME_MS=88;
 // Training-only framing: unchanged 70% size, fighter feet lowered 12px.
@@ -75,7 +75,35 @@ function profileFor(canvas,reference,look=null){
  const scale=Math.min(350/reference.height,520/reference.width)*PRACTICE_SCALE;
  return {source:reference,scale,look};
 }
-function paintTrainingFighter(canvas,img,action,progress,profile){
+
+// Additive training-only impact response; authored fighter scale/foot baseline,
+// world placement and editor offsets stay exactly as calibrated. No angle flips.
+// Away from the left-hand instructor is +X in this local canvas.
+function reactionOffset(kind,progress,reducedMotion=false){
+ const t=Math.max(0,Math.min(1,Number.isFinite(progress)?progress:0));
+ if(reducedMotion)return {x:0,y:0}; // Prefer no extra animation in accessibility mode.
+ const up=t<.18?Math.sin(t/.18*Math.PI/2):Math.pow((1-t)/.82,2);
+ const recoil=(kind==='guard'?19:39)*up;
+ const bounce=-(kind==='guard'?7:18)*Math.sin(Math.PI*t);
+ const shake=(kind==='guard'?1.8:4.2)*Math.sin(t*Math.PI*(kind==='guard'?6:12))*
+  Math.pow(1-t,2);
+ return {x:recoil+shake,y:bounce};
+}
+function drawTrainingContactFX(ctx,kind,progress,x,y){
+ if(!ctx||!['guard','hit'].includes(kind)||progress>=1)return false;
+ // ArenaRasterFX is a real pre-rendered 8-frame transparent PNG animation,
+ // not a procedural glow or vector arc; guard faces the instructor (left).
+ const size=kind==='guard'?236:216;
+ const drawn=window.ArenaRasterFX?.draw?.(ctx,kind,x,y,size,size,progress,
+  kind==='guard'?.93:1,-1);
+ // 'guard' has a second approved 12-frame painted effect if the PNG is
+ // still loading. Failure uses only its real directional hit PNG frames.
+ if(drawn)return true;
+ return kind==='guard'?!!window.ArenaAnimatedFX?.draw?.(ctx,'guard',x,y,
+  size,size,progress,.85,true):false;
+}
+
+function paintTrainingFighter(canvas,img,action,progress,profile,contact=null){
  if(!canvas)return;
  const ctx=canvas.getContext('2d');if(!ctx)return;
  ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -87,14 +115,23 @@ function paintTrainingFighter(canvas,img,action,progress,profile){
  const bodyScale=window.PracticeScaleProfiles?.scale?.(look)??1;
  const bootY=window.PracticeScaleProfiles?.foot?.(look)??0;
  const k=(profile?.scale??profileFor(canvas,img)?.scale??1)*bodyScale*authored.scale;
+ const extra=contact?reactionOffset(contact.kind,contact.progress,contact.reduced):{x:0,y:0};
  ctx.save();
  // The training fighter faces left. X is in facing space just as it is in
  // normal combat and in the studio. Gameplay hitboxes are never shifted.
- ctx.translate(canvas.width/2-authored.x-motion.x,PRACTICE_FOOT_Y+bootY+authored.y+motion.y);
+ ctx.translate(canvas.width/2-authored.x-motion.x+extra.x,PRACTICE_FOOT_Y+bootY+authored.y+motion.y+extra.y);
  ctx.scale(-1,1);
  try{ctx.drawImage(img,0,0,img.width,img.height,
   -img.width*k/2,-img.height*k,img.width*k,img.height*k);}catch(error){}
  ctx.restore();
+ if(contact&&contact.elapsed<FX_MS){
+  // Grounded guard spark appears in front of the LEFT-facing shield;
+  // an unguarded hit strikes nearer the fighter's upper torso.
+  const x=canvas.width/2-authored.x-motion.x+extra.x+(contact.kind==='guard'?-87:-42);
+  const y=PRACTICE_FOOT_Y+bootY+authored.y+motion.y+extra.y-
+   (contact.kind==='guard'?149:161);
+  drawTrainingContactFX(ctx,contact.kind,contact.elapsed/FX_MS,x,y);
+ }
 }
 function actionAt(t){
  let at=t%ACTION_CYCLE.reduce((sum,x)=>sum+x.ticks,0);
@@ -131,7 +168,11 @@ function animate(a,stage,selected){
    {action:responseKind,progress:Math.max(0,Math.min(1,elapsed/HIT_MS)),frame:Math.min(7,Math.floor(elapsed/HIT_MS*8))}:actionAt(tick);
   // Never substitute the growth atlas's dodge, defeat or death keyposes.
   const src=a.trainingFrame?.(selected,motion.action,motion.frame)||idle;
-  paintTrainingFighter(canvas,src,motion.action,motion.progress,profile);
+  const contact=takingHit?{kind:responseKind,progress:motion.progress,elapsed,
+   reduced:!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches}:null;
+  paintTrainingFighter(canvas,src,motion.action,motion.progress,profile,contact);
+  canvas.dataset.recoilX=contact?String(Math.round(reactionOffset(contact.kind,contact.progress,contact.reduced).x)):'0';
+  canvas.dataset.recoilY=contact?String(Math.round(reactionOffset(contact.kind,contact.progress,contact.reduced).y)):'0';
   canvas.dataset.attack=motion.action;
   canvas.dataset.face='left';
   canvas.dataset.fixedScale=profile?String(profile.scale):'pending';
@@ -233,5 +274,5 @@ function mount(stage,a,s,cbs){
  home.setAttribute('aria-label','메인 루두스 로비로 돌아가기');home.onclick=cbs.onHome;stage.appendChild(home);
  if(h)animate(a,stage,s.active);
 }
-window.LudusTrainingV2={version:'7.4.0',mount,stop,metrics:{scaleFactor:PRACTICE_SCALE,canvasFootY:PRACTICE_FOOT_Y}};
+window.LudusTrainingV2={version:'7.5.0',mount,stop,reactionOffset,drawTrainingContactFX,metrics:{scaleFactor:PRACTICE_SCALE,canvasFootY:PRACTICE_FOOT_Y}};
 })();
