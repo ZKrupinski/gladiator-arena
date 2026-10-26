@@ -4,6 +4,7 @@
 */
 (function(root){'use strict';
 const W=1280,H=720,MAX=4,TYPES=['murmillo','thraex','retiarius'];
+const Personality=root.ArenaPersonality;
 // Background sand begins near y=520. Anchors are feet on the ground.
 // Court placement changes X/Y depth ONLY. All 1-4 fighters and opponents use
 // ONE global practice stage scale=1: character size is studio-authored, never
@@ -73,7 +74,9 @@ function enemyFor(wave,index,rng=Math.random){
  const type=cls==='thraex'?(rng()<.5?'thraex_a':'thraex_b'):cls+'_a';
  const look=type+'_L'+(1+Math.floor(clamp(rng(),0,.999999)*5));
  const hp=enemyHP(wave);
- return {side:'enemy',name:['Varro','Rufus','Gallus','Brutus','Crispus','Atilius'][index%6],
+ const mindProfile=Personality?.profile?.({cls,name:['Varro','Rufus','Gallus','Brutus','Crispus','Atilius'][index%6],level:wave},
+  {atk:enemyAttack(wave),move:230+Math.min(70,wave*3),hp,sp:enemyAttack(wave)*2.3},cls);
+ return {personality:mindProfile,side:'enemy',name:['Varro','Rufus','Gallus','Brutus','Crispus','Atilius'][index%6],
   cls,look,seat:-1,lane:-1,x:0,y:0,hp,maxHp:hp,atk:enemyAttack(wave),
   speed:62+Math.min(42,wave*2.2),armor:Math.min(.25,(wave-1)*.008),
   cooldown:.5+index*.13,swing:0,hit:0,dead:false,fade:1.8,face:-1,
@@ -191,6 +194,7 @@ function heroFor(i,k){
  const maxHp=Math.max(35,Math.round(number(stats.hp,125)-number(h.injury)));
  const c=COURTS[k];
  return {side:'ally',index:i,cls:h.cls,name:h.name,seat:k,lane:k,
+  personality:Personality?.profile?.(h,stats,h.cls),mind:null,
   x:c.x-87,y:c.y,homeX:c.x-87,maxHp,hp:maxHp,
   atk:Math.max(8,Math.round(number(stats.atk,17))),
   armor:clamp(number(stats.armor),0,.62),parryChance:clamp(number(stats.parry,.14)+.18,.12,.6),
@@ -470,27 +474,29 @@ function deal(attacker,target,multiplier=1,style='normal'){
  }
 }
 function prepareStrike(u,target){
- u.swings++;u.special=u.side==='ally'?battle.clock>=u.specialReady&&u.swings>=4:u.swings%4===0;
+ const mood=Personality?.parameters?.(u,battle.clock,Math.random);
+ u.swings++;u.special=u.side==='ally'?(battle.clock>=u.specialReady&&u.swings>=4&&(mood?.special||1)*Math.random()>.18):u.swings%4===0||mood?.mode==='burst'&&u.swings%3===0;
  if(u.special&&u.side==='ally')u.specialReady=battle.clock+(u.specialCooldown||7);
  playCombatSound(u.special?'dash':u.swings%3===0?'heavy_swing':'swing',u,
   u.special?.84:u.swings%3===0?.65:.53);
  if(u.special){emitVfx('dash',u,target,true);root.ArenaCombatFeel?.event?.(battle,'dash',u,target,battle.clock);}
  u.windup=u.special?.34:.24;u.windupTotal=u.windup;
  u.target=target;u.swing=u.special?.59:.46;u.swingTotal=u.swing;
- u.cooldown=((u.side==='ally'?.81:.94)+(u.special?.24:0)+Math.random()*.17)*(u.recovery||1);
+ u.cooldown=((u.side==='ally'?.81:.94)+(u.special?.24:0)+Math.random()*.17)*(u.recovery||1)/clamp(mood?.aggression||1,.70,1.6);
  // Original duel-inspired timing: guard can parry during a brief window,
  // otherwise absorbs part of the hit. Foes can also evade.
  if(target.guardCD<=0&&target.stun<=0){
   const chance=target.side==='ally'?target.parryChance:.18+Math.min(.12,battle.wave*.003);
   // A guard stance does not imply an automatic perfect parry. Preserve
   // roughly the original parry frequency but allow real shield blocks.
-  const guardChance=Math.min(.78,chance+.21);
+  const defenseMood=Personality?.parameters?.(target,battle.clock,Math.random);
+  const guardChance=Math.min(.82,(chance+.21)*(defenseMood?.guard||1));
   if(Math.random()<guardChance){
    target.guard=u.windup+.30;
    target.parry=Math.random()<chance/guardChance?u.windup+.10:0;
    target.guardCD=1.3+Math.random()*.8;
    playCombatSound('guard',target,.42);
-  }else if(Math.random()<(target.side==='ally'?(target.dodgeChance||.08):.06)){
+  }else if(Math.random()<(target.side==='ally'?(target.dodgeChance||.08):.06)*(defenseMood?.evade||1)){
    target.dodge=u.windup+.15;target.guardCD=1.25;
   }
  }
@@ -548,16 +554,20 @@ function act(u,dt){
  // standing immobile at the edge of their weapon's reach.
  const dx=target.x-u.x,dist=Math.abs(dx);
  const side=u.side==='ally'?-1:1;
- const wave=Math.sin(battle.clock*(1.95+u.seat*.09)+u.seat*.91);
- const neutral=ring.x+side*(91+wave*16);
+ const mood=Personality?.parameters?.(u,battle.clock,Math.random);
+ const attackRange=clamp(ATTACK_START_RANGE-(mood?.spacing||0)*.16,183,197);
+ const wave=Math.sin(battle.clock*(1.95+u.seat*.09)*(mood?.speed||1)+u.seat*.91);
+ const neutral=ring.x+side*(91+wave*(16+(mood?.lateral||0)*.34));
  let goal=neutral;
- if(dist>ATTACK_START_RANGE)
-  goal=u.x+Math.sign(dx)*(dist-ATTACK_START_RANGE+8);
+ if(dist>attackRange)
+  goal=u.x+Math.sign(dx)*(dist-attackRange+8);
  else if(dist<MIN_PAIR_GAP+5)
   goal=u.x+side*(MIN_PAIR_GAP+5-dist)*.55;
- const step=Math.max(0,u.speed*dt)*(dist>ATTACK_START_RANGE?1:.72);
+ if(mood?.mode==='feint'&&dist<245&&u.cooldown>.15)
+  goal=u.x+side*(12+(mood.lateral||0)*.35);
+ const step=Math.max(0,u.speed*dt)*(dist>attackRange?1:.72)*(mood?.speed||1);
  u.x=clamp(u.x+clamp(goal-u.x,-step,step),ring.x-LEASH,ring.x+LEASH);
- if(Math.abs(target.x-u.x)<=ATTACK_START_RANGE&&u.cooldown<=0)
+ if(Math.abs(target.x-u.x)<=attackRange&&u.cooldown<=0)
   prepareStrike(u,target);
 }
 // Resolve pair overlap in *world coordinates* after both sides act.

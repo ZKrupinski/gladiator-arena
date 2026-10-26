@@ -1,11 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "72935b37df1494c663cc011379fa0f43afe7101efbbb66d08644f2f8bbee9719",
-    "public/ludus-practice.css": "e3ed874e5387a3138cbc0979d15f37387ea3e9865f2a3fedda6d3801a85fdd25"
+    "public/arena-coop-core.js": "5d9c090e018034c6b9c10ad9142a033e2ef0dd20b249f0cf8170e1fa8c1bead9",
+    "public/index.html": "bb509b91438bb270cb3c295f701142345211a1cbe69ba912049c8040b3ed8515",
+    "public/ludus-practice.js": "1686121304fa6a2db132b76e32dd4c9e6774a6f7169f5166287f726956effa00"
   },
-  "baseCommit": "a40adf50b9e92850eaf3588b56f585492916ce1d",
+  "baseCommit": "caef5ec25acc9b5eb1692450c143b7400f7626df",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-wave-clear-spectators-v103-20261026",
+  "releaseId": "all-modes-five-stat-personality-v104b-20261026",
   "releaseProtocol": "spartacus-uploader-v1"
 }

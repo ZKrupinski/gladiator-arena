@@ -385,7 +385,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=whip-guard-suspense-v93"></script>
 <script src="champion-murmillo.js?v=grounded-v39"></script>
-<script src="arena-gear-catalog.js?v=roman-five-slots-v12"></script><script src="arena-loot.js?v=roman-helm-bracers-v12"></script><script src="arena-gear-bitmap.js?v=roman-square-atlas-v12"></script><script src="arena-excitement.js?v=harder-spectacle-v7"></script><script src="arena-progression.js?v=five-stats-v97"></script><script src="arena-balance.js?v=five-stats-v97"></script>
+<script src="arena-gear-catalog.js?v=roman-five-slots-v12"></script><script src="arena-loot.js?v=roman-helm-bracers-v12"></script><script src="arena-gear-bitmap.js?v=roman-square-atlas-v12"></script><script src="arena-excitement.js?v=harder-spectacle-v7"></script><script src="arena-progression.js?v=five-stats-v97"></script><script src="arena-personality.js?v=five-stat-ai-v104-20261026"></script><script src="arena-balance.js?v=five-stats-v97"></script>
 <script src="arena-portrait-fit.js?v=enemy-facing-v65"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
@@ -1712,27 +1712,34 @@ function beginGuard(f,hold=PARRY_GUARD_HOLD){
  if(f===S.player&&f.parry>0)window.ArenaAudio?.play?.('guard',{gain:.29,pan:(f.x-640)/720});
  return true;
 }
+function aiTactics(f,hero){
+ const P=window.ArenaPersonality;
+ if(!P||!f)return null;
+ if(!f.personality)f.personality=P.profile(hero||f,{...f.cfg,hp:f.maxHp,focus:f.focus,armor:f.armor},f.cls);
+ return P.parameters(f,clock,Math.random);
+}
 function autoPilotPlayer(p,e,dt){
  if(!p||!e||p.dead||e.dead)return;
  const distance=Math.abs(e.x-p.x),dir=Math.sign(e.x-p.x)||1;
+ const mood=aiTactics(p,S.careerMatch?(CAREER.roster[S.careerParticipant]||CAREER.hero):null);
  if(p.comboDash)return;
  p.face=dir;p.guard=p.guardHold>0&&p.st>8&&p.stagger<=0;
  if(p.stagger>0||p.dodge>0||p.net>0)return;
  if(p.guard){p.vx=0;return;}
- const ideal=Math.max(MIN_FIGHTER_DISTANCE+24,Math.min(p.cfg.reach-52,302));
- if(distance>ideal+13){p.vx=dir*p.cfg.move*.77;p.x+=p.vx*dt;}
- else if(distance<ideal-17){p.vx=-dir*p.cfg.move*.39;p.x+=p.vx*dt;}
+ const ideal=Math.max(MIN_FIGHTER_DISTANCE+24,Math.min(p.cfg.reach-52,302))+(mood?.spacing||0)*.40;
+ if(distance>ideal+13){p.vx=dir*p.cfg.move*.77*(mood?.speed||1);p.x+=p.vx*dt;}
+ else if(distance<ideal-17){p.vx=-dir*p.cfg.move*.39*(mood?.evade||1);p.x+=p.vx*dt;}
  // Anticipatory guard: attacks apply damage immediately, so AI must guard before impact.
  const enemyWindingUp=(e.action==='attack'||e.action==='special')&&e.actionT>.06;
  if(distance<=e.cfg.reach+26&&p.st>18&&p.guardRecovery<=0&&
-   (S.careerMatch?(Math.random()<dt*(enemyWindingUp?1.8:1.15)):(enemyWindingUp||Math.random()<dt*2.5))){
+   (S.careerMatch?(Math.random()<dt*(enemyWindingUp?1.8:1.15)*(mood?.guard||1)):(enemyWindingUp||Math.random()<dt*2.5*(mood?.guard||1)))){
    if(beginGuard(p,.44)){p.guardRecovery=.66;return;}
  }
- if(distance<=e.cfg.reach && enemyWindingUp && p.st>35 && p.dodge<=0 && Math.random()<dt*.6){dodge(p);return;}
+ if(distance<=e.cfg.reach && enemyWindingUp && p.st>35 && p.dodge<=0 && Math.random()<dt*.6*(mood?.evade||1)){dodge(p);return;}
  if(distance<=p.cfg.reach+12&&p.attackCD<=0&&p.st>=17){
    // Career AUTO assists, but deliberate timing and training outperform it.
-   if(S.careerMatch&&Math.random()<.38)return;
-   const useSpecial=p.chainHits===0&&p.cd<=0&&p.st>=45&&Math.random()<(S.careerMatch?.13:.26);
+   if(S.careerMatch&&Math.random()<.38/(mood?.aggression||1))return;
+   const useSpecial=p.chainHits===0&&p.cd<=0&&p.st>=45&&Math.random()<(S.careerMatch?.13:.26)*(mood?.special||1);
    attack(p,e,useSpecial);
  }
 }
@@ -2552,6 +2559,7 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
    }
  }
  const ai=S.careerMatch?ArenaBalance.enemyAi(S.careerOpponent?.level||1,!!S.careerOpponent?.boss,e.cls,e.hp/Math.max(1,e.maxHp)):null;
+ const enemyMood=e.beastType?null:aiTactics(e,S.careerMatch?S.careerOpponent:null);
  // Champions become relentless below half HP; ordinary fighters don't.
  if(ai?.retaliate&&e.bossPhase!==2){
   e.bossPhase=2;e.st=Math.min(100,e.st+25);e.attackCD=Math.min(e.attackCD,.18);
@@ -2562,23 +2570,23 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
  if(e._beastRoarUntil>clock){e.vx=0;e.guard=false;}
  else if(e.stagger<=0&&!e.comboDash&&e.dodge<=0&&!e.specialRecoil&&!e.parryChase){
   const dist=Math.abs(e.x-p.x),dir=Math.sign(p.x-e.x)||-1;e.face=dir;
-  const preferred=Math.max(MIN_FIGHTER_DISTANCE+AI_SPACING_BUFFER,e.cfg.reach-55);
+  const preferred=Math.max(MIN_FIGHTER_DISTANCE+AI_SPACING_BUFFER,e.cfg.reach-55)+(enemyMood?.spacing||0)*.48;
   if(!e.guard){
    if(dist>preferred+22){
     if(!preEngagementFootwork(e,p,dt)){
-     e.vx=dir*e.cfg.move*(e.parryHasteT>0?1.55:1)*(ai?.retaliate?.88:.68);e.x+=e.vx*dt;
+     e.vx=dir*e.cfg.move*(e.parryHasteT>0?1.55:1)*(ai?.retaliate?.88:.68)*(enemyMood?.speed||1);e.x+=e.vx*dt;
     }
-   }else if(dist<preferred-22){e.vx=-dir*e.cfg.move*.32;e.x+=e.vx*dt;}
+   }else if(dist<preferred-22){e.vx=-dir*e.cfg.move*.32*(enemyMood?.evade||1);e.x+=e.vx*dt;}
    const threat=(p.action==='attack'||p.action==='special')&&p.actionT>.06;
    if(e.pressureT<=0){
-    const parryRate=ai?.parriesPerSecond||ENEMY_PARRY_RATE;
+    const parryRate=(ai?.parriesPerSecond||ENEMY_PARRY_RATE)*(enemyMood?.guard||1);
     if(dist<=p.cfg.reach+42&&e.st>18&&e.guardRecovery<=0&&
       ((threat&&Math.random()<dt*parryRate*1.1)||Math.random()<dt*parryRate)){
      if(beginGuard(e,ai?.retaliate?.44:.38))e.guardRecovery=ai?.parryInterval||1.05;
     }
     if(!e.guard&&dist<e.cfg.reach+12&&e.attackCD<=0&&
-      Math.random()<dt*(e.st<25?.25:(ai?.attacksPerSecond||ENEMY_ATTACK_RATE))){
-      attack(e,p,e.cd<=0&&Math.random()<(ai?.specialChance||.15));
+      Math.random()<dt*(e.st<25?.25:(ai?.attacksPerSecond||ENEMY_ATTACK_RATE))*(enemyMood?.aggression||1)){
+      attack(e,p,e.cd<=0&&Math.random()<Math.min(.70,(ai?.specialChance||.15)*(enemyMood?.special||1)));
       e.attackCD=Math.max(e.attackCD,ai?.recovery||ENEMY_ATTACK_RECOVERY);
     }
    }
@@ -3806,7 +3814,7 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=blank-v70"></script><script src="practice-scale-published.js?v=true-size-v54"></script><script src="practice-scale-profiles.js?v=atlas-cell-v63"></script><script src="practice-visual-profiles.js?v=vfx-direction-v58"></script><script src="ludus-practice.js?v=crowd-shift-left16-v99"></script><script src="ludus-training-runtime.js?v=studio-scale-parity-v95"></script><script src="ludus-doctore-anim.js?v=training-fit-v71"></script><script src="ludus-approved-scenes.js?v=five-stats-v97"></script><script src="ludus-armory-live.js?v=five-stats-v96"></script><script src="arena-coop-core.js?v=five-stats-v97"></script><script src="arena-coop-match.js?v=five-stats-v97"></script><script src="arena-coop-camera.js?v=concordia-camera-v64"></script><script src="arena-coop.js?v=five-stats-v97"></script><script src="ludus-cards.js?v=five-stats-v96"></script>
+<script src="ludus-scene.js?v=blank-v70"></script><script src="practice-scale-published.js?v=true-size-v54"></script><script src="practice-scale-profiles.js?v=atlas-cell-v63"></script><script src="practice-visual-profiles.js?v=vfx-direction-v58"></script><script src="ludus-practice.js?v=five-stat-ai-v104-20261026"></script><script src="ludus-training-runtime.js?v=studio-scale-parity-v95"></script><script src="ludus-doctore-anim.js?v=training-fit-v71"></script><script src="ludus-approved-scenes.js?v=five-stats-v97"></script><script src="ludus-armory-live.js?v=five-stats-v96"></script><script src="arena-coop-core.js?v=five-stat-ai-v104-20261026"></script><script src="arena-coop-match.js?v=five-stats-v97"></script><script src="arena-coop-camera.js?v=concordia-camera-v64"></script><script src="arena-coop.js?v=five-stats-v97"></script><script src="ludus-cards.js?v=five-stats-v96"></script>
 
 </body></html>
 

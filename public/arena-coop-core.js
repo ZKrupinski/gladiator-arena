@@ -6,6 +6,7 @@
 })(typeof window==='object'?window:globalThis,function(){
  'use strict';
  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ const Personality=(typeof window==='object'?window:globalThis).ArenaPersonality;
  const finite=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
  const distance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.45);
  const footDistance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.6);
@@ -35,6 +36,7 @@
   const stats=h.combat||{},maxHp=Math.max(40,Math.round(finite(stats.hp,160)*STAMINA_MULT));
   const hp=Math.max(1,maxHp-clamp(Math.round(finite(h.injury,0)*1.3),0,maxHp-1));
   return {...h,id:side+seat,side,seat,maxHp,hp,startHp:hp,
+   personality:Personality?.profile?.(h,stats,h.cls),mind:null,
    atk:Math.max(4,finite(stats.atk,20)),armor:clamp(finite(stats.armor,.1),0,.62),
    parry:clamp(finite(stats.parry,.14),.05,.48),speed:Math.max(70,finite(stats.move,220)*.48),
    sp:Math.max(1,finite(stats.sp,finite(stats.atk,20)*2.5)),specialCooldown:Math.max(3.1,finite(stats.specialCooldown,8)),
@@ -322,6 +324,7 @@
    // Avoid retargeting between equally close enemies on successive frames.
    const target=directed||chasing||(previous&&distance(u,previous)<=distance(u,preferred)+58?previous:preferred);
    const near=enemies.slice().sort((a,b)=>distance(u,a)-distance(u,b))[0],nearDist=distance(u,near);
+   const mood=Personality?.parameters?.(u,s.time,s.random);
    u.target=target.id;faceToward(s,u,target);
    if(u.chase&&(!chasing||s.time>=u.chase.until))u.chase=null;
    if(!directed&&target.mode==='retreat'&&nearDist<435&&
@@ -331,7 +334,7 @@
     emit(s,'chase',u,target,u.name+' 도주자 추격!');
     if(target.lure)callReaction(s,'ambush',target,u);
    }
-   if(!u.mode&&s.time>=u.retreatReady&&nearDist<255&&s.random()<dt*(u.hp/u.maxHp<.48?.42:.016)){
+   if(!u.mode&&s.time>=u.retreatReady&&nearDist<255&&s.random()<dt*(u.hp/u.maxHp<.48?.42:.016)*(mood?.retreat?3.1:.65)){
     u.mode='retreat';u.tacticUntil=s.time+2.5+s.random()*1.2;
     u.retreatReady=s.time+16+s.random()*6;u.recoverBudget=u.maxHp*.11;
     // An occasional intentional retreat invites enemy pursuit into a friendly ambush.
@@ -355,7 +358,7 @@
     continue;
    }
    if(u.mode==='retreat'){u.mode='';u.lure=false;emit(s,'rejoin',u,target,u.name+' 전선 복귀');}
-   if(!u.mode&&u.cooldown>.2&&nearDist>170&&nearDist<310&&s.random()<dt*.13){
+   if(!u.mode&&u.cooldown>.2&&nearDist>170&&nearDist<310&&s.random()<dt*.13*(mood?.mode==='feint'?5:mood?.mode==='circle'?2.1:.7)){
     u.mode='feint';u.tacticUntil=s.time+.7+s.random()*.95;
     emit(s,'feint',u,target,u.name+' 간격 탐색 · 견제');
    }
@@ -365,18 +368,18 @@
    }
    if(u.mode==='feint')u.mode='';
    if(u.rooted>0)continue;
-   if(nearDist>205&&nearDist<415&&s.time>=u.dashReady&&s.random()<dt*.45){
+   if(nearDist>205&&nearDist<415&&s.time>=u.dashReady&&s.random()<dt*.45*(mood?.rush||1)){
     u.dash=.65;u.dashReady=s.time+6+s.random()*3;emit(s,'dash',u,target,u.name+' 전력 돌진!');
    }
-   if(distance(u,target)>198){
+   if(distance(u,target)>clamp(198+(mood?.spacing||0)*.27,185,222)){
     const speed=u.speed*(u.dash>0?2.65:1)*(u.chase?1.55:1)*
      (u.side==='ally'&&s.flank?.until>s.time?1.38:1)*
-     (u.side==='ally'&&s.cover?.id===u.id&&s.cover.until>s.time?.75:1);
-    travel(s,u,target.x-u.face*130,target.y+((u.seat%3)-1)*25,speed*dt);
+     (u.side==='ally'&&s.cover?.id===u.id&&s.cover.until>s.time?.75:1)*(mood?.speed||1);
+    travel(s,u,target.x-u.face*(130+(mood?.spacing||0)*.22),target.y+((u.seat%3)-1)*25,speed*dt);
    }else if(u.cooldown<=0){
-    const special=s.time>=u.specialReady;
+    const special=s.time>=u.specialReady&&(mood?.mode==='burst'||mood?.mode==='press'||s.random()<.75);
     u.attack={target:target.id,special,remaining:special?.64:.4,total:special?.64:.4};
-    u.cooldown=(1.25+s.random()*.5)*u.recovery;if(special)u.specialReady=s.time+u.specialCooldown;
+    u.cooldown=(1.25+s.random()*.5)*u.recovery/clamp(mood?.aggression||1,.65,1.55);if(special)u.specialReady=s.time+u.specialCooldown;
    }
   }
   // Only living fighters block movement, including dash and knockback. Fallen bodies persist visually.
