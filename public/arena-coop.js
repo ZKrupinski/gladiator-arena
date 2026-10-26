@@ -18,6 +18,10 @@
  function open(allies,enemies,{onFinish,onClose,seed}={}){
   if(current)return false;
   const sim=C.create(allies,enemies,{seed}),host=document.createElement('section');
+  // Champion death consists of eight asynchronously loaded drawings.
+  // Start loading on arena entry so the first KO does not briefly show idle.
+  if(sim.units.some(u=>u.side==='ally'&&u.appearance===root.ChampionMurmillo?.variant))
+   root.ChampionMurmillo.frame('death',0);
   host.className='arena-coop';host.setAttribute('aria-label','5vs5 실시간 협동전투');
   const previousFocus=document.activeElement,oldOverflow=document.body.style.overflow;
   const state={sim,host,frame:0,last:0,eventId:0,fx:[],paused:false,settled:false,selected:null,flash:0,nextCinematicAt:0,cinematic:null,focusFrame:null, director:root.ArenaCoopCamera?.create?.()||null,lens:{zoom:1,x:640,y:360}};current=state;
