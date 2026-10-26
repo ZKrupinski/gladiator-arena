@@ -1,22 +1,10 @@
 {
   "assetSha256": {
-    "public/arena-balance.js": "52070070f8e106c82e59f5ec2df42d37795081086a7b143d34c2ad6a21bc9240",
-    "public/arena-coop-core.js": "caed27059bb6a1b9da4ba3039ea52d72b59e3645bf69f13e041ac0174b08c4b5",
-    "public/arena-coop-match.js": "5bafc07eeb3bbd77ca4a2f6e485a213ba9fd2b58714eeb06e1ea9e0349919bb8",
-    "public/arena-coop.js": "fd4ab4318f957e7db0e383229302a66ae1fd3e0cb1459e0f179d47cbd56e8933",
-    "public/arena-progression.js": "12c52cff77277871c02ce0bd11c7f83e968d1b9857b72da97ceee553c39582ba",
-    "public/index.html": "258ae479bdffeae7161a506fa025ca82f671782c2496ba9466df40d1e89fbef0",
-    "public/ludus-approved-scenes.js": "9848a36a16f75e0b5a8534a0924149856a5da2239a8a1e1d4ba57b59e5eac934",
-    "public/ludus-practice.js": "c9fb6e8f167b417487baa5e2d218be20fec2e7d3feb772ee0e2e62c6901e5665",
-    "public/ludus-roster.js": "ad199d93d446e5c061c2f52c59ea4f5137716a95b334d8c79f457e0921391ede",
-    "public/ludus-training-risk.js": "a10cabd41c0806b4c2118b3736f3a28d2bd600938359dd6bb9a2379b0ec3b5e4",
-    "public/market-scene.js": "45a5e5e142d52ec2e1020e38509604cd72d071f71f88fd85262e5857f85636c5",
-    "public/market-selection-live.css": "d28f81c2d88e84fff6483e2b533c6fa238c3ee30c58d18952b344f984dd2a09c",
-    "tests/five-stat-combat-v97.js": "ee640ef4ed228acfc6f202972dcfc6f78ea53ba96d1706b1749ea7d8e4779101"
+    "public/assets/capua/capua-night-original.jpg": "4afaf6f29d0322a19ed5db16877a6e96ca9875fbd4bda16bad04522b76c23d11"
   },
-  "baseCommit": "d5c79990909bd0b36e4420d7691bb6298b360d76",
+  "baseCommit": "c4049fddbca5b36d5d7a52541e41dd860f121d8f",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "five-stat-combat-v97-20261026",
+  "releaseId": "capua-night-spectators-v4-jpeg-20261026",
   "releaseProtocol": "spartacus-uploader-v1"
 }
