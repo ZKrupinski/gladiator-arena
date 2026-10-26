@@ -24,7 +24,7 @@ assert.equal(reload.effect.y,20,'FX Y persists across reload');
 assert.equal(reload.effect.scale,1.35,'FX scale persists across reload');
 const x=s.effectGeometry({kind:'sweep',baseX:200,baseY:330,zoom:1,face:1,pose:reload});
 assert.deepEqual(JSON.parse(JSON.stringify(x)),{
- kind:'sweep',x:261,y:335,width:655*1.35,height:605*1.35,zoom:1,scale:1.35
+ kind:'sweep',x:261,y:335,width:655*1.35,height:605*1.35,zoom:1,scale:1.35,face:1
 });
 const flip=s.effectGeometry({kind:'sweep',baseX:200,baseY:330,zoom:.8,face:-1,pose:reload});
 assert(Math.abs(flip.x-(200-(23+38)*.8))<1e-9);

@@ -1,0 +1,47 @@
+name: VFX pose facing + body anchor QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/practice-visual-profiles.js
+      - public/tools/practice-scale-calibrator.html
+      - public/arena-coop.js
+      - public/ludus-practice.js
+      - public/index.html
+      - public/tools/practice-scale-publish.js
+      - tests/qa-vfx-facing-v59.cjs
+      - .github/workflows/qa-vfx-facing-v59.yml
+  workflow_dispatch:
+jobs:
+  facing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Validate all FX direction modes, editor persistence, game bindings
+        run: node tests/qa-vfx-facing-v59.cjs
+      - name: Validate current browser-deployed editor and runtime are exact
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, urllib.request, time
+          base='https://gladiator-arena-git.pages.dev/'
+          paths=['index.html','practice-visual-profiles.js','arena-coop.js','ludus-practice.js','tools/practice-scale-calibrator.html']
+          hashes={p:hashlib.sha256((pathlib.Path('public')/p).read_bytes()).hexdigest() for p in paths}
+          for attempt in range(25):
+              bad=[]
+              for p in paths:
+                  try:
+                      path='' if p=='index.html' else p
+                      req=urllib.request.Request(base+path+'?v=fx-facing-v59&check='+str(attempt),headers={'Cache-Control':'no-cache','User-Agent':'Spartacus-QA'})
+                      with urllib.request.urlopen(req,timeout=15) as r: body=r.read()
+                      if hashlib.sha256(body).hexdigest()!=hashes[p]:bad.append(p+' content-mismatch')
+                  except Exception as e:bad.append(p+':'+str(e)[:90])
+              if not bad:
+                  print('VFX_FACING_LIVE_PASS: exact production editor and duel, practice, coop scripts match main')
+                  break
+              print('Waiting on Cloudflare',attempt,bad,flush=True)
+              time.sleep(10)
+          else:raise SystemExit('VFX_FACING_LIVE_NOT_VERIFIED')
+          PY
