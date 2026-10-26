@@ -91,4 +91,21 @@ assert(noCascade.units[5].hp<120,'rescue attack strikes the attacker');
 assert(noCascade.units[1].protectedUntil>0,'rescued fighter gets temporary protection');
 assert(noCascade.events.some(e=>e.type==='rescue'),'rescue completion event is emitted');
 
+
+// Facing must not flip each frame when a nearby opponent crosses the X axis.
+const turnSim=C.create(team(),team(),{seed:111});
+const turnUnit=turnSim.units[0],turnTarget={x:turnUnit.x};
+for(let i=0;i<80;i++){
+ turnSim.time=i*.05;turnTarget.x=turnUnit.x+(i%2?25:-25);
+ C.faceToward(turnSim,turnUnit,turnTarget);
+ assert.equal(turnUnit.face,1,'close X crossings preserve orientation');
+}
+for(let i=0;i<8;i++){turnSim.time=4+i*.05;turnTarget.x=turnUnit.x-120;C.faceToward(turnSim,turnUnit,turnTarget);}
+assert.equal(turnUnit.face,-1,'sustained leftward target turns after dwell');
+for(let i=0;i<8;i++){turnSim.time=4.4+i*.05;turnTarget.x=turnUnit.x+120;C.faceToward(turnSim,turnUnit,turnTarget);}
+assert.equal(turnUnit.face,1,'sustained rightward target turns after cooldown');
+const wallUnit={x:85,y:395,dead:false,seat:0,face:1};
+assert.equal(C.travel({units:[wallUnit]},wallUnit,0,395,6),false,'blocked travel cannot reverse at world edge');
+assert.equal(wallUnit.x,85);
+
 console.log('PASS: 100 seeded battles; collision-free living fighters with pass-through corpses, dash/riposte/assist, feints, retreat/recovery, commands/cooldowns, pause, timeout and result idempotence. Average '+(total/100).toFixed(1)+'s, ally wins '+wins+'%.');

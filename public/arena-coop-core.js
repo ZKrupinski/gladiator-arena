@@ -16,6 +16,20 @@
  // Team-only endurance: the crowd can see multiple tactics before eliminations.
  // Not written to roster stats; both sides benefit from the same multiplier.
  const STAMINA_MULT=1.5,CONTACT_RATE=.42;
+ // Keep facing stable during close-quarter crossings and collision stalls.
+ const FACE_DEADZONE=36,FACE_DWELL=.18,FACE_COOLDOWN=.50;
+ function faceToward(s,u,foe){
+  if(!foe||u.dead)return u.face;
+  const dx=foe.x-u.x;
+  if(Math.abs(dx)<FACE_DEADZONE){u.pendingFace=0;return u.face;}
+  const desired=dx>0?1:-1;
+  if(u.face===desired){u.pendingFace=0;return u.face;}
+  if(u.pendingFace!==desired){u.pendingFace=desired;u.pendingFaceAt=s.time;return u.face;}
+  if(s.time-u.pendingFaceAt>=FACE_DWELL&&s.time-(u.lastFaceAt??-Infinity)>=FACE_COOLDOWN){
+   u.face=desired;u.lastFaceAt=s.time;u.pendingFace=0;
+  }
+  return u.face;
+ }
  function rng(seed){let n=seed>>>0;return ()=>{n=(Math.imul(1664525,n)+1013904223)>>>0;return n/4294967296;};}
  function makeUnit(h,side,seat){
   const stats=h.combat||{},maxHp=Math.max(40,Math.round(finite(stats.hp,160)*STAMINA_MULT));
@@ -49,16 +63,24 @@
  function travel(s,u,tx,ty,step){
   const dx=tx-u.x,dy=ty-u.y,len=Math.hypot(dx,dy);
   if(len<1||step<=0||u.dead)return false;
-  const stride=Math.min(step,len),ang=Math.atan2(dy,dx),sign=u.seat%2?-1:1;
-  for(const a of [0,sign*.43,-sign*.43,sign*.9,-sign*.9,sign*1.5,-sign*1.5,sign*2,-sign*2,Math.PI]){
+  const stride=Math.min(step,len),ang=Math.atan2(dy,dx);
+  // Sticky obstacle side; never take the former 180-degree reverse step.
+  const sign=u.steerSide||(u.seat%2?-1:1);
+  const angles=[0,sign*.42,sign*.85,sign*1.24,sign*1.47,-sign*.42,-sign*.85,-sign*1.24,-sign*1.47];
+  for(const a of angles){
    const vx=Math.cos(ang+a),vy=Math.sin(ang+a);let x=u.x,y=u.y,ok=true;
    for(let t=0;t<stride;t+=7){
     const d=Math.min(7,stride-t);x=clamp(x+vx*d,85,1195);y=clamp(y+vy*d,395,675);
     if(!free(s,u,x,y)){ok=false;break;}
    }
-   if(ok&&Math.hypot(x-u.x,y-u.y)>.15){u.x=x;u.y=y;u.moving=true;return true;}
+   const actual=Math.hypot(x-u.x,y-u.y),forward=((x-u.x)*dx+(y-u.y)*dy)/len;
+   if(ok&&actual>.65&&forward>Math.min(.12,stride*.04)){
+    u.x=x;u.y=y;u.moving=actual>1.4;
+    u.steerSide=a===0?0:Math.sign(a);
+    return true;
+   }
   }
-  return false;
+  u.steerSide=0;return false; // Stuck means idle, not rapid walk jitter.
  }
  function shove(s,u,amount){
   const from=u.x,sign=Math.sign(amount);
@@ -207,7 +229,7 @@
     const foe=s.units.find(v=>v.id===u.counter.target);
     if(!foe||foe.dead||s.time>u.counter.expires){u.counter=null;}
     else{
-     u.face=foe.x>=u.x?1:-1;
+     faceToward(s,u,foe);
      if(s.time>=u.counter.due&&distance(u,foe)<205){
       u.counter=null;u.attack=null;u.swing=.55;
       const dealt=hurt(s,u,foe,1.6,'counter',false);
@@ -225,7 +247,7 @@
     const r=u.reaction,foe=s.units.find(v=>v.id===r.target),ward=s.units.find(v=>v.id===r.ward);
     if(!foe||foe.dead||!ward||ward.dead||s.time>r.expires)u.reaction=null;
     else{
-     u.face=foe.x>=u.x?1:-1;
+     faceToward(s,u,foe);
      if(s.time>=r.due&&distance(u,foe)<215){
       u.reaction=null;u.swing=.56;u.dash=.4;
       const dealt=hurt(s,u,foe,r.kind==='ambush'?1.32:1.04,r.kind,false);
@@ -250,7 +272,7 @@
    const assist=s.links.find(l=>l.actor===u.id&&l.expires>=s.time&&s.units.some(v=>v.id===l.target&&!v.dead));
    if(assist){
     const foe=s.units.find(v=>v.id===assist.target);
-    u.face=foe.x>=u.x?1:-1;
+    faceToward(s,u,foe);
     if(distance(u,foe)>190){
      u.dash=Math.max(u.dash,.15);
      travel(s,u,foe.x-u.face*127,foe.y+((u.seat%3)-1)*24,u.speed*dt*2.3);
@@ -282,9 +304,12 @@
    if(!enemies.length)continue;
    const directed=u.side==='ally'&&s.focus?.until>s.time?enemies.find(v=>v.id===s.focus.id):null;
    const chasing=u.chase?.until>s.time?enemies.find(v=>v.id===u.chase.target):null;
-   const target=directed||chasing||enemies.slice().sort((a,b)=>distance(u,a)+(a.seat===u.seat?-32:0)-distance(u,b)-(b.seat===u.seat?-32:0))[0];
+   const preferred=enemies.slice().sort((a,b)=>distance(u,a)+(a.seat===u.seat?-32:0)-distance(u,b)-(b.seat===u.seat?-32:0))[0];
+   const previous=enemies.find(v=>v.id===u.target);
+   // Avoid retargeting between equally close enemies on successive frames.
+   const target=directed||chasing||(previous&&distance(u,previous)<=distance(u,preferred)+58?previous:preferred);
    const near=enemies.slice().sort((a,b)=>distance(u,a)-distance(u,b))[0],nearDist=distance(u,near);
-   u.target=target.id;u.face=target.x>=u.x?1:-1;
+   u.target=target.id;faceToward(s,u,target);
    if(u.chase&&(!chasing||s.time>=u.chase.until))u.chase=null;
    if(!directed&&target.mode==='retreat'&&nearDist<435&&
        s.time>=u.chaseReady&&!u.chase&&u.hp/u.maxHp>.26){
@@ -346,7 +371,7 @@
    const a=s.units.find(u=>u.id===l.actor),b=s.units.find(u=>u.id===l.target);
    if(!a||!b||a.dead||b.dead||s.time>l.expires)return false;
    if(s.time<l.due||distance(a,b)>215)return true;
-   a.face=b.x>=a.x?1:-1;a.swing=.4;
+   faceToward(s,a,b);a.swing=.4;
    const dealt=hurt(s,a,b,l.kind==='총공세'?.85:1.05,'assist',false);
    if(dealt){
     a.assists++;s.teamwork[a.side]++;
@@ -358,5 +383,5 @@
   else if(s.time>=s.limit)finish(s,'timeout');
   return s;
  }
- return {create,step,command,finish,alive,distance,footDistance,depthOrder};
+ return {create,step,command,finish,alive,distance,footDistance,depthOrder,faceToward,travel};
 });
