@@ -2,17 +2,12 @@
  'use strict';
  const C=root.ArenaCoopCore,escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let current=null;
- // A dead fighter is always rendered as a horizontal, motionless body.
- // Use the reliable 'hit' frame instead of relying on an optional 'death'
- // frame: legacy 10-frame fighters may otherwise fall back to standing idle.
- function corpseFall(u,time){
-  if(!u?.dead)return 0;
-  const f=u.flight;
-  const phase=f?
-   Math.max(0,Math.min(1,(time-f.at)/Math.max(.01,f.duration))):
-   Math.max(0,Math.min(1,(time-(Number.isFinite(u.deathAt)?u.deathAt:time))/.35));
-  const t=Math.max(0,Math.min(1,f?(phase-.55)/.45:phase));
-  return t*t*(3-2*t);
+ // A painted death animation plays once and holds its final frame.
+ // Eight-frame champion art runs at 10 FPS; other atlases expose their fixed
+ // death pose through the same 'death' action.
+ function deathFrame(u,time){
+  if(!Number.isFinite(u?.deathAt)||!Number.isFinite(time))return 7;
+  return Math.max(0,Math.min(7,Math.floor((time-u.deathAt)*10)));
  }
  // Depth follows the exact planted FOOT y coordinate (far 395 / near 675).
  // Linear and clamped: 0.76 at far feet, 1.22 at near feet (formerly 1.14).
@@ -122,13 +117,13 @@
   function drawUnit(u){
    const flight=u.flight,flightT=flight?Math.max(0,Math.min(1,(sim.time-flight.at)/flight.duration)):1;
     const airborne=flight&&flightT<1;
-    const pose=u.dead?'hit':airborne?'hit':u.hit>0?'hit':u.guard>0?'guard':u.attack||u.swing>0?'attack':u.moving?'walk':'idle';
-   const progress=u.dead?Math.min(1,(sim.time-u.deathAt)/.8):u.attack? .4*(1-u.attack.remaining/u.attack.total):u.swing>0?.4+.6*(1-u.swing/.4):pose==='hit'?1-u.hit/.24:(sim.time*.8)%1;
+    const pose=u.dead?'death':airborne?'hit':u.hit>0?'hit':u.guard>0?'guard':u.attack||u.swing>0?'attack':u.moving?'walk':'idle';
+   const progress=u.dead?1:u.attack? .4*(1-u.attack.remaining/u.attack.total):u.swing>0?.4+.6*(1-u.swing/.4):pose==='hit'?1-u.hit/.24:(sim.time*.8)%1;
    const action=pose==='attack'?(u.cls==='retiarius'?'thrust':'slash'):pose;
    const look=root.PracticeScaleProfiles?.look?.(u,root.LudusBridge?.state?.()?.roster)||u.look,
     profile=root.PracticeVisualProfiles?.resolve(look,action)||{x:0,y:0,scale:1};
    const motion=u.dead?{x:0,y:0}:(root.PracticeVisualProfiles?.sampleMotion(profile,progress)||{x:0,y:0});
-   const tick=u.dead?0:pose==='attack'?Math.floor(progress*7):sim.time*8;
+   const tick=u.dead?deathFrame(u,sim.time):pose==='attack'?Math.floor(progress*7):sim.time*8;
    const image=art(u,pose,tick),idle=art(u,'idle',0);if(!image||!idle?.height)return;
    const basis=root.LudusBridge?.practiceNominal?.(u);
    const sourceScale=basis?.width>0&&basis?.height>0?
@@ -148,13 +143,9 @@
    ctx.translate(u.x+flightX,u.y+flightY*depth);
    ctx.scale(depth,depth);
    ctx.translate((profile.x+motion.x)*z*u.face,((root.PracticeScaleProfiles?.foot(look)||0)+profile.y+motion.y)*z);
-   if(airborne&&!flight.reduced)ctx.rotate(u.face*(u.dead?.16:.11)*Math.sin(Math.PI*flightT));
+   if(airborne&&!flight.reduced&&!u.dead)ctx.rotate(u.face*.11*Math.sin(Math.PI*flightT));
    if(!u.dead){if(!airborne)ctx.translate(body.x,body.y);ctx.rotate(airborne?0:body.tilt||0);ctx.scale(impact.scale||1,impact.scale||1);}
    ctx.scale(u.face,1);
-   // Rotate around the actual planted foot, NOT the sprite center.
-   // Progressively turn into a prone corpse during the last portion of KO
-   // flight, then hold the same horizontal pose until the battle ends.
-   if(u.dead)ctx.rotate(-Math.PI*.5*corpseFall(u,sim.time));
    if(!u.dead&&impact.flash>0)ctx.filter='brightness('+(1+impact.flash*2.5).toFixed(2)+')';
    if(!u.dead&&!airborne&&u.recoilAt!==undefined&&sim.time-u.recoilAt<.58){
     const life=1-(sim.time-u.recoilAt)/.58;
@@ -367,5 +358,5 @@
   root.ArenaAudio?.unlock?.();root.ArenaAudio?.enterArena?.();tell('전투 개시 · 적을 지정하고 동료에게 기회를 만드세요');
   $('[data-pause]').focus();state.frame=requestAnimationFrame(loop);return true;
  }
- root.ArenaCoop={open,isOpen:()=>!!current,perspectiveScale,corpseFall};
+ root.ArenaCoop={open,isOpen:()=>!!current,perspectiveScale,deathFrame};
 })(window);

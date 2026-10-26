@@ -44,4 +44,19 @@ node('[data-formation]').onclick();assert(sim.formation.until>0,'formation comma
 node('[data-flank]').onclick();assert(sim.flank.until>0,'flank command immediately active');
 sim.meter=60;node('[data-rally]').onclick();assert.equal(sim.meter,0,'allies spend combo meter on team rally');
 sim.paused=true;node('[data-formation]').onclick();assert.equal(sim.formationReady,19,'paused commands cannot bypass cooldown');
+
+// Death must use the approved sprite action, play 0–7 exactly once, and
+// never rotate the fighter image sideways as a substitute for the animation.
+const deathFrame=root.ArenaCoop.deathFrame;
+assert.equal(deathFrame({deathAt:10},9.5),0,'never select negative death frames');
+assert.equal(deathFrame({deathAt:10},10),0,'start from frame zero');
+assert.equal(deathFrame({deathAt:10},10.35),3,'death sequence advances at 10 FPS');
+assert.equal(deathFrame({deathAt:10},10.85),7,'finish on frame seven');
+assert.equal(deathFrame({deathAt:10},19),7,'never wrap the corpse back to frame zero');
+assert.equal(deathFrame({},19),7,'missing timestamps preserve the final death frame');
+const renderer=fs.readFileSync(path.join(__dirname,'../public/arena-coop.js'),'utf8');
+assert.match(renderer,/const pose=u\.dead\?'death':/,'dead fighters select death art');
+assert.match(renderer,/const tick=u\.dead\?deathFrame\(u,sim\.time\):/,'death pose receives the held frame');
+assert.doesNotMatch(renderer,/corpseFall|if\(u\.dead\)ctx\.rotate/,'remove 90-degree corpse rotation');
+
 console.log('PASS: 10 facing thumbnails, under-field panel, ally cover/enemy focus instant taps, team-wide tactics and paused command safety');
