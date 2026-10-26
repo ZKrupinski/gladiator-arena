@@ -17,9 +17,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
-      - name: Validate V4 empty still, actor-only atlas and looping script
+      - name: Validate V98 audience fit, unwarped architecture and four-frame loop
         run: node tests/ludus-balcony-atlas.cjs
-      - name: Verify live Cloudflare static yard and cropped crowd atlas
+      - name: Verify live Cloudflare spectator atlas and unchanged practice yard
         run: |
           python - <<'PY'
           import hashlib, pathlib, time, urllib.request
@@ -28,19 +28,20 @@ jobs:
           paths=['index.html','ludus-practice.js',
                  'assets/ludus-practice/manifest.json',
                  'assets/ludus-practice/ludus-practice-yard-empty-v4-game.webp',
-                 'assets/ludus-practice/capua-balcony-full-4f-lossless-v2.webp']
+                 'assets/ludus-practice/capua-balcony-full-4f-lossless-v2.webp',
+                 'assets/ludus-practice/ludus-balcony-actors-only-v4-4f.webp']
           expected={p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in paths}
           for attempt in range(24):
               fail=[]
               for p in paths:
                   try:
-                      url=base+('' if p=='index.html' else p)+'?v=capua-fullbalcony-stable-v5&check='+str(attempt)
+                      url=base+('' if p=='index.html' else p)+'?v=capua-crowd-aspect-v98&check='+str(attempt)
                       req=urllib.request.Request(url,headers={'Cache-Control':'no-cache','User-Agent':'Spartacus-Asset-QA'})
                       with urllib.request.urlopen(req,timeout=14) as response: data=response.read()
                       if hashlib.sha256(data).hexdigest()!=expected[p]: fail.append(p+' mismatch')
                   except Exception as e: fail.append(p+': '+str(e)[:100])
               if not fail:
-                  print('LUDUS_BALCONY_LIVE_PASS: exact index, runtime JS, manifest and TWO WebP asset byte hashes match production.')
+                  print('LUDUS_BALCONY_LIVE_PASS: updated runtime, 90% fitted crowd, fallback and yard WebP match production.')
                   print(base)
                   break
               print('Waiting for deploy (%d/24): %s'%(attempt+1,', '.join(fail)),flush=True)
