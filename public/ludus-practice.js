@@ -215,7 +215,7 @@ function heroFor(i,k){
   sp:number(stats.sp,number(stats.atk,17)*1.55/.65),specialCooldown:number(stats.specialCooldown,7),specialReady:4+k*.5,
   recovery:number(stats.recovery,1),dodgeChance:number(stats.dodgeChance,.08),guardEfficiency:number(stats.guardEfficiency),
   cooldown:.18+k*.12,swing:0,hit:0,dead:false,fade:1.8,face:1,
-  exp:0,kills:0,level:h.level,windup:0,target:null,guard:0,parry:0,
+  exp:0,kills:0,level:h.level,initialLevel:h.level,initialXp:number(h.xp,0),windup:0,target:null,guard:0,parry:0,
   guardCD:0,dodge:0,stun:0,swings:0,special:false};
 }
 function announce(text){
@@ -449,6 +449,18 @@ function drawSpark(p){
  ctx.beginPath();ctx.arc(p.x,p.y,p.critical?3.3:2.1,0,Math.PI*2);
  ctx.fill();ctx.restore();
 }
+// Live XP is a read-only preview of career progression. It updates the
+// fighter's visible level immediately without ever prematurely modifying
+// the persistent roster (which is settled exactly once at match end).
+function refreshPracticeLevel(hero){
+ if(!battle||hero?.side!=='ally')return;
+ const signals=root.ArenaCombatSignals;
+ const next=signals?.previewLevel?.(hero.initialLevel,hero.initialXp,hero.exp);
+ if(!next||next.level<=hero.level)return;
+ signals.levelUp(hero,hero.level,next.level,battle.clock);
+ hero.level=next.level;
+ root.ArenaAudio?.play?.('victory',{gain:.38});
+}
 function deal(attacker,target,multiplier=1,style='normal'){
  if(attacker.dead||target.dead)return;
  const crit=Math.random()<(attacker.side==='ally'?.17:.09);
@@ -484,6 +496,7 @@ function deal(attacker,target,multiplier=1,style='normal'){
   beginRemoval(target);
   if(attacker.side==='ally'&&target.side==='enemy'){
    attacker.exp+=experienceAward(killXP(battle.wave),battle.heroes.filter(h=>!h.dead).length);attacker.kills++;battle.kills++;
+   refreshPracticeLevel(attacker);
   }
  }
 }
@@ -652,7 +665,7 @@ function awardEngagementExperience(dt){
    h.engagementClock-=rules.every;
    const gained=Math.min(rules.chunk,Math.max(0,rules.cap-(h.engagementBonus||0)));
    if(gained<=0){h.engagementClock=0;break;}
-   h.exp+=gained;h.engagementBonus=(h.engagementBonus||0)+gained;
+   h.exp+=gained;h.engagementBonus=(h.engagementBonus||0)+gained;refreshPracticeLevel(h);
   }
  }
 }
@@ -722,7 +735,7 @@ function simulate(dt){
     !battle.exits.length&&!battle.cleared){
   const living=battle.heroes.filter(h=>!h.dead),count=living.length;
   battle.cleared=true;battle.clearedWave=battle.wave;battle.breakTime=1.8;
-  living.forEach(h=>h.exp+=experienceAward(waveXP(battle.wave),count));
+  living.forEach(h=>{h.exp+=experienceAward(waveXP(battle.wave),count);refreshPracticeLevel(h);});
   beginSurvivorReflow();
   announce('WAVE '+battle.wave+' 돌파 · 생존 '+count+'명 · EXP ×'+experienceMultiplier(count).toFixed(1));
  }
@@ -858,6 +871,16 @@ function drawUnit(unit){
  ctx.strokeStyle='#ffdf9a';ctx.lineWidth=.8;ctx.strokeRect(-bar/2,-labelHeight-26*scale,bar,8*scale);
  ctx.font='bold '+Math.max(10,Math.round(13*scale))+'px sans-serif';
  ctx.fillStyle='#fff0cf';ctx.textAlign='center';ctx.fillText(unit.name.slice(0,15),0,-labelHeight-31*scale);
+ if(!unit.dead){
+  // One living opponent per court: arrows update as waves rotate enemies.
+  const foe=unit.side==='ally'?
+   battle.enemies.find(e=>!e.dead&&e.seat===unit.seat):
+   battle.heroes.find(h=>!h.dead&&h.seat===unit.seat);
+  if(!unit._levelFx)root.ArenaCombatSignals?.drawAdvantage?.(ctx,unit,foe,{
+   x:0,y:-labelHeight-66*scale,time:battle.clock,size:19*scale});
+  root.ArenaCombatSignals?.drawLevelUp?.(ctx,unit,{
+   x:0,y:-labelHeight-65*scale,time:battle.clock,scale:scale*.82});
+ }
  ctx.restore();
 }
 // A numbered combat court is an independent compositing layer.

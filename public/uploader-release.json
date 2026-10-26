@@ -1,10 +1,11 @@
 {
   "assetSha256": {
-    "public/index.html": "883bf4a8cc990ad4e653c4dd3095dc5f9b9db8256421ee6924a9c65201964d80"
+    "public/index.html": "696749c387f23f4de1cf94d698827b9748d9e2243ddbabbbad20ac64ed31810c",
+    "public/ludus-practice.js": "cc77435cb2a88816ae855ccd7e5233970fc861af8893d495fd58603c4c70c75e"
   },
-  "baseCommit": "03c094b066cac8752fa8d02e4d4d6a30f63a3dbe",
+  "baseCommit": "f605e779886d664ebbfc8882ffdd5cd882289d70",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "beast-gallery-result-return-v109-20261027",
+  "releaseId": "combat-matchup-marker-levelup-v110-20261027",
   "releaseProtocol": "spartacus-uploader-v1"
 }

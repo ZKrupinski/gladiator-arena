@@ -389,7 +389,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=whip-guard-suspense-v93"></script>
 <script src="champion-murmillo.js?v=grounded-v39"></script>
-<script src="arena-gear-catalog.js?v=roman-five-slots-v12"></script><script src="arena-loot.js?v=roman-helm-bracers-v12"></script><script src="arena-gear-bitmap.js?v=roman-square-atlas-v12"></script><script src="arena-excitement.js?v=harder-spectacle-v7"></script><script src="arena-progression.js?v=five-stats-v97"></script><script src="arena-personality.js?v=five-stat-ai-v104-20261026"></script><script src="arena-matchup.js?v=class-beast-rps-v106-20261026"></script><script src="arena-balance.js?v=five-stats-v97"></script>
+<script src="arena-gear-catalog.js?v=roman-five-slots-v12"></script><script src="arena-loot.js?v=roman-helm-bracers-v12"></script><script src="arena-gear-bitmap.js?v=roman-square-atlas-v12"></script><script src="arena-excitement.js?v=harder-spectacle-v7"></script><script src="arena-progression.js?v=five-stats-v97"></script><script src="arena-personality.js?v=five-stat-ai-v104-20261026"></script><script src="arena-matchup.js?v=class-beast-rps-v106-20261026"></script><script src="arena-combat-signals.js?v=affinity-levelup-v110-20261027"></script><script src="arena-balance.js?v=five-stats-v97"></script>
 <script src="arena-portrait-fit.js?v=enemy-facing-v65"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
@@ -997,7 +997,8 @@ function finishCareerMatch(){
  const serious=window.LudusRecovery.maybeSevere(h,{injuryBefore,fatigueBefore,glory:CAREER.glory,rosterCount:CAREER.roster.length});
  h.fatigue=Math.min(100,(Number(h.fatigue)||0)+Math.round(ArenaLineup.fatigueGain(S.careerStartingHp,S.player.hp,1)*(1-equipmentBonus(h).fatigueReduction)));
  h.fights++;if(win)h.wins++;
- const earned=Math.round(payout.xp*(1+(win?(equipmentBonus(h).xpBonus||0):0))),gained=grantCareerXp(h,earned);
+ const earned=Math.round(payout.xp*(1+(win?(equipmentBonus(h).xpBonus||0):0))),oldLevel=careerLevel(h),gained=grantCareerXp(h,earned);
+ if(gained)window.ArenaCombatSignals?.levelUp?.(S.player,oldLevel,h.level,clock);
   const loot=win?ArenaLoot.awardBattle(CAREER,h,{boss:!!S.careerOpponent?.boss,excitement:S.crowd?.score||0}):[];
   S.matchLoot=loot;CAREER.lastLoot=loot;CAREER.lastPrize.loot=loot;CAREER.lastPrize.excitement=ArenaCrowd.snapshot(S.crowd);
  CAREER.message=(win?'승리! ':'패배. ')+reward+'D · 경험치 +'+earned+(gained?' · LEVEL UP!':'')+
@@ -1414,7 +1415,10 @@ function finishBeastMatch(){
   const before=CAREER.gold;
   CAREER.gold+=prize;S.matchGold=prize;
   CAREER.lastPrize={mode:'beast_hunt',stage:run.stage.id,win:final,round:run.roundIndex+1,gold:prize,before,after:CAREER.gold,at:Date.now()};
-  if(final)grantCareerXp(h,Math.round((18+run.stage.difficulty*8)*(1+(equipmentBonus(h).xpBonus||0))));
+  if(final){const oldLevel=careerLevel(h);
+   if(grantCareerXp(h,Math.round((18+run.stage.difficulty*8)*(1+(equipmentBonus(h).xpBonus||0)))))
+    window.ArenaCombatSignals?.levelUp?.(S.player,oldLevel,h.level,clock);
+  }
   const loot=final?ArenaLoot.awardBattle(CAREER,h,{beast:true,boss:run.stage.difficulty>=3,excitement:S.crowd?.score||0}):[];
    S.matchLoot=loot;CAREER.lastLoot=loot;CAREER.lastPrize.loot=loot;CAREER.lastPrize.excitement=ArenaCrowd.snapshot(S.crowd);
    CAREER.message=(final?'맹수 토벌 성공!': '맹수 토벌 실패. ')+' '+run.stage.label+' · 보상 '+prize+'D'+(loot.length?' · 전리품 '+loot.length+'개 입고!':' · 장비 드롭 없음')+' · 잔액 '+CAREER.gold+'D';
@@ -1701,7 +1705,10 @@ function finishLineupCareerMatch(){
   window.LudusRecovery.maybeSevere(h,{injuryBefore,fatigueBefore,glory:CAREER.glory,rosterCount:CAREER.roster.length});
   h.fatigue=Math.min(100,(Number(h.fatigue)||0)+ArenaLineup.fatigueGain(entry.initialHp,entry.lastHp,entry.bouts));
   h.fights=(h.fights||0)+1;if(win)h.wins=(h.wins||0)+1;
-  grantCareerXp(h,Math.max(5,Math.round(payout.xp*(q.allies.length>1?.78:1)*(1+(equipmentBonus(h).xpBonus||0)))));
+  const oldLevel=careerLevel(h);
+  const raised=grantCareerXp(h,Math.max(5,Math.round(payout.xp*(q.allies.length>1?.78:1)*(1+(equipmentBonus(h).xpBonus||0)))));
+  if(raised&&S.player&&idx===S.careerParticipant)
+   window.ArenaCombatSignals?.levelUp?.(S.player,oldLevel,h.level,clock);
  }
  const lootHero=CAREER.roster[Number(participants[0])]||CAREER.hero;
   const loot=win&&lootHero?ArenaLoot.awardBattle(CAREER,lootHero,{lineup:true,boss:!!leader.boss,excitement:S.crowd?.score||0}):[];
@@ -3185,7 +3192,14 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  }
  ctx.restore();
  ctx.globalAlpha=1;
-
+ // Both factions use the real head/foot camera projection, without
+ // altering any authored poses or sprite scale. Aqua allies, red rivals.
+ const opponent=f===S.player?S.enemy:S.player;
+ const signals=window.ArenaCombatSignals;
+ const markerY=FLOOR-FIGHTER_DRAW_SIZE*.84+(f._fxRender?.dy||0)-22;
+ if(S.phase==='fight'&&!f._levelFx)
+  signals?.drawAdvantage?.(ctx,f,opponent,{x:f.x,y:markerY,time:clock,size:22});
+ signals?.drawLevelUp?.(ctx,f,{x:f.x,y:markerY,time:clock,scale:1.12});
 }
 function drawIllustratedEffect(key,x,y,w,h,alpha=1,flip=false,rotation=0){
  const img=CINEMATIC_IMG[key];
@@ -3626,7 +3640,9 @@ function startCoopMatch(indices){
     window.LudusRecovery.maybeSevere(h,{injuryBefore,fatigueBefore,glory:CAREER.glory,rosterCount:CAREER.roster.length});
     h.fatigue=Math.min(100,(h.fatigue||0)+Math.min(12,Math.floor(result.time/8)));
     h.coopFights=(h.coopFights||0)+1;if(result.win)h.coopWins=(h.coopWins||0)+1;
-    grantCareerXp(h,xp);return {index:u.index,name:h.name,xp,injury:h.injury,fatigue:h.fatigue};
+    const oldLevel=careerLevel(h),raised=grantCareerXp(h,xp);
+    if(raised)window.ArenaCombatSignals?.levelUp?.(u,oldLevel,h.level,result.time);
+    return {index:u.index,name:h.name,xp,levels:raised,level:h.level,injury:h.injury,fatigue:h.fatigue};
    });
    CAREER.coopLast={win:result.win,reason:result.reason,gold,glory,teamwork:result.teamwork,time:Math.round(result.time)};
    CAREER.message='5vs5 협동전 '+(retreat?'철수':result.win?'승리':'패배')+' · '+gold+' D · 협동 '+result.teamwork+'회';
@@ -3832,7 +3848,7 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=atomic-lobby-reveal-v107-20261026"></script><script src="practice-scale-published.js?v=true-size-v54"></script><script src="practice-scale-profiles.js?v=atlas-cell-v63"></script><script src="practice-visual-profiles.js?v=vfx-direction-v58"></script><script src="ludus-practice.js?v=class-beast-rps-v106-20261026"></script><script src="ludus-training-runtime.js?v=studio-scale-parity-v95"></script><script src="ludus-doctore-anim.js?v=training-fit-v71"></script><script src="ludus-approved-scenes.js?v=atomic-market-training-v108-20261027"></script><script src="ludus-armory-live.js?v=five-stats-v96"></script><script src="arena-coop-core.js?v=class-beast-rps-v106-20261026"></script><script src="arena-coop-match.js?v=five-stats-v97"></script><script src="arena-coop-camera.js?v=concordia-camera-v64"></script><script src="arena-coop.js?v=five-stats-v97"></script><script src="ludus-cards.js?v=five-stats-v96"></script>
+<script src="ludus-scene.js?v=atomic-lobby-reveal-v107-20261026"></script><script src="practice-scale-published.js?v=true-size-v54"></script><script src="practice-scale-profiles.js?v=atlas-cell-v63"></script><script src="practice-visual-profiles.js?v=vfx-direction-v58"></script><script src="ludus-practice.js?v=affinity-levelup-v110-20261027"></script><script src="ludus-training-runtime.js?v=studio-scale-parity-v95"></script><script src="ludus-doctore-anim.js?v=training-fit-v71"></script><script src="ludus-approved-scenes.js?v=atomic-market-training-v108-20261027"></script><script src="ludus-armory-live.js?v=five-stats-v96"></script><script src="arena-coop-core.js?v=class-beast-rps-v106-20261026"></script><script src="arena-coop-match.js?v=five-stats-v97"></script><script src="arena-coop-camera.js?v=concordia-camera-v64"></script><script src="arena-coop.js?v=affinity-levelup-v110-20261027"></script><script src="ludus-cards.js?v=five-stats-v96"></script>
 
 </body></html>
 
