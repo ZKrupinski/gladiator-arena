@@ -20,7 +20,7 @@
   const sim=C.create(allies,enemies,{seed}),host=document.createElement('section');
   // Champion death consists of eight asynchronously loaded drawings.
   // Start loading on arena entry so the first KO does not briefly show idle.
-  if(sim.units.some(u=>u.side==='ally'&&u.appearance===root.ChampionMurmillo?.variant))
+  if(root.ChampionMurmillo?.frame&&sim.units.some(u=>u.side==='ally'&&u.appearance===root.ChampionMurmillo.variant))
    root.ChampionMurmillo.frame('death',0);
   host.className='arena-coop';host.setAttribute('aria-label','5vs5 실시간 협동전투');
   const previousFocus=document.activeElement,oldOverflow=document.body.style.overflow;
@@ -173,43 +173,10 @@
     }
    }
    ctx.globalAlpha=1;ctx.drawImage(image,-px*k,-py*k,image.width*k,image.height*k);ctx.restore();
-   if(u.dead)return;
-   ctx.save();
-   ctx.translate(u.x,u.y);
-   ctx.scale(depth,depth);
-   ctx.translate(-u.x,-u.y);
-   const ally=u.side==='ally';
-   const active=(ally&&sim.cover?.id===u.id&&sim.cover.until>sim.time)||
-    (!ally&&sim.focus?.id===u.id&&sim.focus.until>sim.time);
-   if(active||state.selected===u.id&&state.pickedUntil>sim.time){
-    const color=ally?'#5cb9ff':'#ff665c',strength=.72+.28*Math.sin(sim.time*10);
-    ctx.save();ctx.strokeStyle=color;ctx.fillStyle=color;
-    ctx.shadowColor=color;ctx.shadowBlur=16;ctx.globalAlpha=strength;ctx.lineWidth=4;
-    ctx.beginPath();ctx.ellipse(u.x,u.y+5,50,15,0,0,Math.PI*2);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(u.x-46,u.y-23);ctx.lineTo(u.x-46,u.y-43);ctx.lineTo(u.x-30,u.y-43);
-    ctx.moveTo(u.x+46,u.y-23);ctx.lineTo(u.x+46,u.y-43);ctx.lineTo(u.x+30,u.y-43);ctx.stroke();
-    ctx.shadowBlur=0;ctx.font='bold 14px sans-serif';ctx.textAlign='center';
-    ctx.fillText(active?(ally?'엄호 대상':'집중 대상'):(ally?'아군 지정':'적군 지정'),u.x,u.y-50);
-    ctx.restore();
-   }
-   const tactic=u.reaction?u.reaction.kind:u.chase?.until>sim.time?'chase':u.mode==='retreat'&&u.lure?'bait':u.mode;
-   const tag={rescue:'구출 돌진',ambush:'기습!',chase:'맹추격',bait:'유인 중',retreat:'후퇴 · 회복',feint:'견제'}[tactic];
-   if(tag){
-    ctx.save();ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.lineWidth=4;ctx.strokeStyle='#171008';
-    ctx.fillStyle=({rescue:'#b4f9df',ambush:'#ffcf7d',chase:'#ffc6b1',bait:'#d1c6ff',retreat:'#bdeba9',feint:'#f0d394'})[tactic];
-    ctx.strokeText(tag,u.x,u.y-118);ctx.fillText(tag,u.x,u.y-118);ctx.restore();
-   }
-   if(u.protectedUntil>sim.time){
-    ctx.save();ctx.strokeStyle='#a4e6cd';ctx.lineWidth=3;ctx.globalAlpha=.4+.4*Math.sin(sim.time*12);
-    ctx.beginPath();ctx.ellipse(u.x,u.y-63,47,74,0,0,Math.PI*2);ctx.stroke();ctx.restore();
-   }
-   ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle=u.side==='ally'?'#d9ffd0':'#ffd3b5';ctx.strokeStyle='#20110a';ctx.lineWidth=3;ctx.strokeText(String(u.seat+1),u.x-40,u.y+15);ctx.fillText(String(u.seat+1),u.x-40,u.y+15);
-   ctx.fillStyle='#170e0c';ctx.fillRect(u.x-31,u.y+8,62,6);ctx.fillStyle=u.side==='ally'?'#a7dca4':'#ed9276';ctx.fillRect(u.x-30,u.y+9,60*u.hp/u.maxHp,4);
-   if(u.attack){ctx.fillStyle='#f2b95d';ctx.fillRect(u.x-24,u.y+18,48*(1-u.attack.remaining/u.attack.total),3);}
-   if(u.rooted>0){ctx.strokeStyle='#eac78b';ctx.lineWidth=2;ctx.strokeRect(u.x-30,u.y-55,60,50);ctx.fillStyle='#fff2ca';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.fillText('포획',u.x,u.y-65);}
-   if(sim.focus?.id===u.id&&sim.focus.until>sim.time||state.selected===u.id){ctx.strokeStyle=u.side==='ally'?'#d9f0c7':'#ffcd77';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(u.x,u.y+10,40,12,0,0,Math.PI*2);ctx.stroke();}
-   ctx.restore();
   }
+  // Painted-only 5v5 battlefield: no procedural paths, rings, outlines,
+  // dotted tactical beams, primitive impact bursts or canvas damage text.
+  // Preserve approved sprites, directional PNG impact effects and the HUD.
   function draw(){
    const mobile=host.clientWidth<=700,field=$('.coop-field');
    const width=mobile?Math.round(field.clientWidth*1.5):1280,height=mobile?Math.round(field.clientHeight*1.5):720;
@@ -237,20 +204,11 @@
    // 5v5 has its own two-depth-lane ground plane, distinct from Capua's single court.
    // Always use the original Colosseum backdrop here, regardless of venue toggle.
    if(bg.complete&&bg.naturalWidth){const horizon=bg.naturalHeight*.76;ctx.drawImage(bg,0,0,bg.naturalWidth,horizon,0,0,1280,350);ctx.drawImage(bg,0,horizon,bg.naturalWidth,bg.naturalHeight-horizon,0,350,1280,370);}else{ctx.fillStyle='#69503b';ctx.fillRect(0,0,1280,720);}
-   // A wide camera keeps all ten fighters on the approved arena floor.
-   ctx.fillStyle='#120b0744';ctx.fillRect(0,0,1280,720);
    // World Y is each fighter's foot/depth anchor: smaller Y first (farther back).
    // Dead and living sprites use identical depth ordering; corpses stay fully opaque.
    for(const u of C.depthOrder(sim.units))drawUnit(u);
    for(const e of state.fx){
     const age=sim.time-e.time;if(age>1.3)continue;
-    if(['link','cover','rescue-call','ambush-call','chase','bait'].includes(e.type)){
-     const a=sim.units.find(u=>u.id===e.source),b=sim.units.find(u=>u.id===e.target);if(!a||!b)continue;
-     ctx.save();ctx.globalAlpha=Math.max(0,1-age/1.3);
-     ctx.strokeStyle=['rescue-call','cover'].includes(e.type)?'#a2e9d3':['ambush-call','bait'].includes(e.type)?'#f6c875':e.type==='chase'?'#f4a18e':'#f8d38b';
-     ctx.lineWidth=e.type==='rescue-call'||e.type==='ambush-call'?5:3;ctx.setLineDash([9,7]);
-     ctx.beginPath();ctx.moveTo(a.x,a.y-75);ctx.lineTo(b.x,b.y-75);ctx.stroke();ctx.restore();
-    }
     if(['hit','assist','parry','counter','riposte','rescue','ambush','push'].includes(e.type)&&age<.52){
      const kind=['parry','counter','riposte','rescue'].includes(e.type)?'parry':
       ['ambush','push'].includes(e.type)?'special':'hit';
@@ -279,15 +237,8 @@
       geometry?.width??(big?305:180)*depth,geometry?.height??(big?270:166)*depth,
       age/.52,big?1:.90,geometry?.face??face);
     }
-    if(['dash','push','retreat','recover','chase','bait','rescue-call','ambush-call'].includes(e.type)&&age<.9){
-     ctx.save();ctx.globalAlpha=Math.max(0,.68-age*.75);ctx.lineWidth=e.type==='push'?5:3;
-     ctx.strokeStyle=['recover','rescue-call'].includes(e.type)?'#8ce3a8':['retreat','bait'].includes(e.type)?'#bba6f3':e.type==='chase'?'#ee8d72':'#f9cb82';
-     ctx.beginPath();ctx.ellipse(e.x,e.y+7,22+age*65,9+age*19,0,0,Math.PI*2);ctx.stroke();ctx.restore();
-    }
-    if(e.damage){ctx.save();ctx.globalAlpha=Math.max(0,1-age/1.3);ctx.fillStyle=e.type==='assist'?'#ffdf84':'#fff1dd';ctx.strokeStyle='#29160f';ctx.lineWidth=4;ctx.textAlign='center';ctx.font='bold 22px sans-serif';ctx.strokeText(e.text,e.x,e.y-110-age*35);ctx.fillText(e.text,e.x,e.y-110-age*35);ctx.restore();}
    }
    ctx.restore();
-   root.ArenaCombatFeel?.overlay?.(ctx,width,height,shot);
   }
   function hud(){
    const time=Math.ceil(Math.max(0,sim.limit-sim.time));$('.coop-clock').textContent=Math.floor(time/60)+':'+String(time%60).padStart(2,'0');

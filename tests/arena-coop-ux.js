@@ -59,4 +59,19 @@ assert.match(renderer,/const pose=u\.dead\?'death':/,'dead fighters select death
 assert.match(renderer,/const tick=u\.dead\?deathFrame\(u,sim\.time\):/,'death pose receives the held frame');
 assert.doesNotMatch(renderer,/corpseFall|if\(u\.dead\)ctx\.rotate/,'remove 90-degree corpse rotation');
 
+
+// Artwork-only 5v5 regression: status cues live in the portrait HUD, not as
+// basic canvas geometry (rings, dotted connectors, boxes, bars or damage text).
+const rasterOnlySource=fs.readFileSync(path.join(__dirname,'../public/arena-coop.js'),'utf8');
+assert.doesNotMatch(rasterOnlySource,/\bctx\.(?:beginPath|setLineDash|moveTo|lineTo|ellipse|arc|stroke|strokeRect|strokeText|fillText)\s*\(/,
+ '5v5 battlefield may not draw procedural shapes or canvas labels');
+assert.doesNotMatch(rasterOnlySource,/ArenaCombatFeel\?\.overlay\?\./,
+ '5v5 must not overlay procedural full-screen flash rectangles');
+assert.match(rasterOnlySource,/ArenaRasterFX\?\.draw\?\.\(/,
+ 'approved directional PNG hit art remains in battle');
+assert.match(rasterOnlySource,/for\(const u of C\.depthOrder\(sim\.units\)\)drawUnit\(u\)/,
+ 'all ten fighters and dead sprites remain visible');
+assert.match(rasterOnlySource,/b\.classList\.toggle\('is-selected'/,
+ 'selection is still visible on the portrait HUD');
+
 console.log('PASS: 10 facing thumbnails, under-field panel, ally cover/enemy focus instant taps, team-wide tactics and paused command safety');
