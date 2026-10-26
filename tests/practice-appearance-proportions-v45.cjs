@@ -67,5 +67,5 @@ assert.match(main,/const DUEL_BASE_VISUAL_SCALE=\.82/);
 assert.match(source,/referenceH=idle\?\.height\|\|idle\?\.naturalHeight/);
 assert.doesNotMatch(source,/202\/bound\.h/);
 assert.doesNotMatch(source,/unit\.side==='enemy'\?\.96:1/);
-assert.match(source,/ctx\.save\(\);ctx\.translate\(unit\.x,unit\.y\)/,'equal boot height, not special enemy render offset');
+assert.match(source,/ctx\.save\(\);ctx\.translate\(unit\.x\+flightX,unit\.y\+flightY\)/,'equal planted boot position plus common flight motion');
 console.log('PASS: no artist-overriding alpha zoom or ally boost in 1-4 practice courts; stable action/idle size and feet');
