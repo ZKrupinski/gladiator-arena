@@ -32,7 +32,7 @@ const coop=fs.readFileSync(path.join(root,'public','arena-coop.js'),'utf8');
 assert.doesNotMatch(coop,/CapuaVenue\?\.draw/);
 assert.match(coop,/bg\.src='assets\/new-era\/arena\.webp'/);
 assert.match(coop,/bg\.naturalHeight\*\.76/);
-assert.match(html,/arena-coop\.js\?v=colosseum-only-5v5-v78/);
+assert.match(html,/arena-coop\.js\?v=foot-perspective-v79/);
 new Function(coop);
 const vm=require('node:vm'),coop2=fs.readFileSync(path.join(root,'public','arena-coop.js'),'utf8');
 const sandbox={window:{}};vm.runInNewContext(coop2,sandbox);
