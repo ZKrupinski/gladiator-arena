@@ -319,7 +319,7 @@ function emitVfx(kind,unit,other,emphasis=false){
  });
  if(!geometry)return;
  battle.fx.push({seat:unit.seat,kind:chosen,x:geometry.x,y:geometry.y,
-  width:geometry.width,height:geometry.height,face,
+  width:geometry.width,height:geometry.height,face:geometry.face,
   age:0,duration:fx.FAMILIES[chosen].duration||.34,
   depth:court.y-(unit.side==='enemy'?12:0)+.6,
   front:unit.side==='ally'?1:0,alpha:emphasis?1:.87});

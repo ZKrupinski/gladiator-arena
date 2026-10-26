@@ -260,7 +260,29 @@
      const kind=['parry','counter','riposte','rescue'].includes(e.type)?'parry':
       ['ambush','push'].includes(e.type)?'special':'hit';
      const big=['counter','riposte','rescue','ambush','push'].includes(e.type);
-     root.ArenaRasterFX?.draw(ctx,kind,e.x,e.y-80,big?305:180,big?270:166,age/.52,big?1:.90,1);
+     // Position each VFX on a live sprite, including its recoil flight, rather than
+     // leaving it at the original hit-event coordinate. Depth follows the feet.
+     const target=sim.units.find(u=>u.id===e.target),source=sim.units.find(u=>u.id===e.source);
+     const owner=e.type==='parry'?(source||target):(target||source);
+     const face=owner?.face<0?-1:1;
+     const appearance=owner?(root.PracticeScaleProfiles?.look?.(owner,root.LudusBridge?.state?.()?.roster)||owner.look):null;
+     const action=e.type==='parry'?'parry':kind==='special'?'special':'hit';
+     const authored=root.PracticeVisualProfiles?.resolve?.(appearance,action);
+     const chosen=authored?.effect?.kind&&authored.effect.kind!=='auto'?authored.effect.kind:kind;
+     if(chosen==='none')continue;
+     const depth=owner?perspectiveScale(owner.y):1,zoom=.60*depth;
+     const flight=owner?.flight;
+     const ft=flight?Math.max(0,Math.min(1,(sim.time-flight.at)/Math.max(.01,flight.duration))):1;
+     const bodyX=owner?owner.x+(ft<1?(flight.fromX-owner.x)*Math.pow(1-ft,1.6):0):e.x;
+     const bodyY=owner?owner.y+(ft<1&&!flight.reduced?-4*flight.height*ft*(1-ft)*depth:0):e.y;
+     const foot=appearance?(root.PracticeScaleProfiles?.foot?.(appearance)||0):0;
+     const geometry=root.PracticeVisualProfiles?.effectGeometry?.({
+      kind:chosen,baseX:bodyX+face*(kind==='hit'?0:52*zoom),
+      baseY:bodyY+(-113+foot)*zoom,face,zoom,pose:authored,progress:.5
+     });
+     root.ArenaRasterFX?.draw?.(ctx,chosen,geometry?.x??e.x,geometry?.y??(e.y-80),
+      geometry?.width??(big?305:180)*depth,geometry?.height??(big?270:166)*depth,
+      age/.52,big?1:.90,geometry?.face??face);
     }
     if(['dash','push','retreat','recover','chase','bait','rescue-call','ambush-call'].includes(e.type)&&age<.9){
      ctx.save();ctx.globalAlpha=Math.max(0,.68-age*.75);ctx.lineWidth=e.type==='push'?5:3;

@@ -516,7 +516,7 @@ async function previewAction(){
    // Preview THAT exact spawn transform, not the currently scrubbed pose.
    const fxZoom=z;
    const box=v.effectGeometry({
-    kind,baseX:anchorX+(kind==='hit'?0:52*fxZoom),
+    kind,baseX:anchorX+(kind==='hit'?0:face*52*fxZoom),
     baseY:anchorY-113*fxZoom+Number(feet[key])*fxZoom,zoom:fxZoom,face,pose:val,progress:.5
    });
    c.save();c.translate(box.x,box.y);c.scale(box.face,1);c.globalAlpha=.87;
@@ -596,7 +596,8 @@ function initMotionDrag(){
    const probe=document.createElement('canvas');probe.width=probe.height=1;
    const context=probe.getContext('2d');
    const w=hit.frame.naturalWidth||hit.frame.width,h=hit.frame.naturalHeight||hit.frame.height;
-   context.drawImage(hit.frame,(pos.x-hit.left)/hit.width*w,(pos.y-hit.top)/hit.height*h,1,1,0,0,1,1);
+   const u=(pos.x-hit.left)/hit.width;
+   context.drawImage(hit.frame,(hit.face<0?1-u:u)*w,(pos.y-hit.top)/hit.height*h,1,1,0,0,1,1);
    if(context.getImageData(0,0,1,1).data[3]<16)return;
   }catch(_){return;}
   event.preventDefault();recordHistory();
