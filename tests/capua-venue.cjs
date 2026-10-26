@@ -1,7 +1,9 @@
 const fs=require('node:fs'),crypto=require('node:crypto'),assert=require('node:assert/strict'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),dir=path.join(root,'public/assets/capua');
 const m=JSON.parse(fs.readFileSync(path.join(dir,'manifest.json'),'utf8'));
-assert.equal(m.version,'capua-second-image-animated-spectators-20261026');
+assert.equal(m.version,'capua-second-image-animated-spectators-fast-v3-20261026');
+assert.equal(m.frameMs,190);
+assert.equal(m.cheerSpeedMultiplier,1.84);
 assert.equal(m.noDuplicateTiles,true);
 assert.deepEqual(m.audienceZones,['west_citizens','west_elites','center_west','center_east','east_citizens']);
 assert.deepEqual(m.loopOrder,[0,1,2,3,2,1]);
@@ -15,6 +17,10 @@ assert.match(code,/ctx\.drawImage\(audience,frame\*1672,0,1672,264,x,y\+78\*scal
 assert.doesNotMatch(code,/for\(const position of \[-10,552,1114\]\)/);
 assert.match(code,/chosen!=='capua'/);
 assert.match(code,/order=\[0,1,2,3,2,1\]/);
+assert.match(code,/Math\.floor\(Math\.max\(0,t\)\/\.19\)/);
+assert.doesNotMatch(code,/Math\.floor\(Math\.max\(0,t\)\/\.35\)/);
+assert.match(code,/motionOff\?0:order/);
+assert.match(fs.readFileSync(path.join(root,'public/index.html'),'utf8'),/capua-venue\.js\?v=capua-sd-cheer-fast-v3-20261026/);
 const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');
 assert.match(html,/id="arenaVenueToggle"/);assert.match(html,/CapuaVenue\?\.draw/);
 assert.match(html,/assets\/new-era\/arena\.webp/);

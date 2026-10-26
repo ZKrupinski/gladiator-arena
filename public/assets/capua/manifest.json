@@ -1,5 +1,5 @@
 {
-  "version": "capua-second-image-animated-spectators-20261026",
+  "version": "capua-second-image-animated-spectators-fast-v3-20261026",
   "stage": "capua",
   "preserves": "assets/new-era/arena.webp",
   "defaultMode": "capua",
@@ -15,7 +15,7 @@
     264
   ],
   "frameY": 78,
-  "frameMs": 350,
+  "frameMs": 190,
   "loopOrder": [
     0,
     1,
@@ -37,7 +37,7 @@
   ],
   "noDuplicateTiles": true,
   "architectureStatic": true,
-  "description": "Second approved cheerful SD scene. Full upper stands animated by five staggered crowd sections. Existing Colosseum selectable.",
+  "description": "Second approved cheerful SD scene. Full upper stands animated by five unique groups. Existing Colosseum selectable. Ping-pong SD crowd loop accelerated from 350ms to 190ms per frame (~1.84x) without moving architecture.",
   "assets": {
     "capua-sd-arena-selected.webp": {
       "size": 554886,
@@ -47,5 +47,6 @@
       "size": 793124,
       "sha256": "b0e9a2958bfa72030936ad45f91a1a213c207fdd0683381333058ec3bd2218e2"
     }
-  }
+  },
+  "cheerSpeedMultiplier": 1.84
 }

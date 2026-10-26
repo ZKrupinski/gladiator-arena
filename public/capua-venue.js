@@ -1,6 +1,6 @@
 /* CAPUA VENUE · second approved SD crowd scene; Colosseum remains untouched. */
 (function(root){'use strict';
-const VERSION='capua-second-sd-stadium-v2-20261026';
+const VERSION='capua-sd-cheer-fast-v3-20261026';
 const source='assets/capua/';
 const yard=new Image(),audience=new Image();
 yard.src=source+'capua-sd-arena-selected.webp?v='+VERSION;
@@ -22,7 +22,9 @@ function draw(ctx,settings={}){
  if(audience.complete&&audience.naturalWidth===6688&&audience.naturalHeight===264){
   const motionOff=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   const order=[0,1,2,3,2,1],t=Number(settings.time)||0;
-  const frame=motionOff?0:order[Math.floor(Math.max(0,t)/.35)%order.length];
+  // Keep the six-beat forward/backwards loop, but cheer about 1.84x faster.
+  // No animated architectural regions; only the alpha-matted crowd changes.
+  const frame=motionOff?0:order[Math.floor(Math.max(0,t)/.19)%order.length];
   // All five crowd groups appear ONCE, in their own original locations.
   // Source alpha excludes the immovable upper canopy, pillars, foreground
   // railing, banners, stone wall and the whole playing floor.
