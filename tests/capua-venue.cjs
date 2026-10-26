@@ -15,14 +15,23 @@ const code=fs.readFileSync(path.join(root,'public/capua-venue.js'),'utf8');new F
 assert.match(code,/yard\.src=source\+'capua-sd-arena-selected\.webp/);
 assert.match(code,/ctx\.drawImage\(audience,frame\*1672,0,1672,264,x,y\+78\*scale,width,264\*scale\)/);
 assert.doesNotMatch(code,/for\(const position of \[-10,552,1114\]\)/);
-assert.match(code,/chosen!=='capua'/);
-assert.match(code,/order=\[0,1,2,3,2,1\]/);
-assert.match(code,/Math\.floor\(Math\.max\(0,t\)\/\.19\)/);
+assert.match(code,/chosen==='colosseum'/);
+assert.match(code,/frameOrder=\[0,1,2,3,2,1\]/);
+assert.match(code,/Math\.floor\(t\/\.19\)/);
 assert.doesNotMatch(code,/Math\.floor\(Math\.max\(0,t\)\/\.35\)/);
-assert.match(code,/motionOff\?0:order/);
-assert.match(fs.readFileSync(path.join(root,'public/index.html'),'utf8'),/capua-venue\.js\?v=capua-sd-cheer-fast-v3-20261026/);
+assert.match(code,/reduced\(\)\?0:frameOrder/);
+assert.match(fs.readFileSync(path.join(root,'public/index.html'),'utf8'),/capua-venue\.js\?v=capua-night-crowd-v4-20261026/);
+assert.match(code,/capua-night-original\\.png/);
+assert.match(code,/const choices=\\['capua','capua-night','colosseum'\\]/);
+assert.match(code,/function nextMatch\\(\\)/);
+assert.match(code,/function buildNightFrames\\(\\)/);
+assert.match(code,/nightFrames\\[frame\\]/);
+assert.match(code,/const storageKey='spartacus-arena-venue-v4'/);
 const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');
 assert.match(html,/id="arenaVenueToggle"/);assert.match(html,/CapuaVenue\?\.draw/);
+assert.match(html,/CapuaVenue\?\.nextMatch/);
+assert.match(html,/랜덤/);
+assert.match(fs.readFileSync(path.join(root,'public/squad-arena.js'),'utf8'),/CapuaVenue\?\.nextMatch/);
 assert.match(html,/assets\/new-era\/arena\.webp/);
 // Single duels and non-5v5 squad modes can still select the Capua venue.
 const squad=fs.readFileSync(path.join(root,'public','squad-arena.js'),'utf8');
