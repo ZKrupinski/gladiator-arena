@@ -337,7 +337,7 @@ function beginRemoval(unit){
  }
  battle.exits.push({unit,seq,age:0,scale,court:c,viewport});
 }
-const FALL_DURATION=.72;
+const FALL_DURATION=1.16; // Keep the body visible through the complete flight and landing.
 function deathFrame(unit,clock){
  const elapsed=Math.max(0,(Number(clock)||0)-(unit.deathAt??(Number(clock)||0)));
  return Math.min(7,Math.floor((elapsed+1e-6)*10));
@@ -348,13 +348,13 @@ function selectedDeathArt(unit){
  return api()?.practiceFrame?.(unit,'death')?.canvas||
   rawSprite(unit,'death')||rawSprite(unit,'hit')||null;
 }
-function drawDefeatPose(unit,zoom){
- const art=selectedDeathArt(unit);if(!art)return;
+function drawDefeatPose(unit,zoom,pose='death'){
+ const art=pose==='hit'?(api()?.practiceFrame?.(unit,'hit')?.canvas||rawSprite(unit,'hit')||selectedDeathArt(unit)):selectedDeathArt(unit);if(!art)return;
  const metric=calibration(unit,art);if(!metric)return;
- const k=metric.pixels*zoom,meta=api()?.practiceFrame?.(unit,'death');
+ const k=metric.pixels*zoom,meta=api()?.practiceFrame?.(unit,pose);
  // Display the exact approved loss pose, no extraneous 90-degree rotation.
  ctx.save();
- const action=visualAction(unit,'death'),face=unit.side==='enemy'?-1:1;
+ const action=visualAction(unit,pose),face=unit.side==='enemy'?-1:1;
  const motion=root.PracticeVisualProfiles?.sampleMotion?.(action,1)||{x:0,y:0};
  ctx.translate((action.x+motion.x)*zoom*face,(profilesFoot(unit)+action.y+motion.y)*zoom);
  if(face<0)ctx.scale(-1,1);
@@ -366,8 +366,13 @@ function drawDefeatPose(unit,zoom){
  ctx.restore();
 }
 function drawFalling(removal){
- ctx.save();ctx.translate(removal.unit.x,removal.court.y-4);
- drawDefeatPose(removal.unit,removal.court.scale);
+ const f=removal.unit.flight,age=removal.age;
+ const t=f?clamp(age/f.duration,0,1):1;
+ // Animate from actual contact to the final landing point; never snap to the corpse.
+ const dx=f?(f.fromX-removal.unit.x)*Math.pow(1-t,1.6):0;
+ const lift=f&&!f.reduced?-4*f.height*removal.court.scale*t*(1-t):0;
+ ctx.save();ctx.translate(removal.unit.x+dx,removal.court.y-4+lift);
+ drawDefeatPose(removal.unit,removal.court.scale,f&&t<.76?'hit':'death');
  ctx.restore();
 }
 function drawDeparture(removal){
@@ -430,8 +435,16 @@ function deal(attacker,target,multiplier=1,style='normal'){
  else emitVfx(crit?'sweep':attacker.swings%3===0?'thrust':'slash',attacker,target,crit);
  playCombatSound(isKO||crit?'heavy_hit':'hit',target,isKO?.98:crit?.87:.70);
  const c=COURTS[target.seat],sign=attacker.side==='ally'?1:-1;
- const knock=style==='parry'?82:style==='special'?76:crit?34:18;
- target.x=clamp(target.x+sign*knock,c.x-LEASH,c.x+LEASH);
+ const contactX=target.x;
+ const knock=isKO?(style==='parry'||style==='special'?235:175):style==='parry'?158:style==='special'?112:crit?34:18;
+ const reach=isKO?LEASH+125:LEASH;
+ target.x=clamp(target.x+sign*knock,c.x-reach,c.x+reach);
+ if(isKO||style==='parry'||style==='special'){
+  const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+  target.flight={fromX:contactX,at:battle.clock,duration:isKO?1.08:.76,
+   height:reduced?12:isKO?145:92,reduced,kind:isKO?'death':style};
+  if(!isKO){target.stun=Math.max(target.stun,.79);target.windup=0;target.target=null;target.hit=Math.max(target.hit,.76);}
+ }
  root.ArenaCombatFeel?.event?.(battle,style==='parry'?'reversal':
    style==='special'?'special':crit?'strike':'hit',
    attacker,target,battle.clock,{power:style==='parry'||style==='special'?1.12:.72});
@@ -511,7 +524,7 @@ function act(u,dt){
   if(u.windup<=0){u.windup=0;contact(u,u.target);}
   return;
  }
- if(u.stun>0||u.dodge>0)return;
+ if(u.stun>0||u.dodge>0||(u.flight&&battle.clock-u.flight.at<u.flight.duration))return;
  if(!target){
   const dx=u.homeX-u.x;
   u.x=clamp(u.x+clamp(dx,-u.speed*dt,u.speed*dt),ring.x-LEASH,ring.x+LEASH);
@@ -674,7 +687,7 @@ function motionProgress(unit,pose){
  return 1;
 }
 function actorPose(unit){
- return unit.dead?'death':unit.entry>0?'walk':unit.hit>0?'hit':unit.guard>0?'guard':
+ return unit.dead?'death':unit.entry>0?'walk':unit.flight&&battle.clock-unit.flight.at<unit.flight.duration?'hit':unit.hit>0?'hit':unit.guard>0?'guard':
    unit.dodge>0?'dodge':unit.windup>0||unit.swing>0?'attack':
    Math.abs(unit.x-unit.homeX)>13?'walk':'idle';
 }
@@ -708,7 +721,10 @@ function drawUnit(unit){
  const scale=COURTS[unit.seat]?.scale??1;
  const height=202*scale;
  let labelHeight=height;
- ctx.save();ctx.translate(unit.x,unit.y);
+ const flight=unit.flight,flightT=flight?clamp((battle.clock-flight.at)/flight.duration,0,1):1;
+ const flightX=flight?(flight.fromX-unit.x)*Math.pow(1-flightT,1.6):0;
+ const flightY=flight&&!flight.reduced?-4*flight.height*scale*flightT*(1-flightT):0;
+ ctx.save();ctx.translate(unit.x+flightX,unit.y+flightY);
  const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
  const bodyMotion=root.ArenaMotion?.pose?.(unit,battle?.clock||0,reduced)||{x:0,y:0,tilt:0};
  const impact=root.ArenaMotion?.visual?.(unit,reduced,true)||{scale:1,flash:0};
