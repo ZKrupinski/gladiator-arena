@@ -29,8 +29,8 @@ function stateAt(f,scene,clock=0){
  if(!f)return {action:'idle',progress:0,loop:true};
  if(f.dead&&f.parryKO){
   const t=f.parryKO.t;
-  return t<.22?{action:'hit',progress:clamp((t-.07)/.15),loop:false}:
-   {action:'death',progress:clamp((t-.22)/.50),loop:false};
+  return t<.62?{action:'hit',progress:clamp((t-.07)/.55),loop:false}:
+   {action:'death',progress:clamp((t-.62)/.39),loop:false};
  }
  if(scene&&(scene.phase==='finisher'||scene.phase==='result')&&scene.resultApplied){
    const won=(f===scene.player)===!!scene.resultWin;

@@ -42,7 +42,7 @@ function impact(f,kind='strike'){
  const preset=IMPACTS[kind]||IMPACTS.strike;
  if(f.hitVisual && (IMPACTS[f.hitVisual.kind]?.grow||0)>preset.grow&&
     f.hitVisual.t<preset.duration*.32)return;
- f.hitVisual={kind,t:0,duration:preset.duration};
+ f.hitVisual={kind,t:['strike','guard','special'].includes(kind)?-.10:0,duration:preset.duration};
 }
 function advanceImpact(f,dt){
  if(!f?.hitVisual)return;
@@ -55,18 +55,15 @@ function visual(f,reduced=false,fx=true){
  if(!f?.hitVisual||f.dead||f.hp<=0||
     f.action==='defeat'||f.action==='death'||reduced||!fx)return neutral;
  const state=f.hitVisual,p=IMPACTS[state.kind]||IMPACTS.strike;
+ if(state.t<0)return neutral;
  const phase=clamp(state.t/state.duration);
  let scale;
  if(phase<.20)scale=1+(p.shrink-1)*phase/.20;
  else if(phase<.49)scale=p.shrink+(p.grow-p.shrink)*(phase-.20)/.29;
  else scale=1+(p.grow-1)*Math.pow((1-phase)/.51,2);
- // Two ultra-short translucent glints (0–32 ms, 47–91 ms).
- // The source illustration remains 70%+ visible. Longer body recoil is
- // independent of the flash envelope, even during dramatic slow motion.
+ // One contact glint, never a second startup blink.
  const t=state.t;
- const first=t<.032?Math.max(0,1-t/.032):0;
- const second=t>=.047&&t<.091?Math.max(0,1-Math.abs(t-.067)/.024):0;
- const flash=p.flash*.29*Math.max(first,.72*second);
+ const flash=p.flash*.22*Math.max(0,1-t/.055);
  return {scale:clamp(scale,.94,1.16),flash:clamp(flash,0,.29)};
 }
 function pulse(f,type,role,dir=1){

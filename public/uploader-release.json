@@ -1,11 +1,12 @@
 {
-  "releaseId": "parry-ko-continuity-20261026",
+  "releaseId": "strong-ko-no-startup-flash-20261026-v2",
   "releaseProtocol": "spartacus-uploader-v1",
   "project": "GLADIATOR ARENA / SPARTACUS",
   "branch": "main",
-  "baseCommit": "c45efa37c9c3ab88e5b51850194251b08ce49d68",
+  "baseCommit": "7909d40ec3d81642f20bb08835d56e86be0eefa7",
   "assetSha256": {
-    "public/index.html": "17b84e318f8b4f962e24a757ca62a353e169f5770b320cbd5f1087b7d3ff87d2",
-    "public/murmillo-motion-v2.js": "1fdd18a3955180eced9116bd1e063bd4a26a6257cdc9c975fefc08003c4159db"
+    "public/index.html": "a16924b1b39886d8c157e8ec8311d4ee03bf0432288f168de5ba0bd7566fa042",
+    "public/murmillo-motion-v2.js": "54b34971ee3998aeec310a9d95f75674b8f02a6be65c9035ba5d174ca2f96097",
+    "public/arena-motion.js": "dbb53f43212b6d2cc704b876e622c7ceafb3156e101793c041a2b277bc898533"
   }
 }

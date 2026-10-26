@@ -383,7 +383,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <div id="careerMini" hidden role="dialog" aria-modal="true" aria-label="훈련"><div class="career-mini-panel"><h2 id="careerMiniTitle"></h2><p id="careerMiniHelp"></p><div class="career-timing"><div class="career-hitzone"></div><div id="careerNeedle"></div></div><div id="careerTrainingResult" class="career-training-result" hidden aria-live="assertive"></div><div class="career-buttons" style="justify-content:center"><button id="careerHit">지금! (SPACE)</button><button id="careerCancel">취소</button></div></div></div>
 <script src="market-scene.js?v=blank-market-v68"></script>
 <script src="growth-frames.js?v=2"></script>
-<script src="murmillo-motion-v2.js?v=approved-defeat-v34"></script>
+<script src="murmillo-motion-v2.js?v=strong-ko-v2"></script>
 <script src="champion-murmillo.js?v=grounded-v39"></script>
 <script src="arena-gear-catalog.js?v=roman-five-slots-v12"></script><script src="arena-loot.js?v=roman-helm-bracers-v12"></script><script src="arena-gear-bitmap.js?v=roman-square-atlas-v12"></script><script src="arena-excitement.js?v=harder-spectacle-v7"></script><script src="arena-progression.js?v=innate-lv50-v67"></script><script src="arena-balance.js?v=innate-lv50-v67"></script>
 <script src="arena-portrait-fit.js?v=enemy-facing-v65"></script>
@@ -392,7 +392,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-beasts.js?v=action-authoring-v46"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
 <script src="arena-beast-stage-previews.js?v=versus-v5"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
-<script src="arena-carnifex.js?v=action-authoring-v46"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=combat-drama-v6"></script><script src="arena-motion.js?v=combat-drama-v6"></script><script src="arena-combat-feel.js?v=combat-impact-v2"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=training-hit-v1"></script>
+<script src="arena-carnifex.js?v=action-authoring-v46"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=combat-drama-v6"></script><script src="arena-motion.js?strongKO=v2&v=combat-drama-v6"></script><script src="arena-combat-feel.js?v=combat-impact-v2"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=training-hit-v1"></script>
 <script src="ludus-recovery.js?v=overexertion-v69"></script><script src="ludus-training-risk.js?v=innate-repetition-v72"></script><script src="ludus-roster.js?v=innate-lv50-v67"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
 <script>/* GLADIATOR NEW ERA · sprite-combat vertical slice v3.8.2 (approved golden victory-glow art instead of procedural spotlight)
@@ -662,7 +662,7 @@ function updateCamera(dt){
  const distance=visible.length===1?900:Math.abs(e.x-p.x);
  const midX=visible.length===1?visible[0].x:(p.x+e.x)*.5;
  const close=clamp((590-distance)/310,0,1);
- const activeFight=S.phase==='fight'||S.phase==='finisher';
+ const activeFight=S.phase==='fight'||S.phase==='finisher'||S.phase==='knockout';
  const pressure=activeFight?close:0;
  const striking=activeFight&&[p,e].some(f=>f.actionT>0&&(f.action==='attack'||f.action==='special'));
  const rushing=activeFight&&[p,e].some(f=>!!f.comboDash);
@@ -892,7 +892,7 @@ function installChampionMurmillo(){
 // Champion and animation starters already in an old save are preserved unchanged.
 function careerMessage(t){CAREER.message=t;saveCareer();renderCareer();}
 function openSlaveMarket(){
- if(S.phase==='fight'||S.phase==='finisher'||MINI)return;
+ if(S.phase==='fight'||S.phase==='finisher'||S.phase==='knockout'||MINI)return;
  const shop=window.SlaveMarket;
  if(!shop){careerMessage('시장 화면을 준비하는 중입니다. 다시 눌러주세요.');return;}
  $('#careerHub').hidden=true;
@@ -942,7 +942,7 @@ $('#careerGearTab').addEventListener('click',()=>{CAREER_TAB='gear';CAREER_SELEC
 $('#careerFightTop').addEventListener('click',openCareerDraft);
 
 function enterCareer(){
- if(S.phase==='fight'||S.phase==='finisher')return;
+ if(S.phase==='fight'||S.phase==='finisher'||S.phase==='knockout')return;
  window.ArenaAudio?.leave?.();
  if(MINI){MINI=null;$('#careerMini').hidden=true;}
  $('#endScreen').hidden=true;$('#startScreen').hidden=true;
@@ -1263,7 +1263,8 @@ function beginArenaEntrance(entrants){
  if(!seq)return false;
  S.entrance=seq;S.phase='entrance';S.keys.clear();
  S.autoPlaying=false;S.lastManualInput=clock;
- S.cinematic=null;S.focusFrame=null;S.shake=0;
+ S.cinematic=null;S.focusFrame=null;S.shake=0;S.flash=0;S.sparks=[];S.parryBursts=[];
+ for(const f of [S.player,S.enemy])if(f){f.hitVisual=null;f.bodySpring=null;f.parryKO=null;}
  CAMERA.x=W*.5;CAMERA.zoom=1;CAMERA.y=H*.5;CAMERA.initialized=true;
  S.notice='AD ARENAM · GLADIATORES';S.noticeT=seq.total;
  return true;
@@ -1874,27 +1875,50 @@ function clearCombatAfterimages(...actors){
  S.parryBursts=[];
  S.cinematic=null;S.focusFrame=null;S.cameraKick=null;
 }
-// Real-time KO trajectory: keep the hit location, then fly, land and settle.
+// Shared strong KO: preserve contact location, then show flight before retrieval.
+function beginStrongKO(winner,loser,cause){
+ winner.parryKO=null;loser.parryKO=null;
+ if(!['parry','special'].includes(cause)||loser.beastType)return false;
+ const recoil=loser.specialRecoil;
+ const fromX=recoil&&recoil.elapsed===0?recoil.startX:loser.x;
+ const dir=Math.sign(fromX-winner.x)||winner.face||1;
+ const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ loser.x=fromX;
+ loser.parryKO={t:0,fromX,toX:clamp(fromX+dir*(reduced?85:370),-40,1320),
+  dir,height:reduced?14:110,y:0,landed:false,total:1.08};
+ loser.vx=0;loser.knockVX=0;loser.knockT=0;
+ return true;
+}
 function advanceParryKO(f,dt){
  const k=f?.parryKO;if(!k)return;
- k.t=Math.min(.79,k.t+dt);
- const t=Math.max(0,k.t-.07),u=clamp(t/.48,0,1);
- const ease=1-Math.pow(1-u,2);
- f.x=k.fromX+(k.toX-k.fromX)*ease;
+ k.t=Math.min(k.total,k.t+dt);
+ const t=Math.max(0,k.t-.07),u=clamp(t/.64,0,1);
+ // Keep motion legible throughout descent; don't spend the fall already still.
+ const travel=.88*(1-Math.pow(1-u,1.6));
+ const slide=.12*clamp((t-.64)/.30,0,1);
+ f.x=k.fromX+(k.toX-k.fromX)*(travel+slide);
  k.y=-4*k.height*u*(1-u);
- if(t>.48){const b=clamp((t-.48)/.16,0,1);k.y=b>=1?0:-9*Math.sin(Math.PI*b);}
- if(t>=.48&&!k.landed){
+ if(t>.64){const b=clamp((t-.64)/.18,0,1);k.y=b>=1?0:-12*Math.sin(Math.PI*b);}
+ if(t>=.64&&!k.landed){
   k.landed=true;
-  if(S.fx)window.ArenaMotion?.shake?.(S,'strike',k.dir,.45);
-  if(sounds)window.ArenaAudio?.play?.('heavy_hit',{gain:.48,pan:(f.x-640)/720});
+  if(S.fx)window.ArenaMotion?.shake?.(S,'strike',k.dir,.65);
+  if(sounds)window.ArenaAudio?.play?.('heavy_hit',{gain:.66,pan:(f.x-640)/720});
  }
- // The authored defeat pose supplies the actual collapse; no size override.
  f.actionT=Math.max(0,f.actionDuration-t);
 }
 function finishFight(winner,loser,cause=null){
  if(loser.hp>0||S.phase!=='fight')return false;
  crowdEvent('finisher');
- if(S.gauntlet)return resolveLineupBout(!winner.enemy);
+ const linkedKO=beginStrongKO(winner,loser,cause);
+ if(S.gauntlet){
+  if(!linkedKO)return resolveLineupBout(!winner.enemy);
+  loser.hp=0;loser.dead=true;loser.hitVisual=null;winner.hitVisual=null;
+  clearCombatAfterimages(winner,loser);S.flash=0;S.keys.clear();
+  setAction(loser,'defeat',1.08);setAction(winner,'finisher',1.08);
+  S.phase='knockout';S.koBout={winner,loser};
+  say(cause==='parry'?'CONTRA!':'ICTUS FATALIS!',1.08);
+  fxSound('finisher');return true;
+ }
  loser.hp=0;loser.dead=true;winner.dead=false;
  if(loser.beastType)loser._beastDeathSince=clock;
  // Hit flashes are ONLY live-combat contact cues. The finishing/death
@@ -1907,14 +1931,6 @@ function finishFight(winner,loser,cause=null){
  // existed only after the full cinematic and results dialog had opened.
  if(S.careerMatch)finishCareerMatch();
  clearCombatAfterimages(winner,loser);
- winner.parryKO=null;loser.parryKO=null;
- if(cause==='parry'&&!loser.beastType){
-  const dir=Math.sign(loser.x-winner.x)||winner.face||1;
-  const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
-  loser.parryKO={t:0,fromX:loser.x,toX:clamp(loser.x+dir*(reduced?65:245),105,1175),
-   dir,height:reduced?10:58,y:0,landed:false};
-  loser.vx=0;loser.knockVX=0;loser.knockT=0;
- }
  if(loser.beastType){
   window.ArenaBeastFX?.ensure?.();
   const collapse=beastGroundFx(loser,loser.x,FLOOR-45,560,325);
@@ -2306,7 +2322,7 @@ function attack(f,victim,special=false,dashImpact=false){
  if(dashImpact&&!guarded&&sounds)window.ArenaAudio?.play?.('heavy_hit',{
   gain:.82,delay:.11,pan:(victim.x-640)/720
  });
- if(victim.hp<=0)finishFight(f,victim);else updateHud();
+ if(victim.hp<=0)finishFight(f,victim,special?'special':null);else updateHud();
 }
 function dodge(f){
  if(f.st<23||f.dodge>0||f.dead||f.stagger>0)return;
@@ -2368,7 +2384,7 @@ function choosePose(f){
  // Beast death starts with its actual FIRST collapse sprite, never replace
  // the first quarter-second with a generic hit/attacker finisher pose.
  if(f?.beastType&&(f.dead||f.hp<=0))return 'defeat';
- if(f.parryKO&&f.dead)return f.parryKO.t<.22?'hit':'defeat';
+ if(f.parryKO&&f.dead)return f.parryKO.t<.62?'hit':'defeat';
  if(S.phase==='finisher'||S.phase==='result'){
   if(S.resultApplied){const won=(f===S.player)===S.resultWin;
    if(S.phase==='finisher'&&S.resultAnim<.26)return won?'special':'hit';
@@ -2443,6 +2459,15 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
    updateHud();
   }
   return; // No clock, HP, cooldown, or attack/AI progress during walk-on
+ }
+ if(S.phase==='knockout'){
+  const beat=S.koBout;
+  if(!beat){S.phase='fight';return;}
+  advanceParryKO(beat.loser,realDt);
+  if(beat.loser.parryKO.t>=beat.loser.parryKO.total){
+   S.koBout=null;S.phase='fight';resolveLineupBout(!beat.winner.enemy);
+  }
+  return;
  }
  if(S.phase==='cleanup'){
   if(!S.cleanup||!window.ArenaCarnifex||
@@ -3001,8 +3026,10 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
   (window.ArenaMotion?.visual?.(f,reduceImpact,S.fx)||{flash:0,scale:1}):{flash:0,scale:1};
  // Temporary foot-anchored collision rebound, never a saved character-size override.
  const contactZoom=clamp(impactVisual.scale||1,.97,1.115);
+ const ko=f.dead?f.parryKO:null;
+ const koTilt=ko&&ko.t<.62?ko.dir*.22*Math.sin(Math.PI*clamp((ko.t-.07)/.55,0,1)):0;
  f._fxRender={dx:drawX-(f.x-width/2)+editedX,
-  dy:drawY-(feet-height)+footOffset+editedY,tilt:0,
+  dy:drawY-(feet-height)+footOffset+editedY,tilt:koTilt,
   sx:1,sy:1,pivotX:f.x,pivotY:feet};
  ctx.save();
  // The artist's authored action scale is the sole body-size animation.
@@ -3027,6 +3054,7 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
    ctx.save();
    // All human poses, echoes and white hit flashes share one foot pivot.
    ctx.translate(x+width/2+editedX,y+height+editedY);
+   ctx.rotate(koTilt);
    ctx.scale(authored.scale*contactZoom,authored.scale*contactZoom);
    ctx.translate(-(x+width/2),-(y+height));
   }
@@ -3295,16 +3323,7 @@ function drawCinematicFocus(){
  const sx=clamp((f.centerX-CAMERA.x)*CAMERA.zoom+W*.5,W*.19,W*.81);
  const sy=clamp((FLOOR-173-CAMERA.y)*CAMERA.zoom+H*.5,H*.24,H*.76);
  ctx.save();
- if(f.bloom>0){
-  ctx.globalCompositeOperation='screen';
-  const shine=ctx.createRadialGradient(sx,sy,4,sx,sy,390);
-  const tint=f.kind==='parry'?'216,233,255':f.kind==='reversal'?'255,230,166':'255,213,145';
-  shine.addColorStop(0,'rgba('+tint+','+Math.min(f.kind==='parry'?.30:.7,f.bloom*(f.kind==='parry'?.65:1.3))+')');
-  shine.addColorStop(.28,'rgba('+tint+','+Math.min(f.kind==='parry'?.15:.32,f.bloom*(f.kind==='parry'?.24:.46))+')');
-  shine.addColorStop(1,'rgba('+tint+',0)');
-  ctx.fillStyle=shine;ctx.fillRect(0,0,W,H);
-  ctx.globalCompositeOperation='source-over';
- }
+ // Contact artwork supplies light; no broad screen bloom.
  const rim=ctx.createRadialGradient(sx,sy,85,sx,sy,W*.76);
  rim.addColorStop(0,'rgba(12,8,9,0)');
  rim.addColorStop(.46,'rgba(12,8,9,0)');
@@ -3386,8 +3405,8 @@ function render(){
  }
  drawEffects();
  ctx.restore();
- // Damage flashes stay screen-fixed; HUD and on-screen buttons are never zoomed.
- if(S.phase==='fight'&&S.flash>0&&S.fx&&!reducedShake){ctx.fillStyle=`rgba(255,235,204,${Math.min(.22,S.flash*.36)})`;ctx.fillRect(-45,-45,W+90,H+90);}
+ // No full-screen white flash on approach or attack startup.
+
  drawCinematicFocus();
  ctx.restore();
  if(loaded<7){ctx.fillStyle='#f7d3a0';ctx.font='20px system-ui';ctx.fillText('Loading sprite atlases…',25,680);}
@@ -3403,7 +3422,7 @@ function loop(t){
  // The simulation alone slows; camera, input, canvas and audio timing stay
  // responsive. The clock runs in real time so focus ends even during hitstop.
  let gameDt=dt;
- if(!S.paused&&!document.hidden&&(S.phase==='fight'||S.phase==='finisher'||S.phase==='cleanup')){
+ if(!S.paused&&!document.hidden&&(S.phase==='fight'||S.phase==='finisher'||S.phase==='knockout'||S.phase==='cleanup')){
   const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   const focus=window.ArenaFocus?.advance?.(S.cinematic,dt,reduced);
   if(focus){S.cinematic=focus.state;S.focusFrame=focus.active?focus:null;gameDt=focus.gameDt;}
@@ -3431,7 +3450,7 @@ function loop(t){
 // Opt-in QA hook: actual game internals only on the explicit smoke-test URL.
 if(new URLSearchParams(window.location.search).has('__arena_qa')){
  Object.defineProperty(window,'__arenaQA',{configurable:true,
-  value:{state:S,camera:CAMERA,attack,fxPoint,fxTiming,render,update,finishFight,advanceParryKO,
+  value:{state:S,camera:CAMERA,attack,fxPoint,fxTiming,render,update,finishFight,advanceParryKO,beginStrongKO,start,
    beginArenaEntrance,
    assetsReady:()=>['murmillo','thraex','retiarius'].every(k=>
     !!(IMG[k]?.complete&&IMG[k]?.naturalWidth&&INDEPENDENT_CHARACTER_FRAMES.get(IMG[k])?.length===10)),

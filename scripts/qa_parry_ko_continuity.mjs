@@ -4,7 +4,7 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 const page=await browser.newPage({viewport:{width:1280,height:900}});
 const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 try{
- await page.goto('http://127.0.0.1:8765/?__arena_qa=1');
+ await page.goto('http://127.0.0.1:8765/?__arena_qa=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.__arenaQA?.assetsReady());
  const results=await page.evaluate(()=>{
   const q=window.__arenaQA,s=q.state,out=[];
@@ -19,7 +19,7 @@ try{
    // Pause the automatic loop; step the actual trajectory deterministically.
    s.paused=true;
    q.update(.1,.1);const paused=k.t===0;
-   for(let i=0;i<fps;i++){
+   for(let i=0;i<fps*1.2;i++){
     q.advanceParryKO(e,1/fps);q.render();
     samples.push({x:e.x,y:k.y,t:k.t});
    }
