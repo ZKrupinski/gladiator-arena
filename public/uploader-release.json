@@ -1,12 +1,11 @@
 {
   "assetSha256": {
-    "public/arena-coop-core.js": "5d9c090e018034c6b9c10ad9142a033e2ef0dd20b249f0cf8170e1fa8c1bead9",
-    "public/index.html": "bb509b91438bb270cb3c295f701142345211a1cbe69ba912049c8040b3ed8515",
-    "public/ludus-practice.js": "1686121304fa6a2db132b76e32dd4c9e6774a6f7169f5166287f726956effa00"
+    "public/index.html": "92b3bcd36de38a978e358fca1c0114d58f3743862a589ede8f1b06c9a0a56ffc",
+    "public/ludus-practice.js": "fe0b8ad6480453d847e0b4d5f0823dbb9fb6a63a7776aeeb9af68d40a19af850"
   },
-  "baseCommit": "caef5ec25acc9b5eb1692450c143b7400f7626df",
+  "baseCommit": "3295e771fed23c660ef53e90375bec2565c5477b",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "all-modes-five-stat-personality-v104b-20261026",
+  "releaseId": "practice-survivor-exp-reflow-v105-20261026",
   "releaseProtocol": "spartacus-uploader-v1"
 }

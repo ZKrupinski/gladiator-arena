@@ -68,6 +68,19 @@ const enemyHP=w=>Math.round(43+Math.pow(w,1.09)*13);
 const enemyAttack=w=>Math.round(4.3+Math.pow(w,.95)*1.15);
 const waveXP=w=>9+Math.round(Math.pow(w,1.18)*4);
 const killXP=w=>10+Math.round(Math.pow(w,1.1)*3);
+const XP_MULTIPLIERS=Object.freeze([0,2.2,1.6,1.3,1]);
+const experienceMultiplier=n=>XP_MULTIPLIERS[clamp(Math.round(Number(n)||1),1,4)];
+const experienceAward=(base,n)=>Math.max(0,Math.round(Math.max(0,Number(base)||0)*experienceMultiplier(n)));
+function engagementBonusRules(wave,n){
+ const premium=experienceMultiplier(n)-1,base=waveXP(wave);
+ return {every:2.5,chunk:premium>0?Math.max(1,Math.round(base*.11*premium)):0,
+  cap:Math.max(0,Math.round(base*.48*premium))};
+}
+function courtAssignments(survivors){
+ const units=survivors.slice().sort((a,b)=>a.seat-b.seat);
+ const layout=units.length?courtsForParty(units.length):[];
+ return units.map((unit,seat)=>({unit,seat,homeX:layout[seat].x-87,y:layout[seat].y}));
+}
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function enemyFor(wave,index,rng=Math.random){
  const cls=TYPES[Math.floor(clamp(rng(),0,.999999)*3)];
@@ -164,7 +177,7 @@ function selectionUI(){
  }).join('');
  rootEl.scrollTop=oldScroll;rootEl.querySelectorAll('[data-art]').forEach(c=>drawPortrait(c,Number(c.dataset.art)));
  $('#epChosen').textContent=chosen.length+' / '+MAX+'명';$('#epStart').disabled=!chosen.length;
- $('#epHint').textContent=chosen.length?'출전자 '+chosen.length+'명 · 자동 전투 · 전멸 시 종료':'1명 이상 선택하세요.';
+ $('#epHint').textContent=chosen.length?'출전자 '+chosen.length+'명 · EXP ×'+experienceMultiplier(chosen.length).toFixed(1)+' · 생존자가 줄면 보너스 증가':'1명 이상 선택하세요.';
 }
 function select(i){
  const roster=api()?.state()?.roster||[];if(battle||!eligible(roster[i]))return;
@@ -216,7 +229,8 @@ function nextWave(){
  battle.serial=0;battle.delay=.65;battle.breakTime=0;battle.cleared=false;
  for(const h of battle.heroes)if(!h.dead){
   h.hp=Math.min(h.maxHp,h.hp+Math.round(h.maxHp*.045));
-  h.x=h.homeX;h.windup=0;h.guard=0;h.parry=0;h.stun=0;h.dodge=0;h.cooldown=.15;
+  h.x=h.homeX;h.y=COURTS[h.seat].y;h.windup=0;h.guard=0;h.parry=0;h.stun=0;h.dodge=0;h.cooldown=.15;
+  h.engagementClock=0;h.engagementBonus=0;h.reflow=null;
  }
  battle.enemies=[];battle.queued=[];
  // All available allies get matched opponents at the SAME wave start.
@@ -469,7 +483,7 @@ function deal(attacker,target,multiplier=1,style='normal'){
   target.dead=true;target.deathAt=battle.clock;target.fade=1.6;target.windup=0;target.guard=0;
   beginRemoval(target);
   if(attacker.side==='ally'&&target.side==='enemy'){
-   attacker.exp+=killXP(battle.wave);attacker.kills++;battle.kills++;
+   attacker.exp+=experienceAward(killXP(battle.wave),battle.heroes.filter(h=>!h.dead).length);attacker.kills++;battle.kills++;
   }
  }
 }
@@ -625,9 +639,54 @@ function keepCourtSpacing(){
  }
  keepAlliedColumns();
 }
+// The XP time bonus requires a live, landed opponent and is capped per wave.
+function awardEngagementExperience(dt){
+ const live=battle.heroes.filter(h=>!h.dead),rules=engagementBonusRules(battle.wave,live.length);
+ if(!rules.chunk)return;
+ for(const h of live){
+  const foe=battle.enemies.find(e=>!e.dead&&e.seat===h.seat&&e.entry<=0);
+  if(!foe||h.stun>0||h.dodge>0||
+     h.flight&&battle.clock-h.flight.at<h.flight.duration)continue;
+  h.engagementClock=(h.engagementClock||0)+dt;
+  while(h.engagementClock>=rules.every){
+   h.engagementClock-=rules.every;
+   const gained=Math.min(rules.chunk,Math.max(0,rules.cap-(h.engagementBonus||0)));
+   if(gained<=0){h.engagementClock=0;break;}
+   h.exp+=gained;h.engagementBonus=(h.engagementBonus||0)+gained;
+  }
+ }
+}
+// Only between waves, after corpse retrieval, return living members to
+// a 1/2/3/4 person formation by interpolating world-space foot anchors.
+function beginSurvivorReflow(){
+ const live=battle.heroes.filter(h=>!h.dead);
+ if(!live.length||live.length===COURTS.length)return;
+ const assignments=courtAssignments(live);
+ COURTS=courtsForParty(live.length);
+ for(const {unit,seat,homeX,y} of assignments){
+  unit.reflow={x:unit.x,y:unit.y,toX:homeX,toY:y,elapsed:0,duration:1.30};
+  unit.seat=seat;unit.lane=seat;unit.homeX=homeX;
+  unit.windup=0;unit.target=null;unit.guard=0;unit.parry=0;
+ }
+ battle.nextSeat=0;battle.fx=[];battle.particles=[];
+}
+function advanceSurvivorReflow(dt){
+ for(const h of battle.heroes){
+  const r=h.reflow;if(!r)continue;
+  r.elapsed=Math.min(r.duration,r.elapsed+dt);
+  const ease=1-Math.pow(1-r.elapsed/r.duration,3);
+  h.x=r.x+(r.toX-r.x)*ease;h.y=r.y+(r.toY-r.y)*ease;
+  if(r.elapsed>=r.duration){h.x=r.toX;h.y=r.toY;h.reflow=null;}
+ }
+}
 function simulate(dt){
  if(!battle||battle.paused||battle.finished)return;
  battle.clock+=dt;battle.shakes=Math.max(0,battle.shakes-24*dt);
+ if(battle.cleared){
+  advanceSurvivorReflow(dt);
+  if((battle.breakTime-=dt)<=0)nextWave();
+  return;
+ }
  // Assign at most one foe to each living gladiator, only when that
  // court is empty. The queue remains pending instead of clustering.
  if(battle.left>0||battle.queued.length){
@@ -658,13 +717,15 @@ function simulate(dt){
   battle.knockout+=dt;if(battle.knockout>.65)finish(false);
   return;
  }
+ awardEngagementExperience(dt);
  if(!battle.left&&!battle.queued.length&&!battle.enemies.some(u=>!u.dead)&&
     !battle.exits.length&&!battle.cleared){
-  battle.cleared=true;battle.clearedWave=battle.wave;battle.breakTime=1.6;
-  battle.heroes.filter(h=>!h.dead).forEach(h=>h.exp+=waveXP(battle.wave));
-  announce('WAVE '+battle.wave+' 돌파 · 생존 '+battle.heroes.filter(h=>!h.dead).length+'명');
+  const living=battle.heroes.filter(h=>!h.dead),count=living.length;
+  battle.cleared=true;battle.clearedWave=battle.wave;battle.breakTime=1.8;
+  living.forEach(h=>h.exp+=experienceAward(waveXP(battle.wave),count));
+  beginSurvivorReflow();
+  announce('WAVE '+battle.wave+' 돌파 · 생존 '+count+'명 · EXP ×'+experienceMultiplier(count).toFixed(1));
  }
- if(battle.cleared&&((battle.breakTime-=dt)<=0))nextWave();
 }
 // Original authored frame geometry is shared with the normal arena duel.
 // Do not fit the alpha/opaque head-height here: padded red-helmet or special
@@ -881,7 +942,7 @@ function status(){
  if(!battle)return;
  $('#epWave').textContent='WAVE '+battle.wave;$('#epKills').textContent='격파 '+battle.kills;
  $('#epAlive').textContent='생존 '+battle.heroes.filter(h=>!h.dead).length+'/'+battle.heroes.length;
- $('#epXP').textContent='EXP +'+battle.heroes.reduce((n,h)=>n+h.exp,0);
+ $('#epXP').textContent='EXP +'+battle.heroes.reduce((n,h)=>n+h.exp,0)+' · ×'+experienceMultiplier(Math.max(1,battle.heroes.filter(h=>!h.dead).length)).toFixed(1);
  $('#epHealth').innerHTML=battle.heroes.map(h=>'<div class="ep-hp-card '+(h.dead?'dead':'')+'">'+
   '<strong>'+safe(h.name)+'</strong><small>Lv.'+h.level+' · '+h.kills+'격파</small>'+
   '<div class="ep-bar"><i style="width:'+Math.round(100*h.hp/h.maxHp)+'%"></i></div>'+
@@ -943,6 +1004,6 @@ function close(){
 if(typeof document!=='undefined')document.addEventListener('visibilitychange',()=>{
  if(document.hidden&&battle&&!battle.paused){battle.paused=true;prev=0;updateButtons();}
 });
-root.LudusPractice={open,close,isOpen:display,rules:{eligible,waveSize,enemyHP,enemyAttack,waveXP,killXP,enemyFor,courtsForParty,deathFrame,practiceSummary}};
+root.LudusPractice={open,close,isOpen:display,rules:{eligible,waveSize,enemyHP,enemyAttack,waveXP,killXP,enemyFor,courtsForParty,courtAssignments,experienceMultiplier,experienceAward,engagementBonusRules,deathFrame,practiceSummary}};
 if(typeof module!=='undefined')module.exports=root.LudusPractice.rules;
 })(typeof window!=='undefined'?window:globalThis);
