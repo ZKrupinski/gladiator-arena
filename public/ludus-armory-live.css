@@ -579,3 +579,23 @@
   margin-top:2px;
  }
 }
+
+/* v96 · Five calibrated training stats, including independent DEF.
+   Compact two-line pills prevent truncation in the narrow fighter sidebar. */
+.ra-collection .ra-fighters .ra-stats{
+ display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;
+ margin-top:5px;min-width:0;width:100%;align-items:stretch;
+}
+.ra-collection .ra-fighters .ra-stats>span{
+ box-sizing:border-box;min-width:0;min-height:38px;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:2px;padding:3px 0;overflow:hidden;white-space:nowrap;
+}
+.ra-collection .ra-fighters .ra-stats small{
+ display:block;max-width:100%;font:800 9px/1.12 Georgia,serif;
+ letter-spacing:-.035em;white-space:nowrap;color:#f0d09a;
+}
+.ra-collection .ra-fighters .ra-stats b{
+ font:900 13px/1.1 Georgia,serif;font-variant-numeric:tabular-nums;
+ max-width:100%;overflow:hidden;text-overflow:ellipsis;
+}

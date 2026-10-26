@@ -1,0 +1,26 @@
+name: QA Ludus 5 Trained Stats v96
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/ludus-armory-live.js
+      - public/ludus-armory-live.css
+      - public/ludus-cards.js
+      - public/ludus-cards.css
+      - public/index.html
+      - tests/ludus-five-stats-views-v96.cjs
+      - .github/workflows/qa-ludus-five-stats-v96.yml
+  workflow_dispatch:
+jobs:
+  five-attributes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Check both screens and responsive stat grids
+        run: |
+          node --check public/ludus-armory-live.js
+          node --check public/ludus-cards.js
+          node tests/ludus-five-stats-views-v96.cjs

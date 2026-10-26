@@ -93,9 +93,11 @@ function roster(){
  var quote=has?(a.recoveryQuote?.(s.active)||careQuote(h)):null;
  var canHeal=has&&quote.heal.needed&&Number(s.gold)>=quote.heal.gold&&Number(s.glory)>=quote.heal.glory;
  var canRest=has&&quote.rest.needed&&Number(s.gold)>=quote.rest.gold;
+ // Five trained stats: DEF raises armor while END raises max HP.
  var stats=has?[
-  ['STR','공격',h.stats.str||0],['AGI','민첩',h.stats.agi||0],
-  ['END','체력',h.stats.end||0],['FOCUS','기술',h.stats.focus||0]
+  ['STR','공격',h.stats?.str||0],['AGI','민첩',h.stats?.agi||0],
+  ['DEF','방어',h.stats?.def??h.stats?.end??0],
+  ['END','체력',h.stats?.end||0],['FOCUS','기술',h.stats?.focus||0]
  ]:[];
  var equip=has?['weapon','shield','armor'].map(function(slot){
   var label={weapon:'무기',shield:'방패',armor:'갑옷'}[slot];
@@ -117,10 +119,10 @@ function roster(){
  (has?'<div class="lc-highlight"><div class="lc-hero-badge">'+rank(h)+'</div><canvas id="lcFeaturedHero" width="355" height="352" aria-label="'+safe(h.name)+' 스탠딩"></canvas></div>'+
  '<div class="lc-nameplate"><h2>'+safe(h.name)+'</h2><span>'+className(h)+' · Lv.'+level(h)+'</span></div>'+
  '<div class="lc-xp"><div><strong>LEVEL '+level(h)+' / 50</strong><small>경험치 '+(level(h)>=50?'MAX':Number(h.xp||0)+' / '+(36+level(h)*19))+'</small></div><i><b style="width:'+percent(h)+'%"></b></i></div>'+
- '<div class="lc-stats">'+stats.map(function(p){return '<span><small>'+p[0]+' · '+p[1]+'</small><strong>'+p[2]+'</strong></span>';}).join('')+'</div>'+
- (h.aptitudes?'<div class="lc-aptitude"><strong>타고난 성장 적성</strong><span>'+[['str','근력'],['agi','민첩'],['end','체력'],['focus','집중']].map(function(v){var n=Number(h.aptitudes[v[0]])||1;return '<em class="'+(n>=1.22?'apt-strong':n<.89?'apt-weak':'')+'">'+v[1]+' ×'+n.toFixed(2)+'</em>';}).join('')+'</span></div>':'')+
+ '<div class="lc-stats" aria-label="훈련 스탯 5종">'+stats.map(function(p){return '<span aria-label="'+p[0]+' '+p[1]+' '+p[2]+'"><b class="lc-stat-code">'+p[0]+'</b><small>'+p[1]+'</small><strong>'+p[2]+'</strong></span>';}).join('')+'</div>'+
+ (h.aptitudes?'<div class="lc-aptitude"><strong>타고난 성장 적성</strong><span>'+[['str','근력'],['agi','민첩'],['def','방어'],['end','체력'],['focus','집중']].map(function(v){var n=Number(h.aptitudes[v[0]]??(v[0]==='def'?h.aptitudes.end:undefined))||1;return '<em class="'+(n>=1.22?'apt-strong':n<.89?'apt-weak':'')+'">'+v[1]+' ×'+n.toFixed(2)+'</em>';}).join('')+'</span></div>':'')+
  (innate?'<div class="lc-born-signature"><strong>선천 성장 성향 · '+safe(innate.name)+'</strong>'+
- '<span>Lv.'+level(h)+' 누적 성장 보정: '+[['str','근력'],['agi','민첩'],['end','체력'],['focus','집중']].map(function(v){return v[1]+' +'+innate.growth[v[0]].toFixed(1);}).join(' · ')+'</span>'+
+ '<span>Lv.'+level(h)+' 누적 성장 보정: '+[['str','근력'],['agi','민첩'],['def','방어'],['end','체력'],['focus','집중']].map(function(v){return v[1]+' +'+innate.growth[v[0]==='def'?'end':v[0]].toFixed(1);}).join(' · ')+'</span>'+
  '<small>Lv.50 예상 강점: '+safe(projected.name)+' +'+projected.growth[projected.best].toFixed(1)+' / 약점 '+safe(projected.weakness)+' +'+projected.growth[projected.weak].toFixed(1)+'</small></div>':'')+
  '<div class="lc-record"><span>시합 <b>'+(Number(h.fights)||0)+'전 '+(Number(h.wins)||0)+'승</b></span><span>부상 <b class="'+(injury(h)>=80?'lc-danger':'')+'">'+injury(h)+'</b></span><span>피로 <b class="'+(fatigue(h)>=80?'lc-danger':'')+'">'+fatigue(h)+'</b></span></div>'+
  '<div class="lc-equipment">'+equip+'</div></div>'+
