@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),crypto=require('node:crypto'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),dir=path.join(root,'public/assets/ludus-practice');
 const m=JSON.parse(fs.readFileSync(path.join(dir,'manifest.json'),'utf8'));
-assert.equal(m.assetVersion,'ludus-capua-full-balcony-v5-20261026');
+assert.equal(m.assetVersion,'ludus-capua-stable-full-balcony-v5-20261026');
 assert.equal(m.frameCount,4);assert.equal(m.frameWidth,480);assert.equal(m.frameHeight,225);
 assert.deepEqual(m.order,[0,1,2,3,2,1]);assert.deepEqual(m.targetDraw,{x:760,y:0,width:480,height:225});
 function dims(b){assert.equal(b.toString('ascii',0,4),'RIFF');assert.equal(b.toString('ascii',8,12),'WEBP');const t=b.toString('ascii',12,16);

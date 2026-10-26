@@ -123,7 +123,7 @@ function setup(){
   back=new Image();yardAssetFailed=false;
   back.onerror=()=>{yardAssetFailed=true;back.onerror=null;back.src='assets/new-era/arena.webp';};
   back.src='assets/ludus-practice/ludus-practice-yard-empty-v4-game.webp?v=emptyyard-v4';
-  crowdAtlas=new Image();crowdAtlas.src='assets/ludus-practice/capua-balcony-full-4f-lossless.webp?v=entirestand-v5';
+  crowdAtlas=new Image();crowdAtlas.src='assets/ludus-practice/capua-balcony-full-4f-lossless-v2.webp?v=entirestand-stable-v5';
  screen.addEventListener('click',event=>{
   const btn=event.target.closest('button');if(!btn||!screen.contains(btn))return;
   const id=btn.dataset.do;
