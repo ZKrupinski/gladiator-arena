@@ -123,7 +123,7 @@ function setup(){
   back=new Image();yardAssetFailed=false;
   back.onerror=()=>{yardAssetFailed=true;back.onerror=null;back.src='assets/new-era/arena.webp';};
   back.src='assets/ludus-practice/ludus-practice-yard-empty-v4-game.webp?v=emptyyard-v4';
-  crowdAtlas=new Image();crowdAtlas.src='assets/ludus-practice/ludus-balcony-actors-only-v4-4f.webp?v=emptyyard-v4';
+  crowdAtlas=new Image();crowdAtlas.src='assets/ludus-practice/capua-balcony-full-4f-lossless.webp?v=entirestand-v5';
  screen.addEventListener('click',event=>{
   const btn=event.target.closest('button');if(!btn||!screen.contains(btn))return;
   const id=btn.dataset.do;
@@ -822,14 +822,13 @@ function paint(){
  if(!root.ArenaCombatFeel&&battle.shakes)ctx.translate((Math.random()-.5)*battle.shakes,(Math.random()-.5)*battle.shakes);
  if(back.complete&&back.naturalWidth)ctx.drawImage(back,0,0,W,H);
  else{const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#24120e');grad.addColorStop(1,'#754328');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);}
- // Only whole animated spectators are composited onto the EMPTY courtyard plate.
-  // The sky, columns, front railing and red drapery exist solely in the static plate;
-  // alpha at the top and bottom of each atlas frame stays zero to prevent jitter.
-  if(!yardAssetFailed&&crowdAtlas?.complete&&crowdAtlas.naturalWidth===1868&&crowdAtlas.naturalHeight===187){
-   // Six-beat ping-pong order removes the harsh frame-4 -> frame-1 snap.
+ // ONE full balcony rectangle per frame. The image contains identical fixed
+ // railings, pillars, sky and awning in every frame, with Capua SD supporters
+ // moving behind the rail. No independent per-character sprites at runtime.
+  if(!yardAssetFailed&&crowdAtlas?.complete&&crowdAtlas.naturalWidth===1920&&crowdAtlas.naturalHeight===225){
    const order=[0,1,2,3,2,1],tick=Math.floor(spectatorClock/.33);
    const frame=reduced?0:order[tick%order.length];
-   ctx.drawImage(crowdAtlas,frame*467,0,467,187,796,18,358,143);
+   ctx.drawImage(crowdAtlas,frame*480,0,480,225,760,0,480,225);
   }
   ctx.fillStyle='#160a0910';ctx.fillRect(0,0,W,H);
  // All court floor overlays removed: gladiators stand on the original sand.

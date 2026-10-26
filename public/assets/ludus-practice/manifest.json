@@ -1,10 +1,10 @@
 {
-  "assetVersion": "ludus-empty-yard-crowd-v4-20261026",
+  "assetVersion": "ludus-capua-full-balcony-v5-20261026",
   "background": "ludus-practice-yard-empty-v4-game.webp",
-  "atlas": "ludus-balcony-actors-only-v4-4f.webp",
+  "atlas": "capua-balcony-full-4f-lossless.webp",
   "frameCount": 4,
-  "frameWidth": 467,
-  "frameHeight": 187,
+  "frameWidth": 480,
+  "frameHeight": 225,
   "frameMs": 330,
   "order": [
     0,
@@ -14,29 +14,25 @@
     2,
     1
   ],
-  "sourceDimensions": [
-    1672,
-    941
-  ],
   "canvasDimensions": [
     1280,
     720
   ],
   "targetDraw": {
-    "x": 796,
-    "y": 18,
-    "width": 358,
-    "height": 143
+    "x": 760,
+    "y": 0,
+    "width": 480,
+    "height": 225
   },
-  "notes": "User approved truly empty practice yard. 4 frame whole-body audience alpha matte with sky, pillars, railing and frontal drapery excluded. Fixed stage perspective and static architecture. Pauses with battle and reduced-motion uses first frame.",
+  "description": "Single whole upper-right spectator balcony per frame: background sky, pillars, awning, railing, fabric, wall baked static and visually bit-identical across four frames; only 2-3 head Capua chibi spectators vary.",
   "assets": {
     "ludus-practice-yard-empty-v4-game.webp": {
       "size": 206204,
       "sha256": "024782ba367c1c4b1fbb3d8af7919abb414d7e9c6f4168bc03d1ade2bdd37ae6"
     },
-    "ludus-balcony-actors-only-v4-4f.webp": {
-      "size": 123688,
-      "sha256": "2f6fe0af23505ccfa8173e7691c445e5ad6761a0d63c5b7db6b8ddbb41bf2792"
+    "capua-balcony-full-4f-lossless.webp": {
+      "size": 449298,
+      "sha256": "c5f143fa27df3f742498e6c47022afeadab4a1b47d66b0839bbb987f10ac4d29"
     }
   }
 }
