@@ -1,0 +1,49 @@
+name: QA static Ludus yard and animated balcony
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - public/ludus-practice.js
+      - public/assets/ludus-practice/**
+      - tests/ludus-balcony-atlas.cjs
+      - .github/workflows/qa-ludus-balcony.yml
+  workflow_dispatch:
+jobs:
+  balcony:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify cropped actor-only atlas, image bytes and loop script
+        run: node tests/ludus-balcony-atlas.cjs
+      - name: Verify live Cloudflare static yard and cropped crowd atlas
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, time, urllib.request
+          root=pathlib.Path('public')
+          base='https://gladiator-arena-git.pages.dev/'
+          paths=['index.html','ludus-practice.js',
+                 'assets/ludus-practice/manifest.json',
+                 'assets/ludus-practice/ludus-practice-yard.webp',
+                 'assets/ludus-practice/ludus-balcony-crowd-4f.webp']
+          expected={p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in paths}
+          for attempt in range(24):
+              fail=[]
+              for p in paths:
+                  try:
+                      url=base+('' if p=='index.html' else p)+'?v=balcony20261026&check='+str(attempt)
+                      req=urllib.request.Request(url,headers={'Cache-Control':'no-cache','User-Agent':'Spartacus-Asset-QA'})
+                      with urllib.request.urlopen(req,timeout=14) as response: data=response.read()
+                      if hashlib.sha256(data).hexdigest()!=expected[p]: fail.append(p+' mismatch')
+                  except Exception as e: fail.append(p+': '+str(e)[:100])
+              if not fail:
+                  print('LUDUS_BALCONY_LIVE_PASS: exact index, runtime JS, manifest and TWO WebP asset byte hashes match production.')
+                  print(base)
+                  break
+              print('Waiting for deploy (%d/24): %s'%(attempt+1,', '.join(fail)),flush=True)
+              time.sleep(9)
+          else: raise SystemExit('LUDUS_BALCONY_LIVE_NOT_VERIFIED')
+          PY
