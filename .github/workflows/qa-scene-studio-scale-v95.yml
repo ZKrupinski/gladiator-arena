@@ -11,6 +11,8 @@ on:
       - public/index.html
       - public/tools/practice-size-stage.js
       - tests/scene-studio-scale-parity-v95.cjs
+      - tests/practice-size-stage-parity-v54.cjs
+      - tests/practice-appearance-proportions-v45.cjs
       - .github/workflows/qa-scene-studio-scale-v95.yml
   workflow_dispatch:
 jobs:
