@@ -1,12 +1,11 @@
 {
   "assetSha256": {
-    "public/arena-carnifex.js": "c9dc449f34b953306e9ed52abb4055e63b218f94afd7b4e7014aa44eebe4932b",
-    "public/index.html": "bd39ac5f8182cd60b50648e07e2ad650ac8e7610cf69599b443ee9655ebd2e85",
-    "scripts/qa_carnifex_sd.mjs": "f83ab1033356a913280083889b84d297fc71eeb8545bba28b9d1d4e266d036a9"
+    "public/index.html": "507bc7c54efbccef29b3ecb8ffc20a4df60360293183bdf5890cd0b9116638ad",
+    "public/ludus-training-runtime.css": "122d623bd54c4942ddc2021e2b43fd5ffb13b213edb98a5d1c10d7ba0c14f0ad"
   },
-  "baseCommit": "fe48444d4d6efc516ea7cdeb13ab2e6206332bd1",
+  "baseCommit": "243650b003fd050677b41b2de7af599cc22b1cff",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "carnifex-turn-drag-sync-v100-20261026",
+  "releaseId": "training-fighter-1045-v101-20261026",
   "releaseProtocol": "spartacus-uploader-v1"
 }
