@@ -1,12 +1,12 @@
 {
   "assetSha256": {
-    "public/arena-coop-core.js": "69339de70182486f4ae0ae3e21311dee76d65f355bd9160078b94c5a572102f1",
-    "public/index.html": "04e4b8082fa0f21c4c03702c503a9e5cd5406d0f28a8c16a29abe48da7dc625f",
-    "public/ludus-practice.js": "e67ac7645ea5bc914303337f0f22b86a8528d2db4a837b785eed5b970c51189b"
+    "public/index.html": "1ac1d6f4808296a85fbc8986cf900733ec04f957e9b2d579ee7f3e31ebf26b17",
+    "public/ludus-scene.css": "1b5446baf3a53eb363c53d595ff13450639475ec2dc61ac1e65f6cb85e7afd08",
+    "public/ludus-scene.js": "65350a0bd689461693c90792bba6e1107ede2c043bf0024682bc510c7c38cc2e"
   },
-  "baseCommit": "03892e33732e6d4e01b4a257de8ef8e489745059",
+  "baseCommit": "a3864e65a81c09d836c23c680cafcc960fa07529",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "class-beast-matchups-v106-20261026",
+  "releaseId": "ludus-entry-no-legacy-flicker-v107-20261026",
   "releaseProtocol": "spartacus-uploader-v1"
 }

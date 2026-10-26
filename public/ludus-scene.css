@@ -313,3 +313,23 @@
 .ll-scene .ll-roster .ll-portraits button.ll-add small{
  margin-top:9px;font-size:16px;
 }
+
+
+/* v107: image-decode and roster-ready atomic reveal.
+   A clean neutral loading veil replaces the obsolete Domina boxes/menu
+   until the approved 1448x1086 bitmap and actual controls are ready. */
+.ll-scene:not(.ll-display-ready) .ll-stage{
+ visibility:hidden!important;pointer-events:none!important;
+}
+.ll-scene:not(.ll-display-ready)::after{
+ content:"LVDVS MAGNVS  ·  루두스 준비 중…";
+ position:absolute;z-index:30;inset:0;display:grid;place-items:center;
+ background:radial-gradient(ellipse at center,#302017,#110a08 72%);
+ color:#efd3a0;font:700 clamp(14px,2.8vw,25px)/1.4 Georgia,"Noto Sans KR",serif;
+ letter-spacing:.065em;text-align:center;pointer-events:none;
+}
+.ll-scene.ll-art-failed::after{
+ content:"루두스 배경을 불러오지 못했습니다. 화면을 다시 열어주세요.";
+}
+.ll-scene:not(.ll-display-ready) .ll-orientation{visibility:hidden!important}
+.ll-fallback{display:none!important}

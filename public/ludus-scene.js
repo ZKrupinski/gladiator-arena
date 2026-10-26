@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-var scene,stage,toastTimer=0,dominaTimer=0,dominaReturnTimer=0,lastDominaPose=0;
+var scene,stage,toastTimer=0,dominaTimer=0,dominaReturnTimer=0,lastDominaPose=0,openEpoch=0;
 var W=1448,H=1086;
 // The approved lobby art already contains all the distant gladiators.
  // Do not render smaller, semitransparent fighter sprites on top of them.
@@ -20,7 +20,7 @@ function notice(msg){var t=$(".ll-toast");t.textContent=msg;t.hidden=false;clear
 function close(){
  clearTimeout(dominaTimer);clearTimeout(dominaReturnTimer);
  dominaTimer=0;dominaReturnTimer=0;lastDominaPose=0;
- if(scene){scene.hidden=true;var patch=$('.ll-domina-expression');if(patch)patch.src='assets/ludus/domina_face_aligned_0.webp?v=7';clearTimeout(toastTimer);}
+ if(scene){openEpoch++;scene.hidden=true;scene.classList.remove('ll-display-ready');var patch=$('.ll-domina-expression');if(patch)patch.src='assets/ludus/domina_face_aligned_0.webp?v=7';clearTimeout(toastTimer);}
 }
 function animateDomina(){
  if(!scene||scene.hidden)return;
@@ -90,7 +90,6 @@ if(scene)return;
 scene=document.createElement("div");scene.className="ll-scene";scene.id="ludusScene";scene.hidden=true;
 var html=[
 '<div class="ll-stage" role="region" aria-label="루두스 훈련장">',
-'<div class="ll-fallback"><div class="ll-domina"><img src="assets/ludus/domina_0.webp" alt=""><span>DOMINA · 루두스의 주인</span></div></div>',
 '<img class="ll-key" src="assets/ludus/ludus_blank_v70.webp" alt="" aria-hidden="true">',
 '<img class="ll-domina-expression" src="assets/ludus/domina_face_aligned_0.webp?v=7" alt="" aria-hidden="true" draggable="false">',
 '<button class="ll-title" data-action="back" aria-label="타이틀로 돌아가기">❮ 루두스</button>',
@@ -111,7 +110,10 @@ var html=[
 '</div><div class="ll-toast" hidden role="status"></div></div><div class="ll-orientation" role="dialog" aria-label="가로 화면 권장"><div class="ll-rotate-icon" aria-hidden="true">↻</div><strong>가로 화면에서 플레이해 주세요</strong><p>루두스는 가로형 게임 화면으로 제작되었습니다.<br>기기를 가로로 돌리면 버튼과 검투사가 크게 보입니다.</p><button data-action="dismiss-orientation">작은 화면으로 계속 보기</button></div>'
 ];
 scene.innerHTML=html.join("");document.body.appendChild(scene);stage=$(".ll-stage");setupRosterDrag($(".ll-portraits"));
-var art=$(".ll-key");art.addEventListener("load",function(){scene.classList.add("ll-has-art");});art.addEventListener("error",function(){scene.classList.remove("ll-has-art");});if(art.complete&&art.naturalWidth)scene.classList.add("ll-has-art");
+var art=$(".ll-key");
+art.addEventListener("load",function(){scene.classList.add("ll-has-art");scene.classList.remove("ll-art-failed");revealWhenReady(openEpoch);});
+art.addEventListener("error",function(){scene.classList.remove("ll-has-art","ll-display-ready");scene.classList.add("ll-art-failed");});
+if(art.complete&&art.naturalWidth)scene.classList.add("ll-has-art");
 scene.addEventListener("click",function(ev){
  var b=ev.target.closest("button[data-action]");
  if(!b||!scene.contains(b))return;
@@ -169,9 +171,28 @@ var addNote=document.createElement("small");addNote.textContent="검투사 영�
 add.onclick=function(){action("market");};host.appendChild(add);
 host.scrollLeft=savedScroll;
 }
+// Hold the stage back until the complete approved key image has decoded,
+// resource totals, roster portraits, hitboxes and stage transform are prepared.
+function revealWhenReady(token){
+ var art=$(".ll-key");
+ if(!scene||scene.hidden||token!==openEpoch||!art||!art.complete||!art.naturalWidth)return;
+ var reveal=function(){
+  if(!scene||scene.hidden||token!==openEpoch)return;
+  scene.classList.add("ll-has-art");
+  window.requestAnimationFrame(function(){
+   if(!scene||scene.hidden||token!==openEpoch)return;
+   scene.classList.add("ll-display-ready");
+  });
+ };
+ if(typeof art.decode==="function")art.decode().then(reveal,function(){reveal();});
+ else reveal();
+}
 function open(){
  setup();if(!bridge())return;
+ var token=++openEpoch;
+ scene.classList.remove("ll-display-ready","ll-art-failed");
  scene.hidden=false;refresh();fit();
+ revealWhenReady(token);
  var strip=$(".ll-portraits"),chosen=strip&&strip.querySelector(".selected");
  if(strip&&chosen)strip.scrollLeft=Math.max(0,chosen.offsetLeft-(strip.clientWidth-chosen.offsetWidth)/2);
  clearTimeout(dominaTimer);clearTimeout(dominaReturnTimer);
