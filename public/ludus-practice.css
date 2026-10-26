@@ -45,18 +45,24 @@
 .ep-start{margin:17px 0;display:flex;justify-content:space-between;align-items:center;gap:15px}
 .ep-start span{color:#e7c38d;font-size:14px}
 .ep-combat{display:grid;gap:10px}
-.ep-hud{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;
+.ep-hud{display:flex;gap:clamp(5px,1.1vw,12px);justify-content:space-between;align-items:center;flex-wrap:wrap;
  border:2px ridge #bd925e;border-radius:7px;background:#29160ee8;padding:10px clamp(9px,1.7vw,17px)}
-.ep-hud strong{color:#ffdc8c;font-size:clamp(23px,3.2vw,39px);text-shadow:0 0 13px #d9a15290}
-.ep-hud span{font:bold clamp(13px,1.6vw,18px) Georgia,'Noto Sans KR',serif}
+/* Training WAVE broadcast only: text is enlarged, with no battle canvas resizing. */
+.ep-hud strong{color:#ffe1a0;font-size:clamp(29px,3.9vw,46px);line-height:1.15;white-space:nowrap;
+ text-shadow:0 2px 2px #160805,0 0 15px #d9a15275}
+.ep-hud span{font:800 clamp(16px,1.9vw,21px)/1.3 Georgia,'Noto Sans KR',serif;
+ white-space:nowrap;font-variant-numeric:tabular-nums;color:#ffebc7;text-shadow:0 2px 3px #110603}
 .ep-arena{width:min(100%,1280px);margin:0 auto;aspect-ratio:16/9;position:relative;overflow:hidden;
  border:6px ridge #bb965e;background:#27140d;box-shadow:0 13px 26px #000a}
 .ep-arena canvas{width:100%;height:100%;display:block;object-fit:contain}
-.ep-announcement{position:absolute;top:11%;left:0;right:0;pointer-events:none;text-align:center;
- font:bold clamp(15px,2.6vw,33px) Georgia,'Noto Sans KR',serif;color:#ffdf91;
- text-shadow:0 3px 7px #120804,0 0 15px #f9c564}
+.ep-announcement{position:absolute;top:10%;left:0;right:0;pointer-events:none;text-align:center;
+ padding:6px 12px;font:900 clamp(21px,3.35vw,42px)/1.3 Georgia,'Noto Sans KR',serif;
+ letter-spacing:.012em;color:#ffe5a3;
+ background:linear-gradient(90deg,transparent 9%,#24110975 33%,#2411098c 50%,#24110975 67%,transparent 91%);
+ -webkit-text-stroke:.3px #59341d;
+ text-shadow:0 2px 2px #130704,0 4px 10px #090301,0 0 16px #d5964066}
 .ep-announcement.ep-pop{animation:ep-flash .9s ease-out both}
-@keyframes ep-flash{0%{opacity:0;transform:translateY(-14px) scale(1.06)}40%{opacity:1;transform:none}100%{opacity:.7;transform:none}}
+@keyframes ep-flash{0%{opacity:0;transform:translateY(-14px) scale(1.06)}40%{opacity:1;transform:none}100%{opacity:1;transform:none}}
 .ep-health{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:7px}
 .ep-hp-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 8px;border:1px solid #a0784c;
  background:#24140edb;border-radius:6px;padding:8px 10px}
@@ -92,12 +98,20 @@
  .ep-fighter canvas{width:52px;height:85px}
  .ep-unit-info{gap:3px}.ep-unit-info strong{font-size:13px}.ep-unit-info small{font-size:11px}.ep-unit-info em{font-size:9px}
  .ep-fighter b{font-size:10px}.ep-start{flex-wrap:wrap}.ep-start button{width:100%}
- .ep-hud{padding:7px}.ep-hud span{font-size:12px}
+ .ep-hud{padding:7px;gap:5px}
+ .ep-hud strong{font-size:clamp(27px,6vw,36px)}
+ .ep-hud span{font-size:clamp(14px,3.5vw,18px)}
+ .ep-announcement{top:9.5%;padding:5px 8px;font-size:clamp(20px,5.2vw,31px)}
  .ep-arena{border-width:3px}.ep-actions p{flex:1 1 100%}
  .ep-health{grid-template-columns:repeat(2,minmax(0,1fr))}
  .ep-hp-card{padding:6px}.ep-hp-card strong{font-size:12px}.ep-hp-card small{font-size:10px}
 }
-@media(max-width:380px){.ep-roster{grid-template-columns:1fr}.ep-fighter canvas{width:77px;height:103px}}
+@media(max-width:380px){
+ .ep-roster{grid-template-columns:1fr}.ep-fighter canvas{width:77px;height:103px}
+ /* 4 enlarged metrics never overlap on narrow portrait screens. */
+ .ep-hud{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px}
+ .ep-hud span:nth-child(2),.ep-hud span:last-child{text-align:right}
+}
 @media(prefers-reduced-motion:reduce){.ep-announcement.ep-pop{animation:none}}
 
 

@@ -1,11 +1,11 @@
 {
   "assetSha256": {
-    "public/index.html": "507bc7c54efbccef29b3ecb8ffc20a4df60360293183bdf5890cd0b9116638ad",
-    "public/ludus-training-runtime.css": "122d623bd54c4942ddc2021e2b43fd5ffb13b213edb98a5d1c10d7ba0c14f0ad"
+    "public/index.html": "33de55ae088e0c177fe0e1a8fa296caa47e14bbe18103839cd5a254709f748ba",
+    "public/ludus-practice.css": "c12d7820038a8d5e4123b266ab98db3a4cbc1c872390969dc1b753d1d11f6e41"
   },
-  "baseCommit": "243650b003fd050677b41b2de7af599cc22b1cff",
+  "baseCommit": "29d19f38437f42d3bb017178b7ed640dd68686e2",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "training-fighter-1045-v101-20261026",
+  "releaseId": "practice-wave-hud-legibility-v102-20261026",
   "releaseProtocol": "spartacus-uploader-v1"
 }
