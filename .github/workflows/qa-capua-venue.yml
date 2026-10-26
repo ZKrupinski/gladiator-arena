@@ -1,4 +1,4 @@
-name: QA Capua arena preview and Cloudflare
+name: QA Capua SD crowd full-stand animation and Cloudflare
 on:
   push:
     branches: [main]
@@ -28,19 +28,19 @@ jobs:
           import hashlib,pathlib,time,urllib.request
           base='https://gladiator-arena-git.pages.dev/'
           root=pathlib.Path('public')
-          files=['index.html','capua-venue.js','squad-arena.js','arena-coop.js','assets/capua/manifest.json','assets/capua/capua-yard.webp','assets/capua/capua-crowd-4f.webp']
+          files=['index.html','capua-venue.js','squad-arena.js','arena-coop.js','assets/capua/manifest.json','assets/capua/capua-sd-arena-selected.webp','assets/capua/capua-sd-crowd-4f-selected.webp']
           hashes={p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in files}
           for attempt in range(24):
               failures=[]
               for p in files:
                   try:
-                      uri=base+('' if p=='index.html' else p)+'?capua-preview=20261026&try='+str(attempt)
+                      uri=base+('' if p=='index.html' else p)+'?capua-sd-selected=20261026&try='+str(attempt)
                       req=urllib.request.Request(uri,headers={'Cache-Control':'no-cache','User-Agent':'Spartacus-Capua-QA'})
                       with urllib.request.urlopen(req,timeout=15) as res: actual=res.read()
                       if hashlib.sha256(actual).hexdigest()!=hashes[p]: failures.append(p+' hash mismatch')
                   except Exception as e:failures.append(p+' '+str(e)[:80])
               if not failures:
-                  print('CAPUA_LIVE_DEPLOY_PASS: game JS + original-combat integrations + both WebP match Cloudflare byte-for-byte')
+                  print('CAPUA_SD_LIVE_PASS: second approved scene, native crowd animation and venue integrations match Cloudflare')
                   break
               print('Still deploying',attempt,','.join(failures),flush=True);time.sleep(10)
           else:raise SystemExit('CAPUA_LIVE_DEPLOY_NOT_VERIFIED')

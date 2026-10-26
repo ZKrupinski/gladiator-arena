@@ -1,18 +1,21 @@
 {
-  "version": "capua-stand-preview-v1-20261026",
+  "version": "capua-second-image-animated-spectators-20261026",
   "stage": "capua",
-  "mode": "rough comparison",
   "preserves": "assets/new-era/arena.webp",
   "defaultMode": "capua",
   "options": [
     "capua",
     "colosseum"
   ],
+  "background": "capua-sd-arena-selected.webp",
+  "atlas": "capua-sd-crowd-4f-selected.webp",
   "frameCount": 4,
   "frameSize": [
-    543,
-    270
+    1672,
+    264
   ],
+  "frameY": 78,
+  "frameMs": 350,
   "loopOrder": [
     0,
     1,
@@ -21,25 +24,28 @@
     2,
     1
   ],
-  "crowdSegments": [
-    -10,
-    552,
-    1114
-  ],
-  "crowdOffsetY": 83,
-  "backgroundSize": [
+  "sourceDimensions": [
     1672,
     941
   ],
-  "notes": "Initial test composite of supplied Capua empty stands plus first-scale audience reference, repeated to cover three sections. Not final crowd alignment; user requested see actual battle placement first.",
+  "audienceZones": [
+    "west_citizens",
+    "west_elites",
+    "center_west",
+    "center_east",
+    "east_citizens"
+  ],
+  "noDuplicateTiles": true,
+  "architectureStatic": true,
+  "description": "Second approved cheerful SD scene. Full upper stands animated by five staggered crowd sections. Existing Colosseum selectable.",
   "assets": {
-    "capua-yard.webp": {
-      "size": 356196,
-      "sha256": "a13e847ee632a92a358f13734e3f99dd55a94919f26d8c68dbc96ffbfa9d5db9"
+    "capua-sd-arena-selected.webp": {
+      "size": 554886,
+      "sha256": "8501a6acde6b36bbf0ceffc1d163b864335f9b776e0c8202e672927ed8c522f7"
     },
-    "capua-crowd-4f.webp": {
-      "size": 258930,
-      "sha256": "ffeacb59d6581deb7cb5d87da5dfb027169ae24b57502fb5d7acd20495256b67"
+    "capua-sd-crowd-4f-selected.webp": {
+      "size": 793124,
+      "sha256": "b0e9a2958bfa72030936ad45f91a1a213c207fdd0683381333058ec3bd2218e2"
     }
   }
 }
