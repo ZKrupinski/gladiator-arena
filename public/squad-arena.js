@@ -28,6 +28,7 @@ function unit(hero,side,i,round,mainEnemy=false){
  const injury=side==='ally'?Math.max(0,hero.injury||0):0;
  return {
   side,id:side+'-'+i,index:i,hero,cls,lane,x,face:side==='ally'?1:-1,
+  personality:root.ArenaPersonality?.profile?.(hero,rank,cls),mind:null,
   y:near?580:459,size:boss?(near?280:237):(near?252:207),boss,
   hp:Math.max(1,maxHp-injury),maxHp,atk:rank.atk,sp:rank.sp,
   speed:rank.move,range:BASE[cls].reach,armor:rank.armor??B.TRAITS[cls].armor,
@@ -185,12 +186,16 @@ function advance(battle,dt,commands={}){
   f.face=target.x>=f.x?1:-1;
   if(f.stagger>0)continue;
   const distance=Math.abs(target.x-f.x)+Math.abs(target.lane-f.lane)*55;
+  const mood=actorControl?null:root.ArenaPersonality?.parameters?.(f,battle.t,battle.random);
   if(actorControl&&actorControl.move){
    f.x=clamp(f.x+actorControl.move*f.speed*dt*.60,105,1175);
-  }else if(!f.rooted&&distance>f.range-18){
-   f.x=clamp(f.x+(target.x>f.x?1:-1)*f.speed*dt*.52,105,1175);
+  }else if(!f.rooted&&distance>f.range-18+(mood?.spacing||0)*.22){
+   f.x=clamp(f.x+(target.x>f.x?1:-1)*f.speed*dt*.52*(mood?.speed||1),105,1175);
   }else if(!f.rooted&&distance<f.range*.50&&f.cls==='retiarius'){
-   f.x=clamp(f.x-(target.x>f.x?1:-1)*f.speed*dt*.23,105,1175);
+   f.x=clamp(f.x-(target.x>f.x?1:-1)*f.speed*dt*.23*(mood?.evade||1),105,1175);
+  }
+  if(!actorControl&&!f.rooted&&distance<f.range+24&&mood?.mode==='feint'&&f.cooldown>.1){
+   f.x=clamp(f.x-f.face*f.speed*dt*.32,105,1175);
   }
   if(actorControl?.dodge&&f.stamina>18){f.stamina-=18;f.dodge=.38;f.x=clamp(f.x-f.face*52,105,1175);f.action='dodge';f.attackT=.38;}
   if(actorControl?.guard){f.guard=.28;f.action='guard';f.stamina=Math.max(0,f.stamina-11*dt);}
@@ -201,10 +206,12 @@ function advance(battle,dt,commands={}){
    const freq=f.side==='enemy'
     ?(.98+f.level*.026+(f.boss?.36:0))*phase
     :(.81+f.level*.016);
-   const p=dt*freq;
-   if(f.boss&&f.skillCD<=0&&battle.random()<dt*.55)performAttack(battle,f,target,true);
+   const p=dt*freq*(mood?.aggression||1);
+   if(f.boss&&f.skillCD<=0&&battle.random()<dt*.55*(mood?.special||1))performAttack(battle,f,target,true);
    else if(battle.random()<p)performAttack(battle,f,target,false);
-   if(f.side==='enemy'&&f.cls==='murmillo'&&battle.random()<dt*.30&&f.stamina>20)f.guard=.28;
+   if(f.stamina>20&&battle.random()<dt*.23*(mood?.guard||1)){
+    f.guard=.26;f.action='guard';
+   }
   }
   if(f.attackT<=0&&f.stagger<=0&&f.guard<=0)f.action=Math.abs(distance)>f.range?'walk':'idle';
  }
