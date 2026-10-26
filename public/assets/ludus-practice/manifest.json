@@ -1,5 +1,5 @@
 {
-  "assetVersion": "ludus-capua-stable-full-balcony-v5-20261026",
+  "assetVersion": "ludus-capua-portrait-aspect-v98-20261026",
   "background": "ludus-practice-yard-empty-v4-game.webp",
   "atlas": "capua-balcony-full-4f-lossless-v2.webp",
   "frameCount": 4,
@@ -24,7 +24,7 @@
     "width": 480,
     "height": 225
   },
-  "description": "Capua 2-3-head SD audience in one whole balcony rectangle. Lossless input from original RGBA pixels (not intermediate lossy art). Columns, sky, canopy and lower rail all originate from same fixed original background. All four frames have bitwise identical bottom 75px rail and left 48px edge.",
+  "description": "Practical training 4-frame audience rendered from separate alpha actor atlas at 90% horizontal scale only; static approved 1280x720 architecture and balcony railing remain unwarped. Legacy full-balcony atlas is fallback.",
   "assets": {
     "ludus-practice-yard-empty-v4-game.webp": {
       "size": 206204,
@@ -34,5 +34,23 @@
       "size": 329974,
       "sha256": "b4d7ff1ff62d0af331c4fd2b249f2eba18d23c656104da88c607912c21db3eb4"
     }
-  }
+  },
+  "preferredOverlay": "ludus-balcony-actors-only-v4-4f.webp",
+  "sourceActorFrame": {
+    "width": 467,
+    "height": 187
+  },
+  "actorFit": {
+    "sourceWidth": 467,
+    "sourceHeight": 187,
+    "horizontalScale": 0.9,
+    "centerIn": [
+      760,
+      0,
+      480,
+      225
+    ],
+    "railOcclusionY": 151
+  },
+  "atlasFallback": "capua-balcony-full-4f-lossless-v2.webp"
 }
