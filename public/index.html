@@ -1997,7 +1997,7 @@ function launchCombatRecoil(target,dir,distance,kind){
  const initialX=clamp(startX+side*Math.min(190,distance*.47),-300,1580);
  const restX=clamp(startX+side*(kind==='parry'?125:120),110,1170);
  target.specialRecoil={kind,startX,initialX,farX,restX,
-  elapsed:0,total:kind==='parry'?1.32:1.18};
+  elapsed:0,total:kind==='parry'?1.32:1.52};
  target.x=initialX;target.knockT=0;
  target.knockVX=side*(kind==='parry'?1050:1180);
  target.stagger=Math.max(target.stagger,kind==='parry'?1.43:1.37);
@@ -2638,13 +2638,13 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
   if(f.specialRecoil){
    const k=f.specialRecoil;
    k.elapsed=Math.min(k.total,k.elapsed+realDt);
-   const q=k.elapsed/k.total;
-   if(q<.34){
-    const a=q/.34;
+   const q=k.elapsed/k.total,launchRatio=k.kind==='special'?.42:.34;
+   if(q<launchRatio){
+    const a=q/launchRatio;
     const ease=1-Math.pow(1-a,3);
     f.x=k.initialX+(k.farX-k.initialX)*ease;
    }else{
-    const a=clamp((q-.34)/.66,0,1);
+    const a=clamp((q-launchRatio)/(1-launchRatio),0,1);
     const ease=a*a*(3-2*a);
     const spring=Math.sin(a*Math.PI*2)*Math.pow(1-a,2)*16;
     f.x=k.farX+(k.restX-k.farX)*ease+Math.sign(k.restX-k.farX)*spring;
