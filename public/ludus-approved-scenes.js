@@ -72,7 +72,7 @@ function fit(){
  stage.style.height=armory?Math.max(H,Math.min(1420,Math.floor(usableH/z)))+'px':'';
  stage.style.transform=`translate(-50%,-50%) scale(${z})`;
 }
-function toast(msg){let n=$('.la-notice');if(!n)return;n.textContent=msg;n.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>n.hidden=true,2800);}
+function toast(msg,duration=2800){let n=$('.la-notice');if(!n)return;n.textContent=msg;n.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>n.hidden=true,duration);}
 // Big visual training result is rendered over the actual arena BETWEEN
 // Doctore and gladiator, after the real economy has committed its outcome.
 // 3.2 sec lifetime; each consecutive attempt restarts its own full duration.
@@ -116,7 +116,7 @@ function actionTraining(){const s=bridge()?.state();if(!s?.roster?.length){toast
  const gained=Math.max(0,(Number(h.stats[opt.stat])||0)-before);
  speechPhase=failed?'failed':Number(h.stats[opt.stat])>10?'mastery':'success';
  refresh();showTrainingFeedback({failed,statName:opt.statLabel,gain:gained,cost});
- pose(failed?2:3);toast(failed?h.name+' · 훈련 실패 · '+cost+'D 소모':h.name+' · '+opt.name+' 완료!');}
+ pose(failed?2:3);toast(failed?h.name+' · 훈련 실패 · '+cost+'D 소모':h.name+' · '+opt.name+' 완료!',TRAINING_RESULT_MS);}
 function changeItem(mode){const a=bridge(),list=a?.catalog()||[],gear=list.find(g=>g.id===selectedGear);if(!gear){toast('장비를 먼저 선택하세요.');return;}const outcome=a.equip(selectedGear,mode);toast(outcome||'장비 상태가 갱신되었습니다.');refresh();}
 function drawRoster(parent,isTraining){parent.replaceChildren();const a=bridge(),s=a?.state();if(!s)return;
  const from=Math.max(0,Math.min(s.active-1,Math.max(0,s.roster.length-(isTraining?6:3))));

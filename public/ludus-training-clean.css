@@ -396,3 +396,25 @@
 /* Original illustrated banner already contains the title '훈련 효과'.
    Do not create a second floating title that doubles over the artwork. */
 .la-stage.training .lt-stat-list + .lt-info-head{display:none!important}
+
+
+/* v92: outcome emblem and economic result toast share the painted
+   '훈련 항목 선택' sign's X center (690 of 1672), not the fighter's position.
+   The shield sits immediately under the speech bubble; the one-line toast
+   sits BELOW the shield and ABOVE the training-choice sign. */
+.la-stage.training .la-training-feedback{
+ left:546px!important;top:217px!important;
+ width:288px!important;height:258px!important;
+}
+.la-stage.training .la-notice:not([hidden]){
+ box-sizing:border-box;
+ left:690px!important;top:505px!important;bottom:auto!important;
+ width:520px!important;max-width:520px!important;min-width:0!important;
+ min-height:0!important;padding:8px 13px!important;
+ transform:translateX(-50%)!important;
+ font:900 19px/24px 'Noto Sans KR',sans-serif!important;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+ text-align:center!important;z-index:46!important;
+ pointer-events:none;
+}
+/* Keep both the success and failure notices in the same vertical lane. */

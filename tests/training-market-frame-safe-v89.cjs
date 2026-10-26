@@ -7,7 +7,7 @@ for(const rule of ['.gm-card-dynamic .gm-roman-name','.gm-card-dynamic .gm-class
 assert(t.includes('top:131px!important')&&t.includes('height:16px'),'training final caption moved up');
 assert(m.includes('height:17px;margin:1px 0!important'),'market bars tightly packed');
 assert(m.includes('padding:4px 12px 8px!important'),'market card has 12px safe margin');
-assert(html.includes('ludus-training-clean.css?v=artwork-icon-alignment-v91'),'training cache refreshed');
+assert(html.includes('ludus-training-clean.css?v=training-outcome-center-v92'),'training cache refreshed');
 assert(html.includes('ludus-training-runtime.js?v=artwork-icon-alignment-v91'),'training renderer cache refreshed');
 assert(html.includes('market-selection-live.css?v=market-frame-safe-v89'),'market cache refreshed');
 assert(131+16<=158-10,'training help has 11px bottom safe zone');
@@ -24,6 +24,18 @@ assert.deepEqual(cards.map(x=>x[3]),[8,8,4,10,12],'each title/stat/description u
 assert(runtime.includes("b.style.setProperty('--icon-text-offset',iconOffset+'px')"),'each tile receives artwork centre offset');
 assert(!runtime.includes('<div class="lt-info-head">훈련 효과</div>'),'remove duplicate heading over painted title');
 assert(t.includes('top:177px!important')&&t.includes('top:301px!important')&&t.includes('top:348px!important'),'right panel reflowed upward');
+// Result layout is in the same native 1672x941 coordinate system as the sign.
+const scenes=src('ludus-approved-scenes.js');
+assert(t.includes('left:546px!important;top:217px!important'),'success/failure shield directly below dialogue');
+assert(t.includes('left:690px!important;top:505px!important;bottom:auto!important'),'toast above the choice sign');
+assert(t.includes('transform:translateX(-50%)!important'),'toast is centered on the emblem');
+assert(t.includes('.la-stage.training .la-notice:not([hidden])'),'only training notice is moved');
+assert(t.includes('width:520px!important;max-width:520px!important'),'long name and currency use a single aligned line');
+assert(html.includes('ludus-approved-scenes.js?v=training-outcome-center-v92'),'live training result code cache refreshed');
+assert(scenes.includes("TRAINING_RESULT_MS);"),'result popup lives for the same duration as shield');
+assert.equal(546+288/2,690,'shield center is the sign center');
+assert(217+258<505,'shield leaves a gap above toast');
+assert(505+52<573,'toast clears the training-choice sign');
 const marketHeight=4+25+2+30+3+14+1+18+2+4*18+8;
 assert(marketHeight<=183,'four market bars and two-line class fit within illustration');
 console.log('PASS: training 5-stat info, 5 card captions and three market booths fit within painted frame safe-zones.');
