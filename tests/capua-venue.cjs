@@ -32,7 +32,7 @@ const coop=fs.readFileSync(path.join(root,'public','arena-coop.js'),'utf8');
 assert.doesNotMatch(coop,/CapuaVenue\?\.draw/);
 assert.match(coop,/bg\.src='assets\/new-era\/arena\.webp'/);
 assert.match(coop,/bg\.naturalHeight\*\.76/);
-assert.match(html,/arena-coop\.js\?v=foot-perspective-v80/);
+assert.match(html,/arena-coop\.js\?v=corpse-prone-v81/);
 new Function(coop);
 const vm=require('node:vm'),coop2=fs.readFileSync(path.join(root,'public','arena-coop.js'),'utf8');
 const sandbox={window:{}};vm.runInNewContext(coop2,sandbox);
@@ -46,7 +46,7 @@ assert.match(coop2,/ctx\.scale\(depth,depth\)/);
 assert.match(coop2,/const z=\.60,depth=perspectiveScale\(u\.y\)/);
 assert.match(coop2,/bg\.src='assets\/new-era\/arena\.webp'/);
 assert.doesNotMatch(coop2,/CapuaVenue\?\.draw/);
-assert.match(html,/arena-coop\.js\?v=foot-perspective-v80/);
+assert.match(html,/arena-coop\.js\?v=corpse-prone-v81/);
 console.log('COOP_PERSPECTIVE_PASS: continuous foot-anchored 0.76-1.22 depth scaling');
 
 // Regression: older ten-cell Retiarius graphics must not leave upright corpses in 5v5.
