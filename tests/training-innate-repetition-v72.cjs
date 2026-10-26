@@ -40,7 +40,7 @@ assert(index.includes('window.LudusTrainingRisk.attempt(CAREER.hero,stat)'),'tim
 assert(index.includes("if(result.failed)"),'failed normal training must skip stat and XP changes');
 assert(index.includes('if(!result.failed){'),'failed normal training must not display success FX');
 assert(index.includes('const earned=exhausted?0:'),'probabilistic minigame failure must award 0 XP');
-assert(scenes.includes("speechPhase=failed?'failed'"),'Doctore reacts correctly to failed sessions');
+assert(scenes.includes("speechPhase=job.failed?'failed'"),'Doctore reacts after the contact and fighter response, not before');
 assert(runtime.includes('lt-risk-row'),'real training info displays risk counter');
 assert(runtime.includes('totalAttempts'),'show lifetime per-fighter training count');
 assert(css.includes('.lt-risk-row.lt-risk-active'),'training danger highlight exists');

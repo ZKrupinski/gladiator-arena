@@ -154,6 +154,7 @@ const TRAINING_FRAMES={
  sweep:[9,3,3,20,20,3,3,9],
  thrust:[9,4,4,4,4,4,4,9],
  heavy:[9,5,5,5,5,5,5,9],
+ guard:[9,6,6,6,6,6,6,9],
   hit:[9,7,7,7,7,7,9,0]
 };
 function trainingFrame(action='idle',index=0){

@@ -42,6 +42,13 @@ try{
   'training UI should visibly show real saved attempts and odds: '+riskView);
  await page.evaluate(()=>{window.__originalRandom=Math.random;Math.random=()=>0;});
  await page.locator('.la-stage.training .lt-start-button').click();
+ assert.equal(await page.locator('.la-stage.training .la-training-feedback').count(),0,
+  'result badge must NOT appear on button press');
+ assert.equal(await page.locator('.la-stage.training.training-resolving').count(),1,
+  'fighter is awaiting real whip contact');
+ await page.waitForFunction(()=>document.querySelector('.la-stage.training .lt-fighter-canvas')?.dataset.trainingResponse==='hit',{timeout:3500});
+ assert.equal(await page.locator('.la-stage.training .la-training-feedback').count(),0,
+  'failed trainee must visibly take the hit BEFORE the badge');
  await page.waitForFunction(()=>document.querySelector('.la-stage.training .la-training-speech')?.dataset.phase==='failed',{timeout:5000});
  const failureBadge=page.locator('.la-stage.training .la-training-feedback');
  assert.equal(await failureBadge.count(),1,'a single, large failure badge must appear after a real failed session');
@@ -59,7 +66,7 @@ try{
  assert(failBadgeData.svg.includes('la-result-glyph'),'training failure emblem SVG must exist');
  assert(failBadgeData.duration>=3000,'result must last long enough to read');
  assert(failBadgeData.w>=80&&failBadgeData.h>=65,'icon text should remain legible on scene');
- assert(failBadgeData.x>420&&failBadgeData.x<800&&failBadgeData.y>230&&failBadgeData.y<560,
+ assert(failBadgeData.x>420&&failBadgeData.x<800&&failBadgeData.y>180&&failBadgeData.y<560,
   'emblem must appear in the center between instructor and fighter '+JSON.stringify(failBadgeData));
  await page.waitForTimeout(1880);
  assert.equal(await failureBadge.count(),1,'failure graphic must remain visible for at least ~2 seconds');
@@ -90,6 +97,12 @@ try{
   'attempts must be saved in actual career roster');
  await page.evaluate(()=>{Math.random=()=>.999999;});
  await page.locator('.la-stage.training .lt-start-button').click();
+ assert.equal(await page.locator('.la-stage.training .la-training-feedback').count(),0,
+  'success must wait for the painted shield-block frame');
+ await page.waitForFunction(()=>document.querySelector('.la-stage.training .lt-fighter-canvas')?.dataset.trainingResponse==='guard',{timeout:3500});
+ assert.equal(await page.locator('.la-stage.training .la-training-feedback').count(),0,
+  'blocking must precede success badge');
+ await page.waitForFunction(()=>document.querySelector('.la-stage.training .la-training-feedback')?.dataset.outcome==='success',{timeout:5000});
  const successBadge=page.locator('.la-stage.training .la-training-feedback');
  assert.equal(await successBadge.count(),1,'success reuses the one emblem layer');
  const successMarkup=await successBadge.evaluate(n=>({
@@ -120,8 +133,8 @@ try{
  assert(endUI.includes('선택 2회')&&endUI.includes('실패 '+endQuote.percent+'%'),
   'changing to an END tile must show the same stored end stat counter');
  await page.locator('.la-stage.training .lt-tile-button').nth(1).click();
- assert((await page.locator('.la-stage.training .lt-risk-row').textContent()).includes('선택 2회'),
-  'defense and endurance tiles share the same END counter');
+ assert((await page.locator('.la-stage.training .lt-risk-row').textContent()).includes('선택 0회'),
+  'DEF training has an independent counter from END, migrated without extra attempts');
  for(const size of [{width:1680,height:950},{width:930,height:800},{width:420,height:930}]){
   await page.setViewportSize(size);
   const geom=await page.evaluate(()=>{

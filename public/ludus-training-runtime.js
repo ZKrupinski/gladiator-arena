@@ -113,8 +113,12 @@ function animate(a,stage,selected){
  stop();
  const canvas=stage.querySelector('.lt-fighter-canvas');
  if(!canvas||selected==null)return;
+ // Preload both painted reaction animations before Doctore swings, so a
+ // champion's guard or stagger is not temporarily replaced by idle art.
+ a.trainingFrame?.(selected,'guard',0);
+ a.trainingFrame?.(selected,'hit',0);
  const zone=canvas.closest('.lt-fighter-zone');
- let profile=null,hitStart=-1,hitCount=0;
+ let profile=null,hitStart=-1,hitCount=0,responseKind='hit';
  const draw=()=>{
   if(!canvas.isConnected){stop();return;}
   // Calibrate all motion against the SAME idle pose; never rescale on impact.
@@ -124,7 +128,7 @@ function animate(a,stage,selected){
   const elapsed=hitStart<0?HIT_MS:performance.now()-hitStart;
   const takingHit=elapsed<HIT_MS;
   const motion=takingHit?
-   {action:'hit',progress:Math.max(0,Math.min(1,elapsed/HIT_MS)),frame:Math.min(7,Math.floor(elapsed/HIT_MS*8))}:actionAt(tick);
+   {action:responseKind,progress:Math.max(0,Math.min(1,elapsed/HIT_MS)),frame:Math.min(7,Math.floor(elapsed/HIT_MS*8))}:actionAt(tick);
   // Never substitute the growth atlas's dodge, defeat or death keyposes.
   const src=a.trainingFrame?.(selected,motion.action,motion.frame)||idle;
   paintTrainingFighter(canvas,src,motion.action,motion.progress,profile);
@@ -132,17 +136,20 @@ function animate(a,stage,selected){
   canvas.dataset.face='left';
   canvas.dataset.fixedScale=profile?String(profile.scale):'pending';
   canvas.dataset.hitCount=String(hitCount);
-  zone?.classList.toggle('whip-hit',takingHit);
+  canvas.dataset.trainingResponse=takingHit?responseKind:'';
+  zone?.classList.toggle('whip-hit',takingHit&&responseKind==='hit');
   const ribbon=stage.querySelector('.lt-motion-slash');
-  if(ribbon){ribbon.classList.toggle('active',!takingHit&&motion.action!=='idle');ribbon.dataset.action=motion.action;}
+  if(ribbon){
+   ribbon.classList.toggle('active',(takingHit&&responseKind==='guard')||(!takingHit&&motion.action!=='idle'));
+   ribbon.dataset.action=motion.action;
+  }
   if(!takingHit)tick++;
  };
  impactHandler=event=>{
   if(!canvas.isConnected||event.detail?.source!=='doctore')return;
+  responseKind=stage.dataset.trainingOutcome==='success'?'guard':'hit';
   hitStart=performance.now();hitCount++;tick=0;
-  // Same sampled bass-heavy hit used in the arena, on the exact whip contact.
-  // The Ludus audio entry point stays isolated from arena music/crowd buses.
-  window.ArenaAudio?.playTrainingImpact?.({gain:.98,pan:.08});
+  window.ArenaAudio?.playTrainingImpact?.({gain:responseKind==='guard'?.53:.98,pan:.08});
   draw(); // No 88ms timing lag: begin the stagger on the impact frame.
  };
  impactStage=stage;

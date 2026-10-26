@@ -47,10 +47,10 @@ jobs:
                  'ludus-training-clean.css','ludus-approved-scenes.js']
           expected={name:hashlib.sha256((pathlib.Path('public')/name).read_bytes()).hexdigest() for name in paths}
           markers=[
-            'ludus-training-risk.js?v=innate-repetition-v72',
-            'ludus-training-runtime.js?v=innate-repetition-v72',
-            'ludus-training-clean.css?v=training-result-emblem-v73',
-            'ludus-approved-scenes.js?v=training-result-emblem-v73'
+            'ludus-training-risk.js?v=def-end-separation-v88',
+            'ludus-training-runtime.js?v=whip-guard-suspense-v93',
+            'ludus-training-clean.css?v=whip-guard-suspense-v93',
+            'ludus-approved-scenes.js?v=whip-guard-suspense-v93'
           ]
           headers={'User-Agent':'GladiatorInnateTrainingQA','Cache-Control':'no-cache'}
           def download(resource):

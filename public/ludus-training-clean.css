@@ -418,3 +418,13 @@
  pointer-events:none;
 }
 /* Keep both the success and failure notices in the same vertical lane. */
+
+/* v93: block repeat tapping during the whip / guard / hit sequence.
+   Preserve the original illustrated button, floor and training text. */
+.la-stage.training.training-resolving .lt-start-button,
+.la-stage.training.training-resolving .lt-tile-button,
+.la-stage.training.training-resolving .lt-roster-items>button,
+.la-stage.training.training-resolving .lt-step>button,
+.la-stage.training.training-resolving .la-hit:not([data-hit="home"]){
+ pointer-events:none!important;
+}

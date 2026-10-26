@@ -21,6 +21,6 @@ assert.match(scenes,/statName:opt\.statLabel/,'result names actual grown stat');
 assert.match(scenes,/tiles\[selectedTraining\]\.statLabel/,'fallback view is also accurate');
 assert.match(css,/\.lt-tile-benefit/,'tile labels have dedicated CSS rather than covering art');
 for(const ref of ['ludus-training-runtime.js','ludus-approved-scenes.js','ludus-training-clean.css']){
- assert(html.includes(ref+'?v=def-end-separation-v88'),ref+' cache busted');
+ assert(html.includes(ref+'?v=whip-guard-suspense-v93'),ref+' cache busted');
 }
 console.log('PASS: five painted training options correctly identify five independently trained stats, DEF and END separated, selection, result and cache.');

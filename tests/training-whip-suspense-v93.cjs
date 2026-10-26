@@ -1,0 +1,22 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const file=p=>fs.readFileSync(path.join(__dirname,'../public',p),'utf8');
+const scene=file('ludus-approved-scenes.js'),actor=file('ludus-training-runtime.js');
+const fighter=file('murmillo-motion-v2.js'),html=file('index.html'),style=file('ludus-training-clean.css');
+assert(scene.includes('if(pendingTraining)return;'),'rapid taps never charge twice');
+assert(scene.includes('pose(3); // Seven genuine'),'whip launches when training is pressed');
+assert(scene.includes("stage.addEventListener('ludus:whip-impact',onTrainingWhipImpact)"),'listens to real contact');
+assert(scene.includes("const TRAINING_REACTION_MS=560"),'reaction completes before badges');
+assert(scene.includes("stage.dataset.trainingOutcome=failed?'fail':'success'"),'outcome held hidden until reaction');
+assert(scene.includes('revealTimer=setTimeout(()=>revealTrainingSequence(job.token),TRAINING_REACTION_MS)'),'badge deferred beyond impact');
+assert(scene.includes("clearTrainingSequence();\n speechPhase=job.failed"),'pending transaction cleared before reveal');
+assert(scene.includes('TRAINING_IMPACT_FALLBACK_MS=1400'),'reduced-motion fallback');
+assert(actor.includes("responseKind=stage.dataset.trainingOutcome==='success'?'guard':'hit'"),'success blocks, failure recoils');
+assert(actor.includes("takingHit&&responseKind==='hit'"),'only failures get hit FX');
+assert(fighter.includes('guard:[9,6,6,6,6,6,6,9]'),'murmillo genuine guard pose');
+assert(html.includes("kind==='guard'?5"),'legacy fighter guard pose');
+assert(html.includes("kind==='guard'?6"),'growth fighter guard pose');
+assert(style.includes('.training-resolving .lt-start-button'),'touch shield during suspense');
+for(const p of ['ludus-training-runtime.js','ludus-approved-scenes.js','ludus-training-clean.css','murmillo-motion-v2.js'])
+ assert(html.includes(p+'?v=whip-guard-suspense-v93'),p+' cache bust');
+console.log('PASS: one economy roll, real whip contact, distinct guard/hit motions, delayed result and fallbacks');
