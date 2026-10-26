@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const file=p=>fs.readFileSync(path.join(__dirname,'../public',p),'utf8');
 const scene=file('ludus-approved-scenes.js'),actor=file('ludus-training-runtime.js');
-const fighter=file('murmillo-motion-v2.js'),html=file('index.html'),style=file('ludus-training-clean.css');
+const fighter=file('murmillo-motion-v2.js'),html=file('index.html'),style=file('ludus-training-clean.css'),fighterCss=file('ludus-training-runtime.css');
 assert(scene.includes('if(pendingTraining)return;'),'rapid taps never charge twice');
 assert(scene.includes('pose(3); // Seven genuine'),'whip launches when training is pressed');
 assert(scene.includes("stage.addEventListener('ludus:whip-impact',onTrainingWhipImpact)"),'listens to real contact');
@@ -20,7 +20,7 @@ assert(actor.includes("kind==='guard'?19:39"),'block has smaller recoil than bod
 assert(actor.includes('Math.sin(Math.PI*t)'),'fighter bounces briefly and then returns to planted baseline');
 assert(actor.includes('drawTrainingContactFX(ctx,contact.kind,contact.elapsed/FX_MS,x,y)'),'matching real artwork effect is played at contact');
 assert(actor.includes('window.ArenaRasterFX?.draw?.(ctx,kind'),'uses authored RGBA guard/hit animations, not vector shapes');
-assert(style.includes('.lt-fighter-zone.whip-hit::after{content:none!important}'),'retire redundant synthetic radial flash');
+assert(fighterCss.includes('.lt-fighter-zone.whip-hit::after{content:none!important}'),'retire redundant synthetic radial flash');
 assert(html.includes('ludus-training-runtime.js?v=training-contact-recoil-v94'));
 assert(html.includes('ludus-training-runtime.css?v=training-contact-recoil-v94'));
 
