@@ -1878,14 +1878,14 @@ function clearCombatAfterimages(...actors){
 // Shared strong KO: preserve contact location, then show flight before retrieval.
 function beginStrongKO(winner,loser,cause){
  winner.parryKO=null;loser.parryKO=null;
- if(!['parry','special'].includes(cause)||loser.beastType)return false;
+ if(loser.beastType)return false; // A lethal strike in any duel gets the full connected flight.
  const recoil=loser.specialRecoil;
  const fromX=recoil&&recoil.elapsed===0?recoil.startX:loser.x;
  const dir=Math.sign(fromX-winner.x)||winner.face||1;
  const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
  loser.x=fromX;
- loser.parryKO={t:0,fromX,toX:clamp(fromX+dir*(reduced?85:370),-40,1320),
-  dir,height:reduced?14:110,y:0,landed:false,total:1.08};
+ loser.parryKO={t:0,fromX,toX:clamp(fromX+dir*(reduced?85:480),-120,1400),
+  dir,height:reduced?14:160,y:0,landed:false,total:1.20};
  loser.vx=0;loser.knockVX=0;loser.knockT=0;
  return true;
 }
@@ -1914,9 +1914,9 @@ function finishFight(winner,loser,cause=null){
   if(!linkedKO)return resolveLineupBout(!winner.enemy);
   loser.hp=0;loser.dead=true;loser.hitVisual=null;winner.hitVisual=null;
   clearCombatAfterimages(winner,loser);S.flash=0;S.keys.clear();
-  setAction(loser,'defeat',1.08);setAction(winner,'finisher',1.08);
+  setAction(loser,'defeat',1.20);setAction(winner,'finisher',1.20);
   S.phase='knockout';S.koBout={winner,loser};
-  say(cause==='parry'?'CONTRA!':'ICTUS FATALIS!',1.08);
+  say(cause==='parry'?'CONTRA!':'ICTUS FATALIS!',1.20);
   fxSound('finisher');return true;
  }
  loser.hp=0;loser.dead=true;winner.dead=false;
@@ -3009,6 +3009,13 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  // Retire all scene-coded per-pose X/Y and scale changes. The sprite uses
  // its world position, the camera projection and the studio's action edit.
  let drawX=f.x-width/2,drawY=feet-height+(f.dead?f.parryKO?.y||0:0);
+ // A living fighter also becomes airborne on a successful parry. His existing
+ // horizontal launcher continues uninterrupted; this only adds a clean arc.
+ const recoil=f.specialRecoil;
+ if(!f.dead&&recoil?.kind==='parry'&&!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches){
+  const air=clamp(recoil.elapsed/(recoil.total*.71),0,1);
+  drawY-=4*105*air*(1-air);
+ }
  const footOffset=duelFootOffset(f); // same published per-look boot pivot as practice and training
  if(S.phase==='fight'){
   const trail=f.dodgeEcho||f.specialLunge||f.attackLunge;
