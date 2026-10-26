@@ -48,4 +48,24 @@ assert.match(coop2,/bg\.src='assets\/new-era\/arena\.webp'/);
 assert.doesNotMatch(coop2,/CapuaVenue\?\.draw/);
 assert.match(html,/arena-coop\.js\?v=foot-perspective-v80/);
 console.log('COOP_PERSPECTIVE_PASS: continuous foot-anchored 0.76-1.22 depth scaling');
+
+// Regression: older ten-cell Retiarius graphics must not leave upright corpses in 5v5.
+const deathUnit={dead:true,deathAt:0,flight:{at:0,duration:1.16}};
+const corpseFall=sandbox.window.ArenaCoop.corpseFall;
+near(corpseFall({dead:false},10),0);
+near(corpseFall(deathUnit,0),0);
+near(corpseFall(deathUnit,1.16),1);
+near(corpseFall(deathUnit,10),1);
+near(corpseFall({dead:true,deathAt:0},1),1);
+for(let t=0;t<=1.16;t+=.02){
+ assert.ok(corpseFall(deathUnit,t)>=0&&corpseFall(deathUnit,t)<=1);
+}
+assert.match(coop2,/const pose=u\.dead\?'hit'/);
+assert.match(coop2,/const tick=u\.dead\?0/);
+assert.match(coop2,/ctx\.rotate\(-Math\.PI\*\.5\*corpseFall\(u,sim\.time\)\)/);
+assert.match(coop2,/const motion=u\.dead\?\{x:0,y:0\}/);
+assert.match(html,/arena-coop\.js\?v=corpse-prone-v81/);
+assert.match(html,/hero\.appearance==='legacy'[\s\S]{0,120}death:9/);
+console.log('COOP_CORPSE_PASS: legacy Retiarius and all 5v5 deaths fall sideways, freeze after landing');
+
 console.log('CAPUA_SECOND_SD_PASS: Capua remains in duels/squad; 5v5 Colosseum depth-lane background restored');
