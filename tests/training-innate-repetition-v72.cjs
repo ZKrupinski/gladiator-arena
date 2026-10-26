@@ -8,9 +8,9 @@ for(const stat of model.KEYS){
  assert.equal(model.quote(blank,stat).percent,0,'initial training must not fail');
  assert.equal(model.quote(blank,stat).totalAttempts,0);
 }
-const start={...blank,trainingAttempts:{str:4,agi:1,end:1,focus:0}};
+const start={...blank,trainingAttempts:{str:4,agi:1,def:0,end:1,focus:0}};
 assert.equal(model.quote(start,'str').chance,0,'first 7 sessions are safe; total 6');
-const ready={...blank,trainingAttempts:{str:5,agi:1,end:1,focus:0}};
+const ready={...blank,trainingAttempts:{str:5,agi:1,def:0,end:1,focus:0}};
 assert(model.quote(ready,'str').chance>0,'eighth session has genuine chance');
 assert(model.quote(ready,'str').chance<.20);
 const weak={...blank,trainingAttempts:{str:10,agi:8,end:8,focus:8}};
@@ -34,7 +34,7 @@ assert.equal(model.attempt({trainingAttempts:{}},'str',()=>0).failed,false,'new 
 assert.equal(model.quote({trainingAttempts:{str:100,agi:100,end:100,focus:100}},'str').chance,.72);
 const index=read('public/index.html'),scenes=read('public/ludus-approved-scenes.js'),
  runtime=read('public/ludus-training-runtime.js'),css=read('public/ludus-training-clean.css');
-assert(index.includes('ludus-training-risk.js?v=innate-repetition-v72'),'game loads risk engine');
+assert(index.includes('ludus-training-risk.js?v=def-end-separation-v88'),'game loads risk engine');
 assert(index.includes('window.LudusTrainingRisk.attempt(h,stat)'),'normal training uses risk roll');
 assert(index.includes('window.LudusTrainingRisk.attempt(CAREER.hero,stat)'),'timing minigame uses risk roll');
 assert(index.includes("if(result.failed)"),'failed normal training must skip stat and XP changes');
@@ -45,3 +45,10 @@ assert(runtime.includes('lt-risk-row'),'real training info displays risk counter
 assert(runtime.includes('totalAttempts'),'show lifetime per-fighter training count');
 assert(css.includes('.lt-risk-row.lt-risk-active'),'training danger highlight exists');
 console.log('TRAINING_INNATE_REPETITION_UNIT_PASS',JSON.stringify({weak:low.percent,strong:strong.percent,stage:before.totalAttempts}));
+
+const separate={birthStats:{str:4,agi:4,end:6,focus:4},trainingAttempts:{str:0,agi:0,def:7,end:2,focus:0}};
+assert.equal(model.quote(separate,'def').attempts,7);
+assert.equal(model.quote(separate,'end').attempts,2);
+model.attempt(separate,'def',()=>.99);
+assert.equal(separate.trainingAttempts.def,8);
+assert.equal(separate.trainingAttempts.end,2,'defense must not consume endurance attempts');

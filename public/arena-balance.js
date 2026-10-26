@@ -8,7 +8,8 @@
  const TRAINING_SOFTCAP=10;
  const LEVEL_CAP=50;
  const innate=(h,key)=>root.ArenaProgression?.growth?.(h,key)||0;
- const stat=(h,key)=>trainedStat(h?.stats?.[key])+innate(h,key);
+ // DEF training is separate from END; immutable END-born toughness persists.
+ const stat=(h,key)=>trainedStat(h?.stats?.[key])+innate(h,key==='def'?'end':key);
  function trainedStat(value){
   const n=Number(value);
   if(!Number.isFinite(n)||n<=0)return 0;
@@ -28,7 +29,7 @@
   '3v3':{allies:3,enemies:3,label:'군단전',reward:1.75}
  };
  function trainingAptitude(h,stat){
-  const n=Number(h?.aptitudes?.[stat]);
+  const n=Number(h?.aptitudes?.[stat]??(stat==='def'?h?.aptitudes?.end:undefined));
   return Number.isFinite(n)?clamp(n,.60,1.60):1;
  }
  function trainingCost(h,stat){
@@ -38,7 +39,7 @@
  function trainingGain(h,stat,base){
   const n=Math.max(0,Math.floor(Number(base)||0));
   if(!n)return 0;
-  if(!h?.aptitudes||!Object.prototype.hasOwnProperty.call(h.aptitudes,stat))return n;
+  if(!h?.aptitudes||!(Object.prototype.hasOwnProperty.call(h.aptitudes,stat)||(stat==='def'&&Object.prototype.hasOwnProperty.call(h.aptitudes,'end'))))return n;
   h.growthRemainder=h.growthRemainder||{};
   const earned=n*trainingAptitude(h,stat)+(Number(h.growthRemainder[stat])||0);
   const gain=Math.max(1,Math.floor(earned+1e-8));
@@ -52,7 +53,7 @@
   return Math.round(level*2.8+
     stat(h,'str')*6.5+
     stat(h,'agi')*5.2+
-    stat(h,'end')*6.2+
+    stat(h,'end')*3.7+stat(h,'def')*2.5+
     stat(h,'focus')*6.1+
     (equip.weapon&&equip.weapon!=='wood'?13:0)+
     (equip.shield?9:0)+(equip.armor?15:0));
@@ -65,7 +66,7 @@
  function matchStrength(h){
   const s=h?.stats||{},equip=h?.equipment||{},base=BASE[h?.cls]||BASE.murmillo;
   const level=clamp(h?.level||1,1,LEVEL_CAP);
-  const training=['str','agi','end','focus'].reduce((n,k)=>n+stat(h,k),0);
+  const training=stat(h,'str')+stat(h,'agi')+stat(h,'focus')+stat(h,'end')*.55+stat(h,'def')*.45;
   const worn=['weapon','shield','armor'].map(k=>EQUIP[equip[k]]||null).filter(Boolean);
   const equipment=worn.filter(g=>g.atk||g.hp).length;
   const gear=worn.reduce((sum,g)=>({atk:sum.atk+g.atk,hp:sum.hp+g.hp}),{atk:0,hp:0});
@@ -143,7 +144,7 @@
    sp:Math.round(base.sp+stat(h,'focus')*4.9+stat(h,'str')*.65+(gear.sp||0)),
    staminaRegen:1+stat(h,'agi')*.048+(gear.stamina||0),
    specialCooldown:clamp(7-stat(h,'focus')*.33-(gear.cooldown||0),3.1,7),
-   armor:clamp(trait.armor+stat(h,'end')*.007+(gear.armor||0),0,.48),
+   armor:clamp(trait.armor+stat(h,'def')*.007+(gear.armor||0),0,.48),
    focus:stat(h,'focus'),
    parry:clamp(trait.parry+stat(h,'focus')*.016,0,.48)
   };
@@ -186,7 +187,7 @@
  function combatDamage(value,kind='normal'){
   return Math.max(1,Math.round(Math.max(0,Number(value)||0)*(DAMAGE_RATES[kind]??DAMAGE_RATES.normal)));
  }
- root.ArenaBalance={version:'1.4.0',TRAINING_SOFTCAP,LEVEL_CAP,trainedStat,stat,trainingAptitude,trainingGain,combatDamage,DAMAGE_RATES,TRAITS,MODES,trainingCost,heroPower,
+ root.ArenaBalance={version:'1.5.0',TRAINING_SOFTCAP,LEVEL_CAP,trainedStat,stat,trainingAptitude,trainingGain,combatDamage,DAMAGE_RATES,TRAITS,MODES,trainingCost,heroPower,
   matchStrength,makeMatch,comebackParry,
   encounterLevel,duelEnemy,heroStats,enemyAi,damageReduction,
   playerParryDamage,rewards};

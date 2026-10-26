@@ -153,7 +153,7 @@ function animate(a,stage,selected){
 function mount(stage,a,s,cbs){
  stop();
  const h=s.roster[s.active],stats=h?.stats||{};
- const statsList=[['str','STR','근력',stats.str||0],['agi','AGI','민첩',stats.agi||0],['end','END','지구력',stats.end||0],['focus','FOCUS','집중',stats.focus||0]];
+ const statsList=[['str','STR','근력',stats.str||0],['agi','AGI','민첩',stats.agi||0],['def','DEF','방어',stats.def||0],['end','END','체력',stats.end||0],['focus','FOCUS','집중',stats.focus||0]];
  const selected=cbs.selectedTraining||0,chosen=cbs.tiles[selected];
  const risk=h?window.LudusTrainingRisk?.quote(h,chosen.stat):null;
  const details=h?'<div class="lt-selected-unit"><canvas width="84" height="91" id="ltInfoPortrait"></canvas>'+
@@ -163,7 +163,7 @@ function mount(stage,a,s,cbs){
  const panel=document.createElement('section');panel.className='lt-info';
  panel.setAttribute('aria-label','선택 검투사의 실제 훈련 정보');
  panel.innerHTML='<h2>선택된 검투사</h2>'+details+
- '<div class="lt-info-head">현재 능력치 · 4종</div><div class="lt-stat-list">'+statsList.map(([key,id,n,v])=>
+ '<div class="lt-info-head">현재 능력치 · 5종</div><div class="lt-stat-list">'+statsList.map(([key,id,n,v])=>
  '<div class="'+(chosen.stat===key?'lt-stat-active':'')+'" data-stat="'+key+'"><span>'+id+' <small>'+n+'</small></span><strong>'+v+'</strong></div>').join('')+'</div>'+
  '<div class="lt-info-head">훈련 효과</div><div class="lt-effect">'+
  '<strong>'+E(chosen.name)+'</strong>'+
@@ -222,5 +222,5 @@ function mount(stage,a,s,cbs){
  home.setAttribute('aria-label','메인 루두스 로비로 돌아가기');home.onclick=cbs.onHome;stage.appendChild(home);
  if(h)animate(a,stage,s.active);
 }
-window.LudusTrainingV2={version:'7.3.0',mount,stop,metrics:{scaleFactor:PRACTICE_SCALE,canvasFootY:PRACTICE_FOOT_Y}};
+window.LudusTrainingV2={version:'7.4.0',mount,stop,metrics:{scaleFactor:PRACTICE_SCALE,canvasFootY:PRACTICE_FOOT_Y}};
 })();

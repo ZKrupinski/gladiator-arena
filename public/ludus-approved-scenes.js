@@ -1,17 +1,17 @@
 /* Approved 1672×941 training/armory art. All interactive state lives in LudusBridge. */
 (function(){'use strict';
 const W=1672,H=941;
-// Five training categories operate on FOUR real stats; defense and stamina
-// both grow END (HP and armor), including a shared cost/failure counter.
+// Five training choices grow five separate stats with independent effort counts.
+// DEF raises armor; END raises maximum HP. Both retain birth END aptitude.
 const tiles=[
  {name:'공격 훈련',stat:'str',statLabel:'STR · 근력',help:'공격력 증가'},
- {name:'방어 훈련',stat:'end',statLabel:'END · 지구력',help:'방어력·최대 HP 동시 증가',shared:'체력 훈련과 동일한 END'},
- {name:'체력 훈련',stat:'end',statLabel:'END · 지구력',help:'최대 HP·방어력 동시 증가',shared:'방어 훈련과 동일한 END'},
+ {name:'방어 훈련',stat:'def',statLabel:'DEF · 방어',help:'피해 감소율·방어력 증가'},
+ {name:'체력 훈련',stat:'end',statLabel:'END · 체력',help:'최대 HP 증가'},
  {name:'민첩 훈련',stat:'agi',statLabel:'AGI · 민첩',help:'이동 속도·기력 회복 증가'},
  {name:'기술 훈련',stat:'focus',statLabel:'FOCUS · 집중',help:'패링·필살기 능력 증가'}
 ];
 // All dialogue is text, not painted into any image. One script per training
-// tile (including separate scripts for END defense and endurance training).
+// tile (distinct DEF shieldwork versus END endurance conditioning).
 const DOCTORE_SCRIPT=[
  {title:'ARS GLADII · 공격 훈련',
   lines:'발을 딛고 허리를 비틀어라! 온몸으로 칼을 휘둘러 방패 뒤의 적까지 흔들어라.',
@@ -203,7 +203,7 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
   const instructor=document.createElement('div');instructor.className='la-doctore-live';
   instructor.dataset.pose='0';instructor.setAttribute('aria-hidden','true');
   stage.appendChild(instructor);window.LudusDoctoreAnim?.mount?.(instructor);
-  const st=block('la-training-stats',1471,241);st.innerHTML=h?['str','agi','end','focus'].map(k=>'<div>'+Number(h.stats?.[k]||0)+'</div>').join(''):'—';
+  const st=block('la-training-stats',1471,241);st.innerHTML=h?['str','agi','def','end','focus'].map(k=>'<div>'+k.toUpperCase()+' '+Number(h.stats?.[k]||0)+'</div>').join(''):'—';
   let nm=block('la-training-name',1413,151);nm.innerHTML=h?'<strong>'+escapeHtml(h.name)+'</strong><small>'+escapeHtml(h.cls)+' · Lv.'+Number(h.level||1)+'</small>':'검투사 없음';
   const eff=block('la-training-effect',1309,455);eff.textContent=tiles[selectedTraining].name+' → '+tiles[selectedTraining].statLabel+' ↑\n'+tiles[selectedTraining].help+'\n훈련 비용 '+(h?a.trainingCost(s.active,tiles[selectedTraining].stat):'—')+' D';
   block('la-training-selected',149+selectedTraining*211,608);

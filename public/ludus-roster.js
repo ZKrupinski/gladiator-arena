@@ -40,7 +40,7 @@
  }
  function create(cls,number,extra={}){
   const h={cls,name:romanName({cls,appearance:extra.appearance},number),
-   stats:{str:0,agi:0,end:0,focus:0},injury:0,
+   stats:{str:0,agi:0,def:0,end:0,focus:0},injury:0,
    equipment:{weapon:'wood',shield:null,armor:null},inventory:['wood'],
    fights:0,wins:0,level:1,xp:0,growthType:cls+'_a',...extra};
   if(isPlaceholderName(h.name))h.name=romanName(h,number);

@@ -1,8 +1,8 @@
 /* Spartacus Training Aptitude v72. A failed training consumes the quoted
  * denarii but awards no stat/XP. Risk uses both lifetime total bouts
  * of training and repeated concentration in the selected ability. Uses immutable Lv.0 identity, NEVER mutable
- * current stats. Per-stat attempts share existing trainingAttempts saved on
- * the gladiator. Both defense and endurance train END and share its count.
+ * current stats. DEF and END have independent training attempts/cost/gains.
+ * DEF's inherited training aptitude comes from immutable birth END potential.
  */
 (function(root,factory){
  'use strict';
@@ -11,14 +11,16 @@
  if(typeof module==='object'&&module.exports)module.exports=api;
 })(typeof window==='object'?window:globalThis,function(){
  'use strict';
- const KEYS=['str','agi','end','focus'];
+ const KEYS=['str','agi','def','end','focus'];
  const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,Number.isFinite(+v)?+v:lo));
  const attempts=(h,key)=>Math.max(0,Math.floor(Number(h?.trainingAttempts?.[key])||0));
  function potential(h,key){
   const identity=h?.birthStats||h?.innateStats;
+  // DEF owns its trained point pool, but inherits END-born aptitude.
+  const origin=key==='def'?'end':key;
   // Legacy units do not have a trustworthy pre-training baseline.
-  const birth=identity&&Number.isFinite(+identity[key])?clamp(identity[key],1,9):4;
-  const aptitude=clamp(h?.aptitudes?.[key]??1,.6,1.6);
+  const birth=identity&&Number.isFinite(+identity[origin])?clamp(identity[origin],1,9):4;
+  const aptitude=clamp(h?.aptitudes?.[key]??h?.aptitudes?.[origin]??1,.6,1.6);
   return clamp(.65+(aptitude-1)*1.05+(birth-4)*.088,.28,1.72);
  }
  function quote(h,key){
