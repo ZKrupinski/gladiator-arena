@@ -1,0 +1,45 @@
+{
+  "version": "capua-stand-preview-v1-20261026",
+  "stage": "capua",
+  "mode": "rough comparison",
+  "preserves": "assets/new-era/arena.webp",
+  "defaultMode": "capua",
+  "options": [
+    "capua",
+    "colosseum"
+  ],
+  "frameCount": 4,
+  "frameSize": [
+    543,
+    270
+  ],
+  "loopOrder": [
+    0,
+    1,
+    2,
+    3,
+    2,
+    1
+  ],
+  "crowdSegments": [
+    -10,
+    552,
+    1114
+  ],
+  "crowdOffsetY": 83,
+  "backgroundSize": [
+    1672,
+    941
+  ],
+  "notes": "Initial test composite of supplied Capua empty stands plus first-scale audience reference, repeated to cover three sections. Not final crowd alignment; user requested see actual battle placement first.",
+  "assets": {
+    "capua-yard.webp": {
+      "size": 356196,
+      "sha256": "a13e847ee632a92a358f13734e3f99dd55a94919f26d8c68dbc96ffbfa9d5db9"
+    },
+    "capua-crowd-4f.webp": {
+      "size": 258930,
+      "sha256": "ffeacb59d6581deb7cb5d87da5dfb027169ae24b57502fb5d7acd20495256b67"
+    }
+  }
+}

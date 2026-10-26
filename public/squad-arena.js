@@ -308,7 +308,10 @@ function drawUnit(ctx,u,bridge,battle){
 }
 function canvasRender(battle,ctx,background,bridge){
  const w=1280,h=720;ctx.clearRect(0,0,w,h);
- if(background.complete&&background.naturalWidth){
+ if(root.CapuaVenue?.draw(ctx,{width:w,height:h,time:battle.t})){
+  // Match current venue selection; original Colosseum branch follows untouched.
+ }
+ else if(background.complete&&background.naturalWidth){
   // Fill 16:9 without stretching the panoramic Colosseum artwork.
   const rw=background.naturalWidth,rh=background.naturalHeight;
   const cropW=Math.min(rw,rh*w/h),cropH=Math.min(rh,rw*h/w);

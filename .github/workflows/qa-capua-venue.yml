@@ -1,0 +1,47 @@
+name: QA Capua arena preview and Cloudflare
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/capua-venue.js
+      - public/index.html
+      - public/squad-arena.js
+      - public/arena-coop.js
+      - public/assets/capua/**
+      - tests/capua-venue.cjs
+      - .github/workflows/qa-capua-venue.yml
+  workflow_dispatch:
+jobs:
+  capua:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate Capua still, crowd atlas, scripts, and Colosseum preservation
+        run: node tests/capua-venue.cjs
+      - name: Verify deployed Capua runtime and all assets
+        run: |
+          python - <<'PY'
+          import hashlib,pathlib,time,urllib.request
+          base='https://gladiator-arena-git.pages.dev/'
+          root=pathlib.Path('public')
+          files=['index.html','capua-venue.js','squad-arena.js','arena-coop.js','assets/capua/manifest.json','assets/capua/capua-yard.webp','assets/capua/capua-crowd-4f.webp']
+          hashes={p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in files}
+          for attempt in range(24):
+              failures=[]
+              for p in files:
+                  try:
+                      uri=base+('' if p=='index.html' else p)+'?capua-preview=20261026&try='+str(attempt)
+                      req=urllib.request.Request(uri,headers={'Cache-Control':'no-cache','User-Agent':'Spartacus-Capua-QA'})
+                      with urllib.request.urlopen(req,timeout=15) as res: actual=res.read()
+                      if hashlib.sha256(actual).hexdigest()!=hashes[p]: failures.append(p+' hash mismatch')
+                  except Exception as e:failures.append(p+' '+str(e)[:80])
+              if not failures:
+                  print('CAPUA_LIVE_DEPLOY_PASS: game JS + original-combat integrations + both WebP match Cloudflare byte-for-byte')
+                  break
+              print('Still deploying',attempt,','.join(failures),flush=True);time.sleep(10)
+          else:raise SystemExit('CAPUA_LIVE_DEPLOY_NOT_VERIFIED')
+          PY

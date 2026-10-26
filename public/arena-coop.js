@@ -207,7 +207,9 @@
    // Keep a readable horizon: a very small nudge only during push-in shots.
    const vibration=Math.min(.46,Math.max(0,(lens.zoom-1)/.04));
    ctx.translate((shot.x||0)*vibration,(shot.y||0)*vibration);
-   if(bg.complete&&bg.naturalWidth){const horizon=bg.naturalHeight*.76;ctx.drawImage(bg,0,0,bg.naturalWidth,horizon,0,0,1280,350);ctx.drawImage(bg,0,horizon,bg.naturalWidth,bg.naturalHeight-horizon,0,350,1280,370);}else{ctx.fillStyle='#69503b';ctx.fillRect(0,0,1280,720);}
+   if(root.CapuaVenue?.draw(ctx,{width:1280,height:720,time:sim.time})){
+    // Shared camera and depth ordering are preserved.
+   }else if(bg.complete&&bg.naturalWidth){const horizon=bg.naturalHeight*.76;ctx.drawImage(bg,0,0,bg.naturalWidth,horizon,0,0,1280,350);ctx.drawImage(bg,0,horizon,bg.naturalWidth,bg.naturalHeight-horizon,0,350,1280,370);}else{ctx.fillStyle='#69503b';ctx.fillRect(0,0,1280,720);}
    // A wide camera keeps all ten fighters on the approved arena floor.
    ctx.fillStyle='#120b0744';ctx.fillRect(0,0,1280,720);
    // World Y is each fighter's foot/depth anchor: smaller Y first (farther back).
