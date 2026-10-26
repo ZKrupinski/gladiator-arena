@@ -24,5 +24,14 @@ assert.match(fs.readFileSync(path.join(root,'public/index.html'),'utf8'),/capua-
 const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');
 assert.match(html,/id="arenaVenueToggle"/);assert.match(html,/CapuaVenue\?\.draw/);
 assert.match(html,/assets\/new-era\/arena\.webp/);
-for(const name of ['arena-coop.js','squad-arena.js']){const s=fs.readFileSync(path.join(root,'public',name),'utf8');assert.match(s,/CapuaVenue\?\.draw/);new Function(s);}
-console.log('CAPUA_SECOND_SD_PASS: exact approved scene, 5 crowd zones, original Colosseum, 1v1/squad/coop');
+// Single duels and non-5v5 squad modes can still select the Capua venue.
+const squad=fs.readFileSync(path.join(root,'public','squad-arena.js'),'utf8');
+assert.match(squad,/CapuaVenue\?\.draw/);new Function(squad);
+// In 5v5 the two depth lanes require the original Colosseum floor geometry.
+const coop=fs.readFileSync(path.join(root,'public','arena-coop.js'),'utf8');
+assert.doesNotMatch(coop,/CapuaVenue\?\.draw/);
+assert.match(coop,/bg\.src='assets\/new-era\/arena\.webp'/);
+assert.match(coop,/bg\.naturalHeight\*\.76/);
+assert.match(html,/arena-coop\.js\?v=colosseum-only-5v5-v78/);
+new Function(coop);
+console.log('CAPUA_SECOND_SD_PASS: Capua remains in duels/squad; 5v5 Colosseum depth-lane background restored');
