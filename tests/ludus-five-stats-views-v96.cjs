@@ -9,7 +9,7 @@ const trained=arm.match(/\['(STR|AGI|DEF|END|FOCUS)','(str|agi|def|end|focus)'\]
 assert.equal(trained.length,5,'armory shows five independent trained values');
 assert.deepEqual(trained.map(s=>s.match(/'([A-Z]+)'/)[1]),keys);
 assert.match(arm,/hero\.stats\?\.\[key\]/,'render live hero stats instead of hardcoded values');
-assert.match(arm,/data-stat="'+key+'/,'each armory stat is individually labeled');
+assert.match(arm,/data-stat="'\+key\+'"/,'each armory stat is individually labeled');
 assert.match(card,/\['DEF','방어',h\.stats\?\.def\?\?h\.stats\?\.end\?\?0\]/,
  'roster displays new defense score with legacy fallback');
 const rosterStats=card.slice(card.indexOf('var stats=has?['),card.indexOf('var equip=has?',card.indexOf('var stats=has?[')));
