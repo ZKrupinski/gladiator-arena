@@ -3,10 +3,10 @@
  const C=root.ArenaCoopCore,escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let current=null;
  // Depth follows the exact planted FOOT y coordinate (far 395 / near 675).
- // Linear and clamped so crossing between rows changes smoothly.
+ // Linear and clamped: 0.76 at far feet, 1.22 at near feet (formerly 1.14).
  const perspectiveScale=y=>{
   const t=Math.max(0,Math.min(1,((Number(y)||395)-395)/280));
-  return .76+t*.38;
+  return .76+t*.46;
  };
  function open(allies,enemies,{onFinish,onClose,seed}={}){
   if(current)return false;
