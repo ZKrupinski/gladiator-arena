@@ -10,6 +10,7 @@ const ACTIONS=Object.freeze(['idle','walk','attack','slash','sweep','thrust','he
 // The runtime and studio use this same mapping, with no scene-owned pose tweaks.
 const ACTION_FALLBACK=Object.freeze({slash:'attack',sweep:'attack',thrust:'attack',heavy:'special'});
 const fallbackAction=action=>ACTION_FALLBACK[action]||null;
+const DIRECTIONS=Object.freeze(['follow','reverse','right','left']);
 const EFFECTS=Object.freeze(['auto','none','slash','sweep','thrust','hit','guard','parry','finisher','special','dash','victory']);
 const FX_SIZES=Object.freeze({slash:[600,570],sweep:[655,605],thrust:[710,570],hit:[480,450],
  guard:[440,430],parry:[510,495],finisher:[690,650],special:[660,620],dash:[790,510],victory:[660,600]});
@@ -71,12 +72,13 @@ function clean(value){
   scale:round(between(v.scale,.45,1.8,1)),
   effect:{kind:EFFECTS.includes(e.kind)?e.kind:'auto',
    x:Math.round(between(e.x,-300,300)),y:Math.round(between(e.y,-300,300)),
-   scale:round(between(e.scale,.2,2.5,1))},
+   scale:round(between(e.scale,.2,2.5,1)),
+    direction:DIRECTIONS.includes(e.direction)?e.direction:'follow'},
   motion:cleanMotion(v.motion)
  };
 }
 const isDefault=v=>v.x===0&&v.y===0&&v.scale===1&&v.effect.kind==='auto'&&
- v.effect.x===0&&v.effect.y===0&&v.effect.scale===1&&
+ v.effect.x===0&&v.effect.y===0&&v.effect.scale===1&&v.effect.direction==='follow'&&
  Object.values(v.motion).every(key=>key.x===0&&key.y===0);
 function sanitize(data){
  const out={},allowed=Object.keys(scaleProfiles()?.DEFAULTS||{});
@@ -132,15 +134,16 @@ function effectGeometry({kind,baseX=0,baseY=0,face=1,zoom=1,pose=null,
  const p=clean(pose),e=effect?clean({effect}).effect:p.effect;
  const [width,height]=size(kind);
  const z=between(zoom,.01,10,1),direction=face<0?-1:1;
+ const facing=e.direction==='reverse'?-direction:e.direction==='right'?1:e.direction==='left'?-1:direction;
  const move=applyMotionOffset?sampleMotion(p,progress):neutralPoint();
  return Object.freeze({
   kind,x:baseX+direction*((applyPoseOffset?p.x:0)+e.x+move.x)*z,
   y:baseY+((applyPoseOffset?p.y:0)+e.y+move.y)*z,
   width:width*z*e.scale,height:height*z*e.scale,
-  zoom:z,scale:e.scale
+  zoom:z,scale:e.scale,face:facing
  });
 }
 root.PracticeVisualProfiles=Object.freeze({KEY,ACTIONS,ACTION_FALLBACK,fallbackAction,
- EFFECTS,FX_SIZES,clean,cleanMotion,motionKeys,sampleMotion,sanitize,read,all,resolve,write,reset,size,effectGeometry});
+ EFFECTS,DIRECTIONS,FX_SIZES,clean,cleanMotion,motionKeys,sampleMotion,sanitize,read,all,resolve,write,reset,size,effectGeometry});
 if(typeof module!=='undefined')module.exports=root.PracticeVisualProfiles;
 })(typeof window!=='undefined'?window:globalThis);
