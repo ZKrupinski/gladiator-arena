@@ -165,7 +165,7 @@ function mount(stage,a,s,cbs){
  panel.innerHTML='<h2>선택된 검투사</h2>'+details+
  '<div class="lt-stat-list" role="group" aria-label="현재 능력치 5종">'+statsList.map(([key,id,n,v])=>
  '<div class="'+(chosen.stat===key?'lt-stat-active':'')+'" data-stat="'+key+'"><span>'+id+' <small>'+n+'</small></span><strong>'+v+'</strong></div>').join('')+'</div>'+
- '<div class="lt-info-head">훈련 효과</div><div class="lt-effect">'+
+ '<div class="lt-effect">'+
  '<strong>'+E(chosen.name)+'</strong>'+
  '<div class="lt-effect-stat">성장 스탯 <b>'+E(chosen.statLabel)+' ↑</b></div>'+
  '<p>'+E(chosen.help)+(chosen.shared?' <span class="lt-shared-note">('+E(chosen.shared)+')</span>':'')+'</p>'+
@@ -196,11 +196,15 @@ function mount(stage,a,s,cbs){
  roster.querySelector('#ltNext').onclick=()=>cbs.move(1);
  // Original approved image contains 5 richly painted training tiles and a
  // large '훈련 시작' button. Give each artwork tile one real interactive hitbox.
- const cards=[[153,603,195],[365,603,188],[573,603,198],[784,603,192],[994,603,196]];
- cards.forEach(([x,y,w],i)=>{
+ // Native artwork has slightly asymmetric icons. Offset each label group
+ // to its painted icon, not the mathematical centre of the hitbox.
+ // Measured against the user-approved phone capture (native 1672x941 stage).
+ const cards=[[153,603,195,8],[365,603,188,8],[573,603,198,4],[784,603,192,10],[994,603,196,12]];
+ cards.forEach(([x,y,w,iconOffset],i)=>{
   const b=document.createElement('button');
   b.className='lt-tile-button';b.type='button';
   b.style.left=x+'px';b.style.top=y+'px';b.style.width=w+'px';
+  b.style.setProperty('--icon-text-offset',iconOffset+'px');
   const tileRisk=h?window.LudusTrainingRisk?.quote(h,cbs.tiles[i].stat):null;
    const tile=cbs.tiles[i];
    b.setAttribute('aria-label',tile.name+' · 상승 스탯 '+tile.statLabel+' · '+tile.help+' · 누적 '+Number(tileRisk?.attempts||0)+'회 · 실패 확률 '+Number(tileRisk?.percent||0)+'%');

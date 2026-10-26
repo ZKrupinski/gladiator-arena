@@ -377,3 +377,22 @@
  top:131px!important;height:16px!important;
  font:800 11px/16px 'Noto Sans KR',sans-serif!important;
 }
+
+
+/* v91: calibrated to the PAINTED sprite/icon centres, not the button centres.
+   The 5 approved illustrations are slightly asymmetrical. The live labels
+   all use the same per-card --icon-text-offset to form one visual column.
+   Hit targets, their size, and the painted background remain unchanged. */
+.la-stage.training .lt-tile-button strong,
+.la-stage.training .lt-tile-button .lt-tile-stat,
+.la-stage.training .lt-tile-button .lt-tile-benefit{
+ left:calc(50% + var(--icon-text-offset, 0px))!important;
+ width:calc(100% - 42px)!important;
+ max-width:calc(100% - 42px)!important;
+ right:auto!important;
+ transform:translateX(-50%)!important;
+ text-align:center!important;
+}
+/* Original illustrated banner already contains the title '훈련 효과'.
+   Do not create a second floating title that doubles over the artwork. */
+.la-stage.training .lt-stat-list + .lt-info-head{display:none!important}
