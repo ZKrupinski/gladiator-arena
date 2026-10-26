@@ -1,10 +1,11 @@
 {
   "assetSha256": {
-    "public/assets/capua/capua-night-original.jpg": "4afaf6f29d0322a19ed5db16877a6e96ca9875fbd4bda16bad04522b76c23d11"
+    "public/index.html": "02b2efd128be52390d969d7ac91c7f64d10110aac0189f4543397955866532fc",
+    "public/ludus-practice.js": "7aaad7d3577a878631b7e44678b72651d11c9c6a09e264280c990c7f3426c265"
   },
-  "baseCommit": "c4049fddbca5b36d5d7a52541e41dd860f121d8f",
+  "baseCommit": "4c1006e6866097096f54d1b59d8ebb64b7f810f3",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "capua-night-spectators-v4-jpeg-20261026",
+  "releaseId": "capua-practice-crowd-left16-v99b-20261026",
   "releaseProtocol": "spartacus-uploader-v1"
 }

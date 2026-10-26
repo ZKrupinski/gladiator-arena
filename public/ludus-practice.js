@@ -841,7 +841,7 @@ function paint(){
    if(crowdActors?.complete&&crowdActors.naturalWidth===1868&&crowdActors.naturalHeight===187&&back.naturalWidth===1280&&back.naturalHeight===720){
     const sourceWidth=467,sourceHeight=187;
     const fittedWidth=sourceWidth*.90;
-    const centeredX=760+(480-fittedWidth)/2;
+    const centeredX=760+(480-fittedWidth)/2-16;
     // Keep the people behind the unchanged stone railing: no distorted posts,
     // canopies or banners and no old double-rendered crowd underneath.
     ctx.save();
