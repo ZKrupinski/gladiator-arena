@@ -48,7 +48,8 @@ class Sprite {
 const root={};
 vm.runInNewContext(source,{globalThis:root,Image:Sprite});
 const C=root.ArenaCarnifex;
-assert.equal(C.version,'6.0.0');
+assert.equal(C.version,'6.1.0');
+assert.equal(C.DRAG_START,C.TIME.arrive+C.TIME.grip);
 assert.equal(C.sprite.baselineY,326);
 assert.equal(C.sprite.actions,2);
 assert.equal(C.sprite.frameWidth,270);
@@ -108,6 +109,46 @@ for(const [isEnemy,view] of [
   'extend the retreat until BOTH bodies clear a shifted camera viewport');
  assert.ok(C.positions(moving).executionerX>prior.executionerX);
 }
+// Playback regression: the corpse is stationary in ALL grab frames. The
+// executioner flips on the same world tick that the corpse starts to travel,
+// independent of which side lost or whether the animation is mirrored.
+for(const enemySide of [false,true]){
+ const fallen={enemy:enemySide,x:enemySide?940:335,cfg:{name:'fall test'}};
+ const retire=C.begin(fallen,!enemySide,{finished:false});
+ const onset=C.DRAG_START,epsilon=1/60;
+ const before=C.positions({...retire,t:onset-0.0001});
+ const instant=C.positions({...retire,t:onset});
+ const moving=C.positions({...retire,t:onset+epsilon});
+ assert.equal(before.phase,'grab');assert.equal(before.frame,3);
+ assert.equal(before.bodyX,fallen.x,'grab must never shift corpse');
+ assert.equal(instant.phase,'drag');assert.equal(instant.frame,4,
+   'first turning frame must be exactly the first drag frame');
+ assert.equal(instant.bodyX,fallen.x,'no corpse teleport at turn onset');
+ assert.ok((moving.bodyX-fallen.x)*(enemySide?1:-1)>0,
+   'body must move out during the first drag tick');
+ assert.equal(moving.executionerX-moving.bodyX,(enemySide?1:-1)*145,
+   'hand-to-corpse hold must remain unchanged');
+ function sample(t){
+  const scales=[],frames=[];
+  const c={save(){},restore(){},translate(){},rotate(){},
+   scale(x,y){scales.push([x,y]);},set filter(_){},
+   drawImage(...args){frames.push(args);}};
+  C.draw(c,{...retire,t},()=>{});
+  return {flip:Math.sign(scales[0][0]),sourceY:frames[0][2],frameX:frames[0][1]};
+ }
+ const a=sample(onset-0.0001),b=sample(onset);
+ const side=enemySide?1:-1;
+ assert.equal(a.flip,-side,'do not turn early during the gripping pose');
+ assert.equal(b.flip,side,'turn sprite when hauling starts');
+ assert.equal(a.sourceY,0,'last grab frame stays on first haul-sheet row');
+ assert.equal(b.sourceY,342,'first drag frame uses the approved second row');
+ const simulated=C.begin(fallen,!enemySide,{finished:false});
+ C.advance(simulated,onset-0.0001);
+ assert.equal(simulated.pickedUp,false);
+ C.advance(simulated,0.0001);
+ assert.equal(simulated.pickedUp,true,'simulation grab and first visual turn share DRAG_START');
+}
+
 const draws=[],verticalPlanes=[];
 const ctx={save(){},restore(){},translate(x,y){if(x===0&&y<0)verticalPlanes.push(y);},scale(){},rotate(){},
  set filter(x){},drawImage(...a){draws.push(a)}};

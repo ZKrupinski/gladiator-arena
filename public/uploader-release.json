@@ -1,11 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "02b2efd128be52390d969d7ac91c7f64d10110aac0189f4543397955866532fc",
-    "public/ludus-practice.js": "7aaad7d3577a878631b7e44678b72651d11c9c6a09e264280c990c7f3426c265"
+    "public/arena-carnifex.js": "c9dc449f34b953306e9ed52abb4055e63b218f94afd7b4e7014aa44eebe4932b",
+    "public/index.html": "bd39ac5f8182cd60b50648e07e2ad650ac8e7610cf69599b443ee9655ebd2e85",
+    "scripts/qa_carnifex_sd.mjs": "f83ab1033356a913280083889b84d297fc71eeb8545bba28b9d1d4e266d036a9"
   },
-  "baseCommit": "4c1006e6866097096f54d1b59d8ebb64b7f810f3",
+  "baseCommit": "fe48444d4d6efc516ea7cdeb13ab2e6206332bd1",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "capua-practice-crowd-left16-v99b-20261026",
+  "releaseId": "carnifex-turn-drag-sync-v100-20261026",
   "releaseProtocol": "spartacus-uploader-v1"
 }

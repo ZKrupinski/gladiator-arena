@@ -6,6 +6,8 @@
 'use strict';
 const TIME={arrive:.96,grip:.48,haul:2.48,exit:1.10}; // Keep both actors visible through exit
 TIME.total=TIME.arrive+TIME.grip+TIME.haul+TIME.exit;
+// A single world-time event drives the first turn frame AND the first corpse-drag step.
+const DRAG_START=TIME.arrive+TIME.grip;
 const W=1280,FLOOR=617,ATLAS_COLS=8,CELL_W=320,CELL_H=390;
 const BODY_HALF=174,EXEC_HALF=218,GRIP_OFFSET=145,EXIT_MARGIN=74;
 const EXIT_SPEED=235; // visible world pixels per second for delayed clearance
@@ -58,12 +60,12 @@ function positions(seq){
   return {executionerX:LERP(enter,near,k),bodyX:cx,
    rope:0,lift:0,exiting:false,bodyVisible:true,phase:'walk',frame:Math.min(7,Math.floor(t/TIME.arrive*8))};
  }
- if(t<TIME.arrive+TIME.grip){
+ if(t<DRAG_START){
   const grip=(t-TIME.arrive)/TIME.grip;
   return {executionerX:near,bodyX:cx,rope:EASE(grip),lift:0,
    exiting:false,bodyVisible:true,phase:'grab',frame:Math.min(3,Math.floor(grip*4))};
  }
- const elapsed=t-TIME.arrive-TIME.grip;
+ const elapsed=t-DRAG_START;
  const duration=TIME.haul+TIME.exit;
  const fraction=Math.min(1,elapsed/duration);
  // Continuous dragging through the former teleport/hide boundary.
@@ -87,7 +89,7 @@ function outsideViewport(seq,pose,view){
 function advance(seq,dt,viewport){
  if(!seq||seq.finished)return true;
  seq.t+=Math.max(0,Number(dt)||0);
- seq.pickedUp=seq.t>=TIME.arrive+TIME.grip;
+ seq.pickedUp=seq.t>=DRAG_START;
  const view=validView(viewport)?viewport:{left:seq.viewLeft??0,right:seq.viewRight??W};
  seq.finished=seq.t>=TIME.total-.000001&&outsideViewport(seq,positions(seq),view);
  return seq.finished;
@@ -100,9 +102,10 @@ function drawExecutioner(ctx,seq,pose,floorY,footOffsetFactor=1){
  const backup=fallback?.complete&&fallback.naturalWidth?fallback:null;
  if(!inkReady&&!art&&!backup)return;
  const side=seq.side;
- // Walk into the arena facing the fallen fighter. Turn during the grip,
- // then move out with the dragging hand behind the character, next to the corpse.
- const inward=pose.phase==='walk'||(pose.phase==='grab'&&pose.frame<=1);
+ // Stay facing the fallen gladiator through EVERY grab frame (0-3).
+ // Flip ONLY when the shared DRAG_START event advances to haul frame 4,
+ // the same exact time bodyX begins traveling with the dragging hand.
+ const inward=pose.phase==='walk'||pose.phase==='grab';
  const facing=inward?-side:side;
  const flip=facing<0;
  const gait=pose.phase==='walk'?Math.sin(seq.t*22)*3.1:
@@ -161,7 +164,7 @@ function draw(ctx,seq,drawBody,floorY=FLOOR,options={}){
  }
  ctx.restore();
 }
-root.ArenaCarnifex={version:'6.0.0',TIME,begin,advance,positions,draw,preload,
+root.ArenaCarnifex={version:'6.1.0',TIME,DRAG_START,begin,advance,positions,draw,preload,
  isReady:()=>!!(walkArt?.complete&&haulArt?.complete&&
   walkArt.naturalWidth===INK_COLS*INK_W&&haulArt.naturalWidth===INK_COLS*INK_W&&
   walkArt.naturalHeight===2*INK_H&&haulArt.naturalHeight===2*INK_H),
