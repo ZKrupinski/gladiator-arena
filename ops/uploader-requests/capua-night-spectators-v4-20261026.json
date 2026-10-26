@@ -1,0 +1,14 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "capua-night-spectators-v4-20261026",
+  "expectedMainSha": "41a11112a7d8109527aa1ae7e37c995ef4b8f239",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/assets/capua/capua-night-original.png",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3KlCHKRIJO34SPkOC5UMUPo7vEp/6321f4bc-ebe0-490b-888b-348589cc3f84.png",
+      "sha256": "4afaf6f29d0322a19ed5db16877a6e96ca9875fbd4bda16bad04522b76c23d11"
+    }
+  ]
+}
