@@ -80,7 +80,7 @@ function enemyFor(wave,index,rng=Math.random){
   windup:0,target:null,guard:0,parry:0,guardCD:0,dodge:0,stun:0,swings:0,special:false,waiting:false,
   entry:0,arrival:0};
 }
-let screen,canvas,ctx,back,crowdAtlas,chosen=[],battle=null,frameId=0,prev=0,drawTick=0;
+let screen,canvas,ctx,back,crowdAtlas,crowdActors,chosen=[],battle=null,frameId=0,prev=0,drawTick=0;
 let spectatorClock=0,yardAssetFailed=false;
 const $=selector=>screen?.querySelector(selector);
 const api=()=>root.LudusBridge;
@@ -124,6 +124,9 @@ function setup(){
   back.onerror=()=>{yardAssetFailed=true;back.onerror=null;back.src='assets/new-era/arena.webp';};
   back.src='assets/ludus-practice/ludus-practice-yard-empty-v4-game.webp?v=emptyyard-v4';
   crowdAtlas=new Image();crowdAtlas.src='assets/ludus-practice/capua-balcony-full-4f-lossless-v2.webp?v=entirestand-stable-v5';
+  // Separate approved alpha sprites let people keep natural proportions.
+  // Do not scale the architecture or the canvas to correct spectator heads.
+  crowdActors=new Image();crowdActors.src='assets/ludus-practice/ludus-balcony-actors-only-v4-4f.webp?v=balcony-portrait-fit-v98';
  screen.addEventListener('click',event=>{
   const btn=event.target.closest('button');if(!btn||!screen.contains(btn))return;
   const id=btn.dataset.do;
@@ -828,13 +831,30 @@ function paint(){
  if(!root.ArenaCombatFeel&&battle.shakes)ctx.translate((Math.random()-.5)*battle.shakes,(Math.random()-.5)*battle.shakes);
  if(back.complete&&back.naturalWidth)ctx.drawImage(back,0,0,W,H);
  else{const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#24120e');grad.addColorStop(1,'#754328');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);}
- // ONE full balcony rectangle per frame. The image contains identical fixed
- // railings, pillars, sky and awning in every frame, with Capua SD supporters
- // moving behind the rail. No independent per-character sprites at runtime.
-  if(!yardAssetFailed&&crowdAtlas?.complete&&crowdAtlas.naturalWidth===1920&&crowdAtlas.naturalHeight===225){
+ // Spectator portraits alone receive an aspect correction. The plaza, columns,
+ // awnings and balcony remain 1:1 with the 1280x720 approved background.
+ // The actor-only 4-frame atlas has 467x187 frames (1868x187 total).
+ // A gentle horizontal 10% reduction un-squashes the original chibi heads.
+  if(!yardAssetFailed){
    const order=[0,1,2,3,2,1],tick=Math.floor(spectatorClock/.33);
    const frame=reduced?0:order[tick%order.length];
-   ctx.drawImage(crowdAtlas,frame*480,0,480,225,760,0,480,225);
+   if(crowdActors?.complete&&crowdActors.naturalWidth===1868&&crowdActors.naturalHeight===187&&back.naturalWidth===1280&&back.naturalHeight===720){
+    const sourceWidth=467,sourceHeight=187;
+    const fittedWidth=sourceWidth*.90;
+    const centeredX=760+(480-fittedWidth)/2;
+    // Keep the people behind the unchanged stone railing: no distorted posts,
+    // canopies or banners and no old double-rendered crowd underneath.
+    ctx.save();
+    ctx.beginPath();ctx.rect(760,0,480,155);ctx.clip();
+    ctx.drawImage(crowdActors,frame*sourceWidth,0,sourceWidth,sourceHeight,
+     centeredX,0,fittedWidth,sourceHeight);
+    ctx.restore();
+    // Re-occlude foreground balcony rail and bunting from the approved still.
+    ctx.drawImage(back,760,151,480,74,760,151,480,74);
+   }else if(crowdAtlas?.complete&&crowdAtlas.naturalWidth===1920&&crowdAtlas.naturalHeight===225){
+    // Asset download fallback: preserve the previous approved full-station animation.
+    ctx.drawImage(crowdAtlas,frame*480,0,480,225,760,0,480,225);
+   }
   }
   ctx.fillStyle='#160a0910';ctx.fillRect(0,0,W,H);
  // All court floor overlays removed: gladiators stand on the original sand.
