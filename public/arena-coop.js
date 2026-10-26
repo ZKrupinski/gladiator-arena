@@ -2,6 +2,12 @@
  'use strict';
  const C=root.ArenaCoopCore,escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let current=null;
+ // Depth follows the exact planted FOOT y coordinate (far 395 / near 675).
+ // Linear and clamped so crossing between rows changes smoothly.
+ const perspectiveScale=y=>{
+  const t=Math.max(0,Math.min(1,((Number(y)||395)-395)/280));
+  return .76+t*.38;
+ };
  function open(allies,enemies,{onFinish,onClose,seed}={}){
   if(current)return false;
   const sim=C.create(allies,enemies,{seed}),host=document.createElement('section');
@@ -115,7 +121,7 @@
    const basis=root.LudusBridge?.practiceNominal?.(u);
    const sourceScale=basis?.width>0&&basis?.height>0?
     root.PracticeScaleProfiles?.cellPixels?.(look,basis.width,basis.height,202):0;
-   const z=.60,k=(sourceScale||
+   const z=.60,depth=perspectiveScale(u.y),k=(sourceScale||
     root.PracticeScaleProfiles?.framePixels?.(look,idle.height,202)||
     202/idle.height*(root.PracticeScaleProfiles?.scale?.(look)||1))*z*profile.scale;
    const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
@@ -124,7 +130,12 @@
    const frame=root.LudusBridge.practiceFrame(u,pose),px=frame?.canvas===image&&Number.isFinite(frame.pivotX)?frame.pivotX:image.width/2,py=frame?.canvas===image&&Number.isFinite(frame.footY)?frame.footY:image.height;
    const flightX=airborne?(flight.fromX-u.x)*Math.pow(1-flightT,1.6):0;
    const flightY=airborne&&!flight.reduced?-4*flight.height*flightT*(1-flightT):0;
-   ctx.save();ctx.translate(u.x+flightX+(profile.x+motion.x)*z*u.face,u.y+flightY+((root.PracticeScaleProfiles?.foot(look)||0)+profile.y+motion.y)*z);
+   // First translate to the fixed world foot, then scale only this fighter.
+   // Keeps parry flight, pose frames and trails on the same perspective plane.
+   ctx.save();
+   ctx.translate(u.x+flightX,u.y+flightY*depth);
+   ctx.scale(depth,depth);
+   ctx.translate((profile.x+motion.x)*z*u.face,((root.PracticeScaleProfiles?.foot(look)||0)+profile.y+motion.y)*z);
    if(airborne&&!flight.reduced)ctx.rotate(u.face*(u.dead?.16:.11)*Math.sin(Math.PI*flightT));
    if(!u.dead){if(!airborne)ctx.translate(body.x,body.y);ctx.rotate(airborne?0:body.tilt||0);ctx.scale(impact.scale||1,impact.scale||1);}
    ctx.scale(u.face,1);
@@ -152,6 +163,10 @@
    }
    ctx.globalAlpha=1;ctx.drawImage(image,-px*k,-py*k,image.width*k,image.height*k);ctx.restore();
    if(u.dead)return;
+   ctx.save();
+   ctx.translate(u.x,u.y);
+   ctx.scale(depth,depth);
+   ctx.translate(-u.x,-u.y);
    const ally=u.side==='ally';
    const active=(ally&&sim.cover?.id===u.id&&sim.cover.until>sim.time)||
     (!ally&&sim.focus?.id===u.id&&sim.focus.until>sim.time);
@@ -182,6 +197,7 @@
    if(u.attack){ctx.fillStyle='#f2b95d';ctx.fillRect(u.x-24,u.y+18,48*(1-u.attack.remaining/u.attack.total),3);}
    if(u.rooted>0){ctx.strokeStyle='#eac78b';ctx.lineWidth=2;ctx.strokeRect(u.x-30,u.y-55,60,50);ctx.fillStyle='#fff2ca';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.fillText('포획',u.x,u.y-65);}
    if(sim.focus?.id===u.id&&sim.focus.until>sim.time||state.selected===u.id){ctx.strokeStyle=u.side==='ally'?'#d9f0c7':'#ffcd77';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(u.x,u.y+10,40,12,0,0,Math.PI*2);ctx.stroke();}
+   ctx.restore();
   }
   function draw(){
    const mobile=host.clientWidth<=700,field=$('.coop-field');
@@ -313,5 +329,5 @@
   root.ArenaAudio?.unlock?.();root.ArenaAudio?.enterArena?.();tell('전투 개시 · 적을 지정하고 동료에게 기회를 만드세요');
   $('[data-pause]').focus();state.frame=requestAnimationFrame(loop);return true;
  }
- root.ArenaCoop={open,isOpen:()=>!!current};
+ root.ArenaCoop={open,isOpen:()=>!!current,perspectiveScale};
 })(window);
