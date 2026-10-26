@@ -5,7 +5,7 @@ const source='assets/capua/';
 const yard=new Image(),audience=new Image(),night=new Image();
 yard.src=source+'capua-sd-arena-selected.webp?v='+VERSION;
 audience.src=source+'capua-sd-crowd-4f-selected.webp?v='+VERSION;
-night.src=source+'capua-night-original.png?v='+VERSION;
+night.src=source+'capua-night-original.jpg?v='+VERSION;
 const choices=['capua','capua-night','colosseum'];
 const modes=['random',...choices];
 const storageKey='spartacus-arena-venue-v4';
