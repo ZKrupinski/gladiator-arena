@@ -102,7 +102,9 @@
   document.addEventListener('visibilitychange',visibility);document.addEventListener('keydown',keys);root.addEventListener('beforeunload',unload);
   function art(u,pose,tick){return u.side==='ally'?root.LudusBridge.squadSprite(u,pose,tick):root.LudusBridge.practiceEnemySprite(u.look,pose);}
   function drawUnit(u){
-   const pose=u.dead?'death':u.hit>0?'hit':u.guard>0?'guard':u.attack||u.swing>0?'attack':u.moving?'walk':'idle';
+   const flight=u.flight,flightT=flight?Math.max(0,Math.min(1,(sim.time-flight.at)/flight.duration)):1;
+    const airborne=flight&&flightT<1;
+    const pose=u.dead?(airborne&&flightT<.76?'hit':'death'):airborne?'hit':u.hit>0?'hit':u.guard>0?'guard':u.attack||u.swing>0?'attack':u.moving?'walk':'idle';
    const progress=u.dead?Math.min(1,(sim.time-u.deathAt)/.8):u.attack? .4*(1-u.attack.remaining/u.attack.total):u.swing>0?.4+.6*(1-u.swing/.4):pose==='hit'?1-u.hit/.24:(sim.time*.8)%1;
    const action=pose==='attack'?(u.cls==='retiarius'?'thrust':'slash'):pose;
    const look=root.PracticeScaleProfiles?.look?.(u,root.LudusBridge?.state?.()?.roster)||u.look,
@@ -120,18 +122,29 @@
    const body=root.ArenaMotion?.pose?.(u,sim.time,reduced)||{x:0,y:0,tilt:0};
    const impact=root.ArenaMotion?.visual?.(u,reduced,true)||{scale:1,flash:0};
    const frame=root.LudusBridge.practiceFrame(u,pose),px=frame?.canvas===image&&Number.isFinite(frame.pivotX)?frame.pivotX:image.width/2,py=frame?.canvas===image&&Number.isFinite(frame.footY)?frame.footY:image.height;
-   ctx.save();ctx.translate(u.x+(profile.x+motion.x)*z*u.face,u.y+((root.PracticeScaleProfiles?.foot(look)||0)+profile.y+motion.y)*z);
-   if(!u.dead){ctx.translate(body.x,body.y);ctx.rotate(body.tilt||0);ctx.scale(impact.scale||1,impact.scale||1);}
+   const flightX=airborne?(flight.fromX-u.x)*Math.pow(1-flightT,1.6):0;
+   const flightY=airborne&&!flight.reduced?-4*flight.height*flightT*(1-flightT):0;
+   ctx.save();ctx.translate(u.x+flightX+(profile.x+motion.x)*z*u.face,u.y+flightY+((root.PracticeScaleProfiles?.foot(look)||0)+profile.y+motion.y)*z);
+   if(airborne&&!flight.reduced)ctx.rotate(u.face*(u.dead?.16:.11)*Math.sin(Math.PI*flightT));
+   if(!u.dead){if(!airborne)ctx.translate(body.x,body.y);ctx.rotate(airborne?0:body.tilt||0);ctx.scale(impact.scale||1,impact.scale||1);}
    ctx.scale(u.face,1);
    if(impact.flash>0)ctx.filter='brightness('+(1+impact.flash*2.5).toFixed(2)+')';
-   if(!u.dead&&u.recoilAt!==undefined&&sim.time-u.recoilAt<.58){
+   if(!u.dead&&!airborne&&u.recoilAt!==undefined&&sim.time-u.recoilAt<.58){
     const life=1-(sim.time-u.recoilAt)/.58;
     for(const [t,alpha] of [[0,.14],[.25,.23],[.5,.36],[.75,.48]]){
      ctx.globalAlpha=life*alpha;
      ctx.drawImage(image,-px*k+(u.recoilFromX-u.x)*(1-t)*u.face,-py*k,image.width*k,image.height*k);
     }
    }
-   if(u.dash>0&&!u.dead){
+   if(airborne&&!flight.reduced){
+    for(const [fraction,alpha] of [[.3,.12],[.58,.21],[.81,.28]]){
+     const previous=Math.max(0,flightT-fraction*.16),priorX=(flight.fromX-u.x)*Math.pow(1-previous,1.6);
+     const priorY=-4*flight.height*previous*(1-previous);
+     ctx.globalAlpha=alpha*(1-flightT*.45);
+     ctx.drawImage(image,-px*k+(priorX-flightX)*u.face,-py*k+(priorY-flightY),image.width*k,image.height*k);
+    }
+   }
+   if(u.dash>0&&!u.dead&&!airborne){
     for(const [offset,alpha] of [[-69,.12],[-38,.23]]){
      ctx.globalAlpha=alpha*Math.min(1,u.dash/.25);
      ctx.drawImage(image,-px*k+offset,-py*k,image.width*k,image.height*k);
@@ -263,7 +276,7 @@
    const dt=state.last?Math.min(.05,(now-state.last)/1000):0;state.last=now;
    const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
    const scaled=root.ArenaCombatFeel?.advance?.(state,sim.units,dt,{paused:state.paused||!!sim.result,reduced})??dt;
-   C.step(sim,scaled);
+   C.step(sim,sim.result?dt:scaled);
    const events=sim.events.filter(e=>e.id>state.eventId);
    for(const e of events){state.eventId=e.id;state.fx.push(e);
     if(['parry','counter','riposte','push','dash','rescue','ambush','hit','assist'].includes(e.type)&&
@@ -292,7 +305,8 @@
    draw();if(!state.lastHud||now-state.lastHud>100){hud();state.lastHud=now;}
    if(!state.lastPortrait||now-state.lastPortrait>1200){paintThumbnails();state.lastPortrait=now;}
    root.ArenaAudio?.update?.({phase:sim.result?'result':'fight',paused:state.paused,combo:sim.teamwork.ally,health:C.alive(sim,'ally').reduce((n,u)=>n+u.hp/u.maxHp,0)/5,distance:100});
-   if(sim.result)results();state.frame=requestAnimationFrame(loop);
+   if(sim.result&&!sim.units.some(u=>u.flight&&sim.time-u.flight.at<u.flight.duration))results();
+   state.frame=requestAnimationFrame(loop);
   }
   root.ArenaAudio?.unlock?.();root.ArenaAudio?.enterArena?.();tell('전투 개시 · 적을 지정하고 동료에게 기회를 만드세요');
   $('[data-pause]').focus();state.frame=requestAnimationFrame(loop);return true;
