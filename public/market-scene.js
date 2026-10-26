@@ -11,6 +11,7 @@ const labels=[['STR','#ff5554','#bc2223','✊'],['AGI','#66f36e','#238f39','♞'
 const merchantLines={hello:'좋은 검투사가 필요하신가요? 방금 들어온 유망한 후보들입니다!',select:'훈련만 잘 시킨다면 훌륭한 투사가 될 겁니다!',confirm:'정말 이 검투사를 영입하시겠습니까? 데나리우스를 지불하면 거래가 성사됩니다.',cancel:'마음이 바뀌셨습니까? 다른 후보도 살펴보시지요.',success:'하하하! 안목이 훌륭하시군요! 이 검투사는 이제 당신의 루두스 소속입니다!',poor:'금화가 부족하다니 아쉽군요. 시합에서 승리하고 다시 방문하세요.',empty:'모든 단상이 비었습니다! 후보 갱신으로 새로운 검투사를 불러오십시오.',refresh:'새로운 후보들이 단상에 올랐습니다! 천천히 살펴보시지요.'};
 let scene=null,stage=null,opts=null,selection=0,keyImg=null,mode='idle',dialogOffer=null;
 let speechReset=null,animateTimer=null,moodTimer=null,previousFocus=null;
+let sceneEpoch=0,bootTimeout=0;
 const merchantFrames=Array.from({length:4},(_,n)=>{const im=new Image();im.src='assets/market/merchant_pose_'+n+'.webp';return im;});
 const $=s=>scene?.querySelector(s);
 const clean=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -275,7 +276,7 @@ function restock(){
  state.marketInventory=makeStock(state);
  selection=pick(0);opts.save?.();render();reaction(merchantLines.refresh,'refresh');
 }
-function close(){if(!scene)return;if(mode==='confirm')cancel();if(mode==='success')hideDialog();scene.hidden=true;clearTimeout(speechReset);clearTimeout(moodTimer);clearInterval(animateTimer);face(1);opts?.onExit?.();}
+function close(){if(!scene)return;sceneEpoch++;clearTimeout(bootTimeout);scene.classList.remove('gm-display-ready','gm-art-error');if(mode==='confirm')cancel();if(mode==='success')hideDialog();scene.hidden=true;clearTimeout(speechReset);clearTimeout(moodTimer);clearInterval(animateTimer);face(1);opts?.onExit?.();}
 function keydown(e){if(!scene||scene.hidden)return;
  if(e.key==='Escape'){e.preventDefault();if(mode==='confirm'||mode==='success')cancel();else close();return;}
  if(mode!=='idle'){
@@ -314,7 +315,18 @@ function setup(){if(scene)return;
   </div>
   <div class="gm-orient" aria-hidden="true">가로 화면에서 시장을 더 크게 볼 수 있습니다.</div>
  </div>`;
+ // The loading veil sits outside the native-size stage. During loading, no
+ // temporary merchant cards, currency boxes, buttons or silhouettes are visible.
+ const boot=document.createElement('div');boot.className='gm-boot';boot.setAttribute('role','status');
+ boot.innerHTML='<span class="gm-boot-message">검투사시장 준비 중…</span><div class="gm-boot-actions"><button type="button" data-retry hidden>다시 불러오기</button><button type="button" data-back>루두스로 돌아가기</button></div>';
+ scene.appendChild(boot);
  document.body.appendChild(scene);stage=$('#gmStage');
+ boot.querySelector('[data-retry]').addEventListener('click',()=>{
+  for(const img of [$('#gmKey'),$('#gmMerchantMain'),...merchantFrames])
+   if(img?.complete&&!img.naturalWidth)img.src=img.src.split('?')[0]+'?retry='+Date.now();
+  prepareMarket(++sceneEpoch);
+ });
+ boot.querySelector('[data-back]').addEventListener('click',close);
  window.addEventListener('resize',fit,{passive:true});document.addEventListener('keydown',keydown);
  $('#gmKey').addEventListener('load',e=>{keyImg=e.target;const o=selection<0?null:inventory()[selection];drawPortrait(o);});
  $('#gmBack').textContent='⌂ 루두스 로비';$('#gmBack').setAttribute('aria-label','메인 루두스 로비로 돌아가기');$('#gmBack').addEventListener('click',close);$('#gmHire').addEventListener('click',askPurchase);
@@ -322,12 +334,51 @@ function setup(){if(scene)return;
  for(let i=0;i<3;i++)$('#gmCard'+i).addEventListener('click',()=>{if(mode!=='idle'||!inventory()[i])return;selection=i;render();reaction(inventory()[i].name+'! '+merchantLines.select,'select');});
  fit();
 }
+function marketAsset(img){
+ return new Promise((resolve,reject)=>{
+  if(!img?.src)return reject(new Error('market image missing'));
+  const finish=()=>{if(!img.naturalWidth)return reject(new Error('market image failed'));if(typeof img.decode==='function')img.decode().then(resolve,reject);else resolve();};
+  if(img.complete){finish();return;}
+  img.addEventListener('load',finish,{once:true});
+  img.addEventListener('error',()=>reject(new Error('market image load failed')),{once:true});
+ });
+}
+async function prepareMarket(epoch){
+ if(!scene||scene.hidden||epoch!==sceneEpoch)return;
+ clearTimeout(bootTimeout);
+ scene.classList.remove('gm-display-ready','gm-art-error');
+ const boot=scene.querySelector('.gm-boot'),actions=boot.querySelector('.gm-boot-actions');
+ boot.querySelector('.gm-boot-message').textContent='검투사시장 준비 중…';
+ actions.querySelector('[data-retry]').hidden=true;
+ try{
+  // Approved background + first merchant pose + every active merchant motion.
+  // Career sprite atlas preparation is shared with the rest of Ludus.
+  let timeoutId;const timeout=new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(new Error('market asset timeout')),25000);bootTimeout=timeoutId;});
+  await Promise.race([Promise.all([
+   ...[$('#gmKey'),$('#gmMerchantMain'),...merchantFrames].map(marketAsset),
+   Promise.resolve().then(()=>opts?.assetsReady?.())
+  ]),timeout]);
+  if(scene.hidden||epoch!==sceneEpoch)return;
+  fit();render();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   if(!scene||scene.hidden||epoch!==sceneEpoch)return;
+   scene.classList.add('gm-display-ready');
+   reaction(available().length?merchantLines.hello:merchantLines.empty,available().length?'hello':'empty',5400);
+  }));
+ }catch(error){
+  if(scene.hidden||epoch!==sceneEpoch)return;
+  console.warn('Market art readiness failed',error);
+  scene.classList.add('gm-art-error');
+  boot.querySelector('.gm-boot-message').textContent='시장 그래픽을 준비하지 못했습니다.';
+  actions.querySelector('[data-retry]').hidden=false;
+ }finally{clearTimeout(timeoutId);if(bootTimeout===timeoutId)bootTimeout=0;}
+}
 function open(options){opts=options;setup();
  // Preserve prior careers; an untouched new Ludus begins with the concept-art starting wallet.
  if((!opts.state.roster||opts.state.roster.length===0)&&(Number(opts.state.fights)||0)===0&&Number(opts.state.gold)<500){opts.state.gold=3200;opts.save?.();}
  if(scene&&!scene.hidden)return;
  ensureInventory();selection=pick(0);mode='idle';$('#gmDialog').hidden=true;
- scene.hidden=false;fit();render();reaction(available().length?merchantLines.hello:merchantLines.empty,available().length?'hello':'empty',5400);
+ scene.hidden=false;scene.classList.remove('gm-display-ready','gm-art-error');fit();render();prepareMarket(++sceneEpoch);
 }
 root.SlaveMarket={open,close,refresh:render};
 if(typeof module!=='undefined')module.exports={types,newOffer,makeStock,qualities,RESTOCK_COST};

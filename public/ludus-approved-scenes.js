@@ -59,6 +59,7 @@ function drawTrainingSpeech(){
 const equips={wood:{x:-1126,y:-487},iron:{x:-991,y:-486},shield:{x:-1458,y:-486},elite:{x:-1347,y:-486}};
 let screen,stage,room='training',selectedTraining=0,selectedGear='iron',category='all',sortMode=0,toastTimer=0,poseTimer=0,feedbackTimer=0;
 let pendingTraining=null,impactFallback=0,revealTimer=0,trainingSequence=0;
+let approvedEpoch=0,approvedTimeout=0,trainingIdleImage=null;
 const $=s=>screen?.querySelector(s);
 const bridge=()=>window.LudusBridge;
 const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;'}[c]));
@@ -136,7 +137,7 @@ function showTrainingFeedback({failed,statName,gain,cost}){
 }
 function pose(index){window.LudusDoctoreAnim?.react?.(index);}
 function moveHero(step){if(pendingTraining)return;let a=bridge(),s=a?.state();if(!s?.roster?.length){toast('검투사시장에서 먼저 영입하세요.');return;}let i=((s.active||0)+step+s.roster.length)%s.roster.length;a.select(i);refresh();}
-function changeRoom(next){clearTrainingSequence();clearTrainingFeedback();room=next;bridge()?.section(next);screen.hidden=false;render();}
+function changeRoom(next){clearTrainingSequence();clearTrainingFeedback();bridge()?.section(next);}
 function goHome(){clearTrainingSequence();clearTrainingFeedback();window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();screen.hidden=true;clearTimeout(toastTimer);clearTimeout(poseTimer);pose(-1);bridge()?.returnHome();document.getElementById('careerHub').hidden=true;window.LudusScene?.open();}
 function actionTraining(){
  if(pendingTraining)return;
@@ -196,7 +197,14 @@ function liveFighter(a,s,isTraining){
  }
  stage.appendChild(canvas);
 }
-function setup(){if(screen)return;screen=document.createElement('section');screen.className='la-screen';screen.hidden=true;screen.setAttribute('aria-label','승인된 루두스 장비실 및 훈련소');screen.innerHTML='<div class="la-stage"><img class="la-key" draggable="false" alt=""><div class="la-notice" role="status" hidden></div><div class="la-pose"></div></div><div class="la-orient">가로 화면에서 더 크게 볼 수 있습니다.<button type="button">작은 화면으로 계속</button></div>';document.body.appendChild(screen);stage=$('.la-stage');stage.addEventListener('ludus:whip-impact',onTrainingWhipImpact);$('.la-orient button').addEventListener('click',()=>screen.classList.add('la-allow-portrait'));addEventListener('resize',fit,{passive:true});document.addEventListener('keydown',e=>{if(screen.hidden)return;if(e.key==='Escape'){e.preventDefault();goHome();}else if(e.key==='ArrowLeft'){e.preventDefault();moveHero(-1);}else if(e.key==='ArrowRight'){e.preventDefault();moveHero(1);}else if(e.key==='Enter'&&room==='training'){e.preventDefault();actionTraining();}});fit();}
+function setup(){if(screen)return;screen=document.createElement('section');screen.className='la-screen';screen.hidden=true;screen.setAttribute('aria-label','승인된 루두스 장비실 및 훈련소');screen.innerHTML='<div class="la-stage"><img class="la-key" draggable="false" alt=""><div class="la-notice" role="status" hidden></div><div class="la-pose"></div></div><div class="la-orient">가로 화면에서 더 크게 볼 수 있습니다.<button type="button">작은 화면으로 계속</button></div><div class="la-boot" role="status"><span class="la-boot-message">훈련소 준비 중…</span><div class="la-boot-actions"><button type="button" data-retry hidden>다시 불러오기</button><button type="button" data-back>루두스로 돌아가기</button></div></div>';document.body.appendChild(screen);
+$('.la-boot [data-retry]').addEventListener('click',()=>{
+  const key=$('.la-key');
+  for(const img of [key,trainingIdleImage].filter(Boolean))
+   if(img.complete&&!img.naturalWidth)img.src=img.src.split('?')[0]+'?retry='+Date.now();
+  prepareApproved(++approvedEpoch);
+ });
+$('.la-boot [data-back]').addEventListener('click',goHome);stage=$('.la-stage');stage.addEventListener('ludus:whip-impact',onTrainingWhipImpact);$('.la-orient button').addEventListener('click',()=>screen.classList.add('la-allow-portrait'));addEventListener('resize',fit,{passive:true});document.addEventListener('keydown',e=>{if(screen.hidden)return;if(e.key==='Escape'){e.preventDefault();goHome();}else if(e.key==='ArrowLeft'){e.preventDefault();moveHero(-1);}else if(e.key==='ArrowRight'){e.preventDefault();moveHero(1);}else if(e.key==='Enter'&&room==='training'){e.preventDefault();actionTraining();}});fit();}
 function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state();if(!s)return;const h=s.roster[s.active],training=room==='training';stage.className='la-stage '+room;
  const key=$('.la-key');const src=training?'assets/ludus/training_blank_v74.webp':'assets/ludus/armory_approved.webp';if(!key.src.endsWith(src))key.src=src;
  // Halt the old RAF before replacing this scene's character node.
@@ -285,11 +293,54 @@ function render(){if(!screen||screen.hidden)return;const a=bridge(),s=a?.state()
  home.title='메인 루두스 로비로 돌아가기';
  home.addEventListener('click',goHome);stage.appendChild(home);
  fit();}
+function approvedAsset(img){
+ return new Promise((resolve,reject)=>{
+  if(!img?.src)return reject(new Error('approved room image missing'));
+  const done=()=>{if(!img.naturalWidth)return reject(new Error('approved room image load failed'));if(typeof img.decode==='function')img.decode().then(resolve,reject);else resolve();};
+  if(img.complete){done();return;}
+  img.addEventListener('load',done,{once:true});
+  img.addEventListener('error',()=>reject(new Error('approved room image load failed')),{once:true});
+ });
+}
+async function prepareApproved(epoch){
+ if(!screen||screen.hidden||epoch!==approvedEpoch)return;
+ clearTimeout(approvedTimeout);
+ screen.classList.remove('la-display-ready','la-art-error');
+ const boot=$('.la-boot'),actions=boot.querySelector('.la-boot-actions');
+ boot.querySelector('.la-boot-message').textContent=room==='training'?'훈련소 준비 중…':'장비실 준비 중…';
+ actions.querySelector('[data-retry]').hidden=true;
+ try{
+  const imgs=[$('.la-key')];
+  if(room==='training'){
+   if(!trainingIdleImage){trainingIdleImage=new Image();trainingIdleImage.src='assets/ludus/doctore-idle-approved-v1.png?approved=3';}
+   imgs.push(trainingIdleImage);
+  }
+  // Both the painted room and the real character atlas must be ready before reveal.
+  let timeoutId;const timeout=new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(new Error('approved room asset timeout')),25000);approvedTimeout=timeoutId;});
+  await Promise.race([Promise.all([...imgs.map(approvedAsset),
+    Promise.resolve().then(()=>bridge()?.assetsReady?.())]),timeout]);
+  if(screen.hidden||epoch!==approvedEpoch)return;
+  render();fit();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   if(!screen||screen.hidden||epoch!==approvedEpoch)return;
+   screen.classList.add('la-display-ready');
+  }));
+ }catch(error){
+  if(screen.hidden||epoch!==approvedEpoch)return;
+  console.warn('Approved room readiness failed',error);
+  screen.classList.add('la-art-error');
+  boot.querySelector('.la-boot-message').textContent='훈련소·장비실 그래픽을 준비하지 못했습니다.';
+  actions.querySelector('[data-retry]').hidden=false;
+ }finally{clearTimeout(timeoutId);if(approvedTimeout===timeoutId)approvedTimeout=0;}
+}
 function open(name){setup();clearTrainingSequence();clearTrainingFeedback();room=name==='gear'?'armory':'training';if(room==='training'){
  speechPhase='welcome';
  window.ArenaAudio?.prepareTrainingImpact?.();
-}screen.hidden=false;render();}
-function close(){clearTrainingSequence();clearTrainingFeedback();window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();if(screen)screen.hidden=true;}
+}
+ screen.hidden=false;screen.classList.remove('la-display-ready','la-art-error');
+ render();prepareApproved(++approvedEpoch);
+}
+function close(){approvedEpoch++;clearTimeout(approvedTimeout);clearTrainingSequence();clearTrainingFeedback();window.LudusDoctoreAnim?.unmount?.();window.LudusTrainingV2?.stop();if(screen){screen.classList.remove('la-display-ready','la-art-error');screen.hidden=true;}}
 function refresh(){if(screen&&!screen.hidden)render();}
 window.LudusApprovedScenes={open,close,refresh,goHome};
 window.addEventListener('arena-gear-atlas-ready',()=>{if(screen&&!screen.hidden&&room==='armory')refresh();});

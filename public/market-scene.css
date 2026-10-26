@@ -155,3 +155,14 @@
 }
 .gm-screen .gm-stage .gm-card-dynamic .gm-lv{font-size:18px;line-height:1.12}
 .gm-screen .gm-stage .gm-card-dynamic .gm-stat{margin:2px auto}
+
+/* v108: market stays fully obscured until all opening art and live cards are ready. */
+.gm-screen:not(.gm-display-ready) .gm-stage{visibility:hidden!important;pointer-events:none!important}
+.gm-screen .gm-boot{position:fixed;inset:0;z-index:100;display:grid;place-content:center;gap:16px;text-align:center;
+ background:radial-gradient(ellipse at center,#352219,#110a08 74%);color:#f6d89f;
+ font:800 clamp(16px,2.7vw,28px)/1.4 Georgia,'Noto Sans KR',serif;letter-spacing:.025em}
+.gm-screen.gm-display-ready .gm-boot{display:none!important}
+.gm-screen .gm-boot-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.gm-screen .gm-boot-actions[hidden]{display:none!important}
+.gm-screen .gm-boot-actions button{position:static;min-width:145px;padding:10px 16px;border:2px solid #c29b64;
+ border-radius:8px;background:#493021;color:#ffe2a7;font:800 16px 'Noto Sans KR',sans-serif;cursor:pointer}

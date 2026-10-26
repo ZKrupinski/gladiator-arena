@@ -46,3 +46,15 @@
 .la-orient{display:none}
 @media(orientation:portrait) and (max-width:700px){.la-orient{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#24110eee;padding:25px;font:700 22px 'Noto Sans KR',sans-serif;text-align:center;color:#ffe2aa;gap:17px}.la-orient button{border:2px ridge #cc9d57;background:#60351f;padding:12px;color:#ffeac9;font:inherit}.la-allow-portrait .la-orient{display:none}}
 @media(prefers-reduced-motion:reduce){.la-pose,.la-training-selected{transition:none}}
+
+/* v108: training/armory native stage remains hidden until key art + current fighter are ready. */
+.la-screen:not(.la-display-ready) .la-stage{visibility:hidden!important;pointer-events:none!important}
+.la-screen .la-boot{position:fixed;inset:0;z-index:150;display:grid;place-content:center;gap:16px;text-align:center;
+ background:radial-gradient(ellipse at center,#382318,#100907 74%);color:#f5d8a2;
+ font:800 clamp(16px,2.7vw,27px)/1.4 Georgia,'Noto Sans KR',serif;letter-spacing:.025em}
+.la-screen.la-display-ready .la-boot{display:none!important}
+.la-screen:not(.la-display-ready) .la-orient{visibility:hidden!important}
+.la-screen .la-boot-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.la-screen .la-boot-actions[hidden]{display:none!important}
+.la-screen .la-boot-actions button{min-width:140px;padding:11px 16px;border:2px solid #c59b62;
+ border-radius:8px;background:#493022;color:#ffe2a9;font:800 16px 'Noto Sans KR',sans-serif;cursor:pointer}
