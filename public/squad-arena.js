@@ -94,6 +94,14 @@ function closest(battle,unit,override){
   return !best||score(target)<score(best)?target:best;
  },null);
 }
+function startFlight(battle,target,fromX,direction,kind){
+ const reduced=!!(root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
+ const distance=reduced?(kind==='death'?70:38):kind==='death'?275:175;
+ const landing=clamp(target.x+direction*distance,85,1195);
+ target.x=landing;target.flight={fromX,at:battle.t,duration:kind==='death'?1.12:.78,
+  height:reduced?12:kind==='death'?145:95,reduced,kind};
+ if(kind==='parry'){target.stagger=Math.max(target.stagger,.82);target.action='hit';target.attackT=.78;target.attackDuration=.78;}
+}
 function performAttack(battle,unit,target,special=false){
  if(!target||target.dead||unit.dead||unit.stagger>0||unit.cooldown>0)return false;
  const stamina=special?31:14;
@@ -105,6 +113,14 @@ function performAttack(battle,unit,target,special=false){
  const laneGap=Math.abs(target.lane-unit.lane)*55,dist=Math.abs(target.x-unit.x)+laneGap;
  if(dist>unit.range+(special?68:0)){battle.log.push({text:'MISS',x:target.x,y:target.y,t:.6});return false;}
  if(target.dodge>0){battle.log.push({text:'DODGE',x:target.x,y:target.y,t:.6});return false;}
+ // A real guarded parry repels the incoming attacker before the next strike.
+ if(target.guard>0&&target.stagger<=0&&battle.random()<.36){
+  const fromX=unit.x,away=Math.sign(unit.x-target.x)||unit.face*-1;
+  startFlight(battle,unit,fromX,away,'parry');unit.cooldown=Math.max(unit.cooldown,.82);
+  target.guard=0;target.stamina=Math.max(0,target.stamina-6);
+  battle.events.push({x:fromX,y:unit.y-110,t:.5,text:'PARRY',critical:true,side:target.side});
+  battle.log.push({text:'PARRY',x:fromX,y:unit.y,t:.6});return true;
+ }
  const critical=unit.cls==='thraex'&&battle.random()<(.12+unit.focus*.015);
  let dmg=(special?unit.sp:unit.atk)*(critical?1.45:1);
  if(unit.boss&&unit.hp<unit.maxHp*.5)dmg*=1.23;
@@ -115,8 +131,9 @@ function performAttack(battle,unit,target,special=false){
  target.hp=Math.max(0,target.hp-dmg);unit.damageDone+=dmg;unit.hits++;
  target.stagger=Math.max(target.stagger,target.boss?.10:.15);
  target.action='hit';target.attackT=.20;target.attackDuration=.20;
- const knock=target.side==='enemy'?1:-1;
+ const knock=target.side==='enemy'?1:-1,contactX=target.x;
  target.x=clamp(target.x+knock*(special?25:9),105,1175);
+ if(special&&target.hp>0)startFlight(battle,target,contactX,knock,'parry');
  if(special){
   if(unit.cls==='retiarius'){target.rooted=1.9;target.stagger=.38;}
   if(unit.cls==='thraex'){target.bleed=3.2;target.bleedPower=Math.max(1,unit.atk*.1);}
@@ -133,16 +150,21 @@ function performAttack(battle,unit,target,special=false){
    nearby.hp=Math.max(0,nearby.hp-splash);unit.damageDone+=splash;
    nearby.stagger=Math.max(nearby.stagger,.24);
    battle.events.push({x:nearby.x,y:nearby.y-110,t:.36,text:'-'+splash,critical:false,side:unit.side});
-   if(nearby.hp<=0){nearby.dead=true;nearby.action='death';nearby.attackT=.8;}
+   if(nearby.hp<=0){nearby.dead=true;nearby.action='death';nearby.attackT=1.12;
+    startFlight(battle,nearby,nearby.x,knock,'death');}
   }
  }
  battle.events.push({x:target.x,y:target.y-120,t:.36,text:'-'+dmg,critical,side:unit.side});
- if(target.hp<=0){target.dead=true;target.action='death';target.attackT=.8;}
+ if(target.hp<=0){target.dead=true;target.action='death';target.attackT=1.12;
+  startFlight(battle,target,contactX,knock,'death');}
  return true;
 }
 function advance(battle,dt,commands={}){
- if(!battle||battle.state!=='fight')return battle;
- dt=clamp(dt,0,.05);battle.t+=dt;
+ if(!battle)return battle;
+ dt=clamp(dt,0,.05);
+ if(battle.state==='finished'){battle.t+=dt;return battle;}
+ if(battle.state!=='fight')return battle;
+ battle.t+=dt;
  battle.events=battle.events.filter(e=>(e.t-=dt)>0);
  battle.log=battle.log.filter(e=>(e.t-=dt)>0);
  const manual=commands.manual||null;
@@ -155,6 +177,7 @@ function advance(battle,dt,commands={}){
   f.stamina=clamp(f.stamina+dt*19*f.regen,0,100);
   if(f.bleed>0){f.hp=Math.max(0,f.hp-f.bleedPower*dt);f.bleed=Math.max(0,f.bleed-dt);}
   if(f.hp<=0){f.dead=true;f.action='death';continue;}
+  if(f.flight&&battle.t-f.flight.at<f.flight.duration)continue;
   const actorControl=f.side==='ally'&&battle.party[battle.focusAlly]===f?manual:null;
   const chosen=actorControl?battle.foes[battle.focusEnemy]:null;
   const target=closest(battle,f,chosen);
@@ -238,7 +261,7 @@ function spriteBounds(img){
 }
 function drawUnit(ctx,u,bridge,battle){
  const rectY=u.y+(u.lane?0:8),time=battle.t;
- ctx.save();ctx.globalAlpha=u.dead?.35:1;
+ ctx.save();ctx.globalAlpha=1;
  if(u.boss){
   ctx.strokeStyle=u.hp<u.maxHp*.5?'#ee554e':'#e7ae50';
   ctx.lineWidth=5;
@@ -249,7 +272,9 @@ function drawUnit(ctx,u,bridge,battle){
   ctx.beginPath();ctx.ellipse(u.x,rectY+10,77,19,0,0,Math.PI*2);ctx.stroke();
  }
  ctx.fillStyle='#0a0505a0';ctx.beginPath();ctx.ellipse(u.x,rectY+7,66,13,0,0,Math.PI*2);ctx.fill();
- const action=u.dead?'death':u.action==='special'?'special':
+ const flight=u.flight,flightT=flight?clamp((battle.t-flight.at)/flight.duration,0,1):1;
+ const airborne=flight&&flightT<1;
+ const action=u.dead?(airborne&&flightT<.78?'hit':'death'):airborne?'hit':u.action==='special'?'special':
   u.action==='attack'?'attack':u.action==='hit'?'hit':u.action==='guard'?'guard':u.action==='walk'?'walk':'idle';
  const frame=Math.floor(time*11)%8;
  const img=bridge.squadSprite?.(u.hero,action,frame)||bridge.squadSprite?.(u.hero,'idle',0);
@@ -262,7 +287,11 @@ function drawUnit(ctx,u,bridge,battle){
   }
   const w=box.w*u.artScale,h=box.h*u.artScale;
   const lean=u.attackT>0&&u.action==='attack'?Math.sin(Math.PI*clamp(1-u.attackT/u.attackDuration,0,1))*14*u.face:0;
-  ctx.translate(u.x+lean,rectY);if(u.side==='enemy')ctx.scale(-1,1);
+  const flightX=airborne?(flight.fromX-u.x)*Math.pow(1-flightT,1.6):0;
+  const flightY=airborne&&!flight.reduced?-4*flight.height*flightT*(1-flightT):0;
+  ctx.translate(u.x+lean+flightX,rectY+flightY);
+  if(airborne&&!flight.reduced)ctx.rotate(u.face*(u.dead?.17:.11)*Math.sin(Math.PI*flightT));
+  if(u.side==='enemy')ctx.scale(-1,1);
   ctx.drawImage(img,box.x,box.y,box.w,box.h,-w/2,-h,w,h);
  }else{
   ctx.fillStyle=u.side==='ally'?'#ceaa6e':'#8b332b';
@@ -396,7 +425,10 @@ function start({mode,party,opponent,bridge,onFinish,onReturn}){
      guard:held.has('guard')||command==='guard',dodge:command==='dodge'};
    }
    advance(battle,dt,{manual});
-   if(battle.state==='finished')complete(battle.win);
+   if(battle.state==='finished'&&!battle.all.some(u=>u.flight&&battle.t-u.flight.at<u.flight.duration))complete(battle.win);
+  }else if(battle.state==='finished'&&!ss.done){
+   advance(battle,dt);
+   if(!battle.all.some(u=>u.flight&&battle.t-u.flight.at<u.flight.duration))complete(battle.win);
   }
   canvasRender(battle,ctx,bg,bridge);
   const label=screen.querySelector('#saInfo');
