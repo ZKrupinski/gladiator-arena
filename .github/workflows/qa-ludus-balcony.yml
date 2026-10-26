@@ -1,4 +1,4 @@
-name: QA static Ludus yard and animated balcony
+name: QA empty Ludus yard and actor-only balcony animation
 on:
   push:
     branches: [main]
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
-      - name: Verify cropped actor-only atlas, image bytes and loop script
+      - name: Validate V4 empty still, actor-only atlas and looping script
         run: node tests/ludus-balcony-atlas.cjs
       - name: Verify live Cloudflare static yard and cropped crowd atlas
         run: |
@@ -27,14 +27,14 @@ jobs:
           base='https://gladiator-arena-git.pages.dev/'
           paths=['index.html','ludus-practice.js',
                  'assets/ludus-practice/manifest.json',
-                 'assets/ludus-practice/ludus-practice-yard.webp',
-                 'assets/ludus-practice/ludus-balcony-crowd-4f.webp']
+                 'assets/ludus-practice/ludus-practice-yard-empty-v4-game.webp',
+                 'assets/ludus-practice/ludus-balcony-actors-only-v4-4f.webp']
           expected={p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in paths}
           for attempt in range(24):
               fail=[]
               for p in paths:
                   try:
-                      url=base+('' if p=='index.html' else p)+'?v=balcony20261026&check='+str(attempt)
+                      url=base+('' if p=='index.html' else p)+'?v=emptyyardv4-20261026&check='+str(attempt)
                       req=urllib.request.Request(url,headers={'Cache-Control':'no-cache','User-Agent':'Spartacus-Asset-QA'})
                       with urllib.request.urlopen(req,timeout=14) as response: data=response.read()
                       if hashlib.sha256(data).hexdigest()!=expected[p]: fail.append(p+' mismatch')

@@ -122,8 +122,8 @@ function setup(){
  // One static Ludus yard background and one small four-frame, alpha-masked balcony group.
   back=new Image();yardAssetFailed=false;
   back.onerror=()=>{yardAssetFailed=true;back.onerror=null;back.src='assets/new-era/arena.webp';};
-  back.src='assets/ludus-practice/ludus-practice-yard-v2.webp?v=wholebody20261026';
-  crowdAtlas=new Image();crowdAtlas.src='assets/ludus-practice/ludus-balcony-crowd-v2-4f.webp?v=wholebody20261026';
+  back.src='assets/ludus-practice/ludus-practice-yard-empty-v4-game.webp?v=emptyyard-v4';
+  crowdAtlas=new Image();crowdAtlas.src='assets/ludus-practice/ludus-balcony-actors-only-v4-4f.webp?v=emptyyard-v4';
  screen.addEventListener('click',event=>{
   const btn=event.target.closest('button');if(!btn||!screen.contains(btn))return;
   const id=btn.dataset.do;
@@ -822,14 +822,14 @@ function paint(){
  if(!root.ArenaCombatFeel&&battle.shakes)ctx.translate((Math.random()-.5)*battle.shakes,(Math.random()-.5)*battle.shakes);
  if(back.complete&&back.naturalWidth)ctx.drawImage(back,0,0,W,H);
  else{const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#24120e');grad.addColorStop(1,'#754328');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);}
- // A single padded spectator-group patch includes the entire head+headband, arms,
-  // shoulders and nearby railing/columns. Never mask individual face pieces.
-  // The underlying Ludus yard remains a single immutable still image.
-  if(!yardAssetFailed&&crowdAtlas?.complete&&crowdAtlas.naturalWidth===1848&&crowdAtlas.naturalHeight===217){
+ // Only whole animated spectators are composited onto the EMPTY courtyard plate.
+  // The sky, columns, front railing and red drapery exist solely in the static plate;
+  // alpha at the top and bottom of each atlas frame stays zero to prevent jitter.
+  if(!yardAssetFailed&&crowdAtlas?.complete&&crowdAtlas.naturalWidth===1868&&crowdAtlas.naturalHeight===187){
    // Six-beat ping-pong order removes the harsh frame-4 -> frame-1 snap.
    const order=[0,1,2,3,2,1],tick=Math.floor(spectatorClock/.33);
    const frame=reduced?0:order[tick%order.length];
-   ctx.drawImage(crowdAtlas,frame*462,0,462,217,746,15,462,217);
+   ctx.drawImage(crowdAtlas,frame*467,0,467,187,796,18,358,143);
   }
   ctx.fillStyle='#160a0910';ctx.fillRect(0,0,W,H);
  // All court floor overlays removed: gladiators stand on the original sand.
