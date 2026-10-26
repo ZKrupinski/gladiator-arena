@@ -1,11 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "92b3bcd36de38a978e358fca1c0114d58f3743862a589ede8f1b06c9a0a56ffc",
-    "public/ludus-practice.js": "fe0b8ad6480453d847e0b4d5f0823dbb9fb6a63a7776aeeb9af68d40a19af850"
+    "public/arena-coop-core.js": "69339de70182486f4ae0ae3e21311dee76d65f355bd9160078b94c5a572102f1",
+    "public/index.html": "04e4b8082fa0f21c4c03702c503a9e5cd5406d0f28a8c16a29abe48da7dc625f",
+    "public/ludus-practice.js": "e67ac7645ea5bc914303337f0f22b86a8528d2db4a837b785eed5b970c51189b"
   },
-  "baseCommit": "3295e771fed23c660ef53e90375bec2565c5477b",
+  "baseCommit": "03892e33732e6d4e01b4a257de8ef8e489745059",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "practice-survivor-exp-reflow-v105-20261026",
+  "releaseId": "class-beast-matchups-v106-20261026",
   "releaseProtocol": "spartacus-uploader-v1"
 }

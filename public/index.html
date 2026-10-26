@@ -385,7 +385,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=whip-guard-suspense-v93"></script>
 <script src="champion-murmillo.js?v=grounded-v39"></script>
-<script src="arena-gear-catalog.js?v=roman-five-slots-v12"></script><script src="arena-loot.js?v=roman-helm-bracers-v12"></script><script src="arena-gear-bitmap.js?v=roman-square-atlas-v12"></script><script src="arena-excitement.js?v=harder-spectacle-v7"></script><script src="arena-progression.js?v=five-stats-v97"></script><script src="arena-personality.js?v=five-stat-ai-v104-20261026"></script><script src="arena-balance.js?v=five-stats-v97"></script>
+<script src="arena-gear-catalog.js?v=roman-five-slots-v12"></script><script src="arena-loot.js?v=roman-helm-bracers-v12"></script><script src="arena-gear-bitmap.js?v=roman-square-atlas-v12"></script><script src="arena-excitement.js?v=harder-spectacle-v7"></script><script src="arena-progression.js?v=five-stats-v97"></script><script src="arena-personality.js?v=five-stat-ai-v104-20261026"></script><script src="arena-matchup.js?v=class-beast-rps-v106-20261026"></script><script src="arena-balance.js?v=five-stats-v97"></script>
 <script src="arena-portrait-fit.js?v=enemy-facing-v65"></script>
 <script src="arena-lineup.js?v=1"></script>
 <script src="sprite-motion-registry.js?v=1"></script>
@@ -2096,7 +2096,7 @@ function attack(f,victim,special=false,dashImpact=false){
    const reversal=window.ArenaBalance?.comebackParry?.(victim,f,baseCounter,victim.comebackUsed);
     crowdEvent(reversal?.critical?'reversal':'parry');
     if(!victim.enemy&&victim.hp/victim.maxHp<=.28)crowdEvent('comeback');
-   const counterDamage=ArenaBalance.combatDamage(reversal?.damage??baseCounter,'parry');
+   const counterDamage=window.ArenaMatchup?.damage?.(ArenaBalance.combatDamage(reversal?.damage??baseCounter,'parry'),victim,f)??ArenaBalance.combatDamage(reversal?.damage??baseCounter,'parry');
    if(reversal?.critical)victim.comebackUsed=true;
    victim.parry=0;breakAttackChain(victim);victim.invuln=Math.max(victim.invuln,PARRY_COUNTER_IFRAMES);
    victim.st=clamp(victim.st-(special?12:7),0,100);
@@ -2216,7 +2216,7 @@ function attack(f,victim,special=false,dashImpact=false){
  if(special&&!f.beastType&&f.cls==='murmillo'){victim.st=clamp(victim.st-21,0,100);say('SCUTUM IMPACT!');}
  if(special&&!f.beastType&&f.cls==='thraex'){
   victim.bleedT=Math.max(victim.bleedT||0,2.6);
-  victim.bleedDPS=ArenaBalance.combatDamage(Math.max(2,Math.round(f.cfg.atk*.18)));
+  victim.bleedDPS=window.ArenaMatchup?.damage?.(ArenaBalance.combatDamage(Math.max(2,Math.round(f.cfg.atk*.18))),f,victim)??ArenaBalance.combatDamage(Math.max(2,Math.round(f.cfg.atk*.18)));
   say('SICA · BLEED!');
  }
  const guarded=wasGuarding;
@@ -2231,6 +2231,8 @@ function attack(f,victim,special=false,dashImpact=false){
  // Limit disproportionate one-shots from high-grade equipment.
  const maxChunk=Math.max(12,Math.round(victim.maxHp*(dashImpact?.35:special?.27:.18)));
  dmg=Math.min(dmg,maxChunk);
+ // Resolve affinity AFTER the proportional burst limiter so the advantage is visible.
+ dmg=window.ArenaMatchup?.damage?.(dmg,f,victim)??dmg;
  victim.hp=Math.max(0,victim.hp-dmg);
   crowdEvent('clash');
   if(special&&!guarded)crowdEvent('special');
@@ -3814,7 +3816,7 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=blank-v70"></script><script src="practice-scale-published.js?v=true-size-v54"></script><script src="practice-scale-profiles.js?v=atlas-cell-v63"></script><script src="practice-visual-profiles.js?v=vfx-direction-v58"></script><script src="ludus-practice.js?v=survivor-xp-reflow-v105-20261026"></script><script src="ludus-training-runtime.js?v=studio-scale-parity-v95"></script><script src="ludus-doctore-anim.js?v=training-fit-v71"></script><script src="ludus-approved-scenes.js?v=five-stats-v97"></script><script src="ludus-armory-live.js?v=five-stats-v96"></script><script src="arena-coop-core.js?v=five-stat-ai-v104-20261026"></script><script src="arena-coop-match.js?v=five-stats-v97"></script><script src="arena-coop-camera.js?v=concordia-camera-v64"></script><script src="arena-coop.js?v=five-stats-v97"></script><script src="ludus-cards.js?v=five-stats-v96"></script>
+<script src="ludus-scene.js?v=blank-v70"></script><script src="practice-scale-published.js?v=true-size-v54"></script><script src="practice-scale-profiles.js?v=atlas-cell-v63"></script><script src="practice-visual-profiles.js?v=vfx-direction-v58"></script><script src="ludus-practice.js?v=class-beast-rps-v106-20261026"></script><script src="ludus-training-runtime.js?v=studio-scale-parity-v95"></script><script src="ludus-doctore-anim.js?v=training-fit-v71"></script><script src="ludus-approved-scenes.js?v=five-stats-v97"></script><script src="ludus-armory-live.js?v=five-stats-v96"></script><script src="arena-coop-core.js?v=class-beast-rps-v106-20261026"></script><script src="arena-coop-match.js?v=five-stats-v97"></script><script src="arena-coop-camera.js?v=concordia-camera-v64"></script><script src="arena-coop.js?v=five-stats-v97"></script><script src="ludus-cards.js?v=five-stats-v96"></script>
 
 </body></html>
 

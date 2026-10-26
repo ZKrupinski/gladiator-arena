@@ -7,6 +7,7 @@
  'use strict';
  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
  const Personality=(typeof window==='object'?window:globalThis).ArenaPersonality;
+ const Matchup=(typeof window==='object'?window:globalThis).ArenaMatchup;
  const finite=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
  const distance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.45);
  const footDistance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.6);
@@ -162,7 +163,7 @@
   if(b.exposed>0)amount*=1.25;
   if(target.side==='ally'&&s.formation?.until>s.time)amount*=.74;
   if(target.protectedUntil>s.time)amount*=.58;
-  const damage=Math.min(target.hp,Math.max(1,Math.round(amount)));
+  const damage=Math.min(target.hp,Math.max(1,Matchup?.damage?.(amount,a,target)??Math.round(amount)));
   target.hp-=damage;target.hit=.24;target.lastHitAt=s.time;a.damage+=damage;
   emit(s,kind,a,target,(kind==='assist'?'협공 ':'')+'−'+damage,{damage});
   if(target.hp<=0){

@@ -456,7 +456,7 @@ function deal(attacker,target,multiplier=1,style='normal'){
  const raw=power*(.88+Math.random()*.24)*(crit?1.43:1)*multiplier;
  const base=root.ArenaBalance?.combatDamage?.(raw,style)
   ?? Math.round(raw*(style==='parry'?.60:style==='special'?.54:.46));
- const damage=Math.max(1,Math.round(base*(1-target.armor)));
+ const damage=root.ArenaMatchup?.damage?.(base*(1-target.armor),attacker,target)??Math.max(1,Math.round(base*(1-target.armor)));
  target.hp=Math.max(0,target.hp-damage);target.hit=.25;
  const isKO=target.hp<=0;
  sparks(target,crit||style==='parry'||style==='special');
