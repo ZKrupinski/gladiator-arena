@@ -1,15 +1,11 @@
 {
-  "assetSha256": {
-    "public/assets/ludus/training_blank_v71.webp": "776ef503dd710cda21711c65a388f6521e576cff2101ecc5abd0dcbdcfaaf92f",
-    "public/index.html": "b01d7a95c12d312e0f717c8388ff88e7f42cdf93ff95faf5b681ec68312678cc",
-    "public/ludus-approved-scenes.js": "161b8c2ccd90af156c377ad96aa618d68b947c2ba9a731ef89167f08d7e9c0d1",
-    "public/ludus-doctore-anim.js": "a67f1f0477ed0665b68d96e0bd59121af03cc534b66da9442f28f3debf2c2b47",
-    "public/ludus-training-clean.css": "83857b607a2a908ac58289f4c3148bfda692beba0d42d2409d0a018a40d6f2bf",
-    "public/ludus-training-runtime.js": "cf208d6bfca91dc3eb1c076d365f4802f4f86c81b98c2ab223abbb6ad2c75629"
-  },
-  "baseCommit": "a25afc4a5b632d9842af4553ec88bdfa3685c9fa",
-  "branch": "main",
+  "releaseId": "parry-ko-continuity-20261026",
+  "releaseProtocol": "spartacus-uploader-v1",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "training-fit-v71b-20261025",
-  "releaseProtocol": "spartacus-uploader-v1"
+  "branch": "main",
+  "baseCommit": "c45efa37c9c3ab88e5b51850194251b08ce49d68",
+  "assetSha256": {
+    "public/index.html": "17b84e318f8b4f962e24a757ca62a353e169f5770b320cbd5f1087b7d3ff87d2",
+    "public/murmillo-motion-v2.js": "1fdd18a3955180eced9116bd1e063bd4a26a6257cdc9c975fefc08003c4159db"
+  }
 }

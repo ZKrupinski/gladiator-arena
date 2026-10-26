@@ -1874,7 +1874,24 @@ function clearCombatAfterimages(...actors){
  S.parryBursts=[];
  S.cinematic=null;S.focusFrame=null;S.cameraKick=null;
 }
-function finishFight(winner,loser){
+// Real-time KO trajectory: keep the hit location, then fly, land and settle.
+function advanceParryKO(f,dt){
+ const k=f?.parryKO;if(!k)return;
+ k.t=Math.min(.79,k.t+dt);
+ const t=Math.max(0,k.t-.07),u=clamp(t/.48,0,1);
+ const ease=1-Math.pow(1-u,2);
+ f.x=k.fromX+(k.toX-k.fromX)*ease;
+ k.y=-4*k.height*u*(1-u);
+ if(t>.48){const b=clamp((t-.48)/.16,0,1);k.y=b>=1?0:-9*Math.sin(Math.PI*b);}
+ if(t>=.48&&!k.landed){
+  k.landed=true;
+  if(S.fx)window.ArenaMotion?.shake?.(S,'strike',k.dir,.45);
+  if(sounds)window.ArenaAudio?.play?.('heavy_hit',{gain:.48,pan:(f.x-640)/720});
+ }
+ // The authored defeat pose supplies the actual collapse; no size override.
+ f.actionT=Math.max(0,f.actionDuration-t);
+}
+function finishFight(winner,loser,cause=null){
  if(loser.hp>0||S.phase!=='fight')return false;
  crowdEvent('finisher');
  if(S.gauntlet)return resolveLineupBout(!winner.enemy);
@@ -1890,6 +1907,14 @@ function finishFight(winner,loser){
  // existed only after the full cinematic and results dialog had opened.
  if(S.careerMatch)finishCareerMatch();
  clearCombatAfterimages(winner,loser);
+ winner.parryKO=null;loser.parryKO=null;
+ if(cause==='parry'&&!loser.beastType){
+  const dir=Math.sign(loser.x-winner.x)||winner.face||1;
+  const reduced=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+  loser.parryKO={t:0,fromX:loser.x,toX:clamp(loser.x+dir*(reduced?65:245),105,1175),
+   dir,height:reduced?10:58,y:0,landed:false};
+  loser.vx=0;loser.knockVX=0;loser.knockT=0;
+ }
  if(loser.beastType){
   window.ArenaBeastFX?.ensure?.();
   const collapse=beastGroundFx(loser,loser.x,FLOOR-45,560,325);
@@ -2125,7 +2150,7 @@ function attack(f,victim,special=false,dashImpact=false){
     gain:reversal?.critical?.78:.54,delay:.095,pan:(contact.x-640)/720
    });
    if(reversal?.critical)window.ArenaAudio?.play?.('finisher',{gain:.76,delay:.19});
-   if(f.hp<=0)finishFight(victim,f);
+   if(f.hp<=0)finishFight(victim,f,'parry');
    else updateHud();
    return;
  }
@@ -2343,6 +2368,7 @@ function choosePose(f){
  // Beast death starts with its actual FIRST collapse sprite, never replace
  // the first quarter-second with a generic hit/attacker finisher pose.
  if(f?.beastType&&(f.dead||f.hp<=0))return 'defeat';
+ if(f.parryKO&&f.dead)return f.parryKO.t<.22?'hit':'defeat';
  if(S.phase==='finisher'||S.phase==='result'){
   if(S.resultApplied){const won=(f===S.player)===S.resultWin;
    if(S.phase==='finisher'&&S.resultAnim<.26)return won?'special':'hit';
@@ -2426,7 +2452,7 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
    }))finishLineupCleanup();
   return;
  }
- if(S.phase==='finisher'){S.resultAnim+=dt;S.slow-=dt;if(S.slow<=0){S.phase='result';showEnd();}return;}
+ if(S.phase==='finisher'){for(const f of [S.player,S.enemy])advanceParryKO(f,realDt);S.resultAnim+=dt;S.slow-=dt;if(S.slow<=0){S.phase='result';showEnd();}return;}
  const p=S.player,e=S.enemy;S.time-=dt;
  if(S.time<=0&&S.gauntlet){return resolveLineupBout(p.hp/p.maxHp>e.hp/e.maxHp,true);}
  if(S.time<=0){clearCombatAfterimages(p,e);p.hitVisual=null;e.hitVisual=null;S.flash=0;S.resultWin=p.hp/Math.max(1,p.maxHp)>e.hp/Math.max(1,e.maxHp);S.resultApplied=true;S.resultAnim=0;S.phase='finisher';S.slow=2.05;setAction(S.resultWin?p:e,'finisher',2.2);setAction(S.resultWin?e:p,'defeat',2.2);say(S.resultWin?'VICTORIA!':'DEFEAT',1.8);return;}
@@ -2579,7 +2605,7 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
     fxSound('heavy_hit');
     if(!f.enemy){S.score+=bonus;S.combo++;crowdEvent('riposte');}
     else S.combo=0;
-    if(enemy.hp<=0)finishFight(f,enemy);
+    if(enemy.hp<=0)finishFight(f,enemy,'parry');
    }
   }
  }
@@ -2957,7 +2983,7 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  const height=FIGHTER_DRAW_SIZE,width=FIGHTER_DRAW_SIZE,feet=FLOOR-1;
  // Retire all scene-coded per-pose X/Y and scale changes. The sprite uses
  // its world position, the camera projection and the studio's action edit.
- let drawX=f.x-width/2,drawY=feet-height;
+ let drawX=f.x-width/2,drawY=feet-height+(f.dead?f.parryKO?.y||0:0);
  const footOffset=duelFootOffset(f); // same published per-look boot pivot as practice and training
  if(S.phase==='fight'){
   const trail=f.dodgeEcho||f.specialLunge||f.attackLunge;
@@ -3405,7 +3431,7 @@ function loop(t){
 // Opt-in QA hook: actual game internals only on the explicit smoke-test URL.
 if(new URLSearchParams(window.location.search).has('__arena_qa')){
  Object.defineProperty(window,'__arenaQA',{configurable:true,
-  value:{state:S,camera:CAMERA,attack,fxPoint,fxTiming,render,
+  value:{state:S,camera:CAMERA,attack,fxPoint,fxTiming,render,update,finishFight,advanceParryKO,
    beginArenaEntrance,
    assetsReady:()=>['murmillo','thraex','retiarius'].every(k=>
     !!(IMG[k]?.complete&&IMG[k]?.naturalWidth&&INDEPENDENT_CHARACTER_FRAMES.get(IMG[k])?.length===10)),

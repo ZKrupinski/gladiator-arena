@@ -27,6 +27,11 @@ const cycleTracks={
 const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,Number.isFinite(v)?v:0));
 function stateAt(f,scene,clock=0){
  if(!f)return {action:'idle',progress:0,loop:true};
+ if(f.dead&&f.parryKO){
+  const t=f.parryKO.t;
+  return t<.22?{action:'hit',progress:clamp((t-.07)/.15),loop:false}:
+   {action:'death',progress:clamp((t-.22)/.50),loop:false};
+ }
  if(scene&&(scene.phase==='finisher'||scene.phase==='result')&&scene.resultApplied){
    const won=(f===scene.player)===!!scene.resultWin;
    if(scene.phase==='finisher'){
