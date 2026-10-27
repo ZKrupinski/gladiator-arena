@@ -9,10 +9,15 @@
   if(!Number.isFinite(u?.deathAt)||!Number.isFinite(time))return 7;
   return Math.max(0,Math.min(7,Math.floor((time-u.deathAt)*10)));
  }
- // Only the scene CAMERA is allowed to project scale in 5v5. No per-unit
- // rear/front/seat multipliers: the tool's 31 relative sizes are preserved.
- const COOP_CAMERA_BODY_ZOOM=.60;
- const perspectiveScale=()=>1;
+ // Depth scale is a single camera projection AFTER studio-authored art size.
+ // A rear fighter at y405 is 82% of an identical foreground fighter at y653.
+ // This affects sprite, trail, foot offsets, icon and raster FX together;
+ // it never touches collision or stored per-look size.
+ const COOP_CAMERA_BODY_ZOOM=.60,COOP_FAR_Y=405,COOP_NEAR_Y=653,COOP_FAR_SCALE=.82;
+ const perspectiveScale=y=>{
+  const t=Math.max(0,Math.min(1,(Number(y)-COOP_FAR_Y)/(COOP_NEAR_Y-COOP_FAR_Y)));
+  return COOP_FAR_SCALE+(1-COOP_FAR_SCALE)*t;
+ };
  function open(allies,enemies,{onFinish,onClose,seed}={}){
   if(current)return false;
   const sim=C.create(allies,enemies,{seed}),host=document.createElement('section');
