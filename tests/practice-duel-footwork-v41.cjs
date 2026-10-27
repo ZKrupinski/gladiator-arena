@@ -7,6 +7,7 @@ const injected=original.replace('root.LudusPractice={',
   'root.__practiceQA={setBattle:b=>battle=b,setCourts:n=>COURTS=courtsForParty(n),act,keepCourtSpacing,courts:()=>COURTS};root.LudusPractice={');
 assert.notEqual(injected,original,'QA-only helper attached without shipping a debug API');
 const ctx={window:{},console};
+ctx.window.SpartacusBodyCollision=require('../public/arena-body-collision.js');
 vm.runInNewContext(injected,ctx);
 const api=ctx.window.__practiceQA,rules=ctx.window.LudusPractice.rules;
 const layout=rules.courtsForParty(4);
