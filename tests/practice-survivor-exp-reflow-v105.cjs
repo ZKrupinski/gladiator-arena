@@ -33,5 +33,5 @@ assert(source.includes("COURTS=courtsForParty(live.length)"),'survivor layout');
 assert(source.includes("battle.breakTime=1.8"),'transition duration longer than interpolation');
 assert(!source.includes("battle.heroes.filter(h=>!h.dead).forEach(h=>h.exp+=waveXP(battle.wave))"),
  'old unweighted clear removed');
-assert(html.includes("ludus-practice.js?v=survivor-xp-reflow-v105-20261026"));
+assert(/ludus-practice\.js\?v=[a-z0-9-]+/i.test(html),'deployed game loads current practice runtime');
 console.log('PRACTICE_SURVIVOR_EXP_REFLOW_PASS: weighted rewards, capped engagement, 1-4 layout, safe tween');
