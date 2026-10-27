@@ -34,14 +34,47 @@ const $=s=>scene?.querySelector(s);
 const clean=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // The market is an independent pool. None of its offers carries a bossId,
 // champion-only appearance, arena unlock, or any beast identity.
-const romanPool=[...new Set(types.flatMap(t=>t.names).concat([
- 'Atilius','Severus','Corvinus','Varro','Aurelius','Maximus','Regulus','Crispus',
- 'Silvanus','Rufus','Sabinus','Cato','Lupus','Scaeva','Priscus','Vitalis',
- 'Agrippa','Longinus','Celsus','Gallus','Serranus','Calvus','Florus',
- 'Caecilius','Octavius','Servius','Pompeius','Naso','Quirinus','Atticus',
- 'Licinius','Silanus','Vibius','Manlius','Faustus','Drusus','Aquila',
- 'Paullus','Sextilianus','Varenus','Aemilius','Tullius','Cornelius'
-]))];
+// The slave market uses historically styled Roman praenomen + nomen.
+ // Never rename hired gladiators; only unpurchased market offers are normalized.
+const ROMAN_PRAENOMINA=Object.freeze([
+ 'Marcus','Lucius','Gaius','Publius','Quintus','Titus','Sextus','Aulus',
+ 'Decimus','Tiberius','Gnaeus','Servius','Appius','Numerius','Spurius'
+]);
+const ROMAN_NOMINA=Object.freeze([
+ 'Aurelius','Valerius','Julius','Cornelius','Cassius','Claudius',
+ 'Flavius','Tullius','Manlius','Aemilius','Fabius','Pompeius',
+ 'Octavius','Licinius','Domitius','Antonius','Calpurnius','Junius',
+ 'Vibius','Sulpicius','Caecilius','Sempronius','Marcius','Papirius',
+ 'Plautius','Sergius','Terentius','Atilius','Quinctius','Porcius',
+ 'Livius','Flaminius','Hostilius','Lucretius','Minucius','Servilius',
+ 'Petronius','Vitellius','Scribonius','Volumnius','Fabritius','Vettius'
+]);
+const ROMAN_FIRST_SET=new Set(ROMAN_PRAENOMINA);
+const ROMAN_FAMILY_SET=new Set(ROMAN_NOMINA);
+function stableNameRoll(identity){
+ const text=String(identity||'');let hash=2166136261;
+ for(let i=0;i<text.length;i++)hash=Math.imul(hash^text.charCodeAt(i),16777619)>>>0;
+ return hash/4294967296;
+}
+function isRomanFullName(name){
+ const p=String(name||'').trim().split(/\s+/);
+ return p.length===2&&ROMAN_FIRST_SET.has(p[0])&&ROMAN_FAMILY_SET.has(p[1]);
+}
+function romanName(previous,usedNames,rng=Math.random){
+ const prior=String(previous||'').trim();
+ if(isRomanFullName(prior)&&!usedNames.has(prior.toLowerCase())){
+  usedNames.add(prior.toLowerCase());return prior;
+ }
+ const first=ROMAN_FIRST_SET.has(prior)?ROMAN_PRAENOMINA.indexOf(prior):Math.floor(rng()*ROMAN_PRAENOMINA.length)%ROMAN_PRAENOMINA.length;
+ const family=ROMAN_FAMILY_SET.has(prior)?ROMAN_NOMINA.indexOf(prior):Math.floor(rng()*ROMAN_NOMINA.length)%ROMAN_NOMINA.length;
+ const total=ROMAN_PRAENOMINA.length*ROMAN_NOMINA.length;
+ for(let i=0;i<total;i++){
+  const candidate=ROMAN_PRAENOMINA[(first+i)%ROMAN_PRAENOMINA.length]+' '+
+   ROMAN_NOMINA[(family+Math.floor(i/ROMAN_PRAENOMINA.length))%ROMAN_NOMINA.length];
+  if(!usedNames.has(candidate.toLowerCase())){usedNames.add(candidate.toLowerCase());return candidate;}
+ }
+ throw new Error('Roman market name pool exhausted');
+}
 const qualities={
  common:{label:'일반',bonus:0,min:320,range:340},
  promising:{label:'유망주',bonus:1,min:610,range:410},
@@ -56,10 +89,8 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random,f
   ?types.filter(t=>t.id!==usedClasses[0]):types;
  const t=forcedLook?types.find(t=>t.id===forcedLook.cls):candidateClasses[randIndex(rng,candidateClasses.length)];
  if(!t)throw new Error('Unknown human gladiator class in market look');
- const available=romanPool.filter(n=>!usedNames.has(n.toLowerCase()));
- const name=available.length?available[randIndex(rng,available.length)]:
-  'Numerius '+Math.max(1,Math.trunc(numberFrom(seed)+slot+1));
- usedNames.add(name.toLowerCase());usedClasses.push(t.id);
+ const name=romanName(null,usedNames,rng);
+ usedClasses.push(t.id);
  const roll=rng();
  // A rare market-born special: 0.6% per individual lot (~1.8%/visit).
  // It is NOT any boss-only gladiator; all sprites use regular growth art.
@@ -131,9 +162,9 @@ function makeStock(state,rng=Math.random,existing=[]){
   const position=MARKET_LOOKS.findIndex(look=>look.cls===offer.id&&look.visualId===key);
   if(position<0||slots[position])continue;
   const look=MARKET_LOOKS[position];
-  slots[position]={...offer,visualId:look.visualId,appearance:look.appearance,
+  const name=romanName(offer.name,usedNames,()=>stableNameRoll(look.visualId+'|'+(offer.name||'')));
+  slots[position]={...offer,name,visualId:look.visualId,appearance:look.appearance,
    growthType:look.growthType||offer.growthType||look.cls+'_a',visualLabel:look.label};
-  usedNames.add(String(offer.name||'').toLowerCase());
   usedClasses.push(offer.id);
  }
  for(let i=0;i<MARKET_LOOKS.length;i++){
@@ -148,6 +179,7 @@ function ensureInventory(){
   state.marketInventory=makeStock(state,Math.random,state.marketInventory);opts.save?.();
  }else{
   let converted=false;
+  const usedNames=new Set((state.roster||[]).map(h=>String(h.name||'').trim().toLowerCase()).filter(Boolean));
   for(let i=0;i<state.marketInventory.length;i++){
    const h=state.marketInventory[i];if(!h)continue;
    const look=MARKET_LOOKS[i];
@@ -157,6 +189,9 @@ function ensureInventory(){
     converted=true;
    }
    if(h.visualLabel!==look.label){h.visualLabel=look.label;converted=true;}
+   // Rename only unpurchased, previously saved single-token offers.
+   const updated=romanName(h.name,usedNames,()=>stableNameRoll(look.visualId+'|'+(h.name||'')));
+   if(h.name!==updated){h.name=updated;converted=true;}
   }
   if(converted)opts.save?.();
  }
@@ -218,7 +253,7 @@ function drawMarketFigure(i,hero){
 function overlayPanel(hero,i,visible){const el=$('#gmPanel'+i);el.hidden=!visible;if(!visible)return;
  const q=qualities[hero.quality]||qualities.common;
  el.classList.toggle('gm-rare-panel',hero.quality==='rare');
- el.innerHTML=`<div class="gm-roman-name">${clean(hero.name)}</div><div class="gm-class">${clean(hero.className)} · ${q.label} · ${clean(hero.visualLabel||'성장형')}</div><div class="gm-innate">${clean(hero.innateSummary||'성장 적성 · 보통')}</div><div class="gm-lv">Lv.0</div>`+
+ el.innerHTML=`<div class="gm-roman-name${hero.name.length>17?' is-long':''}">${clean(hero.name)}</div><div class="gm-class">${clean(hero.className)} · ${q.label} · ${clean(hero.visualLabel||'성장형')}</div><div class="gm-innate">${clean(hero.innateSummary||'성장 적성 · 보통')}</div><div class="gm-lv">Lv.0</div>`+
  [...hero.vals,hero.defense??hero.vals[2]].map((n,j)=>`<div class="gm-stat"><span class="gm-stat-name"><b style="color:${labels[j][1]}">${labels[j][3]}</b>${labels[j][0]}</span><span class="gm-stat-track"><i style="--value:${Math.min(100,n*12)}%;--color:${labels[j][1]};--shade:${labels[j][2]}"></i></span></div>`).join('');
 }
 function render(){if(!scene||scene.hidden)return;
@@ -249,7 +284,7 @@ function render(){if(!scene||scene.hidden)return;
  detail.hidden=avatar.hidden=!hero;
  if(hero){
   const quality=qualities[hero.quality]||qualities.common;
-  detail.innerHTML=`<h2>${clean(hero.name)} <span class="gm-divider">·</span> ${clean(hero.className)} · ${clean(hero.visualLabel||'성장형')}</h2><div class="gm-level"><strong>Lv.0 · ${quality.label}</strong><span>◉ ${Number(hero.cost).toLocaleString('ko-KR')} D</span></div><p>${clean(hero.innateSummary||hero.desc)} · ${clean(hero.trait||'고유 적성')}</p>`;
+  detail.innerHTML=`<h2>${clean(hero.name)}</h2><div class="gm-appearance">${clean(hero.className)} · ${clean(hero.visualLabel||'성장형')}</div><div class="gm-level"><strong>Lv.0 · ${quality.label}</strong><span>◉ ${Number(hero.cost).toLocaleString('ko-KR')} D</span></div><p>${clean(hero.innateSummary||hero.desc)} · ${clean(hero.trait||'고유 적성')}</p>`;
   drawPortrait(hero);
  }
  const hire=$('#gmHire'),price=$('#gmPrice');hire.disabled=!hero||Number(state.gold)<hero.cost;
@@ -439,5 +474,5 @@ function open(options){opts=options;setup();
  scene.hidden=false;scene.classList.remove('gm-display-ready','gm-art-error');fit();render();prepareMarket(++sceneEpoch);
 }
 root.SlaveMarket={open,close,refresh:render};
-if(typeof module!=='undefined')module.exports={types,newOffer,makeStock,MARKET_LOOKS,PAGE_SIZE,PAGE_COUNT,qualities,RESTOCK_COST};
+if(typeof module!=='undefined')module.exports={types,newOffer,makeStock,MARKET_LOOKS,PAGE_SIZE,PAGE_COUNT,qualities,RESTOCK_COST,romanName,isRomanFullName,ROMAN_PRAENOMINA,ROMAN_NOMINA};
 })(globalThis);
