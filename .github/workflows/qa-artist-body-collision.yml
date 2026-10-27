@@ -1,0 +1,43 @@
+name: QA size-aware fighter body collisions
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/arena-body-collision.js
+      - public/arena-coop-core.js
+      - public/arena-coop.js
+      - public/ludus-practice.js
+      - public/index.html
+      - tests/arena-body-collision-v116.cjs
+      - tests/arena-coop-core.js
+      - tests/arena-depth-perspective-v113.cjs
+      - tests/practice-appearance-proportions-v45.cjs
+      - .github/workflows/qa-artist-body-collision.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  physics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax of all common fighter physics and raster renderers
+        run: |
+          node --check public/arena-body-collision.js
+          node --check public/arena-coop-core.js
+          node --check public/arena-coop.js
+          node --check public/ludus-practice.js
+      - name: Verify 70% far field and size-aware body geometry in all modes
+        run: node tests/arena-body-collision-v116.cjs
+      - name: Verify 5v5 100 seeded real battles still move and attack with collisions
+        run: node tests/arena-coop-core.js
+      - name: Verify 1v4 training and 5v5 perspective and FX depth
+        run: node tests/arena-depth-perspective-v113.cjs
+      - name: Preserve 1v4 studio-authored sprites and enemy proportions
+        run: node tests/practice-appearance-proportions-v45.cjs
+      - name: Preserve 1v4 bitmap FX and swing frame geometry
+        run: node tests/practice-fx-editor-fidelity-v52.cjs
