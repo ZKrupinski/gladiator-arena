@@ -59,7 +59,7 @@ test('a studio-generated new look automatically joins every game table',()=>{
  assert.equal(stock.at(-1).appearance,look.visualId);
  assert.equal(stock.at(-1).id,'murmillo');
  assert.equal(stock.at(-1).priceLevel,2);
- assert.equal(market.PAGE_COUNT,9,'old module export preserved, dynamic count checked via registry');
+ assert.equal(market.PAGE_COUNT,10,'all 28 registered looks are paginated dynamically');
  assert.equal(Math.ceil(registry.market().length/3),10);
 });
 test('a game-side SpriteMotionRegistry addition becomes visible to the same studio API',()=>{
