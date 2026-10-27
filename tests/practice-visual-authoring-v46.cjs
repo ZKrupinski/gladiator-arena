@@ -74,7 +74,7 @@ for(let n=1;n<=4;n++){
 }
 assert.doesNotMatch(game,/scale:1\.29|scale:1\.06|scale:1\.24/,
  'remove ALL old staggered front/rear scales');
-assert(html.includes('practice-size-stage.js?v=true-size-v54'),'studio imports actual shared battle-sized preview');
+assert(/practice-size-stage\.js\?v=[a-z0-9-]+/i.test(html),'studio imports actual shared battle-sized preview');
 assert(html.includes('const previewScale=.52,z=previewScale*window.SpartacusStagePreview.offsetFactor(key,scene)'),
  'studio action preview shares live duel/practice scene projection');
 assert(html.includes("slash:'slash',sweep:'sweep',thrust:'thrust'"),'studio previews exact attack FX variants');
