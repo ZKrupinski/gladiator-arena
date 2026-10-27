@@ -450,9 +450,27 @@ window.ArenaAnimatedFX?.bind?.(CINEMATIC_IMG);
 // the same visual identity. Do not swap the class keys in emitAttackFx().
 // Sprite atlases are content-aware repacked into exact 420px cells to avoid clipped weapon tips and frame bleed.
 const ATLAS_COLS=5, ATLAS_ROWS=2;
-// v5.7: body collision follows the visible torsos rather than the full 348px sprite frame.
-// Weapons may extend beyond the body pivot; keep a small stance gap without giant invisible walls.
+// Neutral-body collisions use the same published look scale as renderers.
+// Attack weapon tips, dash silhouettes and authored action-only keyframe motion
+// are transient and must not enlarge persistent idle/walk collision geometry.
 const MIN_FIGHTER_DISTANCE=200, AI_SPACING_BUFFER=18, FIGHTER_DRAW_SIZE=348;
+const BODY=window.SpartacusBodyCollision;
+if(!BODY)throw Error('Shared neutral fighter collision missing');
+function duelBodyShape(f){
+ const look=f?.beastType?'beast_'+f.beastType:duelAppearanceKey(f);
+ const size=f?.beastType?(
+  (window.PracticeScaleProfiles?.scale?.(look)??1)*
+  (window.ArenaBeasts?.types?.[f.beastType]?.scale??1)
+ ):(duelVisualScale(f)/DUEL_BASE_VISUAL_SCALE);
+ const neutral=window.PracticeVisualProfiles?.resolve?.(look,'idle')?.scale??1;
+ return BODY.footprint('duel',{scale:size*neutral});
+}
+function duelBodyGap(a,b){return BODY.gap(duelBodyShape(a),duelBodyShape(b),4);}
+function duelCollisionException(f){
+ return !!(f?.comboDash||f?.parryChase||f?.attackLunge?.t>0||
+  f?.specialLunge?.t>0||f?.specialRecoil||f?.dodge>0||
+  ((f?.action==='attack'||f?.action==='special')&&f.actionT>0));
+}
 const DATA={
  murmillo:{name:'무르밀로',eng:'MURMILLO',hp:138,atk:17,reach:279,move:244,sp:42,color:'#ce7652',special:'SCUTUM IMPACT'},
  thraex:{name:'트라엑스',eng:'THRAEX',hp:113,atk:18,reach:292,move:290,sp:35,color:'#8baec6',special:'SICA CROSS CUT'},
@@ -2168,7 +2186,8 @@ function attack(f,victim,special=false,dashImpact=false){
    }
    fxSound(special?'heavy_swing':'swing');
  }
- const dist=Math.abs(f.x-victim.x),reach=f.cfg.reach+(special?40:0)+(dashImpact?102:0);
+ const dist=Math.abs(f.x-victim.x),
+ reach=Math.max(f.cfg.reach+(special?40:0)+(dashImpact?102:0),duelBodyGap(f,victim)+40);
  // Perfect parry has a separate, much wider horizontal reach. Normal hits do not.
  const parryDistance=Math.max(PARRY_MIN_DISTANCE,reach+PARRY_SIDE_BONUS);
  const wideParry=victim.guard&&victim.st>0&&victim.parry>0&&victim.dodge<=0&&dist<=parryDistance;
@@ -2674,7 +2693,7 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
  if(e._beastRoarUntil>clock){e.vx=0;e.guard=false;}
  else if(e.stagger<=0&&!e.comboDash&&e.dodge<=0&&!e.specialRecoil&&!e.parryChase){
   const dist=Math.abs(e.x-p.x),dir=Math.sign(p.x-e.x)||-1;e.face=dir;
-  const preferred=Math.max(MIN_FIGHTER_DISTANCE+AI_SPACING_BUFFER,e.cfg.reach-55)+(enemyMood?.spacing||0)*.48;
+  const preferred=Math.max(duelBodyGap(e,p)+AI_SPACING_BUFFER,e.cfg.reach-55)+(enemyMood?.spacing||0)*.48;
   if(!e.guard){
    if(dist>preferred+22){
     if(!preEngagementFootwork(e,p,dt)){
@@ -2785,18 +2804,20 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
  }
  p.x=clamp(p.x,p.specialRecoil?-300:100,p.specialRecoil?1580:1180);
  e.x=clamp(e.x,e.specialRecoil?-300:100,e.specialRecoil?1580:1180);
- // Physical body separation: never let the front silhouettes merge.
- const sep=Math.abs(e.x-p.x);
- if(sep<MIN_FIGHTER_DISTANCE){
-  if(window.ArenaMotion?.contactPulse?.(p,e,MIN_FIGHTER_DISTANCE)){
+ // Normal moving/standing silhouettes keep clear while authored
+ // attack, dash, parry and knockback travel remains unrestricted.
+ const minGap=duelBodyGap(p,e),sep=Math.abs(e.x-p.x);
+ if(sep<minGap&&!duelCollisionException(p)&&!duelCollisionException(e)){
+  if(window.ArenaMotion?.contactPulse?.(p,e,minGap))
    window.ArenaMotion.shake(S,'contact',p.x<e.x?1:-1);
-  }
-  const dir=p.x<=e.x?1:-1,half=(MIN_FIGHTER_DISTANCE-sep)*.5;
+  const dir=p.x<=e.x?1:-1,half=(minGap-sep)*.5;
   p.x=clamp(p.x-dir*half,100,1180);
   e.x=clamp(e.x+dir*half,100,1180);
-  const missing=MIN_FIGHTER_DISTANCE-Math.abs(e.x-p.x);
-  if(missing>0){p.x=clamp(p.x-dir*missing,100,1180);
-    if(Math.abs(e.x-p.x)<MIN_FIGHTER_DISTANCE)e.x=clamp(e.x+dir*(MIN_FIGHTER_DISTANCE-Math.abs(e.x-p.x)),100,1180);}
+  const missing=minGap-Math.abs(e.x-p.x);
+  if(missing>0){
+   p.x=clamp(p.x-dir*missing,100,1180);
+   if(Math.abs(e.x-p.x)<minGap)e.x=clamp(e.x+dir*(minGap-Math.abs(e.x-p.x)),100,1180);
+  }
  }
  updateHud();}
 function renderBattleRewardTray(){
