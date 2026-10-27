@@ -41,7 +41,7 @@ function onReady(fn){if(typeof fn!=='function')return()=>{};listeners.add(fn);if
 function getAction(f,scene,clock){
  const st=root.MurmilloMotion?.stateAt?.(f,scene,clock)||
    (f?.dead?{action:'death',progress:1,loop:false}:{action:Math.abs(f?.vx||0)>7?'walk':'idle',progress:0,loop:true});
- const actual={defeat:'death',dodge:'walk',dash:'heavy',victory:'idle'}[st.action]||st.action;
+ const actual={defeat:'death',dodge:'walk',dash:'heavy',comboDash:'heavy',special:'heavy',finisher:'idle',victory:'idle'}[st.action]||st.action;
  const action=ACTIONS.includes(actual)?actual:'idle';
  let index=0;
  const time=Number.isFinite(clock)?clock:0;
