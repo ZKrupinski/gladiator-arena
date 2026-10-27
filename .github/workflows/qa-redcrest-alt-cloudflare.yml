@@ -7,6 +7,10 @@ on:
       - public/index.html
       - public/alt-murmillo.js
       - public/market-scene.js
+      - public/market-pricing.js
+      - public/practice-scale-published.js
+      - public/tools/practice-scale-publish.js
+      - scripts/qa_market_price_studio_browser.mjs
       - public/market-scene.css
       - tests/market-all-human-looks.test.cjs
       - public/tools/practice-scale-calibrator.html
