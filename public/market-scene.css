@@ -166,3 +166,23 @@
 .gm-screen .gm-boot-actions[hidden]{display:none!important}
 .gm-screen .gm-boot-actions button{position:static;min-width:145px;padding:10px 16px;border:2px solid #c29b64;
  border-radius:8px;background:#493021;color:#ffe2a7;font:800 16px 'Noto Sans KR',sans-serif;cursor:pointer}
+
+/* v113: 27 human gladiator looks in 9 pages of the approved three-podium market. */
+.gm-screen .gm-stage .gm-appearance-nav{
+ position:absolute;z-index:24;left:478px;top:202px;width:1015px;height:43px;
+ display:flex;align-items:center;justify-content:center;gap:16px;pointer-events:auto;
+ font-family:'Noto Sans KR',sans-serif;
+}
+.gm-screen .gm-appearance-nav button{
+ position:static;display:block;flex:0 0 auto;width:172px;height:42px;
+ background:linear-gradient(#57311c,#2a180f);border:2px ridge #b99253;
+ border-radius:7px;color:#ffe3a4;font:900 19px/1.2 'Noto Sans KR',sans-serif;
+ box-shadow:0 2px 6px #100704;
+}
+.gm-screen .gm-appearance-nav button:hover:not(:disabled){filter:brightness(1.17)}
+.gm-screen .gm-appearance-nav button:disabled{opacity:.38;cursor:default}
+.gm-screen .gm-appearance-nav span{
+ min-width:340px;text-align:center;padding:5px 10px;background:#20140edc;
+ border:1px solid #b18a4b;border-radius:5px;color:#ffe2a1;
+ font:900 22px/1.2 'Noto Sans KR',sans-serif;white-space:nowrap;
+}
