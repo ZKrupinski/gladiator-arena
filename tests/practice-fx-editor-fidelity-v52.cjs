@@ -54,10 +54,11 @@ const battle={fx:[],clock:0};qa.setBattle(battle);
 qa.emitVfx('slash',unit,null,true);
 assert.equal(battle.fx.length,1);
 const fx=battle.fx[0],expect=s.effectGeometry({
- kind:'sweep',baseX:unit.x+52,baseY:unit.y-113+11,
- zoom:1,face:1,pose:reload
+ kind:'sweep',baseX:unit.x+52*.82,baseY:unit.y+(-113+11)*.82,
+ zoom:.82,face:1,pose:reload
 });
 assert.equal(fx.kind,'sweep','user-selected FX type is applied');
+assert.equal(qa.setCourts(4)||window.LudusPractice.rules.courtPerspective(606),.82,'rear PNG effects use the same depth projection as sprites');
 assert.equal(fx.x,expect.x,'practice FX X uses exact editor geometry');
 assert.equal(fx.y,expect.y,'practice FX Y uses exact editor geometry');
 assert.equal(fx.width,expect.width,'practice FX width uses exact editor geometry');
