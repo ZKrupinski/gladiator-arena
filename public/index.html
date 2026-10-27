@@ -1539,7 +1539,10 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
  S.autoPlaying=false;S.lastManualInput=clock;S.careerRewardApplied=false;S.crowd=ArenaCrowd.create();S.matchLoot=[];S.matchGold=0;
  S.player=fighter(selected,335,false);S.enemy=fighter(rival,940,true);CAMERA.initialized=false;
  if(careerMatch){
-  if(isCustomMurmillo(CAREER.hero)){
+  if(registeredVisualId(CAREER.hero)){
+   S.player.registeredAppearance=registeredVisualId(CAREER.hero);
+   S.player.growthType=growthType(CAREER.hero);S.player.growthLevel=5;
+  }else if(isCustomMurmillo(CAREER.hero)){
    S.player.championVariant=CAREER.hero.appearance;
    S.player.growthType='murmillo_a';S.player.growthLevel=5;
   }else if(isAnimatedMurmillo(CAREER.hero)){
@@ -1550,7 +1553,10 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
   }
   S.player.cfg={...S.player.cfg,name:CAREER.hero.name+' · Lv.'+careerLevel(CAREER.hero)};
   const opponent=S.careerOpponent;
-  if(opponent.appearance===CHAMPION_MURMILLO_VARIANT||opponent.appearance===NEW_MURMILLO_VARIANT||opponent.appearance===ALT_MURMILLO_VARIANT){
+  if(registeredVisualId(opponent)){
+   S.enemy.registeredAppearance=registeredVisualId(opponent);
+   S.enemy.growthType=growthType(opponent);S.enemy.growthLevel=5;
+  }else if(opponent.appearance===CHAMPION_MURMILLO_VARIANT||opponent.appearance===NEW_MURMILLO_VARIANT||opponent.appearance===ALT_MURMILLO_VARIANT){
    S.enemy.championVariant=opponent.appearance;
    S.enemy.championBoss=true;
    S.enemy.growthType='murmillo_a';S.enemy.growthLevel=5;
@@ -1621,7 +1627,8 @@ function updateLineupHud(){
 }
 function lineupHero(index){
  const h=CAREER.roster[index],f=fighter(h.cls,335,false);
- if(isCustomMurmillo(h)){f.championVariant=h.appearance;f.growthType='murmillo_a';f.growthLevel=5;}
+ if(registeredVisualId(h)){f.registeredAppearance=registeredVisualId(h);f.growthType=growthType(h);f.growthLevel=5;}
+ else if(isCustomMurmillo(h)){f.championVariant=h.appearance;f.growthType='murmillo_a';f.growthLevel=5;}
  else if(isAnimatedMurmillo(h)){f.motionVariant=ANIMATED_MURMILLO_VARIANT;f.growthType='murmillo_a';f.growthLevel=5;}
  else if(h.appearance==='legacy'){f.legacyVisualId='legacy_'+h.cls;}
  else {f.growthType=growthType(h);f.growthLevel=visualCareerStage(h);}
