@@ -224,7 +224,20 @@ function changePage(direction){
  reaction('검투사 외형 '+(page+1)+' / '+PAGE_COUNT+' · '+merchantLines.select,'select',2600);
 }
 function fit(){if(!stage)return;const z=Math.min(innerWidth/WIDTH,innerHeight/HEIGHT);stage.style.transform=`translate(-50%,-50%) scale(${z})`;}
-function getHeroArtwork(h){if(!h)return null;const art=opts?.getSprite?.(h.id,h);return art&&art.width&&art.height?art:null;}
+const watchedCustomArtwork=new Set();
+function getHeroArtwork(h){
+ if(!h)return null;
+ // A new fighter's own texture loads asynchronously. Refresh its sale slot
+ // immediately when ready instead of showing a stale or unrelated portrait.
+ const id=h.visualId,loader=root.SpartacusExtraGladiatorArt;
+ if(registry.isCustom(id)&&loader&&!watchedCustomArtwork.has(id)){
+  watchedCustomArtwork.add(id);
+  loader.onReady(id,()=>{if(scene&&!scene.hidden)render();});
+  loader.loadAssets(id);
+ }
+ const art=opts?.getSprite?.(h.id,h);
+ return art&&art.width&&art.height?art:null;
+}
 function drawPortrait(h){
  const c=$('#gmPortrait');if(!c||c.parentElement.hidden||!h)return;
  const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);
