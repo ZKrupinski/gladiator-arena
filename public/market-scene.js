@@ -297,7 +297,7 @@ function render(){if(!scene||scene.hidden)return;
  detail.hidden=avatar.hidden=!hero;
  if(hero){
   const quality=qualities[hero.quality]||qualities.common;
-  detail.innerHTML=`<h2>${clean(hero.name)}</h2><div class="gm-appearance">${clean(hero.className)} · ${clean(hero.visualLabel||'성장형')}</div><div class="gm-level"><strong>Lv.0 · ${quality.label}</strong><span>◉ ${Number(hero.cost).toLocaleString('ko-KR')} D</span></div><p>${clean(hero.innateSummary||hero.desc)} · ${clean(hero.trait||'고유 적성')}</p>`;
+  detail.innerHTML=`<h2>${clean(hero.name)}</h2><div class="gm-appearance">${clean(hero.className)} · ${clean(hero.visualLabel||'성장형')}</div><div class="gm-level"><strong>Lv.0 · ${quality.label} · 가격레벨 ${hero.priceLevel||3}</strong><span>◉ ${Number(hero.cost).toLocaleString('ko-KR')} D</span></div><p>${clean(hero.innateSummary||hero.desc)} · ${clean(hero.trait||'고유 적성')}</p>`;
   drawPortrait(hero);
  }
  const hire=$('#gmHire'),price=$('#gmPrice');hire.disabled=!hero||Number(state.gold)<hero.cost;
