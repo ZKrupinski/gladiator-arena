@@ -10,23 +10,23 @@ const types=[
  {id:'murmillo',className:'무르밀로',names:['Lucius','Marcus','Brutus','Gaius','Publius','Tiberius'],base:[5,3,5,3],cost:500,desc:'견고한 방패와 단검으로 전선을 지키는 강인한 무르밀로입니다. 안정적인 방어에 능합니다.',face:[856,255,163,151]},
  {id:'retiarius',className:'레티아리우스',names:['Marcellus','Quintus','Nero','Sextus','Julius','Valerius'],base:[2,4,1,5],cost:500,desc:'그물과 삼지창으로 원거리를 장악하는 레티아리우스입니다. 높은 기술과 넓은 사거리를 가집니다.',face:[1244,264,176,150]}
 ];
-// Every playable human appearance has one permanent sale slot. Beasts and NPCs never enter this catalog.
-const MARKET_LOOKS=Object.freeze([
- ...[
-  ['murmillo','murmillo_a','무르밀로 A'],
-  ['thraex','thraex_a','트라엑스 A'],
-  ['thraex','thraex_b','트라엑스 B'],
-  ['retiarius','retiarius_a','레티아리우스 A']
- ].flatMap(([cls,family,name])=>Array.from({length:5},(_,i)=>({
-  cls,visualId:family+'_L'+(i+1),growthType:family,label:name+' · 외형 '+(i+1),appearance:null,special:false
- }))),
- {cls:'murmillo',visualId:'murmillo_champion_red',appearance:'murmillo_champion_red',label:'붉은 투구 챔피언',special:true},
- {cls:'murmillo',visualId:'murmillo_redcrest_new_v1',appearance:'murmillo_redcrest_new_v1',label:'신규 붉은투구 무르밀로',special:true},
- {cls:'murmillo',visualId:'murmillo_redcrest_alt_v1',appearance:'murmillo_redcrest_alt_v1',label:'레드크레스트 II',special:true},
- {cls:'murmillo',visualId:'murmillo_motion_v3',appearance:'murmillo_motion_v3',label:'모션 무르밀로',special:true},
- ...['murmillo','thraex','retiarius'].map(cls=>({cls,visualId:'legacy_'+cls,appearance:'legacy',label:'클래식 '+(cls==='murmillo'?'무르밀로':cls==='thraex'?'트라엑스':'레티아리우스'),special:true}))
-]);
-const PAGE_COUNT=Math.ceil(MARKET_LOOKS.length/PAGE_SIZE);
+// Unified catalog: the studio and ALL game modes use the same identity IDs.
+const registry=root.SpartacusGladiators||
+ (typeof module!=='undefined'&&module.exports?require('./gladiator-registry.js'):null);
+if(!registry)throw Error('Unified gladiator registry missing');
+let MARKET_LOOKS=registry.market(),PAGE_COUNT=Math.ceil(MARKET_LOOKS.length/PAGE_SIZE);
+function syncCatalog(){
+ const latest=registry.market();
+ if(latest.length!==MARKET_LOOKS.length||
+ latest.some((look,i)=>MARKET_LOOKS[i]?.visualId!==look.visualId)){
+  MARKET_LOOKS=latest;
+  PAGE_COUNT=Math.ceil(latest.length/PAGE_SIZE);
+  page=Math.max(0,Math.min(page,PAGE_COUNT-1));
+  const label=scene?.querySelector('.gm-appearance-nav');
+  if(label)label.setAttribute('aria-label','검투사 '+latest.length+'종 페이지');
+ }
+ return MARKET_LOOKS;
+}
 const labels=[['STR','#ff5554','#bc2223','✊'],['AGI','#66f36e','#238f39','♞'],['END','#f4bf6a','#9e702a','♥'],['FOC','#a66afa','#6028bd','✥'],['DEF','#5796ff','#274cc2','⬟']];
 const merchantLines={hello:'좋은 검투사가 필요하신가요? 방금 들어온 유망한 후보들입니다!',select:'훈련만 잘 시킨다면 훌륭한 투사가 될 겁니다!',confirm:'정말 이 검투사를 영입하시겠습니까? 데나리우스를 지불하면 거래가 성사됩니다.',cancel:'마음이 바뀌셨습니까? 다른 후보도 살펴보시지요.',success:'하하하! 안목이 훌륭하시군요! 이 검투사는 이제 당신의 루두스 소속입니다!',poor:'금화가 부족하다니 아쉽군요. 시합에서 승리하고 다시 방문하세요.',empty:'모든 단상이 비었습니다! 후보 갱신으로 새로운 검투사를 불러오십시오.',refresh:'새로운 후보들이 단상에 올랐습니다! 천천히 살펴보시지요.'};
 let scene=null,stage=null,opts=null,selection=0,page=0,keyImg=null,mode='idle',dialogOffer=null;
@@ -154,6 +154,7 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random,f
   marketOrigin:'mercatus',marketLot:Math.trunc(numberFrom(seed))};
 }
 function makeStock(state,rng=Math.random,existing=[]){
+ syncCatalog();
  const slots=Array(MARKET_LOOKS.length).fill(null);
  const usedNames=new Set((state.roster||[]).map(h=>String(h.name||'').toLowerCase()).filter(Boolean));
  const usedClasses=[];
@@ -180,6 +181,7 @@ function makeStock(state,rng=Math.random,existing=[]){
  return slots;
 }
 function ensureInventory(){
+ syncCatalog();
  const state=opts.state;
  if(!Array.isArray(state.marketInventory)||state.marketInventory.length!==MARKET_LOOKS.length){
   state.marketInventory=makeStock(state,Math.random,state.marketInventory);opts.save?.();
@@ -369,7 +371,7 @@ function restock(){
  if(Number(state.gold)<RESTOCK_COST){
   reaction('검투사 전체 후보를 갱신할 '+RESTOCK_COST+' 데나리우스가 부족합니다.','poor');return;
  }
- // A single paid click replaces all 27 human appearances, regardless of purchase status.
+ // A single paid click refreshes every registered human appearance (beasts excluded).
  state.gold-=RESTOCK_COST;
  state.marketSeed=Math.max(0,Math.trunc(numberFrom(state.marketSeed)))+1;
  state.marketInventory=makeStock(state);
@@ -394,7 +396,7 @@ function setup(){if(scene)return;
   <img class="gm-key-art" id="gmKey" src="assets/market/market_blank_v68.webp" alt="" aria-hidden="true" decoding="sync" draggable="false">
   <img class="gm-merchant-full gm-pose-1" id="gmMerchantMain" src="assets/market/merchant_pose_1.webp" alt="" aria-hidden="true" draggable="false">
   <div class="gm-paper-foreground" aria-hidden="true"></div>
-  <nav class="gm-appearance-nav" aria-label="검투사 27종 페이지">
+  <nav class="gm-appearance-nav" aria-label="검투사 외형 페이지">
    <button type="button" id="gmPrevPage" aria-label="이전 검투사 외형 3종">❮ 이전 3종</button>
    <span id="gmPageStatus" role="status" aria-live="polite"></span>
    <button type="button" id="gmNextPage" aria-label="다음 검투사 외형 3종">다음 3종 ❯</button>
@@ -487,10 +489,14 @@ function open(options){opts=options;setup();
  ensureInventory();page=0;selection=pick(0);mode='idle';$('#gmDialog').hidden=true;
  scene.hidden=false;scene.classList.remove('gm-display-ready','gm-art-error');fit();render();prepareMarket(++sceneEpoch);
 }
+registry.subscribe(()=>{
+ syncCatalog();
+ if(scene&&!scene.hidden&&mode==='idle'){ensureInventory();selection=pick(page*PAGE_SIZE);render();}
+});
 // In another tab, the calibrator can change this device's market price drafts.
 if(typeof window!=='undefined')window.addEventListener('storage',e=>{
- if(e.key===priceModel.STORAGE_KEY&&scene&&!scene.hidden&&mode==='idle')render();
+ if((e.key===priceModel.STORAGE_KEY||e.key===registry.KEY)&&scene&&!scene.hidden&&mode==='idle')render();
 });
 root.SlaveMarket={open,close,refresh:render};
-if(typeof module!=='undefined')module.exports={types,newOffer,makeStock,MARKET_LOOKS,PAGE_SIZE,PAGE_COUNT,qualities,RESTOCK_COST,romanName,isRomanFullName,ROMAN_PRAENOMINA,ROMAN_NOMINA};
+if(typeof module!=='undefined')module.exports={types,newOffer,makeStock,MARKET_LOOKS,PAGE_SIZE,PAGE_COUNT,qualities,RESTOCK_COST,romanName,isRomanFullName,ROMAN_PRAENOMINA,ROMAN_NOMINA,registry,syncCatalog};
 })(globalThis);
