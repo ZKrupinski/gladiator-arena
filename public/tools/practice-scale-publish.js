@@ -97,7 +97,7 @@ function valuesFrom(text){
   throw Error('게시된 시장가격 27종 설정이 유효하지 않습니다');
  const priceLevels=pricing.normalize({...pricing.BASE,...parsedPrices});
  const registry=root.SpartacusGladiators;
- const extra=text.match(/SpartacusPublishedGladiators\\s*=\\s*Object\\.freeze\\(\\s*(\\[[\\s\\S]*?\\])\\s*\\)/);
+ const extra=text.match(/SpartacusPublishedGladiators\s*=\s*Object\.freeze\(\s*(\[[\s\S]*?\])\s*\)/);
  const raw=extra?JSON.parse(extra[1]):[];
  const gladiators=registry.sanitize(raw);
  if(gladiators.length!==raw.length)throw Error('GitHub 검투사 등록부에 유효하지 않은 신규 외형이 있습니다.');
