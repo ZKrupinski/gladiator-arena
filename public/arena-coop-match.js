@@ -29,7 +29,11 @@
    const h=allies[i],unitHp=hpOf(h),unitAtk=atkOf(h);
    const hp=160+(clamp(unitHp,hpAvg*.72,hpAvg*1.28)-160)*.75;
    const atk=18+(clamp(unitAtk,atkAvg*.76,atkAvg*1.26)-18)*.75;
-   const look=cls+'_a_L'+stage;
+   const candidates=globalThis.SpartacusGladiators?.custom?.()
+    .filter(g=>g.cls===cls)||[];
+   const chosen=candidates.length&&(i+Math.floor(level/5))%3===0?
+    candidates[(i+level)%candidates.length]:null;
+   const look=chosen?.visualId||cls+'_a_L'+stage;
    return {name:NAMES[i],cls,level,stage,growthType:cls+'_a',look,visualId:look,
     combat:{
      // A fighter's current condition affects enemy offense more than enemy
