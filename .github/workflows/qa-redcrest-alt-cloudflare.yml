@@ -7,6 +7,14 @@ on:
       - public/index.html
       - public/alt-murmillo.js
       - public/market-scene.js
+      - public/gladiator-registry.js
+      - public/gladiator-custom-art.js
+      - public/sprite-motion-registry.js
+      - public/practice-scale-profiles.js
+      - public/ludus-roster.js
+      - public/ludus-practice.js
+      - public/arena-coop-match.js
+      - tests/gladiator-registry-sync.test.cjs
       - public/market-pricing.js
       - public/practice-scale-published.js
       - public/tools/practice-scale-publish.js
@@ -29,6 +37,6 @@ jobs:
         with:
           node-version: '22'
       - name: Regression test all 27 Roman market candidates and old-save migration
-        run: node --test tests/market-all-human-looks.test.cjs
+        run: node --test tests/market-all-human-looks.test.cjs tests/gladiator-registry-sync.test.cjs
       - name: Compare production site to committed nine full-res sprites and game loader
         run: python scripts/verify_live_redcrest_alt.py 24
