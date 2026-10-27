@@ -2,6 +2,9 @@
 (function(root){
 'use strict';
 const WIDTH=1672, HEIGHT=941, RESTOCK_COST=60, PAGE_SIZE=3;
+const priceModel=(typeof module!=='undefined'&&module.exports)
+ ?require('./market-pricing.js'):root.SpartacusMarketPricing;
+if(!priceModel)throw new Error('Spartacus market pricing module is missing');
 const types=[
  {id:'thraex',className:'트라엑스',names:['Cassius','Decimus','Aulus','Titus','Felix','Flavius'],base:[2,5,2,2],cost:500,desc:'민첩한 움직임과 빠른 공격이 특징인 트라엑스입니다. 날카로운 시카로 적의 허점을 노립니다.',face:[550,258,158,146]},
  {id:'murmillo',className:'무르밀로',names:['Lucius','Marcus','Brutus','Gaius','Publius','Tiberius'],base:[5,3,5,3],cost:500,desc:'견고한 방패와 단검으로 전선을 지키는 강인한 무르밀로입니다. 안정적인 방어에 능합니다.',face:[856,255,163,151]},
@@ -140,11 +143,11 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random,f
  });
  const defense=Math.max(1,Math.min(9,(t.id==='murmillo'?5:3)+q.bonus+randIndex(rng,5)-2));
  aptitudes.def=+(.70+randIndex(rng,21)*.04).toFixed(2);
- const cost=Math.round((q.min+randIndex(rng,q.range+1))/10)*10;
- const premium=
-  (appearance==='legacy'?850:appearance==='murmillo_motion_v3'?2600:
-   appearance==='murmillo_champion_red'?3600:appearance==='murmillo_redcrest_alt_v1'?2800:appearance==='murmillo_redcrest_new_v1'?3000:0);
- return {id:t.id,className:t.className,name,vals,defense,cost:cost+premium,aptitudes,innateSummary,
+ // Art tier, not random rarity premiums, controls the entire market economy.
+ const sale=priceModel.quote(visualId,seed);
+ if(!sale)throw new Error('Market look has no configured price: '+visualId);
+ return {id:t.id,className:t.className,name,vals,defense,cost:sale.cost,
+  priceLevel:sale.level,priceModelVersion:sale.model,aptitudes,innateSummary,
   desc:t.desc+' '+(quality==='rare'?'매우 드문 고급 검투사. ':quality==='veteran'?'실전 경험이 풍부한 숙련자. ':'')+
    '특기: '+trait+'.',
   face:t.face,quality,trait,growthType,visualId,appearance,visualLabel,
@@ -164,8 +167,10 @@ function makeStock(state,rng=Math.random,existing=[]){
   if(position<0||slots[position])continue;
   const look=MARKET_LOOKS[position];
   const name=romanName(offer.name,usedNames,()=>stableNameRoll(look.visualId+'|'+(offer.name||'')));
+  const sale=priceModel.quote(look.visualId,state.marketSeed);
   slots[position]={...offer,name,visualId:look.visualId,appearance:look.appearance,
-   growthType:look.growthType||offer.growthType||look.cls+'_a',visualLabel:look.label};
+   growthType:look.growthType||offer.growthType||look.cls+'_a',visualLabel:look.label,
+   cost:sale.cost,priceLevel:sale.level,priceModelVersion:sale.model};
   usedClasses.push(offer.id);
  }
  for(let i=0;i<MARKET_LOOKS.length;i++){
@@ -185,7 +190,8 @@ function ensureInventory(){
    const h=state.marketInventory[i];if(!h)continue;
    const look=MARKET_LOOKS[i];
    if(h.visualId!==look.visualId||h.appearance!==look.appearance){
-    // Repair only the sale slot's visual mapping; keep its name, price and stats.
+    // Repair sale slot's visual mapping; preserve its name and stats.
+    // Old exorbitant costs are recalculated independently below.
     h.visualId=look.visualId;h.appearance=look.appearance;h.growthType=look.growthType||h.growthType;
     converted=true;
    }
@@ -193,6 +199,12 @@ function ensureInventory(){
    // Rename only unpurchased, previously saved single-token offers.
    const updated=romanName(h.name,usedNames,()=>stableNameRoll(look.visualId+'|'+(h.name||'')));
    if(h.name!==updated){h.name=updated;converted=true;}
+   // Previously unsold lots adopt published/device draft tiers; hires never change.
+   const sale=priceModel.quote(look.visualId,state.marketSeed);
+   if(h.cost!==sale.cost||h.priceLevel!==sale.level||h.priceModelVersion!==sale.model){
+     h.cost=sale.cost;h.priceLevel=sale.level;h.priceModelVersion=sale.model;
+     converted=true;
+   }
   }
   if(converted)opts.save?.();
  }
@@ -331,7 +343,7 @@ function askPurchase(){if(mode!=='idle')return;const hero=selection>=0?inventory
  const modal=$('#gmDialog');modal.hidden=false;modal.dataset.mode='confirm';
  $('#gmDialogHeading').textContent='검투사 고용 계약';
  $('#gmDialogBody').textContent=hero.name+' · '+hero.className+'을(를) '+hero.cost+' 데나리우스에 고용하시겠습니까?';
- $('#gmDialogDetail').textContent=(hero.quality==='rare'?'희귀 특수 검투사 · 높은 가격과 강화된 기본 능력. ':'')+'고용하면 데나리우스가 차감되고, 루두스에 Lv.1로 등록됩니다.';
+ $('#gmDialogDetail').textContent=(hero.quality==='rare'?'희귀 특수 검투사 · 강화된 기본 능력. 외형별 가격 레벨을 적용합니다. ':'')+'고용하면 데나리우스가 차감되고, 루두스에 Lv.1로 등록됩니다.';
  $('#gmConfirm').textContent='◉ '+hero.cost+' D · 고용 확정';$('#gmCancel').textContent='취소하기';
  reaction(merchantLines.confirm,'confirm',7000);$('#gmCancel').focus();
 }
@@ -475,6 +487,10 @@ function open(options){opts=options;setup();
  ensureInventory();page=0;selection=pick(0);mode='idle';$('#gmDialog').hidden=true;
  scene.hidden=false;scene.classList.remove('gm-display-ready','gm-art-error');fit();render();prepareMarket(++sceneEpoch);
 }
+// In another tab, the calibrator can change this device's market price drafts.
+if(typeof window!=='undefined')window.addEventListener('storage',e=>{
+ if(e.key===priceModel.STORAGE_KEY&&scene&&!scene.hidden&&mode==='idle')render();
+});
 root.SlaveMarket={open,close,refresh:render};
 if(typeof module!=='undefined')module.exports={types,newOffer,makeStock,MARKET_LOOKS,PAGE_SIZE,PAGE_COUNT,qualities,RESTOCK_COST,romanName,isRomanFullName,ROMAN_PRAENOMINA,ROMAN_NOMINA};
 })(globalThis);
