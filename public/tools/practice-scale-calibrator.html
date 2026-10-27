@@ -108,7 +108,7 @@ input[type=file]{display:none}
 <body>
 <header><small>SPARTACVS · LVDVS · SPRITE CALIBRATION</small>
 <h1>검투사 · 야수 · 집행인 크기·동작 보정실</h1>
-<p>31종을 <strong>한 페이지에서 끝까지 스크롤</strong>해 비교합니다. 개별 크기·발높이(Y)와 <strong>동작별 프레임 위치·크기 / 이펙트 종류·위치·크기</strong>를 직접 조정합니다. 검투사 실전훈련의 자동 프레임 크기 보정은 제거했습니다. 투명 영역이나 무기·투구 길이를 기준으로 크기를 다시 추정하지 않습니다.</p></header>
+<p>32종을 <strong>한 페이지에서 끝까지 스크롤</strong>해 비교합니다. 개별 크기·발높이(Y)와 <strong>동작별 프레임 위치·크기 / 이펙트 종류·위치·크기</strong>를 직접 조정합니다. 검투사 실전훈련의 자동 프레임 크기 보정은 제거했습니다. 투명 영역이나 무기·투구 길이를 기준으로 크기를 다시 추정하지 않습니다.</p></header>
 <section class="tools" aria-label="정렬 및 일괄 크기 조정">
  <div class="toolbar">
   <label for="sort">정렬</label><select id="sort">
@@ -218,10 +218,10 @@ input[type=file]{display:none}
 </div>
 <div class="action-actions"><button id="actionShowIdle">기본 동작 보기</button><output id="actionAutosave" role="status">동작·이펙트 변경값은 이 기기에 자동 임시저장됩니다.</output><span class="source-note">프리뷰는 전열 기준이며 투명영역 자동 확대를 사용하지 않습니다. 변경 후 기기 임시저장 또는 GitHub 원본 게시를 누르세요.</span></div>
 </section>
-<main class="grid" id="grid" aria-label="검투사, 야수, 집행인 전체 31종 크기 미리보기"></main>
+<main class="grid" id="grid" aria-label="검투사, 야수, 집행인 전체 32종 크기 미리보기"></main>
 <section class="source-panel" aria-labelledby="gitTitle">
 <h2 id="gitTitle">GitHub 원본에 크기·발높이·동작·이펙트 저장</h2>
-<p>여기에 게시한 31종 크기·발높이·동작별 프레임/이펙트 설정이 모든 기기에 적용되는 <strong>게임 기본값</strong>입니다. 브라우저 임시저장만으로는 GitHub 원본이 바뀌지 않습니다.</p>
+<p>여기에 게시한 32종 크기·발높이·동작별 프레임/이펙트 설정이 모든 기기에 적용되는 <strong>게임 기본값</strong>입니다. 브라우저 임시저장만으로는 GitHub 원본이 바뀌지 않습니다.</p>
 <div class="source-actions">
  <button id="publishOpen" class="primary" type="button">GitHub 원본 게시</button>
  <button id="githubEdit" type="button">GitHub 편집기에서 저장</button>
@@ -255,14 +255,14 @@ input[type=file]{display:none}
 </footer>
 <p class="guide">체크한 여러 외형에 크기 ±5% 또는 발높이 ↑↓5px을 일괄 적용할 수 있습니다. 발높이는 음수일수록 위로, 양수일수록 아래로 이동하며 바닥 안내선은 움직이지 않습니다. 셔플하면 위치만 바뀌고 선택·크기·발높이는 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
 <script src="../growth-frames.js"></script>
-<script src="../practice-scale-published.js?v=true-size-v54"></script><script src="../practice-scale-profiles.js?v=true-size-v54"></script>
+<script src="../practice-scale-published.js?v=redcrest-scale-v111"></script><script src="../practice-scale-profiles.js?v=redcrest-scale-v111"></script>
 <script src="../practice-visual-profiles.js?v=vfx-direction-v58"></script>
-<script src="practice-size-stage.js?v=true-size-v54"></script>
+<script src="practice-size-stage.js?v=redcrest-scale-v111"></script>
 <script>
 (()=>{'use strict';
 const p=window.PracticeScaleProfiles;
 const names={murmillo_a:'무르밀로',thraex_a:'트라엑스 A',thraex_b:'트라엑스 B',retiarius_a:'레티아리우스',
- murmillo_champion_red:'붉은 투구 챔피언',murmillo_motion_v3:'모션 무르밀로',
+ murmillo_champion_red:'붉은 투구 챔피언',murmillo_redcrest_new_v1:'신규 붉은투구 무르밀로',murmillo_motion_v3:'모션 무르밀로',
  legacy_murmillo:'클래식 무르밀로',legacy_thraex:'클래식 트라엑스',legacy_retiarius:'클래식 레티아리우스',
  beast_wolf:'늑대',beast_leopard:'표범',beast_tiger:'호랑이',beast_lion:'사자',
  beast_elephant:'코끼리',npc_carnifex:'사형집행인'};
@@ -290,6 +290,12 @@ async function frameSource(key){
  if(key.startsWith('beast_')){
   const type=key.slice(6),canvas=await image('../assets/beasts/individual/'+type+'/idle/00.png?v=3');
   return {canvas,pivotX:canvas.naturalWidth/2,footY:p.footY(canvas,canvas.naturalHeight*.88)};
+ }
+ if(key==='murmillo_redcrest_new_v1'){
+  const sheet=await image(combat+'murmillo-redcrest-v1/idle.png?v=redcrest-scale-v111');
+  const canvas=document.createElement('canvas');canvas.width=960;canvas.height=540;
+  canvas.getContext('2d').drawImage(sheet,0,0,960,540,0,0,960,540);
+  return {canvas,pivotX:480,footY:512};
  }
  if(key==='murmillo_champion_red'){
   const m=await json(combat+'champion-murmillo/manifest.json?v=2'),frame=m.actions?.idle?.[0];
@@ -347,6 +353,15 @@ function poseSource(key,pose,frameNumber=0){
   const file=String(frameNumber).padStart(2,'0')+'.png?v=3';
   return image(base+file).catch(()=>image(base+'00.png?v=3')).then(canvas=>
    ({canvas,pivotX:canvas.naturalWidth/2,footY:p.footY(canvas,canvas.naturalHeight*.88)}));
+ }
+ if(key==='murmillo_redcrest_new_v1'){
+  const name={attack:'slash',special:'heavy',dodge:'walk',parry:'guard',finisher:'heavy',victory:'idle'}[action]||action;
+  const resolved=['idle','walk','slash','sweep','thrust','heavy','guard','hit','death'].includes(name)?name:'idle';
+  return image('../assets/combat/murmillo-redcrest-v1/'+resolved+'.png?v=redcrest-scale-v111').then(sheet=>{
+   const canvas=document.createElement('canvas');canvas.width=960;canvas.height=540;
+   canvas.getContext('2d').drawImage(sheet,(frameNumber%4)*960,Math.floor(frameNumber/4)*540,960,540,0,0,960,540);
+   return {canvas,pivotX:480,footY:512};
+  });
  }
  if(key==='murmillo_champion_red'){
   return json('../assets/combat/champion-murmillo/manifest.json?v=2').then(async m=>{
@@ -867,7 +882,7 @@ function shuffle(){
   const j=Math.floor(Math.random()*(i+1));
   [order[i],order[j]]=[order[j],order[i]];
  }
- $('#sort').value='shuffle';sortCards();announce('31종 위치를 셔플했습니다. 체크와 설정값은 유지됩니다.');
+ $('#sort').value='shuffle';sortCards();announce('32종 위치를 셔플했습니다. 체크와 설정값은 유지됩니다.');
 }
 function build(){
  const root=$('#grid');root.replaceChildren();drawers.clear();
@@ -951,7 +966,7 @@ function build(){
   });
  }
  sortCards();updateBulkState();renderComparison();
- announce('31종 표시 완료. 위에서 실제 같은 카메라의 크기를 비교하세요.');
+ announce('32종 표시 완료. 위에서 실제 같은 카메라의 크기를 비교하세요.');
 }
 function setupCompareEditor(){
  const picker=$('#compareKey');
@@ -1030,20 +1045,20 @@ $('#save').addEventListener('click',()=>{
   '브라우저 저장 실패: JSON 내보내기를 사용하세요.');
 });
 $('#reset').addEventListener('click',()=>{
- if(!confirm('31종의 모든 수정값을 게시된 기본값으로 복원할까요? 실행 취소로 되돌릴 수 있습니다.'))return;
+ if(!confirm('32종의 모든 수정값을 게시된 기본값으로 복원할까요? 실행 취소로 되돌릴 수 있습니다.'))return;
  recordHistory();
  Object.assign(state,p.DEFAULTS);Object.assign(feet,p.FOOT_DEFAULTS);for(const key of keys)refresh(key);
  p.reset();p.resetFeet();v.reset();
  for(const key of Object.keys(actions))delete actions[key];
  Object.assign(actions,v.all());updateBulkState();sortCards();
- updateActionControls();announce('31종 크기·발높이·동작·이펙트 수정값을 기본값으로 복원했습니다.');
+ updateActionControls();announce('32종 크기·발높이·동작·이펙트 수정값을 기본값으로 복원했습니다.');
 });
 $('#export').addEventListener('click',()=>{
  const blob=new Blob([JSON.stringify({version:46,overrides:state,footOffsets:feet,actions},null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');
  a.href=url;a.download='spartacus-31-character-action-fx.json';a.click();
  setTimeout(()=>URL.revokeObjectURL(url),1000);
- announce('31종 설정 JSON을 내보냈습니다.');
+ announce('32종 설정 JSON을 내보냈습니다.');
 });
 $('#import').addEventListener('click',()=>$('#file').click());
 $('#file').addEventListener('change',async e=>{

@@ -1,4 +1,4 @@
-/* 31 author-approved Spartacus fighter, beast and executioner sizes and foot heights.
+/* 32 author-approved Spartacus fighter, beast and executioner sizes and foot heights.
  * Repository source-of-truth: GitHub main. No credentials stored.
  */
 (function(root){"use strict";root.SpartacusPublishedScales=Object.freeze({
@@ -23,6 +23,7 @@
   "retiarius_a_L4": 1.26,
   "retiarius_a_L5": 1.37,
   "murmillo_champion_red": 1.66,
+  "murmillo_redcrest_new_v1": 1,
   "murmillo_motion_v3": 1.16,
   "legacy_murmillo": 1.49,
   "legacy_thraex": 1.57,
@@ -55,6 +56,7 @@
   "retiarius_a_L4": 0,
   "retiarius_a_L5": 0,
   "murmillo_champion_red": 0,
+  "murmillo_redcrest_new_v1": 0,
   "murmillo_motion_v3": 0,
   "legacy_murmillo": 0,
   "legacy_thraex": 0,

@@ -30,7 +30,7 @@ function rect({key,frame,idle=frame,scene='duel',zoom=1,scale=1}={}){
   const k=348*.83*BEAST[key]/refH*z*factor;
   return {w:w*k,h:h*k,pivotX:px*k,pivotY:py*k};
  }
- if(key==='murmillo_champion_red'){
+ if(key==='murmillo_champion_red'||key==='murmillo_redcrest_new_v1'){
   // Important: champion source is 960x540; runtime scales it by w/540,
   // not the preview's old 202/source-height convention.
   const k=DUEL/540*z*factor;
