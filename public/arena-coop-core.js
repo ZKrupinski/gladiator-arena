@@ -105,7 +105,7 @@
     const a=live[i],b=live[j];
     if(bodySlack(a,b)<1)continue;
     const penetration=Body.penetration(a,b,bodyShape(a),bodyShape(b));
-    if(!penetration||penetration.amount<.02)continue;
+    if(!penetration||penetration.amount<=0)continue;
     const {axis,sign}=penetration,k=axis==='x'?'x':'y';
     const min=k==='x'?85:395,max=k==='x'?1195:675;
     const half=(penetration.amount+.12)/2;
