@@ -87,3 +87,13 @@ test('saved unpurchased old Roman surnames become two-part names without changin
  }
  assert.ok(migrated.every(o=>isRomanFullName(o.name)));
 });
+
+test('Roman candidate family names vary within each three-podium market page',()=>{
+ for(const seed of [0,1,2]){
+  const stock=makeStock({roster:[],marketSeed:seed},()=>.42);
+  for(let page=0;page<PAGE_COUNT;page++){
+   const names=stock.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);
+   assert.ok(new Set(names.map(x=>x.name.split(' ')[1])).size>=2, 'repeated surname on page '+page);
+  }
+ }
+});
