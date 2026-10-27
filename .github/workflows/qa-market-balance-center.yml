@@ -53,5 +53,5 @@ jobs:
         run: node scripts/qa_market_balance_center_browser.mjs
       - name: Verify 27 tier controls, legacy prices, GitHub save payload and reload in browser
         run: node scripts/qa_market_price_studio_browser.mjs
-      - name: Verify both directions: editor to all game modes and game to studio
+      - name: "Verify both directions: editor to all game modes and game to studio"
         run: node scripts/qa_gladiator_registry_browser.mjs
