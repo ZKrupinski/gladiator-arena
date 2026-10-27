@@ -23,8 +23,8 @@ function source(){
  const market=root.SpartacusMarketPricing;
  const marketLevels=market?.normalize?.(studio()?.priceLevels?.()||{})||{};
  const extras=root.SpartacusGladiators?.custom?.()||[];
- if(!market||Object.keys(marketLevels).length!==27)
-  throw Error('시장 가격레벨 27종의 설정을 읽지 못했습니다');
+ if(!market||Object.keys(marketLevels).length!==root.SpartacusGladiators?.market?.().length)
+  throw Error('등록된 모든 검투사의 가격레벨 설정을 읽지 못했습니다');
  if(!current||!apiScale)throw Error('보정실 크기 설정에 접근할 수 없습니다');
  const accepted={},acceptedFeet={};
  for(const key of Object.keys(apiScale.DEFAULTS)){
