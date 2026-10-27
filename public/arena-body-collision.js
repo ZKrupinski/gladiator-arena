@@ -48,7 +48,7 @@
   const dx=(Number(b.x)||0)-(Number(a.x)||0),dy=(Number(b.y)||0)-(Number(a.y)||0);
   const rx=(shapeA.rx+shapeB.rx)*slack,ry=(shapeA.ry+shapeB.ry)*slack;
   const q=Math.sqrt(dx*dx/(rx*rx)+dy*dy/(ry*ry));
-  if(!Number.isFinite(q)||q>=1-1e-6)return null;
+  if(!Number.isFinite(q)||q>=1-1e-9)return null;
   // Favor the horizontal axis when reasonable; depth Y is the tighter
   // vertical theater and should not be changed unless necessary.
   const sx=rx-Math.abs(dx),sy=ry-Math.abs(dy);
