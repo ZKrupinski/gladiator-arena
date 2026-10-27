@@ -47,6 +47,7 @@ const window={
  ArenaRasterFX:{FAMILIES:families,draw:(...args)=>{drawArgs.push(args);return true;}},
  LudusBridge:{state:()=>({roster:[]})}
 };
+window.SpartacusBodyCollision=require('../public/arena-body-collision.js');
 vm.runInNewContext(injected,{window,console});
 const qa=window.__fxQA;qa.setCourts(4);
 const unit={seat:2,side:'ally',look:'murmillo_a_L1',x:440,y:606};
