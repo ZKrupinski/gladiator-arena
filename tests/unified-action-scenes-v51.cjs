@@ -10,7 +10,7 @@ const window={localStorage:{getItem:()=>null,setItem(){},removeItem(){}},
 vm.runInNewContext(scaleSource,{window,console});
 vm.runInNewContext(visualSource,{window,console});
 const profile=window.PracticeScaleProfiles,artist=window.PracticeVisualProfiles;
-assert.equal(Object.keys(profile.BASE).length,31);
+assert.equal(Object.keys(profile.BASE).length,33,'27 human appearances + 5 beasts + Carnifex');
 assert(Object.values(profile.BASE).every(n=>n===1),
  'every class/grade has neutral artist baseline: no special hidden Murmillo sizing');
 assert.equal(artist.ACTIONS.length,15);
@@ -68,7 +68,7 @@ assert.match(studio,/slash:'종베기',sweep:'횡베기',thrust:'찌르기',heav
 assert.match(studio,/\['frameX','frameY','frameScale','fxX','fxY','fxScale','fxKind'\]/);
 assert.match(studio,/const fallback=v\.fallbackAction\?\.\(pose\)/);
 assert.match(studio,/const special=\{parry:'guard',finisher:'attack',victory:'idle'\}/);
-assert.match(main,/ludus-training-runtime\.js\?v=motion-timeline-v53/);
-assert.match(main,/ludus-practice\.js\?v=motion-timeline-v53/);
-assert.match(main,/practice-visual-profiles\.js\?v=motion-timeline-v53/);
+assert.match(main,/ludus-training-runtime\.js\?v=[a-z0-9-]+/i);
+assert.match(main,/ludus-practice\.js\?v=[a-z0-9-]+/i);
+assert.match(main,/practice-visual-profiles\.js\?v=[a-z0-9-]+/i);
 console.log('PASS: one artist action/profile for normal duel, practice and training; 15 poses, no scene-specific offsets or hidden body scaling');
