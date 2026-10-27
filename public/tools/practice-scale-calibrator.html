@@ -50,6 +50,14 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .config label{font-size:11px;color:#d6b187;overflow-wrap:anywhere}
 .config input{width:100%;accent-color:#ebb876}
 .config .value{text-align:center;font:bold 20px Georgia;color:#ffdc8f;font-variant-numeric:tabular-nums}
+.registry-add{max-width:1290px;margin:15px auto;padding:14px;border:2px solid #c99b5b;background:#2c1a12;border-radius:12px}
+.registry-add h2{margin:0 0 7px;font-size:21px;color:#ffe4aa}.registry-add p{font-size:12px}
+.registry-add form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.registry-add form label{display:grid;gap:5px;color:#f2d2a4;font-size:13px;font-weight:800}
+.registry-add form input,.registry-add form select{width:100%;min-height:46px;padding:8px;background:#180f0c;color:#ffe5b3;border:1px solid #af8955;border-radius:6px;font-size:15px}
+.registry-add form button{grid-column:1/-1;min-height:46px;background:#8a4b2a;font-size:16px}
+.registry-add output{display:block;margin:10px 0;font-size:13px;white-space:pre-wrap}
+@media(max-width:700px){.registry-add form{grid-template-columns:1fr}}
 .price-level{display:grid;gap:6px;padding:9px 8px;border:1px solid #9c7849;border-radius:8px;background:#241710}
 .price-level label{font-size:13px;font-weight:900;color:#ffe0a0}
 .price-level select{width:100%;min-height:43px;font:800 15px 'Noto Sans KR',system-ui,sans-serif}
@@ -141,7 +149,7 @@ input[type=file]{display:none}
   <button id="bulkFootPlus" disabled>선택 발 ↓ 5px</button>
   <button id="bulkFootReset" disabled>발높이 0</button>
  </div>
-<nav class="quick-links" aria-label="편집실 바로가기"><a href="#actionEditor">동작 편집</a><a href="#grid">가격레벨 조정</a><a href="#gitTitle">GitHub 게시</a></nav>
+<nav class="quick-links" aria-label="편집실 바로가기"><a href="#registryAdd">신규 검투사 등록</a><a href="#actionEditor">동작 편집</a><a href="#grid">가격레벨 조정</a><a href="#gitTitle">GitHub 게시</a></nav>
 <div class="save-health" aria-label="현재 크기·발높이 저장 상태" aria-live="polite">
  <span id="draftHealth">기기 임시저장: 확인 중</span>
  <span id="repoHealth">GitHub 원본: 확인 중</span>
@@ -229,7 +237,21 @@ input[type=file]{display:none}
 1단계 약 420D · 2단계 580D · 3단계 780D · 4단계 1,020D · 5단계 1,350D. 실제 가격은 ±6% 변동합니다.
 야수·집행인은 시장에 등장하지 않아 가격을 설정할 수 없습니다.</p>
 <p>설정은 기기에 자동 임시저장되고 시장의 미판매 매물에 즉시 적용됩니다. 모든 기기에 적용하려면 <strong>GitHub 원본 게시</strong>를 실행하세요. 고용 완료된 검투사와 성장 능력치는 변경되지 않습니다.</p></section>
-<main class="grid" id="grid" aria-label="27종 시장 가격레벨과 32종 크기 비교"></main>
+<section class="registry-add" id="registryAdd" aria-label="새 검투사 외형 등록">
+<h2>⚔ 신규 검투사 외형 · 게임 전체 자동 등록</h2>
+<p>검투사시장, 루두스, 훈련, 장비, 1:1·다인 전투와 이 조정실에서 <strong>같은 외형 ID</strong>를 사용합니다.
+전용 경로에 9종 동작 스프라이트(각 3840×1080 투명 4×2 배열)를 올린 뒤 등록하세요.
+그림이 없는 검투사를 다른 그림으로 대체하지 않습니다.</p>
+<form id="registerGladiator">
+<label>고유 외형 ID<input name="visualId" required pattern="[a-z][a-z0-9_]{2,47}" placeholder="murmillo_goldhelm_v1" autocomplete="off"></label>
+<label>전투 클래스<select name="cls"><option value="murmillo">무르밀로</option><option value="thraex">트라엑스</option><option value="retiarius">레티아리우스</option></select></label>
+<label>외형 표시 이름<input name="label" required minlength="2" maxlength="44" placeholder="황금 투구 무르밀로" autocomplete="off"></label>
+<label>전용 이미지 폴더 (9동작)<input name="assetFolder" required placeholder="assets/combat/murmillo-goldhelm-v1" autocomplete="off"></label>
+<label>기본 시장 가격레벨<select name="priceLevel"><option value="1">1 · 저가형</option><option value="2" selected>2 · 일반형</option><option value="3">3 · 숙련형</option><option value="4">4 · 특수형</option><option value="5">5 · 최고가형</option></select></label>
+<button type="submit" id="registerGladiatorSubmit">9개 동작 원본 검사 후 공통 등록</button>
+</form>
+<output id="registryStatus" role="status" aria-live="polite">등록된 인간 검투사: <span id="registryCount">27</span>종 · 등록 시 게임과 조정실에 반영됩니다.</output></section>
+<main class="grid" id="grid" aria-label="검투사 전체 외형별 가격·크기·동작·이펙트 편집"></main>
 <section class="source-panel" aria-labelledby="gitTitle">
 <h2 id="gitTitle">GitHub 원본에 크기·발높이·동작·이펙트·시장 가격레벨 저장</h2>
 <p>여기에 게시한 32종 크기·발높이·동작별 프레임/이펙트와 27종 시장 가격레벨 설정이 모든 기기에 적용되는 <strong>게임 기본값</strong>입니다. 브라우저 임시저장만으로는 GitHub 원본이 바뀌지 않습니다.</p>
@@ -275,7 +297,8 @@ input[type=file]{display:none}
 <script src="practice-size-stage.js?v=redcrest-scale-v111"></script>
 <script>
 (()=>{'use strict';
-const p=window.PracticeScaleProfiles,pricing=window.SpartacusMarketPricing;
+const p=window.PracticeScaleProfiles,pricing=window.SpartacusMarketPricing,
+ registry=window.SpartacusGladiators;
 if(!pricing)throw Error('시장 가격레벨 모듈 로드 실패');
 const names={murmillo_a:'무르밀로',thraex_a:'트라엑스 A',thraex_b:'트라엑스 B',retiarius_a:'레티아리우스',
  murmillo_champion_red:'붉은 투구 챔피언',murmillo_redcrest_new_v1:'신규 붉은투구 무르밀로',murmillo_redcrest_alt_v1:'무르밀로 · 레드크레스트 II',murmillo_motion_v3:'모션 무르밀로',
@@ -289,7 +312,12 @@ let order=keys.slice(),origin=new Map(),observer=null,cutsPromise=null;
 const cache=new Map(),actionCache=new Map(),effectCache=new Map(),drawers=new Map(),$=selector=>document.querySelector(selector);
 const announce=s=>$('#status').textContent=s;
 const category=key=>key.startsWith('beast_')?'야수':key.startsWith('npc_')?'NPC':p.EXTRAS.includes(key)?'특수/클래식':'검투사';
-function nameFor(key){const type=key.replace(/_L[1-5]$/,'');return (names[type]||key)+(type!==key?' · '+key.slice(-1)+'형':'');}
+function nameFor(key){
+ const registered=registry.get(key);
+ if(registered)return registered.label;
+ const type=key.replace(/_L[1-5]$/,'');
+ return (names[type]||key)+(type!==key?' · '+key.slice(-1)+'형':'');
+}
 async function image(src){const i=new Image();i.src=src;await i.decode();return i;}
 async function json(src){const response=await fetch(src);if(!response.ok)throw Error('원본 리소스 '+response.status);return response.json();}
 async function cuts(){
