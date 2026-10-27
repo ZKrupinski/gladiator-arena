@@ -85,7 +85,11 @@ const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'
 function enemyFor(wave,index,rng=Math.random){
  const cls=TYPES[Math.floor(clamp(rng(),0,.999999)*3)];
  const type=cls==='thraex'?(rng()<.5?'thraex_a':'thraex_b'):cls+'_a';
- const look=type+'_L'+(1+Math.floor(clamp(rng(),0,.999999)*5));
+ const baseLook=type+'_L'+(1+Math.floor(clamp(rng(),0,.999999)*5));
+ const custom=root.SpartacusGladiators?.custom?.().filter(item=>item.cls===cls)||[];
+ const registered=custom.length&&rng()<.20?
+  custom[Math.floor(clamp(rng(),0,.999999)*custom.length)]:null;
+ const look=registered?.visualId||baseLook;
  const hp=enemyHP(wave);
  const mindProfile=Personality?.profile?.({cls,name:['Varro','Rufus','Gallus','Brutus','Crispus','Atilius'][index%6],level:wave},
   {atk:enemyAttack(wave),move:230+Math.min(70,wave*3),hp,sp:enemyAttack(wave)*2.3},cls);
