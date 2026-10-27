@@ -723,7 +723,8 @@ let growthLoading=null,growthCuts=null;
 function growthType(h){return h?.growthType||({murmillo:'murmillo_a',thraex:'thraex_a',retiarius:'retiarius_a'}[h?.cls]);}
 // Each former growth sheet is now a permanently assigned visual identity.
 function fixedLook(h){
- if(!h||h.appearance==='legacy'||isCustomMurmillo(h)||isAnimatedMurmillo(h))return false;
+ if(!h||h.appearance==='legacy'||isCustomMurmillo(h)||isAnimatedMurmillo(h)||
+ window.SpartacusGladiators?.isCustom?.(h.visualId||h.appearance))return false;
  if(/^(murmillo_a|thraex_a|thraex_b|retiarius_a)_L[1-5]$/.test(String(h.visualId||'')))return false;
  const n=Math.max(careerStage(h),Math.max(1,Math.min(5,Number(h.marketStage)||1)));
  h.visualId=growthType(h)+'_L'+n;h.fixedVisualTier=n;return true;
@@ -733,6 +734,8 @@ function visualCareerStage(h){
  return m?Number(m[1]):Math.max(careerStage(h),Math.max(1,Math.min(5,Number(h?.marketStage)||1)));
 }
 function looksLabel(h){
+ const known=window.SpartacusGladiators?.get?.(h?.visualId||h?.appearance);
+ if(known?.kind==='custom')return known.label;
  if(isAltMurmillo(h))return '무르밀로 · 레드크레스트 II';
  if(isNewMurmillo(h))return '신규 붉은투구 무르밀로';
  if(isCustomMurmillo(h))return '붉은 투구 챔피언';
@@ -740,7 +743,7 @@ function looksLabel(h){
  if(h?.appearance==='legacy')return '클래식 검투사';
  return ({murmillo_a:'무르밀로 A',thraex_a:'트라엑스 A',thraex_b:'트라엑스 B',retiarius_a:'레티아리우스 A'}[growthType(h)]||'검투사')+' · 외형 '+visualCareerStage(h);
 }
-function growthImage(h){if(h?.appearance==='legacy')return null;
+function growthImage(h){if(h?.appearance==='legacy'||window.SpartacusGladiators?.isCustom?.(h?.visualId||h?.appearance))return null;
  if(isCustomMurmillo(h))return null; // The champion must never use legacy growth frames.
  if(isAnimatedMurmillo(h))return GROWTH_IMAGES.get('murmillo_a_L5')||null;
  return GROWTH_IMAGES.get(growthType(h)+'_L'+visualCareerStage(h))||null;}
@@ -748,6 +751,19 @@ function growthStatus(message){document.getElementById('growthState').textConten
 function refreshGrowthAvatar(){
  const avatar=document.querySelector('#careerBody .career-avatar'),hero=CAREER.hero;
  if(!avatar||!hero)return;
+ const custom=registeredVisualId(hero);
+ if(custom){
+  avatar.style.backgroundImage='none';avatar.replaceChildren();
+  const source=CUSTOM_GLADIATOR_ART?.portrait(custom);
+  if(source){
+   const canvas=document.createElement('canvas');canvas.width=canvas.height=410;
+   canvas.style.cssText='width:100%;height:100%;object-fit:contain';
+   const fit=Math.min(390/source.width,390/source.height);
+   canvas.getContext('2d').drawImage(source,(410-source.width*fit)/2,410-source.height*fit,source.width*fit,source.height*fit);
+   avatar.append(canvas);
+  }
+  return;
+ }
  if(isCustomMurmillo(hero)){
   avatar.style.backgroundImage='none';avatar.replaceChildren();
   const art=specialMurmilloVisual(hero)?.portrait();
@@ -812,6 +828,11 @@ const ANIMATED_MURMILLO_VARIANT='murmillo_motion_v3';
 const CHAMPION_MURMILLO_VARIANT='murmillo_champion_red';
 const NEW_MURMILLO_VARIANT='murmillo_redcrest_new_v1';
 const ALT_MURMILLO_VARIANT='murmillo_redcrest_alt_v1';
+const GLADIATORS=window.SpartacusGladiators,CUSTOM_GLADIATOR_ART=window.SpartacusExtraGladiatorArt;
+function registeredVisualId(unit){
+ const id=unit?.registeredAppearance||unit?.visualId||unit?.appearance;
+ return GLADIATORS?.isCustom?.(id)?id:null;
+}
 // A common visual baseline for normal duels and per-look art calibration.
 const DUEL_BASE_VISUAL_SCALE=.82;
 const CHAMPION_MURMILLO_SCALE=DUEL_BASE_VISUAL_SCALE;
@@ -823,7 +844,7 @@ function specialMurmilloVisual(h){return h?.appearance===ALT_MURMILLO_VARIANT?wi
 function specialMurmilloFighter(f){return f?.championVariant===ALT_MURMILLO_VARIANT?window.AltMurmillo:f?.championVariant===NEW_MURMILLO_VARIANT?window.NewMurmillo:window.ChampionMurmillo;}
 const ANIMATED_MURMILLO_SCALE=DUEL_BASE_VISUAL_SCALE;
 function duelAppearanceKey(f){
- return f?.championVariant||f?.motionVariant||f?.legacyVisualId||
+ return f?.registeredAppearance||f?.championVariant||f?.motionVariant||f?.legacyVisualId||
   (f?.growthType&&f?.growthLevel?f.growthType+'_L'+f.growthLevel:null)||
   (f?.cls?'legacy_'+f.cls:null);
 }
