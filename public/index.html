@@ -1846,7 +1846,7 @@ function autoPilotPlayer(p,e,dt){
  p.face=dir;p.guard=p.guardHold>0&&p.st>8&&p.stagger<=0;
  if(p.stagger>0||p.dodge>0||p.net>0)return;
  if(p.guard){p.vx=0;return;}
- const ideal=Math.max(MIN_FIGHTER_DISTANCE+24,Math.min(p.cfg.reach-52,302))+(mood?.spacing||0)*.40;
+ const ideal=Math.max(duelBodyGap(p,e)+24,Math.min(p.cfg.reach-52,302))+(mood?.spacing||0)*.40;
  if(distance>ideal+13){p.vx=dir*p.cfg.move*.77*(mood?.speed||1);p.x+=p.vx*dt;}
  else if(distance<ideal-17){p.vx=-dir*p.cfg.move*.39*(mood?.evade||1);p.x+=p.vx*dt;}
  // Anticipatory guard: attacks apply damage immediately, so AI must guard before impact.
@@ -2119,7 +2119,7 @@ function advanceComboDash(f,dt){
  if(!target||target.dead){f.comboDash=null;breakAttackChain(f);return;}
  if(a.t>=.17&&a.t<.43){
    const direction=Math.sign(target.x-f.x)||a.dir;
-   const gap=Math.max(0,Math.abs(target.x-f.x)-(MIN_FIGHTER_DISTANCE-20));
+   const gap=Math.max(0,Math.abs(target.x-f.x)-(duelBodyGap(f,target)-20));
    f.x=clamp(f.x+direction*Math.min(gap,1040*dt),105,1175);
    f.vx=direction*1040;
  }
