@@ -2952,6 +2952,13 @@ function renderResultPortrait(id,f,index){
   paintBeastResults();return;
  }
  BEAST_RESULT_VIEWS.delete(id);
+ if(f.registeredAppearance){
+  element.replaceChildren();element.style.backgroundImage='none';
+  const source=CUSTOM_GLADIATOR_ART?.frame(f.registeredAppearance,f.dead?'death':'idle',f.dead?7:0)||
+   CUSTOM_GLADIATOR_ART?.portrait(f.registeredAppearance);
+  if(source)drawSizedResultPortrait(element,source,isWinner);
+  return;
+ }
  const atlas=(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT||f.championVariant===ALT_MURMILLO_VARIANT)?null:GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
  element.replaceChildren();
  if(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT||f.championVariant===ALT_MURMILLO_VARIANT){
@@ -3747,8 +3754,10 @@ window.LudusBridge={
  trainingCost:(i,stat)=>careerTrainingCost(CAREER.roster[i],stat),
  aptitude:(i,stat)=>ArenaBalance.trainingAptitude(CAREER.roster[i],stat),
  enemyPortrait:(enemy)=>arenaOpponentPortrait(enemy),
- squadSprite:(hero,action='idle',tick=0)=>{
+  squadSprite:(hero,action='idle',tick=0)=>{
   if(!hero)return null;
+  const custom=registeredVisualId(hero);
+  if(custom)return CUSTOM_GLADIATOR_ART?.frame(custom,action,tick)||null;
   // Older legacy sheets have 10 cells: death is 9, not 11.
   // Requesting cell 11 used to fall back to idle (a standing corpse).
   const index=(hero.appearance==='legacy'?
@@ -3783,6 +3792,8 @@ window.LudusBridge={
  state:()=>{ArenaLoot.ensure(CAREER);return {gold:CAREER.gold,glory:CAREER.glory,roster:CAREER.roster,active:CAREER.active,message:CAREER.message,lastLoot:CAREER.lastLoot,practiceBest:CAREER.practiceBest||0,practiceRuns:CAREER.practiceRuns||0,practiceTotalXp:CAREER.practiceTotalXp||0,armoryInventory:CAREER.armoryInventory,discoveredGear:CAREER.discoveredGear};},
  portrait:(i)=>{
   const h=CAREER.roster[i];if(!h)return null;
+  const custom=registeredVisualId(h);
+  if(custom)return CUSTOM_GLADIATOR_ART?.portrait(custom)||null;
   if(isCustomMurmillo(h))return specialMurmilloVisual(h)?.portrait()||null;
   if(isAnimatedMurmillo(h)){const src=window.MurmilloMotion?.trainingFrame('idle',0);if(src)return src;}
   const g=growthImage(h);if(g?.frames?.[9]?.canvas)return g.frames[9].canvas;
@@ -3790,6 +3801,8 @@ window.LudusBridge={
  },
  trainingFrame:(i,kind='idle',tick=0)=>{
   const h=CAREER.roster[i];if(!h)return null;
+  const custom=registeredVisualId(h);
+  if(custom)return CUSTOM_GLADIATOR_ART?.frame(custom,kind,tick)||null;
   // Training explicitly excludes fall/defeat/dodge/net poses for ALL classes.
   if(isCustomMurmillo(h))return specialMurmilloVisual(h)?.frame(kind,tick)||null;
   if(isAnimatedMurmillo(h)){
@@ -3839,6 +3852,7 @@ window.LudusBridge={
  // Never enlarge a cropped 12-pose frame to a 202px body by itself.
  practiceNominal:(unit)=>{
   const h=unit?.side==='ally'?CAREER.roster[unit.index]:null;
+  if(registeredVisualId(h)||GLADIATORS?.isCustom?.(unit?.look))return {width:960,height:540};
   if(h&&isCustomMurmillo(h))return {width:540,height:540};
   const atlas=h?(isAnimatedMurmillo(h)?GROWTH_IMAGES.get('murmillo_a_L5'):growthImage(h)):
    GROWTH_IMAGES.get(unit?.look||'murmillo_a_L1');
@@ -3852,12 +3866,18 @@ window.LudusBridge={
  },
  practiceFrame:(unit,kind='idle')=>{
   const h=unit?.side==='ally'?CAREER.roster[unit.index]:null;
+  const custom=registeredVisualId(h)||(unit?.side==='enemy'&&GLADIATORS?.isCustom?.(unit?.look)?unit.look:null);
+  if(custom){
+   const frame=CUSTOM_GLADIATOR_ART?.frame(custom,kind,0);
+   return frame?{canvas:frame,pivotX:480,footY:512,cellWidth:960,cellHeight:540}:null;
+  }
   if(h&&(h.appearance==='legacy'||isCustomMurmillo(h)||isAnimatedMurmillo(h)))return null;
   const atlas=h?growthImage(h):GROWTH_IMAGES.get(unit?.look||'murmillo_a_L1');
   const frame={idle:0,walk:1,attack:2,guard:6,dodge:8,hit:7,death:11}[kind]??0;
   return atlas?.frames?.[frame]||atlas?.frames?.[0]||null;
  },
  practiceEnemySprite:(visualId,kind='idle')=>{
+  if(GLADIATORS?.isCustom?.(visualId))return CUSTOM_GLADIATOR_ART?.frame(visualId,kind,0)||null;
   const valid=/^(murmillo_a|thraex_a|thraex_b|retiarius_a)_L[1-5]$/.test(String(visualId||''));
   const atlas=GROWTH_IMAGES.get(valid?visualId:'murmillo_a_L1');
   const index={idle:0,walk:1,attack:2,special:3,guard:6,dodge:8,hit:7,death:11}[kind]??0;
