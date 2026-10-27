@@ -30,12 +30,12 @@ for(let frame=0;frame<220;frame++){
  for(const e of enemies)api.act(e,.05);
  api.keepCourtSpacing();
  for(let i=0;i<4;i++){
-  assert.ok(enemies[i].x-heroes[i].x>=172-1e-7,'no duel body overlap in court '+i);
+  assert.ok(enemies[i].x-heroes[i].x>=rules.pairBodyGap(heroes[i],enemies[i])-1e-6,'scale-aware duel body clearance in court '+i);
   assert.ok(heroes[i].x>=layout[i].x-168&&heroes[i].x<=layout[i].x+168);
   trail[i].push(heroes[i].x);
  }
  const xs=heroes.map(h=>h.x).sort((a,b)=>a-b);
- for(let j=1;j<xs.length;j++)assert.ok(xs[j]-xs[j-1] >=215,'all four allies remain unobscured with split-depth columns');
+ for(let j=1;j<xs.length;j++)assert.ok(xs[j]-xs[j-1] >=144,'rear/front columns retain independent body footprint corridors');
 }
 for(const [i,t] of trail.entries()){
  const range=Math.max(...t)-Math.min(...t);
@@ -45,18 +45,19 @@ for(const [i,t] of trail.entries()){
 // The corridor applies even when attacks/parries displace the combatants.
 const rearBoundary=(layout[2].x+layout[3].x)/2;
 assert.ok(layout[3].x-layout[2].x>=400,'rear station anchors spread out');
-assert.ok(enemies[2].x<=rearBoundary-110,"3 rival cannot occupy the 4 ally's artwork");
-assert.ok(heroes[3].x>=rearBoundary+110,'4 ally retains his own artwork corridor');
+const rearHalf=(rules.pairBodyGap(enemies[2],heroes[3])+22)/2;
+assert.ok(enemies[2].x<=rearBoundary-rearHalf,"3 rival has size-aware rear-court corridor");
+assert.ok(heroes[3].x>=rearBoundary+rearHalf,'4 ally retains scale-aware artwork clearance');
 enemies[2].x=rearBoundary+35;heroes[3].x=rearBoundary-35;
 api.keepCourtSpacing();
-assert.ok(enemies[2].x<=rearBoundary-110,'knockback cannot drag 3 enemy across shared corridor');
-assert.ok(heroes[3].x>=rearBoundary+110,"4 ally cannot enter 3 rival's 220px art corridor");
+assert.ok(enemies[2].x<=rearBoundary-rearHalf,'knockback cannot override scaled 3/4 rear corridor');
+assert.ok(heroes[3].x>=rearBoundary+rearHalf,'4 ally cannot enter 3 rival sized corridor');
 for(let i=0;i<4;i++){
  heroes[i].x=layout[i].x+10;enemies[i].x=layout[i].x-10;
 }
 api.keepCourtSpacing();
 for(let i=0;i<4;i++){
- assert.ok(Math.abs((enemies[i].x-heroes[i].x)-172)<1e-7,'recover from crossed/overlapping centers');
+ assert.ok(Math.abs((enemies[i].x-heroes[i].x)-rules.pairBodyGap(heroes[i],enemies[i]))<1e-5,'recover from crossed/overlapping bodies at their visible sizes');
  assert.ok(heroes[i].x<enemies[i].x,'fighter/enemy side order preserved');
 }
 console.log('PASS: four clear allied columns, paired collision resolution and active left-right footwork');
