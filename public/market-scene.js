@@ -1,15 +1,32 @@
 /* GLADIATOR / MERCATUS : v4.9 interactive transaction layer on approved 1672x941 key art. */
 (function(root){
 'use strict';
-const WIDTH=1672, HEIGHT=941, RESTOCK_COST=60;
+const WIDTH=1672, HEIGHT=941, RESTOCK_COST=60, PAGE_SIZE=3;
 const types=[
  {id:'thraex',className:'트라엑스',names:['Cassius','Decimus','Aulus','Titus','Felix','Flavius'],base:[2,5,2,2],cost:500,desc:'민첩한 움직임과 빠른 공격이 특징인 트라엑스입니다. 날카로운 시카로 적의 허점을 노립니다.',face:[550,258,158,146]},
  {id:'murmillo',className:'무르밀로',names:['Lucius','Marcus','Brutus','Gaius','Publius','Tiberius'],base:[5,3,5,3],cost:500,desc:'견고한 방패와 단검으로 전선을 지키는 강인한 무르밀로입니다. 안정적인 방어에 능합니다.',face:[856,255,163,151]},
  {id:'retiarius',className:'레티아리우스',names:['Marcellus','Quintus','Nero','Sextus','Julius','Valerius'],base:[2,4,1,5],cost:500,desc:'그물과 삼지창으로 원거리를 장악하는 레티아리우스입니다. 높은 기술과 넓은 사거리를 가집니다.',face:[1244,264,176,150]}
 ];
+// Every playable human appearance has one permanent sale slot. Beasts and NPCs never enter this catalog.
+const MARKET_LOOKS=Object.freeze([
+ ...[
+  ['murmillo','murmillo_a','무르밀로 A'],
+  ['thraex','thraex_a','트라엑스 A'],
+  ['thraex','thraex_b','트라엑스 B'],
+  ['retiarius','retiarius_a','레티아리우스 A']
+ ].flatMap(([cls,family,name])=>Array.from({length:5},(_,i)=>({
+  cls,visualId:family+'_L'+(i+1),growthType:family,label:name+' · 외형 '+(i+1),appearance:null,special:false
+ }))),
+ {cls:'murmillo',visualId:'murmillo_champion_red',appearance:'murmillo_champion_red',label:'붉은 투구 챔피언',special:true},
+ {cls:'murmillo',visualId:'murmillo_redcrest_new_v1',appearance:'murmillo_redcrest_new_v1',label:'신규 붉은투구 무르밀로',special:true},
+ {cls:'murmillo',visualId:'murmillo_redcrest_alt_v1',appearance:'murmillo_redcrest_alt_v1',label:'레드크레스트 II · 임시 이미지',special:true},
+ {cls:'murmillo',visualId:'murmillo_motion_v3',appearance:'murmillo_motion_v3',label:'모션 무르밀로',special:true},
+ ...['murmillo','thraex','retiarius'].map(cls=>({cls,visualId:'legacy_'+cls,appearance:'legacy',label:'클래식 '+(cls==='murmillo'?'무르밀로':cls==='thraex'?'트라엑스':'레티아리우스'),special:true}))
+]);
+const PAGE_COUNT=Math.ceil(MARKET_LOOKS.length/PAGE_SIZE);
 const labels=[['STR','#ff5554','#bc2223','✊'],['AGI','#66f36e','#238f39','♞'],['END','#f4bf6a','#9e702a','♥'],['FOC','#a66afa','#6028bd','✥'],['DEF','#5796ff','#274cc2','⬟']];
 const merchantLines={hello:'좋은 검투사가 필요하신가요? 방금 들어온 유망한 후보들입니다!',select:'훈련만 잘 시킨다면 훌륭한 투사가 될 겁니다!',confirm:'정말 이 검투사를 영입하시겠습니까? 데나리우스를 지불하면 거래가 성사됩니다.',cancel:'마음이 바뀌셨습니까? 다른 후보도 살펴보시지요.',success:'하하하! 안목이 훌륭하시군요! 이 검투사는 이제 당신의 루두스 소속입니다!',poor:'금화가 부족하다니 아쉽군요. 시합에서 승리하고 다시 방문하세요.',empty:'모든 단상이 비었습니다! 후보 갱신으로 새로운 검투사를 불러오십시오.',refresh:'새로운 후보들이 단상에 올랐습니다! 천천히 살펴보시지요.'};
-let scene=null,stage=null,opts=null,selection=0,keyImg=null,mode='idle',dialogOffer=null;
+let scene=null,stage=null,opts=null,selection=0,page=0,keyImg=null,mode='idle',dialogOffer=null;
 let speechReset=null,animateTimer=null,moodTimer=null,previousFocus=null;
 let sceneEpoch=0,bootTimeout=0;
 const merchantFrames=Array.from({length:4},(_,n)=>{const im=new Image();im.src='assets/market/merchant_pose_'+n+'.webp';return im;});
@@ -34,10 +51,11 @@ const qualities={
 const traits=['강철 수비','빠른 반격','강인한 투지','정교한 무기술','뛰어난 체력','전광석화'];
 const randIndex=(rng,n)=>Math.min(n-1,Math.max(0,Math.floor(rng()*n)));
 const numberFrom=(v,defaultValue=0)=>Number.isFinite(Number(v))?Number(v):defaultValue;
-function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
+function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random,forcedLook=null){
  const candidateClasses=usedClasses.length>=2&&usedClasses.every(x=>x===usedClasses[0])
   ?types.filter(t=>t.id!==usedClasses[0]):types;
- const t=candidateClasses[randIndex(rng,candidateClasses.length)];
+ const t=forcedLook?types.find(t=>t.id===forcedLook.cls):candidateClasses[randIndex(rng,candidateClasses.length)];
+ if(!t)throw new Error('Unknown human gladiator class in market look');
  const available=romanPool.filter(n=>!usedNames.has(n.toLowerCase()));
  const name=available.length?available[randIndex(rng,available.length)]:
   'Numerius '+Math.max(1,Math.trunc(numberFrom(seed)+slot+1));
@@ -45,7 +63,7 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
  const roll=rng();
  // A rare market-born special: 0.6% per individual lot (~1.8%/visit).
  // It is NOT any boss-only gladiator; all sprites use regular growth art.
- const quality=roll<.006?'rare':roll<.096?'veteran':roll<.35?'promising':'common';
+ const quality=forcedLook?.special?'rare':roll<.006?'rare':roll<.096?'veteran':roll<.35?'promising':'common';
  const q=qualities[quality],trait=traits[randIndex(rng,traits.length)];
  // Human gladiator visuals: 4 growth silhouettes x 5 grades, historical
  // legacy boss looks, motion Murmillo and red-plume champion; NEVER beasts.
@@ -55,7 +73,6 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
  const usedVisuals=usedNames.usedVisuals||(usedNames.usedVisuals=new Set());
  const picks=[1,2,3,4,5].map(n=>growthType+'_L'+n).filter(id=>!usedVisuals.has(id));
  let visualId=picks.length?picks[randIndex(rng,picks.length)]:growthType+'_L'+(1+randIndex(rng,5));
- usedVisuals.add(visualId);
  let appearance=null,visualLabel='외형 '+(growthType.endsWith('_b')?'B-':'A-')+visualId.slice(-1);
  const kind=rng();
  if(quality==='rare'&&t.id==='murmillo'&&kind<.78){
@@ -65,6 +82,14 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
  }else if((quality==='rare'&&kind<.86)||(quality==='veteran'&&kind<.13)){
   appearance='legacy';visualId='legacy_'+t.id;visualLabel='클래식 챔피언';
  }
+ // Fixed look identity takes priority over random variant rolls.
+ if(forcedLook){
+  growthType=forcedLook.growthType||t.id+'_a';
+  visualId=forcedLook.visualId;
+  appearance=forcedLook.appearance;
+  visualLabel=forcedLook.label;
+ }
+ usedVisuals.add(visualId);
  const primary=randIndex(rng,4);
  const weakness=(primary+1+randIndex(rng,3))%4;
  const statKeys=['str','agi','end','focus'],statNames=['근력','민첩','체력','집중'];
@@ -86,7 +111,7 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
  const cost=Math.round((q.min+randIndex(rng,q.range+1))/10)*10;
  const premium=
   (appearance==='legacy'?850:appearance==='murmillo_motion_v3'?2600:
-   appearance==='murmillo_champion_red'?3600:appearance==='murmillo_redcrest_alt_v1'?2800:0);
+   appearance==='murmillo_champion_red'?3600:appearance==='murmillo_redcrest_alt_v1'?2800:appearance==='murmillo_redcrest_new_v1'?3000:0);
  return {id:t.id,className:t.className,name,vals,defense,cost:cost+premium,aptitudes,innateSummary,
   desc:t.desc+' '+(quality==='rare'?'매우 드문 고급 검투사. ':quality==='veteran'?'실전 경험이 풍부한 숙련자. ':'')+
    '특기: '+trait+'.',
@@ -94,31 +119,44 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
   marketOrigin:'mercatus',marketLot:Math.trunc(numberFrom(seed))};
 }
 function makeStock(state,rng=Math.random,existing=[]){
- const live=existing.filter(Boolean);
- const usedNames=new Set((state.roster||[]).concat(live)
-  .map(h=>String(h.name||'').toLowerCase()).filter(Boolean));
- const usedClasses=live.map(h=>h.id);
- usedNames.usedVisuals=new Set(live.map(h=>h.visualId).filter(Boolean));
- const seed=Math.max(0,Math.trunc(numberFrom(state.marketSeed)));
- return Array.from({length:3-live.length},(_,i)=>newOffer(i,seed,usedNames,usedClasses,rng));
+ const slots=Array(MARKET_LOOKS.length).fill(null);
+ const usedNames=new Set((state.roster||[]).map(h=>String(h.name||'').toLowerCase()).filter(Boolean));
+ const usedClasses=[];
+ const old=Array.isArray(existing)?existing:[];
+ // Upgrade the old three-offer save without discarding unsold fighters.
+ // Match by unique art ID, not by randomly assigned class or podium index.
+ for(const offer of old){
+  if(!offer||!types.some(t=>t.id===offer.id))continue;
+  const key=offer.visualId||(offer.appearance==='legacy'?'legacy_'+offer.id:offer.appearance);
+  const position=MARKET_LOOKS.findIndex(look=>look.cls===offer.id&&look.visualId===key);
+  if(position<0||slots[position])continue;
+  const look=MARKET_LOOKS[position];
+  slots[position]={...offer,visualId:look.visualId,appearance:look.appearance,
+   growthType:look.growthType||offer.growthType||look.cls+'_a',visualLabel:look.label};
+  usedNames.add(String(offer.name||'').toLowerCase());
+  usedClasses.push(offer.id);
+ }
+ for(let i=0;i<MARKET_LOOKS.length;i++){
+  if(slots[i])continue;
+  slots[i]=newOffer(i,state.marketSeed,usedNames,usedClasses,rng,MARKET_LOOKS[i]);
+ }
+ return slots;
 }
 function ensureInventory(){
  const state=opts.state;
- if(!Array.isArray(state.marketInventory)||state.marketInventory.length!==3){
-  state.marketInventory=makeStock(state);opts.save?.();
+ if(!Array.isArray(state.marketInventory)||state.marketInventory.length!==MARKET_LOOKS.length){
+  state.marketInventory=makeStock(state,Math.random,state.marketInventory);opts.save?.();
  }else{
   let converted=false;
-  // Existing unsold market offers are not replaced for free.
-  for(const h of state.marketInventory){
-   if(!h||h.visualId)continue;
-   h.visualId=h.appearance==='legacy'?'legacy_'+h.id:
-    h.appearance||((h.growthType||h.id+'_a')+'_L'+Math.max(1,Math.min(5,Number(h.marketStage)||1)));
-   h.visualLabel=h.appearance==='legacy'?'클래식 챔피언':
-    h.appearance==='murmillo_champion_red'?'붉은 투구 챔피언':
-    h.appearance==='murmillo_motion_v3'?'모션 정예':
-     h.appearance==='murmillo_redcrest_alt_v1'?'레드크레스트 II':
-    '외형 '+(h.growthType?.endsWith('_b')?'B-':'A-')+h.visualId.slice(-1);
-   converted=true;
+  for(let i=0;i<state.marketInventory.length;i++){
+   const h=state.marketInventory[i];if(!h)continue;
+   const look=MARKET_LOOKS[i];
+   if(h.visualId!==look.visualId||h.appearance!==look.appearance){
+    // Repair only the sale slot's visual mapping; keep its name, price and stats.
+    h.visualId=look.visualId;h.appearance=look.appearance;h.growthType=look.growthType||h.growthType;
+    converted=true;
+   }
+   if(h.visualLabel!==look.label){h.visualLabel=look.label;converted=true;}
   }
   if(converted)opts.save?.();
  }
@@ -126,7 +164,15 @@ function ensureInventory(){
 }
 function inventory(){return ensureInventory();}
 function available(){return inventory().map((o,i)=>o?i:-1).filter(i=>i>=0);}
-function pick(preferred){const live=available();return live.includes(preferred)?preferred:live[0]??-1;}
+function visibleAvailable(){return available().filter(i=>Math.floor(i/PAGE_SIZE)===page);}
+function pick(preferred){const live=visibleAvailable();return live.includes(preferred)?preferred:live[0]??-1;}
+function changePage(direction){
+ if(mode!=='idle')return;
+ const next=Math.max(0,Math.min(PAGE_COUNT-1,page+direction));
+ if(next===page)return;
+ page=next;selection=pick(page*PAGE_SIZE);render();
+ reaction('검투사 외형 '+(page+1)+' / '+PAGE_COUNT+' · '+merchantLines.select,'select',2600);
+}
 function fit(){if(!stage)return;const z=Math.min(innerWidth/WIDTH,innerHeight/HEIGHT);stage.style.transform=`translate(-50%,-50%) scale(${z})`;}
 function getHeroArtwork(h){if(!h)return null;const art=opts?.getSprite?.(h.id,h);return art&&art.width&&art.height?art:null;}
 function drawPortrait(h){
@@ -182,8 +228,9 @@ function render(){if(!scene||scene.hidden)return;
  const amount=wallet.querySelector('.gm-wallet-amount');
  amount.textContent=balanceText;
  amount.classList.toggle('is-compact',balanceText.length>8);
- for(let i=0;i<3;i++){
-  const h=list[i],btn=$('#gmCard'+i),sold=$('#gmVacant'+i),selected=(i===selection&&!!h);
+ for(let i=0;i<PAGE_SIZE;i++){
+  const absolute=page*PAGE_SIZE+i;
+  const h=list[absolute],btn=$('#gmCard'+i),sold=$('#gmVacant'+i),selected=(absolute===selection&&!!h);
   btn.disabled=!h;btn.setAttribute('aria-pressed',String(selected));
   btn.setAttribute('aria-label',h?h.name+' '+h.className+' Lv.0 선택':'판매 완료 · 비어 있는 단상');
   sold.hidden=!!h;
@@ -209,9 +256,12 @@ function render(){if(!scene||scene.hidden)return;
  hire.setAttribute('aria-label',hero?hero.name+' 구매 확인, '+hero.cost+' 데나리우스':'구매 가능한 검투사가 없습니다');
  price.hidden=!hero;price.textContent=hero?'◉ '+Number(hero.cost).toLocaleString('ko-KR')+' D':'';
  $('#gmNoCandidates').hidden=!!hero;
+ $('#gmPageStatus').textContent=(page+1)+' / '+PAGE_COUNT+' · 전체 '+MARKET_LOOKS.length+'종';
+ $('#gmPrevPage').disabled=page===0;
+ $('#gmNextPage').disabled=page===PAGE_COUNT-1;
  const restock=$('#gmRestock');restock.disabled=Number(state.gold)<RESTOCK_COST;
- restock.setAttribute('aria-label','검투사 매대 3명 전체 갱신. 비용 '+RESTOCK_COST+' 데나리우스');
- $('#gmRestockCount').textContent='3명 전체';
+ restock.setAttribute('aria-label','검투사 외형 '+MARKET_LOOKS.length+'종 전체 갱신. 비용 '+RESTOCK_COST+' 데나리우스');
+ $('#gmRestockCount').textContent=MARKET_LOOKS.length+'종 전체';
 }
 function face(pose){
  if(pose===2)pose=1;
@@ -261,7 +311,7 @@ function confirm(){if(mode==='success'){close();return;}if(mode!=='confirm'||!di
  render();mode='success';dialogOffer=null;
  $('#gmDialog').dataset.mode='success';$('#gmDialogHeading').textContent='영입 성공!';
  $('#gmDialogBody').textContent=hero.name+' · '+hero.className+'이(가) LUDUS에 합류했습니다!';
- $('#gmDialogDetail').textContent='구매한 단상은 비어 있습니다. 다시 방문해도 매물은 유지되며, 60D를 지불하면 세 자리 모두 새 매물로 교체됩니다.';
+ $('#gmDialogDetail').textContent='구매한 자리는 비어 있습니다. 다른 페이지의 검투사도 확인할 수 있으며, 60D를 지불하면 전체 후보가 갱신됩니다.';
  $('#gmConfirm').textContent='LUDUS로 이동';$('#gmCancel').textContent='시장 계속 보기';
  reaction(merchantLines.success,'success',8800);$('#gmConfirm').focus();
 }
@@ -269,13 +319,13 @@ function restock(){
  if(mode!=='idle')return;
  const state=opts.state;
  if(Number(state.gold)<RESTOCK_COST){
-  reaction('매물 3명을 교체할 '+RESTOCK_COST+' 데나리우스가 부족합니다.','poor');return;
+  reaction('검투사 전체 후보를 갱신할 '+RESTOCK_COST+' 데나리우스가 부족합니다.','poor');return;
  }
- // A single paid click replaces all three slots, regardless of purchase status.
+ // A single paid click replaces all 27 human appearances, regardless of purchase status.
  state.gold-=RESTOCK_COST;
  state.marketSeed=Math.max(0,Math.trunc(numberFrom(state.marketSeed)))+1;
  state.marketInventory=makeStock(state);
- selection=pick(0);opts.save?.();render();reaction(merchantLines.refresh,'refresh');
+ selection=pick(page*PAGE_SIZE);opts.save?.();render();reaction(merchantLines.refresh,'refresh');
 }
 function close(){if(!scene)return;sceneEpoch++;clearTimeout(bootTimeout);scene.classList.remove('gm-display-ready','gm-art-error');if(mode==='confirm')cancel();if(mode==='success')hideDialog();scene.hidden=true;clearTimeout(speechReset);clearTimeout(moodTimer);clearInterval(animateTimer);face(1);opts?.onExit?.();}
 function keydown(e){if(!scene||scene.hidden)return;
@@ -285,9 +335,10 @@ function keydown(e){if(!scene||scene.hidden)return;
   e.stopPropagation();return;
  }
  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
-  e.preventDefault();const live=available();if(!live.length)return;
+  e.preventDefault();const live=visibleAvailable();if(!live.length)return;
   const x=live.indexOf(selection);selection=live[(x+(e.key==='ArrowRight'?1:live.length-1))%live.length];render();reaction(inventory()[selection].name+'! '+merchantLines.select,'select');
  }
+ if(e.key==='PageDown'||e.key==='PageUp'){e.preventDefault();changePage(e.key==='PageDown'?1:-1);}
 }
 function setup(){if(scene)return;
  scene=document.createElement('section');scene.className='gm-screen';scene.id='slaveMarket';scene.hidden=true;scene.setAttribute('role','dialog');scene.setAttribute('aria-label','검투사시장');
@@ -295,6 +346,11 @@ function setup(){if(scene)return;
   <img class="gm-key-art" id="gmKey" src="assets/market/market_blank_v68.webp" alt="" aria-hidden="true" decoding="sync" draggable="false">
   <img class="gm-merchant-full gm-pose-1" id="gmMerchantMain" src="assets/market/merchant_pose_1.webp" alt="" aria-hidden="true" draggable="false">
   <div class="gm-paper-foreground" aria-hidden="true"></div>
+  <nav class="gm-appearance-nav" aria-label="검투사 27종 페이지">
+   <button type="button" id="gmPrevPage" aria-label="이전 검투사 외형 3종">❮ 이전 3종</button>
+   <span id="gmPageStatus" role="status" aria-live="polite"></span>
+   <button type="button" id="gmNextPage" aria-label="다음 검투사 외형 3종">다음 3종 ❯</button>
+  </nav>
   <button type="button" class="gm-back-hit" id="gmBack" aria-label="루두스로 돌아가기" title="루두스로 돌아가기"></button>
   ${types.map((t,i)=>`<button type="button" class="gm-card-hit" data-i="${i}" id="gmCard${i}" aria-label="매물 ${i+1} 선택" aria-pressed="${i===0}"></button><div class="gm-empty-podium" id="gmEmpty${i}" data-i="${i}" aria-hidden="true"></div><div class="gm-visual-softener" id="gmSoft${i}" data-i="${i}" hidden aria-hidden="true"></div><canvas class="gm-visual-character" id="gmVisual${i}" data-i="${i}" width="340" height="290" hidden aria-hidden="true"></canvas><span class="gm-rare-marker" id="gmRare${i}" data-i="${i}" hidden aria-hidden="true">✦ RARVS · 희귀 특수 ✦</span><div class="gm-selected-wreath" id="gmSelection${i}" data-i="${i}" aria-hidden="true" hidden><span>❧</span><b>선택</b><span>❧</span></div><div class="gm-vacant" id="gmVacant${i}" data-i="${i}" hidden><span class="gm-vacant-badge">✦ 판매 완료 ✦</span><strong>빈 단상</strong><small>신규 후보를 갱신하세요</small></div><div class="gm-card-dynamic" data-i="${i}" id="gmPanel${i}" hidden></div>`).join('')}
   <div class="gm-wallet-legacy-mask" aria-hidden="true"></div>
@@ -332,7 +388,8 @@ function setup(){if(scene)return;
  $('#gmKey').addEventListener('load',e=>{keyImg=e.target;const o=selection<0?null:inventory()[selection];drawPortrait(o);});
  $('#gmBack').textContent='⌂ 루두스 로비';$('#gmBack').setAttribute('aria-label','메인 루두스 로비로 돌아가기');$('#gmBack').addEventListener('click',close);$('#gmHire').addEventListener('click',askPurchase);
  $('#gmRestock').addEventListener('click',restock);$('#gmCancel').addEventListener('click',cancel);$('#gmConfirm').addEventListener('click',confirm);
- for(let i=0;i<3;i++)$('#gmCard'+i).addEventListener('click',()=>{if(mode!=='idle'||!inventory()[i])return;selection=i;render();reaction(inventory()[i].name+'! '+merchantLines.select,'select');});
+ $('#gmPrevPage').addEventListener('click',()=>changePage(-1));$('#gmNextPage').addEventListener('click',()=>changePage(1));
+ for(let i=0;i<PAGE_SIZE;i++)$('#gmCard'+i).addEventListener('click',()=>{const absolute=page*PAGE_SIZE+i;if(mode!=='idle'||!inventory()[absolute])return;selection=absolute;render();reaction(inventory()[absolute].name+'! '+merchantLines.select,'select');});
  fit();
 }
 function marketAsset(img){
@@ -378,9 +435,9 @@ function open(options){opts=options;setup();
  // Preserve prior careers; an untouched new Ludus begins with the concept-art starting wallet.
  if((!opts.state.roster||opts.state.roster.length===0)&&(Number(opts.state.fights)||0)===0&&Number(opts.state.gold)<500){opts.state.gold=3200;opts.save?.();}
  if(scene&&!scene.hidden)return;
- ensureInventory();selection=pick(0);mode='idle';$('#gmDialog').hidden=true;
+ ensureInventory();page=0;selection=pick(0);mode='idle';$('#gmDialog').hidden=true;
  scene.hidden=false;scene.classList.remove('gm-display-ready','gm-art-error');fit();render();prepareMarket(++sceneEpoch);
 }
 root.SlaveMarket={open,close,refresh:render};
-if(typeof module!=='undefined')module.exports={types,newOffer,makeStock,qualities,RESTOCK_COST};
+if(typeof module!=='undefined')module.exports={types,newOffer,makeStock,MARKET_LOOKS,PAGE_SIZE,PAGE_COUNT,qualities,RESTOCK_COST};
 })(globalThis);
