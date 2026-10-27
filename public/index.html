@@ -977,6 +977,8 @@ function openSlaveMarket(){
   state:CAREER,
   assetsReady:()=>growthLoading||loadGrowthAtlases(),
   getSprite:(cls,offer)=>{
+   const custom=registeredVisualId(offer);
+   if(custom)return CUSTOM_GLADIATOR_ART?.portrait(custom)||null;
    if(offer?.appearance===ALT_MURMILLO_VARIANT)return window.AltMurmillo?.portrait()||null;
     if(offer?.appearance===NEW_MURMILLO_VARIANT)return window.NewMurmillo?.portrait()||null;
    if(offer?.appearance==='murmillo_champion_red')return window.ChampionMurmillo?.portrait()||null;
@@ -3046,7 +3048,14 @@ function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
  ctx.restore();
 }
 function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
- if(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT||f.championVariant===ALT_MURMILLO_VARIANT){
+ if(f.registeredAppearance){
+  const scale=duelVisualScale(f),dx=x+w*(1-scale)/2,dy=y+h*(1-scale);
+  CUSTOM_GLADIATOR_ART?.draw(ctx,{id:f.registeredAppearance,fighter:f,clock,
+   x:dx,y:dy,w:w*scale,h:h*scale,flip,alpha});
+  // Never substitute another fighter's image when the requested art is missing.
+  return true;
+ }
+ if(f.championVariant=CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT||f.championVariant===ALT_MURMILLO_VARIANT){
   const scale=duelVisualScale(f);
   const x0=x+w*(1-scale)/2,y0=y+h*(1-scale),w0=w*scale,h0=h*scale;
   // A slow or failed champion asset load must never reveal the old Murmillo.
@@ -3086,6 +3095,7 @@ function spriteHasInk(canvas){
  const visible=count>=32;SPRITE_INK_CACHE.set(canvas,visible);return visible;
 }
 function safeFighterPose(f,requested){
+ if(f.registeredAppearance)return requested;
  if(f.championVariant===CHAMPION_MURMILLO_VARIANT||
    f.motionVariant===ANIMATED_MURMILLO_VARIANT)return requested;
  const growth=GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
