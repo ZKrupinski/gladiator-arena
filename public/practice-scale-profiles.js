@@ -6,14 +6,20 @@ const KEY='spartacus.practice.scale.v32';
 const FEET_KEY='spartacus.practice.feet.v42';
 const FOOT_MIN=-70,FOOT_MAX=40;
 const clampFoot=v=>Math.max(FOOT_MIN,Math.min(FOOT_MAX,Math.round(Number(v)||0)));
+const registry=root.SpartacusGladiators||
+ (typeof module!=='undefined'&&module.exports?require('./gladiator-registry.js'):null);
 const TYPES=['murmillo_a','thraex_a','thraex_b','retiarius_a'];
 // The baseline for EVERY costume is neutral ×1. No class-specific Murmillo,
 // Thraex or Retiarius correction is hidden in the runtime. A non-1 value
 // can now only come from the artist's published or device draft studio data.
-const EXTRAS=Object.freeze(['murmillo_champion_red','murmillo_redcrest_new_v1','murmillo_redcrest_alt_v1','murmillo_motion_v3','legacy_murmillo','legacy_thraex','legacy_retiarius']);
+const EXTRAS=registry?registry.market().filter(x=>x.kind!=='growth').map(x=>x.visualId):
+ ['murmillo_champion_red','murmillo_redcrest_new_v1','murmillo_redcrest_alt_v1','murmillo_motion_v3','legacy_murmillo','legacy_thraex','legacy_retiarius'];
 const BEASTS=Object.freeze(['beast_wolf','beast_leopard','beast_tiger','beast_lion','beast_elephant']);
 const NPCS=Object.freeze(['npc_carnifex']);
-const BASE=Object.freeze({...Object.fromEntries(TYPES.flatMap(type=>Array.from({length:5},(_,i)=>[type+'_L'+(i+1),1]))),...Object.fromEntries(EXTRAS.concat(BEASTS,NPCS).map(key=>[key,1]))});
+const BASE=Object.freeze(Object.fromEntries(
+ (registry?.ids()||TYPES.flatMap(type=>Array.from({length:5},(_,i)=>type+'_L'+(i+1))).concat(EXTRAS))
+ .concat(BEASTS,NPCS).map(key=>[key,1])
+));
 const source=root.SpartacusPublishedScales||{};
 const published={};
 for(const key of Object.keys(BASE))if(Object.prototype.hasOwnProperty.call(source,key)&&
@@ -94,6 +100,8 @@ function look(unit,roster){
  if(unit?.side==='enemy')return DEFAULTS[unit.look]?unit.look:null;
  if(unit?.side!=='ally')return null;
  const hero=roster?.[unit.index];if(!hero)return null;
+ if(registry?.isCustom(hero.appearance||hero.visualId))
+  return registry.get(hero.appearance||hero.visualId).visualId;
  if(hero.appearance==='murmillo_redcrest_alt_v1')return 'murmillo_redcrest_alt_v1';
  if(hero.appearance==='murmillo_redcrest_new_v1')return 'murmillo_redcrest_new_v1';
  if(hero.appearance==='murmillo_champion_red')return 'murmillo_champion_red';
