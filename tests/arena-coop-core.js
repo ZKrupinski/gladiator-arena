@@ -35,7 +35,13 @@ s=C.create(team(),team(),{seed:2});s.units[5].dead=true;s.units[5].hp=0;s.links.
 let wins=0,total=0,allKinds=new Set();
 for(let seed=1;seed<=100;seed++){
  s=C.create(team(),team(),{seed});let moved=new Set();
- while(!s.result){C.step(s,.05);for(const [i,u] of s.units.entries()){if(u.moving)moved.add(u.id);assert(Number.isFinite(u.x)&&Number.isFinite(u.y)&&Number.isFinite(u.hp));assert(u.hp>=0);assert(u.x>=85&&u.x<=1195);assert(u.y>=395&&u.y<=675);for(let j=i+1;j<s.units.length;j++)if(!u.dead&&!s.units[j].dead)assert(C.footDistance(u,s.units[j])>=101.9,'living fighters cannot overlap');}for(const e of s.events)allKinds.add(e.type);}
+ while(!s.result){C.step(s,.05);for(const [i,u] of s.units.entries()){if(u.moving)moved.add(u.id);assert(Number.isFinite(u.x)&&Number.isFinite(u.y)&&Number.isFinite(u.hp));assert(u.hp>=0);assert(u.x>=85&&u.x<=1195);assert(u.y>=395&&u.y<=675);for(let j=i+1;j<s.units.length;j++)if(!u.dead&&!s.units[j].dead){
+ const other=s.units[j];
+ const neutral=!u.dash&&!other.dash&&!u.attack&&!other.attack&&
+   !u.reaction&&!other.reaction;
+ if(neutral)assert(!C.bodyBlocked(u,other),
+  'non-attacking calibrated bodies cannot overlap at '+u.x+','+u.y+' / '+other.x+','+other.y);
+}}for(const e of s.events)allKinds.add(e.type);}
  assert.equal(moved.size,10,'all ten actors move simultaneously');assert(s.time<=120.1);assert(s.teamwork.ally>0);wins+=s.result.win;total+=s.time;
  const result=s.result,after=JSON.stringify(s.units);C.step(s,.05);C.finish(s,'retreat');assert.equal(s.result,result);assert.equal(JSON.stringify(s.units),after);assert.equal(C.command(s,'focus','enemy0'),false);
 }
@@ -78,7 +84,7 @@ for(let i=0;i<100&&!passThrough.result;i++){
 assert(crossedCorpse,'living fighter moves through a visible nonblocking corpse');
 assert(runner.x>corpse.x+102,'living fighter passes fully beyond the fallen body');
 assert.deepEqual({x:corpse.x,y:corpse.y},{x:550,y:510},'corpse remains visible in place');
-assert(C.footDistance(runner,foe)>=101.9,'living combatant collision remains enabled');
+assert(!C.bodyBlocked(runner,foe),'living combatant collision remains scaled and enabled');
 const noCascade=C.create(team(),team(),{seed:7});
 noCascade.units[0].reaction={kind:'rescue',target:'enemy0',ward:'ally1',due:0,expires:2};
 noCascade.units[0].x=680;noCascade.units[0].y=405;
