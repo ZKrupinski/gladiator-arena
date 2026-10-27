@@ -44,6 +44,7 @@ const window={
  },
  PracticeScaleProfiles:shared,ArenaPortraitFit:{bounds:img=>img.alpha}
 };
+window.SpartacusBodyCollision=require('../public/arena-body-collision.js');
 vm.runInNewContext(injected,{window,console});
 const qa=window.__depthQA;
 qa.setCourts(4);qa.setContext(ctx);
