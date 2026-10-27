@@ -136,7 +136,7 @@ input[type=file]{display:none}
   <button id="undoEdit" disabled>↶ 실행 취소</button><button id="redoEdit" disabled>↷ 다시 실행</button>
   <button id="shuffle">🔀 셔플</button>
   <button id="checkAll">전체 선택</button><button id="clearChecks">선택 해제</button>
-  <span id="selectedCount" aria-live="polite">선택 0 / 31</span>
+  <span id="selectedCount" aria-live="polite">선택 0 / 등록부 로딩</span>
  </div>
  <div class="batch" aria-label="선택 항목 일괄 보정">
   <label for="bulkSlider">선택 항목 일괄 배율</label>
@@ -965,7 +965,7 @@ function shuffle(){
   const j=Math.floor(Math.random()*(i+1));
   [order[i],order[j]]=[order[j],order[i]];
  }
- $('#sort').value='shuffle';sortCards();announce('32종 위치를 셔플했습니다. 체크와 설정값은 유지됩니다.');
+ $('#sort').value='shuffle';sortCards();announce(keys.length+'종 위치를 셔플했습니다. 체크와 설정값은 유지됩니다.');
 }
 function build(){
  const root=$('#grid');root.replaceChildren();drawers.clear();
@@ -1078,7 +1078,7 @@ function build(){
   });
  }
  sortCards();updateBulkState();renderComparison();
- announce('32종 표시 완료. 위에서 실제 같은 카메라의 크기를 비교하세요.');
+ announce(keys.length+'종 표시 완료 · 시장 검투사 '+registry.market().length+'종 자동 연동.');
 }
 function setupCompareEditor(){
  const picker=$('#compareKey');
@@ -1157,7 +1157,7 @@ $('#save').addEventListener('click',()=>{
   '브라우저 저장 실패: JSON 내보내기를 사용하세요.');
 });
 $('#reset').addEventListener('click',()=>{
- if(!confirm('32종의 모든 수정값을 게시된 기본값으로 복원할까요? 실행 취소로 되돌릴 수 있습니다.'))return;
+ if(!confirm(keys.length+'종의 모든 수정값을 게시된 기본값으로 복원할까요? 실행 취소로 되돌릴 수 있습니다.'))return;
  recordHistory();
  Object.assign(state,p.DEFAULTS);Object.assign(feet,p.FOOT_DEFAULTS);
  Object.assign(marketPrices,pricing.DEFAULTS);
@@ -1166,14 +1166,14 @@ $('#reset').addEventListener('click',()=>{
  for(const key of Object.keys(actions))delete actions[key];
  Object.assign(actions,v.all());updateBulkState();sortCards();
  updateActionControls();document.dispatchEvent(new Event('input'));
- announce('32종 연출과 27종 시장 가격레벨을 게시된 기본값으로 복원했습니다.');
+ announce(keys.length+'종 연출과 '+registry.market().length+'종 시장 가격레벨을 게시된 기본값으로 복원했습니다.');
 });
 $('#export').addEventListener('click',()=>{
  const blob=new Blob([JSON.stringify({version:47,overrides:state,footOffsets:feet,actions,marketPrices},null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');
- a.href=url;a.download='spartacus-31-character-action-fx.json';a.click();
+ a.href=url;a.download='spartacus-'+keys.length+'-character-actions-prices.json';a.click();
  setTimeout(()=>URL.revokeObjectURL(url),1000);
- announce('32종 설정 JSON을 내보냈습니다.');
+ announce(keys.length+'종 설정 JSON을 내보냈습니다.');
 });
 $('#import').addEventListener('click',()=>$('#file').click());
 $('#file').addEventListener('change',async e=>{
