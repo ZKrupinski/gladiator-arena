@@ -10,10 +10,10 @@
   return Math.max(0,Math.min(7,Math.floor((time-u.deathAt)*10)));
  }
  // Depth scale is a single camera projection AFTER studio-authored art size.
- // A rear fighter at y405 is 82% of an identical foreground fighter at y653.
+ // The REAL 5v5 playable Y bounds are 395..675 (not just spawn Y 405..653).
  // This affects sprite, trail, foot offsets, icon and raster FX together;
  // it never touches collision or stored per-look size.
- const COOP_CAMERA_BODY_ZOOM=.60,COOP_FAR_Y=405,COOP_NEAR_Y=653,COOP_FAR_SCALE=.82;
+ const COOP_CAMERA_BODY_ZOOM=.60,COOP_FAR_Y=395,COOP_NEAR_Y=675,COOP_FAR_SCALE=.82;
  const perspectiveScale=y=>{
   const t=Math.max(0,Math.min(1,(Number(y)-COOP_FAR_Y)/(COOP_NEAR_Y-COOP_FAR_Y)));
   return COOP_FAR_SCALE+(1-COOP_FAR_SCALE)*t;
