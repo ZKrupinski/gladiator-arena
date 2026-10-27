@@ -12,6 +12,7 @@ on:
       - tests/arena-coop-core.js
       - tests/arena-depth-perspective-v113.cjs
       - tests/practice-appearance-proportions-v45.cjs
+      - tests/practice-duel-footwork-v41.cjs
       - .github/workflows/qa-artist-body-collision.yml
   workflow_dispatch:
 permissions:
@@ -39,5 +40,7 @@ jobs:
         run: node tests/arena-depth-perspective-v113.cjs
       - name: Preserve 1v4 studio-authored sprites and enemy proportions
         run: node tests/practice-appearance-proportions-v45.cjs
+      - name: Verify dynamic pair-body gaps in all 1-4 training layouts
+        run: node tests/practice-duel-footwork-v41.cjs
       - name: Preserve 1v4 bitmap FX and swing frame geometry
         run: node tests/practice-fx-editor-fidelity-v52.cjs
