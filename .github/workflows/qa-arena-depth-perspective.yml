@@ -9,6 +9,9 @@ on:
       - public/index.html
       - tests/arena-depth-perspective-v113.cjs
       - tests/practice-fx-editor-fidelity-v52.cjs
+      - tests/practice-appearance-proportions-v45.cjs
+      - tests/practice-carnifex-scale-v44.cjs
+      - tests/practice-independent-layers-v49.cjs
       - .github/workflows/qa-arena-depth-perspective.yml
   workflow_dispatch:
 permissions:
