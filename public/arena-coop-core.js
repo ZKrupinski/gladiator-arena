@@ -9,12 +9,39 @@
  const Personality=(typeof window==='object'?window:globalThis).ArenaPersonality;
  const Matchup=(typeof window==='object'?window:globalThis).ArenaMatchup;
  const finite=(n,f)=>Number.isFinite(Number(n))?Number(n):f;
+ const world=typeof window==='object'?window:globalThis;
+ const Body=world.SpartacusBodyCollision||
+  (typeof module==='object'&&module.exports?require('./arena-body-collision.js'):null);
+ if(!Body)throw Error('Shared neutral body collision must load before 5v5');
+ function appearanceOf(h){
+  if(h?.look)return h.look;
+  if(h?.appearance==='legacy')return 'legacy_'+h.cls;
+  if(h?.appearance)return h.appearance;
+  if(h?.visualId)return h.visualId;
+  const type=h?.growthType||(h?.cls==='thraex'?'thraex_a':h?.cls+'_a');
+  return type+'_L'+Math.max(1,Math.min(5,Math.trunc(finite(h?.stage,1))));
+ }
+ function spriteBodyScale(h){
+  const look=appearanceOf(h);
+  const base=world.PracticeScaleProfiles?.scale?.(look)??1;
+  const neutral=world.PracticeVisualProfiles?.resolve?.(look,'idle')?.scale??1;
+  return clamp(finite(base,1)*finite(neutral,1),.45,2.4);
+ }
+ function bodyShape(u,y=u.y){
+  return Body.footprint('coop',{scale:finite(u.collisionScale,1),y});
+ }
+ function bodySlack(a,b){
+  return (a?.dash>0||b?.dash>0||a?.attack||b?.attack||a?.reaction||b?.reaction)?.80:1;
+ }
+ function bodyBlocked(a,b,x=a.x,y=a.y){
+  return Body.ellipse({x,y},b,bodyShape(a,y),bodyShape(b),{slack:bodySlack(a,b)});
+ }
  const distance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.45);
  const footDistance=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)*1.6);
  // A unit's world-space Y is its grounded foot position. Draw back-to-front
  // by this value alone: a corpse has exactly the same depth rules as a live fighter.
  function depthOrder(units){return units.slice().sort((a,b)=>a.y-b.y);}
- const SOLID_GAP=102; // Solid spacing applies only to living fighters. Corpses remain visual, nonblocking.
+ // The old fixed 102px gap ignored character art size and scene depth.
  // Team-only endurance: the crowd can see multiple tactics before eliminations.
  // Not written to roster stats; both sides benefit from the same multiplier.
  const STAMINA_MULT=1.5,CONTACT_RATE=.42;
@@ -37,6 +64,7 @@
   const stats=h.combat||{},maxHp=Math.max(40,Math.round(finite(stats.hp,160)*STAMINA_MULT));
   const hp=Math.max(1,maxHp-clamp(Math.round(finite(h.injury,0)*1.3),0,maxHp-1));
   return {...h,id:side+seat,side,seat,maxHp,hp,startHp:hp,
+   collisionLook:appearanceOf(h),collisionScale:spriteBodyScale(h),
    personality:Personality?.profile?.(h,stats,h.cls),mind:null,
    atk:Math.max(4,finite(stats.atk,20)),armor:clamp(finite(stats.armor,.1),0,.62),
    parry:clamp(finite(stats.parry,.14),.05,.48),speed:Math.max(70,finite(stats.move,220)*.48),
@@ -53,9 +81,10 @@
   if(allies.length!==5||enemies.length!==5)throw Error('각 팀은 정확히 5명이어야 합니다.');
   if(new Set(allies.map(h=>h.index)).size!==5)throw Error('같은 검투사를 중복 출전시킬 수 없습니다.');
   if(allies.some(h=>finite(h.injury,0)>=80||finite(h.fatigue,0)>=80))throw Error('중상 또는 탈진한 검투사는 출전할 수 없습니다.');
-  return {units:[...allies.map((h,i)=>makeUnit(h,'ally',i)),...enemies.map((h,i)=>makeUnit(h,'enemy',i))],
+  const sim={units:[...allies.map((h,i)=>makeUnit(h,'ally',i)),...enemies.map((h,i)=>makeUnit(h,'enemy',i))],
    time:0,limit:clamp(finite(limit,120),10,180),random:rng(seed),events:[],serial:0,links:[],
    meter:25,focus:null,cover:null,focusReady:0,coverReady:0,formation:null,formationReady:0,flank:null,flankReady:0,paused:false,result:null,teamwork:{ally:0,enemy:0}};
+  separateBodies(sim,4);return sim;
  }
  const alive=(s,side)=>s.units.filter(u=>!u.dead&&(!side||u.side===side));
  function emit(s,type,a,b,text,extra={}){
