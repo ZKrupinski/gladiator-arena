@@ -18,7 +18,10 @@ try{
  await form.locator('[name="label"]').fill('QA 신규 검투사');
  await form.locator('[name="assetFolder"]').fill(FOLDER);
  await form.locator('[name="priceLevel"]').selectOption('3');
- await form.locator('[type="submit"]').click();
+ await Promise.all([
+  studio.waitForEvent('load',{timeout:100000}),
+  form.locator('[type="submit"]').click()
+ ]);
  await studio.waitForFunction(id=>Boolean(
   window.SpartacusScaleStudio?.priceLevels?.()[id]&&window.SpartacusGladiators?.get(id)
  ),ID,{timeout:100000});
