@@ -181,9 +181,9 @@
     const signals=root.ArenaCombatSignals,rivals=sim.units.filter(v=>v.side!==u.side&&!v.dead);
     const opponent=rivals.find(v=>v.id===u.target)||
       rivals.sort((a,b)=>Math.hypot(a.x-u.x,a.y-u.y)-Math.hypot(b.x-u.x,b.y-u.y))[0];
-    const headY=u.y+flightY*depth-Math.min(225,Math.max(93,image.height*k*depth))-21;
-    if(!u._levelFx)signals?.drawAdvantage?.(ctx,u,opponent,{x:u.x+flightX,y:headY,time:sim.time,size:20});
-    signals?.drawLevelUp?.(ctx,u,{x:u.x+flightX,y:headY,time:sim.time,scale:1});
+    const headY=u.y+flightY*depth-Math.min(225*depth,Math.max(93*depth,image.height*k*depth))-21*depth;
+    if(!u._levelFx)signals?.drawAdvantage?.(ctx,u,opponent,{x:u.x+flightX,y:headY,time:sim.time,size:20*depth});
+    signals?.drawLevelUp?.(ctx,u,{x:u.x+flightX,y:headY,time:sim.time,scale:depth});
    }
   }
   // Painted-only 5v5 battlefield: no procedural paths, rings, outlines,
@@ -216,25 +216,26 @@
    // 5v5 has its own two-depth-lane ground plane, distinct from Capua's single court.
    // Always use the original Colosseum backdrop here, regardless of venue toggle.
    if(bg.complete&&bg.naturalWidth){const horizon=bg.naturalHeight*.76;ctx.drawImage(bg,0,0,bg.naturalWidth,horizon,0,0,1280,350);ctx.drawImage(bg,0,horizon,bg.naturalWidth,bg.naturalHeight-horizon,0,350,1280,370);}else{ctx.fillStyle='#69503b';ctx.fillRect(0,0,1280,720);}
-   // World Y is each fighter's foot/depth anchor: smaller Y first (farther back).
-   // Dead and living sprites use identical depth ordering; corpses stay fully opaque.
-   for(const u of C.depthOrder(sim.units))drawUnit(u);
+   // Every raster effect and its owner share one world-depth painter order.
+   // A distant slash cannot cover a closer gladiator just because FX are late.
+   const units=C.depthOrder(sim.units),items=units.map((u,i)=>({
+    y:u.y,priority:0,serial:i,paint:()=>drawUnit(u)
+   }));
    for(const e of state.fx){
-    const age=sim.time-e.time;if(age>1.3)continue;
-    if(['hit','net-hit','guard','dodge','assist','parry','counter','riposte','rescue','ambush','push'].includes(e.type)&&age<.52){
+    const age=sim.time-e.time;
+    if(age>=.52||!['hit','net-hit','guard','dodge','assist','parry','counter','riposte','rescue','ambush','push'].includes(e.type))continue;
+    const target=sim.units.find(u=>u.id===e.target),source=sim.units.find(u=>u.id===e.source);
+    const owner=['parry','guard','dodge'].includes(e.type)?(source||target):(target||source);
+    items.push({y:owner?.y??e.y,priority:1,serial:items.length,paint:()=>{
      const kind=e.type==='guard'?'guard':e.type==='dodge'?'dash':['parry','counter','riposte','rescue'].includes(e.type)?'parry':
       ['ambush','push'].includes(e.type)?'special':'hit';
      const big=['counter','riposte','rescue','ambush','push'].includes(e.type);
-     // Position each VFX on a live sprite, including its recoil flight, rather than
-     // leaving it at the original hit-event coordinate. Depth follows the feet.
-     const target=sim.units.find(u=>u.id===e.target),source=sim.units.find(u=>u.id===e.source);
-     const owner=['parry','guard','dodge'].includes(e.type)?(source||target):(target||source);
      const face=owner?.face<0?-1:1;
      const appearance=owner?(root.PracticeScaleProfiles?.look?.(owner,root.LudusBridge?.state?.()?.roster)||owner.look):null;
      const action=['parry','guard','dodge'].includes(e.type)?e.type:kind==='special'?'special':'hit';
      const authored=root.PracticeVisualProfiles?.resolve?.(appearance,action);
      const chosen=authored?.effect?.kind&&authored.effect.kind!=='auto'?authored.effect.kind:kind;
-     if(chosen==='none')continue;
+     if(chosen==='none')return;
      const depth=owner?perspectiveScale(owner.y):1,zoom=COOP_CAMERA_BODY_ZOOM*depth;
      const flight=owner?.flight;
      const ft=flight?Math.max(0,Math.min(1,(sim.time-flight.at)/Math.max(.01,flight.duration))):1;
@@ -248,8 +249,10 @@
      root.ArenaRasterFX?.draw?.(ctx,chosen,geometry?.x??e.x,geometry?.y??(e.y-80),
       geometry?.width??(big?305:180)*depth,geometry?.height??(big?270:166)*depth,
       age/.52,big?1:.90,geometry?.face??face);
-    }
+    }});
    }
+   items.sort((a,b)=>a.y-b.y||a.priority-b.priority||a.serial-b.serial);
+   for(const item of items)item.paint();
    ctx.restore();
   }
   function hud(){
