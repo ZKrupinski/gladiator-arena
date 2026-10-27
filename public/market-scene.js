@@ -444,10 +444,11 @@ async function prepareMarket(epoch){
  const boot=scene.querySelector('.gm-boot'),actions=boot.querySelector('.gm-boot-actions');
  boot.querySelector('.gm-boot-message').textContent='검투사시장 준비 중…';
  actions.querySelector('[data-retry]').hidden=true;
+ let timeoutId=null; // Also visible to finally; closing the market must always clear its timer.
  try{
   // Approved background + first merchant pose + every active merchant motion.
   // Career sprite atlas preparation is shared with the rest of Ludus.
-  let timeoutId;const timeout=new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(new Error('market asset timeout')),25000);bootTimeout=timeoutId;});
+  const timeout=new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(new Error('market asset timeout')),25000);bootTimeout=timeoutId;});
   await Promise.race([Promise.all([
    ...[$('#gmKey'),$('#gmMerchantMain'),...merchantFrames].map(marketAsset),
    Promise.resolve().then(()=>opts?.assetsReady?.())
