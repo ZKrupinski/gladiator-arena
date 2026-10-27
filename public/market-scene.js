@@ -89,7 +89,8 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random,f
   ?types.filter(t=>t.id!==usedClasses[0]):types;
  const t=forcedLook?types.find(t=>t.id===forcedLook.cls):candidateClasses[randIndex(rng,candidateClasses.length)];
  if(!t)throw new Error('Unknown human gladiator class in market look');
- const name=romanName(null,usedNames,rng);
+ // Spread Roman family names across the 27 offers even with a fixed QA RNG.
+ const name=romanName(null,usedNames,()=>stableNameRoll('offer|'+seed+'|'+slot+'|'+(forcedLook?.visualId||t.id)));
  usedClasses.push(t.id);
  const roll=rng();
  // A rare market-born special: 0.6% per individual lot (~1.8%/visit).
