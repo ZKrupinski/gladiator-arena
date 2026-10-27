@@ -1,0 +1,41 @@
+name: QA arena depth perspective
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/ludus-practice.js
+      - public/arena-coop.js
+      - public/arena-coop-core.js
+      - public/index.html
+      - tests/arena-depth-perspective-v113.cjs
+      - tests/practice-fx-editor-fidelity-v52.cjs
+      - .github/workflows/qa-arena-depth-perspective.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  depth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Parse training and five-vs-five renderer
+        run: |
+          node --check public/ludus-practice.js
+          node --check public/arena-coop.js
+      - name: Real front/rear fighter depth, VFX and KO scale
+        run: node tests/arena-depth-perspective-v113.cjs
+      - name: Existing artist-edited effects maintain correct geometry
+        run: node tests/practice-fx-editor-fidelity-v52.cjs
+      - name: Existing artist sprite sizes and both ally/rival feet
+        run: node tests/practice-appearance-proportions-v45.cjs
+      - name: Executor retains correct fighter-to-executor ratio
+        run: node tests/practice-carnifex-scale-v44.cjs
+      - name: Four independent courts retain no inter-seat sprite leaks
+        run: node tests/practice-independent-layers-v49.cjs
+      - name: Five-vs-five combat and back-to-front depth ordering
+        run: node tests/arena-coop-core.js
+      - name: World camera framing unaffected
+        run: node tests/arena-coop-camera.js
