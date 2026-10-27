@@ -37,7 +37,7 @@ function loadAction(id,action='idle'){
    resolve(frames);
   };
   img.onerror=()=>reject(Error('Missing unique gladiator art: '+path));
-  img.src=path+'?v=unified-registry-v1';
+  img.src='/'+path+'?v=unified-registry-v1';
  }).then(frames=>{
   st.frames.set(name,frames);st.status='ready';
   if(name==='idle'){st.portrait=null;notify(id);}
