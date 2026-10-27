@@ -1,0 +1,100 @@
+name: Publish Redcrest II original nine motion sheets
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/build_redcrest_alt_user_art.py
+      - .github/workflows/publish-redcrest-alt.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: publish-redcrest-alt-20261027
+  cancel-in-progress: false
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pixel-exact sheet processing packages
+        run: python -m pip install --quiet Pillow numpy opencv-python-headless
+      - name: Fetch nine uploaded original images, fix heavy, build 72 transparent frames
+        run: python scripts/build_redcrest_alt_user_art.py
+      - name: Validate atlas dimensions and cropped silhouettes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+          path=Path('public/assets/combat/murmillo-redcrest-alt-v1')
+          report=json.loads((path/'qa-redcrest-alt.json').read_text())
+          expected=('idle','walk','slash','sweep','thrust','heavy','guard','hit','death')
+          assert set(report)==set(expected)
+          assert sum(x['frames'] for x in report.values())==72
+          for action in expected:
+              im=Image.open(path/(action+'.png'))
+              assert im.size==(3840,1080) and im.mode=='RGBA',action
+              for f in range(8):
+                  x=(f%4)*960;y=(f//4)*540
+                  bbox=im.crop((x,y,x+960,y+540)).getchannel('A').getbbox()
+                  assert bbox and bbox[0]>10 and bbox[1]>10 and bbox[2]<950 and bbox[3]<530,(action,f,bbox)
+          print('PASS: nine full-size RGBA atlases / 72 independent padded frames')
+          PY
+      - name: Invalidate game and size-tool caches only after verified images exist
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          def sub(path,before,after):
+              file=Path(path)
+              content=file.read_text()
+              if before not in content and after not in content:
+                  raise ValueError(f'Unexpected asset loader version: {path}: {before}')
+              file.write_text(content.replace(before,after))
+          sub('public/alt-murmillo.js','png?v=20261027-alt','png?v=redcrest-II-art-v2-20261027')
+          sub('public/alt-murmillo.js','Provisional SpriteForge art','Artist-provided unique nine-action SpriteForge art')
+          sub('public/alt-murmillo.js',"version:'1.0.0'","version:'2.0.0'")
+          sub('public/index.html','alt-murmillo.js?v=redcrest-alt-v1-20261027','alt-murmillo.js?v=redcrest-II-art-v2-20261027')
+          sub('public/index.html','market-scene.js?v=all-human-looks-v113-20261027','market-scene.js?v=redcrest-II-art-v114-20261027')
+          sub('public/index.html','practice-scale-calibrator.html?v=redcrest-alt-v112','practice-scale-calibrator.html?v=redcrest-II-art-v2-20261027')
+          sub('public/tools/practice-scale-calibrator.html',"idle.png?v=redcrest-alt-v112","idle.png?v=redcrest-II-art-v2-20261027")
+          sub('public/tools/practice-scale-calibrator.html',"resolved+'.png?v=redcrest-alt-v112'","resolved+'.png?v=redcrest-II-art-v2-20261027'")
+          sub('public/market-scene.js',"레드크레스트 II · 임시 이미지","레드크레스트 II")
+          f=Path('public/uploader-release.json')
+          manifest=json.loads(f.read_text())
+          manifest['releaseId']='redcrest-II-original-art-72frames-20261027'
+          manifest['baseCommit']='build-from-9-user-original-sheets'
+          manifest['artReview']={
+              'status':'ORIGINAL_USER_SHEETS_PUBLISHED',
+              'source':'nine 2026-10-27 user-supplied motion sheets; heavy repaired',
+              'distinctOriginalsUploaded':True,
+              'qa':'72 frames, nine 3840x1080 RGBA atlases, no boundary cropping verified',
+              'doNotOverwrite':['murmillo_redcrest_new_v1','murmillo_champion_red','murmillo_motion_v3']}
+          for name in ('public/index.html','public/alt-murmillo.js','public/market-scene.js',
+                       'public/tools/practice-scale-calibrator.html'):
+              manifest.setdefault('assetSha256',{})[name]=hashlib.sha256(Path(name).read_bytes()).hexdigest()
+          base=Path('public/assets/combat/murmillo-redcrest-alt-v1')
+          for image in base.glob('*.png'):
+              manifest['assetSha256']['public/assets/combat/murmillo-redcrest-alt-v1/'+image.name]=hashlib.sha256(image.read_bytes()).hexdigest()
+          manifest['assetSha256']['public/assets/combat/murmillo-redcrest-alt-v1/manifest.json']=hashlib.sha256((base/'manifest.json').read_bytes()).hexdigest()
+          f.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
+          print('READY: cache bust + market artwork label + verified uploader release manifest')
+          PY
+      - name: Commit and push exact Redcrest II art to game source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/assets/combat/murmillo-redcrest-alt-v1 public/alt-murmillo.js public/index.html public/market-scene.js public/tools/practice-scale-calibrator.html public/uploader-release.json
+          if git diff --cached --quiet; then
+            echo "No art changes required"
+          else
+            git commit -m "art(redcrest-II): publish nine unique 8-frame sheets and repaired heavy attack"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
