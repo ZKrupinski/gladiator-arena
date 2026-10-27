@@ -1083,20 +1083,23 @@ $('#bulkSlider').addEventListener('change',()=>{
 });
 $('#save').addEventListener('click',()=>{
  announce(saveAllDraft()?
-  '크기·발높이·동작 프레임·이펙트를 이 기기에 임시저장했습니다. 다른 기기에 반영하려면 GitHub 원본에 게시하세요.':
+  '크기·발높이·동작·이펙트·시장 가격레벨을 이 기기에 임시저장했습니다. 다른 기기에 반영하려면 GitHub 원본에 게시하세요.':
   '브라우저 저장 실패: JSON 내보내기를 사용하세요.');
 });
 $('#reset').addEventListener('click',()=>{
  if(!confirm('32종의 모든 수정값을 게시된 기본값으로 복원할까요? 실행 취소로 되돌릴 수 있습니다.'))return;
  recordHistory();
- Object.assign(state,p.DEFAULTS);Object.assign(feet,p.FOOT_DEFAULTS);for(const key of keys)refresh(key);
- p.reset();p.resetFeet();v.reset();
+ Object.assign(state,p.DEFAULTS);Object.assign(feet,p.FOOT_DEFAULTS);
+ Object.assign(marketPrices,pricing.DEFAULTS);
+ for(const key of keys)refresh(key);
+ p.reset();p.resetFeet();pricing.reset();v.reset();
  for(const key of Object.keys(actions))delete actions[key];
  Object.assign(actions,v.all());updateBulkState();sortCards();
- updateActionControls();announce('32종 크기·발높이·동작·이펙트 수정값을 기본값으로 복원했습니다.');
+ updateActionControls();document.dispatchEvent(new Event('input'));
+ announce('32종 연출과 27종 시장 가격레벨을 게시된 기본값으로 복원했습니다.');
 });
 $('#export').addEventListener('click',()=>{
- const blob=new Blob([JSON.stringify({version:46,overrides:state,footOffsets:feet,actions},null,2)],{type:'application/json'});
+ const blob=new Blob([JSON.stringify({version:47,overrides:state,footOffsets:feet,actions,marketPrices},null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');
  a.href=url;a.download='spartacus-31-character-action-fx.json';a.click();
  setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -1106,12 +1109,21 @@ $('#import').addEventListener('click',()=>$('#file').click());
 $('#file').addEventListener('change',async e=>{
  const file=e.target.files?.[0];if(!file)return;
  try{
-  const input=JSON.parse(await file.text()),values=input.overrides||input,footValues=input.footOffsets||{};
+  const input=JSON.parse(await file.text()),values=input.overrides||input,footValues=input.footOffsets||{},
+  importedPrices=input.marketPrices??input.priceLevels;
   if(!values||typeof values!=='object'||Array.isArray(values)||
-   !keys.some(key=>Object.hasOwn(values,key))&&!input.actions&&!input.footOffsets)throw Error('캐릭터 설정이 없는 JSON입니다');
+   !keys.some(key=>Object.hasOwn(values,key))&&!input.actions&&!input.footOffsets&&!importedPrices)throw Error('캐릭터 설정이 없는 JSON입니다');
   for(const data of [values,footValues])for(const key of keys)if(Object.hasOwn(data,key)&&
    (typeof data[key]!=='number'||!Number.isFinite(data[key])))throw Error(key+' 값은 숫자여야 합니다');
   if(input.actions!==undefined&&(!input.actions||typeof input.actions!=='object'||Array.isArray(input.actions)))throw Error('동작 설정 형식이 올바르지 않습니다');
+  if(importedPrices!==undefined){
+   if(!importedPrices||typeof importedPrices!=='object'||Array.isArray(importedPrices))
+    throw Error('시장 가격레벨 설정 형식이 올바르지 않습니다');
+   for(const [key,level] of Object.entries(importedPrices)){
+    if(!pricing.isMarketLook(key)||!Number.isInteger(level)||level<1||level>5)
+     throw Error(key+' : 가격레벨은 1~5의 정수여야 합니다');
+   }
+  }
   recordHistory();
   for(const key of keys)if(Object.hasOwn(values,key)&&Number.isFinite(Number(values[key])))
    state[key]=p.clamp(values[key]);
@@ -1121,9 +1133,10 @@ $('#file').addEventListener('change',async e=>{
    const imported=v.sanitize(input.actions);for(const key of Object.keys(actions))delete actions[key];
    Object.assign(actions,imported);
   }
+  if(importedPrices)Object.assign(marketPrices,pricing.sanitize(importedPrices));
   for(const key of keys)refresh(key);
   const saved=saveAllDraft();updateBulkState();sortCards();updateActionControls();recordHistory();
-  announce(saved?'크기·발높이·동작·이펙트 설정을 가져오고 임시저장했습니다.':'설정은 불러왔지만 기기 저장에 실패했습니다. JSON 내보내기로 백업하세요.');
+  announce(saved?'크기·발높이·동작·이펙트·시장 가격레벨을 가져오고 임시저장했습니다.':'설정은 불러왔지만 기기 저장에 실패했습니다. JSON 내보내기로 백업하세요.');
  }catch(error){announce('불러오기 실패: '+error.message);}
  e.target.value='';
 });
@@ -1132,13 +1145,15 @@ window.SpartacusScaleStudio={
  values:()=>Object.fromEntries(keys.map(key=>[key,Number(state[key])])),
  feet:()=>Object.fromEntries(keys.map(key=>[key,Number(feet[key])])),
  actions:()=>v.sanitize(actions),
+ priceLevels:()=>pricing.normalize(marketPrices),
  saveDraft:saveAllDraft
 };
 function saveAllDraft(){
- const a=p.write(state),b=p.writeFeet(feet),c=v.write(actions);return a&&b&&c;
+ const a=p.write(state),b=p.writeFeet(feet),c=v.write(actions),d=pricing.write(marketPrices);
+ return a&&b&&c&&d;
 }
 const history=[],future=[];
-const snapshot=()=>JSON.stringify({state,feet,actions});
+const snapshot=()=>JSON.stringify({state,feet,actions,marketPrices});
 function historyButtons(){ $('#undoEdit').disabled=history.length<2;$('#redoEdit').disabled=!future.length; }
 function recordHistory(){
  const next=snapshot();if(history.at(-1)!==next){history.push(next);if(history.length>60)history.shift();future.length=0;}
@@ -1146,7 +1161,7 @@ function recordHistory(){
 }
 function restoreHistory(value){
  const data=JSON.parse(value);
- for(const [target,source] of [[state,data.state],[feet,data.feet],[actions,data.actions]]){
+ for(const [target,source] of [[state,data.state],[feet,data.feet],[actions,data.actions],[marketPrices,data.marketPrices||pricing.DEFAULTS]]){
   for(const key of Object.keys(target))delete target[key];Object.assign(target,source);
  }
  for(const key of keys)refresh(key);
