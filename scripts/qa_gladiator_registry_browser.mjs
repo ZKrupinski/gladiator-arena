@@ -80,7 +80,7 @@ try{
  for(let i=1;i<9;i++)await game.locator('#gmNextPage').click({timeout:18000});
  const pageStatus=await game.locator('#gmPageStatus').textContent();
  assert.ok(pageStatus.startsWith('10 / 10')&&pageStatus.includes('28종'),pageStatus);
- const name=await game.locator('#gmCard0 .gm-roman-name').textContent();
+ const name=await game.locator('#gmPanel0 .gm-roman-name').textContent();
  assert.match(name,/^[A-Z][a-z]+ [A-Z][a-z]+$/);
  assert.deepEqual(errors,[],errors.join('\n'));
  console.log('GLADIATOR_REGISTRY_BIDIRECTIONAL_PASS '+JSON.stringify({studioData,gameInfo,pageStatus}));
