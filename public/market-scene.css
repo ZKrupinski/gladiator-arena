@@ -186,3 +186,20 @@
  border:1px solid #b18a4b;border-radius:5px;color:#ffe2a1;
  font:900 22px/1.2 'Noto Sans KR',sans-serif;white-space:nowrap;
 }
+
+/* v115: Roman praenomen + nomen. Keep the complete name readable on compact podium plaques. */
+.gm-screen .gm-stage .gm-card-dynamic .gm-roman-name{
+ font:700 20px/1.15 Georgia,'Noto Serif KR',serif;
+ letter-spacing:-.5px;white-space:nowrap;overflow:visible;
+ text-shadow:0 2px 2px #000;
+}
+.gm-screen .gm-stage .gm-card-dynamic .gm-roman-name.is-long{font-size:18px;letter-spacing:-.65px}
+.gm-screen .gm-stage .gm-bottom-info h2{
+ font:700 23px/1.18 Georgia,'Noto Serif KR',serif;
+ letter-spacing:-.35px;white-space:nowrap;
+}
+.gm-screen .gm-stage .gm-bottom-info .gm-appearance{
+ font:800 15px/1.2 'Noto Sans KR',sans-serif;color:#f4c982;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+ margin:0 0 1px;
+}
