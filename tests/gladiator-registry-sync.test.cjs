@@ -15,7 +15,8 @@ const registry=require('../public/gladiator-registry.js');
 const prices=require('../public/market-pricing.js');
 const sizes=require('../public/practice-scale-profiles.js');
 const market=require('../public/market-scene.js');
-const motion=require('../public/sprite-motion-registry.js');
+require('../public/sprite-motion-registry.js');
+const motion=global.SpriteMotionRegistry;
 const TEST={
  visualId:'murmillo_qa_registered_v1',cls:'murmillo',label:'QA 황금 투구 무르밀로',
  assetFolder:'assets/combat/murmillo-qa-registered-v1',priceLevel:2
