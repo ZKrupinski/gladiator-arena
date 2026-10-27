@@ -93,7 +93,37 @@
  }
  function free(s,u,x,y){
   return x>=85&&x<=1195&&y>=395&&y<=675&&
-    s.units.every(v=>v===u||v.dead||footDistance({x,y},v)>=SOLID_GAP-.01);
+   s.units.every(v=>v===u||v.dead||!bodyBlocked(u,v,x,y));
+ }
+ function separateBodies(s,rounds=3){
+  // Never change the silhouette box for slash, leap, dash or combo images.
+  // Only persistent idle/walk/guard stances are separated.
+  const live=s.units.filter(v=>!v.dead);
+  for(let pass=0;pass<rounds;pass++){
+   let changed=false;
+   for(let i=0;i<live.length;i++)for(let j=i+1;j<live.length;j++){
+    const a=live[i],b=live[j];
+    if(bodySlack(a,b)<1)continue;
+    const penetration=Body.penetration(a,b,bodyShape(a),bodyShape(b));
+    if(!penetration||penetration.amount<.02)continue;
+    const {axis,sign}=penetration,k=axis==='x'?'x':'y';
+    const min=k==='x'?85:395,max=k==='x'?1195:675;
+    const half=(penetration.amount+.12)/2;
+    const oldA=a[k],oldB=b[k];
+    a[k]=clamp(oldA-sign*half,min,max);
+    b[k]=clamp(oldB+sign*half,min,max);
+    // If one character is stuck at the world edge, push only the other.
+    const projected=(b[k]-a[k])*sign;
+    const ideal=(oldB-oldA)*sign+2*half;
+    const shortfall=Math.max(0,ideal-projected);
+    if(shortfall>.01){
+     if(Math.abs(a[k]-oldA)<half*.5)b[k]=clamp(b[k]+sign*shortfall,min,max);
+     else if(Math.abs(b[k]-oldB)<half*.5)a[k]=clamp(a[k]-sign*shortfall,min,max);
+    }
+    changed=true;
+   }
+   if(!changed)break;
+  }
  }
  function travel(s,u,tx,ty,step){
   const dx=tx-u.x,dy=ty-u.y,len=Math.hypot(dx,dy);
@@ -412,7 +442,9 @@
     u.cooldown=(1.25+s.random()*.5)*u.recovery/clamp(mood?.aggression||1,.65,1.55);if(special)u.specialReady=s.time+u.specialCooldown;
    }
   }
-  // Only living fighters block movement, including dash and knockback. Fallen bodies persist visually.
+  // Persistent standing/walking silhouettes are re-separated after steering.
+  // Attack and dash actions retain their temporary cinematic overlap.
+  separateBodies(s);
   s.links=s.links.filter(l=>{
    const a=s.units.find(u=>u.id===l.actor),b=s.units.find(u=>u.id===l.target);
    if(!a||!b||a.dead||b.dead||s.time>l.expires)return false;
@@ -429,5 +461,5 @@
   else if(s.time>=s.limit)finish(s,'timeout');
   return s;
  }
- return {create,step,command,finish,alive,distance,footDistance,depthOrder,faceToward,travel};
+ return {create,step,command,finish,alive,distance,footDistance,depthOrder,faceToward,travel,bodyShape,bodyBlocked,separateBodies,appearanceOf};
 });
