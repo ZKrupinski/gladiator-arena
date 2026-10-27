@@ -20,7 +20,14 @@ for(const type of [...BEASTS,'murmillo','retiarius','thraex','murmillo_champion_
  map.set(type,p);
 }
 function profile(type){return map.get(type)||null;}
-function registerCharacter(type,{extras=[],semantics={}}={}){
+function registerCharacter(type,{extras=[],semantics={},gladiator=null}={}){
+ // Game-driven registration also creates the studio/market/price/roster entry.
+ // A class and nine-action sprite folder are required; an animation name alone
+ // is not enough information to safely add a playable fighter.
+ if(gladiator){
+  if(!root.SpartacusGladiators)throw Error('Gladiator registry is not initialized');
+  root.SpartacusGladiators.register({...gladiator,visualId:gladiator.visualId||type});
+ }
  if(!/^[a-z][a-z0-9_-]{1,48}$/.test(type))throw Error('Invalid character ID');
  const p=map.get(type)||blank(type);
  p.semantics={...p.semantics,...semantics};map.set(type,p);
