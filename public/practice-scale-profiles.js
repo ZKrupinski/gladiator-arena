@@ -16,25 +16,37 @@ const EXTRAS=registry?registry.market().filter(x=>x.kind!=='growth').map(x=>x.vi
  ['murmillo_champion_red','murmillo_redcrest_new_v1','murmillo_redcrest_alt_v1','murmillo_motion_v3','legacy_murmillo','legacy_thraex','legacy_retiarius'];
 const BEASTS=Object.freeze(['beast_wolf','beast_leopard','beast_tiger','beast_lion','beast_elephant']);
 const NPCS=Object.freeze(['npc_carnifex']);
-const BASE=Object.freeze(Object.fromEntries(
+const BASE=Object.fromEntries(
  (registry?.ids()||TYPES.flatMap(type=>Array.from({length:5},(_,i)=>type+'_L'+(i+1))).concat(EXTRAS))
  .concat(BEASTS,NPCS).map(key=>[key,1])
-));
+);
 const source=root.SpartacusPublishedScales||{};
 const published={};
 for(const key of Object.keys(BASE))if(Object.prototype.hasOwnProperty.call(source,key)&&
  Number.isFinite(Number(source[key]))&&Number(source[key])>=.65&&Number(source[key])<=1.85)
  published[key]=Number(source[key]);
-const DEFAULTS=Object.freeze({...BASE,...published});
+const DEFAULTS={...BASE,...published};
 // A foot adjustment is a visual Y displacement in arena pixels; positive = down.
 // Missing keys remain exactly zero, preserving approved ground contacts.
 const footSource=root.SpartacusPublishedFeet||{};
 const PUBLISHED_FEET=Object.freeze(Object.fromEntries(Object.keys(BASE).map(key=>[
  key,Number.isFinite(Number(footSource[key]))?clampFoot(footSource[key]):0
 ])));
-const FOOT_DEFAULTS=Object.freeze({...PUBLISHED_FEET});
+const FOOT_DEFAULTS={...PUBLISHED_FEET};
 const feetBaseline=JSON.stringify({sizes:DEFAULTS,feet:FOOT_DEFAULTS});
 const baseline=JSON.stringify(DEFAULTS);
+// The runtime can gain an approved fighter in the other tab without restart.
+// Only new IDs are added: never rescale any existing gladiator or existing save.
+registry?.subscribe(looks=>{
+ for(const look of looks){
+  const id=look.visualId;
+  if(Object.hasOwn(BASE,id))continue;
+  BASE[id]=1;DEFAULTS[id]=Number.isFinite(Number(source[id]))&&Number(source[id])>=.65&&Number(source[id])<=1.85?
+   Number(source[id]):1;
+  FOOT_DEFAULTS[id]=Number.isFinite(Number(footSource[id]))?clampFoot(footSource[id]):0;
+  if(look.kind!=='growth'&&!EXTRAS.includes(id))EXTRAS.push(id);
+ }
+});
 const clamp=v=>Math.max(.65,Math.min(1.85,Number(v)));
 function read(){
  try{
@@ -54,7 +66,8 @@ function read(){
   const input=stored?.overrides||stored;
   const out={};
   for(const key of Object.keys(DEFAULTS))
-   if((!previous||(Object.hasOwn(previous,key)&&previous[key]===DEFAULTS[key]))&&
+   if((!previous||(Object.hasOwn(previous,key)?previous[key]===DEFAULTS[key]:
+    registry?.isCustom(key)))&&
     Object.prototype.hasOwnProperty.call(input,key)&&Number.isFinite(Number(input[key])))
     out[key]=clamp(input[key]);
   return out;
@@ -82,7 +95,8 @@ function readFeet(){
   }
   const input=stored?.overrides||{};
   return Object.fromEntries(Object.keys(FOOT_DEFAULTS).filter(key=>
-   (!previousFeet||(Object.hasOwn(previousFeet,key)&&previousFeet[key]===FOOT_DEFAULTS[key]))&&
+   (!previousFeet||(Object.hasOwn(previousFeet,key)?previousFeet[key]===FOOT_DEFAULTS[key]:
+     registry?.isCustom(key)))&&
    Object.hasOwn(input,key)&&Number.isFinite(Number(input[key])))
    .map(key=>[key,clampFoot(input[key])]));
  }catch(_){return {};}
