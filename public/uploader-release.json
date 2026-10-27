@@ -1,10 +1,10 @@
 {
   "assetSha256": {
-    "public/index.html": "9afb60f5ae0bf39879fa15e8e8770a9405ace067b69eca364d7b547195bb4161",
+    "public/index.html": "c9e1baf2ffd9a3256a99487f4fa523142c78822dc656cd833f183de29477b3ba",
     "public/alt-murmillo.js": "12f911c72f4e450827b148acbd9cea8f7f99cd0bfdcad58bead539ce0f6e80f2",
     "public/practice-scale-profiles.js": "b0d2f5fb3326f90cceba92a5142580ff653926548fcf5f3b14fd85bedd3fbbbc",
     "public/tools/practice-scale-calibrator.html": "354f718f25c2db851328c272054dc26df2e214e0d4788d5acbbca2f7ea5a1156",
-    "public/market-scene.js": "9cd0b9f489753ddf082941a0e76da87e0d1a78dc73a62f6a9d52f87dafca3951",
+    "public/market-scene.js": "ab892c25887718a6196592a64e399cfbc2a3b8da1c3cfa01ab26655a38e8db0f",
     "public/assets/combat/murmillo-redcrest-alt-v1/manifest.json": "ba0b1d1a5f91771e2b88301fce0ed2900041a9f6b08defc64d5135e46f4f5de1",
     "public/assets/combat/murmillo-redcrest-alt-v1/idle.png": "224795afd6229a8e3810b5828b21cc33061e690b357be6867d2b4071759f8ce6",
     "public/assets/combat/murmillo-redcrest-alt-v1/walk.png": "1008a89ce821fdaf44b84f26406746e4f278c7a4384eed6e5f8ac70c4c4e045e",
@@ -14,7 +14,8 @@
     "public/assets/combat/murmillo-redcrest-alt-v1/heavy.png": "938a32e69f1c2d47248af7cf890067d890c2176ccd0f5d1b4024c2e6c6a238be",
     "public/assets/combat/murmillo-redcrest-alt-v1/guard.png": "fae5771391fb074610c9cd6a0e8c3b30b37c83de794428502fde269407ad981f",
     "public/assets/combat/murmillo-redcrest-alt-v1/hit.png": "75c432b021d819b9954dab89c8b7ce4a5b5cbf4e7c23973c2baa03c4a1463def",
-    "public/assets/combat/murmillo-redcrest-alt-v1/death.png": "5bec79fc47b371505b568af2763d91e5e17c87efdb5c59125bc5612b5d300ce1"
+    "public/assets/combat/murmillo-redcrest-alt-v1/death.png": "5bec79fc47b371505b568af2763d91e5e17c87efdb5c59125bc5612b5d300ce1",
+    "public/market-scene.css": "f19d524ad668004cf7f5a39fba62c24c90fa50168c7c372f58874971ce733651"
   },
   "baseCommit": "8ff7009b7fe52c0c83935a08280d336251794fd4",
   "branch": "main",
@@ -31,5 +32,18 @@
       "murmillo_champion_red",
       "murmillo_motion_v3"
     ]
+  },
+  "marketCatalogRelease": {
+    "commit": "a9109e6fc1af8f4e01aa8f4b37565f774df25b5f",
+    "releaseId": "all-human-looks-v113-20261027",
+    "writtenTo": "main",
+    "source": "connected GitHub repository contents API",
+    "pages": 9,
+    "humanAppearances": 27,
+    "beastAppearances": 0,
+    "staticValidation": "PASS",
+    "liveBrowserValidation": "NOT_RUN",
+    "cloudflareDeployment": "NOT_VERIFIED",
+    "artStatus": "Redcrest II remains independent provisional copy until its original nine sheets are available"
   }
 }
