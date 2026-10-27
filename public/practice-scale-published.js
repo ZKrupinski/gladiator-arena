@@ -138,4 +138,32 @@
       }
     }
   }
+});root.SpartacusPublishedMarketPrices=Object.freeze({
+  "murmillo_a_L1": 1,
+  "murmillo_a_L2": 2,
+  "murmillo_a_L3": 2,
+  "murmillo_a_L4": 3,
+  "murmillo_a_L5": 3,
+  "thraex_a_L1": 1,
+  "thraex_a_L2": 2,
+  "thraex_a_L3": 2,
+  "thraex_a_L4": 3,
+  "thraex_a_L5": 3,
+  "thraex_b_L1": 1,
+  "thraex_b_L2": 2,
+  "thraex_b_L3": 2,
+  "thraex_b_L4": 3,
+  "thraex_b_L5": 3,
+  "retiarius_a_L1": 1,
+  "retiarius_a_L2": 2,
+  "retiarius_a_L3": 2,
+  "retiarius_a_L4": 3,
+  "retiarius_a_L5": 3,
+  "murmillo_champion_red": 5,
+  "murmillo_redcrest_new_v1": 4,
+  "murmillo_redcrest_alt_v1": 4,
+  "murmillo_motion_v3": 4,
+  "legacy_murmillo": 3,
+  "legacy_thraex": 3,
+  "legacy_retiarius": 3
 });})(typeof window!=="undefined"?window:globalThis);
