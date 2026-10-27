@@ -50,6 +50,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .config label{font-size:11px;color:#d6b187;overflow-wrap:anywhere}
 .config input{width:100%;accent-color:#ebb876}
 .config .value{text-align:center;font:bold 20px Georgia;color:#ffdc8f;font-variant-numeric:tabular-nums}
+.price-level{display:grid;gap:6px;padding:9px 8px;border:1px solid #9c7849;border-radius:8px;background:#241710}
+.price-level label{font-size:13px;font-weight:900;color:#ffe0a0}
+.price-level select{width:100%;min-height:43px;font:800 15px 'Noto Sans KR',system-ui,sans-serif}
+.price-level output{font:800 13px/1.35 'Noto Sans KR',system-ui,sans-serif;color:#eecb97}
+.price-level small{font-size:11px;color:#cbb18f}
+@media(max-width:650px){.price-level select{font-size:13px}.price-level output{font-size:12px}}
 .adjust{display:flex;gap:4px}.adjust button{flex:1;padding:6px 3px;font-size:11px}
 .foot-track{display:flex;gap:7px;align-items:center}.foot-track input{flex:1;min-width:0}
 .foot-track output{min-width:46px;text-align:right;color:#ffe4af;font-weight:800;font-variant-numeric:tabular-nums}
@@ -107,7 +113,7 @@ input[type=file]{display:none}
 </style></head>
 <body>
 <header><small>SPARTACVS · LVDVS · SPRITE CALIBRATION</small>
-<h1>검투사 · 야수 · 집행인 크기·동작 보정실</h1>
+<h1>검투사 · 야수 · 집행인 크기·동작·시장가격 보정실</h1>
 <p>32종을 <strong>한 페이지에서 끝까지 스크롤</strong>해 비교합니다. 개별 크기·발높이(Y)와 <strong>동작별 프레임 위치·크기 / 이펙트 종류·위치·크기</strong>를 직접 조정합니다. 검투사 실전훈련의 자동 프레임 크기 보정은 제거했습니다. 투명 영역이나 무기·투구 길이를 기준으로 크기를 다시 추정하지 않습니다.</p></header>
 <section class="tools" aria-label="정렬 및 일괄 크기 조정">
  <div class="toolbar">
@@ -135,7 +141,7 @@ input[type=file]{display:none}
   <button id="bulkFootPlus" disabled>선택 발 ↓ 5px</button>
   <button id="bulkFootReset" disabled>발높이 0</button>
  </div>
-<nav class="quick-links" aria-label="편집실 바로가기"><a href="#actionEditor">동작 편집</a><a href="#grid">캐릭터 목록</a><a href="#gitTitle">GitHub 게시</a></nav>
+<nav class="quick-links" aria-label="편집실 바로가기"><a href="#actionEditor">동작 편집</a><a href="#grid">가격레벨 조정</a><a href="#gitTitle">GitHub 게시</a></nav>
 <div class="save-health" aria-label="현재 크기·발높이 저장 상태" aria-live="polite">
  <span id="draftHealth">기기 임시저장: 확인 중</span>
  <span id="repoHealth">GitHub 원본: 확인 중</span>
@@ -218,10 +224,15 @@ input[type=file]{display:none}
 </div>
 <div class="action-actions"><button id="actionShowIdle">기본 동작 보기</button><output id="actionAutosave" role="status">동작·이펙트 변경값은 이 기기에 자동 임시저장됩니다.</output><span class="source-note">프리뷰는 전열 기준이며 투명영역 자동 확대를 사용하지 않습니다. 변경 후 기기 임시저장 또는 GitHub 원본 게시를 누르세요.</span></div>
 </section>
-<main class="grid" id="grid" aria-label="검투사, 야수, 집행인 전체 32종 크기 미리보기"></main>
+<section class="compare-panel" aria-label="시장 가격 레벨 안내"><h2>◉ 검투사시장 · 외형별 가격레벨</h2>
+<p>아래 인간 검투사 27종 카드의 <strong>시장 가격레벨 1~5</strong>를 정하세요.
+1단계 약 420D · 2단계 580D · 3단계 780D · 4단계 1,020D · 5단계 1,350D. 실제 가격은 ±6% 변동합니다.
+야수·집행인은 시장에 등장하지 않아 가격을 설정할 수 없습니다.</p>
+<p>설정은 기기에 자동 임시저장되고 시장의 미판매 매물에 즉시 적용됩니다. 모든 기기에 적용하려면 <strong>GitHub 원본 게시</strong>를 실행하세요. 고용 완료된 검투사와 성장 능력치는 변경되지 않습니다.</p></section>
+<main class="grid" id="grid" aria-label="27종 시장 가격레벨과 32종 크기 비교"></main>
 <section class="source-panel" aria-labelledby="gitTitle">
-<h2 id="gitTitle">GitHub 원본에 크기·발높이·동작·이펙트 저장</h2>
-<p>여기에 게시한 32종 크기·발높이·동작별 프레임/이펙트 설정이 모든 기기에 적용되는 <strong>게임 기본값</strong>입니다. 브라우저 임시저장만으로는 GitHub 원본이 바뀌지 않습니다.</p>
+<h2 id="gitTitle">GitHub 원본에 크기·발높이·동작·이펙트·시장 가격레벨 저장</h2>
+<p>여기에 게시한 32종 크기·발높이·동작별 프레임/이펙트와 27종 시장 가격레벨 설정이 모든 기기에 적용되는 <strong>게임 기본값</strong>입니다. 브라우저 임시저장만으로는 GitHub 원본이 바뀌지 않습니다.</p>
 <div class="source-actions">
  <button id="publishOpen" class="primary" type="button">GitHub 원본 게시</button>
  <button id="githubEdit" type="button">GitHub 편집기에서 저장</button>
@@ -239,7 +250,7 @@ input[type=file]{display:none}
  <label for="githubToken">GitHub 인증 토큰 (저장소 <code>ZKrupinski/gladiator-arena</code>의 Contents 쓰기 권한)</label>
  <input id="githubToken" type="password" autocomplete="off" spellcheck="false" placeholder="게시할 때만 입력 · 기기에 저장하지 않음">
  <div class="source-actions">
-  <button id="publishConfirm" class="primary" type="button">GitHub main에 모든 연출 설정 커밋</button>
+  <button id="publishConfirm" class="primary" type="button">GitHub main에 연출·가격 설정 커밋</button>
   <button id="publishCancel" type="button">취소</button>
  </div>
  <p class="source-note">입력한 인증 토큰은 이 페이지에서 저장·기록하지 않고 GitHub API 요청에만 사용합니다. GitHub 사이트에서 직접 저장하려면 위 ‘GitHub 편집기에서 저장’을 사용하세요.</p>
@@ -255,19 +266,21 @@ input[type=file]{display:none}
 </footer>
 <p class="guide">체크한 여러 외형에 크기 ±5% 또는 발높이 ↑↓5px을 일괄 적용할 수 있습니다. 발높이는 음수일수록 위로, 양수일수록 아래로 이동하며 바닥 안내선은 움직이지 않습니다. 셔플하면 위치만 바뀌고 선택·크기·발높이는 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
 <script src="../growth-frames.js"></script>
-<script src="../practice-scale-published.js?v=redcrest-scale-v111"></script><script src="../practice-scale-profiles.js?v=redcrest-alt-v112"></script>
+<script src="../practice-scale-published.js?v=market-price-tiers-v1-20261027"></script><script src="../market-pricing.js?v=balanced-tiers-v1-20261027"></script><script src="../practice-scale-profiles.js?v=redcrest-alt-v112"></script>
 <script src="../practice-visual-profiles.js?v=vfx-direction-v58"></script>
 <script src="practice-size-stage.js?v=redcrest-scale-v111"></script>
 <script>
 (()=>{'use strict';
-const p=window.PracticeScaleProfiles;
+const p=window.PracticeScaleProfiles,pricing=window.SpartacusMarketPricing;
+if(!pricing)throw Error('시장 가격레벨 모듈 로드 실패');
 const names={murmillo_a:'무르밀로',thraex_a:'트라엑스 A',thraex_b:'트라엑스 B',retiarius_a:'레티아리우스',
  murmillo_champion_red:'붉은 투구 챔피언',murmillo_redcrest_new_v1:'신규 붉은투구 무르밀로',murmillo_redcrest_alt_v1:'무르밀로 · 레드크레스트 II',murmillo_motion_v3:'모션 무르밀로',
  legacy_murmillo:'클래식 무르밀로',legacy_thraex:'클래식 트라엑스',legacy_retiarius:'클래식 레티아리우스',
  beast_wolf:'늑대',beast_leopard:'표범',beast_tiger:'호랑이',beast_lion:'사자',
  beast_elephant:'코끼리',npc_carnifex:'사형집행인'};
 const v=window.PracticeVisualProfiles;
-const state={...p.DEFAULTS,...p.read()},feet={...p.FOOT_DEFAULTS,...p.readFeet()},actions=v.all(),selection=new Set(),keys=Object.keys(p.DEFAULTS);
+const state={...p.DEFAULTS,...p.read()},feet={...p.FOOT_DEFAULTS,...p.readFeet()},
+ marketPrices={...pricing.DEFAULTS,...pricing.read()},actions=v.all(),selection=new Set(),keys=Object.keys(p.DEFAULTS);
 let order=keys.slice(),origin=new Map(),observer=null,cutsPromise=null;
 const cache=new Map(),actionCache=new Map(),effectCache=new Map(),drawers=new Map(),$=selector=>document.querySelector(selector);
 const announce=s=>$('#status').textContent=s;
@@ -924,12 +937,41 @@ function build(){
   footActions.append(up,feetReset,down);
   const edit=document.createElement('button');edit.className='action-open';
   edit.textContent='⚔ 이 캐릭터 동작·이펙트 편집';
-  controls.append(code,value,slider,adjust,footCaption,footTrack,footActions,edit);
+  let priceSelect=null,priceValue=null;
+  controls.append(code,value,slider,adjust,footCaption,footTrack,footActions);
+  if(pricing.isMarketLook(key)){
+   const wrap=document.createElement('div');wrap.className='price-level';
+   const priceLabel=document.createElement('label');priceLabel.textContent='◉ 시장 가격레벨';
+   priceSelect=document.createElement('select');priceSelect.id='price-'+key;
+   priceSelect.setAttribute('aria-label',nameFor(key)+' 시장 가격레벨');
+   priceLabel.htmlFor=priceSelect.id;
+   for(const tier of pricing.LEVELS){
+    const option=document.createElement('option');option.value=String(tier.level);
+    option.textContent='레벨 '+tier.level+' · '+tier.label+' (약 '+tier.target.toLocaleString('ko-KR')+' D)';
+    priceSelect.appendChild(option);
+   }
+   priceValue=document.createElement('output');priceValue.setAttribute('aria-live','polite');
+   const small=document.createElement('small');small.textContent='기기에 자동 임시저장 · GitHub 게시 시 모든 기기에 적용';
+   wrap.append(priceLabel,priceSelect,priceValue,small);
+   controls.append(wrap);
+   priceSelect.addEventListener('change',()=>{
+    marketPrices[key]=Number(priceSelect.value);
+    priceValue.textContent='기준 가격 '+pricing.LEVELS[marketPrices[key]-1].target.toLocaleString('ko-KR')+' D (±6%)';
+    const ok=pricing.write(marketPrices);
+    announce(nameFor(key)+' 시장 가격레벨 '+marketPrices[key]+' · '+(ok?'기기 임시저장 완료':'임시저장 실패'));
+    document.dispatchEvent(new Event('input'));
+   });
+  }
+  controls.append(edit);
   card.append(head,art,controls);root.appendChild(card);
   let available=null;
   const redraw=()=>{
    slider.value=String(state[key]);value.textContent='×'+Number(state[key]).toFixed(2);
    footSlider.value=String(feet[key]);footValue.textContent=(feet[key]>0?'+':'')+feet[key]+'px';
+   if(priceSelect){
+    priceSelect.value=String(marketPrices[key]);
+    priceValue.textContent='기준 가격 '+pricing.LEVELS[marketPrices[key]-1].target.toLocaleString('ko-KR')+' D (±6%)';
+   }
    if(available)paint(canvas,available,key);
   };
   drawers.set(key,redraw);
@@ -1147,5 +1189,5 @@ setupCompareEditor();initActionEditor();build();
 setupNumbers();recordHistory();initMotionDrag();
 })();
 </script>
-<script src="practice-scale-publish.js?v=fx-autosave-v52"></script>
+<script src="practice-scale-publish.js?v=market-price-levels-v1-20261027"></script>
 </body></html>
