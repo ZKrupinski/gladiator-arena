@@ -5,6 +5,9 @@
 (function(root){'use strict';
 const W=1280,H=720,MAX=4,TYPES=['murmillo','thraex','retiarius'];
 const Personality=root.ArenaPersonality;
+const Body=root.SpartacusBodyCollision||
+ (typeof module==='object'&&module.exports?require('./arena-body-collision.js'):null);
+if(!Body)throw Error('Practice requires neutral body collision');
 // Background sand begins near y=520. Anchors are feet on the ground.
 // A near/far camera plane multiplies the studio-authored size ONCE.
 // Far feet at 606px = 82%; foreground feet >=676px = 100%.
@@ -50,14 +53,24 @@ function courtPaintOrder(count=COURTS.length){
  const n=Math.max(1,Math.min(MAX,Math.floor(Number(count)||1)));
  return COURT_PAINT_STACK[n].slice();
 }
-const LEASH=168,MIN_PAIR_GAP=172,ATTACK_START_RANGE=188,CONTACT_REACH=214;
-const REAR_COURT_ART_GAP=220; // 202px artwork + 18px motion/weapon clearance
+const LEASH=168,ATTACK_START_RANGE=188,CONTACT_REACH=214;
+function neutralBody(unit){
+ const look=visualLook(unit),size=root.PracticeScaleProfiles?.scale?.(look)??1;
+ const neutral=root.PracticeVisualProfiles?.resolve?.(look,'idle')?.scale??1;
+ return Body.footprint('practice',{scale:size*neutral,y:unit?.y??PRACTICE_NEAR_Y});
+}
+function pairBodyGap(a,b){
+ return Body.gap(neutralBody(a),neutralBody(b),3);
+}
+const REAR_COURT_ART_GAP=220; // default when one fighter is unavailable; otherwise use body size
 function rearCourtBoundary(){
  if(COURTS.length<4)return null;
  const left=COURTS[2],right=COURTS[3];
  const midpoint=(left.x+right.x)/2;
- return {leftMax:midpoint-REAR_COURT_ART_GAP/2,
-  rightMin:midpoint+REAR_COURT_ART_GAP/2};
+ const enemy=battle?.enemies?.find(u=>!u.dead&&!u.retiring&&u.seat===2&&u.entry<=0);
+ const ally=battle?.heroes?.find(u=>!u.dead&&!u.retiring&&u.seat===3);
+ const width=enemy&&ally?pairBodyGap(enemy,ally)+22:REAR_COURT_ART_GAP;
+ return {leftMax:midpoint-width/2,rightMin:midpoint+width/2};
 }
 // Reference on-screen size of the same gladiator in standard duels (348 * .82)
 // and in practice (202). Carnifex shares the gladiator's COURT perspective;
@@ -543,7 +556,8 @@ function prepareStrike(u,target){
  }
 }
 function contact(u,target){
- if(u.dead||!target||target.dead||Math.abs(u.x-target.x)>CONTACT_REACH)return;
+ if(u.dead||!target||target.dead||
+  Math.abs(u.x-target.x)>Math.max(CONTACT_REACH,pairBodyGap(u,target)+30))return;
  if(target.dodge>0){
   sparks(target);playCombatSound('dodge',target,.67);return;
  }
@@ -596,14 +610,15 @@ function act(u,dt){
  const dx=target.x-u.x,dist=Math.abs(dx);
  const side=u.side==='ally'?-1:1;
  const mood=Personality?.parameters?.(u,battle.clock,Math.random);
- const attackRange=clamp(ATTACK_START_RANGE-(mood?.spacing||0)*.16,183,197);
+ const attackRange=Math.max(clamp(ATTACK_START_RANGE-(mood?.spacing||0)*.16,183,197),
+  pairBodyGap(u,target)+14);
  const wave=Math.sin(battle.clock*(1.95+u.seat*.09)*(mood?.speed||1)+u.seat*.91);
  const neutral=ring.x+side*(91+wave*(16+(mood?.lateral||0)*.34));
  let goal=neutral;
  if(dist>attackRange)
   goal=u.x+Math.sign(dx)*(dist-attackRange+8);
- else if(dist<MIN_PAIR_GAP+5)
-  goal=u.x+side*(MIN_PAIR_GAP+5-dist)*.55;
+ else if(dist<pairBodyGap(u,target)+5)
+  goal=u.x+side*(pairBodyGap(u,target)+5-dist)*.55;
  if(mood?.mode==='feint'&&dist<245&&u.cooldown>.15)
   goal=u.x+side*(12+(mood.lateral||0)*.35);
  const step=Math.max(0,u.speed*dt)*(dist>attackRange?1:.72)*(mood?.speed||1);
@@ -622,10 +637,10 @@ function keepAlliedColumns(){
  if(COURTS.length!==4||!battle)return;
  const bySeat=new Map(battle.heroes.filter(h=>!h.dead&&!h.retiring).map(h=>[h.seat,h]));
  const leftToRight=[0,2,3,1];
- const gap=220;
  for(let i=0;i<leftToRight.length-1;i++){
   const leftSeat=leftToRight[i],rightSeat=leftToRight[i+1];
   const left=bySeat.get(leftSeat),right=bySeat.get(rightSeat);
+  const gap=left&&right?pairBodyGap(left,right)+24:REAR_COURT_ART_GAP;
   const mid=(COURTS[leftSeat].x+COURTS[rightSeat].x)/2-87;
   if(left)left.x=Math.min(left.x,mid-gap/2);
   if(right)right.x=Math.max(right.x,mid+gap/2);
@@ -649,12 +664,14 @@ function keepCourtSpacing(){
  for(const h of battle.heroes){
   if(h.dead||h.retiring)continue;
   const e=battle.enemies.find(u=>!u.dead&&!u.retiring&&u.seat===h.seat&&u.entry<=0);
-  if(!e||e.x-h.x>=MIN_PAIR_GAP)continue;
+  if(!e)continue;
+  const gap=pairBodyGap(h,e);
+  if(e.x-h.x>=gap)continue;
   const ring=COURTS[h.seat];
   const middle=clamp((h.x+e.x)*.5,
-   ring.x-LEASH+MIN_PAIR_GAP/2,ring.x+LEASH-MIN_PAIR_GAP/2);
-  h.x=middle-MIN_PAIR_GAP/2;
-  e.x=middle+MIN_PAIR_GAP/2;
+   ring.x-LEASH+gap/2,ring.x+LEASH-gap/2);
+  h.x=middle-gap/2;
+  e.x=middle+gap/2;
  }
  // Pair collision recovery cannot undo the rear lane art corridor.
  // Keep both visible bodies apart while retaining their own attack reach.
@@ -1041,6 +1058,6 @@ function close(){
 if(typeof document!=='undefined')document.addEventListener('visibilitychange',()=>{
  if(document.hidden&&battle&&!battle.paused){battle.paused=true;prev=0;updateButtons();}
 });
-root.LudusPractice={open,close,isOpen:display,rules:{eligible,waveSize,enemyHP,enemyAttack,waveXP,killXP,enemyFor,courtsForParty,courtAssignments,courtPerspective,unitPerspective,executionerCourtScale,experienceMultiplier,experienceAward,engagementBonusRules,deathFrame,practiceSummary}};
+root.LudusPractice={open,close,isOpen:display,rules:{eligible,waveSize,enemyHP,enemyAttack,waveXP,killXP,enemyFor,courtsForParty,courtAssignments,courtPerspective,unitPerspective,executionerCourtScale,neutralBody,pairBodyGap,experienceMultiplier,experienceAward,engagementBonusRules,deathFrame,practiceSummary}};
 if(typeof module!=='undefined')module.exports=root.LudusPractice.rules;
 })(typeof window!=='undefined'?window:globalThis);
