@@ -58,7 +58,7 @@ try{
    assert.equal(bought.displayed,(3200-displayedCost).toLocaleString('ko-KR'),
     'live balance updates on the actual purchase');
    assert.equal(bought.recruits,1);
-   assert.equal(bought.inventory,2);
+   assert.equal(bought.inventory,26,'27-slot market must retain all 26 other human gladiators');
    const soldBox=await page.evaluate(()=>{
     const stage=document.querySelector('#gmStage').getBoundingClientRect(),
      pane=document.querySelector('#gmVacant0'),
@@ -126,7 +126,27 @@ try{
    }));
    assert.deepEqual(replenished.hidden,[true,true,true],
     'restocked gladiators must reappear');
-   assert.equal(replenished.count,3);
+   assert.equal(replenished.count,27,'restock must refill all 27 human appearance slots');
+   // Browse all nine pages and verify two-part Roman market names are actually rendered.
+   const pages=[];
+   for(let p=0;p<9;p++){
+    const names=await page.locator('.gm-card-dynamic:not([hidden]) .gm-roman-name').allTextContents();
+    assert.equal(names.length,3,'three candidates displayed on page '+(p+1));
+    assert.ok(names.every(n=>/^[A-Z][a-z]+ [A-Z][a-z]+$/.test(n)),
+     'Roman praenomen and nomen required on market page '+(p+1)+': '+names.join(', '));
+    const sizes=await page.evaluate(()=>{
+     return [...document.querySelectorAll('.gm-card-dynamic:not([hidden]) .gm-roman-name')].map(el=>{
+      const c=document.createElement('canvas').getContext('2d');
+      c.font=getComputedStyle(el).font;
+      return {name:el.textContent,textWidth:c.measureText(el.textContent).width,available:el.clientWidth};
+     });
+    });
+    assert.ok(sizes.every(n=>n.textWidth<=n.available+2),
+     'Roman name must fit inside podium plaque: '+JSON.stringify(sizes));
+    pages.push(names);
+    if(p<8)await page.locator('#gmNextPage').click();
+   }
+   assert.equal(new Set(pages.flat()).size,27,'no repeated full Roman name across market');
    assert.deepEqual(errors,[],'browser JS errors');
    console.log('MARKET_BALANCE_CENTER_PASS '+JSON.stringify({viewport,metrics,bought,large,soldBox,soldRegions,emptyVisual,allEmpty,replenished}));
   }finally{await page.close()}
