@@ -36,6 +36,7 @@ ALLOWED_PREFIXES = (
     "public/practice-scale-profiles.js", "public/practice-scale-published.js",
     "public/practice-visual-profiles.js",
     "public/tools/practice-scale-calibrator.html", "public/tools/practice-scale-publish.js",
+    "public/tools/practice-size-stage.js",
     "scripts/", "config/",
     "docs/", "tests/"
 )
