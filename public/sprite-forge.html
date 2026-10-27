@@ -29,6 +29,16 @@
 <p class="note">동작 10종 × 8프레임 모두 합격하고 수동 승인하기 전에는 ‘게임 완성’으로 표시하지 않습니다. 각 동작별 경고 원인을 확인하세요.</p>
 <div class="compact"><button id="export" disabled>현재 동작 검수 ZIP 저장</button><button class="secondary" id="report" disabled>검수 리포트 저장</button><button class="danger" id="clear">현재 작업 지우기</button></div><pre class="result" id="log">검수 기록이 여기에 표시됩니다.</pre>
 </section>
+<section class="panel" id="redcrestInspector">
+<h2>04 · 신규 붉은 투구 무르밀로 · 9종 × 8프레임 원본 검수</h2>
+<p class="note">게임 등록 외형 ID: <code>murmillo_redcrest_new_v1</code> · 기존 캐릭터 데이터와 리소스를 변경하지 않습니다. 게시된 4×2 패딩 시트를 원본 크기로 읽어 8프레임을 유지하며 경계·중복·빈 포즈를 검사합니다.</p>
+<p class="bad">이 화면의 미리보기는 자동 출시 승인이 아닙니다. 신규 원화가 이웃 프레임과 붙어 있는 경우 반드시 서버 SpriteForge V3/V6 전체 알파 소속 검사 후 임포트하세요. 사각형 분할만으로 겹친 포즈를 잘라서 승인할 수 없습니다.</p>
+<div class="compact"><button id="redcrestRunQA" type="button">등록된 9종 전체 검사</button><button id="redcrestDownloadQA" type="button" class="secondary">검수 리포트 JSON</button><a id="redcrestOpenGame" href="./" style="align-self:center;color:#f4d59e;font-weight:800">게임에서 확인</a></div>
+<div id="redcrestStatus" class="status" role="status">신규 무르밀로 9종 검사 버튼을 눌러 주세요.</div>
+<div id="redcrestActions" class="actions" style="margin:10px 0"></div>
+<canvas id="redcrestStage" class="checker" width="960" height="540" style="width:100%;aspect-ratio:16/9;max-height:500px;object-fit:contain;border:1px solid #96724d;border-radius:8px;display:block"></canvas>
+<div id="redcrestFrameLabel" class="muted">동작을 선택하면 8프레임 원본 애니메이션을 재생합니다.</div>
+</section>
 <div class="footer">로컬 브라우저 처리 · 파일은 자동으로 서버에 전송되지 않습니다 · 저장소 자동 배포 기능 없음 · AI 그림 생성 기능 아님(스프라이트 정렬·검수 전용)</div>
 </main>
 <script>
@@ -178,4 +188,4 @@ $('report').onclick=()=>download(JSON.stringify(report(),null,2),safe($('charact
 $('clear').onclick=()=>{if(confirm('현재 검수 데이터를 전부 비울까요?')){setPlaying(false);state.packs={};state.current=null;$('frames').replaceChildren();$('status').textContent='초기화되었습니다.';renderButtons();$('previewBtn').disabled=true;$('export').disabled=true;$('report').disabled=true;$('stage').getContext('2d').clearRect(0,0,960,720);$('source').removeAttribute('src')}};
 renderButtons();
 })();
-</script></body></html>
+</script><script src="spriteforge-redcrest-audit.js?v=redcrest-tool-v1-20261027"></script></body></html>
