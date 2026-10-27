@@ -36,7 +36,7 @@ for(let seat=0;seat<4;seat++){
  assert(Math.abs(removal.scale-expected)<1e-10,'same projected size as duel');
  assert(Math.abs((466*removal.scale)/(202*court.scale)-466/(348*.82))<1e-10,'same executor/fighter body ratio');
  assert(Math.abs((466*removal.scale*1.4)/(202*court.scale)-466*1.4/(348*.82))<1e-10,'studio scale is multiplied once');
- removal.age=1;calls.length=0;qa.drawDeparture(removal);
+ removal.age=1.3;calls.length=0;qa.drawDeparture(removal);
  const outer=calls.find(x=>x[0]==='scale');
  assert(outer&&Math.abs(outer[1]-expected)<1e-10,'scene camera scales only by court projection');
  const rendered=calls.find(x=>x[0]==='engineDraw');
