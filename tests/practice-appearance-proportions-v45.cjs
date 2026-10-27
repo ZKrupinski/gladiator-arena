@@ -23,6 +23,7 @@ const window={
  },
  ArenaPortraitFit:{bounds:art=>art.alpha}
 };
+window.SpartacusBodyCollision=require('../public/arena-body-collision.js');
 vm.runInNewContext(injected,{window,console});
 const qa=window.__practiceScaleQA,court=qa.courtsForParty(3)[0];
 function fighter(side,attack=false){
