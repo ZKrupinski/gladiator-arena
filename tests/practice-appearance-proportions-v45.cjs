@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const source=fs.readFileSync('public/ludus-practice.js','utf8');
 const injected=source.replace('root.LudusPractice={',`root.__practiceScaleQA={
- setCourts:n=>COURTS=courtsForParty(n),setContext:c=>ctx=c,
+ setCourts:n=>COURTS=courtsForParty(n),setContext:c=>ctx=c,setBattle:b=>battle=b,
  drawUnit,calibration,courtsForParty,
 };root.LudusPractice={`);
 assert.notEqual(injected,source,'exercise actual render functions');
@@ -38,7 +38,7 @@ const gfx={
  drawImage(...v){calls.push(['image',...v])},
  beginPath(){},ellipse(){},fill(){},fillRect(){},strokeRect(){},fillText(...v){calls.push(['label',...v])}
 };
-qa.setContext(gfx);
+qa.setContext(gfx);qa.setBattle({clock:0,heroes:[],enemies:[]});
 for(let n=1;n<=4;n++){
  qa.setCourts(n);
  for(let side of ['ally','enemy']){
