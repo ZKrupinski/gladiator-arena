@@ -8,7 +8,7 @@ ACTIONS=('idle','walk','slash','sweep','thrust','heavy','guard','hit','death')
 FILES=['index.html','market-scene.js','market-scene.css','market-pricing.js',
  'gladiator-registry.js','gladiator-custom-art.js','sprite-motion-registry.js',
  'practice-scale-profiles.js','ludus-roster.js','ludus-practice.js',
- 'arena-coop.js','arena-coop-core.js','arena-coop-match.js',
+ 'arena-body-collision.js','arena-coop.js','arena-coop-core.js','arena-coop-match.js',
  'practice-scale-published.js','tools/practice-scale-publish.js','alt-murmillo.js',
  'tools/practice-scale-calibrator.html',
  'assets/combat/murmillo-redcrest-alt-v1/manifest.json',
