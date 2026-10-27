@@ -5,7 +5,7 @@ import hashlib,subprocess,sys,time
 ROOT=Path(__file__).resolve().parents[1]
 SITE="https://gladiator-arena-git.pages.dev"
 ACTIONS=('idle','walk','slash','sweep','thrust','heavy','guard','hit','death')
-FILES=['index.html','market-scene.js','alt-murmillo.js',
+FILES=['index.html','market-scene.js','market-scene.css','alt-murmillo.js',
  'tools/practice-scale-calibrator.html',
  'assets/combat/murmillo-redcrest-alt-v1/manifest.json',
  'assets/combat/murmillo-redcrest-alt-v1/qa-redcrest-alt.json']+[
