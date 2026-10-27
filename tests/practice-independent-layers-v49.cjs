@@ -7,7 +7,8 @@ const source=fs.readFileSync('public/ludus-practice.js','utf8');
 const injected=source.replace('root.LudusPractice={',
  'root.__layerQA={courtPaintOrder,courtPaintQueue,setCourts:n=>COURTS=courtsForParty(n)};root.LudusPractice={');
 assert.notEqual(injected,source);
-const win={};vm.runInNewContext(injected,{window:win,console});
+const win={};win.SpartacusBodyCollision=require('../public/arena-body-collision.js');
+vm.runInNewContext(injected,{window:win,console});
 const qa=win.__layerQA;
 function flat(xs){return Array.from(xs);}
 for(const [count,expect] of [[1,[0]],[2,[1,0]],[3,[2,1,0]],[4,[3,2,1,0]]]){
