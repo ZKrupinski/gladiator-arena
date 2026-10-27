@@ -15,6 +15,7 @@ on:
       - public/ludus-practice.js
       - public/arena-coop.js
       - public/arena-coop-core.js
+      - public/arena-body-collision.js
       - public/arena-coop-match.js
       - tests/arena-depth-perspective-v113.cjs
       - tests/gladiator-registry-sync.test.cjs
