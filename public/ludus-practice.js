@@ -6,20 +6,26 @@
 const W=1280,H=720,MAX=4,TYPES=['murmillo','thraex','retiarius'];
 const Personality=root.ArenaPersonality;
 // Background sand begins near y=520. Anchors are feet on the ground.
-// Court placement changes X/Y depth ONLY. All 1-4 fighters and opponents use
-// ONE global practice stage scale=1: character size is studio-authored, never
-// secretly enlarged in a front seat or shrunk in a rear seat.
+// A near/far camera plane multiplies the studio-authored size ONCE.
+// Far feet at 606px = 82%; foreground feet >=676px = 100%.
+const PRACTICE_FAR_Y=606,PRACTICE_NEAR_Y=676,PRACTICE_FAR_SCALE=.82;
+function courtPerspective(y){
+ const t=Math.max(0,Math.min(1,(Number(y)-PRACTICE_FAR_Y)/(PRACTICE_NEAR_Y-PRACTICE_FAR_Y)));
+ return PRACTICE_FAR_SCALE+(1-PRACTICE_FAR_SCALE)*t;
+}
+const court=(x,y)=>Object.freeze({x,y,scale:courtPerspective(y)});
+
 const COURT_LAYOUTS=Object.freeze({
- 1:Object.freeze([{x:640,y:676,scale:1}]),
- 2:Object.freeze([{x:325,y:689,scale:1},{x:955,y:689,scale:1}]),
- 3:Object.freeze([{x:325,y:689,scale:1},{x:955,y:689,scale:1},
-   {x:640,y:606,scale:1}]),
+ 1:Object.freeze([court(640,676)]),
+ 2:Object.freeze([court(325,689),court(955,689)]),
+ 3:Object.freeze([court(325,689),court(955,689),
+   court(640,606)]),
  // Keep all four ALLIED silhouettes in their own horizontal columns.
  // Enemies may cross columns, but foreground allies cannot occlude rear allies.
- 4:Object.freeze([{x:215,y:689,scale:1},{x:1120,y:689,scale:1},
+ 4:Object.freeze([court(215,689),court(1120,689),
    // Four allies remain visible at authored full-frame size; the rear-left
    // enemy is also clear of the rear-right hero, even during lateral footwork.
-   {x:465,y:606,scale:1},{x:885,y:606,scale:1}])
+   court(465,606),court(885,606)])
 });
 function courtsForParty(count){
  // Does not depend on later-initialized variables; works at script load.
@@ -59,6 +65,10 @@ function rearCourtBoundary(){
 const DUEL_GLADIATOR_REFERENCE=348*.82,PRACTICE_GLADIATOR_REFERENCE=202;
 function executionerCourtScale(court){
  return court.scale*PRACTICE_GLADIATOR_REFERENCE/DUEL_GLADIATOR_REFERENCE;
+}
+function unitPerspective(unit){
+ // Animate size smoothly if a survivor shifts from the back court to front.
+ return courtPerspective(unit?.y??COURTS[unit?.seat]?.y??PRACTICE_NEAR_Y);
 }
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const number=(x,d=0)=>Number.isFinite(Number(x))?Number(x):d;
@@ -317,7 +327,7 @@ function sparks(target,force=false){
  const s=COURTS[target.seat];
  for(let i=0;i<(force?11:6);i++){
   const rad=Math.random()*Math.PI*2,velocity=30+Math.random()*85;
-  battle.particles.push({seat:target.seat,x:target.x,y:target.y-77*s.scale,
+  battle.particles.push({seat:target.seat,x:target.x,y:target.y-77*unitPerspective(target),sizeScale:unitPerspective(target),
    dx:Math.cos(rad)*velocity,dy:Math.sin(rad)*velocity-40,
    depth:s.y-(target.side==='enemy'?12:0)+.55,
    front:target.side==='ally'?1:0,
@@ -328,7 +338,7 @@ function sparks(target,force=false){
 // No fake geometry arcs or newly drawn vector attack effects.
 function emitVfx(kind,unit,other,emphasis=false){
  if(!battle||unit.seat<0||!COURTS[unit.seat])return;
- const court=COURTS[unit.seat],fx=root.ArenaRasterFX;
+ const court=COURTS[unit.seat],perspective=unitPerspective(unit),fx=root.ArenaRasterFX;
  // Match the same orientation used by sprite() / drawDefeatPose().
  // An impact belongs to the person HIT, not the attacker's mirrored artwork.
  const face=unit.side==='ally'?1:-1;
@@ -342,9 +352,9 @@ function emitVfx(kind,unit,other,emphasis=false){
  const chosen=!selected||selected==='auto'?kind:selected;
  if(chosen==='none'||!fx?.FAMILIES?.[chosen])return;
  const geometry=settings?.effectGeometry?.({
-  kind:chosen,baseX:unit.x+(kind==='hit'?0:face*52*court.scale),
-  baseY:unit.y-113*court.scale+profilesFoot(unit)*court.scale,
-  face,zoom:court.scale,pose:authored,progress:.5
+  kind:chosen,baseX:unit.x+(kind==='hit'?0:face*52*perspective),
+  baseY:unit.y+(-113+profilesFoot(unit))*perspective,
+  face,zoom:perspective,pose:authored,progress:.5
  });
  if(!geometry)return;
  battle.fx.push({seat:unit.seat,kind:chosen,x:geometry.x,y:geometry.y,
@@ -356,7 +366,7 @@ function emitVfx(kind,unit,other,emphasis=false){
 function beginRemoval(unit){
  if(!battle||unit.retiring||unit.seat<0)return;
  unit.retiring=true;
- const c=COURTS[unit.seat],engine=root.ArenaCarnifex;
+ const c={...COURTS[unit.seat],y:unit.y,scale:unitPerspective(unit)},engine=root.ArenaCarnifex;
  const scale=executionerCourtScale(c);
  const offset=c.x-640*scale;
  const viewport={left:-offset/scale,right:(W-offset)/scale};
@@ -450,7 +460,7 @@ function drawVfx(v){
 function drawSpark(p){
  ctx.save();ctx.globalAlpha=clamp(p.life/.75,0,.9);
  ctx.fillStyle=p.critical?'#ffe9a3':'#fbb071';
- ctx.beginPath();ctx.arc(p.x,p.y,p.critical?3.3:2.1,0,Math.PI*2);
+ ctx.beginPath();ctx.arc(p.x,p.y,(p.critical?3.3:2.1)*(p.sizeScale||1),0,Math.PI*2);
  ctx.fill();ctx.restore();
 }
 // Live XP is a read-only preview of career progression. It updates the
@@ -820,7 +830,7 @@ function profilesFoot(unit){
  return p?.foot?.(p?.look?.(unit,api()?.state()?.roster))||0;
 }
 function drawUnit(unit){
- const scale=COURTS[unit.seat]?.scale??1;
+ const scale=unitPerspective(unit);
  const height=202*scale;
  let labelHeight=height;
  const flight=unit.flight,flightT=flight?clamp((battle.clock-flight.at)/flight.duration,0,1):1;
@@ -1031,6 +1041,6 @@ function close(){
 if(typeof document!=='undefined')document.addEventListener('visibilitychange',()=>{
  if(document.hidden&&battle&&!battle.paused){battle.paused=true;prev=0;updateButtons();}
 });
-root.LudusPractice={open,close,isOpen:display,rules:{eligible,waveSize,enemyHP,enemyAttack,waveXP,killXP,enemyFor,courtsForParty,courtAssignments,experienceMultiplier,experienceAward,engagementBonusRules,deathFrame,practiceSummary}};
+root.LudusPractice={open,close,isOpen:display,rules:{eligible,waveSize,enemyHP,enemyAttack,waveXP,killXP,enemyFor,courtsForParty,courtAssignments,courtPerspective,unitPerspective,executionerCourtScale,experienceMultiplier,experienceAward,engagementBonusRules,deathFrame,practiceSummary}};
 if(typeof module!=='undefined')module.exports=root.LudusPractice.rules;
 })(typeof window!=='undefined'?window:globalThis);
