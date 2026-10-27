@@ -62,13 +62,15 @@ assert.match(publisher,/actions:root\.PracticeVisualProfiles\?\.sanitize/,'saved
 const deployed=fs.readFileSync('public/index.html','utf8');
 assert.match(deployed,/practice-visual-profiles\.js\?v=vfx-direction-v58/);
 const indexProfile=deployed.indexOf('practice-visual-profiles.js?v=vfx-direction-v58');
-const indexRuntime=deployed.indexOf('ludus-practice.js?v=fx-body-facing-v82');
+const indexRuntime=deployed.search(/ludus-practice\.js\?v=[a-z0-9-]+/i);
 assert(indexProfile>=0&&indexRuntime>indexProfile,'action profiles load before live runtime');
 const rules=require('../public/ludus-practice.js');
 for(let n=1;n<=4;n++){
  const courts=rules.courtsForParty(n);
  assert.equal(courts.length,n);
- for(const c of courts)assert.equal(c.scale,1,'NO hidden party/seat enlargement: '+n);
+ for(const c of courts)assert.equal(c.scale,rules.courtPerspective(c.y),
+   'scene depth alone controls zoom: '+n+' / '+c.y);
+  assert(courts.every(c=>c.scale<=1&&c.scale>=.82),'no enlarged fighter art outside approved depth bounds');
 }
 assert.doesNotMatch(game,/scale:1\.29|scale:1\.06|scale:1\.24/,
  'remove ALL old staggered front/rear scales');
