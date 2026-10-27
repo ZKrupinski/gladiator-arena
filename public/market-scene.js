@@ -498,5 +498,5 @@ if(typeof window!=='undefined')window.addEventListener('storage',e=>{
  if((e.key===priceModel.STORAGE_KEY||e.key===registry.KEY)&&scene&&!scene.hidden&&mode==='idle')render();
 });
 root.SlaveMarket={open,close,refresh:render};
-if(typeof module!=='undefined')module.exports={types,newOffer,makeStock,MARKET_LOOKS,PAGE_SIZE,PAGE_COUNT,qualities,RESTOCK_COST,romanName,isRomanFullName,ROMAN_PRAENOMINA,ROMAN_NOMINA,registry,syncCatalog};
+if(typeof module!=='undefined')module.exports={types,newOffer,makeStock,get MARKET_LOOKS(){return MARKET_LOOKS;},PAGE_SIZE,get PAGE_COUNT(){return PAGE_COUNT;},qualities,RESTOCK_COST,romanName,isRomanFullName,ROMAN_PRAENOMINA,ROMAN_NOMINA,registry,syncCatalog};
 })(globalThis);
