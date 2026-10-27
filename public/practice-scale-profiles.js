@@ -10,7 +10,7 @@ const TYPES=['murmillo_a','thraex_a','thraex_b','retiarius_a'];
 // The baseline for EVERY costume is neutral ×1. No class-specific Murmillo,
 // Thraex or Retiarius correction is hidden in the runtime. A non-1 value
 // can now only come from the artist's published or device draft studio data.
-const EXTRAS=Object.freeze(['murmillo_champion_red','murmillo_redcrest_new_v1','murmillo_motion_v3','legacy_murmillo','legacy_thraex','legacy_retiarius']);
+const EXTRAS=Object.freeze(['murmillo_champion_red','murmillo_redcrest_new_v1','murmillo_redcrest_alt_v1','murmillo_motion_v3','legacy_murmillo','legacy_thraex','legacy_retiarius']);
 const BEASTS=Object.freeze(['beast_wolf','beast_leopard','beast_tiger','beast_lion','beast_elephant']);
 const NPCS=Object.freeze(['npc_carnifex']);
 const BASE=Object.freeze({...Object.fromEntries(TYPES.flatMap(type=>Array.from({length:5},(_,i)=>[type+'_L'+(i+1),1]))),...Object.fromEntries(EXTRAS.concat(BEASTS,NPCS).map(key=>[key,1]))});
@@ -94,6 +94,7 @@ function look(unit,roster){
  if(unit?.side==='enemy')return DEFAULTS[unit.look]?unit.look:null;
  if(unit?.side!=='ally')return null;
  const hero=roster?.[unit.index];if(!hero)return null;
+ if(hero.appearance==='murmillo_redcrest_alt_v1')return 'murmillo_redcrest_alt_v1';
  if(hero.appearance==='murmillo_redcrest_new_v1')return 'murmillo_redcrest_new_v1';
  if(hero.appearance==='murmillo_champion_red')return 'murmillo_champion_red';
  if(hero.appearance==='murmillo_motion_v3')return 'murmillo_motion_v3';

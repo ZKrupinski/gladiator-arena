@@ -320,7 +320,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <div class="arena-wrap"><canvas id="battle" width="1280" height="720" aria-label="GLADIATOR 플레이어와 AI 전투 화면"></canvas><div id="combatNotice" class="canvas-top" aria-live="polite"></div><div id="crowdHeat" class="arena-crowd-hud" aria-label="관중 흥미도" hidden><span id="crowdHeatLabel">관중 흥미도 · 관심 0</span><div class="arena-crowd-track"><i id="crowdHeatFill"></i></div></div><div id="lineupHud" class="lineup-hud" aria-live="polite" hidden></div>
 <section class="overlay overlay-title" id="startScreen">
 <button type="button" id="ludusResetOpen" class="ludus-reset-trigger" aria-haspopup="dialog" aria-controls="ludusResetDialog">루두스 초기화</button>
-<a id="scaleStudioTitleLink" class="size-calibration-link" href="tools/practice-scale-calibrator.html?v=redcrest-scale-v111" aria-label="32종 검투사와 야수 크기 보정실 열기">⚙ 크기 보정실</a>
+<a id="scaleStudioTitleLink" class="size-calibration-link" href="tools/practice-scale-calibrator.html?v=redcrest-alt-v112" aria-label="32종 검투사와 야수 크기 보정실 열기">⚙ 크기 보정실</a>
 <div class="stage-panel stage-panel-title spartacus-home">
  <div class="spartacus-crest" aria-hidden="true">✦ &nbsp; ⚔ &nbsp; ✦</div>
  <div class="spartacus-roman">ROMA · LUDUS MAGNUS · THE ARENA</div>
@@ -390,7 +390,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=whip-guard-suspense-v93"></script>
 <script src="champion-murmillo.js?v=grounded-v39"></script>
-<script src="new-murmillo.js?v=redcrest-v2-20261027"></script>
+<script src="new-murmillo.js?v=redcrest-v2-20261027"></script><script src="alt-murmillo.js?v=redcrest-alt-v1-20261027"></script>
 <script src="arena-gear-catalog.js?v=roman-five-slots-v12"></script><script src="arena-loot.js?v=roman-helm-bracers-v12"></script><script src="arena-gear-bitmap.js?v=roman-square-atlas-v12"></script><script src="arena-excitement.js?v=harder-spectacle-v7"></script><script src="arena-progression.js?v=five-stats-v97"></script><script src="arena-personality.js?v=five-stat-ai-v104-20261026"></script><script src="arena-matchup.js?v=class-beast-rps-v106-20261026"></script><script src="arena-combat-signals.js?v=affinity-levelup-v110-20261027"></script><script src="arena-balance.js?v=five-stats-v97"></script>
 <script src="arena-portrait-fit.js?v=enemy-facing-v65"></script>
 <script src="arena-lineup.js?v=1"></script>
@@ -729,6 +729,7 @@ function visualCareerStage(h){
  return m?Number(m[1]):Math.max(careerStage(h),Math.max(1,Math.min(5,Number(h?.marketStage)||1)));
 }
 function looksLabel(h){
+ if(isAltMurmillo(h))return '무르밀로 · 레드크레스트 II';
  if(isNewMurmillo(h))return '신규 붉은투구 무르밀로';
  if(isCustomMurmillo(h))return '붉은 투구 챔피언';
  if(isAnimatedMurmillo(h))return '모션 무르밀로';
@@ -800,19 +801,22 @@ document.getElementById('growthRetry').onclick=()=>loadGrowthAtlases();
 setTimeout(loadGrowthAtlases,0);
 window.ChampionMurmillo?.onReady?.(()=>window.SlaveMarket?.refresh());
 window.NewMurmillo?.onReady?.(()=>{window.SlaveMarket?.refresh?.();refreshGrowthAvatar();});
+window.AltMurmillo?.onReady?.(()=>{window.SlaveMarket?.refresh?.();refreshGrowthAvatar();});
 window.MurmilloMotion?.loadAssets?.()?.then?.(()=>window.SlaveMarket?.refresh())?.catch?.(()=>{});
 const CAREER_KEY='gladiator.ludus.v1';
 const ANIMATED_MURMILLO_VARIANT='murmillo_motion_v3';
 const CHAMPION_MURMILLO_VARIANT='murmillo_champion_red';
 const NEW_MURMILLO_VARIANT='murmillo_redcrest_new_v1';
+const ALT_MURMILLO_VARIANT='murmillo_redcrest_alt_v1';
 // A common visual baseline for normal duels and per-look art calibration.
 const DUEL_BASE_VISUAL_SCALE=.82;
 const CHAMPION_MURMILLO_SCALE=DUEL_BASE_VISUAL_SCALE;
 function isChampionMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===CHAMPION_MURMILLO_VARIANT;}
 function isNewMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===NEW_MURMILLO_VARIANT;}
-function isCustomMurmillo(h){return isChampionMurmillo(h)||isNewMurmillo(h);}
-function specialMurmilloVisual(h){return h?.appearance===NEW_MURMILLO_VARIANT?window.NewMurmillo:window.ChampionMurmillo;}
-function specialMurmilloFighter(f){return f?.championVariant===NEW_MURMILLO_VARIANT?window.NewMurmillo:window.ChampionMurmillo;}
+function isAltMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===ALT_MURMILLO_VARIANT;}
+function isCustomMurmillo(h){return isChampionMurmillo(h)||isNewMurmillo(h)||isAltMurmillo(h);}
+function specialMurmilloVisual(h){return h?.appearance===ALT_MURMILLO_VARIANT?window.AltMurmillo:h?.appearance===NEW_MURMILLO_VARIANT?window.NewMurmillo:window.ChampionMurmillo;}
+function specialMurmilloFighter(f){return f?.championVariant===ALT_MURMILLO_VARIANT?window.AltMurmillo:f?.championVariant===NEW_MURMILLO_VARIANT?window.NewMurmillo:window.ChampionMurmillo;}
 const ANIMATED_MURMILLO_SCALE=DUEL_BASE_VISUAL_SCALE;
 function duelAppearanceKey(f){
  return f?.championVariant||f?.motionVariant||f?.legacyVisualId||
@@ -925,6 +929,17 @@ function installNewMurmillo(){
 }
 // Asset-opt-in roster addition; do not insert duplicates on reload or reset.
 installNewMurmillo();
+function installAltMurmillo(){
+ if(CAREER.roster.some(isAltMurmillo))return false;
+ const wasEmpty=!CAREER.roster.length;
+ const h=LudusRoster.create('murmillo',CAREER.roster.length+1,{
+  appearance:ALT_MURMILLO_VARIANT,variantId:'redcrest-alt-20261027-01',
+  growthType:'murmillo_a',stats:{str:2,agi:2,def:2,end:2,focus:2}
+ });
+ CAREER.roster.push(h);if(wasEmpty)CAREER.active=0;
+ saveCareer();return true;
+}
+installAltMurmillo();
 // Champion and animation starters already in an old save are preserved unchanged.
 function careerMessage(t){CAREER.message=t;saveCareer();renderCareer();}
 function openSlaveMarket(){
@@ -937,7 +952,8 @@ function openSlaveMarket(){
   state:CAREER,
   assetsReady:()=>growthLoading||loadGrowthAtlases(),
   getSprite:(cls,offer)=>{
-   if(offer?.appearance===NEW_MURMILLO_VARIANT)return window.NewMurmillo?.portrait()||null;
+   if(offer?.appearance===ALT_MURMILLO_VARIANT)return window.AltMurmillo?.portrait()||null;
+    if(offer?.appearance===NEW_MURMILLO_VARIANT)return window.NewMurmillo?.portrait()||null;
    if(offer?.appearance==='murmillo_champion_red')return window.ChampionMurmillo?.portrait()||null;
    if(offer?.appearance==='murmillo_motion_v3')return window.MurmilloMotion?.trainingFrame('idle',0)||null;
    if(offer?.appearance!=='legacy'){
@@ -1050,6 +1066,7 @@ function paintRosterPreviews(){
 // Shared approved artwork for all opponent team portraits.
 function arenaOpponentPortrait(enemy){
  if(!enemy)return null;
+ if(enemy.appearance===ALT_MURMILLO_VARIANT)return window.AltMurmillo?.portrait()||null;
  if(enemy.appearance===NEW_MURMILLO_VARIANT)return window.NewMurmillo?.portrait()||null;
  if(enemy.appearance===CHAMPION_MURMILLO_VARIANT||enemy.bossId===CHAMPION_MURMILLO_VARIANT)
   return window.ChampionMurmillo?.portrait()||null;
@@ -1067,7 +1084,9 @@ function paintDraftOpponent(){
  const enemy=CAREER.pendingOpponent;if(!enemy)return;
  const g=canvas.getContext('2d');g.clearRect(0,0,canvas.width,canvas.height);
  let source=null;
- if(enemy.appearance===NEW_MURMILLO_VARIANT){
+ if(enemy.appearance===ALT_MURMILLO_VARIANT){
+  source=window.AltMurmillo?.portrait()||null;
+ }else if(enemy.appearance===NEW_MURMILLO_VARIANT){
   source=window.NewMurmillo?.portrait()||null;
  }else if(enemy.appearance===CHAMPION_MURMILLO_VARIANT||enemy.bossId===CHAMPION_MURMILLO_VARIANT){
   source=window.ChampionMurmillo?.portrait()||null;
@@ -1504,7 +1523,7 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
   }
   S.player.cfg={...S.player.cfg,name:CAREER.hero.name+' · Lv.'+careerLevel(CAREER.hero)};
   const opponent=S.careerOpponent;
-  if(opponent.appearance===CHAMPION_MURMILLO_VARIANT||opponent.appearance===NEW_MURMILLO_VARIANT){
+  if(opponent.appearance===CHAMPION_MURMILLO_VARIANT||opponent.appearance===NEW_MURMILLO_VARIANT||opponent.appearance===ALT_MURMILLO_VARIANT){
    S.enemy.championVariant=opponent.appearance;
    S.enemy.championBoss=true;
    S.enemy.growthType='murmillo_a';S.enemy.growthLevel=5;
@@ -1592,7 +1611,7 @@ function lineupHero(index){
 }
 function lineupEnemy(opponent){
  const f=fighter(opponent.cls,940,true),profile=ArenaBalance.duelEnemy(f.cfg,opponent,S.round);
- if(opponent.appearance===CHAMPION_MURMILLO_VARIANT||opponent.appearance===NEW_MURMILLO_VARIANT){
+ if(opponent.appearance===CHAMPION_MURMILLO_VARIANT||opponent.appearance===NEW_MURMILLO_VARIANT||opponent.appearance===ALT_MURMILLO_VARIANT){
   f.championVariant=opponent.appearance;f.growthType='murmillo_a';f.growthLevel=5;
  }else if(opponent.appearance==='legacy'){
   f.legacyVisualId='legacy_'+opponent.cls;
@@ -2899,9 +2918,9 @@ function renderResultPortrait(id,f,index){
   paintBeastResults();return;
  }
  BEAST_RESULT_VIEWS.delete(id);
- const atlas=(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT)?null:GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
+ const atlas=(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT||f.championVariant===ALT_MURMILLO_VARIANT)?null:GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
  element.replaceChildren();
- if(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT){
+ if(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT||f.championVariant===ALT_MURMILLO_VARIANT){
   element.style.backgroundImage='none';
   const source=specialMurmilloFighter(f)?.frame(f.dead?'death':'idle',f.dead?7:0)||specialMurmilloFighter(f)?.portrait();
   if(source)drawSizedResultPortrait(element,source,isWinner);
@@ -3002,7 +3021,7 @@ function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
  ctx.restore();
 }
 function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
- if(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT){
+ if(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT||f.championVariant===ALT_MURMILLO_VARIANT){
   const scale=duelVisualScale(f);
   const x0=x+w*(1-scale)/2,y0=y+h*(1-scale),w0=w*scale,h0=h*scale;
   // A slow or failed champion asset load must never reveal the old Murmillo.
@@ -3874,7 +3893,7 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=atomic-lobby-reveal-v107-20261026"></script><script src="practice-scale-published.js?v=redcrest-scale-v111"></script><script src="practice-scale-profiles.js?v=redcrest-scale-v111"></script><script src="practice-visual-profiles.js?v=vfx-direction-v58"></script><script src="ludus-practice.js?v=affinity-levelup-v110-20261027"></script><script src="ludus-training-runtime.js?v=studio-scale-parity-v95"></script><script src="ludus-doctore-anim.js?v=training-fit-v71"></script><script src="ludus-approved-scenes.js?v=atomic-market-training-v108-20261027"></script><script src="ludus-armory-live.js?v=five-stats-v96"></script><script src="arena-coop-core.js?v=class-beast-rps-v106-20261026"></script><script src="arena-coop-match.js?v=five-stats-v97"></script><script src="arena-coop-camera.js?v=concordia-camera-v64"></script><script src="arena-coop.js?v=affinity-levelup-v110-20261027"></script><script src="ludus-cards.js?v=five-stats-v96"></script>
+<script src="ludus-scene.js?v=atomic-lobby-reveal-v107-20261026"></script><script src="practice-scale-published.js?v=redcrest-scale-v111"></script><script src="practice-scale-profiles.js?v=redcrest-alt-v112"></script><script src="practice-visual-profiles.js?v=vfx-direction-v58"></script><script src="ludus-practice.js?v=affinity-levelup-v110-20261027"></script><script src="ludus-training-runtime.js?v=studio-scale-parity-v95"></script><script src="ludus-doctore-anim.js?v=training-fit-v71"></script><script src="ludus-approved-scenes.js?v=atomic-market-training-v108-20261027"></script><script src="ludus-armory-live.js?v=five-stats-v96"></script><script src="arena-coop-core.js?v=class-beast-rps-v106-20261026"></script><script src="arena-coop-match.js?v=five-stats-v97"></script><script src="arena-coop-camera.js?v=concordia-camera-v64"></script><script src="arena-coop.js?v=affinity-levelup-v110-20261027"></script><script src="ludus-cards.js?v=five-stats-v96"></script>
 
 </body></html>
 

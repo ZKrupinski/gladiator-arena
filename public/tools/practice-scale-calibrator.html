@@ -255,14 +255,14 @@ input[type=file]{display:none}
 </footer>
 <p class="guide">체크한 여러 외형에 크기 ±5% 또는 발높이 ↑↓5px을 일괄 적용할 수 있습니다. 발높이는 음수일수록 위로, 양수일수록 아래로 이동하며 바닥 안내선은 움직이지 않습니다. 셔플하면 위치만 바뀌고 선택·크기·발높이는 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
 <script src="../growth-frames.js"></script>
-<script src="../practice-scale-published.js?v=redcrest-scale-v111"></script><script src="../practice-scale-profiles.js?v=redcrest-scale-v111"></script>
+<script src="../practice-scale-published.js?v=redcrest-scale-v111"></script><script src="../practice-scale-profiles.js?v=redcrest-alt-v112"></script>
 <script src="../practice-visual-profiles.js?v=vfx-direction-v58"></script>
 <script src="practice-size-stage.js?v=redcrest-scale-v111"></script>
 <script>
 (()=>{'use strict';
 const p=window.PracticeScaleProfiles;
 const names={murmillo_a:'무르밀로',thraex_a:'트라엑스 A',thraex_b:'트라엑스 B',retiarius_a:'레티아리우스',
- murmillo_champion_red:'붉은 투구 챔피언',murmillo_redcrest_new_v1:'신규 붉은투구 무르밀로',murmillo_motion_v3:'모션 무르밀로',
+ murmillo_champion_red:'붉은 투구 챔피언',murmillo_redcrest_new_v1:'신규 붉은투구 무르밀로',murmillo_redcrest_alt_v1:'무르밀로 · 레드크레스트 II',murmillo_motion_v3:'모션 무르밀로',
  legacy_murmillo:'클래식 무르밀로',legacy_thraex:'클래식 트라엑스',legacy_retiarius:'클래식 레티아리우스',
  beast_wolf:'늑대',beast_leopard:'표범',beast_tiger:'호랑이',beast_lion:'사자',
  beast_elephant:'코끼리',npc_carnifex:'사형집행인'};
@@ -291,8 +291,8 @@ async function frameSource(key){
   const type=key.slice(6),canvas=await image('../assets/beasts/individual/'+type+'/idle/00.png?v=3');
   return {canvas,pivotX:canvas.naturalWidth/2,footY:p.footY(canvas,canvas.naturalHeight*.88)};
  }
- if(key==='murmillo_redcrest_new_v1'){
-  const sheet=await image(combat+'murmillo-redcrest-v1/idle.png?v=redcrest-scale-v111');
+ if(key==='murmillo_redcrest_new_v1'||key==='murmillo_redcrest_alt_v1'){
+  const sheet=await image(combat+(key==='murmillo_redcrest_alt_v1'?'murmillo-redcrest-alt-v1/':'murmillo-redcrest-v1/')+'idle.png?v=redcrest-alt-v112');
   const canvas=document.createElement('canvas');canvas.width=960;canvas.height=540;
   canvas.getContext('2d').drawImage(sheet,0,0,960,540,0,0,960,540);
   return {canvas,pivotX:480,footY:512};
@@ -354,10 +354,10 @@ function poseSource(key,pose,frameNumber=0){
   return image(base+file).catch(()=>image(base+'00.png?v=3')).then(canvas=>
    ({canvas,pivotX:canvas.naturalWidth/2,footY:p.footY(canvas,canvas.naturalHeight*.88)}));
  }
- if(key==='murmillo_redcrest_new_v1'){
+ if(key==='murmillo_redcrest_new_v1'||key==='murmillo_redcrest_alt_v1'){
   const name={attack:'slash',special:'heavy',dodge:'walk',parry:'guard',finisher:'heavy',victory:'idle'}[action]||action;
   const resolved=['idle','walk','slash','sweep','thrust','heavy','guard','hit','death'].includes(name)?name:'idle';
-  return image('../assets/combat/murmillo-redcrest-v1/'+resolved+'.png?v=redcrest-scale-v111').then(sheet=>{
+  return image('../assets/combat/'+(key==='murmillo_redcrest_alt_v1'?'murmillo-redcrest-alt-v1/':'murmillo-redcrest-v1/')+resolved+'.png?v=redcrest-alt-v112').then(sheet=>{
    const canvas=document.createElement('canvas');canvas.width=960;canvas.height=540;
    canvas.getContext('2d').drawImage(sheet,(frameNumber%4)*960,Math.floor(frameNumber/4)*540,960,540,0,0,960,540);
    return {canvas,pivotX:480,footY:512};

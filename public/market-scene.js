@@ -58,10 +58,10 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
  usedVisuals.add(visualId);
  let appearance=null,visualLabel='외형 '+(growthType.endsWith('_b')?'B-':'A-')+visualId.slice(-1);
  const kind=rng();
- if(quality==='rare'&&t.id==='murmillo'&&kind<.64){
-  appearance=kind<.32?'murmillo_champion_red':'murmillo_motion_v3';
+ if(quality==='rare'&&t.id==='murmillo'&&kind<.78){
+  appearance=kind<.26?'murmillo_champion_red':kind<.52?'murmillo_motion_v3':'murmillo_redcrest_alt_v1';
   visualId=appearance;
-  visualLabel=appearance==='murmillo_champion_red'?'붉은 투구 챔피언':'모션 정예';
+  visualLabel=appearance==='murmillo_champion_red'?'붉은 투구 챔피언':appearance==='murmillo_redcrest_alt_v1'?'레드크레스트 II':'모션 정예';
  }else if((quality==='rare'&&kind<.86)||(quality==='veteran'&&kind<.13)){
   appearance='legacy';visualId='legacy_'+t.id;visualLabel='클래식 챔피언';
  }
@@ -86,7 +86,7 @@ function newOffer(slot,seed,usedNames=new Set(),usedClasses=[],rng=Math.random){
  const cost=Math.round((q.min+randIndex(rng,q.range+1))/10)*10;
  const premium=
   (appearance==='legacy'?850:appearance==='murmillo_motion_v3'?2600:
-   appearance==='murmillo_champion_red'?3600:0);
+   appearance==='murmillo_champion_red'?3600:appearance==='murmillo_redcrest_alt_v1'?2800:0);
  return {id:t.id,className:t.className,name,vals,defense,cost:cost+premium,aptitudes,innateSummary,
   desc:t.desc+' '+(quality==='rare'?'매우 드문 고급 검투사. ':quality==='veteran'?'실전 경험이 풍부한 숙련자. ':'')+
    '특기: '+trait+'.',
@@ -116,6 +116,7 @@ function ensureInventory(){
    h.visualLabel=h.appearance==='legacy'?'클래식 챔피언':
     h.appearance==='murmillo_champion_red'?'붉은 투구 챔피언':
     h.appearance==='murmillo_motion_v3'?'모션 정예':
+     h.appearance==='murmillo_redcrest_alt_v1'?'레드크레스트 II':
     '외형 '+(h.growthType?.endsWith('_b')?'B-':'A-')+h.visualId.slice(-1);
    converted=true;
   }

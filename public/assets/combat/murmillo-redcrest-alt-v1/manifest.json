@@ -1,0 +1,18 @@
+{
+  "character": "murmillo_redcrest_alt_v1",
+  "actions": [
+    "idle",
+    "walk",
+    "slash",
+    "sweep",
+    "thrust",
+    "heavy",
+    "guard",
+    "hit",
+    "death"
+  ],
+  "framesPerAction": 8,
+  "approved": false,
+  "artStatus": "INDEPENDENT_SLOT_USING_TEMPORARY_COPY_OF_OLD_ART",
+  "notes": "Distinct visuals produced in this chat have not yet been transmitted to the repo. Do not describe clone as final custom artwork."
+}
