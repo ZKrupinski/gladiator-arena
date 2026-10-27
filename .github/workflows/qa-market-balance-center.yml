@@ -6,6 +6,15 @@ on:
       - public/market-scene.css
       - public/market-transactions.css
       - public/market-scene.js
+      - public/gladiator-registry.js
+      - public/gladiator-custom-art.js
+      - public/sprite-motion-registry.js
+      - public/practice-scale-profiles.js
+      - public/ludus-roster.js
+      - public/ludus-practice.js
+      - public/arena-coop-match.js
+      - tests/gladiator-registry-sync.test.cjs
+      - scripts/qa_gladiator_registry_browser.mjs
       - public/market-pricing.js
       - public/practice-scale-published.js
       - public/tools/practice-scale-calibrator.html
@@ -25,11 +34,17 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
       - name: Verify 27 unique balanced appearance prices and saved stock migration
-        run: node --test tests/market-all-human-looks.test.cjs
+        run: node --test tests/market-all-human-looks.test.cjs tests/gladiator-registry-sync.test.cjs
       - name: Install Chromium
         run: |
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
+      - name: Prepare isolated QA-only 9-action look (NEVER added to production)
+        run: |
+          mkdir -p public/assets/combat/qa-gladiator-sync
+          for action in idle walk slash sweep thrust heavy guard hit death; do
+            cp "public/assets/combat/murmillo-redcrest-alt-v1/${action}.png" "public/assets/combat/qa-gladiator-sync/${action}.png"
+          done
       - name: Host live market screen
         run: |
           python -m http.server 8765 --bind 127.0.0.1 --directory public >/tmp/market-balance-qa.log 2>&1 &
@@ -38,3 +53,5 @@ jobs:
         run: node scripts/qa_market_balance_center_browser.mjs
       - name: Verify 27 tier controls, legacy prices, GitHub save payload and reload in browser
         run: node scripts/qa_market_price_studio_browser.mjs
+      - name: Verify both directions: editor to all game modes and game to studio
+        run: node scripts/qa_gladiator_registry_browser.mjs
