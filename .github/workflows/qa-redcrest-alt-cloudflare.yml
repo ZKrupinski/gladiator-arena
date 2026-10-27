@@ -1,0 +1,23 @@
+name: Verify production Cloudflare Redcrest II nine sprite sheets
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/assets/combat/murmillo-redcrest-alt-v1/**
+      - public/index.html
+      - public/alt-murmillo.js
+      - public/market-scene.js
+      - public/tools/practice-scale-calibrator.html
+      - scripts/verify_live_redcrest_alt.py
+      - .github/workflows/qa-redcrest-alt-cloudflare.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-cloudflare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare production site to committed nine full-res sprites and game loader
+        run: python scripts/verify_live_redcrest_alt.py 24
