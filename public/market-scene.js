@@ -19,7 +19,7 @@ const MARKET_LOOKS=Object.freeze([
  }))),
  {cls:'murmillo',visualId:'murmillo_champion_red',appearance:'murmillo_champion_red',label:'붉은 투구 챔피언',special:true},
  {cls:'murmillo',visualId:'murmillo_redcrest_new_v1',appearance:'murmillo_redcrest_new_v1',label:'신규 붉은투구 무르밀로',special:true},
- {cls:'murmillo',visualId:'murmillo_redcrest_alt_v1',appearance:'murmillo_redcrest_alt_v1',label:'레드크레스트 II · 임시 이미지',special:true},
+ {cls:'murmillo',visualId:'murmillo_redcrest_alt_v1',appearance:'murmillo_redcrest_alt_v1',label:'레드크레스트 II',special:true},
  {cls:'murmillo',visualId:'murmillo_motion_v3',appearance:'murmillo_motion_v3',label:'모션 무르밀로',special:true},
  ...['murmillo','thraex','retiarius'].map(cls=>({cls,visualId:'legacy_'+cls,appearance:'legacy',label:'클래식 '+(cls==='murmillo'?'무르밀로':cls==='thraex'?'트라엑스':'레티아리우스'),special:true}))
 ]);

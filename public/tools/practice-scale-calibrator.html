@@ -292,7 +292,7 @@ async function frameSource(key){
   return {canvas,pivotX:canvas.naturalWidth/2,footY:p.footY(canvas,canvas.naturalHeight*.88)};
  }
  if(key==='murmillo_redcrest_new_v1'||key==='murmillo_redcrest_alt_v1'){
-  const sheet=await image(combat+(key==='murmillo_redcrest_alt_v1'?'murmillo-redcrest-alt-v1/':'murmillo-redcrest-v1/')+'idle.png?v=redcrest-alt-v112');
+  const sheet=await image(combat+(key==='murmillo_redcrest_alt_v1'?'murmillo-redcrest-alt-v1/':'murmillo-redcrest-v1/')+'idle.png?v=redcrest-II-art-v2-20261027');
   const canvas=document.createElement('canvas');canvas.width=960;canvas.height=540;
   canvas.getContext('2d').drawImage(sheet,0,0,960,540,0,0,960,540);
   return {canvas,pivotX:480,footY:512};
@@ -357,7 +357,7 @@ function poseSource(key,pose,frameNumber=0){
  if(key==='murmillo_redcrest_new_v1'||key==='murmillo_redcrest_alt_v1'){
   const name={attack:'slash',special:'heavy',dodge:'walk',parry:'guard',finisher:'heavy',victory:'idle'}[action]||action;
   const resolved=['idle','walk','slash','sweep','thrust','heavy','guard','hit','death'].includes(name)?name:'idle';
-  return image('../assets/combat/'+(key==='murmillo_redcrest_alt_v1'?'murmillo-redcrest-alt-v1/':'murmillo-redcrest-v1/')+resolved+'.png?v=redcrest-alt-v112').then(sheet=>{
+  return image('../assets/combat/'+(key==='murmillo_redcrest_alt_v1'?'murmillo-redcrest-alt-v1/':'murmillo-redcrest-v1/')+resolved+'.png?v=redcrest-II-art-v2-20261027').then(sheet=>{
    const canvas=document.createElement('canvas');canvas.width=960;canvas.height=540;
    canvas.getContext('2d').drawImage(sheet,(frameNumber%4)*960,Math.floor(frameNumber/4)*540,960,540,0,0,960,540);
    return {canvas,pivotX:480,footY:512};

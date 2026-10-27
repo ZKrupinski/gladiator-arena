@@ -1,6 +1,6 @@
 /* Alt Murmillo appearance: 9 independent 8-frame transparent atlases.
  * Existing champion, Murmillo Motion, growth skins and all combat balance stay unchanged.
- * Provisional SpriteForge art: retain all eight frames; warn instead of dropping slots.
+ * Artist-provided unique nine-action SpriteForge art: retain all eight frames; warn instead of dropping slots.
  */
 (function(root){
 'use strict';
@@ -18,7 +18,7 @@ function loadAction(action){
  if(!ACTIONS.includes(action))return Promise.resolve(null);
  if(cache.has(action))return Promise.resolve(cache.get(action));
  if(pending.has(action))return pending.get(action);
- const task=loadImage(BASE+action+'.png?v=20261027-alt').then(img=>{
+ const task=loadImage(BASE+action+'.png?v=redcrest-II-art-v2-20261027').then(img=>{
   if(img.naturalWidth!==CELL_W*4||img.naturalHeight!==CELL_H*2)throw new Error('Invalid 4x2 sprite: '+action);
   // Keep all 8 frames, even if QA flags ownership for later repair.
   const frames=Array.from({length:FRAMES_PER_ACTION},(_,i)=>{
@@ -87,7 +87,7 @@ function portrait(){
  c.getContext('2d').drawImage(f,210,0,540,540,0,0,540,540);
  return portraitCache=c;
 }
-root.AltMurmillo={version:'1.0.0',variant:VARIANT,ACTIONS,FPS,loadAssets,loadAction,onReady,
+root.AltMurmillo={version:'2.0.0',variant:VARIANT,ACTIONS,FPS,loadAssets,loadAction,onReady,
  draw,frame,portrait,status:()=>status,hasFrames:()=>cache.has('idle')};
 if(typeof document!=='undefined')loadAssets();
 if(typeof module!=='undefined'&&module.exports)module.exports=root.AltMurmillo;
