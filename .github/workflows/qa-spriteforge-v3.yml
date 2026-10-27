@@ -12,6 +12,8 @@ on:
       - scripts/spriteforge_auto_repair_v3.py
       - scripts/spriteforge_neighbor_ownership_v3.py
       - scripts/spriteforge_connected_mask_v6.py
+      - scripts/spriteforge_preserve8_review.py
+      - scripts/test_spriteforge_preserve8_review.py
       - scripts/test_spriteforge_connected_mask_v6.py
       - scripts/spartacus_wolf_import.py
       - tests/test_spartacus_wolf_import.py
@@ -41,6 +43,8 @@ jobs:
         run: python scripts/test_spriteforge_pipeline_v3.py
       - name: V6 full-sheet connected component owner extraction, no rectangular amputations
         run: python scripts/test_spriteforge_connected_mask_v6.py
+      - name: Confirm all eight review slots survive ownership warnings without release bypass
+        run: python scripts/test_spriteforge_preserve8_review.py
       - name: Real wolf import uses same connectivity source-of-truth
         run: python -m unittest discover -s tests -p test_spartacus_wolf_import.py
       - name: Test automatic fix / eight-frame regeneration / animated review
