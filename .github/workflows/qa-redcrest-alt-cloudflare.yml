@@ -13,7 +13,10 @@ on:
       - public/practice-scale-profiles.js
       - public/ludus-roster.js
       - public/ludus-practice.js
+      - public/arena-coop.js
+      - public/arena-coop-core.js
       - public/arena-coop-match.js
+      - tests/arena-depth-perspective-v113.cjs
       - tests/gladiator-registry-sync.test.cjs
       - public/market-pricing.js
       - public/practice-scale-published.js
