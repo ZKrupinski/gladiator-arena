@@ -84,7 +84,7 @@
   const sim={units:[...allies.map((h,i)=>makeUnit(h,'ally',i)),...enemies.map((h,i)=>makeUnit(h,'enemy',i))],
    time:0,limit:clamp(finite(limit,120),10,180),random:rng(seed),events:[],serial:0,links:[],
    meter:25,focus:null,cover:null,focusReady:0,coverReady:0,formation:null,formationReady:0,flank:null,flankReady:0,paused:false,result:null,teamwork:{ally:0,enemy:0}};
-  separateBodies(sim,4);return sim;
+  separateBodies(sim,16);return sim;
  }
  const alive=(s,side)=>s.units.filter(u=>!u.dead&&(!side||u.side===side));
  function emit(s,type,a,b,text,extra={}){
@@ -95,7 +95,7 @@
   return x>=85&&x<=1195&&y>=395&&y<=675&&
    s.units.every(v=>v===u||v.dead||!bodyBlocked(u,v,x,y));
  }
- function separateBodies(s,rounds=3){
+ function separateBodies(s,rounds=16){
   // Never change the silhouette box for slash, leap, dash or combo images.
   // Only persistent idle/walk/guard stances are separated.
   const live=s.units.filter(v=>!v.dead);
@@ -457,6 +457,8 @@
    }
    return false;
   });
+  // A final pass after linked attack knockback keeps stationary bodies clear.
+  separateBodies(s);
   if(!alive(s,'ally').length||!alive(s,'enemy').length)finish(s,'elimination');
   else if(s.time>=s.limit)finish(s,'timeout');
   return s;
