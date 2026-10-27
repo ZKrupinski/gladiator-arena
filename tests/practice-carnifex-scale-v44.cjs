@@ -19,6 +19,7 @@ const engine={
  draw(ctx,seq,drawBody,floorY,options){calls.push(['engineDraw',floorY,options]);}
 };
 const window={ArenaCarnifex:engine};
+window.SpartacusBodyCollision=require('../public/arena-body-collision.js');
 vm.runInNewContext(injected,{window,console});
 const qa=window.__executorQA;
 qa.setContext(sceneCtx);
