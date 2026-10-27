@@ -166,4 +166,4 @@
   "legacy_murmillo": 3,
   "legacy_thraex": 3,
   "legacy_retiarius": 3
-});})(typeof window!=="undefined"?window:globalThis);
+});root.SpartacusPublishedGladiators=Object.freeze([]);})(typeof window!=="undefined"?window:globalThis);
