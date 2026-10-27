@@ -66,12 +66,18 @@
   const cls=boss?(special?'murmillo':classes[(Math.floor(round/5)-1)%3]):
    (rng()<.60?preferred:classes[Math.floor(rng()*3)]);
   const level=clamp(match?.level??1,1,50);
+  // Registered, art-validated studio looks may also join normal rival lineups.
+  // Boss identities and their existing art are intentionally kept unchanged.
+  const eligible=root.SpartacusGladiators?.custom?.().filter(look=>look.cls===cls)||[];
+  const selected=!boss&&eligible.length&&rng()<.18?
+   eligible[Math.floor(clamp(rng(),0,.999999)*eligible.length)]:null;
   // First and every fourth championship round introduces the new red-plume
   // Murmillo boss. Other classic bosses keep their established rotation.
   return state.pendingOpponent={cls,level,stage:stage(level),boss,match,matchKey,
-   appearance:special?'murmillo_champion_red':null,
+   appearance:special?'murmillo_champion_red':selected?.visualId||null,
+   visualId:selected?.visualId||null,
    bossId:special?'murmillo_champion_red':boss?cls:null,round,
-   growthType:special?'murmillo_a':cls==='thraex'&&rng()<.5?'thraex_b':cls+'_a',
+   growthType:selected?.growthType||(special?'murmillo_a':cls==='thraex'&&rng()<.5?'thraex_b':cls+'_a'),
    name:romanName({cls,appearance:special?'murmillo_champion_red':boss?'legacy':null},
     round,new Set((state.roster||[]).map(h=>String(h.name||'').toLowerCase())))};
  }
