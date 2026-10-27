@@ -7,6 +7,8 @@ on:
       - public/index.html
       - public/alt-murmillo.js
       - public/market-scene.js
+      - public/market-scene.css
+      - tests/market-all-human-looks.test.cjs
       - public/tools/practice-scale-calibrator.html
       - scripts/verify_live_redcrest_alt.py
       - .github/workflows/qa-redcrest-alt-cloudflare.yml
@@ -19,5 +21,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Regression test all 27 Roman market candidates and old-save migration
+        run: node --test tests/market-all-human-looks.test.cjs
       - name: Compare production site to committed nine full-res sprites and game loader
         run: python scripts/verify_live_redcrest_alt.py 24
