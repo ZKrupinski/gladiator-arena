@@ -389,6 +389,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="growth-frames.js?v=2"></script>
 <script src="murmillo-motion-v2.js?v=whip-guard-suspense-v93"></script>
 <script src="champion-murmillo.js?v=grounded-v39"></script>
+<script src="new-murmillo.js?v=redcrest-v1-20261027"></script>
 <script src="arena-gear-catalog.js?v=roman-five-slots-v12"></script><script src="arena-loot.js?v=roman-helm-bracers-v12"></script><script src="arena-gear-bitmap.js?v=roman-square-atlas-v12"></script><script src="arena-excitement.js?v=harder-spectacle-v7"></script><script src="arena-progression.js?v=five-stats-v97"></script><script src="arena-personality.js?v=five-stat-ai-v104-20261026"></script><script src="arena-matchup.js?v=class-beast-rps-v106-20261026"></script><script src="arena-combat-signals.js?v=affinity-levelup-v110-20261027"></script><script src="arena-balance.js?v=five-stats-v97"></script>
 <script src="arena-portrait-fit.js?v=enemy-facing-v65"></script>
 <script src="arena-lineup.js?v=1"></script>
@@ -717,7 +718,7 @@ let growthLoading=null,growthCuts=null;
 function growthType(h){return h?.growthType||({murmillo:'murmillo_a',thraex:'thraex_a',retiarius:'retiarius_a'}[h?.cls]);}
 // Each former growth sheet is now a permanently assigned visual identity.
 function fixedLook(h){
- if(!h||h.appearance==='legacy'||isChampionMurmillo(h)||isAnimatedMurmillo(h))return false;
+ if(!h||h.appearance==='legacy'||isCustomMurmillo(h)||isAnimatedMurmillo(h))return false;
  if(/^(murmillo_a|thraex_a|thraex_b|retiarius_a)_L[1-5]$/.test(String(h.visualId||'')))return false;
  const n=Math.max(careerStage(h),Math.max(1,Math.min(5,Number(h.marketStage)||1)));
  h.visualId=growthType(h)+'_L'+n;h.fixedVisualTier=n;return true;
@@ -727,22 +728,23 @@ function visualCareerStage(h){
  return m?Number(m[1]):Math.max(careerStage(h),Math.max(1,Math.min(5,Number(h?.marketStage)||1)));
 }
 function looksLabel(h){
- if(isChampionMurmillo(h))return '붉은 투구 챔피언';
+ if(isNewMurmillo(h))return '신규 붉은투구 무르밀로';
+ if(isCustomMurmillo(h))return '붉은 투구 챔피언';
  if(isAnimatedMurmillo(h))return '모션 무르밀로';
  if(h?.appearance==='legacy')return '클래식 검투사';
  return ({murmillo_a:'무르밀로 A',thraex_a:'트라엑스 A',thraex_b:'트라엑스 B',retiarius_a:'레티아리우스 A'}[growthType(h)]||'검투사')+' · 외형 '+visualCareerStage(h);
 }
 function growthImage(h){if(h?.appearance==='legacy')return null;
- if(isChampionMurmillo(h))return null; // The champion must never use legacy growth frames.
+ if(isCustomMurmillo(h))return null; // The champion must never use legacy growth frames.
  if(isAnimatedMurmillo(h))return GROWTH_IMAGES.get('murmillo_a_L5')||null;
  return GROWTH_IMAGES.get(growthType(h)+'_L'+visualCareerStage(h))||null;}
 function growthStatus(message){document.getElementById('growthState').textContent=message;}
 function refreshGrowthAvatar(){
  const avatar=document.querySelector('#careerBody .career-avatar'),hero=CAREER.hero;
  if(!avatar||!hero)return;
- if(isChampionMurmillo(hero)){
+ if(isCustomMurmillo(hero)){
   avatar.style.backgroundImage='none';avatar.replaceChildren();
-  const art=window.ChampionMurmillo?.portrait();
+  const art=specialMurmilloVisual(hero)?.portrait();
   if(art){const canvas=document.createElement('canvas');canvas.width=410;canvas.height=410;canvas.style.cssText='width:100%;height:100%;object-fit:contain';
    const scale=Math.min(390/art.width,390/art.height);
    canvas.getContext('2d').drawImage(art,(410-art.width*scale)/2,410-art.height*scale,art.width*scale,art.height*scale);
@@ -796,14 +798,20 @@ document.getElementById('growthRetry').onclick=()=>loadGrowthAtlases();
 // Defer until career state is initialized. Arcade assets and rendering stay separate.
 setTimeout(loadGrowthAtlases,0);
 window.ChampionMurmillo?.onReady?.(()=>window.SlaveMarket?.refresh());
+window.NewMurmillo?.onReady?.(()=>{window.SlaveMarket?.refresh?.();refreshGrowthAvatar();});
 window.MurmilloMotion?.loadAssets?.()?.then?.(()=>window.SlaveMarket?.refresh())?.catch?.(()=>{});
 const CAREER_KEY='gladiator.ludus.v1';
 const ANIMATED_MURMILLO_VARIANT='murmillo_motion_v3';
 const CHAMPION_MURMILLO_VARIANT='murmillo_champion_red';
+const NEW_MURMILLO_VARIANT='murmillo_redcrest_new_v1';
 // A common visual baseline for normal duels and per-look art calibration.
 const DUEL_BASE_VISUAL_SCALE=.82;
 const CHAMPION_MURMILLO_SCALE=DUEL_BASE_VISUAL_SCALE;
 function isChampionMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===CHAMPION_MURMILLO_VARIANT;}
+function isNewMurmillo(h){return !!h&&h.cls==='murmillo'&&h.appearance===NEW_MURMILLO_VARIANT;}
+function isCustomMurmillo(h){return isChampionMurmillo(h)||isNewMurmillo(h);}
+function specialMurmilloVisual(h){return h?.appearance===NEW_MURMILLO_VARIANT?window.NewMurmillo:window.ChampionMurmillo;}
+function specialMurmilloFighter(f){return f?.championVariant===NEW_MURMILLO_VARIANT?window.NewMurmillo:window.ChampionMurmillo;}
 const ANIMATED_MURMILLO_SCALE=DUEL_BASE_VISUAL_SCALE;
 function duelAppearanceKey(f){
  return f?.championVariant||f?.motionVariant||f?.legacyVisualId||
@@ -903,6 +911,19 @@ function installChampionMurmillo(){
  });
  CAREER.roster.push(h);saveCareer();return true;
 }
+// Idempotent visual addition. Existing gladiators, order, level, economy and active slot stay untouched.
+function installNewMurmillo(){
+ if(CAREER.roster.some(isNewMurmillo))return false;
+ const wasEmpty=!CAREER.roster.length;
+ const h=LudusRoster.create('murmillo',CAREER.roster.length+1,{
+  appearance:NEW_MURMILLO_VARIANT,variantId:'murmillo-redcrest-20261027-01',
+  growthType:'murmillo_a',stats:{str:2,agi:2,def:2,end:2,focus:2}
+ });
+ CAREER.roster.push(h);if(wasEmpty)CAREER.active=0;
+ saveCareer();return true;
+}
+// Asset-opt-in roster addition; do not insert duplicates on reload or reset.
+installNewMurmillo();
 // Champion and animation starters already in an old save are preserved unchanged.
 function careerMessage(t){CAREER.message=t;saveCareer();renderCareer();}
 function openSlaveMarket(){
@@ -915,6 +936,7 @@ function openSlaveMarket(){
   state:CAREER,
   assetsReady:()=>growthLoading||loadGrowthAtlases(),
   getSprite:(cls,offer)=>{
+   if(offer?.appearance===NEW_MURMILLO_VARIANT)return window.NewMurmillo?.portrait()||null;
    if(offer?.appearance==='murmillo_champion_red')return window.ChampionMurmillo?.portrait()||null;
    if(offer?.appearance==='murmillo_motion_v3')return window.MurmilloMotion?.trainingFrame('idle',0)||null;
    if(offer?.appearance!=='legacy'){
@@ -1027,6 +1049,7 @@ function paintRosterPreviews(){
 // Shared approved artwork for all opponent team portraits.
 function arenaOpponentPortrait(enemy){
  if(!enemy)return null;
+ if(enemy.appearance===NEW_MURMILLO_VARIANT)return window.NewMurmillo?.portrait()||null;
  if(enemy.appearance===CHAMPION_MURMILLO_VARIANT||enemy.bossId===CHAMPION_MURMILLO_VARIANT)
   return window.ChampionMurmillo?.portrait()||null;
  if(!enemy.boss){
@@ -1043,7 +1066,9 @@ function paintDraftOpponent(){
  const enemy=CAREER.pendingOpponent;if(!enemy)return;
  const g=canvas.getContext('2d');g.clearRect(0,0,canvas.width,canvas.height);
  let source=null;
- if(enemy.appearance===CHAMPION_MURMILLO_VARIANT||enemy.bossId===CHAMPION_MURMILLO_VARIANT){
+ if(enemy.appearance===NEW_MURMILLO_VARIANT){
+  source=window.NewMurmillo?.portrait()||null;
+ }else if(enemy.appearance===CHAMPION_MURMILLO_VARIANT||enemy.bossId===CHAMPION_MURMILLO_VARIANT){
   source=window.ChampionMurmillo?.portrait()||null;
  }else if(!enemy.boss){
   const atlas=GROWTH_IMAGES.get(enemy.growthType+'_L'+enemy.stage);
@@ -1122,7 +1147,7 @@ function renderCareer(){
  if(workshopCanvas&&h){
   const gg=workshopCanvas.getContext('2d'),atl=growthImage(h);
   gg.clearRect(0,0,240,240);
-  if(isChampionMurmillo(h)){const im=window.ChampionMurmillo?.portrait();if(im){const scale=Math.min(220/im.width,220/im.height);gg.drawImage(im,(240-im.width*scale)/2,235-im.height*scale,im.width*scale,im.height*scale);}}
+  if(isCustomMurmillo(h)){const im=specialMurmilloVisual(h)?.portrait();if(im){const scale=Math.min(220/im.width,220/im.height);gg.drawImage(im,(240-im.width*scale)/2,235-im.height*scale,im.width*scale,im.height*scale);}}
   else if(atl?.frames?.[0]?.canvas){const im=atl.frames[0].canvas,scale=Math.min(220/im.width,220/im.height);gg.drawImage(im,(240-im.width*scale)/2,235-im.height*scale,im.width*scale,im.height*scale);}
   else {const img=IMG[h.cls],im=img&&INDEPENDENT_CHARACTER_FRAMES.get(img)?.[0];if(im)gg.drawImage(im,12,8,216,216);}
  }
@@ -1467,8 +1492,8 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
  S.autoPlaying=false;S.lastManualInput=clock;S.careerRewardApplied=false;S.crowd=ArenaCrowd.create();S.matchLoot=[];S.matchGold=0;
  S.player=fighter(selected,335,false);S.enemy=fighter(rival,940,true);CAMERA.initialized=false;
  if(careerMatch){
-  if(isChampionMurmillo(CAREER.hero)){
-   S.player.championVariant=CHAMPION_MURMILLO_VARIANT;
+  if(isCustomMurmillo(CAREER.hero)){
+   S.player.championVariant=CAREER.hero.appearance;
    S.player.growthType='murmillo_a';S.player.growthLevel=5;
   }else if(isAnimatedMurmillo(CAREER.hero)){
    S.player.motionVariant=ANIMATED_MURMILLO_VARIANT;
@@ -1478,8 +1503,8 @@ function start(mode='new',requestedRosterIndex=null,teamIndices=null){
   }
   S.player.cfg={...S.player.cfg,name:CAREER.hero.name+' · Lv.'+careerLevel(CAREER.hero)};
   const opponent=S.careerOpponent;
-  if(opponent.appearance===CHAMPION_MURMILLO_VARIANT){
-   S.enemy.championVariant=CHAMPION_MURMILLO_VARIANT;
+  if(opponent.appearance===CHAMPION_MURMILLO_VARIANT||opponent.appearance===NEW_MURMILLO_VARIANT){
+   S.enemy.championVariant=opponent.appearance;
    S.enemy.championBoss=true;
    S.enemy.growthType='murmillo_a';S.enemy.growthLevel=5;
   }else if(!opponent.boss){S.enemy.growthType=opponent.growthType;S.enemy.growthLevel=opponent.stage;}
@@ -1549,7 +1574,7 @@ function updateLineupHud(){
 }
 function lineupHero(index){
  const h=CAREER.roster[index],f=fighter(h.cls,335,false);
- if(isChampionMurmillo(h)){f.championVariant=CHAMPION_MURMILLO_VARIANT;f.growthType='murmillo_a';f.growthLevel=5;}
+ if(isCustomMurmillo(h)){f.championVariant=h.appearance;f.growthType='murmillo_a';f.growthLevel=5;}
  else if(isAnimatedMurmillo(h)){f.motionVariant=ANIMATED_MURMILLO_VARIANT;f.growthType='murmillo_a';f.growthLevel=5;}
  else if(h.appearance==='legacy'){f.legacyVisualId='legacy_'+h.cls;}
  else {f.growthType=growthType(h);f.growthLevel=visualCareerStage(h);}
@@ -1566,8 +1591,8 @@ function lineupHero(index){
 }
 function lineupEnemy(opponent){
  const f=fighter(opponent.cls,940,true),profile=ArenaBalance.duelEnemy(f.cfg,opponent,S.round);
- if(opponent.appearance===CHAMPION_MURMILLO_VARIANT){
-  f.championVariant=CHAMPION_MURMILLO_VARIANT;f.growthType='murmillo_a';f.growthLevel=5;
+ if(opponent.appearance===CHAMPION_MURMILLO_VARIANT||opponent.appearance===NEW_MURMILLO_VARIANT){
+  f.championVariant=opponent.appearance;f.growthType='murmillo_a';f.growthLevel=5;
  }else if(opponent.appearance==='legacy'){
   f.legacyVisualId='legacy_'+opponent.cls;
  }else if(!opponent.boss){
@@ -2873,11 +2898,11 @@ function renderResultPortrait(id,f,index){
   paintBeastResults();return;
  }
  BEAST_RESULT_VIEWS.delete(id);
- const atlas=f.championVariant===CHAMPION_MURMILLO_VARIANT?null:GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
+ const atlas=(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT)?null:GROWTH_IMAGES.get(f.growthType+'_L'+f.growthLevel);
  element.replaceChildren();
- if(f.championVariant===CHAMPION_MURMILLO_VARIANT){
+ if(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT){
   element.style.backgroundImage='none';
-  const source=window.ChampionMurmillo?.frame(f.dead?'death':'idle',f.dead?7:0)||window.ChampionMurmillo?.portrait();
+  const source=specialMurmilloFighter(f)?.frame(f.dead?'death':'idle',f.dead?7:0)||specialMurmilloFighter(f)?.portrait();
   if(source)drawSizedResultPortrait(element,source,isWinner);
   return;
  }
@@ -2976,11 +3001,11 @@ function atlasFrame(image,index,x,y,w,h,flip=false,alpha=1){
  ctx.restore();
 }
 function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
- if(f.championVariant===CHAMPION_MURMILLO_VARIANT){
+ if(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT){
   const scale=duelVisualScale(f);
   const x0=x+w*(1-scale)/2,y0=y+h*(1-scale),w0=w*scale,h0=h*scale;
   // A slow or failed champion asset load must never reveal the old Murmillo.
-  window.ChampionMurmillo?.draw(ctx,{fighter:f,scene:S,clock,x:x0,y:y0,w:w0,h:h0,flip,alpha});
+  specialMurmilloFighter(f)?.draw(ctx,{fighter:f,scene:S,clock,x:x0,y:y0,w:w0,h:h0,flip,alpha});
   return true;
  }
  // Restore approved original 5-stage appearances, independently of v3 art.
@@ -3667,8 +3692,8 @@ window.LudusBridge={
   const index=(hero.appearance==='legacy'?
    {idle:0,walk:1,attack:2,special:3,guard:4,hit:6,death:9,dodge:5}:
    {idle:0,walk:1,attack:2,special:3,guard:6,hit:7,death:11,dodge:8})[action]??0;
-  if(isChampionMurmillo(hero))
-   return window.ChampionMurmillo?.frame(({attack:'slash',special:'heavy',death:'death',hit:'hit',guard:'guard',walk:'walk'}[action]||action),tick)||null;
+  if(isCustomMurmillo(hero))
+   return specialMurmilloVisual(hero)?.frame(({attack:'slash',special:'heavy',death:'death',hit:'hit',guard:'guard',walk:'walk'}[action]||action),tick)||null;
   if(isAnimatedMurmillo(hero))
    return window.MurmilloMotion?.trainingFrame(({attack:'slash',special:'heavy',death:'death',hit:'idle'}[action]||action),tick)||null;
   if(hero.appearance==='legacy'){
@@ -3696,7 +3721,7 @@ window.LudusBridge={
  state:()=>{ArenaLoot.ensure(CAREER);return {gold:CAREER.gold,glory:CAREER.glory,roster:CAREER.roster,active:CAREER.active,message:CAREER.message,lastLoot:CAREER.lastLoot,practiceBest:CAREER.practiceBest||0,practiceRuns:CAREER.practiceRuns||0,practiceTotalXp:CAREER.practiceTotalXp||0,armoryInventory:CAREER.armoryInventory,discoveredGear:CAREER.discoveredGear};},
  portrait:(i)=>{
   const h=CAREER.roster[i];if(!h)return null;
-  if(isChampionMurmillo(h))return window.ChampionMurmillo?.portrait()||null;
+  if(isCustomMurmillo(h))return specialMurmilloVisual(h)?.portrait()||null;
   if(isAnimatedMurmillo(h)){const src=window.MurmilloMotion?.trainingFrame('idle',0);if(src)return src;}
   const g=growthImage(h);if(g?.frames?.[9]?.canvas)return g.frames[9].canvas;
   const img=IMG[h.cls];return (img&&INDEPENDENT_CHARACTER_FRAMES.get(img)?.[0])||null;
@@ -3704,7 +3729,7 @@ window.LudusBridge={
  trainingFrame:(i,kind='idle',tick=0)=>{
   const h=CAREER.roster[i];if(!h)return null;
   // Training explicitly excludes fall/defeat/dodge/net poses for ALL classes.
-  if(isChampionMurmillo(h))return window.ChampionMurmillo?.frame(kind,tick)||null;
+  if(isCustomMurmillo(h))return specialMurmilloVisual(h)?.frame(kind,tick)||null;
   if(isAnimatedMurmillo(h)){
    const artwork=window.MurmilloMotion?.trainingFrame(kind,tick);
    if(artwork)return artwork;
@@ -3752,7 +3777,7 @@ window.LudusBridge={
  // Never enlarge a cropped 12-pose frame to a 202px body by itself.
  practiceNominal:(unit)=>{
   const h=unit?.side==='ally'?CAREER.roster[unit.index]:null;
-  if(h&&isChampionMurmillo(h))return {width:540,height:540};
+  if(h&&isCustomMurmillo(h))return {width:540,height:540};
   const atlas=h?(isAnimatedMurmillo(h)?GROWTH_IMAGES.get('murmillo_a_L5'):growthImage(h)):
    GROWTH_IMAGES.get(unit?.look||'murmillo_a_L1');
   if(atlas?.cellWidth>0&&atlas?.cellHeight>0)
@@ -3765,7 +3790,7 @@ window.LudusBridge={
  },
  practiceFrame:(unit,kind='idle')=>{
   const h=unit?.side==='ally'?CAREER.roster[unit.index]:null;
-  if(h&&(h.appearance==='legacy'||isChampionMurmillo(h)||isAnimatedMurmillo(h)))return null;
+  if(h&&(h.appearance==='legacy'||isCustomMurmillo(h)||isAnimatedMurmillo(h)))return null;
   const atlas=h?growthImage(h):GROWTH_IMAGES.get(unit?.look||'murmillo_a_L1');
   const frame={idle:0,walk:1,attack:2,guard:6,dodge:8,hit:7,death:11}[kind]??0;
   return atlas?.frames?.[frame]||atlas?.frames?.[0]||null;
