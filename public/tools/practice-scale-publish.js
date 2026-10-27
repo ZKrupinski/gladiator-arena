@@ -22,6 +22,7 @@ function source(){
  const currentActions=visual?.sanitize?.(studio()?.actions?.()||{})||{};
  const market=root.SpartacusMarketPricing;
  const marketLevels=market?.normalize?.(studio()?.priceLevels?.()||{})||{};
+ const extras=root.SpartacusGladiators?.custom?.()||[];
  if(!market||Object.keys(marketLevels).length!==27)
   throw Error('시장 가격레벨 27종의 설정을 읽지 못했습니다');
  if(!current||!apiScale)throw Error('보정실 크기 설정에 접근할 수 없습니다');
@@ -40,7 +41,8 @@ function source(){
  JSON.stringify(accepted,null,2)+');root.SpartacusPublishedFeet=Object.freeze('+
  JSON.stringify(acceptedFeet,null,2)+');root.SpartacusPublishedActions=Object.freeze('+
  JSON.stringify(currentActions,null,2)+');root.SpartacusPublishedMarketPrices=Object.freeze('+
-  JSON.stringify(marketLevels,null,2)+');})(typeof window!=="undefined"?window:globalThis);\n';
+  JSON.stringify(marketLevels,null,2)+');root.SpartacusPublishedGladiators=Object.freeze('+
+ JSON.stringify(extras,null,2)+');})(typeof window!=="undefined"?window:globalThis);\n';
 }
 function base64(text){
  const bytes=new TextEncoder().encode(text),chunk=8192;
@@ -94,11 +96,18 @@ function valuesFrom(text){
  if(matchPrices&&Object.keys(pricing.sanitize(parsedPrices)).length!==pricing.LOOK_IDS.length)
   throw Error('게시된 시장가격 27종 설정이 유효하지 않습니다');
  const priceLevels=pricing.normalize({...pricing.BASE,...parsedPrices});
- return {scales:out,feet,actions:root.PracticeVisualProfiles?.sanitize?.(actions)||actions,priceLevels};
+ const registry=root.SpartacusGladiators;
+ const extra=text.match(/SpartacusPublishedGladiators\\s*=\\s*Object\\.freeze\\(\\s*(\\[[\\s\\S]*?\\])\\s*\\)/);
+ const raw=extra?JSON.parse(extra[1]):[];
+ const gladiators=registry.sanitize(raw);
+ if(gladiators.length!==raw.length)throw Error('GitHub 검투사 등록부에 유효하지 않은 신규 외형이 있습니다.');
+ return {scales:out,feet,actions:root.PracticeVisualProfiles?.sanitize?.(actions)||actions,
+  priceLevels,gladiators};
 }
 function currentSnapshot(){return {scales:studio()?.values?.(),feet:studio()?.feet?.()||{},
  actions:root.PracticeVisualProfiles?.sanitize?.(studio()?.actions?.()||{})||{},
- priceLevels:root.SpartacusMarketPricing?.normalize?.(studio()?.priceLevels?.()||{})||{}};}
+ priceLevels:root.SpartacusMarketPricing?.normalize?.(studio()?.priceLevels?.()||{})||{},
+ gladiators:root.SpartacusGladiators?.custom?.()||[]};}
 function same(a,b){
  if(!a||!b)return false;
  const keys=Object.keys(root.PracticeScaleProfiles.DEFAULTS);
@@ -107,7 +116,10 @@ function same(a,b){
  const normalize=o=>root.PracticeVisualProfiles?.sanitize?.(o||{})||o||{};
  const price=root.SpartacusMarketPricing;
  const samePrices=price?.LOOK_IDS.every(k=>Number(a.priceLevels?.[k])===Number(b.priceLevels?.[k]))??false;
- return sameSizes&&JSON.stringify(normalize(a.actions))===JSON.stringify(normalize(b.actions))&&samePrices;
+ const canonical=x=>JSON.stringify((x.gladiators||[]).map(g=>
+  [g.visualId,g.cls,g.label,g.assetFolder,g.priceLevel]).sort((a,b)=>a[0].localeCompare(b[0])));
+ return sameSizes&&JSON.stringify(normalize(a.actions))===JSON.stringify(normalize(b.actions))&&
+  samePrices&&canonical(a)===canonical(b);
 }
 function health(id,text,state){const el=$('#'+id);if(el){el.textContent=text;el.dataset.state=state;}}
 function refreshHealth(){
@@ -115,7 +127,8 @@ function refreshHealth(){
  const local={scales:{...root.PracticeScaleProfiles.DEFAULTS,...root.PracticeScaleProfiles.read()},
   feet:{...root.PracticeScaleProfiles.FOOT_DEFAULTS,...root.PracticeScaleProfiles.readFeet?.()},
   actions:root.PracticeVisualProfiles?.all?.()||{},
-   priceLevels:root.SpartacusMarketPricing?.normalize?.(root.SpartacusMarketPricing.read())||{}};
+   priceLevels:root.SpartacusMarketPricing?.normalize?.(root.SpartacusMarketPricing.read())||{},
+   gladiators:root.SpartacusGladiators?.custom?.()||[]};
  health('draftHealth',same(now,local)?'✓ 이 기기: 연출·시장가격 저장됨':'● 이 기기: 연출·시장가격 미저장',same(now,local)?'ok':'warn');
  const repoMatch=same(now,repositoryValues),liveMatch=same(now,liveValues);
  health('repoHealth',repositoryValues?(repoMatch?'✓ GitHub: 연출·시장가격 저장 확인':'● GitHub: 연출·시장가격 게시 필요')+(lastCommit?' · '+lastCommit.slice(0,8):''):
