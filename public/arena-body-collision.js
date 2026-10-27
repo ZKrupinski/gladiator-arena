@@ -49,10 +49,17 @@
   const rx=(shapeA.rx+shapeB.rx)*slack,ry=(shapeA.ry+shapeB.ry)*slack;
   const q=Math.sqrt(dx*dx/(rx*rx)+dy*dy/(ry*ry));
   if(!Number.isFinite(q)||q>=1-1e-9)return null;
-  // Favor the horizontal axis when reasonable; depth Y is the tighter
-  // vertical theater and should not be changed unless necessary.
-  const sx=rx-Math.abs(dx),sy=ry-Math.abs(dy);
-  const axis=sx<=sy*1.20?'x':'y';
+  // Solve the ELLIPSE boundary, not the rectangle surrounding it.
+  // Old rectangle corrections displaced actors several pixels to cure
+  // subpixel overlap, then a neighbor pushed them right back (oscillation).
+  const neededX=Math.sqrt(Math.max(0,1-dy*dy/(ry*ry)))*rx;
+  const neededY=Math.sqrt(Math.max(0,1-dx*dx/(rx*rx)))*ry;
+  const sx=Math.max(0,neededX-Math.abs(dx));
+  const sy=Math.max(0,neededY-Math.abs(dy));
+  // Strong Y depth is reserved for tactical movement, so a shallow
+  // near-tangent silhouette contact generally spreads sideways instead.
+  const axis=(Math.abs(dy)>ry*.74&&Math.abs(dx)>rx*.15)?'x':
+   (sx<=sy*1.30?'x':'y');
   return {axis,amount:axis==='x'?sx:sy,sign:axis==='x'?(dx>=0?1:-1):(dy>=0?1:-1)};
  }
  return Object.freeze({BASE,DEPTH,depth,footprint,gap,ellipse,penetration});
