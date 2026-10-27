@@ -6,7 +6,7 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
 global.Image=class Image{set src(url){this.url=url;}};
-const {MARKET_LOOKS,PAGE_SIZE,PAGE_COUNT,makeStock}=require('../public/market-scene.js');
+const {MARKET_LOOKS,PAGE_SIZE,PAGE_COUNT,makeStock,isRomanFullName}=require('../public/market-scene.js');
 const allIds=MARKET_LOOKS.map(x=>x.visualId);
 const humanClasses=['murmillo','thraex','retiarius'];
 
@@ -60,4 +60,30 @@ test('initial stock has nine distinct pages without sold-out or paid gating',()=
   assert.equal(visible.length,3);
   assert.ok(visible.every(Boolean));
  }
+});
+
+test('all 27 market candidates receive authentic Roman two-part names, even after restock',()=>{
+ for(const roll of [0.01,0.42,0.98]){
+  const stock=makeStock({roster:[{name:'Marcus Aurelius'}],marketSeed:5},()=>roll);
+  assert.equal(stock.length,27);
+  assert.equal(new Set(stock.map(o=>o.name.toLowerCase())).size,27);
+  assert.ok(stock.every(o=>/^([A-Za-z]+) ([A-Za-z]+)$/.test(o.name)), 'two Latin name parts');
+  assert.ok(stock.every(o=>isRomanFullName(o.name)), 'Roman praenomen and family');
+  assert.ok(!stock.some(o=>o.name==='Marcus Aurelius'),'never duplicate an existing hire');
+ }
+});
+
+test('saved unpurchased old Roman surnames become two-part names without changing data',()=>{
+ const old=makeStock({roster:[],marketSeed:1},()=>0.3);
+ const first={...old[0],name:'Manlius'};
+ const second={...old[1],name:'Tullius'};
+ const third={...old[2],name:'Cornelius'};
+ const migrated=makeStock({roster:[{name:'Marcus Aurelius'}],marketSeed:2},()=>0.7,[first,second,third]);
+ for(const [original,final] of [[first,migrated[0]],[second,migrated[1]],[third,migrated[2]]]){
+  assert.equal(final.name.split(' ')[1],original.name);
+  assert.equal(final.cost,original.cost);
+  assert.deepEqual(final.vals,original.vals);
+  assert.equal(final.visualId,original.visualId);
+ }
+ assert.ok(migrated.every(o=>isRomanFullName(o.name)));
 });
