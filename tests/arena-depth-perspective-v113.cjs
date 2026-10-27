@@ -71,7 +71,7 @@ eq(p(529),.91,'5v5 proportional interpolation');
 eq(p(350),.82,'5v5 cannot shrink below far row');
 eq(p(700),1,'5v5 cannot overgrow beyond near row');
 assert.match(coopSource,/ctx\.scale\(depth,depth\)/,'5v5 applies depth once to the fighter and dash echoes');
-assert.match(coopSource,/COOP_CAMERA_BODY_ZOOM\*depth/,'5v5 raster FX scale equals its owner's perspective');
+assert.match(coopSource,/COOP_CAMERA_BODY_ZOOM\*depth/,"5v5 raster FX scale equals its owner depth perspective");
 assert.match(coopSource,/C\.depthOrder\(sim\.units\)/,'5v5 paints back-to-front by foot position');
 assert.match(source,/courtPaintQueue\(battle\)\.forEach/,'practice keeps atomic lane layers');
 assert.match(source,/zoom:perspective,pose:authored/,'practice FX shares depth');
