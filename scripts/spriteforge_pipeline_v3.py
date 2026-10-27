@@ -209,13 +209,23 @@ def generate(job,adapter,result):
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()
-    p.add_argument("--mode",choices=["plan","brief","generate","inspect","repair"],required=True)
+    p.add_argument("--mode",choices=["plan","brief","generate","inspect","repair","preserve8"],required=True)
     p.add_argument("--reference");p.add_argument("--character");p.add_argument("--action")
+    p.add_argument("--source",help="Single action sheet with --action or directory of 9 action sheets")
     p.add_argument("--job");p.add_argument("--result");p.add_argument("--adapter")
     p.add_argument("--extra",action="append",default=[]);p.add_argument("--out",required=True)
     p.add_argument("--initial-result");p.add_argument("--max-retries",type=int,default=3)
     a=p.parse_args();out=Path(a.out).resolve()
-    if a.mode=="plan":
+    if a.mode=="preserve8":
+        # Non-destructive 8-slot review; never substitutes for V6 production QC.
+        if not a.source:p.error("--source required for preserve8")
+        from spriteforge_preserve8_review import extract_review,review_directory
+        payload=(extract_review(Path(a.source),out,a.action)
+                 if a.action else review_directory(Path(a.source),out))
+        print(json.dumps({"status":"REVIEW_8_FRAMES_RETAINED",
+                          "framesPreserved":payload.get("framesPreserved",payload.get("totalFrames")),
+                          "releaseAuthorized":False},ensure_ascii=False))
+    elif a.mode=="plan":
         print(plan(a.reference,a.character,a.action,out,a.extra))
     elif a.mode=="brief":
         if not a.job:p.error("--job required")
