@@ -11,25 +11,32 @@ const LEVELS=Object.freeze([
  {level:4,label:'특수형',target:1020},
  {level:5,label:'최고가형',target:1350}
 ]);
-const BASE=Object.freeze({
- ...Object.fromEntries(['murmillo_a','thraex_a','thraex_b','retiarius_a']
-  .flatMap(family=>[1,2,3,4,5].map((n,i)=>[family+'_L'+n,[1,2,2,3,3][i]]))),
- murmillo_champion_red:5,
- murmillo_redcrest_new_v1:4,
- murmillo_redcrest_alt_v1:4,
- murmillo_motion_v3:4,
- legacy_murmillo:3,
- legacy_thraex:3,
- legacy_retiarius:3
-});
-const LOOK_IDS=Object.freeze(Object.keys(BASE));
-const isMarketLook=id=>Object.hasOwn(BASE,String(id));
+const registry=root.SpartacusGladiators||
+ (typeof module!=='undefined'&&module.exports?require('./gladiator-registry.js'):null);
+if(!registry)throw Error('Unified gladiator registry must load before market pricing');
+const BASE=Object.create(null),DEFAULTS=Object.create(null),LOOK_IDS=[];
+const isMarketLook=id=>!!registry.get(id);
+function sync(){
+ for(const look of registry.market()){
+  const id=look.visualId;
+  if(!Object.hasOwn(BASE,id)){
+   BASE[id]=look.priceLevel??2;
+   DEFAULTS[id]=sanitizePublished(id)??BASE[id];
+   LOOK_IDS.push(id);
+  }
+ }
+}
+function sanitizePublished(id){
+ const value=root.SpartacusPublishedMarketPrices?.[id];
+ return Number.isInteger(value)&&value>=1&&value<=5?value:null;
+}
 function sanitize(value){
  if(!value||typeof value!=='object'||Array.isArray(value))return {};
  return Object.fromEntries(LOOK_IDS.filter(id=>Number.isInteger(value[id])&&value[id]>=1&&value[id]<=5)
   .map(id=>[id,value[id]]));
 }
-const DEFAULTS=Object.freeze({...BASE,...sanitize(root.SpartacusPublishedMarketPrices)});
+sync();
+registry.subscribe(sync);
 function read(){
  try{
   const data=root.localStorage?.getItem(STORAGE_KEY);
@@ -45,11 +52,12 @@ function reset(){
 }
 function levelFor(id){
  if(!isMarketLook(id))return null;
+ sync();
  const draft=read(),published=sanitize(root.SpartacusPublishedMarketPrices);
  return draft[id]??published[id]??BASE[id];
 }
 function normalize(value){
- const clean=sanitize(value);
+ sync();const clean=sanitize(value);
  return Object.fromEntries(LOOK_IDS.map(id=>[id,clean[id]??DEFAULTS[id]]));
 }
 function variation(id,seed){
