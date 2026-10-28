@@ -111,6 +111,8 @@ input[type=file]{display:none}
 .motion-toolbar,.motion-bulk{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:9px 0}
 .motion-toolbar input[type=range]{flex:1;min-width:100px;accent-color:#efbb77}
 .motion-toolbar button,.motion-bulk button{padding:7px 11px;font-weight:700}
+#actionGhost[aria-pressed="true"]{border-color:#ffca75;background:linear-gradient(#7b482e,#493020);color:#ffe9ad}
+#actionGhost[aria-pressed="false"]{opacity:.76}
 .motion-bulk output{color:#f8d79b;font-size:12px}
 .key-track{display:flex;flex-wrap:wrap;gap:5px;padding:7px 0}.key-track button{min-width:58px}.key-track button[aria-pressed="true"]{background:#a65d29;outline:2px solid #ffda87}#motionKeyInfo{font-size:12px;font-weight:400}
 .timeline-axis{flex:1 1 140px;min-width:135px;display:grid;gap:1px;align-self:center}
@@ -202,12 +204,13 @@ input[type=file]{display:none}
 <div><div class="action-preview"><canvas id="actionCanvas" width="520" height="520" aria-label="동작과 이펙트의 프레임별 합성 애니메이션 미리보기"></canvas></div>
 <div class="motion-toolbar">
 <button id="actionPlay" type="button" aria-pressed="true">Ⅱ 일시정지</button>
+<button id="actionGhost" type="button" aria-pressed="true" title="현재 동작 시작 프레임을 미리보기에 연하게 겹쳐 표시">◈ 시작 포즈 잔상 ON</button>
 <label for="actionTime">진행</label><div class="timeline-axis"><input id="actionTime" type="range" min="0" max="100" step=".1" value="0" aria-label="동작 시간 0~100% 직접 이동"><div id="actionKeyMarkers" class="timeline-markers" role="group" aria-label="이동 키 마커 · 클릭해서 해당 시간으로 이동"></div></div>
 <output id="actionTimeValue">0%</output>
 <label for="actionSpeed">속도</label><select id="actionSpeed"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
 </div>
 <p class="motion-hint"><strong>진행 막대를 움직인 뒤 오른쪽 이동 X·Y를 조절하거나 캐릭터를 드래그하면 그 시간에 위치 키가 자동 생성됩니다.</strong> 타임라인 아래 작은 ◆ 키를 누르면 그 시점으로 이동하고 오른쪽 키 시간·좌표가 함께 표시됩니다. X·Y 숫자로 0.1px씩 미세 조정할 수 있습니다.</p>
-<p class="motion-hint">그림에 여러 원본 프레임이 있으면 실제 프레임을 순서대로 재생합니다. 한 장뿐인 동작도 아래 위치 키로 움직일 수 있습니다. 이펙트 역시 8프레임으로 함께 재생합니다.</p>
+<p class="motion-hint">현재 동작의 첫 프레임을 13% 투명도로 뒤에 고정 표시합니다(잔상 토글 가능). 왼쪽 미리보기만 약 15% 확대했으며, 실제 게임의 스케일에는 영향이 없습니다. 이펙트 역시 8프레임으로 함께 재생합니다.</p>
 <p id="actionFrameStatus" role="status">선택한 동작 프레임을 준비합니다.</p></div>
 <div class="action-sliders">
 <div class="action-separator">캐릭터 프레임 — 원본 그림을 건드리지 않는 화면 보정</div>
@@ -525,6 +528,7 @@ function formatAction(){
 let previewHit=null,previewFX=null,dragMotion=null;
 let actionPaintSerial=0,actionProgress=0,actionPlaying=true;
 let actionLastTick=0,actionLoopStarted=false,actionPreviousFrame=-1,actionLastPaint=0;
+let showActionStartGhost=true; // Preview-only overlay, never written to authored game art.
 function updateTimelineLabel(){
  const pct=Math.round(actionProgress*1000)/10;
  $('#actionTime').value=String(pct);
@@ -628,7 +632,7 @@ async function previewAction(){
  if(!key||!pose)return;
  const canvas=$('#actionCanvas'),c=canvas.getContext('2d');
  const anchorX=260,anchorY=345,scene=$('#actionScene').value;
- const previewScale=.52,z=previewScale*window.SpartacusStagePreview.offsetFactor(key,scene);
+ const previewScale=.60,z=previewScale*window.SpartacusStagePreview.offsetFactor(key,scene); // preview zoom only; published actor scale is unchanged
  const val=currentAction(),progress=Math.max(0,Math.min(1,actionProgress)),face=Number($('#fxPreviewFace').value)<0?-1:1;
  const frameNo=Math.min(7,Math.floor(Math.min(progress,.9999)*8));
  const movement=v.sampleMotion?.(val,progress)||{x:0,y:0};
@@ -637,9 +641,10 @@ async function previewAction(){
   dodge:'dash',hit:'hit',death:'none',finisher:'finisher',victory:'victory'};
  const kind=val.effect.kind==='auto'?(auto[pose]||'none'):val.effect.kind;
  try{
-  const [idle,frame,fx]=await Promise.all([
+  const [idle,frame,fx,firstFrame]=await Promise.all([
    frameFor(key),actionFrame(key,pose,frameNo).catch(()=>actionFrame(key,pose,0)),
-   kind==='none'?Promise.resolve(null):effectPreviewFrame(kind,frameNo)
+   kind==='none'?Promise.resolve(null):effectPreviewFrame(kind,frameNo),
+   showActionStartGhost&&progress>.001?actionFrame(key,pose,0).catch(()=>null):Promise.resolve(null)
   ]);
   if(serial!==actionPaintSerial||key!==$('#actionKey').value||
      pose!==$('#actionPose').value||scene!==$('#actionScene').value)return;
@@ -647,7 +652,21 @@ async function previewAction(){
   c.fillStyle='rgba(254,202,130,.09)';c.fillRect(0,anchorY,520,520-anchorY);
   c.strokeStyle='#ead09b';c.setLineDash([6,6]);c.beginPath();
   c.moveTo(8,anchorY);c.lineTo(512,anchorY);c.stroke();c.setLineDash([]);
-  const img=frame.canvas,base=idle.canvas,baseH=base.naturalHeight||base.height;
+  const img=frame.canvas;
+  // Faint, fixed start pose BEHIND the moving character. It uses the very
+  // same authored frame, pivot, facing, and t=0 animation position, but it
+  // does not enter hit-testing or modify any saved motion/scale settings.
+  if(firstFrame){
+   const firstMovement=v.sampleMotion?.(val,0)||{x:0,y:0};
+   c.save();c.globalAlpha=.13;
+   if(face<0){c.translate(520,0);c.scale(-1,1);}
+   window.SpartacusStagePreview.draw(c,{
+    key,frame:firstFrame,idle,scene,zoom:previewScale,
+    scale:Number(state[key])*val.scale,foot:Number(feet[key]),
+    x:anchorX,y:anchorY,offsetX:val.x+firstMovement.x,offsetY:val.y+firstMovement.y
+   });
+   c.restore();
+  }
   c.save();
   if(face<0){c.translate(520,0);c.scale(-1,1);}
   const hitBox=window.SpartacusStagePreview.draw(c,{
@@ -676,6 +695,7 @@ async function previewAction(){
    c.restore();
   }
   $('#actionFrameStatus').textContent=nameFor(key)+' · '+pose+
+   (showActionStartGhost?' · 첫 프레임 잔상 ON':' · 잔상 OFF')+
    ' · '+(scene==='duel'?'일반전투':'실전훈련')+
    ' · '+Math.round(progress*100)+'% · 재생 구간 '+(frameNo+1)+'/8 프레임 · 이동('+
    movement.x+', '+movement.y+')px';
@@ -821,6 +841,12 @@ function initActionEditor(){
  $('#actionPose').onchange=()=>{$('#motionKey').value='0';updateActionControls();};
  $('#actionScene').onchange=previewAction;
  $('#fxPreviewFace').onchange=previewAction;
+ $('#actionGhost').addEventListener('click',()=>{
+  showActionStartGhost=!showActionStartGhost;
+  $('#actionGhost').setAttribute('aria-pressed',String(showActionStartGhost));
+  $('#actionGhost').textContent=showActionStartGhost?'◈ 시작 포즈 잔상 ON':'◇ 시작 포즈 잔상 OFF';
+  previewAction();
+ });
  $('#fxDragMode').onchange=()=>{
   $('#actionCanvas').style.cursor=$('#fxDragMode').value==='effect'?'crosshair':'grab';
   previewAction();
