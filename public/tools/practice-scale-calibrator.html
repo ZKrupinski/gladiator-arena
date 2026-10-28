@@ -318,6 +318,7 @@ const v=window.PracticeVisualProfiles;
 const state={...p.DEFAULTS,...p.read()},feet={...p.FOOT_DEFAULTS,...p.readFeet()},
  marketPrices={...pricing.DEFAULTS,...pricing.read()},actions=v.all(),selection=new Set(),keys=Object.keys(p.DEFAULTS);
 let order=keys.slice(),origin=new Map(),observer=null,cutsPromise=null;
+const numberPairs=[]; // Initialized before first key editor render.
 const cache=new Map(),actionCache=new Map(),effectCache=new Map(),drawers=new Map(),$=selector=>document.querySelector(selector);
 const announce=s=>$('#status').textContent=s;
 $('#registryCount').textContent=String(registry.market().length);
@@ -834,11 +835,12 @@ function initActionEditor(){
   const point=v.sampleMotion(currentAction(),t);keys.push({t,...point});saveMotionKeys(keys,t);
  });
  $('#motionDelete').addEventListener('click',()=>{
-  const keys=keyList(),i=selectedKeyIndex();if(keys.length<=1)return;
+  const keys=keyList(),i=selectedKeyIndex();if(i<0||keys.length<=1)return;
   keys.splice(i,1);saveMotionKeys(keys,keys[Math.min(i,keys.length-1)].t);
  });
  $('#motionKeyTime').addEventListener('change',()=>{
   const input=$('#motionKeyTime'),keys=keyList(),i=selectedKeyIndex();
+  if(i<0)return;
   if(!input.value.trim()||!Number.isFinite(Number(input.value))){showMotionKey();return;}
   const t=Math.round(Math.max(0,Math.min(100,Number(input.value)))*10)/1000;
   if(keys.some((k,n)=>n!==i&&Math.abs(k.t-t)<.00005)){
@@ -847,14 +849,14 @@ function initActionEditor(){
   keys[i].t=t;saveMotionKeys(keys,t);
  });
  $('#motionInterpolation').addEventListener('change',()=>{
-  const keys=keyList();saveMotionKeys(keys,keys[selectedKeyIndex()].t,$('#motionInterpolation').value);
+  const keys=keyList(),i=selectedKeyIndex();saveMotionKeys(keys,i<0?actionProgress:keys[i].t,$('#motionInterpolation').value);
  });
  $('#actionTime').addEventListener('input',()=>{
   actionProgress=Math.max(0,Math.min(1,Number($('#actionTime').value)/100));
   actionPlaying=false;actionPreviousFrame=-1;
   $('#actionPlay').textContent='▶ 재생';
   $('#actionPlay').setAttribute('aria-pressed','false');
-  updateTimelineLabel();previewAction();
+  updateTimelineLabel();showMotionCursor();previewAction();
  });
  $('#actionPlay').addEventListener('click',()=>{
   actionPlaying=!actionPlaying;
@@ -864,9 +866,14 @@ function initActionEditor(){
   if(!actionPlaying)previewAction();
  });
  for(const axis of ['X','Y'])$('#motion'+axis).addEventListener('input',()=>{
-  const keys=keyList(),index=selectedKeyIndex();
-  keys[index][axis.toLowerCase()]=Number($('#motion'+axis).value);
-  saveMotionKeys(keys,keys[index].t);
+  // All editing follows the LEFT timeline, never a stale right-side key.
+  const cfg=currentAction(),keys=keyList(cfg);
+  const t=Math.round(Math.max(0,Math.min(1,actionProgress))*1000)/1000;
+  const index=keys.findIndex(k=>Math.abs(k.t-t)<.00005);
+  const point=index>=0?{...keys[index]}:{t,...v.sampleMotion(cfg,t)};
+  point[axis.toLowerCase()]=Number($('#motion'+axis).value);
+  if(index<0)keys.push(point);else keys[index]=point;
+  saveMotionKeys(keys,t);
  });
  $('#bulkCopyFx').addEventListener('click',()=>applyActionToChecked('effect'));
  $('#bulkCopyMotion').addEventListener('click',()=>applyActionToChecked('motion'));
@@ -1296,7 +1303,6 @@ document.addEventListener('keydown',event=>{
  if(!(event.ctrlKey||event.metaKey)||event.altKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
  if(event.key.toLowerCase()==='z'){event.preventDefault();event.shiftKey?redo():undo();}
 });
-const numberPairs=[];
 function syncNumbers(){for(const [range,number] of numberPairs)if(document.activeElement!==number)number.value=range.value;}
 function setupNumbers(){
  for(const id of ['actionTime','compareScale','compareFeet','frameX','frameY','frameScale','motionX','motionY','fxX','fxY','fxScale']){
