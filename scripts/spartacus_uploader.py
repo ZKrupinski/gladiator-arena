@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""Spartacus-only versioned asset/code uploader and Cloudflare release verifier.
+"""Spartacus-only versioned asset/code uploader (GitHub-only, 2026-10-28).
 
 Usage:
   python scripts/spartacus_uploader.py status
   python scripts/spartacus_uploader.py package --source /mnt/data/wolf_apply_package --out /tmp/review.json
   python scripts/spartacus_uploader.py publish --input ./staged --confirm
   python scripts/spartacus_uploader.py process-request ops/uploader-requests/example.json
-  python scripts/spartacus_uploader.py verify --release-id <id> --attempts 20
 
 The authenticated local publish path uses GITHUB_TOKEN/GH_TOKEN. The
 GitHub Actions request path uses its own scoped GITHUB_TOKEN. Neither needs
-a manually copied repository path. Cloudflare's Git integration is external;
-upload success NEVER means production success until the live marker matches.
+a manually copied repository path. Uploads finish after the GitHub
+commit; no external hosting/deployment verification or waiting occurs.
 """
 from __future__ import annotations
 import argparse, base64, hashlib, ipaddress, json, os, re, socket, subprocess
@@ -24,7 +23,6 @@ from urllib.error import HTTPError
 ROOT = Path(__file__).resolve().parents[1]
 REPO = "ZKrupinski/gladiator-arena"
 MAIN = "main"
-SITE = "https://gladiator-arena-git.pages.dev"
 RELEASE_PROBE = "public/uploader-release.json"
 DEST_WOLF = "public/assets/beasts/wolf-v3/"
 API_ROOT = "https://api.github.com/repos/" + REPO
@@ -350,54 +348,6 @@ def stage_request(spec: dict, *, main_sha: str):
     verify_local_code(items)
     return items
 
-def fetch_public(url: str) -> bytes:
-    """Use the known-working Cloudflare curl client; reject HTTP failures."""
-    cmd=["curl","--fail","--location","--silent","--show-error",
-         "--max-time","30","--header","Cache-Control: no-cache",
-         "--user-agent","Mozilla/5.0 SpartacusUploader/1.0",url]
-    if shutil_which("curl"):
-        run=subprocess.run(cmd,capture_output=True)
-        if run.returncode:
-            raise UploadError("CLOUDFLARE_HTTP_FETCH_FAILED: "+
-                              run.stderr.decode("utf8","replace")[-300:])
-        if len(run.stdout)>MAX_BINARY:
-            raise UploadError("CLOUDFLARE_RESOURCE_TOO_LARGE")
-        return run.stdout
-    with urlopen(Request(url,headers={"User-Agent":"Mozilla/5.0",
-                                       "Cache-Control":"no-cache"}),timeout=30) as r:
-        return r.read(MAX_BINARY+1)
-
-def verify_live(release_id: str, asset_hashes: dict | None = None, attempts: int = 18, pause: float = 15.0):
-    release_id=safe_release_id(release_id)
-    if not (1<=attempts<=100 and 0<=pause<=60):
-        raise UploadError("INVALID_VERIFY_RETRY")
-    failure = ""
-    for index in range(attempts):
-        try:
-            response=fetch_public(SITE+"/uploader-release.json?rid="+quote(release_id)+"&n="+str(index))
-            found=json.loads(response)
-            if found.get("releaseId")!=release_id:
-                raise UploadError("CLOUDFLARE_OLD_DEPLOYMENT")
-            if found.get("releaseProtocol")!="spartacus-uploader-v1":
-                raise UploadError("CLOUDFLARE_UNEXPECTED_MARKER")
-            want=asset_hashes if asset_hashes is not None else found["assetSha256"]
-            if want!=found.get("assetSha256"):
-                raise UploadError("RELEASE_MANIFEST_MISMATCH")
-            for path,expected in want.items():
-                if not path.startswith("public/"): continue
-                actual=fetch_public(SITE+"/"+quote(path[len("public/"):],safe="/")+"?rid="+quote(release_id))
-                if digest(actual)!=expected:
-                    raise UploadError("CLOUDFLARE_CONTENT_MISMATCH: "+path)
-            html=fetch_public(SITE+"/?release="+quote(release_id))
-            if b"<html" not in html[:5000].lower():
-                raise UploadError("CLOUDFLARE_GAME_HTML_NOT_AVAILABLE")
-            return {"state":"DEPLOYED_VERIFIED","releaseId":release_id,"site":SITE+"/",
-                    "checkedAssets":len(want),"attempt":index+1}
-        except Exception as exc:
-            failure=str(exc)[:600]
-            if index+1<attempts:time.sleep(pause)
-    raise UploadError("DEPLOYMENT_UNVERIFIED: "+failure)
-
 def publish_files(items: dict[str,bytes], *, confirm: bool, release_id: str | None = None,
                   verify: bool = True, git: GitHub | None = None, expected_sha: str | None = None,
                   message: str | None = None):
@@ -459,17 +409,15 @@ def publish_files(items: dict[str,bytes], *, confirm: bool, release_id: str | No
     items=dict(items)
     items[RELEASE_PROBE]=marker(rid,fingerprints,head)
     sha=git.commit(items,message or ("deploy(spartacus): "+rid),head)
-    result={"state":"COMMITTED_DEPLOY_NOT_YET_VERIFIED","releaseId":rid,"commit":sha,
+    # GitHub is the only release endpoint: never poll or claim live hosting.
+    # The deprecated 'verify' argument is retained for legacy callers, ignored.
+    return {"state":"GITHUB_COMMITTED","releaseId":rid,"commit":sha,
             "commitUrl":"https://github.com/"+REPO+"/commit/"+sha,
-            "site":SITE+"/","checks":audit}
-    if verify:
-        try:result["deployment"]=verify_live(rid,fingerprints)
-        except UploadError as e:
-            result["deployment"]={"state":"UNVERIFIED","reason":str(e)}
-    return result
+            "sourceUrl":"https://github.com/"+REPO+"/tree/"+sha+"/public",
+            "checks":audit,"assetSha256":fingerprints}
 
 def main(argv=None):
-    p=argparse.ArgumentParser(description="Spartacus uploader: version → QA → commit → Cloudflare verify")
+    p=argparse.ArgumentParser(description="Spartacus uploader: version → QA → GitHub commit")
     s=p.add_subparsers(dest="command",required=True)
     s.add_parser("status")
     make=s.add_parser("package")
@@ -486,16 +434,13 @@ def main(argv=None):
     request=s.add_parser("process-request")
     request.add_argument("manifest")
     request.add_argument("--no-verify",action="store_true")
-    check=s.add_parser("verify")
-    check.add_argument("--release-id",required=True)
-    check.add_argument("--attempts",type=int,default=18)
     args=p.parse_args(argv)
     try:
         if args.command=="status":
             gh=GitHub(); head=gh.main_sha()
-            result={"repo":REPO,"branch":MAIN,"commit":head,"site":SITE+"/",
+            result={"repo":REPO,"branch":MAIN,"commit":head,"sourceUrl":"https://github.com/"+REPO+"/tree/"+head+"/public",
                     "version":"https://github.com/"+REPO+"/commit/"+head,
-                    "deploymentVerified":False}
+                    "verificationScope":"GITHUB_ONLY"}
         elif args.command=="package":
             mapping=json.loads(Path(args.mapping).read_text(encoding="utf8")) if args.mapping else None
             items=stage_from_folder(Path(args.source),mapping)
@@ -508,7 +453,7 @@ def main(argv=None):
             mapping=json.loads(Path(args.mapping).read_text(encoding="utf8")) if args.mapping else None
             result=publish_files(stage_from_folder(Path(args.input),mapping),
                                  confirm=args.confirm,expected_sha=args.expected_sha,
-                                 release_id=args.release_id,verify=not args.no_verify)
+                                 release_id=args.release_id,verify=False)
         elif args.command=="process-request":
             spec=json.loads(Path(args.manifest).read_text(encoding="utf8"))
             gh=GitHub(); head=gh.main_sha()
@@ -539,7 +484,7 @@ def main(argv=None):
                 try:
                     result=publish_files(items,confirm=True,git=gh,expected_sha=head,
                                          release_id=spec["releaseId"],
-                                         verify=not args.no_verify,
+                                         verify=False,
                                          message="deploy(spartacus): "+spec["releaseId"])
                     break
                 except UploadError as error:
@@ -551,12 +496,7 @@ def main(argv=None):
                     # Next iteration gets a fresh main head, validates the
                     # diff against the immutable inbox, and builds a NEW
                     # fast-forward commit; never force-push or overwrite.
-        else:
-            result=verify_live(args.release_id,attempts=args.attempts)
         print(json.dumps(result,ensure_ascii=False,indent=2))
-        # A GitHub commit does not imply completed deployment.
-        if result.get("deployment",{}).get("state")=="UNVERIFIED":
-            return 3
         return 0
     except Exception as exc:
         print(json.dumps({"state":"FAILED","reason":str(exc)},ensure_ascii=False),file=sys.stderr)
