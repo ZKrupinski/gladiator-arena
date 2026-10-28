@@ -70,7 +70,7 @@ for(const cls of ['murmillo','retiarius','thraex','wolf','lion','tiger','elephan
  const f={...actor(),cls,beastType:['wolf','lion','tiger','elephant'].includes(cls)?cls:null};
  for(const kind of ['strike','guard','special','dash','parry','reversal']){
   M.impact(f,kind);
-  assert.ok(M.visual(f).flash>.07&&M.visual(f).flash<=.29,cls+' '+kind+' short transparent glint');
+  assert.ok(M.visual(f).flash>=.64&&M.visual(f).flash<=.99,cls+' '+kind+' prominent per-actor silhouette');
   assert.equal(M.visual(f).scale,1,'the planted-foot pivot starts at original scale');
   M.advance(f,.025,.020);
   const v=M.visual(f);
@@ -86,18 +86,19 @@ for(const cls of ['murmillo','retiarius','thraex','wolf','lion','tiger','elephan
 assert.ok(M.PRESETS.strike.amp>=14);
 assert.ok(M.PRESETS.special.amp>=23);
 assert.ok(M.PRESETS.reversal.amp>=34);
-// Ultra-short blinking flash ends BEFORE the longer body scale recovery.
+// One sustained contact flash, fading completely before the recoil envelope finishes.
 for(const kind of ['strike','guard','special','dash','parry','reversal']){
  const f=actor();f.hp=99;
  M.impact(f,kind);
  const first=M.visual(f).flash;
- assert.ok(first>.07&&first<=.29,kind+' initial flash partially transparent');
+ assert.ok(first>=.64&&first<=.99,kind+' bright flash at confirmed contact');
  M.advance(f,0,.060);M.advance(f,0,.025);
- assert.ok(M.visual(f).flash<1e-10,kind+' glint ends after contact');
- M.advance(f,0,.027);
- assert.equal(M.visual(f).flash,0,kind+' no second blink');
- M.advance(f,0,.036);
- assert.equal(M.visual(f).flash,0,kind+' off permanently after 148ms');
+ assert.ok(M.visual(f).flash>.20,kind+' glint remains visible after 85ms');
+ const early=M.visual(f).flash;
+ M.advance(f,0,.050);
+ assert.ok(M.visual(f).flash<early,kind+' fade is smooth and one-way');
+ M.advance(f,0,.055);M.advance(f,0,.060);
+ assert.ok(M.visual(f).flash<1e-10,kind+' fades completely by 250ms');
  // Death frame must not inherit hit white even before the animation resumes.
  f.dead=true;
  assert.deepEqual(JSON.parse(JSON.stringify(M.visual(f))),{scale:1,flash:0});
@@ -106,7 +107,7 @@ for(const kind of ['strike','guard','special','dash','parry','reversal']){
  f.action='idle';f.hp=0;
  assert.deepEqual(JSON.parse(JSON.stringify(M.visual(f))),{scale:1,flash:0});
  M.impact(f,kind);
- assert.ok(Math.abs((f.hitVisual?.t||0)-.148)<.0001,'KO never restarts flash');
+ assert.ok(Math.abs((f.hitVisual?.t||0)-.25)<.0001,'KO never restarts flash');
 }
 const clashA=actor(),clashB=actor(true);
 clashA.x=500;clashB.x=685;clashA.vx=210;clashB.vx=-90;
