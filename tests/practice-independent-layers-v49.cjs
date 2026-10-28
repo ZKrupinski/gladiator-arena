@@ -15,6 +15,12 @@ for(const [count,expect] of [[1,[0]],[2,[1,0]],[3,[2,1,0]],[4,[3,2,1,0]]]){
  assert.deepEqual(flat(qa.courtPaintOrder(count)),expect,
   'rear row before front row; within each row left court paints last');
 }
+const four=Array.from(win.LudusPractice.rules.courtsForParty(4));
+assert.deepEqual(four.map(c=>[c.x,c.y]),[[1120,689],[215,689],[885,606],[465,606]]);
+for(const count of [2,3]){
+ const seats=Array.from(win.LudusPractice.rules.courtsForParty(count));
+ assert(seats[0].x>seats[1].x);
+}
 const scene={heroes:[],enemies:[],exits:[],fx:[],particles:[]};
 for(let seat=0;seat<4;seat++){
  const y=seat<2?690:605,base={seat,y,dead:false,retiring:false,fade:1};
@@ -37,7 +43,14 @@ const items=flat(qa.courtPaintQueue(scene));
 assert.equal(items.length,32,'all fighters, VFX, impacts, corpses and executioners retained');
 const seatPath=items.map(x=>x.seat);
 const blocks=seatPath.filter((seat,i)=>i===0||seat!==seatPath[i-1]);
-assert.deepEqual(blocks,[3,2,1,0],'seat 3 enemy should render above seat 4 fighter, no court leakage');
+assert.deepEqual(blocks,[3,2,1,0]);
+const firstCourt1=items.findIndex(item=>item.seat===0);
+const lastCourt2=items.findLastIndex(item=>item.seat===1);
+assert(lastCourt2<firstCourt1,'court 1 must be above every court 2 element');
+for(const kind of ['fighter','executioner','effect','spark']){
+ assert(items.filter(item=>item.seat===1&&item.kind===kind)
+  .every(item=>items.indexOf(item)<firstCourt1));
+}
 for(const seat of [0,1,2,3]){
  const own=items.filter(x=>x.seat===seat);
  assert.equal(own.length,8,'a court owns two fighters, two executors, two FX and two impacts');
