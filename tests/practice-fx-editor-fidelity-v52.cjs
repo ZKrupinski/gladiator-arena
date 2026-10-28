@@ -50,16 +50,19 @@ const window={
 window.SpartacusBodyCollision=require('../public/arena-body-collision.js');
 vm.runInNewContext(injected,{window,console});
 const qa=window.__fxQA;qa.setCourts(4);
-const unit={seat:2,side:'ally',look:'murmillo_a_L1',x:440,y:606};
+const unit={seat:2,side:'ally',look:'murmillo_a_L1',x:440,y:608};
+const depth=window.LudusPractice.rules.courtPerspective(unit.y);
+assert(Math.abs(depth-(.70+.30*38/119))<1e-10,'approved far court depth');
 const battle={fx:[],clock:0};qa.setBattle(battle);
 qa.emitVfx('slash',unit,null,true);
 assert.equal(battle.fx.length,1);
 const fx=battle.fx[0],expect=s.effectGeometry({
- kind:'sweep',baseX:unit.x+52*.82,baseY:unit.y+(-113+11)*.82,
- zoom:.82,face:1,pose:reload
+ kind:'sweep',baseX:unit.x+52*depth,baseY:unit.y+(-113+11)*depth,
+ zoom:depth,face:1,pose:reload
 });
 assert.equal(fx.kind,'sweep','user-selected FX type is applied');
-assert.equal(window.LudusPractice.rules.courtPerspective(606),.82,'rear PNG effects use the same depth projection as sprites');
+assert.equal(window.LudusPractice.rules.courtPerspective(unit.y),depth,
+ 'attack FX use the same rear depth scale as their owning sprite');
 assert.equal(fx.x,expect.x,'practice FX X uses exact editor geometry');
 assert.equal(fx.y,expect.y,'practice FX Y uses exact editor geometry');
 assert.equal(fx.width,expect.width,'practice FX width uses exact editor geometry');
