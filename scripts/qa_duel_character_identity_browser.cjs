@@ -22,7 +22,10 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  });
  try{
   await page.goto('http://127.0.0.1:'+server.address().port+'/index.html?__arena_qa=1',{waitUntil:'load',timeout:120000});
-  await page.waitForFunction(()=>window.__arenaQA?.growthReady?.()&&window.__arenaQA?.assetsReady?.(),null,{timeout:110000});
+  await page.waitForFunction(()=>window.__arenaQA?.assetsReady?.()&&window.LudusBridge&&window.LudusRoster,null,{timeout:60000});
+  // The optional 20 growth atlases load independently. Approved class atlases
+  // are sufficient to prove the renderer no longer overrides selected IDs.
+  await page.waitForTimeout(600);
   const result=await page.evaluate(()=>{
    window.requestAnimationFrame=()=>0;
    const Q=window.__arenaQA,a=window.LudusBridge,r=a.state().roster;
