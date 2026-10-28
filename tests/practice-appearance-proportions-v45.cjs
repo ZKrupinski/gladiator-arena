@@ -45,7 +45,8 @@ for(let n=1;n<=4;n++){
  for(let side of ['ally','enemy']){
   for(let attack of [false,true]){
    calls.length=0;
-   const p=fighter(side,attack),m=qa.calibration(p,attack?swing:idle);
+   const p=fighter(side,attack);p.y=qa.courtsForParty(n)[0].y;
+   const m=qa.calibration(p,attack?swing:idle);
    const courtScale=qa.courtsForParty(n)[0].scale;
    assert.equal(m.reference,idle,'stable authored idle frame, not attack bitmap');
    assert(Math.abs(m.pixels-202/540*1.12)<1e-9,'padded costume is NOT enlarged using visible alpha bounds');
