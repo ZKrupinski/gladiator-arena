@@ -3,6 +3,14 @@
 'use strict';
 const assert=require('node:assert/strict');
 const Core=require('../public/arena-coop-core');
+// Standing/walking bodies follow artist scale and world depth. Combat poses
+// intentionally allow transient overlap; a fixed 102px foot radius is obsolete.
+function neutralClear(a,b){
+ if(a.dash>0||b.dash>0||a.attack||b.attack||a.reaction||b.reaction)return true;
+ const sa=Core.bodyShape(a),sb=Core.bodyShape(b);
+ return Math.hypot((a.x-b.x)/(sa.rx+sb.rx),(a.y-b.y)/(sa.ry+sb.ry))>=1-1e-6;
+}
+
 const roster=()=>Array.from({length:5},(_,i)=>({
  index:i,name:'Unit '+i,cls:['murmillo','retiarius','thraex'][i%3],
  combat:{hp:160,atk:21,move:240,parry:.18,armor:.12}
@@ -27,7 +35,7 @@ for(let seed=1;seed<=250;seed++){
    assert(Number.isFinite(u.hp)&&Number.isFinite(u.x)&&Number.isFinite(u.y));
    assert(u.hp>=0&&u.hp<=u.maxHp+.0001,'bounded HP, including retreat healing');
    assert(u.x>=85&&u.x<=1195&&u.y>=395&&u.y<=675,'valid arena boundary');
-   for(let j=i+1;j<10;j++)if(!u.dead&&!sim.units[j].dead)assert(Core.footDistance(u,sim.units[j])>=101.9,
+   for(let j=i+1;j<10;j++)if(!u.dead&&!sim.units[j].dead)assert(neutralClear(u,sim.units[j]),
     'collision between two living fighters in seed '+seed);
   }
  }

@@ -69,7 +69,7 @@ assert.doesNotMatch(rasterOnlySource,/ArenaCombatFeel\?\.overlay\?\./,
  '5v5 must not overlay procedural full-screen flash rectangles');
 assert.match(rasterOnlySource,/ArenaRasterFX\?\.draw\?\.\(/,
  'approved directional PNG hit art remains in battle');
-assert.match(rasterOnlySource,/for\(const u of C\.depthOrder\(sim\.units\)\)drawUnit\(u\)/,
+assert.match(rasterOnlySource,/const units=C\.depthOrder\(sim\.units\),items=units\.map\([\s\S]*?paint:\(\)=>drawUnit\(u\)/,
  'all ten fighters and dead sprites remain visible');
 assert.match(rasterOnlySource,/b\.classList\.toggle\('is-selected'/,
  'selection is still visible on the portrait HUD');

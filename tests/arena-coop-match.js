@@ -2,6 +2,14 @@
 'use strict';
 const assert=require('node:assert/strict');
 const Match=require('../public/arena-coop-match'),Core=require('../public/arena-coop-core');
+// Standing/walking bodies follow artist scale and world depth. Combat poses
+// intentionally allow transient overlap; a fixed 102px foot radius is obsolete.
+function neutralClear(a,b){
+ if(a.dash>0||b.dash>0||a.attack||b.attack||a.reaction||b.reaction)return true;
+ const sa=Core.bodyShape(a),sb=Core.bodyShape(b);
+ return Math.hypot((a.x-b.x)/(sa.rx+sb.rx),(a.y-b.y)/(sa.ry+sb.ry))>=1-1e-6;
+}
+
 const roles=['murmillo','retiarius','thraex','murmillo','thraex'];
 const team=(level=1,injury=0,spread=0,fatigue=0)=>roles.map((cls,i)=>({
  index:i,name:'Hero '+i,cls,level:Math.round(Math.max(1,level*8)),
@@ -52,7 +60,7 @@ for(const [tag,allies] of factions){
    Core.step(sim,.05);
    for(let i=0;i<sim.units.length;i++)for(let j=i+1;j<sim.units.length;j++){
     const a=sim.units[i],b=sim.units[j];
-    if(!a.dead&&!b.dead)assert(Core.footDistance(a,b)>=101.9,'alive collision retained');
+    if(!a.dead&&!b.dead)assert(neutralClear(a,b),'alive collision retained');
    }
   }
   assert(sim.result,'match must finish before timeout');

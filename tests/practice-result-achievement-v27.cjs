@@ -25,5 +25,13 @@ assert(js.includes("api()?.practiceReward?.(payout,snap.wave,snap.kills,quit)"),
  'real training rewards must not be replaced by fake demonstration values');
 for(const selector of ['.ep-result-metrics','.ep-result-metric','.ep-result-achievement','.ep-rewards-title'])
  assert(css.includes(selector),'styled result visual missing: '+selector);
-assert(html.includes('result-honors-v27'),'production index must bust the old asset cache');
+// Later releases legitimately replace the v27 cache token. Check the actual
+// runtime references rather than requiring an obsolete release name forever.
+for(const asset of ['ludus-practice.js','ludus-practice.css']){
+ const references=[...html.matchAll(/(?:src|href)="([^"]+)"/g)]
+  .map(match=>match[1]).filter(url=>url.split('?')[0]===asset);
+ assert.equal(references.length,1,'production must load exactly one '+asset);
+ const version=new URL(references[0],'https://example.test/').searchParams.get('v');
+ assert(version&&version.trim(),'production must version '+asset+' to invalidate stale caches');
+}
 console.log('PRACTICE_ACHIEVEMENT_SCOREBOARD_UNIT_PASS');
