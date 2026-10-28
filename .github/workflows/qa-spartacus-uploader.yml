@@ -38,7 +38,7 @@ jobs:
         run: pip install pillow numpy scipy
       - name: Syntax check
         run: python -m py_compile scripts/spartacus_uploader.py
-      - name: Version, asset validation, permissions, atomic commit, deploy QA
+      - name: Version, SHA256, asset permissions and atomic GitHub commit QA
         run: python -m unittest discover -s tests -p 'test_spartacus_uploader.py' -v
       - name: Validate V6 connected-alpha wolf release gate and mask-safe frame extraction
         run: python -m unittest discover -s tests -p 'test_spartacus_wolf_import.py' -v
