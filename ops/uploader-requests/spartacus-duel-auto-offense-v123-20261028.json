@@ -1,0 +1,14 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "spartacus-duel-auto-offense-v123-20261028",
+  "expectedMainSha": "d684c3bf45314d61111f2e79074b4c213687d473",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "sha256": "890ba9e7dfde9ebe749d18b0c6ef9d21aaa19ecafd36087bec35dd6a130266b6",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/d684c3bf45314d61111f2e79074b4c213687d473/public/index.html"
+    }
+  ]
+}
