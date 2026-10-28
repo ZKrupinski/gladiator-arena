@@ -1,0 +1,14 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "spartacus-gladiator-visual-identity-v125-20261028",
+  "expectedMainSha": "39f994c968088b365f1eb0072fe2a4b197e98824",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "sha256": "2999a6630a21e3f3d5ae3f7980ef4f12684d8ab34c12a29c2ff14bf5f0314233",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/39f994c968088b365f1eb0072fe2a4b197e98824/public/index.html"
+    }
+  ]
+}
