@@ -10,8 +10,8 @@ const Body=root.SpartacusBodyCollision||
 if(!Body)throw Error('Practice requires neutral body collision');
 // Background sand begins near y=520. Anchors are feet on the ground.
 // A near/far camera plane multiplies the studio-authored size ONCE.
-// Far feet at 606px = 82%; foreground feet >=676px = 100%.
-const PRACTICE_FAR_Y=606,PRACTICE_NEAR_Y=676,PRACTICE_FAR_SCALE=.82;
+// Four 4-player foot rows at Y 570, 608, 649, 689: 70% -> 79.6% -> 89.9% -> 100%.
+const PRACTICE_FAR_Y=570,PRACTICE_NEAR_Y=689,PRACTICE_FAR_SCALE=.70;
 function courtPerspective(y){
  const t=Math.max(0,Math.min(1,(Number(y)-PRACTICE_FAR_Y)/(PRACTICE_NEAR_Y-PRACTICE_FAR_Y)));
  return PRACTICE_FAR_SCALE+(1-PRACTICE_FAR_SCALE)*t;
@@ -26,8 +26,11 @@ const COURT_LAYOUTS=Object.freeze({
  1:Object.freeze([court(640,676)]),
  2:Object.freeze([court(955,689),court(325,689)]),
  3:Object.freeze([court(955,689),court(325,689),court(640,606)]),
- 4:Object.freeze([court(1120,689),court(215,689),
-   court(885,606),court(465,606)])
+ // Seat order 1,2,3,4 = front right, front left, rear right, rear left.
+// X is compressed inside the 1280px viewport so the left-side ally and
+// right-side rival can show their full approved neutral bitmap frames.
+ 4:Object.freeze([court(1000,689),court(320,649),
+   court(800,608),court(480,570)])
 });
 function courtsForParty(count){
  // Does not depend on later-initialized variables; works at script load.
@@ -60,7 +63,7 @@ function neutralBody(unit){
 function pairBodyGap(a,b){
  return Body.gap(neutralBody(a),neutralBody(b),3);
 }
-const REAR_COURT_ART_GAP=220; // default when one fighter is unavailable; otherwise use body size
+const REAR_COURT_ART_GAP=160; // unloaded far row: tighter neutral spacing matches its 70-80% projected art
 function rearCourtBoundary(){
  if(COURTS.length<4)return null;
  const left=COURTS[3],right=COURTS[2];
@@ -575,6 +578,18 @@ function contact(u,target){
  }
  deal(u,target,1,u.special?'special':'normal');
 }
+// Keep ordinary footwork and guard silhouettes on-camera, even after a
+// studio artist increases one gladiator's authoring scale. Dash/strike
+// keyframed motion and the enemy's cinematic arrival remain untouched.
+function safeArenaX(unit,x,ring){
+ if(COURTS.length!==4)return clamp(x,ring.x-LEASH,ring.x+LEASH);
+ const look=visualLook(unit);
+ const size=root.PracticeScaleProfiles?.scale?.(look)??1;
+ const neutral=root.PracticeVisualProfiles?.resolve?.(look,'idle')?.scale??1;
+ const edge=clamp(202*.58*unitPerspective(unit)*size*neutral+15,96,238);
+ const lo=Math.max(ring.x-LEASH,edge),hi=Math.min(ring.x+LEASH,W-edge);
+ return clamp(x,lo,Math.max(lo,hi));
+}
 function act(u,dt){
  if(u.dead){u.fade=Math.max(0,u.fade-dt);return;}
  u.cooldown=Math.max(0,u.cooldown-dt);u.swing=Math.max(0,u.swing-dt);
@@ -600,7 +615,7 @@ function act(u,dt){
  if(u.stun>0||u.dodge>0||(u.flight&&battle.clock-u.flight.at<u.flight.duration))return;
  if(!target){
   const dx=u.homeX-u.x;
-  u.x=clamp(u.x+clamp(dx,-u.speed*dt,u.speed*dt),ring.x-LEASH,ring.x+LEASH);
+  u.x=safeArenaX(u,u.x+clamp(dx,-u.speed*dt,u.speed*dt),ring);
   return;
  }
  // Fighters circle forward and back even between attacks, instead of
@@ -620,7 +635,7 @@ function act(u,dt){
  if(mood?.mode==='feint'&&dist<245&&u.cooldown>.15)
   goal=u.x+side*(12+(mood.lateral||0)*.35);
  const step=Math.max(0,u.speed*dt)*(dist>attackRange?1:.72)*(mood?.speed||1);
- u.x=clamp(u.x+clamp(goal-u.x,-step,step),ring.x-LEASH,ring.x+LEASH);
+ u.x=safeArenaX(u,u.x+clamp(goal-u.x,-step,step),ring);
  if(Math.abs(target.x-u.x)<=attackRange&&u.cooldown<=0)
   prepareStrike(u,target);
 }
