@@ -113,6 +113,15 @@ input[type=file]{display:none}
 .motion-toolbar button,.motion-bulk button{padding:7px 11px;font-weight:700}
 .motion-bulk output{color:#f8d79b;font-size:12px}
 .key-track{display:flex;flex-wrap:wrap;gap:5px;padding:7px 0}.key-track button{min-width:58px}.key-track button[aria-pressed="true"]{background:#a65d29;outline:2px solid #ffda87}#motionKeyInfo{font-size:12px;font-weight:400}
+.timeline-axis{flex:1 1 140px;min-width:135px;display:grid;gap:1px;align-self:center}
+.timeline-axis #actionTime{width:100%;min-width:0;margin:0}
+.timeline-markers{height:18px;position:relative;margin:0 8px;border-top:1px solid #8f6743}
+.timeline-marker{position:absolute;top:0;transform:translate(-50%,-2px);width:13px;min-width:13px;height:15px;padding:0;border:0;background:none;color:#ffd191;cursor:pointer;line-height:14px;font-size:12px;text-align:center;z-index:1}
+.timeline-marker::before{content:"◆"}
+.timeline-marker:hover,.timeline-marker:focus-visible{color:#fff5d0;z-index:3;filter:drop-shadow(0 0 4px #ffcb66)}
+.timeline-marker[aria-pressed="true"]{color:#fffdf2;z-index:2;filter:drop-shadow(0 0 3px #ff9c31)}
+.timeline-marker:focus-visible{outline:2px solid #fff3c2;outline-offset:1px;border-radius:3px}
+@media(max-width:650px){.timeline-axis{flex-basis:100%;order:2}.motion-toolbar #actionTimeValue{order:3}}
 .motion-hint{font-size:11px;color:#ebcc96}
 .motion-toolbar label{font-size:12px}
 .motion-toolbar select{min-width:74px}
@@ -193,11 +202,11 @@ input[type=file]{display:none}
 <div><div class="action-preview"><canvas id="actionCanvas" width="520" height="520" aria-label="동작과 이펙트의 프레임별 합성 애니메이션 미리보기"></canvas></div>
 <div class="motion-toolbar">
 <button id="actionPlay" type="button" aria-pressed="true">Ⅱ 일시정지</button>
-<label for="actionTime">진행</label><input id="actionTime" type="range" min="0" max="100" step=".1" value="0" aria-label="동작 시간 0~100% 직접 이동">
+<label for="actionTime">진행</label><div class="timeline-axis"><input id="actionTime" type="range" min="0" max="100" step=".1" value="0" aria-label="동작 시간 0~100% 직접 이동"><div id="actionKeyMarkers" class="timeline-markers" role="group" aria-label="이동 키 마커 · 클릭해서 해당 시간으로 이동"></div></div>
 <output id="actionTimeValue">0%</output>
 <label for="actionSpeed">속도</label><select id="actionSpeed"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
 </div>
-<p class="motion-hint"><strong>진행 시간을 선택한 뒤 캐릭터 그림을 마우스나 손가락으로 드래그하면 그 시간에 위치 키가 자동 생성됩니다.</strong> X·Y 숫자로 0.1px씩 미세 조정할 수 있습니다. 드래그 한 번은 실행 취소 한 번으로 복원됩니다.</p>
+<p class="motion-hint"><strong>진행 막대를 움직인 뒤 오른쪽 이동 X·Y를 조절하거나 캐릭터를 드래그하면 그 시간에 위치 키가 자동 생성됩니다.</strong> 타임라인 아래 작은 ◆ 키를 누르면 그 시점으로 이동하고 오른쪽 키 시간·좌표가 함께 표시됩니다. X·Y 숫자로 0.1px씩 미세 조정할 수 있습니다.</p>
 <p class="motion-hint">그림에 여러 원본 프레임이 있으면 실제 프레임을 순서대로 재생합니다. 한 장뿐인 동작도 아래 위치 키로 움직일 수 있습니다. 이펙트 역시 8프레임으로 함께 재생합니다.</p>
 <p id="actionFrameStatus" role="status">선택한 동작 프레임을 준비합니다.</p></div>
 <div class="action-sliders">
@@ -540,7 +549,9 @@ function animateStudioPreview(now){
 function keyList(cfg=currentAction()){return v.motionKeys(cfg);}
 function selectedKeyIndex(){
  const raw=$('#motionKey').value;
- return ({start:0,middle:1,end:2}[raw]??Number(raw))||0;
+ if(raw==='cursor')return -1;
+ const n=({start:0,middle:1,end:2}[raw]??Number(raw));
+ return Number.isFinite(n)?n:0;
 }
 function pauseAtKey(index){
  const keys=keyList();index=Math.max(0,Math.min(keys.length-1,index));
