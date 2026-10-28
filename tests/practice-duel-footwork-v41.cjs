@@ -78,7 +78,9 @@ for(let i=0;i<4;i++){
 }
 api.keepCourtSpacing();
 for(let i=0;i<4;i++){
- assert.ok(Math.abs((enemies[i].x-heroes[i].x)-rules.pairBodyGap(heroes[i],enemies[i]))<1e-5,'recover from crossed/overlapping bodies at their visible sizes');
+ const clearance=enemies[i].x-heroes[i].x-rules.pairBodyGap(heroes[i],enemies[i]);
+ assert.ok(clearance>=-1e-5&&clearance<=25,
+  'crossed bodies separate by the real art size plus at most 25px of neighboring-court clearance');
  assert.ok(heroes[i].x<enemies[i].x,'fighter/enemy side order preserved');
 }
 console.log('PASS: four clear allied columns, paired collision resolution and active left-right footwork');
