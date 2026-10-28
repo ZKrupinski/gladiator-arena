@@ -18,8 +18,12 @@ const sample=(cls='murmillo',visualId=cls+'_a_L1')=>({index:0,cls,visualId,look:
 function team(){return ['murmillo','retiarius','thraex','murmillo','thraex']
  .map((cls,i)=>({...sample(cls),index:i}));}
 const rect=(mode,scale,y)=>B.footprint(mode,{scale,y});
-eq(B.depth('practice',606),.82,'practice back court');
-eq(B.depth('practice',676),1,'practice front court');
+eq(B.depth('practice',570),.70,'practice rear 4 court');
+eq(B.depth('practice',608),.70+.30*38/119,'practice rear 3 court');
+eq(B.depth('practice',649),.70+.30*79/119,'practice front 2 court');
+eq(B.depth('practice',689),1,'practice front 1 court');
+assert.equal(B.DEPTH.practice.nearY-B.DEPTH.practice.farY,119);
+assert.equal(B.DEPTH.coop.nearY-B.DEPTH.coop.farY,280);
 eq(B.depth('coop',395),.70,'5v5 far = 70%');
 eq(B.depth('coop',675),1,'5v5 near = 100%');
 eq(B.depth('coop',535),.85,'5v5 half-depth');
@@ -61,18 +65,19 @@ assert(large.units.every(u=>u.y>=395&&u.y<=675&&u.x>=85&&u.x<=1195),
  'larger actor setup remains on the arena floor');
 profiles.murmillo_a_L1=1;
 
-// Isolated practice sees the same neutral studio scale, then separate 70px depth.
+// Isolated practice has its own four-stage 119px depth, not the 5v5 floor.
 const savedLook=global.PracticeScaleProfiles.look;
 global.PracticeScaleProfiles.look=u=>u.look;
 const actor={look:'murmillo_a_L1',x:200,y:689,seat:0,side:'enemy'};
 const opponent={look:'retiarius_a_L1',x:380,y:689,seat:0,side:'enemy'};
 const front=P.pairBodyGap(actor,opponent);
 eq(front,B.BASE.practice.rx*2+3,'practice normal 202px scene gap');
-actor.y=606;opponent.y=606;
-assert(P.pairBodyGap(actor,opponent)<front,'rear court collision follows 82% sprite');
+actor.y=570;opponent.y=570;
+const regularRear=P.pairBodyGap(actor,opponent);
+assert(regularRear<front,'rear court collision follows 70% sprite');
 profiles.murmillo_a_L1=1.5;
-assert(P.pairBodyGap(actor,opponent)>front*.9,
- 'large rear silhouette requires more spacing than small front silhouette');
+assert(P.pairBodyGap(actor,opponent)>regularRear*1.15,
+ 'larger artist-sized rear actor has a proportionally wider collision footprint');
 profiles.murmillo_a_L1=.65;
 assert(P.pairBodyGap(actor,opponent)<front*.8,'small rear sprite can stand closer');
 global.PracticeScaleProfiles.look=savedLook;
