@@ -91,8 +91,37 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
   assert.equal(result.clicked.x,result.expected.x);
   assert.equal(result.clicked.y,result.expected.y);
   assert.equal(result.clicked.marker,1,'only the clicked marker is selected');
-  assert.deepEqual(errors,[],'no uncaught exceptions during motion editing');
+  // v128: preview-only zoom + visually drawn first-pose ghost, toggled live.
+  // Count *actual* canvas drawImage operations at 13% opacity; this catches
+  // ghost buttons that update but never paint the sprite.
+  const ghost=await page.evaluate(async()=>{
+   const $=s=>document.querySelector(s);
+   const ctx=$('#actionCanvas').getContext('2d'),native=ctx.drawImage;
+   const button=$('#actionGhost');let ghostDraws=0;
+   const visualSnapshot=()=>{const image=ctx.getImageData(0,0,520,520).data;
+    let h=2166136261;for(let i=0;i<image.length;i+=31)h=Math.imul(h^image[i],16777619)>>>0;return h;};
+   ctx.drawImage=function(...args){if(this.globalAlpha>0.12&&this.globalAlpha<0.14)ghostDraws++;return native.apply(this,args);};
+   try{
+    const time=$('#actionTime');time.value='13.7';time.dispatchEvent(new Event('input',{bubbles:true}));
+    await new Promise(resolve=>setTimeout(resolve,600));
+    const on={label:button.textContent,pressed:button.getAttribute('aria-pressed'),draws:ghostDraws,hash:visualSnapshot(),status:$('#actionFrameStatus').textContent};
+    button.click();await new Promise(resolve=>setTimeout(resolve,300));
+    const off={label:button.textContent,pressed:button.getAttribute('aria-pressed'),draws:ghostDraws,hash:visualSnapshot(),status:$('#actionFrameStatus').textContent};
+    button.click();await new Promise(resolve=>setTimeout(resolve,300));
+    return {on,off,restored:button.getAttribute('aria-pressed'),
+     authoredZoom:window.SpartacusScaleStudio.values()[$('#actionKey').value]};
+   }finally{ctx.drawImage=native;}
+  });
+  assert.equal(ghost.on.pressed,'true','start-pose ghost is enabled by default');
+  assert(ghost.on.draws>0,'real start-pose pixels are rendered under 13% opacity');
+  assert.equal(ghost.off.pressed,'false','toggle disables the ghost');
+  assert.equal(ghost.restored,'true','toggle can restore start-pose ghost');
+  assert.notEqual(ghost.on.hash,ghost.off.hash,'toggle affects actual preview canvas pixels');
+  assert(ghost.on.status.includes('첫 프레임 잔상 ON'));
+  assert(ghost.off.status.includes('잔상 OFF'));
+  assert.deepEqual(errors,[],'no uncaught exceptions during motion editing and ghost toggle');
   console.log('PASS: X-only and Y-only changes each save both X/Y coordinates (including untouched interpolation), persist to storage, and synchronize timeline markers');
+  console.log('PASS: preview-only 15% enlarged sprite, 13% first-frame ghost is painted on canvas and can be toggled off/on');
   console.log(JSON.stringify({actor:result.actor,pose:result.pose,initialCount:result.count,newTimes:[result.first,result.second],
    firstKey:result.created,xOnly:result.createdNumber,yOnly:result.createdY,clicked:result.clicked},null,2));
  }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
