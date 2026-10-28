@@ -1,10 +1,10 @@
 {
   "assetSha256": {
-    "public/index.html": "2999a6630a21e3f3d5ae3f7980ef4f12684d8ab34c12a29c2ff14bf5f0314233"
+    "public/tools/practice-scale-calibrator.html": "aefe6788b8d8fc52340ec97b78090d81ed5848ecedc6c2111fa3a56c0bef2318"
   },
-  "baseCommit": "ffe43d0e8cfcee7e18df1cfc57420b9f86bc54a9",
+  "baseCommit": "83a8aae568833f50168462f6efbe9c064ecb591c",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "spartacus-gladiator-visual-identity-v125-20261028",
+  "releaseId": "spartacus-studio-timeline-autokeys-v126-20261028",
   "releaseProtocol": "spartacus-uploader-v1"
 }
