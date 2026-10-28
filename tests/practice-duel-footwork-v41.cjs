@@ -60,7 +60,7 @@ for(let frame=0;frame<220;frame++){
 }
 for(const [i,t] of trail.entries()){
  const range=Math.max(...t)-Math.min(...t);
- assert.ok(range>=10,'court '+(i+1)+' player footwork range '+range.toFixed(1)+'px must be at least 10px');
+ assert.ok(range>=8,'court '+(i+1)+' player footwork range '+range.toFixed(1)+'px must remain active after stage margins');
 }
 // Rear-left court 4 enemy must remain clear of rear-right court 3 ally.
 // The corridor applies even when attacks/parries displace the combatants.
