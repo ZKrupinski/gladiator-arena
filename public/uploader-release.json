@@ -1,49 +1,12 @@
 {
   "assetSha256": {
-    "public/index.html": "5ac86b3a39bd7f54b8e0d8cad3a302b1ca30943d472af070d1d0d00e71a21d67",
-    "public/alt-murmillo.js": "3c6551b690150e7262a803830c21f14d33abdc4171b7dd8be152de3383aa5e02",
-    "public/practice-scale-profiles.js": "b0d2f5fb3326f90cceba92a5142580ff653926548fcf5f3b14fd85bedd3fbbbc",
-    "public/tools/practice-scale-calibrator.html": "647a873cafdcc05d6941b39efe723790547b8499aec13ff36a0ac772934d9798",
-    "public/market-scene.js": "be11b3f4dc3c821cb9ecd965720ba12a1456ca425f64d937eb896862e2ef1c7a",
-    "public/assets/combat/murmillo-redcrest-alt-v1/manifest.json": "cd26b6448dba41b56f8292cd4127c575f4008a5a78f39093fd243dffc5c1a59c",
-    "public/assets/combat/murmillo-redcrest-alt-v1/idle.png": "438678fddd0e9f1c1a8e1681158993bb19a136932a3dfa76fb874fb368d51d66",
-    "public/assets/combat/murmillo-redcrest-alt-v1/walk.png": "a455443a103f9c0e4066a0be37cc202b7a90f7eb61ec4bafe1b970277c5ad1e6",
-    "public/assets/combat/murmillo-redcrest-alt-v1/slash.png": "b25e1ab13d0b5701f193826287f977ac81d2590ea20b625d8c6d1346087e01e0",
-    "public/assets/combat/murmillo-redcrest-alt-v1/sweep.png": "2d4fd9ee5bdbdab8e5b94b5b2a9e5b22f33884a76cb67112fcc75c46493a6181",
-    "public/assets/combat/murmillo-redcrest-alt-v1/thrust.png": "4a3db15dd101b5108c877997e8a5464c3872ab10db8884628809944e6e95b876",
-    "public/assets/combat/murmillo-redcrest-alt-v1/heavy.png": "15d03a6b70785497521eb95caad51e23b2e0e31de0ba4794e05abc219f436438",
-    "public/assets/combat/murmillo-redcrest-alt-v1/guard.png": "d30fc705019793d5314dec3fa2e3cdbcb9f8d6e4999866a7ec16b29e7279bb2b",
-    "public/assets/combat/murmillo-redcrest-alt-v1/hit.png": "5636a2fa66deb08e85efcc8db1a3cbe5a07e673ccb2a4bf85fb79b7117b3b7b2",
-    "public/assets/combat/murmillo-redcrest-alt-v1/death.png": "c1dd7b9199a8be6879a1ee83793dee33d4524e85ac7d209a4b6ffc7a08b5305e",
-    "public/market-scene.css": "f19d524ad668004cf7f5a39fba62c24c90fa50168c7c372f58874971ce733651"
+    "public/arena-body-collision.js": "d18e6641fc7c2081c6ed4cdab9d0c9653c88a0972ed6ac3704844b1bf7e22555",
+    "public/index.html": "2ffabba14b688b6f5d65bcdc9973fd5ce080f381c9a886d065f7d9fb7b1c25b0",
+    "public/ludus-practice.js": "a1d58a6d86d0577e6ac3b52e98b6c8ee5c4bf8f0e462fd63094b7f01bcc4e3e1"
   },
-  "baseCommit": "build-from-9-user-original-sheets",
+  "baseCommit": "a476e284e88e36a9949a02e2199d1df9fb6d3b3b",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "redcrest-II-original-art-72frames-20261027",
-  "releaseProtocol": "spartacus-uploader-v1",
-  "artReview": {
-    "status": "ORIGINAL_USER_SHEETS_PUBLISHED",
-    "source": "nine 2026-10-27 user-supplied motion sheets; heavy repaired",
-    "distinctOriginalsUploaded": true,
-    "qa": "72 frames, nine 3840x1080 RGBA atlases, no boundary cropping verified",
-    "doNotOverwrite": [
-      "murmillo_redcrest_new_v1",
-      "murmillo_champion_red",
-      "murmillo_motion_v3"
-    ]
-  },
-  "marketCatalogRelease": {
-    "commit": "a9109e6fc1af8f4e01aa8f4b37565f774df25b5f",
-    "releaseId": "all-human-looks-v113-20261027",
-    "writtenTo": "main",
-    "source": "connected GitHub repository contents API",
-    "pages": 9,
-    "humanAppearances": 27,
-    "beastAppearances": 0,
-    "staticValidation": "PASS",
-    "liveBrowserValidation": "NOT_RUN",
-    "cloudflareDeployment": "NOT_VERIFIED",
-    "artStatus": "Redcrest II remains independent provisional copy until its original nine sheets are available"
-  }
+  "releaseId": "spartacus-practice-fourdepth-v120-20261028",
+  "releaseProtocol": "spartacus-uploader-v1"
 }
