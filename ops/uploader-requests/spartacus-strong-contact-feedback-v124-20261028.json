@@ -1,0 +1,19 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "spartacus-strong-contact-feedback-v124-20261028",
+  "expectedMainSha": "e7f0869857e09032f0d17ea5a93838fcfec750b6",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/arena-motion.js",
+      "sha256": "173e31cac6a0b1a6c4797dc2e648df85296ed9b1aed1bf14733f9383a8ba4c43",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/e7f0869857e09032f0d17ea5a93838fcfec750b6/public/arena-motion.js"
+    },
+    {
+      "path": "public/index.html",
+      "sha256": "c213ac9dba6d75a06c54106306650aa93dabae29118fa97e4f7f4c407c747b85",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/e7f0869857e09032f0d17ea5a93838fcfec750b6/public/index.html"
+    }
+  ]
+}
