@@ -1,27 +1,20 @@
-# 스파르타쿠스 전용 업로더 · Spartacus Release Uploader v1
+# 스파르타쿠스 전용 업로더 — GitHub-only (2026-10-28)
 
-> **고정 대상:** GitHub \`ZKrupinski/gladiator-arena\`, 배포 브랜치
-> \`main\`, 게임 정적 파일 \`public/\`, Cloudflare Pages
-> https://gladiator-arena-git.pages.dev/ .
-> **별도 프로젝트 경로나 ZIP을 매번 요청하지 않는다.**
+**확정 작업 경로:** `ZKrupinski/gladiator-arena` → `main` → `public/`.
+Cloudflare Pages 배포·라이브 체크는 사용자 요청으로 **공장 단계에서 제거**했습니다.
+이전 Cloudflare 주소를 확인하거나 배포를 기다리지 않습니다.
 
-## 기본 약속: 매번 같은 절차를 반복 질문하지 않기
+## 공장 표준 절차
 
-게임 수정·추가·스프라이트 교체·배포 요청 시 AI 작업자가 이 저장소의
-현재 \`main\` 커밋을 먼저 확인한다. 이후:
-1. 잠긴 버전 SHA와 기존 게임 소스·리소스 확인.
-2. 변경 코드·PNG/WebP를 수집, 원본 백업은 Git 기록으로 보존.
-3. SpriteForge V3 브리핑 및 대상 동작의 8프레임 QA를 먼저 시행.
-4. 파일 서명(SHA256)·크기·PNG 기본 구조·파일 경로·코드 문법·릴리스
-   권한 확인. 실패하면 **현재 정상 게임은 그대로 유지**.
-5. 모든 파일을 하나의 Git 트리+커밋에 원자적으로 업로드;
-   다른 작업이 \`main\`을 먼저 바꿨으면 중단하고 버전 재확인.
-6. 기존 Cloudflare **Git 연동 자동 배포**를 기다리고
-   \`uploader-release.json\`의 고유 릴리스 ID 및 배포된 게임 파일
-   SHA256이 업로드본과 같은지 실제 URL에서 재검증.
-7. 보고서에서 상태를 정확히 구분한다:
-   \`FAILED\` / \`COMMITTED_DEPLOY_NOT_YET_VERIFIED\` /
-   \`DEPLOYED_VERIFIED\`. 커밋 성공만으로 배포 완료라 하지 않는다.
+1. 연결된 GitHub에서 `main` 커밋을 확인하고 수정 파일 검토
+2. 코드·스프라이트 검수, SpriteForge V3 브리핑(새 그림일 때), 안전 검사
+3. 파일별 SHA-256 검증, 승인된 경로·확장자·바이너리 검사
+4. 원자적 GitHub 커밋 후 커밋 SHA, 변경 내용, QA 결과 보고 — **즉시 종료**
+
+결과 표시는 `GITHUB_COMMITTED` 또는 `FAILED`입니다.
+GitHub 커밋은 게임의 **소스 반영** 완료이며, 실제 공개 웹호스팅을 보장하지
+않습니다. 현재 이 저장소의 GitHub Pages는 비활성화되어 있습니다.
+라이브 사이트 링크는 명시적으로 확인되지 않는 한 생성하지 않습니다.
 
 ## 방법 A — 한 줄 명령으로 로컬/Work 환경에서 자동 업로드
 
@@ -36,7 +29,7 @@ python scripts/spartacus_uploader.py package \\
   --source /path/to/approved-assets \\
   --out /tmp/spartacus-upload-review.json
 
-# 코드 + 리소스 업로드, main 최신 버전 비교 및 Cloudflare 배포 증명:
+# 코드 + 리소스 업로드, main 최신 버전 비교 및 GitHub 커밋 확인:
 python scripts/spartacus_uploader.py publish \\
   --input /path/to/approved-assets \\
   --mapping /path/to/approved-assets/paths.json \\
@@ -73,10 +66,8 @@ GitHub Actions가 다운로드해 바이너리와 코드 파일을 한 번에 �
    **\`main\`에 등록**한다.
 3. 해당 요청 커밋으로 uploader workflow가 실행되고, 요청 커밋
    **직전의 parent SHA**가 요청 JSON의 \`expectedMainSha\`인지
-   확인한다. 파일 내려받기 → SHA 검증 → 문법/QA → Git 커밋 →
-   Cloudflare 라이브 검증을 진행한다.
-4. AI는 GitHub Actions 실행 결과와 실제 배포 파일 일치를 확인해
-   링크를 안내한다.
+   확인한다. 파일 내려받기 → SHA 검증 → 문법/QA → GitHub 커밋으로 완료한다.
+4. AI는 GitHub Actions 결과 및 커밋 SHA를 확인해 소스 링크를 안내한다.
 
 요청 예시는 \`docs/spartacus-upload-request-example.json\`.
 **업로드 요청 하나당 JSON 하나**만 별도 커밋한다. 동시에 여러 업로드
@@ -105,7 +96,7 @@ python scripts/spartacus_wolf_import.py \\
   --source /path/to/approved-wolf-sheets \\
   --review-out /tmp/wolf-v3-review
 
-# 아트 GIF 검수 후에만, 리소스+매니페스트+게임 연결+자동 배포:
+# 아트 GIF 검수 후에만, 리소스+매니페스트+게임 연결+GitHub 커밋:
 python scripts/spartacus_wolf_import.py \\
   --source /path/to/approved-wolf-sheets \\
   --review-out /tmp/wolf-v3-review \\
@@ -120,17 +111,17 @@ python scripts/spartacus_wolf_import.py \\
 
 ## 보안/오류 예방
 
-- Github/Cloudflare 비밀번호를 파일/채팅/소스에 직접 저장 금지.
+- GitHub 비밀번호와 토큰을 파일/채팅/소스에 직접 저장 금지.
 - GitHub 토큰은 GitHub Actions의 자동 주입
   \`GITHUB_TOKEN\` 또는 허가된 Work/환경 변수만 사용.
 - \`.github/\`, \`AGENTS.md\`, \`ops/uploader-requests/\` 같은
   실행 정책 경로를 이미지 업로더로 덮어쓰지 못하게 차단.
 - 허용 확장자, 허용 게임 경로, 소스 HTTPS 도메인 허용 목록,
   SHA256 및 파일 최대 용량으로 오입력 방지.
-- 외부 Cloudflare Git 연동이 꺼져 있으면 업로더가 자동
-  배포되었다고 주장하지 않는다. 라이브 검증 실패 시
-  \`UNVERIFIED\`와 구체적인 원인을 보고하고 기존 게시된 버전
-  확인 및 재시도 절차로 진행.
+- Cloudflare 배포 상태는 더 이상 조회하지 않습니다. 외부 배포 검증 실패로
+  GitHub 업로드가 실패 처리되거나 재시도되는 일도 없습니다.
+- 웹 브라우저 실행 환경은 별도 문제로, GitHub 커밋을 라이브 배포라고
+  표현하지 않습니다.
 - 프로덕션 배포는 Git 커밋 기록으로 롤백 가능하지만, 자동 롤백
   자체는 아직 구현되지 않았다.
 
@@ -144,15 +135,15 @@ python scripts/spartacus_wolf_import.py \\
   프레임 외곽 간격·신체 소속 검수 유지. 기본 URL은 시험용 파일을 로딩하지 않음.
 - 시험용 게임: `public/assets/beasts/wolf-trial/` 9개 WebP와
   `manifest.json`을 **한 번의 원자적 업로드**로 배포.
-  실제 시험 URL은 `https://gladiator-arena-git.pages.dev/?wolfTrial=1`.
+  기존 Cloudflare 시험 URL은 새 릴리스 검증 대상이 아닙니다.
 - 시험 변환: 원본 PNG는 건드리지 않음. 홀수 높이 941px을
   투명 1px 추가한 942px로 정규화하여 발끝이 절단되는 것을 방지.
   확대/업스케일/가짜 손발 복원은 없음. 프레임 경계 침범은 JSON에 기록되며
   시험용 `previewOnly` 표식이 제거되지 않음.
 - 10장 중 9개를 게임 액션에 지정하고 `28415.png`는 대체 공격 이펙트로
   제외하여 기존 원본을 보존.
-- 시험판도 SHA256, 실제 Cloudflare 바이트 검증을 **통과해야만**
-  배포 성공으로 말한다. 기본 게임 이미지까지 교체했다고 주장하지 않는다.
+- 시험판도 GitHub에 등록하는 원본 파일 SHA256과 검수 게이트를 통과해야
+  소스 반영 성공으로 말한다. 기본 게임 이미지까지 교체했다고 주장하지 않는다.
 
 ```bash
 # 채팅으로 받은 원본 28415.png~28424.png를 source 폴더에 보유한
