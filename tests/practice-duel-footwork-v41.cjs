@@ -14,7 +14,7 @@ const layout=rules.courtsForParty(4);
 // Court number 1 must be bottom-right and frontmost:
 //       4   3
 //       2   1
-assert.deepEqual(layout.map(c=>[c.x,c.y]),[[1120,689],[215,689],[885,606],[465,606]]);
+assert.deepEqual(Array.from(layout,c=>[c.x,c.y]),[[1120,689],[215,689],[885,606],[465,606]]);
 
 const alliedHome=layout.map(c=>c.x-87).sort((a,b)=>a-b);
 for(let i=1;i<alliedHome.length;i++)
