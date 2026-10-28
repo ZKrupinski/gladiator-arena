@@ -466,6 +466,8 @@ function duelBodyShape(f){
  return BODY.footprint('duel',{scale:size*neutral});
 }
 function duelBodyGap(a,b){return BODY.gap(duelBodyShape(a),duelBodyShape(b),4);}
+// AI uses the same effective normal-hit reach as attack(), including scaled body silhouettes.
+function duelAiAttackRange(a,b){return Math.max(a.cfg.reach+12,duelBodyGap(a,b)+40);}
 function duelCollisionException(f){
  return !!(f?.comboDash||f?.parryChase||f?.attackLunge?.t>0||
   f?.specialLunge?.t>0||f?.specialRecoil||f?.dodge>0||
@@ -477,7 +479,7 @@ const DATA={
  retiarius:{name:'레티아리우스',eng:'RETIARIUS',hp:116,atk:16,reach:312,move:271,sp:36,color:'#accbb6',special:'RETE CAPTURA'}
 };
 const FRAMES={idle:0,walk:1,attack:2,special:3,guard:4,dodge:5,hit:6,net:7,finisher:8,defeat:9};
-const AUTO_IDLE_SECONDS=2;
+const AUTO_IDLE_SECONDS=.35; // AUTO ON resumes shortly after the last real manual input.
 const PARRY_WINDOW=.50, PARRY_GUARD_HOLD=.43;
 const PARRY_SIDE_BONUS=170, PARRY_MIN_DISTANCE=495; // Wide left/right parry zone.
 const PARRY_COUNTER_IFRAMES=.72; // After parry, defender cannot take damage during recoil.
@@ -1364,7 +1366,7 @@ $('#careerExit').onclick=()=>{if(MINI)return;window.LudusScene?.close();$('#care
 $('#careerHit').onclick=completeTraining;
 $('#careerCancel').onclick=closeTraining;
 window.addEventListener('keydown',e=>{if(MINI&&!MINI.finished&&e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();completeTraining();}},true);
-function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38,dodgeEcho:null,attackLunge:null,specialLunge:null,specialRecoil:null,hitRumble:null,parryChase:null,parryHasteT:0};}
+function fighter(cls,x,enemy){const cfg=DATA[cls];return {cls,cfg,x,vx:0,hp:cfg.hp,maxHp:cfg.hp,st:100,guard:false,dodge:0,action:'idle',actionT:0,stagger:0,cd:0,attackCD:0,invuln:0,face:enemy?-1:1,enemy,dead:false,walkT:0,net:0,parry:0,guardHold:0,guardRecovery:0,knockVX:0,knockT:0,attackVariant:-1,actionDuration:0,chainHits:0,chainExpire:0,comboDash:null,pressureT:0,bodySpring:null,contactCooldown:0,parryTriumphT:0,parryFailT:0,comebackUsed:false,footworkSeed:enemy?1.45:0.38,dodgeEcho:null,attackLunge:null,specialLunge:null,specialRecoil:null,hitRumble:null,parryChase:null,parryHasteT:0,aiAttackWait:enemy?.72:0};}
 function setAction(f,name,time){f.action=name;f.actionT=time;f.actionDuration=time;}
 // Non-combat phase: walk from the gate, hold an original victory keypose,
 // then charge. Health, stamina, cooldowns and clock remain frozen.
@@ -1846,7 +1848,7 @@ function autoPilotPlayer(p,e,dt){
  p.face=dir;p.guard=p.guardHold>0&&p.st>8&&p.stagger<=0;
  if(p.stagger>0||p.dodge>0||p.net>0)return;
  if(p.guard){p.vx=0;return;}
- const ideal=Math.max(duelBodyGap(p,e)+24,Math.min(p.cfg.reach-52,302))+(mood?.spacing||0)*.40;
+ const ideal=Math.min(duelAiAttackRange(p,e)-26,Math.max(duelBodyGap(p,e)+18,Math.min(p.cfg.reach-52,302))+(mood?.spacing||0)*.30);
  if(distance>ideal+13){p.vx=dir*p.cfg.move*.77*(mood?.speed||1);p.x+=p.vx*dt;}
  else if(distance<ideal-17){p.vx=-dir*p.cfg.move*.39*(mood?.evade||1);p.x+=p.vx*dt;}
  // Anticipatory guard: attacks apply damage immediately, so AI must guard before impact.
@@ -1856,7 +1858,7 @@ function autoPilotPlayer(p,e,dt){
    if(beginGuard(p,.44)){p.guardRecovery=.66;return;}
  }
  if(distance<=e.cfg.reach && enemyWindingUp && p.st>35 && p.dodge<=0 && Math.random()<dt*.6*(mood?.evade||1)){dodge(p);return;}
- if(distance<=p.cfg.reach+12&&p.attackCD<=0&&p.st>=17){
+ if(distance<=duelAiAttackRange(p,e)&&p.attackCD<=0&&p.st>=17){
    // Career AUTO assists, but deliberate timing and training outperform it.
    if(S.careerMatch&&Math.random()<.38/(mood?.aggression||1))return;
    const useSpecial=p.chainHits===0&&p.cd<=0&&p.st>=45&&Math.random()<(S.careerMatch?.13:.26)*(mood?.special||1);
@@ -2630,6 +2632,8 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
  if(S.time<=0){clearCombatAfterimages(p,e);p.hitVisual=null;e.hitVisual=null;S.flash=0;S.resultWin=p.hp/Math.max(1,p.maxHp)>e.hp/Math.max(1,e.maxHp);S.resultApplied=true;S.resultAnim=0;S.phase='finisher';S.slow=2.05;setAction(S.resultWin?p:e,'finisher',2.2);setAction(S.resultWin?e:p,'defeat',2.2);say(S.resultWin?'VICTORIA!':'DEFEAT',1.8);return;}
  for(const f of [p,e]){
  f.actionT=Math.max(0,f.actionT-dt);f.attackCD=Math.max(0,f.attackCD-dt);f.cd=Math.max(0,f.cd-dt);
+  // Intent-based enemy cadence is deterministic once in range; no perpetual parry-only lottery.
+  if(f.enemy)f.aiAttackWait=Math.max(0,(f.aiAttackWait??0)-dt);
  // Visual action completion must never wait for cosmetic FX or linger
  // indefinitely on the last attack pose after the timer has elapsed.
  if(f.beastType&&f.actionT<=0&&f.stagger<=0&&!f.comboDash&&
@@ -2693,7 +2697,7 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
  if(e._beastRoarUntil>clock){e.vx=0;e.guard=false;}
  else if(e.stagger<=0&&!e.comboDash&&e.dodge<=0&&!e.specialRecoil&&!e.parryChase){
   const dist=Math.abs(e.x-p.x),dir=Math.sign(p.x-e.x)||-1;e.face=dir;
-  const preferred=Math.max(duelBodyGap(e,p)+AI_SPACING_BUFFER,e.cfg.reach-55)+(enemyMood?.spacing||0)*.48;
+  const preferred=Math.min(duelAiAttackRange(e,p)-24,Math.max(duelBodyGap(e,p)+AI_SPACING_BUFFER,e.cfg.reach-55)+(enemyMood?.spacing||0)*.36);
   if(!e.guard){
    if(dist>preferred+22){
     if(!preEngagementFootwork(e,p,dt)){
@@ -2702,15 +2706,18 @@ function update(dt,realDt=dt){if(S.paused||document.hidden)return;clock+=dt;if(S
    }else if(dist<preferred-22){e.vx=-dir*e.cfg.move*.32*(enemyMood?.evade||1);e.x+=e.vx*dt;}
    const threat=(p.action==='attack'||p.action==='special')&&p.actionT>.06;
    if(e.pressureT<=0){
+    const attackReady=dist<=duelAiAttackRange(e,p)&&!e.guard&&e.st>=17&&e.attackCD<=0&&e.aiAttackWait<=0;
     const parryRate=(ai?.parriesPerSecond||ENEMY_PARRY_RATE)*(enemyMood?.guard||1);
-    if(dist<=p.cfg.reach+42&&e.st>18&&e.guardRecovery<=0&&
-      ((threat&&Math.random()<dt*parryRate*1.1)||Math.random()<dt*parryRate)){
+    // An idle rival is an opportunity to attack, not a reason to stay guarding forever.
+    if(!attackReady&&dist<=duelAiAttackRange(p,e)+30&&e.st>18&&e.guardRecovery<=0&&
+      ((threat&&Math.random()<dt*parryRate*1.1)||Math.random()<dt*parryRate*.42)){
      if(beginGuard(e,ai?.retaliate?.44:.38))e.guardRecovery=ai?.parryInterval||1.05;
     }
-    if(!e.guard&&dist<e.cfg.reach+12&&e.attackCD<=0&&
-      Math.random()<dt*(e.st<25?.25:(ai?.attacksPerSecond||ENEMY_ATTACK_RATE))*(enemyMood?.aggression||1)){
-      attack(e,p,e.cd<=0&&Math.random()<Math.min(.70,(ai?.specialChance||.15)*(enemyMood?.special||1)));
-      e.attackCD=Math.max(e.attackCD,ai?.recovery||ENEMY_ATTACK_RECOVERY);
+    if(attackReady&&!e.guard){
+     const special=e.cd<=0&&e.st>=36&&Math.random()<Math.min(.70,(ai?.specialChance||.15)*(enemyMood?.special||1));
+     attack(e,p,special);
+     e.aiAttackWait=Math.max(.52,Math.min(1.6,1.08/(enemyMood?.aggression||1)));
+     e.attackCD=Math.max(e.attackCD,ai?.recovery||ENEMY_ATTACK_RECOVERY);
     }
    }
   }
