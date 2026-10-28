@@ -1,0 +1,41 @@
+name: QA Redcrest sprites and 27 market fighters (GitHub source only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/assets/combat/murmillo-redcrest-alt-v1/**
+      - public/alt-murmillo.js
+      - public/market-scene.js
+      - public/gladiator-registry.js
+      - public/gladiator-custom-art.js
+      - public/practice-scale-published.js
+      - public/index.html
+      - tests/gladiator-registry-sync.test.cjs
+      - tests/market-all-human-looks.test.cjs
+      - .github/workflows/qa-redcrest-market-github.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check all 27 fighter variants and old-save registry migration
+        run: node --test tests/market-all-human-looks.test.cjs tests/gladiator-registry-sync.test.cjs
+      - name: Check committed art manifest locally
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          folder=Path('public/assets/combat/murmillo-redcrest-alt-v1')
+          m=json.loads((folder/'manifest.json').read_text(encoding='utf8'))
+          expected=('idle','walk','slash','sweep','thrust','heavy','guard','hit','death')
+          files={p.stem for p in folder.glob('*.png')}
+          assert set(expected)<=files,(files,expected)
+          print('PASS: nine original Redcrest II sprite sheets present in GitHub checkout')
+          PY
