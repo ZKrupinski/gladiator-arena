@@ -870,7 +870,11 @@ function initActionEditor(){
   const cfg=currentAction(),keys=keyList(cfg);
   const t=Math.round(Math.max(0,Math.min(1,actionProgress))*1000)/1000;
   const index=keys.findIndex(k=>Math.abs(k.t-t)<.00005);
-  const point=index>=0?{...keys[index]}:{t,...v.sampleMotion(cfg,t)};
+  // Commit BOTH coordinates atomically, even when the artist touches only
+  // X or only Y. The untouched axis keeps the interpolated value at this
+  // exact playhead, never a previous key's coordinate.
+  const baseline=index>=0?keys[index]:v.sampleMotion(cfg,t);
+  const point={t,x:baseline.x,y:baseline.y};
   point[axis.toLowerCase()]=Number($('#motion'+axis).value);
   if(index<0)keys.push(point);else keys[index]=point;
   saveMotionKeys(keys,t);
