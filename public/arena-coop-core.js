@@ -95,30 +95,40 @@
   return x>=85&&x<=1195&&y>=395&&y<=675&&
    s.units.every(v=>v===u||v.dead||!bodyBlocked(u,v,x,y));
  }
- function separateBodies(s,rounds=16){
-  // Never change the silhouette box for slash, leap, dash or combo images.
-  // Only persistent idle/walk/guard stances are separated.
+ function separateBodies(s,rounds=64){
+  // Iterative projected ellipse relaxation keeps all NEUTRAL living bodies
+  // separate without stretching the scene's drawn or saved character size.
+  // Attacks and dashes retain their brief cinematic overlaps.
   const live=s.units.filter(v=>!v.dead);
   for(let pass=0;pass<rounds;pass++){
    let changed=false;
    for(let i=0;i<live.length;i++)for(let j=i+1;j<live.length;j++){
     const a=live[i],b=live[j];
     if(bodySlack(a,b)<1)continue;
-    const penetration=Body.penetration(a,b,bodyShape(a),bodyShape(b));
-    if(!penetration||penetration.amount<=0)continue;
-    const {axis,sign}=penetration,k=axis==='x'?'x':'y';
-    const min=k==='x'?85:395,max=k==='x'?1195:675;
-    const half=(penetration.amount+.12)/2;
-    const oldA=a[k],oldB=b[k];
-    a[k]=clamp(oldA-sign*half,min,max);
-    b[k]=clamp(oldB+sign*half,min,max);
-    // If one character is stuck at the world edge, push only the other.
-    const projected=(b[k]-a[k])*sign;
-    const ideal=(oldB-oldA)*sign+2*half;
-    const shortfall=Math.max(0,ideal-projected);
-    if(shortfall>.01){
-     if(Math.abs(a[k]-oldA)<half*.5)b[k]=clamp(b[k]+sign*shortfall,min,max);
-     else if(Math.abs(b[k]-oldB)<half*.5)a[k]=clamp(a[k]-sign*shortfall,min,max);
+    const sa=bodyShape(a),sb=bodyShape(b),rx=sa.rx+sb.rx,ry=sa.ry+sb.ry;
+    let dx=b.x-a.x,dy=b.y-a.y,q=Math.hypot(dx/rx,dy/ry);
+    if(q>=1-1e-7)continue;
+    if(q<1e-7){dx=a.id<b.id?1:-1;dy=0;q=Math.abs(dx/rx);}
+    const length=Math.hypot(dx,dy)||1;
+    const force=Math.min(45,((1.002/q)-1)*length);
+    const mx=dx/length*force*.5,my=dy/length*force*.5;
+    const oldA={x:a.x,y:a.y},oldB={x:b.x,y:b.y};
+    a.x=clamp(a.x-mx,85,1195);a.y=clamp(a.y-my,395,675);
+    b.x=clamp(b.x+mx,85,1195);b.y=clamp(b.y+my,395,675);
+    // If arena boundaries clipped one actor, transfer the residual to
+    // whichever one is free to move. This avoids stuck pileups at y=395/675.
+    if(Body.ellipse(a,b,bodyShape(a),bodyShape(b))){
+     const x=b.x-a.x,y=b.y-a.y,mag=Math.hypot(x,y)||1;
+     const next=Math.hypot(x/rx,y/ry);
+     if(next<1){
+      const remaining=Math.min(40,Math.max(.1,(1.004/next-1)*mag));
+      const vx=x/mag||dx/length,vy=y/mag||dy/length;
+      if(Math.abs(a.x-oldA.x)+Math.abs(a.y-oldA.y)<Math.abs(b.x-oldB.x)+Math.abs(b.y-oldB.y)){
+       b.x=clamp(b.x+vx*remaining,85,1195);b.y=clamp(b.y+vy*remaining,395,675);
+      }else{
+       a.x=clamp(a.x-vx*remaining,85,1195);a.y=clamp(a.y-vy*remaining,395,675);
+      }
+     }
     }
     changed=true;
    }
