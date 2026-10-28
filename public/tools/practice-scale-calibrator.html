@@ -91,7 +91,7 @@ input[type=file]{display:none}
 @media(max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:650px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.card-head{padding:5px}.card-head label{font-size:12px;gap:4px}.card-head input{width:17px;height:17px}.category{font-size:9px}.config{padding:6px}.adjust button{font-size:10px}}
 @media(max-width:480px){.tools{padding:7px;gap:6px;top:0}.toolbar,.batch{gap:5px}.toolbar button,.batch button{padding:7px 8px;font-size:11px}#bulkSlider{min-width:95px}.grid{gap:6px}.card-head{min-height:55px}.card-head label{font-size:11px}}
-.save-health{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;border-top:1px solid #80613f;padding-top:8px;font-size:12px}
+.save-health{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;border-top:1px solid #80613f;padding-top:8px;font-size:12px}
 .save-health [data-state="ok"]{color:#bcebbd}.save-health [data-state="warn"]{color:#ffd688}.save-health [data-state="error"]{color:#ffad9f}
 .save-health button{justify-self:start;padding:6px 10px}
 .token-help{line-height:1.7;font-size:13px}.token-help ol{padding-left:22px}
@@ -164,8 +164,7 @@ input[type=file]{display:none}
 <div class="save-health" aria-label="현재 크기·발높이 저장 상태" aria-live="polite">
  <span id="draftHealth">기기 임시저장: 확인 중</span>
  <span id="repoHealth">GitHub 원본: 확인 중</span>
- <span id="liveHealth">게임 배포: 확인 중</span>
- <button id="verifySaved" type="button">저장·배포 상태 다시 확인</button>
+ <button id="verifySaved" type="button">GitHub 저장 상태 다시 확인</button>
 </div>
 </section>
 <div id="status" class="status" role="status">원본 캐릭터 그림을 준비하고 있습니다.</div>
