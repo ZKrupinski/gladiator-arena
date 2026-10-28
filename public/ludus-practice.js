@@ -18,17 +18,16 @@ function courtPerspective(y){
 }
 const court=(x,y)=>Object.freeze({x,y,scale:courtPerspective(y)});
 
+// Seat index 0/1/2/3 corresponds to visible court 1/2/3/4.
+//       back:  4   3
+//      front:  2   1  (court 1 is drawn last, topmost).
+// Keep this left/right numbering consistent after survivor reflow.
 const COURT_LAYOUTS=Object.freeze({
  1:Object.freeze([court(640,676)]),
- 2:Object.freeze([court(325,689),court(955,689)]),
- 3:Object.freeze([court(325,689),court(955,689),
-   court(640,606)]),
- // Keep all four ALLIED silhouettes in their own horizontal columns.
- // Enemies may cross columns, but foreground allies cannot occlude rear allies.
- 4:Object.freeze([court(215,689),court(1120,689),
-   // Four allies remain visible at authored full-frame size; the rear-left
-   // enemy is also clear of the rear-right hero, even during lateral footwork.
-   court(465,606),court(885,606)])
+ 2:Object.freeze([court(955,689),court(325,689)]),
+ 3:Object.freeze([court(955,689),court(325,689),court(640,606)]),
+ 4:Object.freeze([court(1120,689),court(215,689),
+   court(885,606),court(465,606)])
 });
 function courtsForParty(count){
  // Does not depend on later-initialized variables; works at script load.
@@ -36,10 +35,9 @@ function courtsForParty(count){
  return COURT_LAYOUTS[n].map(c=>({...c}));
 }
 let COURTS=courtsForParty(4);
-// Compositing order for independent duel groups. 3/4 are behind 1/2;
-// inside each numbered group: opponent, our gladiator, VFX and Carnifex.
-// Do not sort the four groups together by actor feet: long weapons / VFX
-// must stay within their own duel layer even when they overlap a neighbor.
+// Each court is one indivisible painter block including its fighters,
+// VFX, dead bodies, hit sparks and executor: always 4 -> 3 -> 2 -> 1.
+// Court 2's executor must NEVER draw above court 1's gladiator.
 const COURT_PAINT_STACK=Object.freeze({
  1:Object.freeze([0]),
  2:Object.freeze([1,0]),
@@ -65,10 +63,10 @@ function pairBodyGap(a,b){
 const REAR_COURT_ART_GAP=220; // default when one fighter is unavailable; otherwise use body size
 function rearCourtBoundary(){
  if(COURTS.length<4)return null;
- const left=COURTS[2],right=COURTS[3];
+ const left=COURTS[3],right=COURTS[2];
  const midpoint=(left.x+right.x)/2;
- const enemy=battle?.enemies?.find(u=>!u.dead&&!u.retiring&&u.seat===2&&u.entry<=0);
- const ally=battle?.heroes?.find(u=>!u.dead&&!u.retiring&&u.seat===3);
+ const enemy=battle?.enemies?.find(u=>!u.dead&&!u.retiring&&u.seat===3&&u.entry<=0);
+ const ally=battle?.heroes?.find(u=>!u.dead&&!u.retiring&&u.seat===2);
  const width=enemy&&ally?pairBodyGap(enemy,ally)+22:REAR_COURT_ART_GAP;
  return {leftMax:midpoint-width/2,rightMin:midpoint+width/2};
 }
@@ -636,7 +634,7 @@ function act(u,dt){
 function keepAlliedColumns(){
  if(COURTS.length!==4||!battle)return;
  const bySeat=new Map(battle.heroes.filter(h=>!h.dead&&!h.retiring).map(h=>[h.seat,h]));
- const leftToRight=[0,2,3,1];
+ const leftToRight=[1,3,2,0];
  for(let i=0;i<leftToRight.length-1;i++){
   const leftSeat=leftToRight[i],rightSeat=leftToRight[i+1];
   const left=bySeat.get(leftSeat),right=bySeat.get(rightSeat);
@@ -647,17 +645,16 @@ function keepAlliedColumns(){
  }
 }
 function keepCourtSpacing(){
- // Adjacent rear fights previously occupied the same pixels: seat 3's
- // opponent could disappear behind seat 4's ally even with separate layers.
- // Give those two visible actors a permanent corridor between the courts.
+ // Rear-left court 4's foe cannot overlap rear-right court 3's ally.
+ // Preserve their scaled body-size corridor without mixing painter layers.
  const boundary=rearCourtBoundary();
  if(boundary){
   for(const u of battle.enemies){
-   if(!u.dead&&!u.retiring&&u.seat===2&&u.entry<=0)
+   if(!u.dead&&!u.retiring&&u.seat===3&&u.entry<=0)
     u.x=Math.min(u.x,boundary.leftMax);
   }
   for(const u of battle.heroes){
-   if(!u.dead&&!u.retiring&&u.seat===3)
+   if(!u.dead&&!u.retiring&&u.seat===2)
     u.x=Math.max(u.x,boundary.rightMin);
   }
  }
@@ -676,10 +673,10 @@ function keepCourtSpacing(){
  // Pair collision recovery cannot undo the rear lane art corridor.
  // Keep both visible bodies apart while retaining their own attack reach.
  if(boundary){
-  const e3=battle.enemies.find(u=>!u.dead&&!u.retiring&&u.seat===2&&u.entry<=0);
-  const h4=battle.heroes.find(u=>!u.dead&&!u.retiring&&u.seat===3);
-  if(e3)e3.x=Math.min(e3.x,boundary.leftMax);
-  if(h4)h4.x=Math.max(h4.x,boundary.rightMin);
+  const e4=battle.enemies.find(u=>!u.dead&&!u.retiring&&u.seat===3&&u.entry<=0);
+  const h3=battle.heroes.find(u=>!u.dead&&!u.retiring&&u.seat===2);
+  if(e4)e4.x=Math.min(e4.x,boundary.leftMax);
+  if(h3)h3.x=Math.max(h3.x,boundary.rightMin);
  }
  keepAlliedColumns();
 }
@@ -983,12 +980,10 @@ function paint(){
   }
   ctx.fillStyle='#160a0910';ctx.fillRect(0,0,W,H);
  // All court floor overlays removed: gladiators stand on the original sand.
- // Draw each duel as an indivisible scene layer: rear 4 → 3,
- // then front 2 → 1. This specifically keeps court 3's opponent
- // above court 4 artwork where an extreme action pose may overlap. The executor, corpse, slash VFX and impact sparks
- // belong to the SAME court as their fighter. Never intermingle entries
- // from two different court groups, even when they share the same Y.
- courtPaintQueue(battle).forEach(item=>item.paint());
+ // Four full court layers: 4 3 at the back / 2 1 at the front.
+  // Court 1 paints last over court 2's gladiators, FX and Carnifex.
+  // Each particle, corpse, VFX and executor follows its owner's seat.
+  courtPaintQueue(battle).forEach(item=>item.paint());
  ctx.restore();
  root.ArenaCombatFeel?.overlay?.(ctx,W,H,shot);
 }
