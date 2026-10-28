@@ -1,4 +1,4 @@
-/* GLADIATOR ARENA | shared combat secondary-motion controller v1.
+/* GLADIATOR ARENA | shared combat secondary-motion controller v124.
  * Artist poses and gameplay hitboxes stay authoritative. All springs here are
  * *render-only*, anchored at the existing planted feet. Impacts update only
  * short cosmetic states; camera impulses have a separate real-time clock.
@@ -27,12 +27,12 @@ const RESPONSE=Object.freeze({
  contact:{duration:.26,compression:.047,slide:7}
 });
 const IMPACTS=Object.freeze({
- strike:Object.freeze({duration:.22,flash:.78,grow:1.055,shrink:.978}),
- guard:Object.freeze({duration:.18,flash:.38,grow:1.028,shrink:.986}),
- special:Object.freeze({duration:.32,flash:.92,grow:1.092,shrink:.961}),
- dash:Object.freeze({duration:.48,flash:1,grow:1.145,shrink:.950}),
- parry:Object.freeze({duration:.43,flash:1,grow:1.117,shrink:.963}),
- reversal:Object.freeze({duration:.49,flash:1,grow:1.145,shrink:.950})
+ strike:Object.freeze({duration:.28,flash:.86,grow:1.055,shrink:.978}),
+ guard:Object.freeze({duration:.26,flash:.64,grow:1.028,shrink:.986}),
+ special:Object.freeze({duration:.38,flash:.95,grow:1.092,shrink:.961}),
+ dash:Object.freeze({duration:.48,flash:.96,grow:1.145,shrink:.950}),
+ parry:Object.freeze({duration:.43,flash:.97,grow:1.117,shrink:.963}),
+ reversal:Object.freeze({duration:.49,flash:.99,grow:1.145,shrink:.950})
 });
 const sin=Math.sin,cos=Math.cos,PI=Math.PI;
 // Global gladiator+beast hit cue. Never modifies hitboxes or source art.
@@ -63,29 +63,35 @@ function visual(f,reduced=false,fx=true){
  if(phase<.20)scale=1+(p.shrink-1)*phase/.20;
  else if(phase<.49)scale=p.shrink+(p.grow-p.shrink)*(phase-.20)/.29;
  else scale=1+(p.grow-1)*Math.pow((1-phase)/.51,2);
- // One contact glint, never a second startup blink.
- const t=state.t;
- const flash=Math.min(.29,p.flash*.37)*clamp((.085-t)/.060);
- return {scale:clamp(scale,.94,1.16),flash:clamp(flash,0,.29)};
+ // A clearly visible, single confirmed-contact silhouette (no startup blink).
+ // Peak holds ~60 ms, recedes to 58% by 120 ms, and clears by 235 ms.
+ // Short enough to preserve the authored colors between consecutive hits.
+ const t=state.t,fade=t<=.06?1:t<.12?1-.42*(t-.06)/.06:
+  t<.235?.58*(.235-t)/.115:0;
+ const flash=p.flash*clamp(fade);
+ return {scale:clamp(scale,.94,1.16),flash:clamp(flash,0,.99)};
 }
 // Render-only local vibration: never changes world position, hitbox or saved art.
-// It shares hitVisual's real-time clock with the one short white glint.
+// It shares hitVisual's real-time clock with the single prominent white glint.
 function hitOffset(f,reduced=false,fx=true){
  const neutral={x:0,y:0};
  if(!f?.hitVisual||f.dead||f.hp<=0||f.action==='death'||f.action==='defeat'||reduced||!fx)return neutral;
  const {t,kind}=f.hitVisual;
- if(t<0||t>=.16)return neutral;
- const amplitude=['special','dash','parry','reversal'].includes(kind)?7:4.5;
- const decay=Math.pow(1-t/.16,2),phase=t*2*PI*32;
+ if(t<0||t>=.25)return neutral;
+ // Use a 15 Hz alternating recoil that remains readable at 30/60/120 FPS;
+ // the previous 32 Hz / 4.5px tremor was near-invisible and could alias.
+ const amplitude=['special','dash','parry','reversal'].includes(kind)?19:
+  kind==='guard'?12:16;
+ const decay=Math.pow(1-t/.25,1.2),phase=t*2*PI*15;
  return {x:Math.cos(phase)*amplitude*decay*(f.face<0?-1:1),
-  y:Math.sin(phase*.75)*.8*decay};
+  y:Math.sin(phase*.75)*2.2*decay};
 }
 // The painter receives alpha explicitly because some atlas renderers assign
 // globalAlpha internally; an outer multiplier is silently discarded by them.
 function drawHitFlash(ctx,amount,paint){
  if(!ctx||!(amount>0)||typeof paint!=='function')return;
  ctx.save();
- try{ctx.filter='brightness(0) invert(1)';paint(clamp(amount,0,.29));}
+ try{ctx.filter='brightness(0) invert(1)';paint(clamp(amount,0,.99));}
  finally{ctx.restore();}
 }
 function pulse(f,type,role,dir=1){
@@ -216,6 +222,6 @@ function contactPulse(a,b,minGap=MIN_GAP){
  pulse(b,'contact','target',dir);
  return true;
 }
-root.ArenaMotion={version:'1.4.0',PRESETS,RESPONSE,IMPACTS,pose,pulse,impact,visual,hitOffset,drawHitFlash,advance,shake,advanceShake,sampleShake,contactPulse};
+root.ArenaMotion={version:'1.5.0',PRESETS,RESPONSE,IMPACTS,pose,pulse,impact,visual,hitOffset,drawHitFlash,advance,shake,advanceShake,sampleShake,contactPulse};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaMotion;
 })(globalThis);
