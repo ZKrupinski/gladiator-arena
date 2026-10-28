@@ -8,14 +8,14 @@ function excerpt(start,end,from=0){
  return source.slice(a,b);
 }
 const auto=excerpt('function autoPilotPlayer(p,e,dt){','function returnToLudus()');
-const autoRun=new Function('p','e','dt','env','with(env){'+auto.replace(/^function autoPilotPlayer\\(p,e,dt\\)\\{/,'').replace(/\\}\\s*$/,'')+'}');
+const autoRun=new Function('p','e','dt','env','with(env){'+auto.slice('function autoPilotPlayer(p,e,dt){'.length).trim().slice(0,-1)+'}');
 let hits=0;
 const p={x:0,face:1,cfg:{reach:220,move:240},guardHold:0,st:100,stagger:0,dodge:0,net:0,attackCD:0,chainHits:0,cd:0,comboDash:null,guardRecovery:0};
 const rival={x:345,cfg:{reach:220},dead:false,action:'idle',actionT:0};
 autoRun(p,rival,.016,{S:{careerMatch:false},clock:10,duelAiAttackRange:()=>360,duelBodyGap:()=>320,aiTactics:()=>null,beginGuard:()=>false,dodge:()=>{},attack:()=>hits++});
 assert.equal(hits,1,'AUTO must strike within the same scaled hit range as attack()');
 const enemyStart=source.indexOf('if(e.pressureT<=0){',source.indexOf('const ai=S.careerMatch?'));
-const enemyEnd=source.indexOf('\\n   }\\n  }\\n }\\n',enemyStart);
+const nl=String.fromCharCode(10);const enemyEnd=source.indexOf(nl+'   }'+nl+'  }'+nl+' }'+nl,enemyStart);
 assert(enemyStart>0&&enemyEnd>enemyStart,'Cannot extract the real duel enemy branch');
 const enemyBranch=source.slice(enemyStart,enemyEnd+5);
 const enemyRun=new Function('env','with(env){'+enemyBranch+'}');
@@ -30,6 +30,6 @@ e.attackCD=0;e.aiAttackWait=.8;enemyRun(env);
 assert.equal(strikes,1,'Enemy cadence timer prevents rapid repeated attacks');
 e.aiAttackWait=0;env.dist=500;enemyRun(env);
 assert.equal(strikes,1,'Enemy cannot attack outside its effective strike range');
-assert(Number(source.match(/const AUTO_IDLE_SECONDS=([\\d.]+)/)?.[1])<1,'AUTO ON must resume promptly after manual input');
+assert(parseFloat(source.split('const AUTO_IDLE_SECONDS=')[1])<1,'AUTO ON must resume promptly after manual input');
 for(const mode of ['career','beast','lineup'])assert(!source.includes('autoplayEnabled=false; // '+mode),'Shared auto must not silently disable');
 console.log('PASS: duel, lineup and beast shared-AI offensive cadence, scaled reach, manual override timer');
