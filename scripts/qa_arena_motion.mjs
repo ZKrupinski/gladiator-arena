@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const context={globalThis:{}};
 vm.runInNewContext(fs.readFileSync(new URL('../public/arena-motion.js',import.meta.url),'utf8'),context);
 const M=context.globalThis.ArenaMotion;
-assert.equal(M.version,'1.4.0');
+assert.equal(M.version,'1.5.0');
 assert.ok(M.PRESETS.special.amp>=85,'huge special camera impact');
 assert.ok(M.PRESETS.dash.amp>=60,'rushing blow shakes scene more strongly');
 assert.ok(M.PRESETS.parry.amp>=55,'successful parry has its own big two-part shake');
