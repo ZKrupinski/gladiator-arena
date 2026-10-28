@@ -1,0 +1,14 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "spartacus-studio-start-pose-ghost-v128-20261028",
+  "expectedMainSha": "a05c60858913b3d4178772e095945d96034d5b49",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/tools/practice-scale-calibrator.html",
+      "sha256": "87cdd12b75035d6b3f8d83ca7f0fd0c424235ceaca0230e7e43926ffaea561f7",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/a05c60858913b3d4178772e095945d96034d5b49/public/tools/practice-scale-calibrator.html"
+    }
+  ]
+}
