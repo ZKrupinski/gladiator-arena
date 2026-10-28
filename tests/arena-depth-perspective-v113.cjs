@@ -8,20 +8,21 @@ const coopSource=fs.readFileSync('public/arena-coop.js','utf8');
 const practice=require('../public/ludus-practice.js');
 const {courtPerspective,courtsForParty,unitPerspective,executionerCourtScale}=practice;
 function eq(a,b,msg){assert(Math.abs(a-b)<1e-8,msg+': '+a+' vs '+b)}
-eq(courtPerspective(606),.82,'practice far row');
-eq(courtPerspective(676),1,'practice front row');
-eq(courtPerspective(689),1,'practice very-near row');
-eq(courtPerspective(640),.82+.18*34/70,'practice continuous mid-depth');
+eq(courtPerspective(570),.70,'practice fourth court is farthest');
+eq(courtPerspective(608),.70+.30*38/119,'third court is intermediate');
+eq(courtPerspective(649),.70+.30*79/119,'second court is intermediate');
+eq(courtPerspective(689),1,'first court is foreground');
+eq(courtPerspective(640),.70+.30*70/119,'survivor Y interpolates without size jumps');
 for(const n of [1,2,3,4]){
  const seats=courtsForParty(n);
  assert.equal(seats.length,n);
  for(const c of seats)eq(c.scale,courtPerspective(c.y),'court scale follows foot Y');
 }
 const seats=courtsForParty(4);
-assert.deepEqual(seats.map(s=>s.y),[689,689,606,606]);
-assert(seats[2].scale<seats[0].scale);
+assert.deepEqual(seats.map(s=>s.y),[689,649,608,570]);
+assert(seats[3].scale<seats[2].scale&&seats[2].scale<seats[1].scale&&seats[1].scale<seats[0].scale);
 eq(unitPerspective({seat:2,y:640}),courtPerspective(640),'survivor transition interpolates smoothly');
-eq(executionerCourtScale(seats[2])/executionerCourtScale(seats[0]),.82,'Carnifex and corpses share same rear correction');
+eq(executionerCourtScale(seats[3])/executionerCourtScale(seats[0]),.70,'Carnifex and corpses share the projected rear court');
 
 // Exercise actual artist-sized bitmap renderer with a one-costume, two-seat comparison.
 const injected=source.replace('root.LudusPractice={',
@@ -56,11 +57,12 @@ function actualFootFrame(y,seat,side='ally'){
  assert.equal(calls.length,1);
  return calls[0].at(-1);
 }
-const near=actualFootFrame(689,0),rear=actualFootFrame(606,2);
-eq(rear/near,.82,'same studio costume shrinks 18% in rear');
-eq(actualFootFrame(606,2,'enemy'),rear,'same projection applies to rival');
+const near=actualFootFrame(689,0),rear=actualFootFrame(570,3);
+eq(rear/near,.70,'same studio costume shrinks 30% in farthest court');
+for(const [seat,y] of [[0,689],[1,649],[2,608],[3,570]])
+ eq(actualFootFrame(y,seat)/near,courtPerspective(y),'four independent foot-depth steps');
+eq(actualFootFrame(570,3,'enemy'),rear,'rear opponent shares the same perspective');
 eq(actualFootFrame(640,2)/near,courtPerspective(640),'dynamic foot Y drives intermediate size');
-eq(actualFootFrame(689,0)/near,1,'front frame does not accumulate scale');
 eq(shared.scale('murmillo_a_L1'),1.15,'artist scale remains unchanged');
 
 const coop={ArenaCoopCore:{}};
@@ -80,4 +82,4 @@ assert.match(source,/courtPaintQueue\(battle\)\.forEach/,'practice keeps atomic 
 assert.match(source,/zoom:perspective,pose:authored/,'practice FX shares depth');
 assert.match(source,/const scale=unitPerspective\(unit\)/,'practice sprite follows unit world depth');
 assert.match(source,/scale:unitPerspective\(unit\)/,'practice executioner freeze matches character scale at KO');
-console.log('PASS: practice .82–1.0 depth and 5v5 .70–1.0 depth; actor, enemy, reflow, VFX, corpse, executor, studio profiles remain aligned');
+console.log('PASS: practice .70–1.0 across four distinct feet and 5v5 .70–1.0 depth; actor, enemy, reflow, VFX, corpse, executor, studio profiles remain aligned');
