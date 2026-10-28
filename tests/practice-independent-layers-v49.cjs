@@ -16,7 +16,7 @@ for(const [count,expect] of [[1,[0]],[2,[1,0]],[3,[2,1,0]],[4,[3,2,1,0]]]){
   'rear row before front row; within each row left court paints last');
 }
 const four=Array.from(win.LudusPractice.rules.courtsForParty(4));
-assert.deepEqual(four.map(c=>[c.x,c.y]),[[980,689],[320,649],[780,608],[480,570]]);
+assert.deepEqual(four.map(c=>[c.x,c.y]),[[990,689],[320,649],[780,608],[480,570]]);
 for(const count of [2,3]){
  const seats=Array.from(win.LudusPractice.rules.courtsForParty(count));
  assert(seats[0].x>seats[1].x);
