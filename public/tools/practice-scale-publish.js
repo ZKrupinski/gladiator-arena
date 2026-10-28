@@ -71,8 +71,8 @@ async function commit(token,payload=source()){
  if(decode(stored.content)!==payload)throw Error('GitHub 저장 내용이 요청한 배율과 일치하지 않습니다.');
  return data.commit.sha;
 }
-let repositoryValues=null,liveValues=null,repoError='',liveError='',checking=false;
-let lastCommit='',poll=null,pollCount=0;
+let repositoryValues=null,repoError='',checking=false;
+let lastCommit='';
 function decode(content){return new TextDecoder().decode(Uint8Array.from(atob((content||'').replace(/\s/g,'')),c=>c.charCodeAt(0)));}
 function valuesFrom(text){
  const match=text.match(/SpartacusPublishedScales\s*=\s*Object\.freeze\(\s*(\{[\s\S]*?\})\s*\)/);
@@ -130,38 +130,23 @@ function refreshHealth(){
    priceLevels:root.SpartacusMarketPricing?.normalize?.(root.SpartacusMarketPricing.read())||{},
    gladiators:root.SpartacusGladiators?.custom?.()||[]};
  health('draftHealth',same(now,local)?'✓ 이 기기: 연출·시장가격 저장됨':'● 이 기기: 연출·시장가격 미저장',same(now,local)?'ok':'warn');
- const repoMatch=same(now,repositoryValues),liveMatch=same(now,liveValues);
+ const repoMatch=same(now,repositoryValues);
  health('repoHealth',repositoryValues?(repoMatch?'✓ GitHub: 연출·시장가격 저장 확인':'● GitHub: 연출·시장가격 게시 필요')+(lastCommit?' · '+lastCommit.slice(0,8):''):
   'GitHub: '+(repoError||'확인 중'),repositoryValues?(repoMatch?'ok':'warn'):repoError?'error':'warn');
- health('liveHealth',liveValues?(liveMatch?'✓ 게임 배포: 연출·시장가격 반영 확인':repoMatch?'◷ 게임 배포: GitHub 저장 완료 · 배포 대기':'● 게임 배포: 연출·시장가격 미반영'):
-  '게임 배포: '+(liveError||'확인 중'),liveValues?(liveMatch?'ok':'warn'):liveError?'error':'warn');
+
 }
 async function verifySaved(){
  if(checking)return;checking=true;
  const button=$('#verifySaved');if(button)button.disabled=true;
- await Promise.allSettled([
-  (async()=>{try{
-   const response=await request(api+'?ref=main&ts='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github+json'}});
-   if(!response.ok)throw Error('확인 불가 (HTTP '+response.status+') · 다시 확인하세요');
-   repositoryValues=valuesFrom(decode((await response.json()).content));repoError='';
-  }catch(e){repositoryValues=null;repoError=e.message;}})(),
-  (async()=>{try{
-   const response=await request('../practice-scale-published.js?verify='+Date.now(),{cache:'no-store'});
-   if(!response.ok)throw Error('확인 불가 (HTTP '+response.status+')');
-   liveValues=valuesFrom(await response.text());liveError='';
-  }catch(e){liveValues=null;liveError=e.message;}})()
- ]);
- checking=false;if(button)button.disabled=false;refreshHealth();
- if(same(currentSnapshot(),repositoryValues)&&same(currentSnapshot(),liveValues)&&lastCommit){
-  describe('✓ GitHub 저장과 게임 배포 확인 완료 · 커밋 '+lastCommit.slice(0,12),'success');
-  clearTimeout(poll);poll=null;
- }
-}
-function watchDeployment(){
- clearTimeout(poll);pollCount=0;
- const check=async()=>{await verifySaved();
-  if(!same(repositoryValues,liveValues)&&++pollCount<18)poll=setTimeout(check,5000);
- };check();
+ try{
+  const response=await request(api+'?ref=main&ts='+Date.now(),
+   {cache:'no-store',headers:{Accept:'application/vnd.github+json'}});
+  if(!response.ok)throw Error('GitHub 확인 불가 (HTTP '+response.status+')');
+  repositoryValues=valuesFrom(decode((await response.json()).content));repoError='';
+ }catch(e){repositoryValues=null;repoError=e.message;}
+ finally{checking=false;if(button)button.disabled=false;refreshHealth();}
+ if(same(currentSnapshot(),repositoryValues)&&lastCommit)
+  describe('✓ GitHub 저장 및 원본 내용 일치 확인 · 커밋 '+lastCommit.slice(0,12),'success');
 }
 const open=$('#publishOpen'),auth=$('#gitAuth'),token=$('#githubToken'),save=$('#publishConfirm');
 if(!open||!auth||!token||!save)return;
@@ -178,9 +163,8 @@ save.addEventListener('click',async()=>{
   const sha=await commit(secret,payload);
   lastCommit=sha;repositoryValues=valuesFrom(payload);refreshHealth();
   auth.hidden=true;
-  describe('GitHub 원본 저장 성공 · 커밋 '+sha.slice(0,12)+
-   '. 저장 내용을 재확인했습니다. 게임 배포는 별도로 확인 중입니다.','success');
-  watchDeployment();
+  describe('✓ GitHub 원본 저장·내용 대조 완료 · 커밋 '+sha.slice(0,12)+
+   ' · 외부 사이트 배포 검증은 생략합니다.','success');
  }catch(error){describe(error?.message||String(error),'error');health('repoHealth','⚠ GitHub 저장 확인 실패 · 아래 오류 안내를 확인하세요','error')}
  finally{token.value='';save.disabled=false}
 });
