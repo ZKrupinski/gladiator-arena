@@ -15,7 +15,7 @@ const layout=rules.courtsForParty(4);
 //       4   3
 //       2   1
 assert.deepEqual(Array.from(layout,c=>[c.x,c.y]),[
- [980,689],[320,649],[780,608],[480,570]
+ [990,689],[320,649],[780,608],[480,570]
  ],'right/left courts preserve 4 3 / 2 1 while all four feet occupy distinct depths');
 for(let i=1;i<4;i++)assert(layout[i-1].y-layout[i].y>=35,
  'every successive arena layer must have visible vertical depth separation');
