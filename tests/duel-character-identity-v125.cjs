@@ -44,5 +44,5 @@ painted.length=0;
 const legacy={cls:'thraex',legacyVisualId:'legacy_thraex'};
 assert.equal(sandbox.paint(legacy,'idle',0,0,202,202,false,1),false,'legacy route falls back to original class atlas, never to red Murmillo');
 assert.deepEqual(painted,[]);
-assert(!/if\\s*\\(\\s*f\\.championVariant\\s*=[^=]/.test(source),'no accidental assignment to fighter champion identity');
+assert(!/if\s*\(\s*f\.championVariant\s*=[^=]/.test(source),'no accidental assignment to fighter champion identity');
 console.log('PASS: 10 independent identity routes (3 classes, five visual variants, custom, legacy) retain their roster graphics in normal duel, lineup and venatio shared renderer');
