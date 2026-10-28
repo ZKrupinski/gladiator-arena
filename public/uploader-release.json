@@ -1,14 +1,10 @@
 {
   "assetSha256": {
-    "public/arena-combat-feel.js": "46bd2c70b96775ac1262ad1f2e7cc4e1bf4af849ed927acb5bb5e2a7b16023ea",
-    "public/arena-coop.js": "3ddd7d316e071e3b3e12dbcd460ae335852c31b653fc5e13990f79a6580b87a0",
-    "public/arena-motion.js": "e9097c4772f9fefd080dda9279e0601f78e2ecb38585d068c977f19fc90f668f",
-    "public/index.html": "53b11f4457693be9249f79b58f4b41ee26b5567a5dceae1e19303c1bee8ba655",
-    "public/ludus-practice.js": "9fe0fc6dde008a74b90ad987e248e4d4aa231a8063ff88111ca10006735a63d2"
+    "public/index.html": "890ba9e7dfde9ebe749d18b0c6ef9d21aaa19ecafd36087bec35dd6a130266b6"
   },
-  "baseCommit": "97a9788d278f9d4c9d1fec17361cf8e6922c8488",
+  "baseCommit": "a130bd08f5514b4e7496e92973a0e7f3825f0f1e",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "spartacus-contact-flash-rumble-v122-20261028",
+  "releaseId": "spartacus-duel-auto-offense-v123-20261028",
   "releaseProtocol": "spartacus-uploader-v1"
 }
