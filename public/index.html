@@ -3098,7 +3098,7 @@ function drawGrowthPose(f,pose,x,y,w,h,flip,alpha){
   // Never substitute another fighter's image when the requested art is missing.
   return true;
  }
- if(f.championVariant=CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT||f.championVariant===ALT_MURMILLO_VARIANT){
+ if(f.championVariant===CHAMPION_MURMILLO_VARIANT||f.championVariant===NEW_MURMILLO_VARIANT||f.championVariant===ALT_MURMILLO_VARIANT){
   const scale=duelVisualScale(f);
   const x0=x+w*(1-scale)/2,y0=y+h*(1-scale),w0=w*scale,h0=h*scale;
   // A slow or failed champion asset load must never reveal the old Murmillo.
