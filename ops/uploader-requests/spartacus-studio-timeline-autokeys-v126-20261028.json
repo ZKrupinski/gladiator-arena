@@ -1,0 +1,14 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "spartacus-studio-timeline-autokeys-v126-20261028",
+  "expectedMainSha": "0a6aabd3a4cba8e1e140b0cd264170166461e3d8",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/tools/practice-scale-calibrator.html",
+      "sha256": "aefe6788b8d8fc52340ec97b78090d81ed5848ecedc6c2111fa3a56c0bef2318",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/0a6aabd3a4cba8e1e140b0cd264170166461e3d8/public/tools/practice-scale-calibrator.html"
+    }
+  ]
+}
