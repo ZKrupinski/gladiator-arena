@@ -11,6 +11,11 @@ ctx.window.SpartacusBodyCollision=require('../public/arena-body-collision.js');
 vm.runInNewContext(injected,ctx);
 const api=ctx.window.__practiceQA,rules=ctx.window.LudusPractice.rules;
 const layout=rules.courtsForParty(4);
+// Court number 1 must be bottom-right and frontmost:
+//       4   3
+//       2   1
+assert.deepEqual(layout.map(c=>[c.x,c.y]),[[1120,689],[215,689],[885,606],[465,606]]);
+
 const alliedHome=layout.map(c=>c.x-87).sort((a,b)=>a-b);
 for(let i=1;i<alliedHome.length;i++)
  assert.ok(alliedHome[i]-alliedHome[i-1] >=215,'allied foreground/rear silhouette columns must remain distinct');
@@ -41,17 +46,17 @@ for(const [i,t] of trail.entries()){
  const range=Math.max(...t)-Math.min(...t);
  assert.ok(range>=10,'court '+(i+1)+' player footwork range '+range.toFixed(1)+'px must be at least 10px');
 }
-// Adjacent REAR courts must never put seat 3's enemy body under seat 4's ally.
+// Rear-left court 4 enemy must remain clear of rear-right court 3 ally.
 // The corridor applies even when attacks/parries displace the combatants.
 const rearBoundary=(layout[2].x+layout[3].x)/2;
-assert.ok(layout[3].x-layout[2].x>=400,'rear station anchors spread out');
-const rearHalf=(rules.pairBodyGap(enemies[2],heroes[3])+22)/2;
-assert.ok(enemies[2].x<=rearBoundary-rearHalf,"3 rival has size-aware rear-court corridor");
-assert.ok(heroes[3].x>=rearBoundary+rearHalf,'4 ally retains scale-aware artwork clearance');
-enemies[2].x=rearBoundary+35;heroes[3].x=rearBoundary-35;
+assert.ok(layout[2].x-layout[3].x>=400,'rear station anchors spread out');
+const rearHalf=(rules.pairBodyGap(enemies[3],heroes[2])+22)/2;
+assert.ok(enemies[3].x<=rearBoundary-rearHalf,'4 rival has size-aware rear-left corridor');
+assert.ok(heroes[2].x>=rearBoundary+rearHalf,'3 ally retains scale-aware rear-right clearance');
+enemies[3].x=rearBoundary+35;heroes[2].x=rearBoundary-35;
 api.keepCourtSpacing();
-assert.ok(enemies[2].x<=rearBoundary-rearHalf,'knockback cannot override scaled 3/4 rear corridor');
-assert.ok(heroes[3].x>=rearBoundary+rearHalf,'4 ally cannot enter 3 rival sized corridor');
+assert.ok(enemies[3].x<=rearBoundary-rearHalf,'knockback cannot override 4/3 rear corridor');
+assert.ok(heroes[2].x>=rearBoundary+rearHalf,'3 ally cannot enter 4 rival sized corridor');
 for(let i=0;i<4;i++){
  heroes[i].x=layout[i].x+10;enemies[i].x=layout[i].x-10;
 }
