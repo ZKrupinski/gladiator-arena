@@ -16,10 +16,11 @@ rather than being asked to reconnect tools that are already available.
    the configured project uploader or approved GitHub Actions upload request
    protocol for supported binary assets. Do not request a new personal access
    token if the connected integration already has sufficient permission.
-3. For ongoing user-approved game changes, prefer **inspect latest state →
-   modify real project files → QA → commit/upload → independently verify live
-   Cloudflare content** in the same session. Distinguish code commits, binary
-   publication, passing checks, and production deployment.
+3. For user-approved changes, use **inspect GitHub main → edit real project
+   files → QA → GitHub commit/upload → report SHA and tests**. On 2026-10-28
+   the user removed Cloudflare from the factory. Do NOT trigger, poll, wait
+   for or require Cloudflare deployment/live-file validation. GitHub source
+   completion is not evidence of playable web hosting.
 4. A new Chat session **cannot itself grant, reconnect, authorize or persist**
    plugin access. Never represent account-level OAuth activation, tool
    availability in another session, or future background execution as
@@ -107,10 +108,11 @@ When the user says **"게임에 적용해"**, **"적용하고 배포해"**,
 
 * **Never ask again for the repository address or game assets path.**
   Repo: `ZKrupinski/gladiator-arena`; branch: `main`; game root:
-  `public/`; site: `https://gladiator-arena-git.pages.dev/`.
+  `public/`. The former Cloudflare site is not a release gate. GitHub Pages
+  is currently disabled; never invent a working GitHub Pages URL.
 * Use `scripts/spartacus_uploader.py` and the docs at
   `docs/spartacus-uploader.md` as the standard release protocol.
-  Get the current live code SHA using the connected GitHub tool first.
+  Get the current `main` code SHA using the connected GitHub tool first.
 * Code changes are made in GitHub and tested. Image files in an environment
   with authenticated network access can use
   `python scripts/spartacus_uploader.py publish --input DIR --mapping MAP.json --confirm`
@@ -124,10 +126,11 @@ When the user says **"게임에 적용해"**, **"적용하고 배포해"**,
   `public/assets/beasts/wolf-v3/` and existing `arena-beasts.js`
   automatically loads its manifest. **Do not bypass SpriteForge briefing,
   art review, frame ownership, cut/ground alignment, or visual integrity gates.**
-* Prefer update current version → test → commit → verify Cloudflare
-  `uploader-release.json` and actual file checksums → send exact live link.
-  Git success is not proof of production deployment. A failed external
-  integration must be reported as **NOT VERIFIED**, not invented success.
+* Prefer update `main` → QA → atomic GitHub commit → report commit link,
+  checksums and test results. The factory has NO Cloudflare stage, no site
+  polling and no external verification. GitHub repo links are source links,
+  not proof of a running hosted game. For a playable link, separately
+  establish a hosting provider if explicitly requested.
 * This rule stays game-specific. Do not transfer the repo URL/branch to
   another game automatically.
 
