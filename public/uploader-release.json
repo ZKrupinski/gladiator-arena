@@ -1,11 +1,10 @@
 {
   "assetSha256": {
-    "public/arena-motion.js": "173e31cac6a0b1a6c4797dc2e648df85296ed9b1aed1bf14733f9383a8ba4c43",
-    "public/index.html": "c213ac9dba6d75a06c54106306650aa93dabae29118fa97e4f7f4c407c747b85"
+    "public/index.html": "2999a6630a21e3f3d5ae3f7980ef4f12684d8ab34c12a29c2ff14bf5f0314233"
   },
-  "baseCommit": "8d340cc99b875d3dd734aa14ba02aab36326704d",
+  "baseCommit": "ffe43d0e8cfcee7e18df1cfc57420b9f86bc54a9",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "spartacus-strong-contact-feedback-v124-20261028",
+  "releaseId": "spartacus-gladiator-visual-identity-v125-20261028",
   "releaseProtocol": "spartacus-uploader-v1"
 }
