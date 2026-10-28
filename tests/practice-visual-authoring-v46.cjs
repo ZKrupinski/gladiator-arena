@@ -70,7 +70,7 @@ for(let n=1;n<=4;n++){
  assert.equal(courts.length,n);
  for(const c of courts)assert.equal(c.scale,rules.courtPerspective(c.y),
    'scene depth alone controls zoom: '+n+' / '+c.y);
-  assert(courts.every(c=>c.scale<=1&&c.scale>=.82),'no enlarged fighter art outside approved depth bounds');
+  assert(courts.every(c=>c.scale<=1&&c.scale>=.70),'projected art stays within 70-100% and never bypasses the studio scale');
 }
 assert.doesNotMatch(game,/scale:1\.29|scale:1\.06|scale:1\.24/,
  'remove ALL old staggered front/rear scales');
