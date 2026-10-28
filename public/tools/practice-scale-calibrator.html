@@ -874,7 +874,11 @@ function initActionEditor(){
   // X or only Y. The untouched axis keeps the interpolated value at this
   // exact playhead, never a previous key's coordinate.
   const baseline=index>=0?keys[index]:v.sampleMotion(cfg,t);
-  const point={t,x:baseline.x,y:baseline.y};
+  // New keys store the SAME 0.1px coordinates shown in the UI. Preserve
+  // pre-existing authored precision when editing an existing key.
+  const point={t,
+   x:index<0?Math.round(baseline.x*10)/10:baseline.x,
+   y:index<0?Math.round(baseline.y*10)/10:baseline.y};
   point[axis.toLowerCase()]=Number($('#motion'+axis).value);
   if(index<0)keys.push(point);else keys[index]=point;
   saveMotionKeys(keys,t);
