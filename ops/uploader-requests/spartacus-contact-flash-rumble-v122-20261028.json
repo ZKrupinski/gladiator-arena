@@ -1,0 +1,34 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "spartacus-contact-flash-rumble-v122-20261028",
+  "expectedMainSha": "2ab22840c5f5becb90fe265bd0f7ec9ef6920deb",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/arena-motion.js",
+      "sha256": "e9097c4772f9fefd080dda9279e0601f78e2ecb38585d068c977f19fc90f668f",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/2ab22840c5f5becb90fe265bd0f7ec9ef6920deb/public/arena-motion.js"
+    },
+    {
+      "path": "public/arena-combat-feel.js",
+      "sha256": "46bd2c70b96775ac1262ad1f2e7cc4e1bf4af849ed927acb5bb5e2a7b16023ea",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/2ab22840c5f5becb90fe265bd0f7ec9ef6920deb/public/arena-combat-feel.js"
+    },
+    {
+      "path": "public/arena-coop.js",
+      "sha256": "3ddd7d316e071e3b3e12dbcd460ae335852c31b653fc5e13990f79a6580b87a0",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/2ab22840c5f5becb90fe265bd0f7ec9ef6920deb/public/arena-coop.js"
+    },
+    {
+      "path": "public/ludus-practice.js",
+      "sha256": "9fe0fc6dde008a74b90ad987e248e4d4aa231a8063ff88111ca10006735a63d2",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/2ab22840c5f5becb90fe265bd0f7ec9ef6920deb/public/ludus-practice.js"
+    },
+    {
+      "path": "public/index.html",
+      "sha256": "53b11f4457693be9249f79b58f4b41ee26b5567a5dceae1e19303c1bee8ba655",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/2ab22840c5f5becb90fe265bd0f7ec9ef6920deb/public/index.html"
+    }
+  ]
+}
