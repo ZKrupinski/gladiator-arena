@@ -18,10 +18,10 @@ FAKE_PNG = (b"\x89PNG\r\n\x1a\n"+b"\x00\x00\x00\x0dIHDR"+
             b"\x00\x00\x00\x00"+b"\x00\x00\x00\x00IEND\xaeB\x60\x82")
 
 class TestSpartacusUploader(unittest.TestCase):
-    def test_hardcoded_version_and_cloudflare_destination(self):
+    def test_hardcoded_github_release_destination(self):
         self.assertEqual(u.REPO,"ZKrupinski/gladiator-arena")
         self.assertEqual(u.MAIN,"main")
-        self.assertIn("gladiator-arena-git.pages.dev",u.SITE)
+        self.assertFalse(hasattr(u,"SITE"))
     def test_path_sandbox(self):
         valid=["public/assets/beasts/wolf-v3/idle.webp","public/arena-beasts.js",
                "public/index.html","scripts/test_any.py"]
@@ -149,19 +149,21 @@ class TestSpartacusUploader(unittest.TestCase):
             u.publish_files(items,confirm=False,git=gh,verify=False)
         with self.assertRaisesRegex(u.UploadError,"MAIN_MOVED"):
             u.publish_files(items,confirm=True,git=gh,expected_sha="0"*40,verify=False)
-        with patch.object(u,"verify_live",return_value={"state":"DEPLOYED_VERIFIED"}) as verify:
-            result=u.publish_files(items,confirm=True,git=gh,release_id="wolf-release-v1")
-        self.assertEqual(result["deployment"]["state"],"DEPLOYED_VERIFIED")
-        assert gh.uploaded
+        result=u.publish_files(items,confirm=True,git=gh,release_id="wolf-release-v1")
+        self.assertEqual(result["state"],"GITHUB_COMMITTED")
+        self.assertNotIn("deployment",result)
+        self.assertNotIn("site",result)
+        self.assertEqual(result["commit"],"b"*40)
+        self.assertEqual(result["sourceUrl"],
+                         "https://github.com/ZKrupinski/gladiator-arena/tree/"+"b"*40+"/public")
         self.assertEqual(json.loads(gh.uploaded["public/uploader-release.json"])["releaseId"],
                          "wolf-release-v1")
-        self.assertEqual(result["checks"]["public/assets/new-test.json"]["sha256"],u.digest(items["public/assets/new-test.json"]))
-        verify.assert_called_once()
-        with patch.object(u,"verify_live",side_effect=u.UploadError("CLOUDFLARE_OLD_DEPLOYMENT")):
-            pending=u.publish_files(items,confirm=True,git=gh,release_id="wolf-release-v2")
-        self.assertEqual(pending["deployment"]["state"],"UNVERIFIED")
-        self.assertEqual(pending["state"],"COMMITTED_DEPLOY_NOT_YET_VERIFIED")
-        self.assertNotEqual(pending["deployment"]["state"],"DEPLOYED_VERIFIED")
+        self.assertEqual(result["checks"]["public/assets/new-test.json"]["sha256"],
+                         u.digest(items["public/assets/new-test.json"]))
+        legacy=u.publish_files(items,confirm=True,git=gh,verify=True,
+                               release_id="wolf-release-v2")
+        self.assertEqual(legacy["state"],"GITHUB_COMMITTED")
+        self.assertFalse(hasattr(u,"verify_live"))
     def test_request_can_not_replace_deployment_probe(self):
         head="c"*40
         row={"path":"public/uploader-release.json","utf8":"{}","sha256":u.digest(b"{}")}
@@ -249,7 +251,7 @@ class TestSpartacusUploader(unittest.TestCase):
             with patch.dict(os.environ,{"GITHUB_SHA":event}), \
                  patch.object(u,"GitHub",return_value=GH()), \
                  patch.object(u,"stage_request",return_value={"public/assets/beasts/wolf-trial/idle.webp":b"data"}) as stage, \
-                 patch.object(u,"publish_files",return_value={"state":"COMMITTED_DEPLOY_NOT_YET_VERIFIED","deployment":{"state":"DEPLOYED_VERIFIED"}}) as pub:
+                 patch.object(u,"publish_files",return_value={"state":"GITHUB_COMMITTED","commit":"b"*40}) as pub:
                 self.assertEqual(u.main(["process-request",str(filename)]),0)
                 stage.assert_called_once_with(spec,main_sha=base)
                 self.assertEqual(pub.call_args.kwargs["expected_sha"],head)
@@ -279,8 +281,8 @@ class TestSpartacusUploader(unittest.TestCase):
                 if "/compare/" in path:return {"status":"ahead",
                     "files":[{"filename":"docs/unrelated-release-qa.txt"}]}
                 raise AssertionError(path)
-        result={"state":"COMMITTED_DEPLOY_NOT_YET_VERIFIED",
-                "deployment":{"state":"DEPLOYED_VERIFIED"}}
+        result={"state":"GITHUB_COMMITTED",
+                "commit":"b"*40}
         race=u.UploadError('GITHUB_HTTP_422: {"message":"Update is not a fast forward"}')
         with tempfile.TemporaryDirectory() as temp:
             name=pathlib.Path(temp)/"request.json"
