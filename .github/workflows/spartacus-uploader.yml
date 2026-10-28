@@ -1,4 +1,4 @@
-name: Spartacus one-click uploader — version, QA, GitHub, Cloudflare
+name: Spartacus one-click uploader — QA and GitHub-only release
 on:
   push:
     branches: [main]
@@ -54,19 +54,19 @@ jobs:
           esac
           [ -f "$FILE" ] || exit 1
           echo "SPARTACUS_UPLOAD_MANIFEST=$FILE" >> "$GITHUB_ENV"
-      - name: Validate manifest, stage, upload atomic commit, verify live bytes
+      - name: Validate manifest, SHA-256, art gates and commit directly to GitHub
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          python scripts/spartacus_uploader.py process-request "$SPARTACUS_UPLOAD_MANIFEST" | tee /tmp/spartacus-deploy.json
+          python scripts/spartacus_uploader.py process-request "$SPARTACUS_UPLOAD_MANIFEST" | tee /tmp/spartacus-github-release.json
       - name: Deployment report
         if: always()
         shell: bash
         run: |
-          if [ -f /tmp/spartacus-deploy.json ]; then
-            cat /tmp/spartacus-deploy.json >> "$GITHUB_STEP_SUMMARY"
+          if [ -f /tmp/spartacus-github-release.json ]; then
+            cat /tmp/spartacus-github-release.json >> "$GITHUB_STEP_SUMMARY"
           else
-            echo 'No production write completed or no verified report. Check logs.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'No GitHub release completed. Check logs.' >> "$GITHUB_STEP_SUMMARY"
           fi
