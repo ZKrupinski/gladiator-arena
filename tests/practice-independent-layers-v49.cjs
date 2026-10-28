@@ -16,14 +16,14 @@ for(const [count,expect] of [[1,[0]],[2,[1,0]],[3,[2,1,0]],[4,[3,2,1,0]]]){
   'rear row before front row; within each row left court paints last');
 }
 const four=Array.from(win.LudusPractice.rules.courtsForParty(4));
-assert.deepEqual(four.map(c=>[c.x,c.y]),[[1120,689],[215,689],[885,606],[465,606]]);
+assert.deepEqual(four.map(c=>[c.x,c.y]),[[980,689],[320,649],[780,608],[480,570]]);
 for(const count of [2,3]){
  const seats=Array.from(win.LudusPractice.rules.courtsForParty(count));
  assert(seats[0].x>seats[1].x);
 }
 const scene={heroes:[],enemies:[],exits:[],fx:[],particles:[]};
 for(let seat=0;seat<4;seat++){
- const y=seat<2?690:605,base={seat,y,dead:false,retiring:false,fade:1};
+ const y=four[seat].y,base={seat,y,dead:false,retiring:false,fade:1};
  const enemy={...base,side:'enemy',name:'rival'};
  const ally={...base,side:'ally',name:'hero'};
  scene.heroes.push(ally);
@@ -74,4 +74,4 @@ assert.match(source,/battle\.fx\.push\(\{seat:unit\.seat/,'attack FX bound to or
 assert.match(source,/courtPaintQueue\(battle\)\.forEach\(item=>item\.paint\(\)\)/);
 assert.doesNotMatch(source,/units\.concat\(bodies,effects,sparks\)/,
  'global depth sort removed');
-console.log('PASS: 4→3 rear and 2→1 front; left court wins overlapping character/FX/exec pixels in 1-4 fighter modes');
+console.log('PASS: inset 4 3 / 2 1 staging, four distinct foot depths and indivisible court 1 top painter');
