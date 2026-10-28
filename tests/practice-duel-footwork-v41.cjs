@@ -14,11 +14,27 @@ const layout=rules.courtsForParty(4);
 // Court number 1 must be bottom-right and frontmost:
 //       4   3
 //       2   1
-assert.deepEqual(Array.from(layout,c=>[c.x,c.y]),[[1120,689],[215,689],[885,606],[465,606]]);
+assert.deepEqual(Array.from(layout,c=>[c.x,c.y]),[
+ [980,689],[320,649],[780,608],[480,570]
+ ],'right/left courts preserve 4 3 / 2 1 while all four feet occupy distinct depths');
+for(let i=1;i<4;i++)assert(layout[i-1].y-layout[i].y>=35,
+ 'every successive arena layer must have visible vertical depth separation');
+for(const c of layout)assert(c.scale>=.70&&c.scale<=1);
+for(const c of layout){
+ // The approved full 960x540 idle atlas fits inside 1280px at
+ // default size; even 1.7x artist-sized NEUTRAL body has edge clearance.
+ const halfFrame=202*c.scale*960/540/2;
+ for(const x of [c.x-87,c.x+87])
+  assert(x-halfFrame>0&&x+halfFrame<1280,
+   'entire default frame fits in view without clipping');
+ const projectedBody=202*.58*1.7*c.scale;
+ assert(c.x-87-projectedBody>20,'1.7x calibrated allied torso stays visible');
+ assert(c.x+87+projectedBody<1280,'1.7x calibrated enemy torso stays visible');
+}
 
 const alliedHome=layout.map(c=>c.x-87).sort((a,b)=>a-b);
 for(let i=1;i<alliedHome.length;i++)
- assert.ok(alliedHome[i]-alliedHome[i-1] >=215,'allied foreground/rear silhouette columns must remain distinct');
+ assert.ok(alliedHome[i]-alliedHome[i-1] >=150,'four allied silhouettes occupy separate X columns');
 function actor(side,k,c){
  return {side,seat:k,x:c.x+(side==='ally'?-87:87),homeX:c.x+(side==='ally'?-87:87),y:c.y,
   speed:120,dead:false,retiring:false,entry:0,cooldown:200,swing:0,hit:0,
@@ -49,7 +65,7 @@ for(const [i,t] of trail.entries()){
 // Rear-left court 4 enemy must remain clear of rear-right court 3 ally.
 // The corridor applies even when attacks/parries displace the combatants.
 const rearBoundary=(layout[2].x+layout[3].x)/2;
-assert.ok(layout[2].x-layout[3].x>=400,'rear station anchors spread out');
+assert.ok(layout[2].x-layout[3].x>=290,'rear seats must retain space for rivals after inward shift');
 const rearHalf=(rules.pairBodyGap(enemies[3],heroes[2])+22)/2;
 assert.ok(enemies[3].x<=rearBoundary-rearHalf,'4 rival has size-aware rear-left corridor');
 assert.ok(heroes[2].x>=rearBoundary+rearHalf,'3 ally retains scale-aware rear-right clearance');
