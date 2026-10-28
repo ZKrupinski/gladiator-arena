@@ -1,0 +1,29 @@
+name: QA roster-selected gladiator identity v125
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/index.html
+      - tests/duel-character-identity-v125.cjs
+      - scripts/qa_duel_character_identity_browser.cjs
+      - .github/workflows/qa-duel-character-identity-v125.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  appearance-selection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify unique roster visuals and no assignment side effects
+        run: node tests/duel-character-identity-v125.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Click through selected roster and compare actual fighter pixels
+        run: node scripts/qa_duel_character_identity_browser.cjs
