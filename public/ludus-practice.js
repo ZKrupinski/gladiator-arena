@@ -29,8 +29,8 @@ const COURT_LAYOUTS=Object.freeze({
  // Seat order 1,2,3,4 = front right, front left, rear right, rear left.
 // X is compressed inside the 1280px viewport so the left-side ally and
 // right-side rival can show their full approved neutral bitmap frames.
- 4:Object.freeze([court(975,689),court(320,649),
-   court(800,608),court(480,570)])
+ 4:Object.freeze([court(980,689),court(320,649),
+   court(780,608),court(480,570)])
 });
 function courtsForParty(count){
  // Does not depend on later-initialized variables; works at script load.
