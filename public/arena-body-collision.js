@@ -18,7 +18,7 @@
   coop:Object.freeze({rx:57,ry:57})
  });
  const DEPTH=Object.freeze({
-  practice:Object.freeze({farY:606,nearY:676,farScale:.82}),
+  practice:Object.freeze({farY:570,nearY:689,farScale:.70}),
   coop:Object.freeze({farY:395,nearY:675,farScale:.70})
  });
  function depth(scene,y){
