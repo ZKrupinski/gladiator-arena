@@ -57,7 +57,7 @@ for(let n=1;n<=4;n++){
    assert(Math.abs(im.at(-1)-expected)<1e-9,'exact full-frame dimension for both teams and poses');
    const label=calls.find(c=>c[0]==='label');
    assert(label&&label[3]<p.y,'name is above actor');
-   assert(calls.some(c=>c[0]==='translate'&&c[2]===court.y),'both team boot anchors share lane');
+   assert(calls.some(c=>c[0]==='translate'&&c[2]===p.y),'both team boot anchors share lane');
   }
  }
 }
