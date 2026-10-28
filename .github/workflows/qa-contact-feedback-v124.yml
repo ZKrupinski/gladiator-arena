@@ -1,0 +1,42 @@
+name: QA strong visible contact flash and actor rumble v124
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/arena-motion.js
+      - public/index.html
+      - public/ludus-practice.js
+      - public/arena-coop.js
+      - scripts/qa_arena_motion.mjs
+      - scripts/qa_hit_contact_browser.cjs
+      - tests/hit-contact-feedback-v122.cjs
+      - .github/workflows/qa-contact-feedback-v124.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contact-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate shared contact-motion syntax
+        run: |
+          node --check public/arena-motion.js
+          node --check public/arena-combat-feel.js
+          node --check public/arena-coop.js
+          node --check public/ludus-practice.js
+      - name: Verify flash/recoil intensity, timing and simultaneous victims
+        run: |
+          node tests/hit-contact-feedback-v122.cjs
+          node scripts/qa_arena_motion.mjs
+          node tests/arena-combat-feel.js
+      - name: Install headless browser
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Render the real duel, beast, practice and 5v5 canvases
+        run: node scripts/qa_hit_contact_browser.cjs
