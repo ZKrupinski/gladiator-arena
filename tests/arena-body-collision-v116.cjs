@@ -91,7 +91,7 @@ assert.match(duel,/duelCollisionException\(p\)/,'cinematic attacks exempt');
 assert.match(duel,/const preferred=Math\.max\(duelBodyGap\(e,p\)/);
 assert.match(duel,/const ideal=Math\.max\(duelBodyGap\(p,e\)/);
 assert.match(duel,/reach=Math\.max\(f\.cfg\.reach/,'bigger units must not lose weapon range');
-assert.match(duel,/arena-body-collision\.js\?v=artist-body-v116/);
+assert.match(duel,/arena-body-collision\.js\?v=practice-fourdepth-v120/);
 const coopSource=fs.readFileSync('public/arena-coop.js','utf8');
 assert.match(coopSource,/COOP_FAR_SCALE=\.70/);
 assert.match(coopSource,/perspectiveScale=y=>root\.SpartacusBodyCollision/);
