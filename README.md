@@ -2,11 +2,12 @@
 
 Version: **New Era v3.3**. One playable version only. The old **「전설의 시작」 classic combat** and its assets are no longer distributed from `public/`.
 
-## Play / deployment
-- Git-backed Cloudflare Pages: https://gladiator-arena-git.pages.dev/
-- Repository: https://github.com/ZKrupinski/gladiator-arena
-- Deployment branch: `main`; output directory: `public`
-- No build step is required; `public/index.html` is the self-contained playable HTML5 Canvas game.
+## Source / GitHub-only release factory (2026-10-28)
+- Source repository: https://github.com/ZKrupinski/gladiator-arena
+- Release branch: `main`; game static files: `public/`
+- Factory: QA → SHA-256/file guards → GitHub commit. **No Cloudflare deployment, polling, site checks or release gate.**
+- GitHub Pages is currently disabled for this repository; a GitHub source link is **not** a hosted playable game.
+- No build step is required. To run the complete HTML5 Canvas game locally, serve `public/` via HTTP (below).
 
 ## Active source of truth
 - `public/index.html`: modern game runtime, responsive Ludus title, combat HUD/controls, fighter selection, winner/loser result screen, image loading and class-specific hit effects.
@@ -15,7 +16,7 @@ Version: **New Era v3.3**. One playable version only. The old **「전설의 시
 - `public/assets/new-era/arena.webp`: active arena background.
 - v3.2 camera: smooth tracking of the fighter midpoint, proximity-aware zoom during close combat with extra emphasis on hits, parries and leap rushes; separately clamped, overscanned arena parallax so image edges cannot enter the frame.
 - v3.3 arena grounding: draw the original 2172 × 724 wide background in aligned wall and foreground-sand bands. Keep the arena's architectural ground line near screen y=500 and fighter feet near y=617 (117px of visible sand behind the feet). Floor occupies roughly the bottom 31% of the screen; dynamic zoom reveals slightly more. Horizontal scrolling clamps to >=80px image overscan per side. Idle/walk no longer animate the entire sprite vertically, preventing false floating; dodge and leap-rush keep their intended upward movement.
-- `public/deployment-health.json`: Cloudflare Git deploy connectivity probe.
+- `public/deployment-health.json`: historical external-hosting probe (not part of the GitHub-only factory).
 
 ## Game loop
 - Choose your fighter and opponent, enter the arena; move, attack, guard, dodge and special.
@@ -36,7 +37,7 @@ python -m http.server 8000 --directory public
 Open http://localhost:8000/ .
 
 ## Hosting note
-A commit to `main` triggers Git-integrated Cloudflare Pages when the external Cloudflare integration is enabled. Repository commit success alone is not proof that the Cloudflare production deployment succeeded.
+GitHub-only release means **source is committed**, not that an external website has been updated. No automatic hosting verification is performed. Configure a separate web host only if a playable public URL is needed later.
 
 ## Ludus hosted growth sprites (v4.5)
 
