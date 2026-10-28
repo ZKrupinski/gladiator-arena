@@ -1,10 +1,11 @@
 {
   "assetSha256": {
-    "public/index.html": "890ba9e7dfde9ebe749d18b0c6ef9d21aaa19ecafd36087bec35dd6a130266b6"
+    "public/arena-motion.js": "173e31cac6a0b1a6c4797dc2e648df85296ed9b1aed1bf14733f9383a8ba4c43",
+    "public/index.html": "c213ac9dba6d75a06c54106306650aa93dabae29118fa97e4f7f4c407c747b85"
   },
-  "baseCommit": "a130bd08f5514b4e7496e92973a0e7f3825f0f1e",
+  "baseCommit": "8d340cc99b875d3dd734aa14ba02aab36326704d",
   "branch": "main",
   "project": "GLADIATOR ARENA / SPARTACUS",
-  "releaseId": "spartacus-duel-auto-offense-v123-20261028",
+  "releaseId": "spartacus-strong-contact-feedback-v124-20261028",
   "releaseProtocol": "spartacus-uploader-v1"
 }
