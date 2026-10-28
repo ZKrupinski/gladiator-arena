@@ -71,8 +71,8 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  });
  for(const key of ['duel','beast','practice','coop']){const r=result[key];assert(r.afterBrightness>r.beforeBrightness,key+' actual pixels brighten');
   fs.mkdirSync(process.env.QA_OUT||'/tmp/spartacus-contact-qa',{recursive:true});fs.writeFileSync(path.join(process.env.QA_OUT||'/tmp/spartacus-contact-qa',key+'.png'),Buffer.from(r.preview.split(',')[1],'base64'));delete r.preview;
-  assert(r.base>0&&r.ink>100,key+' visible approved art');assert(r.white>0,key+' white silhouette draw');assert(r.alpha.every(a=>a>0&&a<=.29),key+' translucent not opaque');assert(Math.abs(r.offset.x)>0,key+' body vibration');}
- for(const key of ['actualHit','practiceHit']){assert(result[key].hp<100,key+' actual damage');assert(result[key].flash>0,key+' immediate flash');assert(result[key].offset.x!==0,key+' simultaneous vibration');}
+  assert(r.base>0&&r.ink>100,key+' visible approved art');assert(r.white>0,key+' white silhouette draw');assert(r.alpha.every(a=>a>=.64&&a<=.99),key+' clearly visible white silhouette overlay');assert(Math.abs(r.offset.x)>=12,key+' clearly visible local body vibration');}
+ for(const key of ['actualHit','practiceHit']){assert(result[key].hp<100,key+' actual damage');assert(result[key].flash>=.64,key+' strong immediate white flash');assert(Math.abs(result[key].offset.x)>=12,key+' synchronized readable vibration');}
  assert.deepEqual(errors,[]);console.log(JSON.stringify(result,null,2));
  }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(e=>{console.error(e);process.exit(1)});
