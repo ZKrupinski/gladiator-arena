@@ -37,16 +37,29 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
    // A different timeline location + numeric field must create ANOTHER key.
    const second=findGap(after);seek(second);
    const looseBefore=$('#motionKey').value;
-   const secondX=Number($('#motionXNumber').value)+8;
+   const secondBaseline={x:Number($('#motionXNumber').value),y:Number($('#motionYNumber').value)};
+   const secondX=Math.min(150,secondBaseline.x+8);
    input('#motionXNumber',secondX);
    const afterNumber=read(),createdNumber=afterNumber.find(k=>Math.abs(k.t-second/100)<.00001);
-   markerAtTime.click();
+   // Y-only at a third fresh time: X must be captured from interpolation.
+   const third=findGap(afterNumber);seek(third);
+   const thirdBaseline={x:Number($('#motionX').value),y:Number($('#motionY').value)};
+   const thirdY=Math.max(-150,thirdBaseline.y-9);
+   input('#motionY',thirdY);
+   const afterY=read(),createdY=afterY.find(k=>Math.abs(k.t-third/100)<.00001);
+   // Marker elements are rebuilt whenever a key is created: click a LIVE one.
+   const firstMarker=[...document.querySelectorAll('#actionKeyMarkers .timeline-marker')]
+    .find(b=>Math.abs(parseFloat(b.style.left)-first)<.01);
+   firstMarker.click();
    const clicked={time:Number($('#actionTime').value),keyTime:Number($('#motionKeyTime').value),
     x:Number($('#motionX').value),y:Number($('#motionY').value),selected:$('#motionKey').value,
     marker:[...document.querySelectorAll('#actionKeyMarkers .timeline-marker')].filter(x=>x.getAttribute('aria-pressed')==='true').length};
-   return {actor,pose,count,first,second,cursorMode,looseBefore,initial,oldAtCursor,after,created,
-    markerCount,markerSelected:!!marker,markerAtTime:!!markerAtTime,right,originalPreserved,
-    createdNumber,afterNumber,clicked,expected:{x:newX,y:newY}};
+   const persisted=v.read()?.[actor]?.[pose];
+   const persistedKeys=v.motionKeys(persisted);
+   return {actor,pose,count,first,second,third,cursorMode,looseBefore,initial,oldAtCursor,after,created,
+    markerCount,markerSelected:!!marker,markerAtTime:!!firstMarker,right,originalPreserved,
+    secondBaseline,thirdBaseline,thirdY,createdNumber,afterNumber,createdY,afterY,persistedKeys,
+    clicked,expected:{x:newX,y:newY}};
   });
   assert.equal(result.cursorMode,'cursor','scrub to unkeyed time displays an uncommitted cursor');
   assert.equal(result.looseBefore,'cursor','second scrub displays uncommitted cursor');
@@ -62,14 +75,25 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
   assert(result.markerCount===result.count+1,'every key appears under timeline');
   assert(result.createdNumber,'numeric X input creates new key at second scrub position');
   assert.equal(result.afterNumber.length,result.count+2);
+  assert.equal(result.createdNumber.x,Math.min(150,result.secondBaseline.x+8),'X-only edit must save changed X');
+  assert.equal(result.createdNumber.y,result.secondBaseline.y,'X-only edit must ALSO save untouched interpolated Y');
+  assert(result.createdY,'Y-only slider edit creates its own key');
+  assert.equal(result.afterY.length,result.count+3);
+  assert.equal(result.createdY.x,result.thirdBaseline.x,'Y-only edit must ALSO save untouched interpolated X');
+  assert.equal(result.createdY.y,result.thirdY,'Y-only edit must save changed Y');
+  for(const key of [result.createdNumber,result.createdY]){
+   assert(Object.hasOwn(key,'x')&&Object.hasOwn(key,'y'),'every key stores both X and Y explicitly');
+   assert(result.persistedKeys.some(k=>k.t===key.t&&k.x===key.x&&k.y===key.y),
+    'both coordinates persist to device storage after only one axis changed');
+  }
   assert.equal(result.clicked.time,result.first,'clicking marker seeks timeline');
   assert.equal(result.clicked.keyTime,result.first,'clicking marker updates right key time');
   assert.equal(result.clicked.x,result.expected.x);
   assert.equal(result.clicked.y,result.expected.y);
   assert.equal(result.clicked.marker,1,'only the clicked marker is selected');
   assert.deepEqual(errors,[],'no uncaught exceptions during motion editing');
-  console.log('PASS: left scrub auto-key X/Y sliders + numeric edit, original keys safe, visible clickable markers synchronize time and right editor');
+  console.log('PASS: X-only and Y-only changes each save both X/Y coordinates (including untouched interpolation), persist to storage, and synchronize timeline markers');
   console.log(JSON.stringify({actor:result.actor,pose:result.pose,initialCount:result.count,newTimes:[result.first,result.second],
-   firstKey:result.created,numberKey:result.createdNumber,clicked:result.clicked},null,2));
+   firstKey:result.created,xOnly:result.createdNumber,yOnly:result.createdY,clicked:result.clicked},null,2));
  }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(error=>{console.error(error);process.exitCode=1});
