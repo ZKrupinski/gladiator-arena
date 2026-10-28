@@ -558,12 +558,35 @@ function pauseAtKey(index){
  $('#motionKey').value=String(index);actionProgress=keys[index].t;actionPlaying=false;
  actionPreviousFrame=-1;$('#actionPlay').textContent='▶ 재생';
  $('#actionPlay').setAttribute('aria-pressed','false');updateTimelineLabel();showMotionKey(index);previewAction();
+ syncNumbers();
+}
+// The left timeline and right key editor share one source of truth.
+function paintTimelineMarkers(keys,selected=-1){
+ $('#actionKeyMarkers').replaceChildren(...keys.map((point,i)=>{
+  const button=document.createElement('button');button.type='button';button.className='timeline-marker';
+  const percent=Math.round(point.t*1000)/10;
+  button.style.left=(point.t*100)+'%';
+  button.title=(i+1)+'번 이동 키 · '+percent+'% · X '+point.x+'px / Y '+point.y+'px';
+  button.setAttribute('aria-label',button.title+' · 누르면 편집');
+  button.setAttribute('aria-pressed',String(i===selected));
+  button.onclick=()=>pauseAtKey(i);
+  return button;
+ }));
+}
+function showMotionPoint(point){
+ for(const axis of ['X','Y']){
+  const value=point[axis.toLowerCase()];
+  $('#motion'+axis).value=String(value);
+  $('#motion'+axis+'Value').textContent=String(value)+'px';
+ }
+ syncNumbers();
 }
 function showMotionKey(forceIndex){
- const cfg=currentAction(),keys=keyList(cfg),index=Math.min(forceIndex??selectedKeyIndex(),keys.length-1),point=keys[index];
+ const cfg=currentAction(),keys=keyList(cfg),index=Math.max(0,Math.min(forceIndex??selectedKeyIndex(),keys.length-1)),point=keys[index];
  $('#motionKey').replaceChildren(...keys.map((key,i)=>{
   const op=document.createElement('option');op.value=String(i);op.textContent=(i+1)+' · '+Math.round(key.t*1000)/10+'%';return op;
  }));$('#motionKey').value=String(index);
+ $('#motionKeyTime').disabled=false;
  $('#motionKeyTime').value=String(Math.round(point.t*1000)/10);
  $('#motionInterpolation').value=cfg.motion.interpolation||'ease';
  $('#motionDelete').disabled=keys.length<=1;
@@ -572,18 +595,32 @@ function showMotionKey(forceIndex){
   button.setAttribute('aria-label','위치 키 '+(i+1)+' · '+Math.round(key.t*1000)/10+'%');
   button.setAttribute('aria-pressed',String(i===index));button.onclick=()=>pauseAtKey(i);return button;
  }));
- $('#motionKeyInfo').textContent=keys.length+'개 키 · 진행 막대로 시간을 지정하고 키를 추가하세요. 같은 시간은 기존 키를 선택합니다.';
- for(const axis of ['X','Y']){
-  $('#motion'+axis).value=String(point[axis.toLowerCase()]);
-  $('#motion'+axis+'Value').textContent=String(point[axis.toLowerCase()])+'px';
- }
+ paintTimelineMarkers(keys,index);
+ $('#motionKeyInfo').textContent=keys.length+'개 키 · ◆ 타임라인 마커나 오른쪽 키 목록을 누르면 그 시간·X·Y로 이동합니다.';
+ showMotionPoint(point);
+}
+function showMotionCursor(){
+ const cfg=currentAction(),keys=keyList(cfg),t=Math.round(Math.max(0,Math.min(1,actionProgress))*1000)/1000;
+ const existing=keys.findIndex(k=>Math.abs(k.t-t)<.00005);
+ if(existing>=0){showMotionKey(existing);return;}
+ const percent=Math.round(t*1000)/10,point=v.sampleMotion(cfg,t);
+ showMotionKey(Math.max(0,selectedKeyIndex()));
+ const option=document.createElement('option');option.value='cursor';option.textContent='현재 '+percent+'% · 조절 시 새 키';
+ $('#motionKey').append(option);$('#motionKey').value='cursor';
+ $('#motionKeyTime').value=String(percent);
+ $('#motionKeyTime').disabled=true;
+ $('#motionDelete').disabled=true;
+ paintTimelineMarkers(keys,-1);
+ showMotionPoint(point);
+ $('#motionKeyInfo').textContent='현재 '+percent+'% · 보간 X '+point.x+' / Y '+point.y+'px · 오른쪽 X·Y를 움직이면 이 시간에 키가 자동 생성됩니다.';
 }
 function saveMotionKeys(keys,selectedTime,mode){
  const key=$('#actionKey').value,pose=$('#actionPose').value,cfg=currentAction();
  cfg.motion=v.cleanMotion({...cfg.motion,keys,interpolation:mode||cfg.motion.interpolation||'smooth'});
  if(!actions[key])actions[key]={};actions[key][pose]=v.clean(cfg);persistActionEdit();
- const index=cfg.motion.keys.findIndex(k=>Math.abs(k.t-selectedTime)<.00005);
- pauseAtKey(Math.max(0,index));
+ const index=keyList(cfg).findIndex(k=>Math.abs(k.t-selectedTime)<.00005);
+ if(index<0){showMotionCursor();previewAction();return;}
+ pauseAtKey(index);
 }
 async function previewAction(){
  const key=$('#actionKey').value,pose=$('#actionPose').value,serial=++actionPaintSerial;
