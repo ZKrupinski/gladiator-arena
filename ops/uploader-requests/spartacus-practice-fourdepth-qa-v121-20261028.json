@@ -1,0 +1,34 @@
+{
+  "protocol": "spartacus-uploader-v1",
+  "releaseId": "spartacus-practice-fourdepth-qa-v121-20261028",
+  "expectedMainSha": "52bc82724df9a5f4b6bd70de5c13a8e826fbf57a",
+  "mode": "publish",
+  "approvedForProduction": true,
+  "files": [
+    {
+      "path": "public/index.html",
+      "sha256": "ed4d4ce0690ec076ffcd6089a715d9cde2e06f9fc974f37f9834a068c74f1462",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/52bc82724df9a5f4b6bd70de5c13a8e826fbf57a/public/index.html"
+    },
+    {
+      "path": "public/ludus-practice.js",
+      "sha256": "4f9c28b6aa2d07eedf417fe04d061993330af95e099a14dc53fab95d5ac14d03",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/52bc82724df9a5f4b6bd70de5c13a8e826fbf57a/public/ludus-practice.js"
+    },
+    {
+      "path": "public/arena-body-collision.js",
+      "sha256": "d18e6641fc7c2081c6ed4cdab9d0c9653c88a0972ed6ac3704844b1bf7e22555",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/52bc82724df9a5f4b6bd70de5c13a8e826fbf57a/public/arena-body-collision.js"
+    },
+    {
+      "path": "public/arena-coop.js",
+      "sha256": "8ae7073b86e74dd5f7d73f954526a019373c8c457e4305c66c3f24be14250c32",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/52bc82724df9a5f4b6bd70de5c13a8e826fbf57a/public/arena-coop.js"
+    },
+    {
+      "path": "public/arena-coop-core.js",
+      "sha256": "a2c053c380e0d68e031417efd68ec01b4beb7eb6fd182548f8f4a823e1aa2476",
+      "url": "https://raw.githubusercontent.com/ZKrupinski/gladiator-arena/52bc82724df9a5f4b6bd70de5c13a8e826fbf57a/public/arena-coop-core.js"
+    }
+  ]
+}
