@@ -5,7 +5,7 @@
  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,Number(v)||0));
  const strong=new Set(['parry','reversal','dash','special','rescue','ambush']);
  const focusKind=k=>k==='rescue'||k==='ambush'?'reversal':k;
- function event(state,kind,attacker,target,clock=0,{team=false,power=1}={}){
+ function event(state,kind,attacker,target,clock=0,{team=false,power=1,contact=false}={}){
   if(!state)return false;
   const motion=root.ArenaMotion;
   const pulseKind={hit:'strike',strike:'strike',guard:'guard',parry:'parry',
@@ -15,7 +15,7 @@
   if(attacker&&!attacker.dead)motion?.pulse?.(attacker,pulseKind,'source',dir);
   if(target&&!target.dead){
    motion?.pulse?.(target,pulseKind,'target',dir);
-   motion?.impact?.(target,kind==='parry'||kind==='reversal'?'reversal':pulseKind);
+   if(contact)motion?.impact?.(target,kind==='parry'||kind==='reversal'?'reversal':pulseKind);
   }
   const now=Number(clock)||0;
   // Ten simultaneous units used to retrigger the 1v1 shake on EVERY clash.

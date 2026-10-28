@@ -403,7 +403,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 <script src="arena-beasts.js?v=action-authoring-v46"></script><script src="arena-beast-vfx.js?v=2-upper-strike"></script>
 <script src="arena-beast-stage-previews.js?v=versus-v5"></script>
 <script src="arena-lineup-visual.js?v=2"></script><script src="arena-herald.js?v=3"></script>
-<script src="arena-carnifex.js?v=turn-drag-sync-v100-20261026"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=combat-drama-v6"></script><script src="arena-motion.js?strongKO=v2&v=combat-drama-v6"></script><script src="arena-combat-feel.js?v=combat-impact-v2"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=training-hit-v1"></script>
+<script src="arena-carnifex.js?v=turn-drag-sync-v100-20261026"></script><script src="arena-entrance.js?v=wolf-surfaces-pace-20261022"></script><script src="arena-focus.js?v=combat-drama-v6"></script><script src="arena-motion.js?v=contact-flash-rumble-v122-20261028"></script><script src="arena-combat-feel.js?v=contact-flash-rumble-v122-20261028"></script><script src="arena-animated-vfx.js?v=3"></script><script src="arena-raster-vfx.js?v=4-isolated"></script><script src="arena-audio.js?v=training-hit-v1"></script>
 <script src="ludus-recovery.js?v=overexertion-v69"></script><script src="ludus-training-risk.js?v=five-stats-v97"></script><script src="ludus-roster.js?v=five-stats-v97"></script>
 <script src="capua-venue.js?v=capua-night-crowd-v4-20261026"></script>
 <script>window.GLADIATOR_ASSETS={"murmillo": "assets/new-era/retiarius_atlas.png?v=4.0-g753935a6", "thraex": "assets/new-era/thraex_atlas.png?v=4.0-g753935a6", "retiarius": "assets/new-era/murmillo_atlas.png?v=4.0-g753935a6", "fx": "assets/new-era/fx_atlas.png?v=4.0-g753935a6", "fx_thraex": "assets/new-era/fx_retiarius_atlas.png?v=4.0-g753935a6", "fx_retiarius": "assets/new-era/fx_thraex_atlas.png?v=4.0-g753935a6", "bg": "assets/new-era/arena.webp?v=4.0-g753935a6"};</script>
@@ -3200,6 +3200,8 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  const impactVisual=(S.phase==='fight'&&!f.dead&&f.hp>0&&
   pose!=='defeat'&&pose!=='death')?
   (window.ArenaMotion?.visual?.(f,reduceImpact,S.fx)||{flash:0,scale:1}):{flash:0,scale:1};
+ const hitOffset=window.ArenaMotion?.hitOffset?.(f,reduceImpact||S.phase!=='fight',S.fx)||{x:0,y:0};
+ drawX+=hitOffset.x*poseZoom;drawY+=hitOffset.y*poseZoom;
  // Temporary foot-anchored collision rebound, never a saved character-size override.
  const contactZoom=clamp(impactVisual.scale||1,.97,1.115);
  const ko=f.dead?f.parryKO:null;
@@ -3299,13 +3301,7 @@ function drawFighter(f){if(!f||f.removedFromArena)return;
  // A brief white silhouette on the HIT actor only (never every sprite or HUD).
  // Canvas filter operates on original per-pixel alpha, so cutout edges remain
  // transparent; all classes and beast atlases use the same render path.
- if(impactVisual.flash>.02){
-  ctx.save();
-  ctx.globalAlpha*=Math.min(.29,impactVisual.flash);
-  ctx.filter='brightness(0) invert(1)';
-  renderActor(1);
-  ctx.restore();
- }
+ window.ArenaMotion?.drawHitFlash?.(ctx,impactVisual.flash,renderActor);
  ctx.restore();
  ctx.globalAlpha=1;
  // Both factions use the real head/foot camera projection, without
@@ -3977,7 +3973,7 @@ window.ChampionMurmillo?.onReady(()=>{
 S.player=fighter('murmillo',335,false);S.enemy=fighter('retiarius',950,true);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script src="ludus-scene.js?v=atomic-lobby-reveal-v107-20261026"></script><script src="practice-scale-profiles.js?v=registry-sync-v1-20261028"></script><script src="practice-visual-profiles.js?v=vfx-direction-v58"></script><script src="ludus-practice.js?v=practice-fourdepth-qa-v121-20261028"></script><script src="ludus-training-runtime.js?v=studio-scale-parity-v95"></script><script src="ludus-doctore-anim.js?v=training-fit-v71"></script><script src="ludus-approved-scenes.js?v=atomic-market-training-v108-20261027"></script><script src="ludus-armory-live.js?v=five-stats-v96"></script><script src="arena-coop-core.js?v=artist-body-v116-20261028"></script><script src="arena-coop-match.js?v=five-stats-v97"></script><script src="arena-coop-camera.js?v=concordia-camera-v64"></script><script src="arena-coop.js?v=artist-body-v116-20261028"></script><script src="ludus-cards.js?v=five-stats-v96"></script>
+<script src="ludus-scene.js?v=atomic-lobby-reveal-v107-20261026"></script><script src="practice-scale-profiles.js?v=registry-sync-v1-20261028"></script><script src="practice-visual-profiles.js?v=vfx-direction-v58"></script><script src="ludus-practice.js?v=contact-flash-rumble-v122-20261028"></script><script src="ludus-training-runtime.js?v=studio-scale-parity-v95"></script><script src="ludus-doctore-anim.js?v=training-fit-v71"></script><script src="ludus-approved-scenes.js?v=atomic-market-training-v108-20261027"></script><script src="ludus-armory-live.js?v=five-stats-v96"></script><script src="arena-coop-core.js?v=artist-body-v116-20261028"></script><script src="arena-coop-match.js?v=five-stats-v97"></script><script src="arena-coop-camera.js?v=concordia-camera-v64"></script><script src="arena-coop.js?v=contact-flash-rumble-v122-20261028"></script><script src="ludus-cards.js?v=five-stats-v96"></script>
 
 </body></html>
 

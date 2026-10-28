@@ -518,7 +518,7 @@ function deal(attacker,target,multiplier=1,style='normal'){
  }
  root.ArenaCombatFeel?.event?.(battle,style==='parry'?'reversal':
    style==='special'?'special':crit?'strike':'hit',
-   attacker,target,battle.clock,{power:style==='parry'||style==='special'?1.12:.72});
+   attacker,target,battle.clock,{contact:true,power:style==='parry'||style==='special'?1.12:.72});
  if(isKO){
   target.dead=true;target.deathAt=battle.clock;target.fade=1.6;target.windup=0;target.guard=0;
   beginRemoval(target);
@@ -868,7 +868,8 @@ function drawUnit(unit){
  ctx.save();ctx.translate(unit.x+flightX,unit.y+flightY);
  const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
  const bodyMotion=root.ArenaMotion?.pose?.(unit,battle?.clock||0,reduced)||{x:0,y:0,tilt:0};
- const impact=root.ArenaMotion?.visual?.(unit,reduced,true)||{scale:1,flash:0};
+ const impact=root.ArenaMotion?.visual?.(unit,reduced,battle?.fx!==false)||{scale:1,flash:0};
+ const hitOffset=root.ArenaMotion?.hitOffset?.(unit,reduced,battle?.fx!==false)||{x:0,y:0};
  // Approved backdrop already has baked floor lighting: NO vector shadow.
  if(unit.dead)ctx.globalAlpha=1;
  const art=sprite(unit);
@@ -889,15 +890,15 @@ function drawUnit(unit){
    const face=unit.side==='enemy'?-1:1;
    ctx.save();
    if(!unit.dead){
-    ctx.translate(bodyMotion.x,bodyMotion.y);
+    ctx.translate(bodyMotion.x+hitOffset.x*scale,bodyMotion.y+hitOffset.y*scale);
     ctx.rotate(bodyMotion.tilt||0);
     ctx.scale(impact.scale||1,impact.scale||1);
    }
    ctx.translate((t.x+motion.x)*scale*face,(profilesFoot(unit)+t.y+motion.y)*scale);
    if(face<0)ctx.scale(-1,1);
-   if(impact.flash>0)ctx.filter='brightness('+(1+impact.flash*2.5).toFixed(2)+')';
-   try{ctx.drawImage(art,-pivotX*k,-pivotY*k,
-    (art.width||art.naturalWidth)*k,(art.height||art.naturalHeight)*k);}
+   const paintActor=alpha=>{ctx.globalAlpha=alpha;ctx.drawImage(art,-pivotX*k,-pivotY*k,
+    (art.width||art.naturalWidth)*k,(art.height||art.naturalHeight)*k);};
+   try{paintActor(1);root.ArenaMotion?.drawHitFlash?.(ctx,impact.flash,paintActor);}
    catch(_){}
    ctx.restore();
   }

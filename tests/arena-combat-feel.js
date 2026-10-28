@@ -11,7 +11,7 @@ const feel=globalThis.ArenaCombatFeel,practice=globalThis.LudusPractice.rules;
 const fighter=(x,face)=>({x,face,hp:150,maxHp:150,dead:false});
 const source=fighter(410,1),target=fighter(600,-1);
 const state={flash:0,fx:true};
-assert(feel.event(state,'parry',source,target,0,{team:true}));
+assert(feel.event(state,'parry',source,target,0,{team:true,contact:true}));
 assert(state.cameraKick&&state.cinematic,'shake and cinematic both start');
 assert(source.bodySpring&&target.bodySpring,'both bodies rebound');
 assert(target.hitVisual,'victim receives transient scale pulse');

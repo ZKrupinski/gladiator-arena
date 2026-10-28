@@ -141,6 +141,7 @@
    const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
    const body=root.ArenaMotion?.pose?.(u,sim.time,reduced)||{x:0,y:0,tilt:0};
    const impact=root.ArenaMotion?.visual?.(u,reduced,true)||{scale:1,flash:0};
+   const hitOffset=root.ArenaMotion?.hitOffset?.(u,reduced,true)||{x:0,y:0};
    const frame=root.LudusBridge.practiceFrame(u,pose),px=frame?.canvas===image&&Number.isFinite(frame.pivotX)?frame.pivotX:image.width/2,py=frame?.canvas===image&&Number.isFinite(frame.footY)?frame.footY:image.height;
    const flightX=airborne?(flight.fromX-u.x)*Math.pow(1-flightT,1.6):0;
    const flightY=airborne&&!flight.reduced?-4*flight.height*flightT*(1-flightT):0;
@@ -149,11 +150,11 @@
    ctx.save();
    ctx.translate(u.x+flightX,u.y+flightY*depth);
    ctx.scale(depth,depth);
+   ctx.translate(hitOffset.x*COOP_CAMERA_BODY_ZOOM,hitOffset.y*COOP_CAMERA_BODY_ZOOM);
    ctx.translate((profile.x+motion.x)*z*u.face,((root.PracticeScaleProfiles?.foot(look)||0)+profile.y+motion.y)*z);
    if(airborne&&!flight.reduced&&!u.dead)ctx.rotate(u.face*.11*Math.sin(Math.PI*flightT));
    if(!u.dead){if(!airborne)ctx.translate(body.x,body.y);ctx.rotate(airborne?0:body.tilt||0);ctx.scale(impact.scale||1,impact.scale||1);}
    ctx.scale(u.face,1);
-   if(!u.dead&&impact.flash>0)ctx.filter='brightness('+(1+impact.flash*2.5).toFixed(2)+')';
    if(!u.dead&&!airborne&&u.recoilAt!==undefined&&sim.time-u.recoilAt<.58){
     const life=1-(sim.time-u.recoilAt)/.58;
     for(const [t,alpha] of [[0,.14],[.25,.23],[.5,.36],[.75,.48]]){
@@ -175,7 +176,8 @@
      ctx.drawImage(image,-px*k+offset,-py*k,image.width*k,image.height*k);
     }
    }
-   ctx.globalAlpha=1;ctx.drawImage(image,-px*k,-py*k,image.width*k,image.height*k);ctx.restore();
+   const paintActor=alpha=>{ctx.globalAlpha=alpha;ctx.drawImage(image,-px*k,-py*k,image.width*k,image.height*k);};
+   paintActor(1);root.ArenaMotion?.drawHitFlash?.(ctx,impact.flash,paintActor);ctx.restore();
    if(!u.dead){
     const signals=root.ArenaCombatSignals,rivals=sim.units.filter(v=>v.side!==u.side&&!v.dead);
     const opponent=rivals.find(v=>v.id===u.target)||
@@ -295,6 +297,11 @@
    C.step(sim,sim.result?dt:scaled);
    const events=sim.events.filter(e=>e.id>state.eventId);
    for(const e of events){state.eventId=e.id;state.fx.push(e);
+    // Per-victim contact must never share the camera's team-wide throttle.
+    if(e.damage>0){
+     const victim=sim.units.find(u=>u.id===e.target);
+     root.ArenaMotion?.impact?.(victim,['riposte','counter','parry'].includes(e.type)?'parry':e.type==='push'?'special':'strike');
+    }
     if(['parry','counter','riposte','push','dash','rescue','ambush','hit','assist'].includes(e.type)&&
        (e.type!=='hit'&&e.type!=='assist'||sim.time>=(state.nextImpactAt||0))){
      const a=sim.units.find(u=>u.id===e.source),b=sim.units.find(u=>u.id===e.target);

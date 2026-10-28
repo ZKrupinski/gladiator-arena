@@ -41,11 +41,13 @@ function impact(f,kind='strike'){
  if(!f||f.dead||f.hp<=0||f.action==='defeat'||f.action==='death')return;
  const preset=IMPACTS[kind]||IMPACTS.strike;
  if(f.hitVisual && (IMPACTS[f.hitVisual.kind]?.grow||0)>preset.grow&&
-    f.hitVisual.t<preset.duration*.32)return;
- f.hitVisual={kind,t:['strike','guard','special'].includes(kind)?-.10:0,duration:preset.duration};
+    f.hitVisual.t<preset.duration*.32)kind=f.hitVisual.kind;
+ // Called at confirmed contact: start flash and body vibration together.
+ f.hitVisual={kind,t:0,duration:(IMPACTS[kind]||preset).duration};
 }
 function advanceImpact(f,dt){
  if(!f?.hitVisual)return;
+ if(f.dead||f.hp<=0||f.action==='death'||f.action==='defeat'){f.hitVisual=null;return;}
  const state=f.hitVisual;
  state.t=Math.min(state.duration,state.t+clamp(Number(dt)||0,0,.08));
  if(state.t>=state.duration)f.hitVisual=null;
@@ -63,8 +65,28 @@ function visual(f,reduced=false,fx=true){
  else scale=1+(p.grow-1)*Math.pow((1-phase)/.51,2);
  // One contact glint, never a second startup blink.
  const t=state.t;
- const flash=p.flash*.22*Math.max(0,1-t/.055);
+ const flash=Math.min(.29,p.flash*.37)*clamp((.085-t)/.060);
  return {scale:clamp(scale,.94,1.16),flash:clamp(flash,0,.29)};
+}
+// Render-only local vibration: never changes world position, hitbox or saved art.
+// It shares hitVisual's real-time clock with the one short white glint.
+function hitOffset(f,reduced=false,fx=true){
+ const neutral={x:0,y:0};
+ if(!f?.hitVisual||f.dead||f.hp<=0||f.action==='death'||f.action==='defeat'||reduced||!fx)return neutral;
+ const {t,kind}=f.hitVisual;
+ if(t<0||t>=.16)return neutral;
+ const amplitude=['special','dash','parry','reversal'].includes(kind)?7:4.5;
+ const decay=Math.pow(1-t/.16,2),phase=t*2*PI*32;
+ return {x:Math.cos(phase)*amplitude*decay*(f.face<0?-1:1),
+  y:Math.sin(phase*.75)*.8*decay};
+}
+// The painter receives alpha explicitly because some atlas renderers assign
+// globalAlpha internally; an outer multiplier is silently discarded by them.
+function drawHitFlash(ctx,amount,paint){
+ if(!ctx||!(amount>0)||typeof paint!=='function')return;
+ ctx.save();
+ try{ctx.filter='brightness(0) invert(1)';paint(clamp(amount,0,.29));}
+ finally{ctx.restore();}
 }
 function pulse(f,type,role,dir=1){
  if(!f||f.dead)return;
@@ -194,6 +216,6 @@ function contactPulse(a,b,minGap=MIN_GAP){
  pulse(b,'contact','target',dir);
  return true;
 }
-root.ArenaMotion={version:'1.4.0',PRESETS,RESPONSE,IMPACTS,pose,pulse,impact,visual,advance,shake,advanceShake,sampleShake,contactPulse};
+root.ArenaMotion={version:'1.4.0',PRESETS,RESPONSE,IMPACTS,pose,pulse,impact,visual,hitOffset,drawHitFlash,advance,shake,advanceShake,sampleShake,contactPulse};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.ArenaMotion;
 })(globalThis);

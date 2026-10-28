@@ -70,10 +70,6 @@ for(const cls of ['murmillo','retiarius','thraex','wolf','lion','tiger','elephan
  const f={...actor(),cls,beastType:['wolf','lion','tiger','elephant'].includes(cls)?cls:null};
  for(const kind of ['strike','guard','special','dash','parry','reversal']){
   M.impact(f,kind);
-  if(['strike','guard','special'].includes(kind)){
-   assert.equal(M.visual(f).flash,0,'no startup flash');
-   M.advance(f,0,.05);M.advance(f,0,.05);
-  }
   assert.ok(M.visual(f).flash>.07&&M.visual(f).flash<=.29,cls+' '+kind+' short transparent glint');
   assert.equal(M.visual(f).scale,1,'the planted-foot pivot starts at original scale');
   M.advance(f,.025,.020);
@@ -94,15 +90,14 @@ assert.ok(M.PRESETS.reversal.amp>=34);
 for(const kind of ['strike','guard','special','dash','parry','reversal']){
  const f=actor();f.hp=99;
  M.impact(f,kind);
- if(['strike','guard','special'].includes(kind)){M.advance(f,0,.05);M.advance(f,0,.05);}
  const first=M.visual(f).flash;
  assert.ok(first>.07&&first<=.29,kind+' initial flash partially transparent');
- M.advance(f,0,.060);
- assert.equal(M.visual(f).flash,0,kind+' glint ends after contact');
+ M.advance(f,0,.060);M.advance(f,0,.025);
+ assert.ok(M.visual(f).flash<1e-10,kind+' glint ends after contact');
  M.advance(f,0,.027);
  assert.equal(M.visual(f).flash,0,kind+' no second blink');
  M.advance(f,0,.036);
- assert.equal(M.visual(f).flash,0,kind+' off permanently after 103ms');
+ assert.equal(M.visual(f).flash,0,kind+' off permanently after 148ms');
  // Death frame must not inherit hit white even before the animation resumes.
  f.dead=true;
  assert.deepEqual(JSON.parse(JSON.stringify(M.visual(f))),{scale:1,flash:0});
@@ -111,7 +106,7 @@ for(const kind of ['strike','guard','special','dash','parry','reversal']){
  f.action='idle';f.hp=0;
  assert.deepEqual(JSON.parse(JSON.stringify(M.visual(f))),{scale:1,flash:0});
  M.impact(f,kind);
- assert.ok(Math.abs((f.hitVisual?.t||0)-.123)<.0001,'KO never restarts flash');
+ assert.ok(Math.abs((f.hitVisual?.t||0)-.148)<.0001,'KO never restarts flash');
 }
 const clashA=actor(),clashB=actor(true);
 clashA.x=500;clashB.x=685;clashA.vx=210;clashB.vx=-90;
