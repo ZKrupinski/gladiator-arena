@@ -129,6 +129,57 @@ input[type=file]{display:none}
 .motion-toolbar select{min-width:74px}
 .action-open{margin:3px 0;padding:8px 6px!important;font-size:11px!important}
 @media(max-width:720px){.action-body{grid-template-columns:1fr}.action-preview{margin:auto;max-width:420px}.action-sliders{gap:8px}.action-editor{padding:10px}}
+/* v130 | Uniform high-contrast native dropdowns across the entire studio.
+ * Native option popups may ignore :hover on some OSes; color-scheme:dark
+ * plus explicit option foreground/background protects Windows Chrome menus.
+ * Keep the native picker for touch, keyboard, and screen-reader support. */
+select{
+ color-scheme:dark;
+ background:#302016;
+ color:#fff0d2;
+ border:1px solid #c9a06b;
+ border-radius:7px;
+ font:700 14px/1.4 system-ui,"Noto Sans KR",sans-serif;
+ min-height:43px;
+ max-width:100%;
+ padding:8px 11px;
+ accent-color:#c78e47;
+}
+select option,select optgroup{
+ color-scheme:dark;
+ background-color:#24150f;
+ color:#fff0d2;
+ font:700 15px/1.5 system-ui,"Noto Sans KR",sans-serif;
+}
+select option{padding:7px 10px}
+select optgroup{font-weight:800;color:#ffd17d}
+select option:checked{
+ background-color:#85532d;
+ color:#fff9ea;
+}
+select:focus,select:focus-visible,select:open{
+ background-color:#493020;
+ color:#fff8e9;
+ border-color:#ffda98;
+ outline:3px solid #ffd17d;
+ outline-offset:2px;
+}
+@media(hover:hover){
+ select:hover:not(:disabled){background-color:#493020;color:#fff8e9;border-color:#e5b777}
+ select option:hover{background-color:#85532d;color:#fff9ea}
+}
+select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:650px){
+ select,.toolbar select,.action-top select,.motion-toolbar select,
+ .action-field select,.price-level select,.registry-add form select{
+  min-height:46px;
+  font-size:16px;
+  line-height:1.35;
+  padding:10px 12px;
+ }
+ select option,select optgroup{font-size:16px;line-height:1.45}
+ .toolbar select,.action-top select{max-width:min(100%,310px)}
+}
 </style></head>
 <body>
 <header><small>SPARTACVS · LVDVS · SPRITE CALIBRATION</small>
