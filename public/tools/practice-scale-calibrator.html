@@ -180,6 +180,10 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
  select option,select optgroup{font-size:16px;line-height:1.45}
  .toolbar select,.action-top select{max-width:min(100%,310px)}
 }
+/* v131: long precise action labels wrap cleanly on compact displays */
+button{white-space:normal;overflow-wrap:break-word;word-break:keep-all;line-height:1.35;text-align:center}
+.motion-bulk button,.action-field button{min-height:42px}
+@media(max-width:650px){.motion-bulk button,.action-actions button,.batch button{font-size:12px;min-height:44px}}
 </style></head>
 <body>
 <header><small>SPARTACVS · LVDVS · SPRITE CALIBRATION</small>
@@ -197,7 +201,7 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
   </select>
   <button id="undoEdit" disabled>↶ 마지막 수정 취소</button><button id="redoEdit" disabled>↷ 취소한 수정 다시 적용</button>
   <button id="shuffle">🔀 카드 표시 순서 섞기</button>
-  <button id="checkAll">33종 전부 체크</button><button id="clearChecks">모든 체크 해제</button>
+  <button id="checkAll">목록의 캐릭터 전부 체크</button><button id="clearChecks">모든 체크 해제</button>
   <span id="selectedCount" aria-live="polite">선택 0 / 등록부 로딩</span>
  </div>
  <div class="batch" aria-label="선택 항목 일괄 보정">
@@ -247,7 +251,7 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 <option value="practice">실전훈련</option>
 <option value="duel">일반전투</option>
 </select>
-<button id="actionReset" type="button">선택 동작의 위치·이펙트 기본값 복원</button>
+<button id="actionReset" type="button">현재 동작의 위치·이펙트만 기본값 복원</button>
 <button id="actionPreviewRefresh" type="button">현재 동작 그림 다시 불러오기</button>
 </div>
 <div class="action-body">
@@ -259,7 +263,7 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 <output id="actionTimeValue">0%</output>
 <label for="actionSpeed">속도</label><select id="actionSpeed"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
 </div>
-<p class="motion-hint"><strong>진행 막대를 움직인 뒤 오른쪽 이동 X·Y를 조절하거나 캐릭터를 드래그하면 그 시간에 위치 키가 자동 생성됩니다.</strong> 타임라인 아래 작은 ◆ 키를 누르면 그 시점으로 이동하고 오른쪽 키 시간·좌표가 함께 표시됩니다. X·Y 숫자로 0.1px씩 미세 조정할 수 있습니다.</p>
+<p class="motion-hint"><strong>진행 막대를 움직인 뒤 위쪽 동작 X·Y(0% 제외), 오른쪽 이동 X·Y 또는 캐릭터 드래그로 그 시간에 위치 키를 만듭니다.</strong> 타임라인 아래 작은 ◆ 키를 누르면 그 시점으로 이동하고 오른쪽 키 시간·좌표가 함께 표시됩니다. X·Y 숫자로 0.1px씩 미세 조정할 수 있습니다.</p>
 <p class="motion-hint">현재 동작의 첫 프레임을 13% 투명도로 뒤에 고정 표시합니다(잔상 토글 가능). 왼쪽 미리보기만 약 15% 확대했으며, 실제 게임의 스케일에는 영향이 없습니다. 이펙트 역시 8프레임으로 함께 재생합니다.</p>
 <p id="actionFrameStatus" role="status">선택한 동작 프레임을 준비합니다.</p></div>
 <div class="action-sliders">
@@ -290,8 +294,8 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 </div></div>
 <div class="motion-bulk" aria-label="선택한 캐릭터에게 이펙트 설정만 복사">
 <button id="bulkCopyFx" type="button">현재 동작 이펙트 → 체크한 검투사에게 복사</button>
-<button id="bulkCopyAllFx" type="button">15개 동작 이펙트만 → 체크한 검투사에게 복사</button>
-<output id="batchActionStatus" role="status">아래 카드에서 대상 검투사를 체크하세요. 이펙트 종류·방향·위치·배율만 복사하고 각자의 애니메이션 키·기본 위치·크기는 유지합니다.</output>
+<button id="bulkCopyAllFx" type="button">전체 15동작 이펙트만 → 체크한 검투사에게 복사</button>
+<output id="batchActionStatus" role="status">먼저 원본 캐릭터·동작을 선택하고, 아래 카드에서 복사받을 검투사를 체크하세요. 이펙트 종류·방향·위치·배율만 복사합니다. 대상의 캐릭터 고유 이동 키·크기는 유지되며 이 기기에 저장됩니다.</output>
 </div>
 <div class="action-actions"><button id="actionShowIdle">대기(기본) 동작으로 전환</button><output id="actionAutosave" role="status">동작·이펙트 변경값은 이 기기에 자동 임시저장됩니다.</output><span class="source-note">프리뷰는 전열 기준이며 투명영역 자동 확대를 사용하지 않습니다. 변경 후 기기 임시저장 또는 GitHub 원본 게시를 누르세요.</span></div>
 </section>
@@ -299,9 +303,9 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 <p>아래 인간 검투사 27종 카드의 <strong>시장 가격레벨 1~5</strong>를 정하세요.
 1단계 약 420D · 2단계 580D · 3단계 780D · 4단계 1,020D · 5단계 1,350D. 실제 가격은 ±6% 변동합니다.
 야수·집행인은 시장에 등장하지 않아 가격을 설정할 수 없습니다.</p>
-<p>설정은 기기에 자동 임시저장되고 시장의 미판매 매물에 즉시 적용됩니다. 모든 기기에 적용하려면 <strong>GitHub 원본 게시</strong>를 실행하세요. 고용 완료된 검투사와 성장 능력치는 변경되지 않습니다.</p></section>
+<p>설정은 이 기기에 자동 임시저장되고 이 기기의 시장 미판매 매물에 적용됩니다. 모든 기기에 적용하려면 <strong>GitHub 원본 게시</strong>를 실행하세요. 고용 완료된 검투사와 성장 능력치는 변경되지 않습니다.</p></section>
 <section class="registry-add" id="registryAdd" aria-label="새 검투사 외형 등록">
-<h2>⚔ 신규 검투사 외형 · 게임 전체 자동 등록</h2>
+<h2>⚔ 신규 검투사 외형 · 이 기기에서 먼저 등록</h2>
 <p>검투사시장, 루두스, 훈련, 장비, 1:1·다인 전투와 이 조정실에서 <strong>같은 외형 ID</strong>를 사용합니다.
 전용 경로에 9종 동작 스프라이트(각 3840×1080 투명 4×2 배열)를 올린 뒤 등록하세요.
 그림이 없는 검투사를 다른 그림으로 대체하지 않습니다.</p>
@@ -313,7 +317,7 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 <label>기본 시장 가격레벨<select name="priceLevel"><option value="1">1 · 저가형</option><option value="2" selected>2 · 일반형</option><option value="3">3 · 숙련형</option><option value="4">4 · 특수형</option><option value="5">5 · 최고가형</option></select></label>
 <button type="submit" id="registerGladiatorSubmit">9종 이미지 검사 후 이 기기에 외형 등록</button>
 </form>
-<output id="registryStatus" role="status" aria-live="polite">등록된 인간 검투사: <span id="registryCount">27</span>종 · 등록 시 게임과 조정실에 반영됩니다.</output></section>
+<output id="registryStatus" role="status" aria-live="polite">등록된 인간 검투사: <span id="registryCount">27</span>종 · 이 기기에 먼저 등록됩니다. 다른 기기에서 쓰려면 GitHub 원본 게시가 필요합니다.</output></section>
 <main class="grid" id="grid" aria-label="검투사 전체 외형별 가격·크기·동작·이펙트 편집"></main>
 <section class="source-panel" aria-labelledby="gitTitle">
 <h2 id="gitTitle">GitHub 원본에 크기·발높이·동작·이펙트·시장 가격레벨 저장</h2>
@@ -330,7 +334,7 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 <li>Only select repositories → gladiator-arena만 선택</li>
 <li>Repository permissions → Contents → Read and write</li>
 <li>Generate token으로 발급한 문자열을 아래 칸에 붙여넣기</li></ol>
-<p>토큰은 채팅에 보내지 마세요. 토큰 없이 저장하려면 ‘GitHub 편집기에서 저장’을 이용한 뒤 이 페이지에서 ‘저장·배포 상태 다시 확인’을 누르세요.</p></details>
+<p>토큰은 채팅에 보내지 마세요. 토큰 없이 저장하려면 ‘GitHub 편집기 열기·내용 복사’를 눌러 직접 붙여넣고 GitHub에서 커밋하세요. 그런 다음 ‘GitHub 원본과 현재 값 비교’를 누르세요.</p></details>
 <div id="gitAuth" class="auth-line" hidden>
  <label for="githubToken">GitHub 인증 토큰 (저장소 <code>ZKrupinski/gladiator-arena</code>의 Contents 쓰기 권한)</label>
  <input id="githubToken" type="password" autocomplete="off" spellcheck="false" placeholder="게시할 때만 입력 · 기기에 저장하지 않음">
@@ -344,7 +348,7 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 </section>
 <footer class="actions">
 <button id="save" class="primary">현재 수정값 이 기기에 저장</button>
-<button id="reset">이 기기의 모든 수정값 초기화</button>
+<button id="reset">이 기기 수정값 전체 초기화</button>
 <button id="export">설정 백업 JSON 다운로드</button>
 <button id="import">설정 백업 JSON 불러와 적용</button><input id="file" type="file" accept=".json,application/json">
 <a href="../">게임으로 돌아가기 ↗</a>
@@ -375,6 +379,44 @@ let order=keys.slice(),origin=new Map(),observer=null,cutsPromise=null;
 const numberPairs=[]; // Initialized before first key editor render.
 const cache=new Map(),actionCache=new Map(),effectCache=new Map(),drawers=new Map(),$=selector=>document.querySelector(selector);
 const announce=s=>$('#status').textContent=s;
+// Scope-aware actions: expose exact side effects before clicking.
+const studioButtonHelp={
+ undoEdit:'마지막으로 기록된 편집을 되돌립니다. 다른 캐릭터의 수정도 포함할 수 있습니다.',
+ redoEdit:'실행 취소한 편집을 다시 적용합니다.',
+ shuffle:'카드 배치 순서만 무작위로 바꿉니다. 크기·그림·저장 설정은 유지됩니다.',
+ checkAll:'이 페이지에 등록된 모든 캐릭터를 일괄 조정 대상으로 체크합니다.',
+ clearChecks:'체크 표시만 모두 해제합니다. 수정한 값은 지우지 않습니다.',
+ bulkMinus:'체크된 캐릭터 각각의 크기 배율을 5% 줄여 이 기기에 저장합니다.',
+ bulkPlus:'체크된 캐릭터 각각의 크기 배율을 5% 늘려 이 기기에 저장합니다.',
+ bulkReset:'체크한 캐릭터 크기만 각 기본값으로 되돌립니다. 발높이·동작은 유지됩니다.',
+ bulkFootMinus:'체크된 캐릭터들의 발높이를 각각 5px 위로 이동합니다.',
+ bulkFootPlus:'체크된 캐릭터들의 발높이를 각각 5px 아래로 이동합니다.',
+ bulkFootReset:'체크된 캐릭터들의 발높이만 기본값으로 복원합니다. 기본값이 0이 아닐 수도 있습니다.',
+ verifySaved:'현재 화면의 설정값과 GitHub main의 원본 설정값을 비교합니다. 새로 저장하지 않습니다.',
+ compareDefaults:'체크를 전부 해제하고 기본 대표 4명을 비교창에 표시합니다. 보정값은 지우지 않습니다.',
+ actionReset:'현재 캐릭터의 현재 동작 보정만 기본값으로 되돌립니다. 다른 동작·캐릭터는 유지됩니다.',
+ actionPreviewRefresh:'선택 동작의 프레임 그림을 다시 로딩합니다. 이동 키와 보정값은 유지됩니다.',
+ actionPlay:'현재 동작의 미리보기 재생/일시정지를 전환합니다. 저장한 키는 변경하지 않습니다.',
+ actionGhost:'현재 동작 첫 프레임을 미리보기에만 흐릿하게 보여줍니다. 실제 게임 이미지는 변경되지 않습니다.',
+ motionAdd:'왼쪽 재생 커서 시간에 이동 키(X·Y)를 추가합니다. 기존 키가 있으면 그 키로 이동합니다.',
+ motionDelete:'선택된 이동 키 하나만 삭제합니다. 다른 키·이펙트 설정은 유지됩니다.',
+ bulkCopyFx:'현재 캐릭터의 선택한 동작 이펙트만 아래에서 체크한 검투사에게 복사합니다. 대상 고유 이동 키는 유지합니다.',
+ bulkCopyAllFx:'현재 캐릭터의 15개 동작별 이펙트 종류·방향·위치·배율만 체크한 검투사에게 복사합니다. 이동 키는 복사하지 않습니다.',
+ actionShowIdle:'현재 캐릭터의 대기(idle) 동작 미리보기로 전환합니다.',
+ registerGladiatorSubmit:'9종 동작 이미지를 검사한 뒤 이 기기에 외형을 등록합니다. 원본 원격 저장은 별도입니다.',
+ publishOpen:'GitHub에 직접 저장하기 위한 인증 토큰 입력창을 엽니다. 버튼만 눌러서는 게시되지 않습니다.',
+ githubEdit:'현재 설정을 복사하고 GitHub 편집기를 엽니다. 붙여넣기·커밋은 직접 해야 합니다.',
+ publishConfirm:'이 기기의 크기·발높이·동작·이펙트·가격 설정을 GitHub main에 실제 커밋합니다.',
+ publishCancel:'인증 토큰을 지우고 GitHub 게시 창만 닫습니다. 보정값은 유지됩니다.',
+ save:'현재 수정값을 이 브라우저에만 저장합니다. 다른 기기는 변경되지 않습니다.',
+ reset:'이 기기의 크기·발높이·동작·이펙트·가격 수정값 전체를 기본값으로 되돌립니다. 확인창을 표시합니다.',
+ export:'현재 보정값을 JSON 백업 파일로 저장합니다. 값을 변경하지 않습니다.',
+ import:'JSON 백업 파일을 골라 이 기기의 보정값을 불러온 값으로 적용합니다.'
+};
+for(const [id,help] of Object.entries(studioButtonHelp)){
+ const btn=$('#'+id);if(btn){btn.title=help;btn.setAttribute('aria-description',help);}
+}
+
 $('#registryCount').textContent=String(registry.market().length);
 $('#registerGladiator').addEventListener('submit',async event=>{
  event.preventDefault();const form=event.currentTarget,button=$('#registerGladiatorSubmit'),status=$('#registryStatus');
@@ -1179,6 +1221,15 @@ function build(){
   footActions.append(up,feetReset,down);
   const edit=document.createElement('button');edit.className='action-open';
   edit.textContent='⚔ 이 외형의 동작·이펙트 편집하기';
+  for(const [button,help] of [
+   [minus,'이 캐릭터의 크기 배율을 5% 줄이고 이 기기에 저장합니다.'],
+   [plus,'이 캐릭터의 크기 배율을 5% 늘리고 이 기기에 저장합니다.'],
+   [original,'이 캐릭터의 크기 배율만 기본값으로 되돌립니다.'],
+   [up,'이 캐릭터의 발높이를 5px 위로 이동합니다.'],
+   [down,'이 캐릭터의 발높이를 5px 아래로 이동합니다.'],
+   [feetReset,'이 캐릭터의 발높이만 기본값으로 되돌립니다.'],
+   [edit,'이 캐릭터의 동작·이펙트 편집 영역으로 이동합니다. 다른 캐릭터는 유지됩니다.']
+  ]){button.title=help;button.setAttribute('aria-description',help);}
   let priceSelect=null,priceValue=null;
   controls.append(code,value,slider,adjust,footCaption,footTrack,footActions);
   if(pricing.isMarketLook(key)){
