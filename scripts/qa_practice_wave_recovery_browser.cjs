@@ -19,7 +19,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
   let s=fs.readFileSync('public/ludus-practice.js','utf8');
   const anchor='root.LudusPractice={';
   assert(s.includes(anchor));
-  s=s.replace(anchor,'root.__waveQA={setup,simulate,loop,setBattle:b=>battle=b,getBattle:()=>battle,setCourts:n=>COURTS=courtsForParty(n),getCourts:()=>COURTS,setContext:c=>ctx=c};'+anchor);
+  s=s.replace(anchor,'root.__waveQA={setup,simulate,nextWave,loop,setBattle:b=>battle=b,getBattle:()=>battle,setCourts:n=>COURTS=courtsForParty(n),getCourts:()=>COURTS,setContext:c=>ctx=c};'+anchor);
   // Test-only one-frame fault injection; production code stays unchanged.
   s=s.replace('function paint(){','function paint(){if(root.__qaPaintThrowOnce){root.__qaPaintThrowOnce=false;throw Error("forced one-frame painting failure");}');
   await route.fulfill({contentType:'text/javascript',body:s});
@@ -55,6 +55,16 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
    const rescue={remaining:blocked.left,spawned:blocked.enemies.filter(e=>!e.dead).length,
     exits:blocked.exits.length,clock:blocked.clock,paused:blocked.paused};
    window.ArenaCarnifex=original;
+   // Four real simultaneous opponents must be defeated and cleanly replaced.
+   const natural=makeBattle(0);natural.wave=0;natural.kills=0;
+   for(const h of natural.heroes){h.atk=200;h.cooldown=.05;h.kills=0;h.exp=0;}
+   qa.setBattle(natural);qa.nextWave();
+   const initialSpawn=natural.enemies.length,initialPending=natural.left;
+   let ticks=0;
+   for(;ticks<1800&&natural.wave===1;ticks++)qa.simulate(.05);
+   const normalFight={wave:natural.wave,clearedWave:natural.clearedWave,
+    kills:natural.kills,initialSpawn,initialPending,ticks,
+    alive:natural.heroes.filter(h=>!h.dead).length,queued:natural.queued.length};
    // A render exception must not stop the next RAF or advancement of clock.
    const pass=makeBattle(1);qa.setBattle(pass);
    const c=document.getElementById('epCanvas');qa.setContext(c.getContext('2d'));
@@ -62,7 +72,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
    qa.loop(100);const clock0=pass.clock;qa.loop(150);const clock1=pass.clock;
    // Cancel possible queued RAFs before leaving this isolated test state.
    pass.paused=true;document.getElementById('endlessPractice').hidden=true;
-   return {wave2,rescue,clock0,clock1,renderFaultRecovered:!window.__qaPaintThrowOnce};
+   return {wave2,rescue,normalFight,clock0,clock1,renderFaultRecovered:!window.__qaPaintThrowOnce};
   });
   assert(result.wave2.wave>=2,'hung retrieval cannot block WAVE 2');
   assert(result.wave2.clearedWave>=1,'WAVE 1 must be counted as cleared');
@@ -70,6 +80,11 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
   assert(result.rescue.spawned>=1,'empty court with pending enemy auto-recovers');
   assert.equal(result.rescue.remaining,0,'pending enemy is actually instantiated');
   assert(!result.rescue.paused);
+  assert.equal(result.normalFight.initialSpawn,4,'four chosen gladiators get four initial opponents');
+  assert.equal(result.normalFight.initialPending,0,'no hidden initial enemies');
+  assert(result.normalFight.kills>=4,'all four first-wave opponents must be defeated');
+  assert(result.normalFight.wave>=2,'real 4v4 fight automatically advances to wave 2');
+  assert(result.normalFight.alive===4,'normal strong squad remains alive');
   assert(result.renderFaultRecovered,'injected paint error was exercised');
   assert(result.clock1>result.clock0,'RAF continues updating after a render exception');
   // One deliberate synthetic exception is printed by the runtime but caught.
