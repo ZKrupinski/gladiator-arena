@@ -21,15 +21,24 @@ rather than being asked to reconnect tools that are already available.
    the user removed Cloudflare from the factory. Do NOT trigger, poll, wait
    for or require Cloudflare deployment/live-file validation. GitHub source
    completion is not evidence of playable web hosting.
-4. A new Chat session **cannot itself grant, reconnect, authorize or persist**
+4. **MANDATORY in EVERY user-facing game modification completion:** include the
+   current playable game URL as an explicit clickable link, alongside the
+   GitHub commit and QA result. Known public game URL:
+   `https://gladiator-arena-git.pages.dev/`. Never omit the game link just
+   because source work was committed through GitHub. **Do not claim the latest
+   changes are on that URL unless the actual served version was verified.**
+   Otherwise label it clearly as the existing game link, with latest-version
+   application unconfirmed. Do not mention the hosting provider by name in
+   user-visible messages; the user explicitly asked for that on 2026-10-29.
+5. A new Chat session **cannot itself grant, reconnect, authorize or persist**
    plugin access. Never represent account-level OAuth activation, tool
    availability in another session, or future background execution as
    guaranteed. If an actual connector is missing/expired, identify the exact
    unavailable capability and only request user reauthorization when needed.
-5. Never claim "no GitHub access" based solely on assumptions or earlier
+6. Never claim "no GitHub access" based solely on assumptions or earlier
    failures: attempt the available connector first. Never store tokens,
    credentials or sensitive connection strings in repository files.
-6. Applies to this repository. For other games, identify their correct
+7. Applies to this repository. For other games, identify their correct
    project/repository rather than blindly reusing Spartacus deployment paths.
 
 ## MANDATORY: SpriteForge V3 pre-art briefing for ALL artists and tools
