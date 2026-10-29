@@ -1,0 +1,28 @@
+name: QA studio dropdown contrast and mobile readability v130
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/tools/practice-scale-calibrator.html
+      - scripts/qa_studio_dropdown_contrast_browser.cjs
+      - .github/workflows/qa-studio-dropdown-contrast-v130.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  dropdown-contrast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax QA
+        run: node --check scripts/qa_studio_dropdown_contrast_browser.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test native menu option contrast, keyboard and mobile controls
+        run: node scripts/qa_studio_dropdown_contrast_browser.cjs
