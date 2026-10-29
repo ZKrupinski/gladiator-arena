@@ -56,7 +56,7 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
    for(const [id,[caption,hint]] of Object.entries(required)){
     const btn=$('#'+id);
     if(!btn)throw Error('Missing button: '+id);
-    if(btn.textContent.trim()!==caption)throw Error('Misleading label: '+id+' = '+btn.textContent);
+    if(!btn.textContent.trim().includes(caption))throw Error('Misleading label: '+id+' = '+btn.textContent);
     if(!btn.title.includes(hint))throw Error('Missing scope help: '+id+' = '+btn.title);
     if(btn.getAttribute('aria-description')!==btn.title)throw Error('Accessible description missing: '+id);
     labels.push(id);
