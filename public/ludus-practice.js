@@ -254,7 +254,7 @@ function nextWave(){
  if(!battle)return;
  const alive=battle.heroes.filter(h=>!h.dead).length;
  battle.wave++;battle.left=Math.max(waveSize(battle.wave),alive);
- battle.serial=0;battle.delay=.65;battle.breakTime=0;battle.cleared=false;
+ battle.serial=0;battle.delay=.65;battle.breakTime=0;battle.emptySeconds=0;battle.cleared=false;
  for(const h of battle.heroes)if(!h.dead){
   h.hp=Math.min(h.maxHp,h.hp+Math.round(h.maxHp*.045));
   h.x=h.homeX;h.y=COURTS[h.seat].y;h.windup=0;h.guard=0;h.parry=0;h.stun=0;h.dodge=0;h.cooldown=.15;
@@ -278,7 +278,7 @@ function start(){
  COURTS=courtsForParty(picks.length);
  $('.ep-selection').hidden=true;$('.ep-combat').hidden=false;$('.ep-result').hidden=true;
  battle={heroes:picks.map(heroFor),enemies:[],queued:[],wave:0,clearedWave:0,kills:0,left:0,serial:0,delay:0,nextSeat:0,
-  cleared:false,breakTime:0,knockout:0,finished:false,paused:false,speed:1,shakes:0,flash:0,fx:true,nextCinematicAt:0,cinematic:null,focusFrame:null,
+  cleared:false,breakTime:0,emptySeconds:0,knockout:0,finished:false,paused:false,speed:1,shakes:0,flash:0,fx:true,nextCinematicAt:0,cinematic:null,focusFrame:null,
   particles:[],fx:[],exits:[],clock:0,audioTimes:{}};
  root.ArenaAudio?.enterArena?.();
  prev=0;nextWave();updateButtons();frameId=requestAnimationFrame(loop);
@@ -451,17 +451,24 @@ function drawDeparture(removal){
  },617,{footOffsetFactor:court.scale/scale});
  ctx.restore();
 }
+// An unresolved Carnifex sequence must never reserve a court forever.
+const DEPARTURE_SOFT_TIMEOUT=FALL_DURATION+8.5;
+const DEPARTURE_HARD_TIMEOUT=FALL_DURATION+14;
 function updateDepartures(dt){
  if(!battle)return;
  const engine=root.ArenaCarnifex;
  for(const exit of battle.exits){
-  exit.age+=dt;
-  if(exit.seq&&engine?.advance){
-   if(exit.age>=FALL_DURATION)engine.advance(exit.seq,Math.min(dt,exit.age-FALL_DURATION),exit.viewport);
+  const oldAge=exit.age;exit.age+=dt;
+  if(exit.seq&&engine?.advance&&exit.age>=FALL_DURATION){
+   const elapsed=Math.max(0,exit.age-FALL_DURATION)-Math.max(0,oldAge-FALL_DURATION);
+   if(elapsed>0)engine.advance(exit.seq,elapsed,exit.viewport);
+   // Walk original art fully offscreen before pruning an abnormal record.
+   if(!exit.seq.finished&&exit.age>DEPARTURE_SOFT_TIMEOUT)
+    engine.advance(exit.seq,Math.max(0,exit.age-FALL_DURATION-Number(exit.seq.t||0))+.25,exit.viewport);
   }
  }
  battle.exits=battle.exits.filter(exit=>
-  exit.seq?!exit.seq.finished:exit.age<3.6);
+  exit.seq?!exit.seq.finished&&exit.age<DEPARTURE_HARD_TIMEOUT:exit.age<3.6);
 }
 // Authored FX size library lives in PracticeVisualProfiles and is exposed
 // to the same editor that controls each action's sprite transform.
@@ -743,12 +750,23 @@ function simulate(dt){
   if((battle.breakTime-=dt)<=0)nextWave();
   return;
  }
+ // Failsafe: do not strand an endless wave on an empty arena if a corpse
+ // sequence holds a court beyond its maximum expected retrieval time.
+ const noFoe=!battle.enemies.some(e=>!e.dead&&!e.waiting);
+ battle.emptySeconds=noFoe?(battle.emptySeconds||0)+dt:0;
+ if(noFoe&&battle.emptySeconds>DEPARTURE_HARD_TIMEOUT){
+  battle.exits.length=0;
+  battle.delay=0;
+  battle.emptySeconds=0;
+ }
  // Assign at most one foe to each living gladiator, only when that
  // court is empty. The queue remains pending instead of clustering.
  if(battle.left>0||battle.queued.length){
   battle.delay-=dt;
-  if(battle.delay<=0&&spawnMatched())
+  if(battle.delay<=0&&spawnMatched()){
    battle.delay=clamp(1.22-battle.wave*.009,.48,1.22);
+   battle.emptySeconds=0;
+  }
  }
  battle.heroes.forEach(u=>act(u,dt));battle.enemies.forEach(u=>act(u,dt));
  keepCourtSpacing();
@@ -1021,17 +1039,28 @@ function loop(timestamp){
  if(!display()||!battle||battle.finished){frameId=0;return;}
  const realDt=prev?clamp((timestamp-prev)/1000,0,.05):0;
  prev=timestamp;
- const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
- const scaled=root.ArenaCombatFeel?.advance?.(battle,battle.heroes.concat(battle.enemies),
-  realDt,{paused:battle.paused,reduced})??realDt;
- if(!battle.paused){spectatorClock+=realDt;simulate(scaled*battle.speed);}
- if(battle&&!battle.finished){
-  root.ArenaAudio?.update?.({phase:'fight',paused:battle.paused,
-   health:battle.heroes.reduce((hp,u)=>hp+Math.max(0,u.hp/u.maxHp),0)/Math.max(1,battle.heroes.length),
-   distance:360});
-  if(timestamp-drawTick>140){drawTick=timestamp;status();}
-  paint();frameId=requestAnimationFrame(loop);
- }else frameId=0;
+ try{
+  const reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+  const scaled=root.ArenaCombatFeel?.advance?.(battle,battle.heroes.concat(battle.enemies),
+   realDt,{paused:battle.paused,reduced})??realDt;
+  if(!battle.paused){spectatorClock+=realDt;simulate(scaled*battle.speed);}
+  if(battle&&!battle.finished){
+   root.ArenaAudio?.update?.({phase:'fight',paused:battle.paused,
+    health:battle.heroes.reduce((hp,u)=>hp+Math.max(0,u.hp/u.maxHp),0)/Math.max(1,battle.heroes.length),
+    distance:360});
+   if(timestamp-drawTick>140){drawTick=timestamp;status();}
+   paint();
+  }
+ }catch(error){
+  // A canvas frame exception must not permanently stop an active wave.
+  if(battle){
+   battle.loopErrors=(battle.loopErrors||0)+1;
+   if(battle.loopErrors<=3)console.error('[실전훈련] 프레임 오류 복구:',error);
+  }
+ }finally{
+  if(display()&&battle&&!battle.finished)frameId=requestAnimationFrame(loop);
+  else frameId=0;
+ }
 }
 // One success-first scoreboard for both natural KO and voluntary finish.
 // No penalty/failure label: the meaningful result is the distance and growth.
