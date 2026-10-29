@@ -216,7 +216,8 @@ input[type=file]{display:none}
 <div class="action-field"><label for="frameX">동작 X <output id="frameXValue"></output></label><input type="range" id="frameX" min="-180" max="180" step="1"></div>
 <div class="action-field"><label for="frameY">동작 Y <output id="frameYValue"></output></label><input type="range" id="frameY" min="-180" max="180" step="1"></div>
 <div class="action-field"><label for="frameScale">동작 배율 <output id="frameScaleValue"></output></label><input type="range" id="frameScale" min=".45" max="1.8" step=".01"></div>
-<div class="action-separator">동작 이동 애니메이션 — 자유 시간 키 · 시간 0.1% / 위치 0.1px 정밀 편집</div>
+<div class="action-separator">동작 이동 애니메이션 — 자유 시간 키 · 시간 0.1% / 위치 0.1px 정밀 편집
+<small style="display:block;font-weight:400">0% 이외의 시간에서는 위쪽 '동작 X·Y'를 움직여도 현재 시간에 키를 생성합니다. 0%에서는 전체 동작의 기본 위치를 조정합니다.</small></div>
 <div class="action-field"><label for="motionKey">편집할 위치 키</label><select id="motionKey">
 <option value="start">시작 0%</option><option value="middle">중간 50%</option><option value="end">끝 100%</option></select></div>
 <div class="action-field"><label for="motionKeyTime">선택 키 시간 (%)</label><input id="motionKeyTime" type="number" min="0" max="100" step=".1" value="0"></div>
@@ -236,10 +237,10 @@ input[type=file]{display:none}
 <div class="action-separator">드래그 대상을 ‘이펙트 위치 X/Y’로 선택하면 미리보기의 이펙트를 직접 끌어 위치를 자동 저장합니다. 좌우 미리보기 모두 캐릭터가 바라보는 방향 기준으로 저장합니다.</div>
 <div class="action-separator">동작별 X·Y·크기는 모든 게임 씬에서 같은 원본 설정을 사용합니다. 이펙트 선택도 동작별 설정이 우선입니다.</div>
 </div></div>
-<div class="motion-bulk" aria-label="선택한 캐릭터에 동작별 이펙트 및 이동 키 일괄 적용">
-<button id="bulkCopyFx" type="button">체크 캐릭터들에 이 동작 이펙트 복사</button>
-<button id="bulkCopyMotion" type="button">체크 캐릭터들에 모든 시간 키·보간 복사</button>
-<output id="batchActionStatus" role="status">위 캐릭터/동작의 설정을 아래 목록에서 체크한 다른 캐릭터에게만 적용합니다.</output>
+<div class="motion-bulk" aria-label="선택한 캐릭터에게 이펙트 설정만 복사">
+<button id="bulkCopyFx" type="button">현재 동작 이펙트만 복사</button>
+<button id="bulkCopyAllFx" type="button">모든 동작 이펙트 전체 복사 (애니메이션 키 제외)</button>
+<output id="batchActionStatus" role="status">아래 카드에서 대상 검투사를 체크하세요. 이펙트 종류·방향·위치·배율만 복사하고 각자의 애니메이션 키·기본 위치·크기는 유지합니다.</output>
 </div>
 <div class="action-actions"><button id="actionShowIdle">기본 동작 보기</button><output id="actionAutosave" role="status">동작·이펙트 변경값은 이 기기에 자동 임시저장됩니다.</output><span class="source-note">프리뷰는 전열 기준이며 투명영역 자동 확대를 사용하지 않습니다. 변경 후 기기 임시저장 또는 GitHub 원본 게시를 누르세요.</span></div>
 </section>
@@ -583,6 +584,14 @@ function showMotionPoint(point){
   $('#motion'+axis).value=String(value);
   $('#motion'+axis+'Value').textContent=String(value)+'px';
  }
+ // Show the visible action position (base offset + interpolated motion)
+ // whenever a key/cursor is selected, including its precise X/Y values.
+ const cfg=currentAction();
+ for(const axis of ['X','Y']){
+  const absolute=Number(cfg[axis.toLowerCase()])+Number(point[axis.toLowerCase()]||0);
+  $('#frame'+axis).value=String(Math.max(-180,Math.min(180,Math.round(absolute*10)/10)));
+  $('#frame'+axis+'Value').textContent=$('#frame'+axis).value+'px';
+ }
  syncNumbers();
 }
 function showMotionKey(forceIndex){
@@ -726,29 +735,36 @@ function persistActionEdit(){
  document.dispatchEvent(new Event('input'));
  return ok;
 }
-function updateActionControls(){formatAction();showMotionKey();previewAction();}
+function updateActionControls(){formatAction();showMotionCursor();previewAction();}
+function effectForCharacterPose(key,pose){
+ const inherited=v.fallbackAction?.(pose);
+ return {...v.clean(actions[key]?.[pose]||(inherited?actions[key]?.[inherited]:null)).effect};
+}
 function applyActionToChecked(mode){
  const source=$('#actionKey').value,pose=$('#actionPose').value;
- const selected=[...selection].filter(key=>key!==source);
+ const selected=[...selection].filter(key=>key!==source && !key.startsWith('beast_') && !key.startsWith('npc_'));
  const status=$('#batchActionStatus');
  if(!selected.length){
-  status.textContent='대상 없음: 아래 캐릭터 목록에서 다른 캐릭터를 체크해 주세요.';
+  status.textContent='대상 없음: 아래 캐릭터 목록에서 다른 검투사를 체크해 주세요.';
   return 0;
  }
- const from=currentAction();
+ // Detached per-action FX snapshots; each destination retains its own
+ // motion curve, keyframes, base X/Y, scale, and other pose values.
+ const poses=mode==='all-effects'?v.ACTIONS:[pose];
+ const copies=Object.fromEntries(poses.map(action=>[action,effectForCharacterPose(source,action)]));
  for(const key of selected){
   if(!actions[key])actions[key]={};
-  const inherited=v.fallbackAction?.(pose);
-  const to=v.clean(actions[key][pose]||(inherited?actions[key][inherited]:null));
-  if(mode==='effect')to.effect={...from.effect};
-  else if(mode==='motion')to.motion=v.cleanMotion(from.motion);
-  actions[key][pose]=v.clean(to);
+  for(const action of poses){
+   const inherited=v.fallbackAction?.(action);
+   const target=v.clean(actions[key][action]||(inherited?actions[key][inherited]:null));
+   target.effect={...copies[action]};
+   actions[key][action]=v.clean(target);
+  }
  }
  const saved=persistActionEdit();
  status.textContent=saved?
-  '✓ '+selected.length+'명에게 '+(mode==='effect'?'이펙트 종류·방향·X·Y·크기':'시간별 위치 키')+
-  ' 복사·기기 저장 완료 · 이 동작 외의 설정과 크기·발높이는 유지':
-  '⚠ 변경은 적용됐지만 기기 저장 실패 · JSON 내보내기 권장';
+  '✓ '+selected.length+'명에게 '+poses.length+'개 동작의 이펙트만 독립 복사·기기 저장 완료 · 검투사 고유 애니메이션 키 유지':
+  '⚠ 이펙트 복사는 적용됐지만 기기 저장에 실패했습니다. JSON 백업을 권장합니다.';
  return selected.length;
 }
 function initMotionDrag(){
@@ -908,15 +924,32 @@ function initActionEditor(){
   if(index<0)keys.push(point);else keys[index]=point;
   saveMotionKeys(keys,t);
  });
- $('#bulkCopyFx').addEventListener('click',()=>applyActionToChecked('effect'));
- $('#bulkCopyMotion').addEventListener('click',()=>applyActionToChecked('motion'));
+ $('#bulkCopyFx').addEventListener('click',()=>applyActionToChecked('one-effect'));
+ $('#bulkCopyAllFx').addEventListener('click',()=>applyActionToChecked('all-effects'));
  for(const field of ['frameX','frameY','frameScale','fxX','fxY','fxScale','fxKind','fxDirection'])
   $('#'+field).addEventListener(['fxKind','fxDirection'].includes(field)?'change':'input',()=>{
    const key=$('#actionKey').value,pose=$('#actionPose').value;
    if(!actions[key])actions[key]={};
    const cfg=currentAction(),value=['fxKind','fxDirection'].includes(field)?$('#'+field).value:Number($('#'+field).value);
-   if(field==='frameX')cfg.x=value;
-   if(field==='frameY')cfg.y=value;
+   if(field==='frameX'||field==='frameY'){
+    // At nonzero scrub times, the upper position controls author the
+    // visible position as a key instead of changing the entire pose.
+    const axis=field==='frameX'?'x':'y',t=Math.round(actionProgress*1000)/1000;
+    if(t>0){
+     actionPlaying=false;
+     $('#actionPlay').textContent='▶ 재생';
+     $('#actionPlay').setAttribute('aria-pressed','false');
+     const motionKeys=keyList(cfg);
+     const index=motionKeys.findIndex(k=>Math.abs(k.t-t)<.00005);
+     const interpolated=index>=0?motionKeys[index]:v.sampleMotion(cfg,t);
+     const point={t,x:Math.round(interpolated.x*10)/10,y:Math.round(interpolated.y*10)/10};
+     point[axis]=Math.max(-150,Math.min(150,Math.round((value-cfg[axis])*10)/10));
+     if(index>=0)motionKeys[index]=point;else motionKeys.push(point);
+     saveMotionKeys(motionKeys,t);
+     return;
+    }
+    cfg[axis]=value;
+   }
    if(field==='frameScale')cfg.scale=value;
    if(field==='fxKind')cfg.effect.kind=value;
    if(field==='fxDirection')cfg.effect.direction=value;
