@@ -195,27 +195,27 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
    <option value="checked">선택된 항목 먼저</option>
    <option value="shuffle">셔플 순서</option>
   </select>
-  <button id="undoEdit" disabled>↶ 실행 취소</button><button id="redoEdit" disabled>↷ 다시 실행</button>
-  <button id="shuffle">🔀 셔플</button>
-  <button id="checkAll">전체 선택</button><button id="clearChecks">선택 해제</button>
+  <button id="undoEdit" disabled>↶ 마지막 수정 취소</button><button id="redoEdit" disabled>↷ 취소한 수정 다시 적용</button>
+  <button id="shuffle">🔀 카드 표시 순서 섞기</button>
+  <button id="checkAll">33종 전부 체크</button><button id="clearChecks">모든 체크 해제</button>
   <span id="selectedCount" aria-live="polite">선택 0 / 등록부 로딩</span>
  </div>
  <div class="batch" aria-label="선택 항목 일괄 보정">
-  <label for="bulkSlider">선택 항목 일괄 배율</label>
+  <label for="bulkSlider">체크한 캐릭터 크기 일괄 조정</label>
   <input id="bulkSlider" type="range" min=".7" max="1.3" value="1" step=".01" disabled aria-label="선택한 캐릭터들의 기존 크기에 대한 일괄 배율">
   <output id="bulkValue" for="bulkSlider">×1.00</output>
-  <button id="bulkMinus" disabled>모두 −5%</button>
-  <button id="bulkPlus" disabled>모두 +5%</button>
-  <button id="bulkReset" disabled>크기 기본값</button>
-  <button id="bulkFootMinus" disabled>선택 발 ↑ 5px</button>
-  <button id="bulkFootPlus" disabled>선택 발 ↓ 5px</button>
-  <button id="bulkFootReset" disabled>발높이 0</button>
+  <button id="bulkMinus" disabled>체크한 크기 −5%</button>
+  <button id="bulkPlus" disabled>체크한 크기 +5%</button>
+  <button id="bulkReset" disabled>체크한 크기만 기본값 복원</button>
+  <button id="bulkFootMinus" disabled>체크한 발높이 5px 위로</button>
+  <button id="bulkFootPlus" disabled>체크한 발높이 5px 아래로</button>
+  <button id="bulkFootReset" disabled>체크한 발높이 기본값 복원</button>
  </div>
 <nav class="quick-links" aria-label="편집실 바로가기"><a href="#registryAdd">신규 검투사 등록</a><a href="#actionEditor">동작 편집</a><a href="#grid">가격레벨 조정</a><a href="#gitTitle">GitHub 게시</a></nav>
 <div class="save-health" aria-label="현재 크기·발높이 저장 상태" aria-live="polite">
  <span id="draftHealth">기기 임시저장: 확인 중</span>
  <span id="repoHealth">GitHub 원본: 확인 중</span>
- <button id="verifySaved" type="button">GitHub 저장 상태 다시 확인</button>
+ <button id="verifySaved" type="button">GitHub 원본과 현재 값 비교</button>
 </div>
 </section>
 <div id="status" class="status" role="status">원본 캐릭터 그림을 준비하고 있습니다.</div>
@@ -224,10 +224,10 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 <p>아래에서 체크한 검투사 최대 4명을 <strong>같은 카메라·같은 바닥선·같은 배율</strong>로 표시합니다. 체크하지 않으면 대표 4명을 표시합니다. 개별 크기 슬라이더를 움직이면 즉시 비교됩니다.</p>
 <div class="compare-options"><label for="scaleScene">비교 씬</label>
 <select id="scaleScene"><option value="duel" selected>일반전투 1:1</option><option value="practice">실전훈련</option></select>
-<button id="compareDefaults" type="button">대표 4명 비교</button>
+<button id="compareDefaults" type="button">체크 해제하고 기본 4명 비교</button>
 <output id="compareStatus" role="status">원본 준비 중</output></div>
 <div class="compare-adjust" aria-label="실제 게임 화면을 보면서 크기와 발높이 조정">
-<label for="compareKey">바로 조정</label><select id="compareKey"></select>
+<label for="compareKey">비교 중 개별 조정할 캐릭터</label><select id="compareKey"></select>
 <label for="compareScale">크기 <output id="compareScaleValue">×1.00</output></label>
 <input id="compareScale" type="range" min=".65" max="1.85" step=".01" value="1">
 <label for="compareFeet">발높이 <output id="compareFeetValue">0px</output></label>
@@ -247,14 +247,14 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 <option value="practice">실전훈련</option>
 <option value="duel">일반전투</option>
 </select>
-<button id="actionReset" type="button">이 동작 기준값 복원</button>
-<button id="actionPreviewRefresh" type="button">그림 새로고침</button>
+<button id="actionReset" type="button">선택 동작의 위치·이펙트 기본값 복원</button>
+<button id="actionPreviewRefresh" type="button">현재 동작 그림 다시 불러오기</button>
 </div>
 <div class="action-body">
 <div><div class="action-preview"><canvas id="actionCanvas" width="520" height="520" aria-label="동작과 이펙트의 프레임별 합성 애니메이션 미리보기"></canvas></div>
 <div class="motion-toolbar">
-<button id="actionPlay" type="button" aria-pressed="true">Ⅱ 일시정지</button>
-<button id="actionGhost" type="button" aria-pressed="true" title="현재 동작 시작 프레임을 미리보기에 연하게 겹쳐 표시">◈ 시작 포즈 잔상 ON</button>
+<button id="actionPlay" type="button" aria-pressed="true">Ⅱ 미리보기 일시정지</button>
+<button id="actionGhost" type="button" aria-pressed="true" title="미리보기 전용: 선택 동작의 첫 프레임을 13% 농도로 뒤에 겹쳐 표시합니다. 게임 스프라이트에는 저장되지 않습니다.">◈ 시작 프레임 잔상: 켜짐</button>
 <label for="actionTime">진행</label><div class="timeline-axis"><input id="actionTime" type="range" min="0" max="100" step=".1" value="0" aria-label="동작 시간 0~100% 직접 이동"><div id="actionKeyMarkers" class="timeline-markers" role="group" aria-label="이동 키 마커 · 클릭해서 해당 시간으로 이동"></div></div>
 <output id="actionTimeValue">0%</output>
 <label for="actionSpeed">속도</label><select id="actionSpeed"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
@@ -273,7 +273,7 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 <option value="start">시작 0%</option><option value="middle">중간 50%</option><option value="end">끝 100%</option></select></div>
 <div class="action-field"><label for="motionKeyTime">선택 키 시간 (%)</label><input id="motionKeyTime" type="number" min="0" max="100" step=".1" value="0"></div>
 <div class="action-field"><label for="motionInterpolation">보간 방식</label><select id="motionInterpolation"><option value="smooth">자연스러운 곡선 (연속 이동)</option><option value="ease">키마다 부드럽게 정지</option><option value="linear">일정한 속도 (직선)</option></select></div>
-<div class="action-field"><button id="motionAdd" type="button">현재 시간에 키 추가</button><button id="motionDelete" type="button">선택 키 삭제</button></div>
+<div class="action-field"><button id="motionAdd" type="button">현재 재생 시점에 위치 키 추가</button><button id="motionDelete" type="button">선택한 위치 키 삭제</button></div>
 <div class="action-separator"><div id="motionKeyTrack" class="key-track" aria-label="시간별 위치 키 선택"></div><span id="motionKeyInfo" role="status"></span></div>
 <div class="action-field"><label for="motionX">이동 X <output id="motionXValue">0px</output></label><input type="range" id="motionX" min="-150" max="150" step=".1" value="0"></div>
 <div class="action-field"><label for="motionY">이동 Y <output id="motionYValue">0px</output></label><input type="range" id="motionY" min="-150" max="150" step=".1" value="0"></div>
@@ -289,11 +289,11 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 <div class="action-separator">동작별 X·Y·크기는 모든 게임 씬에서 같은 원본 설정을 사용합니다. 이펙트 선택도 동작별 설정이 우선입니다.</div>
 </div></div>
 <div class="motion-bulk" aria-label="선택한 캐릭터에게 이펙트 설정만 복사">
-<button id="bulkCopyFx" type="button">현재 동작 이펙트만 복사</button>
-<button id="bulkCopyAllFx" type="button">모든 동작 이펙트 전체 복사 (애니메이션 키 제외)</button>
+<button id="bulkCopyFx" type="button">현재 동작 이펙트 → 체크한 검투사에게 복사</button>
+<button id="bulkCopyAllFx" type="button">15개 동작 이펙트만 → 체크한 검투사에게 복사</button>
 <output id="batchActionStatus" role="status">아래 카드에서 대상 검투사를 체크하세요. 이펙트 종류·방향·위치·배율만 복사하고 각자의 애니메이션 키·기본 위치·크기는 유지합니다.</output>
 </div>
-<div class="action-actions"><button id="actionShowIdle">기본 동작 보기</button><output id="actionAutosave" role="status">동작·이펙트 변경값은 이 기기에 자동 임시저장됩니다.</output><span class="source-note">프리뷰는 전열 기준이며 투명영역 자동 확대를 사용하지 않습니다. 변경 후 기기 임시저장 또는 GitHub 원본 게시를 누르세요.</span></div>
+<div class="action-actions"><button id="actionShowIdle">대기(기본) 동작으로 전환</button><output id="actionAutosave" role="status">동작·이펙트 변경값은 이 기기에 자동 임시저장됩니다.</output><span class="source-note">프리뷰는 전열 기준이며 투명영역 자동 확대를 사용하지 않습니다. 변경 후 기기 임시저장 또는 GitHub 원본 게시를 누르세요.</span></div>
 </section>
 <section class="compare-panel" aria-label="시장 가격 레벨 안내"><h2>◉ 검투사시장 · 외형별 가격레벨</h2>
 <p>아래 인간 검투사 27종 카드의 <strong>시장 가격레벨 1~5</strong>를 정하세요.
@@ -311,7 +311,7 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 <label>외형 표시 이름<input name="label" required minlength="2" maxlength="44" placeholder="황금 투구 무르밀로" autocomplete="off"></label>
 <label>전용 이미지 폴더 (9동작)<input name="assetFolder" required placeholder="assets/combat/murmillo-goldhelm-v1" autocomplete="off"></label>
 <label>기본 시장 가격레벨<select name="priceLevel"><option value="1">1 · 저가형</option><option value="2" selected>2 · 일반형</option><option value="3">3 · 숙련형</option><option value="4">4 · 특수형</option><option value="5">5 · 최고가형</option></select></label>
-<button type="submit" id="registerGladiatorSubmit">9개 동작 원본 검사 후 공통 등록</button>
+<button type="submit" id="registerGladiatorSubmit">9종 이미지 검사 후 이 기기에 외형 등록</button>
 </form>
 <output id="registryStatus" role="status" aria-live="polite">등록된 인간 검투사: <span id="registryCount">27</span>종 · 등록 시 게임과 조정실에 반영됩니다.</output></section>
 <main class="grid" id="grid" aria-label="검투사 전체 외형별 가격·크기·동작·이펙트 편집"></main>
@@ -319,8 +319,8 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
 <h2 id="gitTitle">GitHub 원본에 크기·발높이·동작·이펙트·시장 가격레벨 저장</h2>
 <p>여기에 게시한 32종 크기·발높이·동작별 프레임/이펙트와 27종 시장 가격레벨 설정이 모든 기기에 적용되는 <strong>게임 기본값</strong>입니다. 브라우저 임시저장만으로는 GitHub 원본이 바뀌지 않습니다.</p>
 <div class="source-actions">
- <button id="publishOpen" class="primary" type="button">GitHub 원본 게시</button>
- <button id="githubEdit" type="button">GitHub 편집기에서 저장</button>
+ <button id="publishOpen" class="primary" type="button">GitHub 직접 게시 (토큰 입력)</button>
+ <button id="githubEdit" type="button">GitHub 편집기 열기·내용 복사</button>
  <a href="https://github.com/ZKrupinski/gladiator-arena/blob/main/public/practice-scale-published.js" target="_blank" rel="noopener noreferrer">현재 GitHub 기준값 확인 ↗</a>
 </div>
 <details class="token-help"><summary>GitHub 토큰은 무엇이며 어디서 받나요?</summary>
@@ -335,18 +335,18 @@ select:disabled,select option:disabled{opacity:.55;cursor:not-allowed}
  <label for="githubToken">GitHub 인증 토큰 (저장소 <code>ZKrupinski/gladiator-arena</code>의 Contents 쓰기 권한)</label>
  <input id="githubToken" type="password" autocomplete="off" spellcheck="false" placeholder="게시할 때만 입력 · 기기에 저장하지 않음">
  <div class="source-actions">
-  <button id="publishConfirm" class="primary" type="button">GitHub main에 연출·가격 설정 커밋</button>
-  <button id="publishCancel" type="button">취소</button>
+  <button id="publishConfirm" class="primary" type="button">현재 수정값을 GitHub main에 저장</button>
+  <button id="publishCancel" type="button">게시 취소·토큰 입력 닫기</button>
  </div>
  <p class="source-note">입력한 인증 토큰은 이 페이지에서 저장·기록하지 않고 GitHub API 요청에만 사용합니다. GitHub 사이트에서 직접 저장하려면 위 ‘GitHub 편집기에서 저장’을 사용하세요.</p>
 </div>
 <output id="publishStatus" role="status" aria-live="polite">GitHub 기준 파일이 모든 기기의 공통 기본값입니다. 수정값을 게시하지 않으면 다른 기기에 전달되지 않습니다.</output>
 </section>
 <footer class="actions">
-<button id="save" class="primary">이 기기 임시저장 · 미리보기 적용</button>
-<button id="reset">전체 기본값 복원</button>
-<button id="export">JSON 내보내기</button>
-<button id="import">JSON 불러오기</button><input id="file" type="file" accept=".json,application/json">
+<button id="save" class="primary">현재 수정값 이 기기에 저장</button>
+<button id="reset">이 기기의 모든 수정값 초기화</button>
+<button id="export">설정 백업 JSON 다운로드</button>
+<button id="import">설정 백업 JSON 불러와 적용</button><input id="file" type="file" accept=".json,application/json">
 <a href="../">게임으로 돌아가기 ↗</a>
 </footer>
 <p class="guide">체크한 여러 외형에 크기 ±5% 또는 발높이 ↑↓5px을 일괄 적용할 수 있습니다. 발높이는 음수일수록 위로, 양수일수록 아래로 이동하며 바닥 안내선은 움직이지 않습니다. 셔플하면 위치만 바뀌고 선택·크기·발높이는 유지됩니다. 임시저장은 이 기기에만 적용됩니다. 모든 기기에 반영하려면 GitHub 원본 게시를 완료하세요. 야수와 집행인의 공격 판정·움직임은 크기 조절의 영향을 받지 않습니다.</p>
@@ -612,7 +612,7 @@ function selectedKeyIndex(){
 function pauseAtKey(index){
  const keys=keyList();index=Math.max(0,Math.min(keys.length-1,index));
  $('#motionKey').value=String(index);actionProgress=keys[index].t;actionPlaying=false;
- actionPreviousFrame=-1;$('#actionPlay').textContent='▶ 재생';
+ actionPreviousFrame=-1;$('#actionPlay').textContent='▶ 미리보기 재생';
  $('#actionPlay').setAttribute('aria-pressed','false');updateTimelineLabel();showMotionKey(index);previewAction();
  syncNumbers();
 }
@@ -835,7 +835,7 @@ function initMotionDrag(){
       pos.y<hit.top||pos.y>hit.top+hit.height)return;
    event.preventDefault();recordHistory();
    const cfg=currentAction();
-   actionPlaying=false;$('#actionPlay').textContent='▶ 재생';
+   actionPlaying=false;$('#actionPlay').textContent='▶ 미리보기 재생';
    $('#actionPlay').setAttribute('aria-pressed','false');
    dragMotion={mode:'effect',pointer:event.pointerId,start:pos,
     base:{...cfg.effect},face:hit.face,z:hit.z,key:hit.key,pose:hit.pose,moved:false};
@@ -857,7 +857,7 @@ function initMotionDrag(){
   event.preventDefault();recordHistory();
   const selectedTime=actionPlaying?hit.progress:actionProgress;
   actionPlaying=false;actionProgress=Math.round(selectedTime*1000)/1000;
-  $('#actionPlay').textContent='▶ 재생';$('#actionPlay').setAttribute('aria-pressed','false');updateTimelineLabel();
+  $('#actionPlay').textContent='▶ 미리보기 재생';$('#actionPlay').setAttribute('aria-pressed','false');updateTimelineLabel();
   dragMotion={pointer:event.pointerId,start:pos,time:actionProgress,base:v.sampleMotion(currentAction(),actionProgress),
    key:hit.key,pose:hit.pose,z:hit.z,moved:false};
   canvas.setPointerCapture(event.pointerId);canvas.style.cursor='grabbing';previewAction();
@@ -910,7 +910,7 @@ function initActionEditor(){
  $('#actionGhost').addEventListener('click',()=>{
   showActionStartGhost=!showActionStartGhost;
   $('#actionGhost').setAttribute('aria-pressed',String(showActionStartGhost));
-  $('#actionGhost').textContent=showActionStartGhost?'◈ 시작 포즈 잔상 ON':'◇ 시작 포즈 잔상 OFF';
+  $('#actionGhost').textContent=showActionStartGhost?'◈ 시작 프레임 잔상: 켜짐':'◇ 시작 프레임 잔상: 꺼짐';
   previewAction();
  });
  $('#fxDragMode').onchange=()=>{
@@ -946,14 +946,14 @@ function initActionEditor(){
  $('#actionTime').addEventListener('input',()=>{
   actionProgress=Math.max(0,Math.min(1,Number($('#actionTime').value)/100));
   actionPlaying=false;actionPreviousFrame=-1;
-  $('#actionPlay').textContent='▶ 재생';
+  $('#actionPlay').textContent='▶ 미리보기 재생';
   $('#actionPlay').setAttribute('aria-pressed','false');
   updateTimelineLabel();showMotionCursor();previewAction();
  });
  $('#actionPlay').addEventListener('click',()=>{
   actionPlaying=!actionPlaying;
   actionLastTick=0;actionLastPaint=0;actionPreviousFrame=-1;
-  $('#actionPlay').textContent=actionPlaying?'Ⅱ 일시정지':'▶ 재생';
+  $('#actionPlay').textContent=actionPlaying?'Ⅱ 미리보기 일시정지':'▶ 미리보기 재생';
   $('#actionPlay').setAttribute('aria-pressed',String(actionPlaying));
   if(!actionPlaying)previewAction();
  });
@@ -988,7 +988,7 @@ function initActionEditor(){
     const axis=field==='frameX'?'x':'y',t=Math.round(actionProgress*1000)/1000;
     if(t>0){
      actionPlaying=false;
-     $('#actionPlay').textContent='▶ 재생';
+     $('#actionPlay').textContent='▶ 미리보기 재생';
      $('#actionPlay').setAttribute('aria-pressed','false');
      const motionKeys=keyList(cfg);
      const index=motionKeys.findIndex(k=>Math.abs(k.t-t)<.00005);
@@ -1166,7 +1166,7 @@ function build(){
   slider.setAttribute('aria-label',nameFor(key)+' 개별 크기');
   const adjust=document.createElement('div');adjust.className='adjust';
   const minus=document.createElement('button'),original=document.createElement('button'),plus=document.createElement('button');
-  minus.textContent='−5%';original.textContent='기본';plus.textContent='+5%';
+  minus.textContent='크기 −5%';original.textContent='크기 기본값';plus.textContent='크기 +5%';
   adjust.append(minus,original,plus);
   const footCaption=document.createElement('label');footCaption.className='foot-caption';footCaption.textContent='발높이 (↑ 음수 / ↓ 양수)';
   const footTrack=document.createElement('div');footTrack.className='foot-track';
@@ -1175,10 +1175,10 @@ function build(){
   const footValue=document.createElement('output');footTrack.append(footSlider,footValue);
   const footActions=document.createElement('div');footActions.className='foot-adjust';
   const up=document.createElement('button'),feetReset=document.createElement('button'),down=document.createElement('button');
-  up.textContent='발 ↑ 5px';feetReset.textContent='발 0';down.textContent='발 ↓ 5px';
+  up.textContent='발 5px 위로';feetReset.textContent='발높이 기본값';down.textContent='발 5px 아래로';
   footActions.append(up,feetReset,down);
   const edit=document.createElement('button');edit.className='action-open';
-  edit.textContent='⚔ 이 캐릭터 동작·이펙트 편집';
+  edit.textContent='⚔ 이 외형의 동작·이펙트 편집하기';
   let priceSelect=null,priceValue=null;
   controls.append(code,value,slider,adjust,footCaption,footTrack,footActions);
   if(pricing.isMarketLook(key)){
