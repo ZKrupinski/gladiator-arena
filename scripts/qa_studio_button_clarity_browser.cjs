@@ -43,7 +43,7 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
     save:['현재 수정값 이 기기에 저장','이 브라우저에만'],
     reset:['이 기기 수정값 전체 초기화','확인창'],
     actionReset:['현재 동작의 위치·이펙트만 기본값 복원','다른 동작'],
-    actionPreviewRefresh:['현재 동작 그림 다시 불러오기','저장한 키'],
+    actionPreviewRefresh:['현재 동작 그림 다시 불러오기','이동 키와 보정값'],
     registerGladiatorSubmit:['9종 이미지 검사 후 이 기기에 외형 등록','원격 저장은 별도'],
     actionShowIdle:['대기(기본) 동작으로 전환','대기(idle)'],
     verifySaved:['GitHub 원본과 현재 값 비교','새로 저장하지'],
