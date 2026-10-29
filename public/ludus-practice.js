@@ -147,7 +147,7 @@ function setup(){
  '<div class="ep-arena"><canvas width="1280" height="720" id="epCanvas" aria-label="검투사 최대 4명이 네 단계 원근 배치에서 적과 싸우는 전투장"></canvas>'+
  '<div id="epAnnouncement" class="ep-announcement" aria-live="polite"></div></div>'+
  '<div class="ep-health" id="epHealth"></div><div class="ep-actions">'+
- '<p>검투사들은 자동으로 싸웁니다. 생존자가 있으면 다음 단계가 즉시 이어집니다.</p>'+
+ '<p id="epCombatHint" aria-live="polite">검투사들은 자동으로 싸웁니다. 살아남으면 다음 웨이브가 자동으로 시작됩니다.</p>'+
  '<button data-do="speed" id="epSpeed">속도 ×1</button><button data-do="pause" id="epPause">Ⅱ 일시정지</button>'+
  '<button data-do="finish" class="ep-stop">훈련 종료 · 경험치 정산</button></div></section>'+
  '<section class="ep-result" hidden><small>EXERCITIVM · RECORDVM</small>'+
@@ -1023,6 +1023,15 @@ function paint(){
 }
 function status(){
  if(!battle)return;
+ const hint=$('#epCombatHint');
+ if(hint){
+  const waitingForOpponent=!battle.enemies.some(e=>!e.dead&&!e.waiting);
+  hint.textContent=battle.paused?'일시정지 중 · 재개 버튼을 누르면 자동전투가 계속됩니다.':
+   battle.cleared?'WAVE '+battle.clearedWave+' 돌파! 다음 웨이브 자동 시작까지 '+Math.max(0,Math.ceil(battle.breakTime))+'초':
+   waitingForOpponent&&battle.exits.length?'시신 회수 중 · 완료되면 다음 적이 자동으로 출전합니다.':
+   waitingForOpponent&&(battle.left>0||battle.queued.length)?'다음 적 출전 준비 중 · 자동으로 이어집니다.':
+   '검투사들이 자동으로 싸우고 있습니다. 생존자가 있으면 다음 웨이브로 이어집니다.';
+ }
  $('#epWave').textContent='WAVE '+battle.wave;$('#epKills').textContent='격파 '+battle.kills;
  $('#epAlive').textContent='생존 '+battle.heroes.filter(h=>!h.dead).length+'/'+battle.heroes.length;
  $('#epXP').textContent='EXP +'+battle.heroes.reduce((n,h)=>n+h.exp,0)+' · ×'+experienceMultiplier(Math.max(1,battle.heroes.filter(h=>!h.dead).length)).toFixed(1);
