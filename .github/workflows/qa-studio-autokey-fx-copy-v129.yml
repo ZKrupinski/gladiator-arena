@@ -1,0 +1,29 @@
+name: QA studio upper X/Y autokey and FX-only 15-pose copying v129
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/tools/practice-scale-calibrator.html
+      - public/practice-visual-profiles.js
+      - scripts/qa_studio_autokey_fx_copy_browser.cjs
+      - .github/workflows/qa-studio-autokey-fx-copy-v129.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  studio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source syntax
+        run: node --check scripts/qa_studio_autokey_fx_copy_browser.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Run real upper-position key and FX-only copy regression
+        run: node scripts/qa_studio_autokey_fx_copy_browser.cjs
